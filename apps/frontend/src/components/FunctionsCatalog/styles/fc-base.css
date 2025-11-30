@@ -1,0 +1,44 @@
+/* SPDX-License-Identifier: MIT */
+/* Base Styles for FunctionsCatalog */
+
+:root {
+  /* Farben – neutral */
+  --fc-bg: #ffffff;
+  --fc-text: #111827;
+  --fc-muted: #6b7280;
+  --fc-border: #d1d5db;
+
+  --fc-panel-bg: #ffffff;
+  --fc-sidebar-bg: #f9fafb;
+  --fc-footer-bg: #f3f4f6;
+
+  --fc-badge-bg: #e5e7eb;
+  --fc-badge-text: #111827;
+
+  --fc-code-bg: #f3f4f6;
+  --fc-code-text: #111;
+}
+
+/* Universelle Styles */
+.fc-panel {
+  background: var(--fc-panel-bg);
+  border: 1px solid var(--fc-border);
+  border-radius: 8px;
+}
+
+.fc-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--fc-badge-bg);
+  color: var(--fc-badge-text);
+  font-size: 12px;
+}
+
+.fc-code {
+  background: var(--fc-code-bg);
+  color: var(--fc-code-text);
+  padding: 8px;
+  border-radius: 6px;
+  overflow-x: auto;
+}

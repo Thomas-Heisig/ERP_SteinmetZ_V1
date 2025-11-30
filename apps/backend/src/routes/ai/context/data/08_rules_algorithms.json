@@ -1,0 +1,112 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(sort|sortier|sortiere|sortieren)\\s+(.*)",
+      "replies": [
+        "Ich sortiere $2.",
+        "Sortierung von $2 wird durchgeführt."
+      ],
+      "action": "sort_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(search|such|suche|finden|finde)\\s+(.*)",
+      "replies": [
+        "Ich suche in $2.",
+        "Suchalgorithmus für $2 wird ausgeführt."
+      ],
+      "action": "search_algorithm",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(optimize|optimier|optimieren)\\s+(.*)",
+      "replies": [
+        "Ich optimiere $2.",
+        "Optimierungsprozess für $2 startet..."
+      ],
+      "action": "optimize_system",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(analyze|analysier|analysiere|analysieren)\\s+(.*)",
+      "replies": [
+        "Ich analysiere $2.",
+        "Analyse von $2 wird durchgeführt."
+      ],
+      "action": "analyze_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(berechne|berechnen|compute|calculate)\\s+(.*)",
+      "replies": [
+        "Ich berechne $2.",
+        "Berechnung von $2 wird ausgeführt."
+      ],
+      "action": "calculate_algorithm",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(filter|filtrier|filtere|filtern)\\s+(.*)",
+      "replies": [
+        "Ich filtere $2.",
+        "Filterprozess für $2 wird durchgeführt."
+      ],
+      "action": "filter_algorithm",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(cluster|gruppier|clustern|gruppieren)\\s+(.*)",
+      "replies": [
+        "Ich führe ein Clustering für $2 durch.",
+        "Daten von $2 werden gruppiert."
+      ],
+      "action": "cluster_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(train|trainier|lerne|lernen)\\s+(.*)",
+      "replies": [
+        "Ich trainiere ein Modell mit $2.",
+        "Training mit den Daten $2 läuft."
+      ],
+      "action": "train_model",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(validier|validiere|prüfe|überprüfe)\\s+(.*)",
+      "replies": [
+        "Ich validiere $2.",
+        "Validierungsalgorithmus für $2 wird ausgeführt."
+      ],
+      "action": "validate_algorithm",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(simuliere|simulier|simulation)\\s+(.*)",
+      "replies": [
+        "Ich simuliere $2.",
+        "Simulation von $2 läuft."
+      ],
+      "action": "simulate_algorithm",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(vergleiche|vergleich|compare)\\s+(.*)\\s+und\\s+(.*)",
+      "replies": [
+        "Ich vergleiche $2 und $3.",
+        "Vergleich zwischen $2 und $3 wird ausgeführt."
+      ],
+      "action": "compare_algorithms",
+      "params": ["$2", "$3"]
+    },
+    {
+      "pattern": "\\b(algorithmus|algorithm|prozess|verfahren)\\s+(start|ausführ|teste|lauf)\\s+(.*)",
+      "replies": [
+        "Ich starte den Algorithmus $3.",
+        "Das Verfahren $3 wird ausgeführt."
+      ],
+      "action": "run_algorithm",
+      "params": ["$3"]
+    }
+  ]
+}

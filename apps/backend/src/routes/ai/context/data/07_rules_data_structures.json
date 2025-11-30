@@ -1,0 +1,121 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(array|feld)\\s+(.*)",
+      "replies": [
+        "Ich verwalte das Array für $2.",
+        "Array-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_arrays",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(list|liste)\\s+(.*)",
+      "replies": [
+        "Ich verwalte die Liste für $2.",
+        "List-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_lists",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(stack|stapel)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den Stack für $2.",
+        "Stack-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_stacks",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(queue|warteschlang)\\s+(.*)",
+      "replies": [
+        "Ich verwalte die Queue für $2.",
+        "Queue-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_queue",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(tree|baum)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den Baum für $2.",
+        "Tree-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_tree",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(graph|netzwerk)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den Graphen für $2.",
+        "Graph-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_graph",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(table|tabelle|matrix)\\s+(.*)",
+      "replies": [
+        "Ich verwalte die Tabelle für $2.",
+        "Tabellenverwaltung für $2 wird durchgeführt."
+      ],
+      "action": "manage_table",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(hash|map|dictionary|assoziativarray)\\s+(.*)",
+      "replies": [
+        "Ich verwalte die Hash-Struktur für $2.",
+        "Hash- oder Map-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_hashmap",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(node|knoten)\\s+(einfüg|insert|hinzufüg|add|entfern|lösch|delete)\\s+(.*)",
+      "replies": [
+        "Ich $2 einen Knoten in $3.",
+        "Knotenoperation ($2) in $3 wird ausgeführt."
+      ],
+      "action": "modify_node",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(traverse|durchlauf|durchsuch|iterier|iteriere)\\s+(.*)",
+      "replies": [
+        "Ich durchlaufe die Struktur $2.",
+        "Traversierung von $2 wird durchgeführt."
+      ],
+      "action": "traverse_structure",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(sortier|sortiere|sortieren)\\s+(.*)",
+      "replies": [
+        "Ich sortiere die Datenstruktur $2.",
+        "Sortierung von $2 wird vorgenommen."
+      ],
+      "action": "sort_structure",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(such|suche|finde|finden)\\s+(.*)\\s+in\\s+(.*)",
+      "replies": [
+        "Ich suche nach $2 in $3.",
+        "Suche nach $2 innerhalb von $3 wird durchgeführt."
+      ],
+      "action": "search_in_structure",
+      "params": ["$2", "$3"]
+    },
+    {
+      "pattern": "\\b(vergleich|vergleiche|compare)\\s+(.*)\\s+und\\s+(.*)",
+      "replies": [
+        "Ich vergleiche $2 und $3.",
+        "Vergleich zwischen $2 und $3 wird ausgeführt."
+      ],
+      "action": "compare_structures",
+      "params": ["$2", "$3"]
+    }
+  ]
+}

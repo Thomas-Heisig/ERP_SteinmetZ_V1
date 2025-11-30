@@ -1,0 +1,130 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(user|benutzer)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den Benutzer $2.",
+        "User-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_user",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(role|rolle)\\s+(.*)",
+      "replies": [
+        "Ich verwalte die Rolle $2.",
+        "Rollen-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_role",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(permission|berechtigung)\\s+(.*)",
+      "replies": [
+        "Ich verwalte die Berechtigung $2.",
+        "Permission-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_permission",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(login|anmeld)\\s+(.*)",
+      "replies": [
+        "Ich melde $2 an.",
+        "Anmeldung für $2 wird durchgeführt."
+      ],
+      "action": "login_user",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(logout|abmeld)\\s+(.*)",
+      "replies": [
+        "Ich melde $2 ab.",
+        "Abmeldung für $2 wird durchgeführt."
+      ],
+      "action": "logout_user",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(erstelle|erstellen|neu|anlegen)\\s+(benutzer|user)\\s+(.*)",
+      "replies": [
+        "Ich lege den Benutzer $3 an.",
+        "Neuer Benutzer $3 wird erstellt."
+      ],
+      "action": "create_user",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(lösche|entferne|entfernen|delete)\\s+(benutzer|user)\\s+(.*)",
+      "replies": [
+        "Ich lösche den Benutzer $3.",
+        "Benutzer $3 wird entfernt."
+      ],
+      "action": "delete_user",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(aktiviere|aktivier|deaktiviere|deaktivier)\\s+(benutzer|user)\\s+(.*)",
+      "replies": [
+        "Ich ändere den Aktivierungsstatus von $3.",
+        "Der Benutzer $3 wird (de)aktiviert."
+      ],
+      "action": "toggle_user_status",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(setze|änder|ändere|aktualisiere)\\s+(profil|daten|information(en)?)\\s+(von\\s+)?(.*)",
+      "replies": [
+        "Ich aktualisiere das Profil von $4.",
+        "Nutzerinformationen von $4 werden angepasst."
+      ],
+      "action": "update_user_profile",
+      "params": ["$4"]
+    },
+    {
+      "pattern": "\\b(gruppe|group)\\s+(erstelle|erstellen|anlegen)\\s+(.*)",
+      "replies": [
+        "Ich erstelle die Gruppe $3.",
+        "Neue Gruppe $3 wird angelegt."
+      ],
+      "action": "create_group",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(gruppe|group)\\s+(lösche|entferne|entfernen)\\s+(.*)",
+      "replies": [
+        "Ich lösche die Gruppe $3.",
+        "Gruppe $3 wird entfernt."
+      ],
+      "action": "delete_group",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(füge|add|hinzufüg|hinzufügen)\\s+(benutzer|user)\\s+(.*)\\s+zu\\s+(gruppe|group)\\s+(.*)",
+      "replies": [
+        "Ich füge den Benutzer $3 zur Gruppe $5 hinzu.",
+        "$3 wird der Gruppe $5 zugeordnet."
+      ],
+      "action": "add_user_to_group",
+      "params": ["$3", "$5"]
+    },
+    {
+      "pattern": "\\b(entferne|remove)\\s+(benutzer|user)\\s+(.*)\\s+aus\\s+(gruppe|group)\\s+(.*)",
+      "replies": [
+        "Ich entferne den Benutzer $3 aus der Gruppe $5.",
+        "$3 wird aus der Gruppe $5 entfernt."
+      ],
+      "action": "remove_user_from_group",
+      "params": ["$3", "$5"]
+    },
+    {
+      "pattern": "\\b(list|liste|zeige|zeig)\\s+(alle\\s+)?(benutzer|user|rollen|gruppen)\\b",
+      "replies": [
+        "Ich zeige Ihnen die Liste der $3.",
+        "Hier sind alle verfügbaren $3."
+      ],
+      "action": "list_users_or_roles",
+      "params": ["$3"]
+    }
+  ]
+}

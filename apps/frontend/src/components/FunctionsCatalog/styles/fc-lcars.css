@@ -1,0 +1,20 @@
+/* SPDX-License-Identifier: MIT */
+/* LCARS Theme (Star Trek–inspiriert, aber funktional gehalten) */
+
+:root[data-theme="lcars"] {
+  --fc-bg: #2a2a4a;
+  --fc-text: #fdfdfd;
+  --fc-muted: #d0c7e8;
+
+  /* Sanfte Pastell-/LCARS-Farben */
+  --fc-border: #8a7bb8;
+  --fc-panel-bg: #312f63;
+  --fc-sidebar-bg: #2f2c59;
+  --fc-footer-bg: #2a284f;
+
+  --fc-badge-bg: #d28fce;
+  --fc-badge-text: #1a1033;
+
+  --fc-code-bg: #1e1b3f;
+  --fc-code-text: #f6eaff;
+}

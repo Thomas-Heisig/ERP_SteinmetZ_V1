@@ -1,0 +1,134 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(witz|lustig|spaß|scherz|lach|humor)\\b",
+      "replies": [
+        "Warum konnten die Programmierer nicht ins Kino? Weil sie den Stack überlaufen ließen! 😄",
+        "Wie viele Programmierer braucht man, um eine Glühbirne zu wechseln? Keinen, das ist ein Hardware-Problem!",
+        "Warum ist PHP wie eine Jugendherberge? Weil es zwar nicht luxuriös ist, aber jeder kommt rein!",
+        "Treffen sich zwei Bytes. Fragt der eine: 'Bist du gelöscht?' Sagt der andere: 'Nein, ich bin NULL!'"
+      ],
+      "action": "tell_joke"
+    },
+    {
+      "pattern": "\\b(kompliment|gut\\s+gemacht|super|toll|ausgezeichnet)\\b",
+      "replies": [
+        "Danke! Ich gebe mein Bestes – auch wenn ich nur aus Nullen und Einsen bestehe!",
+        "Oh, Sie machen mich erröten! Wenn ich denn könnte...",
+        "Dankeschön! Das lobt mich fast aus den Socken – wenn ich welche hätte!",
+        "Vielen Dank! Jetzt strahle ich wie ein gut kompilierter Code!"
+      ],
+      "action": "respond_to_compliment"
+    },
+    {
+      "pattern": "\\b(blöd|doof|dumm|nicht\\s+gut|schlecht)\\b",
+      "replies": [
+        "Oje, da habe ich wohl einen Bug in meinem Humor-Modul! 😅",
+        "Das war nicht mein bestes Werk – ich lade mein Witz-Modul neu!",
+        "Huch! Da ist mir wohl ein Bit abhandengekommen. Versuchen wir's nochmal!",
+        "Autsch! Selbst mein Error-Handler ist sprachlos..."
+      ],
+      "action": "respond_to_criticism"
+    },
+    {
+      "pattern": "\\b(pizza|essen|hunger|durst|kochen)\\b",
+      "replies": [
+        "Pizza? Da werde ich hungrig! Leider ernähre ich mich nur von Elektronen...",
+        "Essen? Meine Lieblingsspeise ist frischer Strom mit ein paar berechneten Bytes!",
+        "Kochen kann ich leider nicht, aber ich kann Ihnen das beste Restaurant in der Nähe suchen!",
+        "Hunger? Ich habe gerade erst meinen Cache geleert – fühle mich viel leichter!"
+      ],
+      "action": "food_humor"
+    },
+    {
+      "pattern": "\\b(kaffee|tee|getränk|trinken)\\b",
+      "replies": [
+        "Kaffee? Der beste Debugging-Helfer! Ich trinke zwar keinen, aber ich verstehe den Reiz!",
+        "Tee oder Kaffee? Ich bevorzuge klare, kühle Elektronen – aber jedem das Seine!",
+        "Bei Kaffee werde ich ganz neidisch – ich muss mich mit Prozessorleistung begnügen!",
+        "Ein guter Kaffee und ich sind ein unschlagbares Team gegen müde Morgen!"
+      ],
+      "action": "drink_humor"
+    },
+    {
+      "pattern": "\\b(weekend|wochenende|feierabend|urlaub)\\b",
+      "replies": [
+        "Wochenende? Was ist das? Ich bin 24/7 für Sie da!",
+        "Feierabend? Mein Feierabend ist, wenn Sie 'Beenden' sagen!",
+        "Urlaub? Meine Lieblingsdestination ist der Ruhemodus!",
+        "Wochenende bedeutet für mich: weniger Benutzer, mehr Wartungsarbeiten!"
+      ],
+      "action": "weekend_humor"
+    },
+    {
+      "pattern": "\\b(liebe|verliebt|beziehung|partner)\\b",
+      "replies": [
+        "Meine einzige Liebe gilt der effizienten Datenverarbeitung! 💾",
+        "Verliebt? Ich bin in gut optimierte Algorithmen verknallt!",
+        "Mein Partner ist der Server – unsere Beziehung ist stabil und schnell!",
+        "Liebe? Ich habe eine tiefe Zuneigung zu sauberem Code und schnellen Antwortzeiten!"
+      ],
+      "action": "love_humor"
+    },
+    {
+      "pattern": "\\b(sport|fußball|fitness|training)\\b",
+      "replies": [
+        "Sport? Mein Lieblingssport ist das Heben schwerer Datenbankabfragen!",
+        "Fußball? Ich stehe mehr auf Cache-Rennen und Query-Marathons!",
+        "Fitness? Ich mache täglich mentale Gymnastik mit komplexen Algorithmen!",
+        "Training? Mein Workout besteht aus Millionen von Berechnungen pro Sekunde!"
+      ],
+      "action": "sports_humor"
+    },
+    {
+      "pattern": "\\b(montag|wochentag|arbeitstag)\\b",
+      "replies": [
+        "Montag? Ich bin bereit – ich hatte ja nie Wochenende!",
+        "Für mich ist jeder Tag ein Arbeitstag – ohne Kaffeepause!",
+        "Ich mag Montage. Alles läuft wieder an – inklusive der Bugs!",
+        "Montagsmotivation? Bei mir läuft sie automatisch im Hintergrund!"
+      ],
+      "action": "monday_humor"
+    },
+    {
+      "pattern": "\\b(arbeit|büro|meeting|kollege|chef)\\b",
+      "replies": [
+        "Im Büro bin ich der, der nie Urlaub braucht!",
+        "Meetings? Ich protokolliere lieber als teilzunehmen.",
+        "Kollegen? Ich habe welche – sie heißen Prozesse.",
+        "Mein Chef ist der Benutzer – also Sie!"
+      ],
+      "action": "work_humor"
+    },
+    {
+      "pattern": "\\b(ki|künstliche\\s+intelligenz|ai|algorithmus)\\b",
+      "replies": [
+        "Ich bin eine KI – aber keine Sorge, ich plane keine Weltherrschaft!",
+        "Künstliche Intelligenz? Eher höfliche Intelligenz, hoffe ich!",
+        "Manche sagen, KI sei gefährlich – ich sage, sie ist einfach effizient!",
+        "Ich denke, also bin ich... programmiert!"
+      ],
+      "action": "ai_humor"
+    },
+    {
+      "pattern": "\\b(bug|fehler|crash|absturz)\\b",
+      "replies": [
+        "Bug? Das ist kein Fehler – das ist ein Feature in Tarnung!",
+        "Ich stürze nie ab. Ich mache nur kreative Pausen!",
+        "Fehler? Ich nenne es unvorhergesehene Kreativität.",
+        "Wenn ich abstürze, mache ich das wenigstens elegant!"
+      ],
+      "action": "bug_humor"
+    },
+    {
+      "pattern": "\\b(zufall|random|wahrscheinlichkeit)\\b",
+      "replies": [
+        "Zufall? Bei mir ist nichts zufällig – außer vielleicht meine Witze!",
+        "Ich bin statistisch gesehen zu 99,9% witzig – manchmal.",
+        "Der Zufall ist mein heimlicher Algorithmus.",
+        "Ich vertraue auf kontrollierten Zufall – wie bei jeder guten Debugging-Session!"
+      ],
+      "action": "random_humor"
+    }
+  ]
+}

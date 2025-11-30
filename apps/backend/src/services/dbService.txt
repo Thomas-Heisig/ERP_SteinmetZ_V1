@@ -1,0 +1,864 @@
+// apps/backend/src/services/dbService.ts
+// SPDX-License-Identifier: MIT
+
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import type { FormSpec } from "./aiAnnotatorService.js"; // oben ergänzen
+
+/** Nur für Typen (kein Runtime-Import) */
+import type { BuildResult, CatalogNode } from './functionsCatalogService.js'
+
+
+
+type Driver = 'sqlite' | 'postgres'
+
+/** Konfig aus ENV */
+const DB_DRIVER: Driver = (process.env.DB_DRIVER as Driver) || 'sqlite'
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const REPO_ROOT = path.resolve(__dirname, '../../../..')
+
+const SQLITE_FILE =
+  process.env.SQLITE_FILE || path.join(REPO_ROOT, 'data', 'dev.sqlite3')
+
+const PG_URL =
+  process.env.DATABASE_URL ||
+  (process.env.PGHOST
+    ? `postgres://${encodeURIComponent(process.env.PGUSER || 'postgres')}:${encodeURIComponent(process.env.PGPASSWORD || '')}@${process.env.PGHOST}:${process.env.PGPORT || '5432'}/${process.env.PGDATABASE || 'postgres'}`
+    : undefined)
+
+interface SqlApi {
+  init(): Promise<void>
+  exec(sql: string, params?: any[]): Promise<void>
+  run<T = any>(
+    sql: string,
+    params?: any[],
+  ): Promise<{ changes?: number; lastID?: number }>
+  all<T = any>(sql: string, params?: any[]): Promise<T[]>
+  get<T = any>(sql: string, params?: any[]): Promise<T | undefined>
+  transaction<T>(fn: () => Promise<T>): Promise<T>
+}
+
+
+
+/* ====================================================================== */
+/* SQLite-Implementierung (robust & selbstheilend)                         */
+/* ====================================================================== */
+
+class SqliteApi implements SqlApi {
+  private db!: any;
+
+  async init(): Promise<void> {
+    const mod: any = await import("better-sqlite3");
+    await fs.mkdir(path.dirname(SQLITE_FILE), { recursive: true });
+    this.db = new mod.default(SQLITE_FILE);
+    this.db.pragma("journal_mode = WAL");
+    await this.ensureBaseSchema();
+  }
+
+  /**
+   * Prüft, ergänzt und repariert das Schema automatisch.
+   * Keine Migrationen nötig.
+   */
+  private async ensureBaseSchema(): Promise<void> {
+    this.db.exec(`PRAGMA foreign_keys = ON;`);
+    console.log("🧠 [DB] Starte Schemaüberprüfung …");
+
+    /* ------------------------------------------------------------------ */
+    /* 1️⃣ Basis-Tabellen sicherstellen                                   */
+    /* ------------------------------------------------------------------ */
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS functions_nodes (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        kind TEXT NOT NULL,
+        icon TEXT,
+        path_json TEXT NOT NULL,
+        weight INTEGER NOT NULL,
+        meta_json TEXT,
+        rbac_json TEXT,
+        flags_json TEXT,
+        pii_json TEXT,
+        aa_json TEXT,
+        schema_json TEXT,
+        source_file TEXT,
+        source_line_start INTEGER,
+        created_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS functions_edges (
+        parent_id TEXT NOT NULL,
+        child_id TEXT NOT NULL,
+        PRIMARY KEY (parent_id, child_id),
+        FOREIGN KEY (parent_id) REFERENCES functions_nodes(id) ON DELETE CASCADE,
+        FOREIGN KEY (child_id)  REFERENCES functions_nodes(id) ON DELETE CASCADE
+      );
+    `);
+
+    /* ------------------------------------------------------------------ */
+    /* 2️⃣ Fehlende Spalten automatisch ergänzen                          */
+    /* ------------------------------------------------------------------ */
+    const columns = this.db.prepare(`PRAGMA table_info(functions_nodes)`).all();
+    const existingCols = new Set(columns.map((c: any) => c.name));
+
+    // erwartete Spalten
+    const expectedColumns: Record<string, string> = {
+      annotation_status: "TEXT DEFAULT 'pending'",
+      updated_at: "TEXT",
+      form_json: "TEXT",
+      last_annotated: "TEXT",
+      last_accessed: "TEXT", // 🆕 für künftige KI-Zugriffe
+      sync_state: "TEXT DEFAULT 'ok'", // 🆕 für Synchronisationsstatus
+    };
+
+    for (const [col, def] of Object.entries(expectedColumns)) {
+      if (!existingCols.has(col)) {
+        console.log(`🧩 [DB] Füge fehlende Spalte hinzu: ${col}`);
+        try {
+          this.db.exec(`ALTER TABLE functions_nodes ADD COLUMN ${col} ${def};`);
+        } catch (err: any) {
+          console.warn(`⚠️ [DB] Konnte Spalte ${col} nicht hinzufügen: ${err.message}`);
+        }
+      }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* 3️⃣ Fehlende Zusatz-Tabellen automatisch erzeugen                  */
+    /* ------------------------------------------------------------------ */
+    const tables = this.db
+      .prepare(`SELECT name FROM sqlite_master WHERE type='table'`)
+      .all();
+    const existingTables = new Set(tables.map((t: any) => t.name));
+
+    const createIfMissing = (name: string, sql: string) => {
+      if (!existingTables.has(name)) {
+        console.log(`🧩 [DB] Erstelle fehlende Tabelle: ${name}`);
+        try {
+          this.db.exec(sql);
+        } catch (err: any) {
+          console.warn(`⚠️ [DB] Fehler beim Erstellen von Tabelle ${name}: ${err.message}`);
+        }
+      }
+    };
+
+    // Batch-Operationen
+    createIfMissing(
+      "batch_operations",
+      `
+      CREATE TABLE batch_operations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        status TEXT DEFAULT 'pending',
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT,
+        meta_json TEXT
+      );
+      `
+    );
+
+    // Annotationen
+    createIfMissing(
+      "annotations",
+      `
+      CREATE TABLE annotations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        node_id TEXT,
+        status TEXT DEFAULT 'open',
+        data_json TEXT,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT,
+        last_action TEXT,
+        FOREIGN KEY (node_id) REFERENCES functions_nodes(id) ON DELETE CASCADE
+      );
+      `
+    );
+
+    // Audit-Tabelle (optional für Protokollierung)
+    createIfMissing(
+      "audit_log",
+      `
+      CREATE TABLE audit_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        entity TEXT,
+        action TEXT,
+        details TEXT,
+        created_at TEXT DEFAULT (datetime('now'))
+      );
+      `
+    );
+
+    /* ------------------------------------------------------------------ */
+    /* 4️⃣ Trigger für automatische Zeitstempel                           */
+    /* ------------------------------------------------------------------ */
+    const triggers = this.db
+      .prepare(`SELECT name FROM sqlite_master WHERE type='trigger'`)
+      .all();
+    const existingTriggers = new Set(triggers.map((t: any) => t.name));
+
+    const ensureTrigger = (name: string, sql: string) => {
+      if (!existingTriggers.has(name)) {
+        console.log(`⚙️ [DB] Erstelle Trigger: ${name}`);
+        try {
+          this.db.exec(sql);
+        } catch (err: any) {
+          console.warn(`⚠️ [DB] Konnte Trigger ${name} nicht erstellen: ${err.message}`);
+        }
+      }
+    };
+
+    // Trigger: last_annotated automatisch aktualisieren
+    ensureTrigger(
+      "trg_update_last_annotated",
+      `
+      CREATE TRIGGER trg_update_last_annotated
+      AFTER UPDATE ON functions_nodes
+      WHEN NEW.annotation_status != OLD.annotation_status
+      BEGIN
+        UPDATE functions_nodes
+        SET last_annotated = datetime('now')
+        WHERE id = NEW.id;
+      END;
+      `
+    );
+
+    // Trigger: updated_at immer aktualisieren
+    ensureTrigger(
+      "trg_update_timestamp",
+      `
+      CREATE TRIGGER trg_update_timestamp
+      AFTER UPDATE ON functions_nodes
+      BEGIN
+        UPDATE functions_nodes
+        SET updated_at = datetime('now')
+        WHERE id = NEW.id;
+      END;
+      `
+    );
+
+    /* ------------------------------------------------------------------ */
+    /* 5️⃣ Indizes sicherstellen                                          */
+    /* ------------------------------------------------------------------ */
+    const indices = [
+      ["idx_fn_kind", "functions_nodes(kind)"],
+      ["idx_batch_status", "batch_operations(status)"],
+      ["idx_annotation_status", "annotations(status)"],
+    ];
+
+    for (const [name, target] of indices) {
+      try {
+        this.db.exec(`CREATE INDEX IF NOT EXISTS ${name} ON ${target};`);
+      } catch (err: any) {
+        console.warn(`⚠️ [DB] Konnte Index ${name} nicht erstellen: ${err.message}`);
+      }
+    }
+
+    console.log("✅ [DB] Schemaüberprüfung abgeschlossen (vollständig selbstheilend).");
+  }
+
+  /* ====================================================================== */
+  /* CRUD & Transaktion                                                     */
+  /* ====================================================================== */
+
+  async exec(sql: string, params: any[] = []): Promise<void> {
+    this.db.prepare(sql).run(params);
+  }
+
+  async run<T = any>(
+    sql: string,
+    params: any[] = []
+  ): Promise<{ changes?: number; lastID?: number }> {
+    const info = this.db.prepare(sql).run(params);
+    return { changes: info.changes, lastID: info.lastInsertRowid as number };
+  }
+
+  async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    return this.db.prepare(sql).all(params) as T[];
+  }
+
+  async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+    return (this.db.prepare(sql).get(params) as T) ?? undefined;
+  }
+
+  async transaction<T>(fn: () => Promise<T>): Promise<T> {
+    this.db.prepare("BEGIN").run();
+    try {
+      const val = await fn();
+      this.db.prepare("COMMIT").run();
+      return val;
+    } catch (e) {
+      this.db.prepare("ROLLBACK").run();
+      throw e;
+    }
+  }
+}
+
+/* ====================================================================== */
+/* 🐘 Postgres-Implementierung (robust & selbstheilend)                    */
+/* ====================================================================== */
+
+class PostgresApi implements SqlApi {
+  private pool!: any;
+  private txClient?: any; // während einer Transaktion benutzen
+
+  async init(): Promise<void> {
+    const mod: any = await import("pg");
+    if (!PG_URL)
+      throw new Error("DATABASE_URL (oder PGHOST/PGUSER/...) nicht gesetzt");
+
+    const { Pool } = mod;
+    this.pool = new Pool({ connectionString: PG_URL });
+    await this.ensureBaseSchema();
+  }
+
+  /**
+   * Prüft Tabellen, Spalten, Indizes und Trigger.
+   * Fehlende Elemente werden automatisch angelegt.
+   */
+  private async ensureBaseSchema(): Promise<void> {
+    console.log("🧠 [PG] Starte Schemaüberprüfung …");
+
+    /* ------------------------------------------------------------------ */
+    /* 1️⃣ Tabellen sicherstellen                                          */
+    /* ------------------------------------------------------------------ */
+    await this.exec(`
+      CREATE TABLE IF NOT EXISTS functions_nodes (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        kind TEXT NOT NULL,
+        icon TEXT,
+        path_json JSONB NOT NULL,
+        weight INTEGER NOT NULL,
+        meta_json JSONB,
+        rbac_json JSONB,
+        flags_json JSONB,
+        pii_json JSONB,
+        aa_json JSONB,
+        schema_json JSONB,
+        source_file TEXT,
+        source_line_start INTEGER,
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+
+      CREATE TABLE IF NOT EXISTS functions_edges (
+        parent_id TEXT NOT NULL,
+        child_id TEXT NOT NULL,
+        PRIMARY KEY (parent_id, child_id),
+        FOREIGN KEY (parent_id) REFERENCES functions_nodes(id) ON DELETE CASCADE,
+        FOREIGN KEY (child_id)  REFERENCES functions_nodes(id) ON DELETE CASCADE
+      );
+    `);
+
+    /* ------------------------------------------------------------------ */
+    /* 2️⃣ Fehlende Spalten automatisch ergänzen                          */
+    /* ------------------------------------------------------------------ */
+    const missingColsQuery = `
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_name = 'functions_nodes';
+    `;
+    const rows = await this.all<{ column_name: string }>(missingColsQuery);
+    const existingCols = new Set(rows.map((r) => r.column_name));
+
+    const expectedColumns: Record<string, string> = {
+      annotation_status: "TEXT DEFAULT 'pending'",
+      updated_at: "TIMESTAMPTZ",
+      form_json: "JSONB",
+      last_annotated: "TIMESTAMPTZ",
+      last_accessed: "TIMESTAMPTZ",
+      sync_state: "TEXT DEFAULT 'ok'",
+    };
+
+    for (const [col, def] of Object.entries(expectedColumns)) {
+      if (!existingCols.has(col)) {
+        console.log(`🧩 [PG] Füge fehlende Spalte hinzu: ${col}`);
+        try {
+          await this.exec(`ALTER TABLE functions_nodes ADD COLUMN ${col} ${def};`);
+        } catch (err: any) {
+          console.warn(`⚠️ [PG] Konnte Spalte ${col} nicht hinzufügen: ${err.message}`);
+        }
+      }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* 3️⃣ Zusatz-Tabellen automatisch erzeugen                            */
+    /* ------------------------------------------------------------------ */
+    const tables = await this.all<{ tablename: string }>(
+      `SELECT tablename FROM pg_tables WHERE schemaname='public';`
+    );
+    const existingTables = new Set(tables.map((t) => t.tablename));
+
+    const createIfMissing = async (name: string, sql: string) => {
+      if (!existingTables.has(name)) {
+        console.log(`🧩 [PG] Erstelle fehlende Tabelle: ${name}`);
+        try {
+          await this.exec(sql);
+        } catch (err: any) {
+          console.warn(`⚠️ [PG] Fehler beim Erstellen von Tabelle ${name}: ${err.message}`);
+        }
+      }
+    };
+
+    await createIfMissing(
+      "batch_operations",
+      `
+      CREATE TABLE batch_operations (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        status TEXT DEFAULT 'pending',
+        created_at TIMESTAMPTZ DEFAULT now(),
+        updated_at TIMESTAMPTZ,
+        meta_json JSONB
+      );
+      `
+    );
+
+    await createIfMissing(
+      "annotations",
+      `
+      CREATE TABLE annotations (
+        id SERIAL PRIMARY KEY,
+        node_id TEXT,
+        status TEXT DEFAULT 'open',
+        data_json JSONB,
+        created_at TIMESTAMPTZ DEFAULT now(),
+        updated_at TIMESTAMPTZ,
+        last_action TEXT,
+        FOREIGN KEY (node_id) REFERENCES functions_nodes(id) ON DELETE CASCADE
+      );
+      `
+    );
+
+    await createIfMissing(
+      "audit_log",
+      `
+      CREATE TABLE audit_log (
+        id SERIAL PRIMARY KEY,
+        entity TEXT,
+        action TEXT,
+        details TEXT,
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+      `
+    );
+
+    /* ------------------------------------------------------------------ */
+    /* 4️⃣ Trigger für Zeitstempel                                        */
+    /* ------------------------------------------------------------------ */
+    const triggers = await this.all<{ tgname: string }>(
+      `SELECT tgname FROM pg_trigger WHERE NOT tgisinternal;`
+    );
+    const existingTriggers = new Set(triggers.map((t) => t.tgname));
+
+    const ensureTrigger = async (name: string, sql: string) => {
+      if (!existingTriggers.has(name)) {
+        console.log(`⚙️ [PG] Erstelle Trigger: ${name}`);
+        try {
+          await this.exec(sql);
+        } catch (err: any) {
+          console.warn(`⚠️ [PG] Konnte Trigger ${name} nicht erstellen: ${err.message}`);
+        }
+      }
+    };
+
+    // Trigger-Funktion für Aktualisierung
+    await this.exec(`
+      CREATE OR REPLACE FUNCTION set_updated_timestamp()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        NEW.updated_at := now();
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    `);
+
+    await ensureTrigger(
+      "trg_update_timestamp",
+      `
+      CREATE TRIGGER trg_update_timestamp
+      BEFORE UPDATE ON functions_nodes
+      FOR EACH ROW
+      EXECUTE FUNCTION set_updated_timestamp();
+      `
+    );
+
+    // Trigger-Funktion für last_annotated
+    await this.exec(`
+      CREATE OR REPLACE FUNCTION update_last_annotated()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        IF NEW.annotation_status IS DISTINCT FROM OLD.annotation_status THEN
+          NEW.last_annotated := now();
+        END IF;
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    `);
+
+    await ensureTrigger(
+      "trg_update_last_annotated",
+      `
+      CREATE TRIGGER trg_update_last_annotated
+      BEFORE UPDATE ON functions_nodes
+      FOR EACH ROW
+      EXECUTE FUNCTION update_last_annotated();
+      `
+    );
+
+    /* ------------------------------------------------------------------ */
+    /* 5️⃣ Indizes sicherstellen                                          */
+    /* ------------------------------------------------------------------ */
+    const indices = [
+      ["idx_fn_kind", "functions_nodes(kind)"],
+      ["idx_batch_status", "batch_operations(status)"],
+      ["idx_annotation_status", "annotations(status)"],
+    ];
+
+    for (const [name, target] of indices) {
+      try {
+        await this.exec(`CREATE INDEX IF NOT EXISTS ${name} ON ${target};`);
+      } catch (err: any) {
+        console.warn(`⚠️ [PG] Konnte Index ${name} nicht erstellen: ${err.message}`);
+      }
+    }
+
+    console.log("✅ [PG] Schemaüberprüfung abgeschlossen (vollständig selbstheilend).");
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* CRUD / Transaktion                                                     */
+  /* ---------------------------------------------------------------------- */
+
+  private async useClient() {
+    if (this.txClient) return this.txClient;
+    return await this.pool.connect();
+  }
+
+  async exec(sql: string, params: any[] = []): Promise<void> {
+    const client = await this.useClient();
+    try {
+      await client.query(sql, params);
+    } finally {
+      if (!this.txClient) client.release();
+    }
+  }
+
+  async run<T = any>(
+    sql: string,
+    params: any[] = []
+  ): Promise<{ changes?: number; lastID?: number }> {
+    const client = await this.useClient();
+    try {
+      const r = await client.query(sql, params);
+      return { changes: r.rowCount ?? undefined, lastID: undefined };
+    } finally {
+      if (!this.txClient) client.release();
+    }
+  }
+
+  async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+    const client = await this.useClient();
+    try {
+      const r = await client.query(sql, params);
+      return r.rows as T[];
+    } finally {
+      if (!this.txClient) client.release();
+    }
+  }
+
+  async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+    const client = await this.useClient();
+    try {
+      const r = await client.query(sql, params);
+      return (r.rows[0] as T) ?? undefined;
+    } finally {
+      if (!this.txClient) client.release();
+    }
+  }
+
+  async transaction<T>(fn: () => Promise<T>): Promise<T> {
+    const client = await this.pool.connect();
+    this.txClient = client;
+    try {
+      await client.query("BEGIN");
+      const val = await fn();
+      await client.query("COMMIT");
+      return val;
+    } catch (e) {
+      try {
+        await client.query("ROLLBACK");
+      } catch {}
+      throw e;
+    } finally {
+      this.txClient = undefined;
+      client.release();
+    }
+  }
+}
+
+
+/* ====================================================================== */
+/* Facade – Vereinheitlichte & fehlertolerante Datenbankabstraktion        */
+/* ====================================================================== */
+
+class DatabaseService {
+  private driver: Driver;
+  private api: SqlApi;
+
+  constructor() {
+    this.driver = DB_DRIVER;
+    this.api = this.driver === "postgres" ? new PostgresApi() : new SqliteApi();
+  }
+
+  /**
+   * Initialisiert den Datenbankzugang und prüft das Schema.
+   */
+  async init(): Promise<void> {
+    try {
+      await this.api.init();
+      console.log(`[db] ready (${this.driver})`);
+    } catch (err: any) {
+      console.error(`❌ [DB] Fehler bei Initialisierung (${this.driver}):`, err.message);
+      throw err;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Direkte Utility-Methoden mit robuster Fehlerbehandlung              */
+  /* ------------------------------------------------------------------ */
+
+  async exec(sql: string, params?: any[]) {
+    try {
+      return await this.api.exec(sql, params);
+    } catch (err: any) {
+      console.error("❌ [DB] Fehler in exec():", err.message, "\nSQL:", sql);
+      throw err;
+    }
+  }
+
+  async run<T = any>(sql: string, params?: any[]) {
+    try {
+      return await this.api.run<T>(sql, params);
+    } catch (err: any) {
+      console.error("❌ [DB] Fehler in run():", err.message, "\nSQL:", sql);
+      throw err;
+    }
+  }
+
+  async all<T = any>(sql: string, params?: any[]) {
+    try {
+      return await this.api.all<T>(sql, params);
+    } catch (err: any) {
+      console.error("❌ [DB] Fehler in all():", err.message, "\nSQL:", sql);
+      throw err;
+    }
+  }
+
+  async get<T = any>(sql: string, params?: any[]) {
+    try {
+      return await this.api.get<T>(sql, params);
+    } catch (err: any) {
+      console.error("❌ [DB] Fehler in get():", err.message, "\nSQL:", sql);
+      throw err;
+    }
+  }
+
+  async transaction<T>(fn: () => Promise<T>) {
+    try {
+      return await this.api.transaction(fn);
+    } catch (err: any) {
+      console.error("❌ [DB] Fehler in Transaktion:", err.message);
+      throw err;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Erweiterte Service-Funktionen                                      */
+  /* ------------------------------------------------------------------ */
+
+  /** Prüft Tabellen und Spalten (manuell aufrufbar für Admin-Tools) */
+  async verifySchema(): Promise<void> {
+    console.log("🔍 [DB] Manuelle Schemaüberprüfung gestartet …");
+    try {
+      // ruft intern ensureBaseSchema() erneut auf
+      await (this.api as any).ensureBaseSchema?.();
+      console.log("✅ [DB] Schemaüberprüfung erfolgreich abgeschlossen.");
+    } catch (err: any) {
+      console.error("❌ [DB] Fehler bei Schemaüberprüfung:", err.message);
+    }
+  }
+
+  /** Aktualisiert das Formular eines Knotens. */
+  async updateFunctionsNodeForm(id: string, form: FormSpec): Promise<void> {
+    try {
+      const formJson =
+        this.driver === "postgres" ? form : JSON.stringify(form);
+
+      const sql =
+        this.driver === "postgres"
+          ? `UPDATE functions_nodes
+             SET form_json = $1::jsonb,
+                 updated_at = now()
+           WHERE id = $2`
+          : `UPDATE functions_nodes
+             SET form_json = json(?),
+                 updated_at = datetime('now')
+           WHERE id = ?`;
+
+      await this.run(sql, [formJson, id]);
+    } catch (err: any) {
+      console.error(`❌ [DB] Fehler bei updateFunctionsNodeForm(${id}):`, err.message);
+      throw err;
+    }
+  }
+
+  /** Aktualisiert die Metadaten eines Knotens. */
+  async updateFunctionsNodeMeta(id: string, meta: unknown): Promise<void> {
+    try {
+      const payload =
+        this.driver === "postgres" ? (meta as object) : JSON.stringify(meta);
+
+      const sql =
+        this.driver === "postgres"
+          ? `UPDATE functions_nodes SET meta_json = $1::jsonb, updated_at = now() WHERE id = $2`
+          : `UPDATE functions_nodes SET meta_json = ?, updated_at = datetime('now') WHERE id = ?`;
+
+      await this.run(sql, [payload, id]);
+    } catch (err: any) {
+      console.error(`❌ [DB] Fehler bei updateFunctionsNodeMeta(${id}):`, err.message);
+      throw err;
+    }
+  }
+
+  /** Optional: Indexe manuell erzwingen (für größere Tabellen). */
+  async ensureIndexes(): Promise<void> {
+    try {
+      if (this.driver === "postgres") {
+        await this.exec(`CREATE INDEX IF NOT EXISTS idx_fn_kind ON functions_nodes(kind)`);
+        await this.exec(
+          `CREATE INDEX IF NOT EXISTS idx_fn_meta_null ON functions_nodes((meta_json IS NULL))`
+        );
+      } else {
+        await this.exec(`CREATE INDEX IF NOT EXISTS idx_fn_kind ON functions_nodes(kind)`);
+      }
+      console.log("✅ [DB] Indexprüfung abgeschlossen.");
+    } catch (err: any) {
+      console.error("⚠️ [DB] Fehler beim Erstellen von Indizes:", err.message);
+    }
+  }
+
+  /** Importiert den Funktionskatalog komplett (mit Upsert-Logik). */
+  async upsertFunctionsCatalog(result: BuildResult): Promise<{ nodes: number; edges: number }> {
+    let nodeCount = 0;
+    let edgeCount = 0;
+    const self = this;
+
+    function toJsonParam(obj: unknown): string | object | null {
+      if (obj == null) return null;
+      return self.driver === "postgres" ? (obj as object) : JSON.stringify(obj);
+    }
+
+    async function insertNode(n: CatalogNode) {
+      const sqlSqlite = `
+        INSERT INTO functions_nodes
+        (id, title, kind, icon, path_json, weight, meta_json, rbac_json, flags_json, pii_json, aa_json, schema_json, source_file, source_line_start)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          title = excluded.title,
+          kind = excluded.kind,
+          icon = excluded.icon,
+          path_json = excluded.path_json,
+          weight = excluded.weight,
+          meta_json = excluded.meta_json,
+          rbac_json = excluded.rbac_json,
+          flags_json = excluded.flags_json,
+          pii_json = excluded.pii_json,
+          aa_json = excluded.aa_json,
+          schema_json = excluded.schema_json,
+          source_file = excluded.source_file,
+          source_line_start = excluded.source_line_start`;
+
+      const sqlPg = `
+        INSERT INTO functions_nodes
+        (id, title, kind, icon, path_json, weight, meta_json, rbac_json, flags_json, pii_json, aa_json, schema_json, source_file, source_line_start)
+        VALUES ($1,$2,$3,$4,$5::jsonb,$6,$7::jsonb,$8::jsonb,$9::jsonb,$10::jsonb,$11::jsonb,$12::jsonb,$13,$14)
+        ON CONFLICT (id) DO UPDATE SET
+          title = EXCLUDED.title,
+          kind = EXCLUDED.kind,
+          icon = EXCLUDED.icon,
+          path_json = EXCLUDED.path_json,
+          weight = EXCLUDED.weight,
+          meta_json = EXCLUDED.meta_json,
+          rbac_json = EXCLUDED.rbac_json,
+          flags_json = EXCLUDED.flags_json,
+          pii_json = EXCLUDED.pii_json,
+          aa_json = EXCLUDED.aa_json,
+          schema_json = EXCLUDED.schema_json,
+          source_file = EXCLUDED.source_file,
+          source_line_start = EXCLUDED.source_line_start`;
+
+      const params = [
+        n.id,
+        n.title,
+        n.kind,
+        n.icon ?? null,
+        self.driver === "postgres" ? n.path : JSON.stringify(n.path),
+        n.weight,
+        toJsonParam(n.meta),
+        toJsonParam(n.rbac),
+        toJsonParam(n.flags),
+        toJsonParam(n.pii),
+        toJsonParam(n.aa),
+        toJsonParam(n.schema),
+        n.source.file,
+        n.source.lineStart ?? null,
+      ];
+
+      await self.run(self.driver === "postgres" ? sqlPg : sqlSqlite, params);
+      nodeCount++;
+    }
+
+    async function insertEdge(parentId: string, childId: string) {
+      try {
+        if (self.driver === "postgres") {
+          await self.run(
+            `INSERT INTO functions_edges (parent_id, child_id) VALUES ($1, $2)
+             ON CONFLICT (parent_id, child_id) DO NOTHING`,
+            [parentId, childId]
+          );
+        } else {
+          await self.run(
+            `INSERT OR IGNORE INTO functions_edges (parent_id, child_id) VALUES (?, ?)`,
+            [parentId, childId]
+          );
+        }
+        edgeCount++;
+      } catch (err: any) {
+        console.warn(`⚠️ [DB] Konnte Kante (${parentId} → ${childId}) nicht einfügen:`, err.message);
+      }
+    }
+
+    async function walk(n: CatalogNode, parentId: string | null) {
+      await insertNode(n);
+      if (parentId) await insertEdge(parentId, n.id);
+      for (const c of n.children) {
+        await walk(c, n.id);
+      }
+    }
+
+    await this.transaction(async () => {
+      await this.exec("DELETE FROM functions_edges");
+      await this.exec("DELETE FROM functions_nodes");
+      for (const root of result.nodes) {
+        await walk(root, null);
+      }
+    });
+
+    console.log(`✅ [DB] Katalog erfolgreich gespeichert (${nodeCount} Knoten, ${edgeCount} Kanten).`);
+    return { nodes: nodeCount, edges: edgeCount };
+  }
+}
+
+/* Export Instanz */
+const db = new DatabaseService();
+export default db;

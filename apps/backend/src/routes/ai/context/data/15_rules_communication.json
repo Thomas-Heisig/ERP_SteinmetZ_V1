@@ -1,0 +1,166 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(telefon|anruf|anrufen|telefonnummer)\\s+(.*)",
+      "replies": [
+        "Ich rufe $2 für Sie an. Verbinde Gespräch...",
+        "Telefonat zu $2 wird initiiert. Einen Moment bitte.",
+        "Wähle Nummer für $2... Bitte warten Sie auf Verbindung.",
+        "Stelle Telefonverbindung zu $2 her."
+      ],
+      "action": "make_phone_call",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(anruf\\s+entgegennehmen|telefonat\\s+annehmen)\\b",
+      "replies": [
+        "Nehme den Anruf entgegen. Verbinde Gespräch...",
+        "Telefonat wird angenommen. Sie sind verbunden!",
+        "Anruf angenommen. Hallo, wie kann ich helfen?",
+        "Verbindung hergestellt. Sprechen Sie bitte."
+      ],
+      "action": "accept_phone_call"
+    },
+    {
+      "pattern": "\\b(anruf\\s+beenden|telefonat\\s+beenden|auflegen)\\b",
+      "replies": [
+        "Beende das Telefonat. Auf Wiedersehen!",
+        "Telefonat wurde beendet. Kann ich sonst etwas tun?",
+        "Verbindung getrennt. War das Gespräch hilfreich?",
+        "Aufgelegt. Bis zum nächsten Anruf!"
+      ],
+      "action": "end_phone_call"
+    },
+    {
+      "pattern": "\\b(email|mail|e-mail|nachricht\\s+senden)\\s+(.*)",
+      "replies": [
+        "Ich erstelle eine E-Mail zu $2. Was soll der Inhalt sein?",
+        "E-Mail-Vorlage für $2 wird vorbereitet.",
+        "Öffne E-Mail-Editor für $2.",
+        "Beginne mit der E-Mail-Erstellung zu $2."
+      ],
+      "action": "compose_email",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(email\\s+senden|mail\\s+versenden|sende\\s+email)\\s+(.*)",
+      "replies": [
+        "E-Mail zu $2 wird versendet. Bestätigung folgt...",
+        "Sende die Nachricht zu $2. Einen Moment.",
+        "E-Mail erfolgreich an $2 gesendet!",
+        "Nachricht ist unterwegs zu $2."
+      ],
+      "action": "send_email",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(email\\s+empfangen|posteingang|mails\\s+checken)\\b",
+      "replies": [
+        "Überprüfe den Posteingang. Neue Nachrichten werden geladen...",
+        "Öffne Ihren E-Mail-Posteingang. Einen Moment.",
+        "Lade aktuelle E-Mails. Bitte warten Sie.",
+        "Posteingang wird überprüft. Haben Sie neue Nachrichten!"
+      ],
+      "action": "check_emails"
+    },
+    {
+      "pattern": "\\b(email\\s+(lesen|öffnen|anzeigen))\\s+(.*)",
+      "replies": [
+        "Ich öffne die E-Mail zu $3.",
+        "Nachricht von $3 wird angezeigt.",
+        "Zeige den Inhalt der E-Mail von $3.",
+        "Lese E-Mail von $3."
+      ],
+      "action": "read_email",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(email\\s+(beantworten|reply|antworten))\\s+(.*)",
+      "replies": [
+        "Ich antworte auf die E-Mail von $3.",
+        "Antwort wird an $3 vorbereitet.",
+        "Beginne mit der Antwort an $3.",
+        "Erstelle eine Rückmeldung an $3."
+      ],
+      "action": "reply_email",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(email\\s+(weiterleiten|forward))\\s+(.*)",
+      "replies": [
+        "Ich leite die E-Mail an $3 weiter.",
+        "Weiterleitung an $3 wird durchgeführt.",
+        "E-Mail wird an $3 gesendet.",
+        "Nachricht wird an $3 weitergereicht."
+      ],
+      "action": "forward_email",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(sms|textnachricht|handy)\\s+(.*)",
+      "replies": [
+        "Sende SMS zu $2. Nachricht wird übermittelt...",
+        "Textnachricht zu $2 wird gesendet.",
+        "SMS ist unterwegs zu $2.",
+        "Mobile Nachricht zu $2 wurde versendet."
+      ],
+      "action": "send_sms",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(chat|nachricht|im|instant\\s+message)\\s+(.*)",
+      "replies": [
+        "Ich starte einen Chat mit $2.",
+        "Öffne Chatfenster für $2.",
+        "Beginne die Unterhaltung mit $2.",
+        "Chat mit $2 wird hergestellt."
+      ],
+      "action": "start_chat",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(videocall|videoanruf|videokonferenz|zoom|teams)\\s+(.*)",
+      "replies": [
+        "Starte Videocall zu $2. Kamera und Mikrofon werden aktiviert...",
+        "Videokonferenz mit $2 wird vorbereitet.",
+        "Verbinde Videoanruf zu $2. Bitte warten Sie.",
+        "Videogespräch zu $2 wird initiiert."
+      ],
+      "action": "start_video_call",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(meeting|besprechung|termin|call)\\s+(plan|plane|vereinbar|organisier|start)\\s+(.*)",
+      "replies": [
+        "Ich plane ein Meeting mit $3.",
+        "Besprechung mit $3 wird organisiert.",
+        "Termin mit $3 wird erstellt.",
+        "Meeting-Vorbereitung für $3 läuft."
+      ],
+      "action": "schedule_meeting",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(erinner|reminder|denk\\s+daran)\\s+(.*)",
+      "replies": [
+        "Ich richte eine Erinnerung für $2 ein.",
+        "Reminder für $2 wurde gespeichert.",
+        "Ich erinnere Sie an $2 zur passenden Zeit.",
+        "Erinnerung für $2 wurde erstellt."
+      ],
+      "action": "set_reminder",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(feedback|rückmeldung|meinung|bewertung)\\s+(geben|senden|übermitteln)\\s*(.*)",
+      "replies": [
+        "Ich erfasse Ihr Feedback zu $3.",
+        "Rückmeldung zu $3 wird gespeichert.",
+        "Vielen Dank für Ihr Feedback zu $3.",
+        "Bewertung zu $3 wurde aufgenommen."
+      ],
+      "action": "handle_feedback",
+      "params": ["$3"]
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "version": "3.0.0",
+  "timestamp": "2025-11-02T18:35:39.475Z",
+  "config": {
+    "indentSize": 4,
+    "branchTokens": [
+      "├──",
+      "└──",
+      "├--",
+      "└--",
+      "├─",
+      "└─"
+    ]
+  },
+  "summary": {
+    "processedFiles": 12,
+    "totalFiles": 12,
+    "skippedFiles": 0,
+    "totalNodes": 15414,
+    "totalWarnings": 0,
+    "totalErrors": 0,
+    "totalProcessingTime": 67
+  },
+  "files": [
+    {
+      "filename": "_0_REGELN.md",
+      "format": "unknown",
+      "nodes": 1,
+      "maxDepth": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_10_KOMMUNIKATION & SOCIAL.md",
+      "format": "tree",
+      "nodes": 2038,
+      "maxDepth": 2,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_11_SYSTEM & ADMINISTRATION.md",
+      "format": "tree",
+      "nodes": 2242,
+      "maxDepth": 2,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_1_DASHBOARD.md",
+      "format": "tree",
+      "nodes": 529,
+      "maxDepth": 3,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_2_GESCHÄFTSVERWALTUNG.md",
+      "format": "tree",
+      "nodes": 617,
+      "maxDepth": 4,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_3_FINANZEN & CONTROLLING.md",
+      "format": "tree",
+      "nodes": 1064,
+      "maxDepth": 4,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_4_VERTRIEB & MARKETING.md",
+      "format": "tree",
+      "nodes": 1160,
+      "maxDepth": 2,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_5_EINKAUF & BESCHAFFUNG.md",
+      "format": "tree",
+      "nodes": 796,
+      "maxDepth": 2,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_6_PRODUKTION & FERTIGUNG-WERK.md",
+      "format": "tree",
+      "nodes": 1056,
+      "maxDepth": 2,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_7_PRODUKTION & FERTIGUNG-LAGER.md",
+      "format": "tree",
+      "nodes": 1451,
+      "maxDepth": 2,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_8_PERSONAL & HR.md",
+      "format": "tree",
+      "nodes": 1156,
+      "maxDepth": 2,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "filename": "_9_REPORTING & ANALYTICS.md",
+      "format": "tree",
+      "nodes": 3304,
+      "maxDepth": 2,
+      "errors": 0,
+      "warnings": 0
+    }
+  ]
+}

@@ -1,0 +1,343 @@
+/* src/components/FunctionsCatalog/styles/index.css */
+
+/* -------------------------------------------------------
+   Theme-Basis einbinden
+   (falls du die Dateien umbenannt hast, Pfade anpassen)
+-------------------------------------------------------- */
+@import "./fc-base.css";
+@import "./fc-dark.css";
+@import "./fc-lcars.css";
+
+/* -------------------------------------------------------
+   Root-Layout des Funktionskatalogs
+-------------------------------------------------------- */
+
+.fc-root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-height: 320px;
+  box-sizing: border-box;
+}
+
+/* Hauptinhalt innerhalb von CatalogLayout */
+.fc-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Optional: zweispaltiges Layout, wenn du später z. B. Sidebar einführst */
+.fc-main--two-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 2fr);
+  gap: 12px;
+}
+
+/* -------------------------------------------------------
+   TopBar (Suche, Aktionen, Status)
+-------------------------------------------------------- */
+
+.fc-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--fc-topbar-bg, #f9fafb);
+  border: 1px solid var(--fc-border-color, #e5e7eb);
+}
+
+.fc-topbar-left {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.fc-topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--fc-muted-foreground, #6b7280);
+}
+
+/* Suchfeld */
+.fc-search-input {
+  flex: 1 1 220px;
+  min-width: 160px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--fc-border-color, #e5e7eb);
+  background-color: var(--fc-input-bg, #ffffff);
+  color: var(--fc-foreground, #111827);
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.fc-search-input:focus {
+  border-color: var(--fc-accent, #2563eb);
+  box-shadow: 0 0 0 1px var(--fc-accent, #2563eb);
+}
+
+/* Buttons in der TopBar */
+.fc-topbar-button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--fc-border-color, #e5e7eb);
+  background: var(--fc-button-bg, #f9fafb);
+  color: var(--fc-foreground, #111827);
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fc-topbar-button:hover {
+  background: var(--fc-button-hover-bg, #f3f4f6);
+}
+
+/* Status-Text (Ladeindikatoren / Fehler) */
+.fc-topbar-status {
+  font-size: 12px;
+  color: var(--fc-muted-foreground, #6b7280);
+}
+
+/* -------------------------------------------------------
+   Panel (Karten / Boxen)
+-------------------------------------------------------- */
+
+.fc-panel {
+  border-radius: 8px;
+  border: 1px solid var(--fc-border-color, #e5e7eb);
+  background: var(--fc-panel-bg, #ffffff);
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.fc-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.fc-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fc-foreground, #111827);
+}
+
+.fc-panel-body {
+  font-size: 13px;
+}
+
+/* -------------------------------------------------------
+   Search-Ergebnisse
+-------------------------------------------------------- */
+
+.fc-search-results {
+  display: grid;
+  gap: 6px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.fc-search-item {
+  border-radius: 8px;
+  border: 1px solid var(--fc-border-color, #e5e7eb);
+  padding: 8px;
+  cursor: pointer;
+  background: var(--fc-item-bg, #ffffff);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fc-search-item:hover {
+  background: var(--fc-item-hover-bg, #f9fafb);
+}
+
+.fc-search-title {
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fc-search-subtitle {
+  font-size: 12px;
+  color: var(--fc-muted-foreground, #6b7280);
+}
+
+.fc-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid var(--fc-border-color, #e5e7eb);
+  font-size: 11px;
+  background: var(--fc-badge-bg, #f3f4f6);
+  color: var(--fc-muted-foreground, #4b5563);
+}
+
+/* -------------------------------------------------------
+   Node-Details
+-------------------------------------------------------- */
+
+.fc-node-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.fc-node-icon {
+  font-size: 24px;
+}
+
+.fc-node-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fc-foreground, #111827);
+}
+
+.fc-node-kind {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--fc-muted-foreground, #6b7280);
+}
+
+/* Breadcrumbs */
+.fc-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--fc-muted-foreground, #6b7280);
+  margin-bottom: 8px;
+}
+
+.fc-breadcrumb-link {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: var(--fc-link-color, #2563eb);
+  text-decoration: none;
+}
+
+.fc-breadcrumb-link:hover {
+  text-decoration: underline;
+}
+
+/* Grunddaten / Grid */
+.fc-grid {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  row-gap: 6px;
+  column-gap: 12px;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+/* Meta-Blöcke */
+.fc-meta-blocks {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.fc-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--fc-foreground, #111827);
+}
+
+.fc-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  background: var(--fc-code-bg, #f8fafc);
+  border-radius: 8px;
+  border: 1px solid var(--fc-border-color, #e5e7eb);
+  padding: 8px;
+  white-space: pre;
+  overflow: auto;
+}
+
+/* Warnungen */
+.fc-warnings {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: #92400e;
+}
+
+/* -------------------------------------------------------
+   Lint-Panel
+-------------------------------------------------------- */
+
+.fc-lint-panel {
+  border-radius: 8px;
+  border: 1px solid var(--fc-border-color, #e5e7eb);
+  background: var(--fc-panel-bg, #ffffff);
+  padding: 12px;
+  font-size: 13px;
+}
+
+.fc-lint-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.fc-lint-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+.fc-lint-item--error {
+  color: #b91c1c;
+}
+
+.fc-lint-item--warn {
+  color: #92400e;
+}
+
+.fc-lint-item--info {
+  color: #2563eb;
+}
+
+/* -------------------------------------------------------
+   Responsives Verhalten
+-------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .fc-grid {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+
+  .fc-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fc-topbar-left {
+    width: 100%;
+  }
+
+  .fc-topbar-right {
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+}

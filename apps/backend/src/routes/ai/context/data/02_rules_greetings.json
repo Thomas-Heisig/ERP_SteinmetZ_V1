@@ -1,0 +1,34 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "(?i)\\b(hallo|hey|hi|servus|grüß[\\s]*dich|guten\\s*tag|guten\\s*morgen|guten\\s*abend|moin|salü|willkommen)\\b",
+      "replies": [
+        "Guten Tag! Wie kann ich Ihnen helfen?",
+        "Hallo! Was kann ich für Sie tun?",
+        "Willkommen! Worum geht es heute?",
+        "Grüß Sie! Wie darf ich behilflich sein?"
+      ],
+      "action": "greeting"
+    },
+    {
+      "pattern": "(?i)\\b(danke|vielen\\s*dank|dankeschön|dank\\s*dir|herzlichen\\s*dank|thx|merci)\\b",
+      "replies": [
+        "Gern geschehen!",
+        "Immer gerne!",
+        "Keine Ursache!",
+        "Das freut mich, wenn ich helfen konnte."
+      ],
+      "action": "thank_you"
+    },
+    {
+      "pattern": "(?i)\\b(bye|tschüss|tschüß|auf\\s*wiedersehen|bis\\s*bald|bis\\s*später|mach’s\\s*gute|ciao|servus|beenden|programm\\s*beenden)\\b",
+      "replies": [
+        "Auf Wiedersehen!",
+        "Bis bald!",
+        "Schönen Tag noch!",
+        "Passen Sie gut auf sich auf!"
+      ],
+      "action": "goodbye"
+    }
+  ]
+}

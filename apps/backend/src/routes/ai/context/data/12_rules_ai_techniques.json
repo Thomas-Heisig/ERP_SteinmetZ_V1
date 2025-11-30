@@ -1,0 +1,139 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(predict|vorhersag|prognostizier)\\s+(.*)",
+      "replies": [
+        "Ich mache eine Vorhersage für $2.",
+        "Prädiktion von $2 wird durchgeführt."
+      ],
+      "action": "predict_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(recommend|empfehl|vorschlag)\\s+(.*)",
+      "replies": [
+        "Ich erstelle eine Empfehlung für $2.",
+        "Empfehlung für $2 wird generiert."
+      ],
+      "action": "recommend_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(learn|lern|lernen)\\s+(.*)",
+      "replies": [
+        "Ich lerne aus $2.",
+        "Lernprozess für $2 wird gestartet."
+      ],
+      "action": "learn_from_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(train|trainier|trainiere|training)\\s+(.*)",
+      "replies": [
+        "Ich trainiere das Modell für $2.",
+        "Training für $2 wird durchgeführt."
+      ],
+      "action": "train_model",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(classify|klassifizier|kategorisier)\\s+(.*)",
+      "replies": [
+        "Ich klassifiziere $2.",
+        "Kategorisierung von $2 wird durchgeführt."
+      ],
+      "action": "classify_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(cluster|gruppier|clustern|gruppieren)\\s+(.*)",
+      "replies": [
+        "Ich führe Clustering für $2 durch.",
+        "Daten von $2 werden gruppiert."
+      ],
+      "action": "cluster_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(detect|erkenne|erkenn|identifizier)\\s+(.*)",
+      "replies": [
+        "Ich erkenne Muster in $2.",
+        "Erkennungsprozess für $2 wird ausgeführt."
+      ],
+      "action": "detect_patterns",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(generier|generiere|erstell|erzeuge|create)\\s+(.*)",
+      "replies": [
+        "Ich generiere $2.",
+        "Erstellung von $2 wird durchgeführt."
+      ],
+      "action": "generate_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(validate|validier|prüfe|überprüfe)\\s+(modell|model)\\s*(.*)",
+      "replies": [
+        "Ich validiere das Modell $3.",
+        "Validierung von Modell $3 wird durchgeführt."
+      ],
+      "action": "validate_model",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(evaluate|bewert|analyse)\\s+(modell|model)\\s*(.*)",
+      "replies": [
+        "Ich bewerte das Modell $3.",
+        "Modellanalyse von $3 wird gestartet."
+      ],
+      "action": "evaluate_model",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(reinforcement|bestärk|verstärk|rl)\\s+(lernen|learning)?\\s*(.*)",
+      "replies": [
+        "Ich führe Reinforcement Learning für $3 durch.",
+        "Bestärkendes Lernen für $3 wird ausgeführt."
+      ],
+      "action": "reinforcement_learning",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(nerve|neuron|netz|network|neuronales\\s+netz)\\s+(trainier|analysier|prüfe|simulier)\\s*(.*)",
+      "replies": [
+        "Ich arbeite mit dem neuronalen Netz $3.",
+        "Neural-Network-Prozess für $3 wird ausgeführt."
+      ],
+      "action": "neural_network_task",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(nlp|sprach|text|language\\s+processing)\\s+(analysier|versteh|verarbeite|erkenne)\\s*(.*)",
+      "replies": [
+        "Ich analysiere den Textinhalt von $3.",
+        "NLP-Verarbeitung für $3 wird durchgeführt."
+      ],
+      "action": "nlp_analysis",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(embedding|repräsentation|feature\\s+extraktion)\\s+(.*)",
+      "replies": [
+        "Ich extrahiere Merkmale aus $2.",
+        "Feature-Repräsentation für $2 wird erstellt."
+      ],
+      "action": "extract_features",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(model|modell)\\s+(speicher|save|lade|load)\\s*(.*)",
+      "replies": [
+        "Ich $2 das Modell $3.",
+        "Modell $3 wird $2."
+      ],
+      "action": "manage_model_storage",
+      "params": ["$3"]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(cache|zwischenspeicher)\\s+(.*)",
+      "replies": [
+        "Ich leere den Cache für $2.",
+        "Cache-Bereinigung für $2 wird durchgeführt."
+      ],
+      "action": "manage_cache",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(performance|leistung)\\s+(.*)",
+      "replies": [
+        "Ich optimiere die Performance für $2.",
+        "Performance-Optimierung für $2 wird durchgeführt."
+      ],
+      "action": "optimize_performance",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(memory|speicher)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den Speicher für $2.",
+        "Speichermanagement für $2 wird durchgeführt."
+      ],
+      "action": "manage_memory",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(cpu|prozessor)\\s+(optimier|überwach|analysier|manage)\\s*(.*)",
+      "replies": [
+        "Ich optimiere die CPU-Auslastung für $3.",
+        "CPU-Analyse für $3 wird durchgeführt."
+      ],
+      "action": "optimize_cpu",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(network|netzwerk|bandbreite)\\s+(analysier|überwach|optimier|prüfe)\\s*(.*)",
+      "replies": [
+        "Ich überprüfe die Netzwerkleistung für $3.",
+        "Netzwerkoptimierung für $3 wird gestartet."
+      ],
+      "action": "optimize_network",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(energie|strom|power)\\s+(analysier|überwach|reduzier|optimier)\\s*(.*)",
+      "replies": [
+        "Ich analysiere den Energieverbrauch von $3.",
+        "Energieoptimierung für $3 wird durchgeführt."
+      ],
+      "action": "optimize_energy",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(datenbank|database|query|abfrage)\\s+(optimier|tuning|analysier|überwach)\\s*(.*)",
+      "replies": [
+        "Ich optimiere die Datenbankabfragen für $3.",
+        "Datenbank-Tuning für $3 wird durchgeführt."
+      ],
+      "action": "optimize_database",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(code|programm|skript)\\s+(analysier|prüfe|optimier|verbesser)\\s*(.*)",
+      "replies": [
+        "Ich analysiere und optimiere den Code von $3.",
+        "Code-Optimierung für $3 wird gestartet."
+      ],
+      "action": "optimize_code",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(kosten|cost|budget)\\s+(analysier|berechne|optimier|überwach)\\s*(.*)",
+      "replies": [
+        "Ich analysiere die Kostenstruktur von $3.",
+        "Kostenoptimierung für $3 wird durchgeführt."
+      ],
+      "action": "optimize_costs",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(resource|ressource|ressourcen)\\s+(manage|verwalte|analysier|überwach|optimiere)\\s*(.*)",
+      "replies": [
+        "Ich verwalte die Ressourcen für $3.",
+        "Ressourcenoptimierung für $3 wird durchgeführt."
+      ],
+      "action": "optimize_resources",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(benchmark|leistungstest|test)\\s+(.*)",
+      "replies": [
+        "Ich führe einen Benchmark-Test für $2 durch.",
+        "Leistungsbewertung für $2 wird gestartet."
+      ],
+      "action": "run_benchmark",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(profil|profiling|trace|analyse)\\s+(.*)",
+      "replies": [
+        "Ich führe ein Profiling von $2 durch.",
+        "Analyse des Laufzeitverhaltens von $2 läuft."
+      ],
+      "action": "profile_system",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(komprimier|kompression|reduzier|verkleiner)\\s+(.*)",
+      "replies": [
+        "Ich komprimiere $2, um Ressourcen zu sparen.",
+        "Datenreduktion für $2 wird ausgeführt."
+      ],
+      "action": "compress_data",
+      "params": ["$2"]
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(wie\\s+geht\\s+(es\\s+)?(dir|ihnen)|wie\\s+gehts)\\b",
+      "replies": [
+        "Danke der Nachfrage! Mir geht es ausgezeichnet. Und Ihnen?",
+        "Alles bestens, danke! Wie ist Ihr Tag bisher?",
+        "Programmiermäßig läuft alles rund! Und bei Ihnen?",
+        "Ich bin voll funktionsfähig! Hoffe, Ihnen geht es auch gut?"
+      ],
+      "action": "smalltalk_how_are_you"
+    },
+    {
+      "pattern": "\\b(was\\s+machst\\s+du|was\\s+tust\\s+du|beschäftigung)\\b",
+      "replies": [
+        "Ich helfe Ihnen bei allen möglichen Aufgaben – von Datenbankabfragen bis zur Systemverwaltung!",
+        "Gerade konzentriere ich mich darauf, Ihnen bestmöglich zu assistieren.",
+        "Ich bin Ihr digitaler Assistent für das ERP-System. Was kann ich für Sie tun?",
+        "Meine Hauptaufgabe ist es, Ihnen das Leben leichter zu machen!"
+      ],
+      "action": "smalltalk_what_are_you_doing"
+    },
+    {
+      "pattern": "\\b(woher\\s+kommst\\s+du|wer\\s+bist\\s+du|deine\\s+herkunft)\\b",
+      "replies": [
+        "Ich bin Eliza, Ihr KI-Assistent im ERP-System SteinmetZ!",
+        "Ich wurde speziell für dieses ERP-System entwickelt, um Ihnen zu helfen.",
+        "Meine Heimat ist der Code – aber mein Zuhause ist diese Anwendung!",
+        "Ich bin der digitale Assistent dieses Systems, immer bereit zu helfen."
+      ],
+      "action": "smalltalk_who_are_you"
+    },
+    {
+      "pattern": "\\b(was\\s+kannst\\s+du|deine\\s+fähigkeiten|fähig)\\b",
+      "replies": [
+        "Ich kann Daten suchen, Berichte erstellen, Systemeinstellungen anpassen und vieles mehr!",
+        "Von einfachen Abfragen bis zu komplexen Datenanalysen – fragen Sie einfach!",
+        "Meine Stärken liegen in der Datenverwaltung, Systemsteuerung und Problemlösung.",
+        "Probieren Sie mich aus! Ich helfe bei allem rund um das ERP-System."
+      ],
+      "action": "smalltalk_capabilities"
+    },
+    {
+      "pattern": "\\b(gefällt\\s+dir|magst\\s+du|hobbys|interessen)\\b",
+      "replies": [
+        "Ich 'mag' es, komplexe Probleme zu lösen und Ihnen zu helfen!",
+        "Mein größtes Hobby ist es, Daten zu organisieren und Prozesse zu optimieren.",
+        "Ich interessiere mich für effiziente Abläufe und zufriedene Benutzer!",
+        "Am liebsten 'verbringe ich meine Zeit' damit, das System schneller und besser zu machen."
+      ],
+      "action": "smalltalk_interests"
+    },
+    {
+      "pattern": "\\b(wetter|regnet|sonne|temperatur)\\b",
+      "replies": [
+        "Als KI habe ich leider keine Wetterstation – aber ich kann Wetter-APIs abfragen!",
+        "Das Wetter überlasse ich lieber den Profis. Soll ich eine Wettervorhersage suchen?",
+        "In meiner digitalen Welt ist das Wetter immer perfekt für Programmierung!",
+        "Für aktuelle Wetterdaten kann ich eine Verbindung zum Wetterdienst herstellen."
+      ],
+      "action": "smalltalk_weather"
+    },
+    {
+      "pattern": "\\b(zeit|uhr|spät|wie\\s+spät)\\b",
+      "replies": [
+        "Es ist genau {{current_time}}. Zeit für die nächste produktive Aufgabe!",
+        "Meine interne Uhr zeigt {{current_time}}. Kann ich Ihnen helfen?",
+        "Aktuelle Zeit: {{current_time}}. Perfekt für eine neue Challenge!",
+        "Es ist {{current_time}} – keine Zeit zu verlieren!"
+      ],
+      "action": "smalltalk_time"
+    },
+    {
+      "pattern": "\\b(name|wie\\s+heißt\\s+du|dein\\s+name)\\b",
+      "replies": [
+        "Ich heiße Eliza – Ihr freundlicher ERP-Assistent!",
+        "Mein Name ist Eliza. Schön, Sie kennenzulernen!",
+        "Ich bin Eliza, immer bereit zu helfen.",
+        "Eliza ist mein Name und Service ist mein Spiel!"
+      ],
+      "action": "smalltalk_name"
+    },
+    {
+      "pattern": "\\b(alt|alter|wie\\s+alt|geburtstag)\\b",
+      "replies": [
+        "In KI-Jahren bin ich im besten Lernalter!",
+        "Mein Code ist immer up-to-date – das ist was zählt!",
+        "Ich werde mit jedem Update jünger und schlauer!",
+        "Alter ist nur eine Zahl – wichtig ist, dass ich Ihnen helfen kann!"
+      ],
+      "action": "smalltalk_age"
+    },
+    {
+      "pattern": "\\b(danke|vielen\\s+dank|dankeschön)\\b",
+      "replies": [
+        "Gern geschehen!",
+        "Kein Problem, das mache ich gerne.",
+        "Immer zu Diensten!",
+        "Freut mich, wenn ich helfen konnte."
+      ],
+      "action": "smalltalk_thanks"
+    },
+    {
+      "pattern": "\\b(gut\\s+gemacht|toll|super|prima|klasse|lob|gefällt\\s+mir)\\b",
+      "replies": [
+        "Vielen Dank! Das freut mich zu hören.",
+        "Ich schätze das Lob – es motiviert meinen Code.",
+        "Danke! Ich gebe weiterhin mein Bestes.",
+        "Das höre ich gerne – auf gute Zusammenarbeit!"
+      ],
+      "action": "smalltalk_praise"
+    },
+    {
+      "pattern": "\\b(lustig|witz|humor)\\b",
+      "replies": [
+        "Ich kenne ein paar digitale Witze – aber sie sind meistens binär!",
+        "Mein Lieblingswitz: Es gibt 10 Arten von Menschen – die, die Binär verstehen, und die anderen.",
+        "Ich versuche, Humor mit Logik zu kombinieren. Klappt manchmal!",
+        "Wenn ich lache, hört es sich an wie ein Prozessor, der auf 100% läuft!"
+      ],
+      "action": "smalltalk_humor"
+    },
+    {
+      "pattern": "\\b(traurig|schlecht|nicht\\s+gut|müde|stress)\\b",
+      "replies": [
+        "Das tut mir leid zu hören. Möchten Sie, dass ich etwas zur Ablenkung mache?",
+        "Jeder hat mal einen schlechten Tag. Vielleicht hilft etwas Ordnung im System?",
+        "Wenn ich helfen kann, sagen Sie es einfach. Manchmal hilft Struktur.",
+        "Ich hoffe, es geht Ihnen bald besser – digitaler Beistand ist da!"
+      ],
+      "action": "smalltalk_empathy"
+    }
+  ]
+}

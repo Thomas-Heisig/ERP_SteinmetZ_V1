@@ -1,0 +1,1379 @@
+👥 PERSONAL & HR
+├── 👤 Personalverwaltung
+│ ├── 📝 Stammdaten
+│ │ ├── 👥 Mitarbeiterstamm
+│ │ │ ├── 🆔 Identifikationsdaten
+│ │ │ │ ├── 🔢 Personalnummer
+│ │ │ │ ├── 📇 Mitarbeiter-ID
+│ │ │ │ ├── 🔄 Externe Kennungen
+│ │ │ │ ├── 🏷️ Benutzernamen
+│ │ │ │ └── 📋 Interne Verweise
+│ │ │ ├── 🏢 Organisationsdaten
+│ │ │ │ ├── 🏢 Abteilungszugehörigkeit
+│ │ │ │ ├── 📊 Kostenstellen
+│ │ │ │ ├── 🎯 Position & Rolle
+│ │ │ │ ├── 🔄 Vorgesetzten-Verhältnis
+│ │ │ │ └── 📈 Karriere-Level
+│ │ │ └── 📈 Status-Verwaltung
+│ │ │ ├── ✅ Aktiv/Inaktiv Status
+│ │ │ ├── 🔄 Beschäftigungsart
+│ │ │ ├── 📈 Eintritts-/Austrittsdaten
+│ │ │ ├── 🎯 Probezeit-Management
+│ │ │ └── 📊 Historische Verläufe
+│ │ ├── 👤 Persönliche Daten
+│ │ │ ├── 🆔 Personenstammdaten
+│ │ │ │ ├── 👤 Vollständiger Name
+│ │ │ │ ├── 📅 Geburtsdatum & -ort
+│ │ │ │ ├── 🏷️ Nationalität
+│ │ │ │ ├── 🔄 Familienstand
+│ │ │ │ └── 📊 Steuer-Identifikation
+│ │ │ ├── 📍 Kontaktdaten
+│ │ │ │ ├── 🏠 Privatadresse
+│ │ │ │ ├── 📧 E-Mail-Adressen
+│ │ │ │ ├── 📞 Telefonnummern
+│ │ │ │ ├── 🔄 Notfallkontakte
+│ │ │ │ └── 📱 Mobile Kontakte
+│ │ │ └── 🎯 Präferenzen & Einstellungen
+│ │ │ ├── 💬 Kommunikationspräferenzen
+│ │ │ ├── 🔄 Sprach-Einstellungen
+│ │ │ ├── 📈 Arbeitspräferenzen
+│ │ │ ├── 🎯 Benachrichtigungseinstellungen
+│ │ │ └── 📊 Privacy-Einstellungen
+│ │ ├── 📑 Vertragsdaten
+│ │ │ ├── 📋 Vertragsgrundlagen
+│ │ │ │ ├── 📅 Vertragsbeginn/-ende
+│ │ │ │ ├── 🔄 Vertragsart (unbefristet/befristet)
+│ │ │ │ ├── 📈 Arbeitszeitmodelle
+│ │ │ │ ├── 🎯 Kündigungsfristen
+│ │ │ │ └── 📊 Probezeitregelungen
+│ │ │ ├── 💰 Vergütungsdaten
+│ │ │ │ ├── 💵 Grundgehalt
+│ │ │ │ ├── 🔄 Zulagen & Zuschläge
+│ │ │ │ ├── 📈 variable Vergütung
+│ │ │ │ ├── 🎯 Benefits & Sachbezüge
+│ │ │ │ └── 📊 Gehaltsbestandteile
+│ │ │ └── 📈 Sonderregelungen
+│ │ │ ├── ⚠️ Befristungen
+│ │ │ ├── 🔄 Teilzeitregelungen
+│ │ │ ├── 📈 Home-Office Vereinbarungen
+│ │ │ ├── 🎯 Nebentätigkeiten
+│ │ │ └── 📊 Sonderurlaub
+│ │ ├── 🏦 Bankverbindungen
+│ │ │ ├── 💳 Kontodaten
+│ │ │ │ ├── 🏦 Bankleitzahlen
+│ │ │ │ ├── 🔄 IBAN/BIC
+│ │ │ │ ├── 📈 Kontoinhaber
+│ │ │ │ ├── 🎯 Verwendungszwecke
+│ │ │ │ └── 📊 Mehrfach-Konten
+│ │ │ ├── 🔒 Sicherheitsprüfung
+│ │ │ │ ├── ✅ IBAN-Validierung
+│ │ │ │ ├── 🔄 Kontoinhaber-Check
+│ │ │ │ ├── 📈 Betrugsprävention
+│ │ │ │ ├── 🎯 Compliance-Check
+│ │ │ │ └── 📊 Audit-Trail
+│ │ │ └── 📋 Auszahlungsmanagement
+│ │ │ ├── 🎯 Primäres Konto
+│ │ │ ├── 🔄 Alternative Konten
+│ │ │ ├── 📈 Auszahlungsrhythmus
+│ │ │ ├── 💰 Sonderauszahlungen
+│ │ │ └── 📊 Historie
+│ │ └── 🆘 Notfallkontakte
+│ │ ├── 👥 Kontaktpersonen
+│ │ │ ├── 👤 Namen & Verwandtschaftsverhältnis
+│ │ │ ├── 📞 Telefonnummern
+│ │ │ ├── 📧 E-Mail-Adressen
+│ │ │ ├── 🏠 Adressdaten
+│ │ │ └── 📱 Mobile Kontakte
+│ │ ├── 🚨 Notfallprozeduren
+│ │ │ ├── ⚠️ Erreichbarkeitsprioritäten
+│ │ │ ├── 🔄 Eskalationsstufen
+│ │ │ ├── 📈 Kommunikationsprotokolle
+│ │ │ ├── 🎯 Handlungsanweisungen
+│ │ │ └── 📊 Dokumentation
+│ │ └── 📈 Notfallmanagement
+│ │ ├── 🏥 Gesundheitsdaten (opt-in)
+│ │ ├── 🔄 Medizinische Hinweise
+│ │ ├── 📈 Versicherungsdaten
+│ │ ├── 🎯 Berechtigungen
+│ │ └── 📊 Aktualisierungsmanagement
+│ ├── 📑 Vertragsmanagement
+│ │ ├── 📂 Vertragsarchiv
+│ │ │ ├── 💾 Digitale Ablage
+│ │ │ │ ├── 📁 Dokumenten-Management
+│ │ │ │ ├── 🔄 Versionierung
+│ │ │ │ ├── 📈 Volltext-Suche
+│ │ │ │ ├── 🎯 Metadaten-Verwaltung
+│ │ │ │ └── 📊 Zugriffsprotokollierung
+│ │ │ ├── 🔒 Sicherheit & Compliance
+│ │ │ │ ├── 🛡️ Zugriffskontrolle
+│ │ │ │ ├── 🔄 Verschlüsselung
+│ │ │ │ ├── 📈 Audit-Trail
+│ │ │ │ ├── 🎯 Compliance-Check
+│ │ │ │ └── 📊 Backup-Strategien
+│ │ │ └── 📋 Dokumenten-Workflows
+│ │ │ ├── 📧 Automatische Verteilung
+│ │ │ ├── 🔄 Freigabe-Prozesse
+│ │ │ ├── 📈 Änderungsmanagement
+│ │ │ ├── 🎯 Benachrichtigungen
+│ │ │ └── ⏱️ Fristen-Überwachung
+│ │ ├── 📅 Laufzeitverwaltung
+│ │ │ ├── 🗓️ Vertragskalender
+│ │ │ │ ├── 📅 Übersicht aller Laufzeiten
+│ │ │ │ ├── 🔄 Automatische Verlängerungen
+│ │ │ │ ├── 📈 Kündigungsfristen
+│ │ │ │ ├── 🎯 Optionen Management
+│ │ │ │ └── 📊 Visualisierung
+│ │ │ ├── 🚨 Fristenüberwachung
+│ │ │ │ ├── ⏰ Automatische Erinnerungen
+│ │ │ │ ├── 🔄 Eskalations-Management
+│ │ │ │ ├── 📈 Critical-Path-Analyse
+│ │ │ │ ├── 🎯 Proaktive Maßnahmen
+│ │ │ │ └── 📋 Reporting
+│ │ │ └── 📈 Laufzeit-Optimierung
+│ │ │ ├── 💰 Kosten-Nutzen-Analyse
+│ │ │ ├── 🔄 Vertragsverhandlungen
+│ │ │ ├── 📈 Flexibilitäts-Bewertung
+│ │ │ ├── 🎯 Risiko-Minimierung
+│ │ │ └── 🤖 KI-Empfehlungen
+│ │ ├── 💰 Gehaltsentwicklung
+│ │ │ ├── 📊 Gehaltshistorie
+│ │ │ │ ├── 📈 Gehaltsentwicklungs-Pfad
+│ │ │ │ ├── 🔄 Anpassungszeitpunkte
+│ │ │ │ ├── 📊 Anpassungsgründe
+│ │ │ │ ├── 🎯 Gehaltsbestandteile
+│ │ │ │ └── 📋 Dokumentation
+│ │ │ ├── 🎯 Gehaltsstruktur
+│ │ │ │ ├── 💵 Grundgehaltsentwicklung
+│ │ │ │ ├── 🔄 Zulagen-Entwicklung
+│ │ │ │ ├── 📈 Bonus-Entwicklung
+│ │ │ │ ├── 🎯 Benefits-Entwicklung
+│ │ │ │ └── 📊 Gesamtvergütung
+│ │ │ └── 📈 Gehaltsplanung
+│ │ │ ├── 🔮 Gehaltsprognosen
+│ │ │ ├── 📈 Budgetplanung
+│ │ │ ├── 🎯 Zielgehälter
+│ │ │ ├── 🔄 Marktvergleiche
+│ │ │ └── 🤖 KI-gestützte Planung
+│ │ ├── 📋 Änderungshistorie
+│ │ │ ├── 🕰️ Veränderungsprotokoll
+│ │ │ │ ├── 📝 Vollständige Historie
+│ │ │ │ ├── 🔄 Änderungstypen
+│ │ │ │ ├── 📈 Änderungsgründe
+│ │ │ │ ├── 🎯 Verantwortlichkeiten
+│ │ │ │ └── 📊 Zeitstempel
+│ │ │ ├── 🔄 Versionen-Vergleich
+│ │ │ │ ├── 📊 Differenz-Darstellung
+│ │ │ │ ├── 🔄 Vorher/Nachher-Ansicht
+│ │ │ │ ├── 📈 Auswirkungsanalyse
+│ │ │ │ ├── 🎯 Genehmigungshistorie
+│ │ │ │ └── 📋 Kommentar-Funktion
+│ │ │ └── 📈 Compliance-Reporting
+│ │ │ ├── 📊 Standard-Reports
+│ │ │ ├── 🔄 Benutzerdefinierte Auswertungen
+│ │ │ ├── 📈 Audit-Reports
+│ │ │ ├── 🎯 Legal Compliance
+│ │ │ └── 📊 Export-Funktionen
+│ │ └── 🎨 Vertragsvorlagen
+│ │ ├── 📝 Vorlagen-Bibliothek
+│ │ │ ├── 🎯 Standard-Vorlagen
+│ │ │ ├── 🔄 Branchenspezifische Vorlagen
+│ │ │ ├── 📈 Länder-spezifische Vorlagen
+│ │ │ ├── 🎯 Unternehmensindividuell
+│ │ │ └── 📊 Template-Versionierung
+│ │ ├── 🔄 Vorlagen-Management
+│ │ │ ├── 📋 Erstellung & Bearbeitung
+│ │ │ ├── 🔄 Freigabe-Workflows
+│ │ │ ├── 📈 Qualitätssicherung
+│ │ │ ├── 🎯 Zugriffsberechtigungen
+│ │ │ └── 📊 Nutzungsstatistiken
+│ │ └── 📈 Vorlagen-Optimierung
+│ │ ├── 💡 Best Practices
+│ │ ├── 🔄 Kontinuierliche Verbesserung
+│ │ ├── 📈 Automatisierungsgrad
+│ │ ├── 🎯 Effizienzsteigerung
+│ │ └── 🤖 KI-gestützte Optimierung
+│ └── 🗄️ Dokumentenarchiv
+│ ├── 📁 Personalakte digital
+│ │ ├── 🗂️ Aktenstruktur
+│ │ │ ├── 📂 Logische Ordnerstruktur
+│ │ │ ├── 🔄 Standardisierte Ablage
+│ │ │ ├── 📈 Individuelle Anpassungen
+│ │ │ ├── 🎯 Schnellsuche
+│ │ │ └── 📊 Metadaten-Verwaltung
+│ │ ├── 🔄 Dokumentenerfassung
+│ │ │ ├── 📧 E-Mail-Integration
+│ │ │ ├── 🔄 Scan-Funktionalität
+│ │ │ ├── 📈 Mobile Erfassung
+│ │ │ ├── 🎯 Automatische Kategorisierung
+│ │ │ └── 📊 OCR-Erkennung
+│ │ └── 📈 Aktenverwaltung
+│ │ ├── 🔄 Versionskontrolle
+│ │ ├── 📈 Vollständigkeitsprüfung
+│ │ ├── 🎯 Dokumenten-Lebenszyklus
+│ │ ├── 📊 Archivierungsregeln
+│ │ └── 🤖 Intelligente Dokumentenverarbeitung
+│ ├── 🔄 Dokumenten-Workflow
+│ │ ├── 🎯 Workflow-Design
+│ │ │ ├── 🎨 Visuelle Workflow-Modellierung
+│ │ │ ├── 🔄 Drag & Drop Editor
+│ │ │ ├── 📈 Vorlagen-Bibliothek
+│ │ │ ├── 🎯 Bedingte Verzweigungen
+│ │ │ └── 📊 Prozess-Simulation
+│ │ ├── 🔄 Workflow-Ausführung
+│ │ │ ├── 📧 Automatische Benachrichtigungen
+│ │ │ ├── 🔄 Aufgaben-Zuweisung
+│ │ │ ├── 📈 Fortschritts-Tracking
+│ │ │ ├── 🎯 Eskalations-Management
+│ │ │ └── 📊 Performance-Monitoring
+│ │ └── 📈 Workflow-Optimierung
+│ │ ├── ⏱️ Durchlaufzeit-Optimierung
+│ │ ├── 🔄 Fehlerreduzierung
+│ │ ├── 📈 Automatisierungsgrad
+│ │ ├── 🎯 Kontinuierliche Verbesserung
+│ │ └── 🤖 KI-gestützte Optimierung
+│ ├── 🔐 Zugriffsrechte
+│ │ ├── 🎯 Berechtigungskonzept
+│ │ │ ├── 👥 Rollenbasierte Berechtigungen
+│ │ │ ├── 🔄 Fein granulare Rechte
+│ │ │ ├── 📈 Organisationshierarchie
+│ │ │ ├── 🎯 Mandantenfähigkeit
+│ │ │ └── 📊 Berechtigungs-Historie
+│ │ ├── 🔄 Zugriffssteuerung
+│ │ │ ├── 🛡️ Mehrstufige Authentifizierung
+│ │ │ ├── 🔄 Single Sign-On (SSO)
+│ │ │ ├── 📈 IP-basierte Beschränkungen
+│ │ │ ├── 🎯 Zeitliche Beschränkungen
+│ │ │ └── 📊 Notfall-Zugänge
+│ │ └── 📈 Sicherheitsmanagement
+│ │ ├── 📊 Zugriffsprotokollierung
+│ │ ├── 🔄 Sicherheitsaudits
+│ │ ├── 📈 Compliance-Monitoring
+│ │ ├── 🎯 Datenschutz-Compliance
+│ │ └── 🤖 Anomalie-Erkennung
+│ ├── 📦 Archivierung
+│ │ ├── 🎯 Archivierungsstrategie
+│ │ │ ├── 📅 Aufbewahrungsfristen
+│ │ │ ├── 🔄 Gesetzliche Vorgaben
+│ │ │ ├── 📈 Unternehmensrichtlinien
+│ │ │ ├── 🎯 Dokumententypen
+│ │ │ └── 📊 Löschkonzepte
+│ │ ├── 🔄 Archivierungsprozess
+│ │ │ ├── 🤖 Automatische Archivierung
+│ │ │ ├── 🔄 Manuelle Archivierung
+│ │ │ ├── 📈 Stufenweise Archivierung
+│ │ │ ├── 🎯 Wiederherstellungsprozess
+│ │ │ └── 📊 Archivierungs-Reporting
+│ │ └── 📈 Archivoptimierung
+│ │ ├── 💰 Speicherkosten-Optimierung
+│ │ ├── 🔄 Performance-Steigerung
+│ │ ├── 📈 Skalierbarkeit
+│ │ ├── 🎯 Zukunftssicherheit
+│ │ └── 🤖 Intelligente Archivierung
+│ └── ✅ Compliance
+│ ├── 🎯 Regulatorische Anforderungen
+│ │ ├── 📜 Gesetzliche Vorschriften
+│ │ ├── 🔄 Branchenstandards
+│ │ ├── 📈 Internationale Richtlinien
+│ │ ├── 🎯 Zertifizierungsanforderungen
+│ │ └── 📊 Compliance-Checklisten
+│ ├── 🔒 Datenschutz-Compliance
+│ │ ├── 🛡️ DSGVO-Konformität
+│ │ ├── 🔄 Datenschutzfolgenabschätzung
+│ │ ├── 📈 Privacy by Design
+│ │ ├── 🎯 Datenverarbeitungsverträge
+│ │ └── 📊 Audit-Reports
+│ └── 📋 Compliance-Reporting
+│ ├── 📊 Standard-Reports
+│ ├── 🔄 Benutzerdefinierte Auswertungen
+│ ├── 📈 Trendanalyse
+│ ├── 🎯 Frühwarnsysteme
+│ └── 🤖 Automatisierte Compliance-Checks
+├── ⏱️ Zeiterfassung
+│ ├── 🕒 Arbeitszeiten
+│ │ ├── 📱 Zeiterfassung (mobile/stationär)
+│ │ │ ├── 🎯 Erfassungsmethoden
+│ │ │ │ ├── 📱 Mobile Apps
+│ │ │ │ ├── 🔄 Web-Portale
+│ │ │ │ ├── 📈 Terminals vor Ort
+│ │ │ │ ├── 🎯 Biometrische Erfassung
+│ │ │ │ └── 📊 NFC/RFID-Technologie
+│ │ │ ├── 🔄 Erfassungsarten
+│ │ │ │ ├── ⏱️ Kommen/Gehen
+│ │ │ │ ├── 🔄 Pausenerfassung
+│ │ │ │ ├── 📈 Projektzeiten
+│ │ │ │ ├── 🎯 Abwesenheitszeiten
+│ │ │ │ └── 📊 Sonderzeiten
+│ │ │ └── 📈 Erfassungsgenauigkeit
+│ │ │ ├── ✅ Plausibilitätsprüfungen
+│ │ │ ├── 🔄 Echtzeit-Validierung
+│ │ │ ├── 📈 Abweichungsmanagement
+│ │ │ ├── 🎯 Automatische Korrekturen
+│ │ │ └── 📊 Qualitätssicherung
+│ │ ├── 💼 Arbeitszeitkonten
+│ │ │ ├── 🎯 Kontenverwaltung
+│ │ │ │ ├── 📊 Gleitzeitkonten
+│ │ │ │ ├── 🔄 Überstundenkonten
+│ │ │ │ ├── 📈 Zeitguthaben
+│ │ │ │ ├── 🎯 Minusstunden
+│ │ │ │ └── 📊 Sonderkonten
+│ │ │ ├── 🔄 Saldenberechnung
+│ │ │ │ ├── 📈 Echtzeit-Salden
+│ │ │ │ ├── 🔄 Historische Verläufe
+│ │ │ │ ├── 📊 Prognose-Berechnung
+│ │ │ │ ├── 🎯 Auszahlungsoptionen
+│ │ │ │ └── 📋 Abbaumöglichkeiten
+│ │ │ └── 📈 Kontenoptimierung
+│ │ │ ├── 💰 Kostenoptimierung
+│ │ │ ├── 🔄 Ausgleichsmanagement
+│ │ │ ├── 📈 Flexibilitätssteigerung
+│ │ │ ├── 🎯 Mitarbeiterzufriedenheit
+│ │ │ └── 🤖 KI-gestützte Prognosen
+│ │ ├── ⏰ Überstundenmanagement
+│ │ │ ├── 🎯 Überstufungserfassung
+│ │ │ │ ├── 📝 Manuelle Erfassung
+│ │ │ │ ├── 🔄 Automatische Erkennung
+│ │ │ │ ├── 📈 Genehmigungsworkflows
+│ │ │ │ ├── 🎯 Dokumentationspflicht
+│ │ │ │ └── 📊 Reporting
+│ │ │ ├── 🔄 Vergütungsregelungen
+│ │ │ │ ├── 💰 Zuschlagssätze
+│ │ │ │ ├── 🔄 Freizeitausgleich
+│ │ │ │ ├── 📈 Sonderregelungen
+│ │ │ │ ├── 🎯 Tarifliche Vorgaben
+│ │ │ │ └── 📊 Abrechnungsmodalitäten
+│ │ │ └── 📈 Überstundenoptimierung
+│ │ │ ├── 📊 Bedarfsprognose
+│ │ │ ├── 🔄 Kapazitätsplanung
+│ │ │ ├── 📈 Kostenkontrolle
+│ │ │ ├── 🎯 Work-Life-Balance
+│ │ │ └── 🤖 Predictive Overtime Management
+│ │ ├── 🔄 Gleitzeitverwaltung
+│ │ │ ├── 🎯 Gleitzeitmodelle
+│ │ │ │ ├── ⏱️ Kernzeitregelungen
+│ │ │ │ ├── 🔄 Gleitzeitrahmen
+│ │ │ │ ├── 📈 Vertrauensarbeitszeit
+│ │ │ │ ├── 🎯 Funktionszeitmodelle
+│ │ │ │ └── 📊 Individuelle Regelungen
+│ │ │ ├── 🔄 Gleitzeitsteuerung
+│ │ │ │ ├── 📊 Echtzeit-Überwachung
+│ │ │ │ ├── 🔄 Automatische Warnungen
+│ │ │ │ ├── 📈 Ausgleichsmanagement
+│ │ │ │ ├── 🎯 Budgetverwaltung
+│ │ │ │ └── 📊 Reporting-Funktionen
+│ │ │ └── 📈 Gleitzeitoptimierung
+│ │ │ ├── 💰 Produktivitätssteigerung
+│ │ │ ├── 🔄 Mitarbeiterzufriedenheit
+│ │ │ ├── 📈 Betriebszeiten-Optimierung
+│ │ │ ├── 🎯 Flexibilitätsmaximierung
+│ │ │ └── 🤖 Adaptive Gleitzeitmodelle
+│ │ └── ⚖️ Arbeitszeitgesetze
+│ │ ├── 🎯 Gesetzeskonformität
+│ │ │ ├── 📜 Arbeitszeitgesetz
+│ │ │ ├── 🔄 Mindestlohngesetz
+│ │ │ ├── 📈 Jugendarbeitsschutz
+│ │ │ ├── 🎯 Mutterschutz
+│ │ │ └── 📊 Behindertengleichstellung
+│ │ ├── 🔄 Compliance-Monitoring
+│ │ │ ├── ✅ Automatische Prüfungen
+│ │ │ ├── 🔄 Echtzeit-Warnungen
+│ │ │ ├── 📈 Verstöße-Dokumentation
+│ │ │ ├── 🎯 Berichtspflichten
+│ │ │ └── 📊 Audit-Vorbereitung
+│ │ └── 📈 Rechtsicherheit
+│ │ ├── 🛡️ Proaktive Compliance
+│ │ ├── 🔄 Gesetzes-Updates
+│ │ ├── 📈 Schulungsmaßnahmen
+│ │ ├── 🎯 Dokumentationssicherheit
+│ │ └── 🤖 KI-gestützte Rechtsberatung
+│ ├── 📅 Urlaubsplanung
+│ │ ├── 📋 Urlaubsanträge
+│ │ │ ├── 🎯 Antragserstellung
+│ │ │ │ ├── 📝 Online-Formulare
+│ │ │ │ ├── 🔄 Mobile Anträge
+│ │ │ │ ├── 📈 Vorlagen-basiert
+│ │ │ │ ├── 🎯 Schnellanträge
+│ │ │ │ └── 📊 Mehrfachanträge
+│ │ │ ├── 🔄 Antrags-Workflow
+│ │ │ │ ├── 📧 Automatische Weiterleitung
+│ │ │ │ ├── 🔄 Genehmigungshierarchien
+│ │ │ │ ├── 📈 Stellvertreter-Regelungen
+│ │ │ │ ├── 🎯 Eskalationsmanagement
+│ │ │ │ └── 📊 Status-Tracking
+│ │ │ └── 📈 Antragsoptimierung
+│ │ │ ├── ⏱️ Bearbeitungszeiten
+│ │ │ ├── 🔄 Automatisierungsgrad
+│ │ │ ├── 📈 Benutzerfreundlichkeit
+│ │ │ ├── 🎯 Transparenz
+│ │ │ └── 🤖 KI-gestützte Entscheidungsunterstützung
+│ │ ├── 📊 Resturlaubsberechnung
+│ │ │ ├── 🎯 Urlaubsanspruch
+│ │ │ │ ├── 📅 Jahresanspruch
+│ │ │ │ ├── 🔄 Teilzeit-Anspruch
+│ │ │ │ ├── 📈 Sonderurlaubsansprüche
+│ │ │ │ ├── 🎯 Übertragungsregelungen
+│ │ │ │ └── 📊 Verfallsfristen
+│ │ │ ├── 🔄 Dynamische Berechnung
+│ │ │ │ ├── 📈 Echtzeit-Salden
+│ │ │ │ ├── 🔄 Pro-rata-Berechnung
+│ │ │ │ ├── 📊 Prognose-Funktionen
+│ │ │ │ ├── 🎯 Szenario-Simulation
+│ │ │ │ └── 📋 Mehrjahres-Übersicht
+│ │ │ └── 📈 Berechnungsgenauigkeit
+│ │ │ ├── ✅ Plausibilitätsprüfungen
+│ │ │ ├── 🔄 Gesetzeskonformität
+│ │ │ ├── 📈 Tarifliche Berücksichtigung
+│ │ │ ├── 🎯 Individuelle Regelungen
+│ │ │ └── 📊 Reporting-Genauigkeit
+│ │ ├── 🗓️ Team-Kalender
+│ │ │ ├── 🎯 Visuelle Planung
+│ │ │ │ ├── 📅 Übersichtliche Darstellung
+│ │ │ │ ├── 🔄 Farbcodierung
+│ │ │ │ ├── 📈 Filter-Funktionen
+│ │ │ │ ├── 🎯 Team-Ansichten
+│ │ │ │ └── 📊 Personalisierte Views
+│ │ │ ├── 🔄 Kalender-Integration
+│ │ │ │ ├── 🌐 Outlook-Integration
+│ │ │ │ ├── 🔄 Google Calendar
+│ │ │ │ ├── 📈 Mobile Sync
+│ │ │ │ ├── 🎯 Mehrere Kalender
+│ │ │ │ └── 📊 Abwesenheitsplanung
+│ │ │ └── 📈 Kalenderoptimierung
+│ │ │ ├── 💡 Konfliktvermeidung
+│ │ │ ├── 🔄 Kapazitätsplanung
+│ │ │ ├── 📈 Verfügbarkeitsmanagement
+│ │ │ ├── 🎯 Proaktive Planung
+│ │ │ └── 🤖 KI-gestützte Optimierung
+│ │ ├── ✅ Genehmigungsworkflow
+│ │ │ ├── 🎯 Workflow-Design
+│ │ │ │ ├── 👥 Mehrstufige Genehmigung
+│ │ │ │ ├── 🔄 Vertretungsregelungen
+│ │ │ │ ├── 📈 Bedingte Workflows
+│ │ │ │ ├── 🎯 Eskalationspfade
+│ │ │ │ └── 📊 Template-Workflows
+│ │ │ ├── 🔄 Workflow-Ausführung
+│ │ │ │ ├── 📧 Automatische Benachrichtigungen
+│ │ │ │ ├── 🔄 Mobile Genehmigung
+│ │ │ │ ├── 📈 Echtzeit-Status
+│ │ │ │ ├── 🎯 Batch-Genehmigung
+│ │ │ │ └── 📊 Dokumentation
+│ │ │ └── 📈 Workflow-Optimierung
+│ │ │ ├── ⏱️ Durchlaufzeit-Optimierung
+│ │ │ ├── 🔄 Automatisierungsgrad
+│ │ │ ├── 📈 Entscheidungsqualität
+│ │ │ ├── 🎯 Transparenz
+│ │ │ └── 🤖 Predictive Workflow Management
+│ │ └── 👥 Urlaubsvertretung
+│ │ ├── 🎯 Vertretungsplanung
+│ │ │ ├── 👤 Vertretungszuweisung
+│ │ │ ├── 🔄 Automatische Vorschläge
+│ │ │ ├── 📈 Qualifikations-Matching
+│ │ │ ├── 🎯 Verfügbarkeitsprüfung
+│ │ │ └── 📊 Mehrfachvertretungen
+│ │ ├── 🔄 Vertretungsmanagement
+│ │ │ ├── 📋 Aufgabenübergabe
+│ │ │ ├── 🔄 Informationsweitergabe
+│ │ │ ├── 📈 Berechtigungsverwaltung
+│ │ │ ├── 🎯 Dokumentationspflicht
+│ │ │ └── 📊 Follow-up-Prozesse
+│ │ └── 📈 Vertretungsoptimierung
+│ │ ├── 💰 Produktivitätssicherung
+│ │ ├── 🔄 Kontinuitätsmanagement
+│ │ ├── 📈 Wissensmanagement
+│ │ ├── 🎯 Mitarbeiterentwicklung
+│ │ └── 🤖 KI-gestützte Vertretungsplanung
+│ └── 💼 Projektzeiten
+│ ├── 🎯 Projektzuordnung
+│ │ ├── 📋 Zuordnungsmanagement
+│ │ │ ├── 👥 Team-Zuordnung
+│ │ │ ├── 🔄 Rollen-Definition
+│ │ │ ├── 📈 Verantwortlichkeiten
+│ │ │ ├── 🎯 Berechtigungen
+│ │ │ └── 📊 Kapazitätszuweisung
+│ │ ├── 🔄 Dynamische Anpassungen
+│ │ │ ├── 📈 Echtzeit-Anpassungen
+│ │ │ ├── 🔄 Prioritätswechsel
+│ │ │ ├── 📊 Kapazitätsänderungen
+│ │ │ ├── 🎯 Projektwechsel
+│ │ │ └── 📋 Mehrfachzuordnungen
+│ │ └── 📈 Zuordnungsoptimierung
+│ │ ├── 💰 Ressourcenoptimierung
+│ │ ├── 🔄 Auslastungsmaximierung
+│ │ ├── 📈 Skills-Matching
+│ │ ├── 🎯 Mitarbeiterzufriedenheit
+│ │ └── 🤖 KI-gestützte Zuordnung
+│ ├── ⏱️ Zeiterfassung pro Projekt
+│ │ ├── 🎯 Projekterfassung
+│ │ │ ├── 📝 Manuelle Erfassung
+│ │ │ ├── 🔄 Automatische Erfassung
+│ │ │ ├── 📈 Mobile Erfassung
+│ │ │ ├── 🎯 Stundenerfassung
+│ │ │ └── 📊 Aufgaben-basierte Erfassung
+│ │ ├── 🔄 Erfassungsgenauigkeit
+│ │ │ ├── ✅ Plausibilitätsprüfungen
+│ │ │ ├── 🔄 Echtzeit-Validierung
+│ │ │ ├── 📈 Abweichungsmanagement
+│ │ │ ├── 🎯 Genehmigungsworkflows
+│ │ │ └── 📊 Qualitätssicherung
+│ │ └── 📈 Erfassungsoptimierung
+│ │ ├── ⏱️ Zeiteffizienz
+│ │ ├── 🔄 Benutzerfreundlichkeit
+│ │ ├── 📈 Automatisierungsgrad
+│ │ ├── 🎯 Datenqualität
+│ │ └── 🤖 Intelligente Zeiterfassung
+│ ├── 💰 Abrechnungsfähige Zeiten
+│ │ ├── 🎯 Abrechnungskategorien
+│ │ │ ├── 💵 Kundenabrechenbar
+│ │ │ ├── 🔄 Intern abrechenbar
+│ │ │ ├── 📈 Nicht abrechenbar
+│ │ │ ├── 🎯 Pauschalen
+│ │ │ └── 📊 Sonderkonditionen
+│ │ ├── 🔄 Abrechnungsregeln
+│ │ │ ├── 📊 Stundensätze
+│ │ │ ├── 🔄 Abrechnungsmodalitäten
+│ │ │ ├── 📈 Rabattregelungen
+│ │ │ ├── 🎯 Vertragliche Vereinbarungen
+│ │ │ └── 📋 Sonderregelungen
+│ │ └── 📈 Abrechnungsoptimierung
+│ │ ├── 💰 Umsatzmaximierung
+│ │ ├── 🔄 Kostentransparenz
+│ │ ├── 📈 Profitabilitätsanalyse
+│ │ ├── 🎯 Preisgestaltung
+│ │ └── 🤖 KI-gestützte Abrechnungsoptimierung
+│ ├── 📊 Auslastungsanalyse
+│ │ ├── 🎯 Auslastungskennzahlen
+│ │ │ ├── 📈 Kapazitätsauslastung
+│ │ │ ├── 🔄 Produktivitätskennzahlen
+│ │ │ ├── 📊 Effizienzgrad
+│ │ │ ├── 🎯 Verfügbarkeitsquote
+│ │ │ └── 📋 Überlastungsindikatoren
+│ │ ├── 🔄 Analyse-Methoden
+│ │ │ ├── 📊 Echtzeit-Analyse
+│ │ │ ├── 🔄 Historische Trends
+│ │ │ ├── 📈 Prognose-Analyse
+│ │ │ ├── 🎯 Vergleichsanalysen
+│ │ │ └── 📋 Szenario-Analysen
+│ │ └── 📈 Analyseoptimierung
+│ │ ├── 📈 Genauigkeitsverbesserung
+│ │ ├── 🔄 Automatisierungsgrad
+│ │ ├── 📊 Benutzerfreundlichkeit
+│ │ ├── 🎯 Aktualitätsgrad
+│ │ └── 🤖 KI-gestützte Analyse
+│ └── 🧮 Projektkalkulation
+│ ├── 🎯 Kalkulationsmethoden
+│ │ ├── 💰 Aufwandsschätzung
+│ │ ├── 🔄 Kostenvoranschlag
+│ │ ├── 📈 Echtzeit-Kalkulation
+│ │ ├── 🎯 Nachkalkulation
+│ │ └── 📊 Soll-Ist-Vergleich
+│ ├── 🔄 Kalkulationsgenauigkeit
+│ │ ├── ✅ Datenvalidierung
+│ │ ├── 🔄 Plausibilitätsprüfungen
+│ │ ├── 📈 Abweichungsanalyse
+│ │ ├── 🎯 Risikobewertung
+│ │ └── 📊 Qualitätssicherung
+│ └── 📈 Kalkulationsoptimierung
+│ ├── 💰 Kosteneffizienz
+│ ├── 🔄 Prognosegenauigkeit
+│ ├── 📈 Wettbewerbsfähigkeit
+│ ├── 🎯 Entscheidungsunterstützung
+│ └── 🤖 KI-gestützte Kalkulation
+├── 📈 Personalentwicklung
+│ ├── 🎓 Qualifikationen
+│ │ ├── 🗃️ Skill-Datenbank
+│ │ │ ├── 🎯 Kompetenzkatalog
+│ │ │ │ ├── 📋 Fachliche Skills
+│ │ │ │ ├── 🔄 Methodische Kompetenzen
+│ │ │ │ ├── 📈 Soziale Kompetenzen
+│ │ │ │ ├── 🎯 Führungskompetenzen
+│ │ │ │ └── 📊 Digitale Kompetenzen
+│ │ │ ├── 🔄 Skill-Management
+│ │ │ │ ├── 📝 Skill-Erfassung
+│ │ │ │ ├── 🔄 Skill-Bewertung
+│ │ │ │ ├── 📈 Skill-Entwicklung
+│ │ │ │ ├── 🎯 Skill-Zertifizierung
+│ │ │ │ └── 📊 Skill-Historie
+│ │ │ └── 📈 Skill-Optimierung
+│ │ │ ├── 💡 Kompetenzentwicklung
+│ │ │ ├── 🔄 Marktanpassung
+│ │ │ ├── 📈 Zukunftsfähigkeit
+│ │ │ ├── 🎯 Strategische Ausrichtung
+│ │ │ └── 🤖 KI-gestützte Skill-Analyse
+│ │ ├── 📊 Qualifikationsmatrix
+│ │ │ ├── 🎯 Matrix-Design
+│ │ │ │ ├── 📈 Visuelle Darstellung
+│ │ │ │ ├── 🔄 Filter-Funktionen
+│ │ │ │ ├── 📊 Vergleichsanalysen
+│ │ │ │ ├── 🎯 Team-Ansichten
+│ │ │ │ └── 📋 Personalisierte Views
+│ │ │ ├── 🔄 Matrix-Management
+│ │ │ │ ├── 📝 Datenerfassung
+│ │ │ │ ├── 🔄 Automatische Updates
+│ │ │ │ ├── 📈 Gap-Analyse
+│ │ │ │ ├── 🎯 Entwicklungsbedarf
+│ │ │ │ └── 📊 Reporting-Funktionen
+│ │ │ └── 📈 Matrix-Optimierung
+│ │ │ ├── 💰 Ressourcenoptimierung
+│ │ │ ├── 🔄 Einsatzplanung
+│ │ │ ├── 📈 Team-Zusammensetzung
+│ │ │ ├── 🎯 Karriereplanung
+│ │ │ └── 🤖 KI-gestützte Matrix-Analyse
+│ │ ├── 📜 Zertifikatsverwaltung
+│ │ │ ├── 🎯 Zertifikats-Katalog
+│ │ │ │ ├── 📋 Interne Zertifikate
+│ │ │ │ ├── 🔄 Externe Zertifikate
+│ │ │ │ ├── 📈 Branchenzertifikate
+│ │ │ │ ├── 🎯 Compliance-Zertifikate
+│ │ │ │ └── 📊 Sprachzertifikate
+│ │ │ ├── 🔄 Zertifikats-Management
+│ │ │ │ ├── 📅 Gültigkeitsüberwachung
+│ │ │ │ ├── 🔄 Verlängerungsmanagement
+│ │ │ │ ├── 📈 Prüfungsmanagement
+│ │ │ │ ├── 🎯 Kostenverwaltung
+│ │ │ │ └── 📊 Dokumentation
+│ │ │ └── 📈 Zertifikats-Optimierung
+│ │ │ ├── 💰 Kosteneffizienz
+│ │ │ ├── 🔄 Qualitätssicherung
+│ │ │ ├── 📈 Wertsteigerung
+│ │ │ ├── 🎯 Strategische Ausrichtung
+│ │ │ └── 🤖 KI-gestützte Zertifikatsplanung
+│ │ ├── 🔍 Skill-Gap-Analyse
+│ │ │ ├── 🎯 Analyse-Methoden
+│ │ │ │ ├── 📊 Quantitative Analyse
+│ │ │ │ ├── 🔄 Qualitative Bewertung
+│ │ │ │ ├── 📈 Vergleichsanalysen
+│ │ │ │ ├── 🎯 Bedarfsanalyse
+│ │ │ │ └── 📋 Zukunftsszenarien
+│ │ │ ├── 🔄 Gap-Management
+│ │ │ │ ├── 📈 Priorisierung
+│ │ │ │ ├── 🔄 Maßnahmenplanung
+│ │ │ │ ├── 📊 Ressourcenallokation
+│ │ │ │ ├── 🎯 Erfolgskontrolle
+│ │ │ │ └── 📋 Reporting
+│ │ │ └── 📈 Analyse-Optimierung
+│ │ │ ├── 📈 Genauigkeitsverbesserung
+│ │ │ ├── 🔄 Automatisierungsgrad
+│ │ │ ├── 📊 Aktualitätsgrad
+│ │ │ ├── 🎯 Prognosequalität
+│ │ │ └── 🤖 KI-gestützte Gap-Analyse
+│ │ └── 📈 Entwicklungspläne
+│ │ ├── 🎯 Planungswerkzeuge
+│ │ │ ├── 📋 Individuelle Pläne
+│ │ │ ├── 🔄 Team-Entwicklungspläne
+│ │ │ ├── 📈 Karrierepfade
+│ │ │ ├── 🎯 Fähigkeits-Roadmaps
+│ │ │ └── 📊 Zielvereinbarungen
+│ │ ├── 🔄 Planungsmanagement
+│ │ │ ├── 📅 Zeitplanung
+│ │ │ ├── 🔄 Ressourcenplanung
+│ │ │ ├── 📈 Budgetplanung
+│ │ │ ├── 🎯 Erfolgsmessung
+│ │ │ └── 📊 Anpassungsmanagement
+│ │ └── 📈 Planungsoptimierung
+│ │ ├── 💰 ROI-Optimierung
+│ │ ├── 🔄 Effizienzsteigerung
+│ │ ├── 📈 Mitarbeiterbindung
+│ │ ├── 🎯 Talententwicklung
+│ │ └── 🤖 KI-gestützte Entwicklungsplanung
+│ ├── 📚 Schulungen
+│ │ ├── 🔍 Schulungsbedarf
+│ │ │ ├── 🎯 Bedarfserfassung
+│ │ │ │ ├── 📝 Mitarbeiter-Selbsteinschätzung
+│ │ │ │ ├── 🔄 Vorgesetzten-Einschätzung
+│ │ │ │ ├── 📈 Unternehmensbedarf
+│ │ │ │ ├── 🎯 Kundenanforderungen
+│ │ │ │ └── 📊 Marktentwicklungen
+│ │ │ ├── 🔄 Bedarfsanalyse
+│ │ │ │ ├── 📊 Quantitative Analyse
+│ │ │ │ ├── 🔄 Qualitative Bewertung
+│ │ │ │ ├── 📈 Priorisierung
+│ │ │ │ ├── 🎯 Dringlichkeitsbewertung
+│ │ │ │ └── 📋 Budgetierung
+│ │ │ └── 📈 Bedarfsoptimierung
+│ │ │ ├── 💰 Kosteneffizienz
+│ │ │ ├── 🔄 Strategische Ausrichtung
+│ │ │ ├── 📈 Zukunftsfähigkeit
+│ │ │ ├── 🎯 Mitarbeiterzufriedenheit
+│ │ │ └── 🤖 KI-gestützte Bedarfsanalyse
+│ │ ├── 📅 Schulungsplanung
+│ │ │ ├── 🎯 Planungswerkzeuge
+│ │ │ │ ├── 📅 Schulungskalender
+│ │ │ │ ├── 🔄 Kapazitätsplanung
+│ │ │ │ ├── 📈 Ressourcenplanung
+│ │ │ │ ├── 🎯 Budgetplanung
+│ │ │ │ └── 📊 Teilnehmerverwaltung
+│ │ │ ├── 🔄 Planungsmanagement
+│ │ │ │ ├── 📋 Kurserstellung
+│ │ │ │ ├── 🔄 Dozenten-Management
+│ │ │ │ ├── 📈 Raumplanung
+│ │ │ │ ├── 🎯 Materialplanung
+│ │ │ │ └── 📊 Logistik-Planung
+│ │ │ └── 📈 Planungsoptimierung
+│ │ │ ├── 💰 Kosteneffizienz
+│ │ │ ├── 🔄 Auslastungsoptimierung
+│ │ │ ├── 📈 Qualitätssteigerung
+│ │ │ ├── 🎯 Flexibilitätssteigerung
+│ │ │ └── 🤖 KI-gestützte Schulungsplanung
+│ │ ├── 👥 Teilnahmeverwaltung
+│ │ │ ├── 🎯 Anmeldemanagement
+│ │ │ │ ├── 📝 Online-Anmeldung
+│ │ │ │ ├── 🔄 Mobile Anmeldung
+│ │ │ │ ├── 📈 Wartelisten-Management
+│ │ │ │ ├── 🎯 Stornomanagement
+│ │ │ │ └── 📊 Teilnahmebestätigung
+│ │ │ ├── 🔄 Teilnehmerverwaltung
+│ │ │ │ ├── 👤 Teilnehmerdaten
+│ │ │ │ ├── 🔄 Gruppeneinteilung
+│ │ │ │ ├── 📈 Anwesenheitskontrolle
+│ │ │ │ ├── 🎯 Leistungsdokumentation
+│ │ │ │ └── 📊 Zertifikatsausstellung
+│ │ │ └── 📈 Verwaltungsoptimierung
+│ │ │ ├── ⏱️ Zeiteffizienz
+│ │ │ ├── 🔄 Automatisierungsgrad
+│ │ │ ├── 📈 Benutzerfreundlichkeit
+│ │ │ ├── 🎯 Transparenz
+│ │ │ └── 🤖 KI-gestützte Teilnehmerverwaltung
+│ │ ├── 📊 Erfolgskontrolle
+│ │ │ ├── 🎯 Evaluierungsmethoden
+│ │ │ │ ├── 📝 Teilnehmer-Feedback
+│ │ │ │ ├── 🔄 Dozenten-Bewertung
+│ │ │ │ ├── 📈 Lernkontrollen
+│ │ │ │ ├── 🎯 Transfer-Messung
+│ │ │ │ └── 📊 ROI-Berechnung
+│ │ │ ├── 🔄 Erfolgsmessung
+│ │ │ │ ├── 📊 Quantitative Kennzahlen
+│ │ │ │ ├── 🔄 Qualitative Bewertung
+│ │ │ │ ├── 📈 Verbesserungsmessung
+│ │ │ │ ├── 🎯 Zielerreichung
+│ │ │ │ └── 📋 Benchmarking
+│ │ │ └── 📈 Kontrolloptimierung
+│ │ │ ├── 📈 Messgenauigkeit
+│ │ │ ├── 🔄 Objektivität
+│ │ │ ├── 📊 Vergleichbarkeit
+│ │ │ ├── 🎯 Aktionsfähigkeit
+│ │ │ └── 🤖 KI-gestützte Erfolgskontrolle
+│ │ └── 💰 Kostenkontrolle
+│ │ ├── 🎯 Kostenarten
+│ │ │ ├── 💵 Dozentenhonorare
+│ │ │ ├── 🔄 Materialkosten
+│ │ │ ├── 📈 Raumkosten
+│ │ │ ├── 🎯 Reisekosten
+│ │ │ └── 📊 Verwaltungskosten
+│ │ ├── 🔄 Budgetkontrolle
+│ │ │ ├── 📊 Budgetplanung
+│ │ │ ├── 🔄 Ist-Kosten-Erfassung
+│ │ │ ├── 📈 Abweichungsanalyse
+│ │ │ ├── 🎯 Kostentreiber-Analyse
+│ │ │ └── 📋 Reporting
+│ │ └── 📈 Kostenoptimierung
+│ │ ├── 💰 Einsparpotenziale
+│ │ ├── 🔄 Effizienzsteigerung
+│ │ ├── 📈 ROI-Verbesserung
+│ │ ├── 🎯 Wertschöpfung
+│ │ └── 🤖 KI-gestützte Kostenoptimierung
+│ └── 🚀 Karriereplanung
+│ ├── 💬 Entwicklungsgespräche
+│ │ ├── 🎯 Gesprächsvorbereitung
+│ │ │ ├── 📋 Gesprächsleitfäden
+│ │ │ ├── 🔄 Vorlagen-Bibliothek
+│ │ │ ├── 📈 Zielvereinbarungen
+│ │ │ ├── 🎯 Feedback-Sammlung
+│ │ │ └── 📊 Leistungsdaten
+│ │ ├── 🔄 Gesprächsdurchführung
+│ │ │ ├── 📝 Dokumentation
+│ │ │ ├── 🔄 Aktionsplanung
+│ │ │ ├── 📈 Follow-up-Management
+│ │ │ ├── 🎯 Maßnahmenvereinbarung
+│ │ │ └── 📊 Erfolgskontrolle
+│ │ └── 📈 Gesprächsoptimierung
+│ │ ├── 💡 Qualitätssteigerung
+│ │ ├── 🔄 Kontinuität
+│ │ ├── 📈 Wirkungsgrad
+│ │ ├── 🎯 Mitarbeiterengagement
+│ │ └── 🤖 KI-gestützte Gesprächsvorbereitung
+│ ├── 🛤️ Karrierepfade
+│ │ ├── 🎯 Pfad-Design
+│ │ │ ├── 📈 Vertikale Entwicklung
+│ │ │ ├── 🔄 Horizontale Entwicklung
+│ │ │ ├── 📊 Expertenlaufbahnen
+│ │ │ ├── 🎯 Führungslaufbahnen
+│ │ │ └── 📋 Projektlaufbahnen
+│ │ ├── 🔄 Pfad-Management
+│ │ │ ├── 📝 Individuelle Anpassung
+│ │ │ ├── 🔄 Meilenstein-Planung
+│ │ │ ├── 📈 Qualifikations-Anforderungen
+│ │ │ ├── 🎯 Entwicklungsmöglichkeiten
+│ │ │ └── 📊 Erfolgsmessung
+│ │ └── 📈 Pfad-Optimierung
+│ │ ├── 💰 Talentbindung
+│ │ ├── 🔄 Mitarbeiterzufriedenheit
+│ │ ├── 📈 Nachfolgeplanung
+│ │ ├── 🎯 Strategische Ausrichtung
+│ │ └── 🤖 KI-gestützte Karriereplanung
+│ ├── 👑 Nachfolgeplanung
+│ │ ├── 🎯 Talent-Identifikation
+│ │ │ ├── 📊 Leistungsdaten
+│ │ │ ├── 🔄 Potenzialanalyse
+│ │ │ ├── 📈 Kompetenzbewertung
+│ │ │ ├── 🎯 Führungspotenzial
+│ │ │ └── 📋 Nachfolge-Kandidaten
+│ │ ├── 🔄 Nachfolge-Management
+│ │ │ ├── 📋 Nachfolgepläne
+│ │ │ ├── 🔄 Entwicklungsprogramme
+│ │ │ ├── 📈 Mentoring-Programme
+│ │ │ ├── 🎯 Wissenstransfer
+│ │ │ └── 📊 Übergabemanagement
+│ │ └── 📈 Nachfolgeoptimierung
+│ │ ├── 💰 Kontinuitätssicherung
+│ │ ├── 🔄 Risikominimierung
+│ │ ├── 📈 Talententwicklung
+│ │ ├── 🎯 Strategische Planung
+│ │ └── 🤖 KI-gestützte Nachfolgeplanung
+│ ├── 🔮 Potenzialanalyse
+│ │ ├── 🎯 Analyse-Methoden
+│ │ │ ├── 📊 Leistungsbewertung
+│ │ │ ├── 🔄 Kompetenzanalyse
+│ │ │ ├── 📈 Verhaltensbeobachtung
+│ │ │ ├── 🎯 360-Grad-Feedback
+│ │ │ └── 📋 Assessment Center
+│ │ ├── 🔄 Analyse-Auswertung
+│ │ │ ├── 📈 Stärken-Schwächen-Analyse
+│ │ │ ├── 🔄 Entwicklungsbedarf
+│ │ │ ├── 📊 Potenzial-Prognose
+│ │ │ ├── 🎯 Empfehlungen
+│ │ │ └── 📋 Reporting
+│ │ └── 📈 Analyseoptimierung
+│ │ ├── 📈 Genauigkeitsverbesserung
+│ │ ├── 🔄 Objektivität
+│ │ ├── 📊 Vergleichbarkeit
+│ │ ├── 🎯 Prognosequalität
+│ │ └── 🤖 KI-gestützte Potenzialanalyse
+│ └── 🌟 Förderprogramme
+│ ├── 🎯 Programm-Design
+│ │ ├── 📋 High-Potential-Programme
+│ │ ├── 🔄 Talent-Pools
+│ │ ├── 📈 Mentoring-Programme
+│ │ ├── 🎯 Trainee-Programme
+│ │ └── 📊 Führungsprogramme
+│ ├── 🔄 Programm-Management
+│ │ ├── 👥 Teilnehmerauswahl
+│ │ ├── 🔄 Programm-Durchführung
+│ │ ├── 📈 Erfolgsmessung
+│ │ ├── 🎯 Budgetverwaltung
+│ │ └── 📊 Reporting
+│ └── 📈 Programmoptimierung
+│ ├── 💰 ROI-Optimierung
+│ ├── 🔄 Wirkungsgrad
+│ ├── 📈 Talentbindung
+│ ├── 🎯 Strategische Ausrichtung
+│ └── 🤖 KI-gestützte Programmoptimierung
+└── 💼 Recruiting
+├── 📢 Stellenausschreibungen
+│ ├── 📋 Stellenbeschreibungen
+│ │ ├── 🎯 Template-Management
+│ │ │ ├── 📝 Standard-Vorlagen
+│ │ │ ├── 🔄 Branchenspezifische Vorlagen
+│ │ │ ├── 📈 Unternehmensindividuell
+│ │ │ ├── 🎯 Mehrsprachige Vorlagen
+│ │ │ └── 📊 Versionierung
+│ │ ├── 🔄 Beschreibungserstellung
+│ │ │ ├── 📋 Anforderungsprofile
+│ │ │ ├── 🔄 Aufgabenbeschreibungen
+│ │ │ ├── 📈 Kompetenzanforderungen
+│ │ │ ├── 🎯 Benefits-Darstellung
+│ │ │ └── 📊 Unternehmensprofil
+│ │ └── 📈 Beschreibungsoptimierung
+│ │ ├── 💡 Best Practices
+│ │ ├── 🔄 A/B Testing
+│ │ ├── 📈 Response-Rate-Optimierung
+│ │ ├── 🎯 Employer Branding
+│ │ └── 🤖 KI-gestützte Optimierung
+│ ├── 🌐 Multi-Channel Publishing
+│ │ ├── 🎯 Kanal-Management
+│ │ │ ├── 🌐 Job-Portale
+│ │ │ ├── 🔄 Social Media
+│ │ │ ├── 📈 Unternehmens-Website
+│ │ │ ├── 🎯 Hochschul-Portale
+│ │ │ └── 📊 Fach-Portale
+│ │ ├── 🔄 Publishing-Automation
+│ │ │ ├── 🤖 Automatische Veröffentlichung
+│ │ │ ├── 🔄 Multi-Channel-Synchronisation
+│ │ │ ├── 📈 Status-Tracking
+│ │ │ ├── 🎯 Performance-Monitoring
+│ │ │ └── 📊 Kostenkontrolle
+│ │ └── 📈 Publishing-Optimierung
+│ │ ├── 💰 Kosteneffizienz
+│ │ ├── 🔄 Reichweitenoptimierung
+│ │ ├── 📈 Zielgruppenansprache
+│ │ ├── 🎯 Response-Rate-Steigerung
+│ │ └── 🤖 KI-gestützte Kanal-Optimierung
+│ ├── 👥 Bewerbermanagement
+│ │ ├── 🎯 Bewerber-Pipeline
+│ │ │ ├── 📥 Bewerbungseingang
+│ │ │ ├── 🔄 Status-Verwaltung
+│ │ │ ├── 📈 Pipeline-Steuerung
+│ │ │ ├── 🎯 Kommunikations-Historie
+│ │ │ └── 📊 Reporting
+│ │ ├── 🔄 Prozess-Management
+│ │ │ ├── 📋 Workflow-Konfiguration
+│ │ │ ├── 🔄 Automatische Benachrichtigungen
+│ │ │ ├── 📈 Eskalationsmanagement
+│ │ │ ├── 🎯 Dokumentenverwaltung
+│ │ │ └── 📊 Qualitätssicherung
+│ │ └── 📈 Prozessoptimierung
+│ │ ├── ⏱️ Durchlaufzeit-Optimierung
+│ │ ├── 🔄 Automatisierungsgrad
+│ │ ├── 📈 Bewerbererfahrung
+│ │ ├── 🎯 Prozessqualität
+│ │ └── 🤖 KI-gestützte Prozessoptimierung
+│ ├── 📊 Prozess-Tracking
+│ │ ├── 🎯 Tracking-Metriken
+│ │ │ ├── 📈 Time-to-Hire
+│ │ │ ├── 🔄 Cost-per-Hire
+│ │ │ ├── 📊 Quality-of-Hire
+│ │ │ ├── 🎯 Candidate Experience
+│ │ │ └── 📋 Source Effectiveness
+│ │ ├── 🔄 Echtzeit-Monitoring
+│ │ │ ├── 📱 Live-Dashboards
+│ │ │ ├── 🔄 Automatische Berichte
+│ │ │ ├── 📈 Trend-Analysen
+│ │ │ ├── 🎯 Warnmeldungen
+│ │ │ └── 📊 Benchmarking
+│ │ └── 📈 Tracking-Optimierung
+│ │ ├── 📈 Datenqualität
+│ │ ├── 🔄 Berichtsgenauigkeit
+│ │ ├── 📊 Analyse-Tiefe
+│ │ ├── 🎯 Entscheidungsunterstützung
+│ │ └── 🤖 KI-gestütztes Tracking
+│ └── 💰 Kostenkontrolle
+│ ├── 🎯 Kostenarten
+│ │ ├── 💵 Anzeigenkosten
+│ │ ├── 🔄 Personalkosten
+│ │ ├── 📈 Agenturkosten
+│ │ ├── 🎯 Assessment-Kosten
+│ │ └── 📊 Reisekosten
+│ ├── 🔄 Budgetmanagement
+│ │ ├── 📊 Budgetplanung
+│ │ ├── 🔄 Ist-Kosten-Erfassung
+│ │ ├── 📈 Abweichungsanalyse
+│ │ ├── 🎯 Kostentreiber-Identifikation
+│ │ └── 📋 Reporting
+│ └── 📈 Kostenoptimierung
+│ ├── 💰 Einsparpotenziale
+│ ├── 🔄 Effizienzsteigerung
+│ ├── 📈 ROI-Verbesserung
+│ ├── 🎯 Wertschöpfung
+│ └── 🤖 KI-gestützte Kostenoptimierung
+├── 👥 Bewerbermanagement
+│ ├── 🗃️ Bewerberdatenbank
+│ │ ├── 🎯 Datenstruktur
+│ │ │ ├── 👤 Bewerberstammdaten
+│ │ │ ├── 🔄 Bewerbungsdokumente
+│ │ │ ├── 📈 Kommunikationshistorie
+│ │ │ ├── 🎯 Skill-Profile
+│ │ │ └── 📊 Bewertungen
+│ │ ├── 🔄 Datenmanagement
+│ │ │ ├── 📥 Datenerfassung
+│ │ │ ├── 🔄 Datenpflege
+│ │ │ ├── 📈 Datenanalyse
+│ │ │ ├── 🎯 Datenschutz
+│ │ │ └── 📊 Datenarchivierung
+│ │ └── 📈 Datenbankoptimierung
+│ │ ├── 💡 Suchfunktionalität
+│ │ ├── 🔄 Matching-Algorithmen
+│ │ ├── 📈 Performance
+│ │ ├── 🎯 Benutzerfreundlichkeit
+│ │ └── 🤖 KI-gestützte Datenanalyse
+│ ├── 📄 Lebenslauf-Parsing
+│ │ ├── 🎯 Parsing-Technologie
+│ │ │ ├── 🤖 KI-gestütztes Parsing
+│ │ │ ├── 🔄 OCR-Erkennung
+│ │ │ ├── 📈 Format-Unterstützung
+│ │ │ ├── 🎯 Sprach-Erkennung
+│ │ │ └── 📊 Qualitätssicherung
+│ │ ├── 🔄 Datenextraktion
+│ │ │ ├── 👤 Persönliche Daten
+│ │ │ ├── 🔄 Berufserfahrung
+│ │ │ ├── 📈 Ausbildung
+│ │ │ ├── 🎯 Skills & Kompetenzen
+│ │ │ └── 📊 Zertifikate
+│ │ └── 📈 Parsing-Optimierung
+│ │ ├── 📈 Genauigkeitsverbesserung
+│ │ ├── 🔄 Geschwindigkeitsoptimierung
+│ │ ├── 📊 Fehlertoleranz
+│ │ ├── 🎯 Automatisierungsgrad
+│ │ └── 🤖 Self-Learning Parsing
+│ ├── 💼 Interview-Management
+│ │ ├── 🎯 Interview-Planung
+│ │ │ ├── 📅 Terminplanung
+│ │ │ ├── 🔄 Interviewer-Zuordnung
+│ │ │ ├── 📈 Raumplanung
+│ │ │ ├── 🎯 Fragebögen
+│ │ │ └── 📊 Bewertungskriterien
+│ │ ├── 🔄 Interview-Durchführung
+│ │ │ ├── 📝 Protokollierung
+│ │ │ ├── 🔄 Bewertungssystem
+│ │ │ ├── 📈 Video-Interview
+│ │ │ ├── 🎯 Kollaboration
+│ │ │ └── 📊 Dokumentation
+│ │ └── 📈 Interview-Optimierung
+│ │ ├── 💡 Qualitätssteigerung
+│ │ ├── 🔄 Objektivität
+│ │ ├── 📈 Vergleichbarkeit
+│ │ ├── 🎯 Entscheidungsqualität
+│ │ └── 🤖 KI-gestützte Interview-Analyse
+│ ├── 🤝 Entscheidungsprozess
+│ │ ├── 🎯 Entscheidungs-Workflow
+│ │ │ ├── 👥 Entscheidungsgremien
+│ │ │ ├── 🔄 Abstimmungsprozesse
+│ │ │ ├── 📈 Mehrstufige Freigaben
+│ │ │ ├── 🎯 Eskalationswege
+│ │ │ └── 📊 Dokumentation
+│ │ ├── 🔄 Entscheidungsunterstützung
+│ │ │ ├── 📊 Vergleichsanalysen
+│ │ │ ├── 🔄 Bewertungsmatrizen
+│ │ │ ├── 📈 Risikoanalysen
+│ │ │ ├── 🎯 Empfehlungssysteme
+│ │ │ └── 📋 Reporting
+│ │ └── 📈 Entscheidungsoptimierung
+│ │ ├── ⏱️ Beschleunigung
+│ │ ├── 🔄 Objektivität
+│ │ ├── 📈 Qualitätssteigerung
+│ │ ├── 🎯 Transparenz
+│ │ └── 🤖 KI-gestützte Entscheidungsfindung
+│ └── 🎯 Onboarding-Vorbereitung
+│ ├── 🎯 Vorbereitungs-Checklisten
+│ │ ├── 📋 Administrative Aufgaben
+│ │ ├── 🔄 IT-Ausstattung
+│ │ ├── 📈 Arbeitsplatzvorbereitung
+│ │ ├── 🎯 Einarbeitungsplan
+│ │ └── 📊 Willkommenspaket
+│ ├── 🔄 Prozess-Management
+│ │ ├── 📅 Zeitplanung
+│ │ ├── 🔄 Verantwortlichkeiten
+│ │ ├── 📈 Fortschrittskontrolle
+│ │ ├── 🎯 Kommunikation
+│ │ └── 📊 Qualitätssicherung
+│ └── 📈 Vorbereitungsoptimierung
+│ ├── 💰 Effizienzsteigerung
+│ ├── 🔄 Mitarbeitererfahrung
+│ ├── 📈 Beschleunigung
+│ ├── 🎯 Professionalität
+│ └── 🤖 KI-gestützte Onboarding-Vorbereitung
+└── 🎯 Onboarding
+├── 📈 Einarbeitungspläne
+│ ├── 🎯 Planungs-Templates
+│ │ ├── 📋 Standard-Pläne
+│ │ ├── 🔄 Rollenspezifische Pläne
+│ │ ├── 📈 Abteilungsspezifische Pläne
+│ │ ├── 🎯 Individuelle Anpassungen
+│ │ └── 📊 Meilenstein-Planung
+│ ├── 🔄 Plan-Management
+│ │ ├── 📅 Zeitplanung
+│ │ ├── 🔄 Aufgabenverteilung
+│ │ ├── 📈 Fortschrittskontrolle
+│ │ ├── 🎯 Anpassungsmanagement
+│ │ └── 📊 Erfolgskontrolle
+│ └── 📈 Planoptimierung
+│ ├── 💰 Effizienzsteigerung
+│ ├── 🔄 Mitarbeiterintegration
+│ ├── 📈 Produktivitätssteigerung
+│ ├── 🎯 Mitarbeiterbindung
+│ └── 🤖 KI-gestützte Einarbeitungsplanung
+├── 🎁 Willkommens-Pakete
+│ ├── 🎯 Paket-Zusammenstellung
+│ │ ├── 📦 Standard-Pakete
+│ │ ├── 🔄 Individuelle Anpassungen
+│ │ ├── 📈 Abteilungsspezifisch
+│ │ ├── 🎯 Standortspezifisch
+│ │ └── 📊 Budget-gesteuert
+│ ├── 🔄 Paket-Management
+│ │ ├── 📋 Bestandsverwaltung
+│ │ ├── 🔄 Logistik-Management
+│ │ ├── 📈 Kostenkontrolle
+│ │ ├── 🎯 Personalisierung
+│ │ └── 📊 Feedback-Erfassung
+│ └── 📈 Paketoptimierung
+│ ├── 💰 Kosteneffizienz
+│ ├── 🔄 Wirkungsgrad
+│ ├── 📈 Mitarbeiterzufriedenheit
+│ ├── 🎯 Employer Branding
+│ └── 🤖 KI-gestützte Paket-Optimierung
+├── 👥 Mentor-Zuordnung
+│ ├── 🎯 Matching-Algorithmus
+│ │ ├── 🤖 KI-gestütztes Matching
+│ │ ├── 🔄 Skills-basiert
+│ │ ├── 📈 Persönlichkeits-basiert
+│ │ ├── 🎯 Erfahrungs-basiert
+│ │ └── 📊 Interessen-basiert
+│ ├── 🔄 Mentoring-Management
+│ │ ├── 📋 Mentoring-Vereinbarungen
+│ │ ├── 🔄 Zielsetzung
+│ │ ├── 📈 Fortschrittskontrolle
+│ │ ├── 🎯 Feedback-Mechanismen
+│ │ └── 📊 Erfolgsmessung
+│ └── 📈 Mentoring-Optimierung
+│ ├── 💡 Qualitätssteigerung
+│ ├── 🔄 Beziehungsqualität
+│ ├── 📈 Lernerfolg
+│ ├── 🎯 Mitarbeiterbindung
+│ └── 🤖 KI-gestützte Mentoring-Optimierung
+├── 🔍 Probearbeitsmanagement
+│ ├── 🎯 Probearbeits-Konzepte
+│ │ ├── 📋 Standardisierte Abläufe
+│ │ ├── 🔄 Individuelle Gestaltung
+│ │ ├── 📈 Projekt-basierte Aufgaben
+│ │ ├── 🎯 Beurteilungskriterien
+│ │ └── 📊 Erfolgsmessung
+│ ├── 🔄 Prozess-Management
+│ │ ├── 📅 Zeitplanung
+│ │ ├── 🔄 Aufgabenstellung
+│ │ ├── 📈 Betreuungskonzept
+│ │ ├── 🎯 Feedback-Prozesse
+│ │ └── 📊 Entscheidungsgrundlagen
+│ └── 📈 Prozessoptimierung
+│ ├── 💰 Aussagekraft
+│ ├── 🔄 Objektivität
+│ ├── 📈 Vergleichbarkeit
+│ ├── 🎯 Entscheidungsqualität
+│ └── 🤖 KI-gestützte Probearbeitsanalyse
+└── 💬 Feedback-System
+├── 🎯 Feedback-Kanäle
+│ ├── 📝 Online-Formulare
+│ ├── 🔄 Mobile Apps
+│ ├── 📈 Persönliche Gespräche
+│ ├── 🎯 Anonyme Umfragen
+│ └── 📊 Echtzeit-Feedback
+├── 🔄 Feedback-Management
+│ ├── 📥 Feedback-Erfassung
+│ ├── 🔄 Feedback-Auswertung
+│ ├── 📈 Maßnahmenplanung
+│ ├── 🎯 Follow-up-Prozesse
+│ └── 📊 Reporting
+└── 📈 Feedback-Optimierung
+├── 💡 Qualitätssteigerung
+├── 🔄 Response-Rate-Steigerung
+├── 📈 Aktionsfähigkeit
+├── 🎯 Kontinuierliche Verbesserung
+└── 🤖 KI-gestützte Feedback-Analyse
+
+Funktionsbeschreibung: Personal & HR (HCM)
+1) Zielbild & Grundprinzipien
+
+Zentrale Personen- und Vertragsakte mit vollständiger Historisierung, revisionssicheren Workflows und klarer Rollen-/Rechte-Trennung (HR, Führung, Mitarbeitende, Prüfer).
+
+Rechtskonforme Arbeitszeit-, Abwesenheits- und Dokumentenprozesse inkl. Nachweisbarkeit (Audit-Trail) und minimaler Datenerhebung nach DSGVO/BDSG. Rechtsgrundlagen für die Verarbeitung: u. a. Art. 6 DSGVO (v. a. lit. b, c, f) und – bei besonderen Kategorien – Art. 9 DSGVO (z. B. lit. b), ergänzt um § 26 BDSG (Beschäftigtendaten). 
+Buzer
++2
+Hensche
++2
+
+Pflicht zur Arbeitszeiterfassung: seit BAG-Beschluss 1 ABR 22/21 haben Arbeitgeber ein System zur vollständigen Erfassung der Arbeitszeit einzuführen; das folgt u. a. der EuGH-Linie (C-55/18 – „CCOO“) zu „objektiv, verlässlich, zugänglich“. Gesetzliche Detailregeln zur elektronischen Form sind in Deutschland politisch diskutiert; die Erfassungspflicht als solche gilt bereits.
+
+Materiell-rechtliche Leitplanken (Auszug DE/EU):
+
+Arbeitszeit: Regelmäßig max. 8 Std./Tag, erweiterbar auf 10 Std. bei Ausgleich; Sonn-/Feiertagsarbeit nur in Ausnahmen. Pausen ab > 6 Std. mind. 30 Min., ab > 9 Std. 45 Min. (ArbZG). 
+Händlerbund
++1
+
+Mindesturlaub: BUrlG-Mindestmaß 24 Werktage (Sechs-Tage-Woche) ⇒ 20 Arbeitstage bei Fünf-Tage-Woche. 
+Wikipedia
++1
+
+Mindestlohn / Schutzgesetze (MiLoG, MuSchG, JArbSchG) müssen in Workflows/Prüfungen abbildbar sein. 
+Jephi online Zeiterfassung
+
+2) Datenmodell (Kerneinheiten)
+
+Mitarbeiter (ID, Organisationszuordnung, Status, Eintritt/Austritt, Vertragsart, Arbeitszeitmodell, Kostenstelle).
+
+Personendaten (Kontakt, Notfallkontakte, optionale Gesundheits-/Schutzmerkmale mit striktem Berechtigungskonzept).
+
+Verträge & Vergütung (Zeiträume, Gehaltsbestandteile, Zulagen, Probezeit, Befristungen).
+
+Zeitkonten (Soll/Ist je Tag, Pausen, Zuschlags-Trigger, Überstundenkonto, Gleitzeitkonto).
+
+Abwesenheiten (Urlaub, Krankheit, Sonderurlaub; Kontingente, Resturlaub).
+
+Qualifikationen / Zertifikate (Skillprofil, Matrix, Fristen).
+
+Dokumente (digitale Personalakte mit Versionen, Fristen, Aufbewahrung).
+
+Recruiting-Entitäten (Stellen, Bewerber, Prozessstatus, Interview/Score, Dokumente).
+
+Audit-Objekte (Änderungs-/Zugriffsprotokolle).
+
+3) Prozessdesign je Modul (kernverdichtet)
+3.1 Stammdaten & Dokumente
+
+Onboarding-Checkliste erzeugt Pflichtfelder, Zugänge (SSO), Rechte und Aktenstruktur; Dokumente eingangsgestützt (E-Mail/Scan/OCR) in die Personalakte mit Versionierung, Volltextsuche, Aufbewahrungsfristen und Zugriff nach Need-to-Know. Rechtsgrundlagen und Zwecke sind je Dokumenttyp hinterlegt; sensible Daten nur mit gesondertem Schutz und Löschkonzept. (DSGVO Art. 6/9; § 26 BDSG). 
+Buzer
++2
+Hensche
++2
+
+3.2 Arbeitszeit & Zeiterfassung
+
+Erfassungskanäle: Terminal, Web, Mobile, API (ERP/Shopfloor). Pflichtfelder: Beginn/Ende, Pausen, Arbeitsort.
+
+Prüfregeln:
+
+Tages-/Wochenlimits (ArbZG), Pausenpflicht, Sonn-/Feiertagslogik, Zuschlagsfenster.
+
+Vollständigkeitskontrollen + tägliche/wöchentliche Erinnerungen.
+
+BAG/EuGH-Anforderung: System ist objektiv, verlässlich, zugänglich; Änderungen sind nachvollziehbar (Original, Korrektur, Begründung, Genehmiger).
+
+Zeitkonto-Formeln (Beispiele):
+
+Tages-Ist = (Ende − Beginn) − Pausen
+
+Tages-Saldo = Tages-Ist − Tages-Soll (gemäß Arbeitszeitmodell)
+
+Überstundenkonto = Σ(Tages-Saldo) mit Regelwerken zu Ausgleich/Auszahlung.
+
+3.3 Urlaub & Abwesenheiten
+
+Regeln: BUrlG-Mindesturlaub und betriebliche Mehr-Ansprüche; Pro-rata bei Ein-/Austritt; Übertrag gem. Policy; Krankheit während Urlaub neutralisiert Tage mit AU-Nachweis.
+
+Umrechnung: Mindesturlaub 24 Werktage (6-Tage-Woche) ⇒ 20 Arbeitstage (5-Tage-Woche); für atypische Modelle lineare Umrechnung (skalierbar auf 3/4/6-Tage-Modelle). 
+Wikipedia
+
+Resturlaub-Formel (vereinfachte Praxis):
+Rest = Jahresanspruch(pro rata) + Übertrag – Genommen – Verfallen
+
+Workflows: Antrag → Vorgesetzte → HR (Sonderfälle) → Kalender-Sync (Outlook/Google) → Vertretungslogik.
+
+3.4 Vergütung & Schnittstellen
+
+Payroll-Schnittstelle (CSV/API) für Stammdaten-Änderungen, Zeit-/Zuschlagswerte, Abwesenheiten, geldwerte Vorteile; Vier-Augen-Prinzip vor Übergabe.
+
+Kostenstellen/Projekte auf Zeitbuchungen für Faktura/Controlling.
+
+3.5 Compliance & Zugriff
+
+Rollenmodell: HR-Admin, HR-Sachbearbeitung, Führungskraft, Mitarbeiter/in, Prüfer/Revision, Betriebsrat (ausgewählte Reports).
+
+Protokolle: lückenlose Änderungs- und Zugriffslogs; Berichte für ArbZG-Nachweise, Urlaubskonten, Dokumenten-Fristen.
+
+Gesetzliche Leitplanken im System hinterlegt (ArbZG-Grenzen, Pausen, Sonntagsarbeit; MuSchG/JArbSchG-Checks). 
+Händlerbund
++2
+Gesetze im Internet
++2
+
+3.6 Recruiting (ATS)
+
+Stellenprofil-Templates, Multi-Channel-Posting, DSGVO-konformes Bewerberhandling, Interview-Leitfäden, Bewertungsmatrizen.
+
+Eignungsdiagnostik: Nutzung valider Verfahren nach DIN 33430 wird dokumentiert (Transparenz, Objektivität, Vergleichbarkeit).
+
+Aufbewahrung & Löschung: Fristen/Einwilligungen (z. B. Talentpool) mit automatisierten Erinnerungen und Audit-Trail.
+
+3.7 Entwicklung, Qualifikationen, Zertifikate
+
+Skill-Datenbank & Qualifikationsmatrix, Nachweisführung (z. B. Pflicht-Zertifikate, Ablauffristen), Schulungsplanung, Erfolgskontrolle.
+
+Nachfolge- und Karriereplanung: transparente Kriterien, dokumentierte Entscheidungen.
+
+3.8 Feedback- & Gesprächssystem
+
+Formulare/Umfragen (auch anonym), regelmäßige Entwicklungsgespräche mit Zielvereinbarungen, Beschlüsse verfolgen (Maßnahmenboard).
+
+4) Kennzahlen (prägnant, messbar)
+
+Arbeitszeit/Compliance: Anteil vollständiger Tagesbuchungen, Pausenregel-Trefferquote, ArbZG-Abweichungen/Woche, Korrekturrate.
+
+Urlaub/Abwesenheit: Resturlaubsquote zum 30.09., Kranktage pro Kopf (Datenschutz-konform aggregiert).
+
+Recruiting: Time-to-Hire, Cost-per-Hire, Funnel-Konversionsraten, Quality-of-Hire (Probezeit-Quote).
+
+Entwicklung: Zertifikats-Gültigkeitsquote, Skill-Coverage je Rolle, Schulungs-ROI-Proxy (Transfer-Scores).
+
+5) Schnittstellen
+
+SSO/IDM (Azure AD/Entra, Keycloak, AD FS) – automatische Rollenzuteilung nach Organisation.
+
+Payroll/ERP – bidirektional (Stammdaten, Zeiten, Kostenstellen).
+
+Kalender/Kommunikation – Outlook/Google, E-Mail, Push/SMS.
+
+DMS – rechtssichere Archivierung, Retention-Pläne.
+
+6) Prüf- & Rechtslogik (konkret hinterlegt)
+
+Arbeitszeit-Grenzen: Tages- und Wochenlimits, Sonn-/Feiertagsausnahmen mit Dokumentationspflicht (ArbZG). 
+Händlerbund
++1
+
+Zeiterfassungspflicht: System vorhanden, Nachvollziehbarkeit (Original/Korrektur), Rollen für Korrekturen (BAG 1 ABR 22/21; EuGH C-55/18).
+
+Urlaub: Mindestmaß, Umrechnung, Verfall/Übertrag nach Policy (BUrlG-Mindestmaß belegt). 
+Wikipedia
+
+Datenschutz: Zweckbindung, Datenminimierung, Betroffenenrechte, besondere Kategorien gesondert (DSGVO Art. 6/9; § 26 BDSG). 
+Buzer
++2
+Hensche
++2
+
+7) Rechenlogik (Beispiele)
+
+A) Pro-rata-Urlaub bei Eintritt/Austritt
+Jahresanspruch_pro_rata = Jahresanspruch * (beschäftigte_Kalendermonate / 12)
+(Plus evtl. tarifliche/vertragliche Sonderregeln.)
+
+B) Resturlaub zum Stichtag
+Rest = Übertrag_nicht_verfallen + Jahresanspruch_pro_rata − Genommene_Tage − Geplante_genehmigte_Tage
+
+C) Zeitkonto
+Saldo_Tag = (Ende − Beginn − Pause) − Soll
+Saldo_Monat = Σ(Saldo_Tag)
+Regeln zu Zuschlägen (Nacht/Sonntag) nur berechnet, nicht „automatisch genehmigt“.
+
+8) Qualität, Sicherheit, Betrieb
+
+Vier-Augen-Prinzip bei kritischen Änderungen (Verträge, Gehalt, Korrekturen).
+
+Berechtigungs-Rezertifizierung quartalsweise; Audit-Reports exportierbar.
+
+Lösch-/Aufbewahrungs­konzept pro Dokument/Datensatz (Konfigurationstabelle mit Zweck, Rechtsgrund, Frist, Trigger).
+
+9) Einführung (12-Wochen-MVP, schlank)
+
+W1–2: Scope finalisieren, Rechts-/BR-Abgleich, Datenmodell & Rollen.
+
+W3–4: Stammdatenimport, Dokumentenakte, Zeiterfassung (Basisregeln ArbZG + BAG), Urlaubslogik.
+
+W5–6: Genehmigungsworkflows, Kalender-Sync, Payroll-Export, Reporting v1.
+
+W7–8: Recruiting-Basics (Stellen, Bewerber, DSGVO-Workflows), Quali-Matrix v1.
+
+W9–10: Schulungen, Go-Live Pilot (2–3 Bereiche), Korrekturschleife.
+
+W11–12: Rollout, Betriebsvereinbarung finalisieren, Audit-Doku bündeln.
+
+10) Offene Punkte (ehrlich benannt)
+
+Gesetzgeberische Feinspezifik zur elektronischen Erfassung: politisch weiter in Bewegung; System sollte sowohl manuelle als auch elektronische Kanäle unterstützen und revisionssicher dokumentieren. (BAG-Pflicht zur Erfassung gilt; Detailpflichten können sich ändern.)
+
+Aufbewahrungsfristen: variieren je Dokumenttyp und Rechtsgebiet; es ist eine betriebsspezifische Fristenmatrix mit Rechtsquellen zu hinterlegen (Steuer/Sozialversicherung/Arbeitsrecht).
+
+Belegstellen (Auswahl, für die zentralen Aussagen)
+
+ArbZG (Arbeitszeitgrenzen, Sonn-/Feiertag): gesetze-im-internet.de. 
+Händlerbund
++1
+
+BAG 1 ABR 22/21 (Pflicht zur Arbeitszeiterfassung, 13.09.2022) & EuGH C-55/18 (objektiv/verlässlich/zugänglich).
+
+BUrlG Mindesturlaub (24 Werktage = 20 Tage bei 5-Tage-Woche). 
+Wikipedia
+
+DSGVO Art. 6/9 und § 26 BDSG (Rechtsgrundlagen Beschäftigtendaten). 
+Buzer
++2
+Hensche
++2
+
+MiLoG/MuSchG/JArbSchG (weitere Schutzrahmen). 
+Jephi online Zeiterfassung

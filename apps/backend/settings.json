@@ -1,0 +1,8 @@
+{
+  "defaultModel": "ollama-qwen3:4b",
+  "audioEnabled": true,
+  "translationEnabled": true,
+  "maxTokens": 4096,
+  "temperature": 0.7,
+  "language": "de"
+}

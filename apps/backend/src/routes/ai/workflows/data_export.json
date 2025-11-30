@@ -1,0 +1,147 @@
+{
+  "name": "data_export",
+  "description": "Exportiert strukturierte Daten aus Tabellen oder Modulen mit erweiterten Funktionen wie Filterung, Validierung und Benachrichtigung.",
+  "metadata": {
+    "author": "Thomas Heisig",
+    "version": "1.1",
+    "created": "2025-11-04",
+    "last_modified": "2025-11-04",
+    "category": "data_processing"
+  },
+  "on_error": "continue",
+  "steps": [
+    {
+      "type": "log",
+      "message": "Starte Datenexport-Prozess für Bestellungen"
+    },
+    {
+      "type": "tool_call",
+      "tool": "query_database",
+      "params": {
+        "table": "orders",
+        "filter": "status='open'",
+        "columns": [
+          "id",
+          "customer_id",
+          "order_date",
+          "total_amount",
+          "status"
+        ]
+      },
+      "variable": "raw_orders"
+    },
+    {
+      "type": "if",
+      "condition": "{{raw_orders.count}} > 0",
+      "steps": [
+        {
+          "type": "tool_call",
+          "tool": "validate_data",
+          "params": {
+            "data": "{{raw_orders.results}}",
+            "rules": {
+              "total_amount": "min:0",
+              "customer_id": "required",
+              "order_date": "valid_date"
+            }
+          },
+          "variable": "validated_orders"
+        },
+        {
+          "type": "tool_call",
+          "tool": "transform_data",
+          "params": {
+            "data": "{{validated_orders.valid_data}}",
+            "mappings": {
+              "id": "order_id",
+              "customer_id": "kunden_nr",
+              "order_date": "bestelldatum",
+              "total_amount": "gesamtbetrag"
+            },
+            "formats": {
+              "order_date": "DD.MM.YYYY",
+              "total_amount": "de_DE"
+            }
+          },
+          "variable": "transformed_data"
+        },
+        {
+          "type": "tool_call",
+          "tool": "convert_to_csv",
+          "params": {
+            "data": "{{transformed_data}}",
+            "delimiter": ";",
+            "encoding": "UTF-8",
+            "include_headers": true
+          },
+          "variable": "csv_data"
+        },
+        {
+          "type": "tool_call",
+          "tool": "write_file",
+          "params": {
+            "filepath": "./exports/orders_{{timestamp}}.csv",
+            "content": "{{csv_data}}",
+            "overwrite": true
+          },
+          "variable": "export_result"
+        },
+        {
+          "type": "tool_call",
+          "tool": "log_activity",
+          "params": {
+            "action": "data_export",
+            "details": "Export von {{raw_orders.count}} Bestellungen erfolgreich abgeschlossen",
+            "file_path": "{{export_result.filepath}}"
+          }
+        },
+        {
+          "type": "if",
+          "condition": "{{raw_orders.count}} > 100",
+          "steps": [
+            {
+              "type": "tool_call",
+              "tool": "send_notification",
+              "params": {
+                "recipient": "export-team@steinmetz.de",
+                "subject": "Großer Datenexport abgeschlossen",
+                "message": "Es wurden {{raw_orders.count}} Datensätze exportiert. Datei: {{export_result.filepath}}"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "if",
+      "condition": "{{raw_orders.count}} == 0",
+      "steps": [
+        {
+          "type": "log",
+          "message": "Keine Daten für den Export gefunden"
+        },
+        {
+          "type": "tool_call",
+          "tool": "send_notification",
+          "params": {
+            "recipient": "export-team@steinmetz.de",
+            "subject": "Datenexport - Keine Daten",
+            "message": "Für den Export wurden keine Bestellungen mit Status 'open' gefunden."
+          }
+        }
+      ]
+    },
+    {
+      "type": "context_update",
+      "params": {
+        "last_export": "{{timestamp}}",
+        "exported_records": "{{raw_orders.count}}",
+        "export_file": "{{export_result.filepath}}"
+      }
+    },
+    {
+      "type": "log",
+      "message": "Datenexport-Prozess abgeschlossen"
+    }
+  ]
+}

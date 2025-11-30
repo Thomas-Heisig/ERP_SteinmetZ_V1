@@ -1,0 +1,620 @@
+const fs = require("fs");
+const path = require("path");
+
+// Interfaces
+interface NodeLine {
+  id: string;
+  parent_id: string | null;
+  title: string;
+  order: number;
+  depth: number;
+  path: string[];
+  kind?: string;
+  tags?: string[];
+  meta?: Record<string, unknown>;
+}
+
+interface ParseResult {
+  success: boolean;
+  nodes: NodeLine[];
+  errors: string[];
+  warnings: string[];
+  format: "rules" | "tree" | "mixed" | "unknown";
+  stats: {
+    totalLines: number;
+    parsedLines: number;
+    skippedLines: number;
+    duplicateIds: number;
+    maxDepth: number;
+    hierarchyLevels: number;
+    processingTime: number;
+  };
+}
+
+// FEHLENDE INTERFACE-DEFINITION HINZUGEFÜGT
+interface FileReport {
+  filename: string;
+  result: ParseResult;
+  outputPath: string;
+}
+
+// VERBESSERTE Konfiguration
+const config = {
+  version: "3.0.0",
+  outputDir: "output",
+  // Einrückung basierend auf Zeichen-Position statt Tokens
+  indentSize: 4, // 4 Zeichen pro Einrückungs-Ebene
+  branchTokens: ["├──", "└──", "├--", "└--", "├─", "└─"],
+  maxDepth: 10,
+  idCase: "kebab" as const,
+  
+  // Semantische Erkennung (unverändert)
+  emojiKindMap: {
+    "📈": "report", "📊": "report", "💰": "finance", "📄": "document",
+    "📋": "document", "🎯": "goal", "🔧": "tool", "⚙️": "tool", "🛠️": "tool",
+    "📦": "data", "👥": "team", "🌍": "location", "⏱️": "time", "⏰": "time",
+    "✅": "check", "⚠️": "alert", "🚨": "alert", "💡": "insight", "🔍": "analysis",
+    "🔄": "process", "📅": "schedule", "🏠": "dashboard", "🔔": "notification",
+    "📧": "communication", "📞": "communication", "💬": "communication",
+    "🏭": "production", "🏢": "organization", "🏗️": "production",
+    "📱": "mobile", "💻": "technology", "🔐": "security"
+  }
+};
+
+// String-Funktionen (unverändert)
+function toAsciiSafe(input: string): string {
+  if (!input || input.trim() === '') return "untitled";
+  
+  let cleaned = input.toLowerCase();
+  
+  const replacements: {[key: string]: string} = {
+    'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss',
+    'á': 'a', 'à': 'a', 'â': 'a', 'ã': 'a',
+    'é': 'e', 'è': 'e', 'ê': 'e', 
+    'í': 'i', 'ì': 'i', 'î': 'i',
+    'ó': 'o', 'ò': 'o', 'ô': 'o', 'õ': 'o',
+    'ú': 'u', 'ù': 'u', 'û': 'u',
+    'ñ': 'n', 'ç': 'c',
+    '&': 'und', '%': 'prozent', '/': '-', '\\': '-',
+    '.': '', ',': '', ';': '', ':': '', '!': '', '?': '',
+    '(': '', ')': '', '[': '', ']': '', '{': '', '}': '',
+    '+': 'plus', '=': 'equals', '<': 'less', '>': 'greater'
+  };
+  
+  cleaned = cleaned.split('').map(char => replacements[char] || char).join('');
+  cleaned = cleaned.replace(/[^a-z0-9\s-]/g, '');
+  
+  return cleaned
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 64);
+}
+
+function cleanTitle(raw: string): string {
+  if (!raw || !raw.trim()) return "Untitled";
+  
+  let cleaned = raw
+    .replace(/^([├└│\s\-]+)?\s*/, "")
+    .trim();
+  
+  cleaned = cleaned.replace(/\s*\(w:\s*-?\d+\)\s*$/, "").trim();
+  cleaned = cleaned.replace(/[\.:]$/, "").trim();
+  
+  return cleaned || "Untitled";
+}
+
+// Semantische Analyse (vereinfacht)
+function detectSemantics(title: string): { kind?: string; tags: string[] } {
+  const tags = new Set<string>();
+  let kind: string | undefined;
+  
+  const firstChar = title.charAt(0);
+  if (config.emojiKindMap[firstChar]) {
+    kind = config.emojiKindMap[firstChar];
+    tags.add(kind);
+  }
+  
+  return { kind, tags: Array.from(tags) };
+}
+
+function detectFormat(content: string): "rules" | "tree" | "mixed" | "unknown" {
+  const lines = content.split('\n');
+  const hasRulesBlock = content.includes('```rules');
+  
+  let treeLineCount = 0;
+  let totalLines = 0;
+  
+  for (const line of lines) {
+    if (line.trim()) {
+      totalLines++;
+      if ((line.match(/[├└│]/) && (line.includes('──') || line.includes('--'))) || 
+          line.match(/^[├└][─-]/)) {
+        treeLineCount++;
+      }
+    }
+  }
+  
+  const treeRatio = totalLines > 0 ? treeLineCount / totalLines : 0;
+  
+  if (hasRulesBlock && treeRatio > 0.3) return "mixed";
+  if (hasRulesBlock) return "rules";
+  if (treeRatio > 0.3) return "tree";
+  
+  return "unknown";
+}
+
+// KOMPLETT ÜBERARBEITETE Baum-Parsing Funktion
+function parseTreeStructure(content: string, filename: string): ParseResult {
+  const startTime = Date.now();
+  const lines = content.split(/\r?\n/);
+  const result: NodeLine[] = [];
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  
+  const stack: Array<{ depth: number; id: string; path: string[]; childrenCount: number }> = [];
+  const childrenMap = new Map<string, number>();
+  const idMap = new Map<string, number>();
+  
+  let totalLines = 0;
+  let parsedLines = 0;
+  let skippedLines = 0;
+  let maxDepthFound = 0;
+  let inFence = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    totalLines++;
+    
+    // Code-Fence Handling
+    if (line.trim().startsWith("```")) {
+      inFence = !inFence;
+      skippedLines++;
+      continue;
+    }
+    if (inFence) {
+      skippedLines++;
+      continue;
+    }
+    
+    if (!line.trim()) {
+      skippedLines++;
+      continue;
+    }
+    
+    // Überspringe Markdown-Header
+    if (line.match(/^#+\s/)) {
+      skippedLines++;
+      continue;
+    }
+    
+    try {
+      // VERBESSERTE Tiefen-Berechnung: Finde Position des ersten Branch-Tokens
+      let depth = 0;
+      let branchPosition = -1;
+      let branchToken = "";
+      
+      // Finde das erste Branch-Token in der Zeile
+      for (const token of config.branchTokens) {
+        const pos = line.indexOf(token);
+        if (pos >= 0 && (branchPosition === -1 || pos < branchPosition)) {
+          branchPosition = pos;
+          branchToken = token;
+        }
+      }
+      
+      if (branchPosition === -1) {
+        // Kein Branch-Token gefunden
+        skippedLines++;
+        continue;
+      }
+      
+      // Tiefe basierend auf Position berechnen
+      depth = Math.floor(branchPosition / config.indentSize);
+      
+      // Titel extrahieren
+      const titleStart = branchPosition + branchToken.length;
+      const rawTitle = line.substring(titleStart).trim();
+      
+      if (!rawTitle) {
+        warnings.push(`Zeile ${i + 1}: Leerer Titel`);
+        skippedLines++;
+        continue;
+      }
+      
+      const title = cleanTitle(rawTitle);
+      const slug = toAsciiSafe(title);
+      parsedLines++;
+      
+      // Parent aus Stack finden - VERBESSERTE LOGIK
+      let parentInfo = null;
+      
+      if (depth > 0) {
+        // Suche Parent mit Tiefe = depth - 1
+        for (let j = stack.length - 1; j >= 0; j--) {
+          if (stack[j].depth === depth - 1) {
+            parentInfo = stack[j];
+            break;
+          }
+        }
+        
+        // Fallback: Wenn kein exakter Parent, suche den letzten mit kleinerer Tiefe
+        if (!parentInfo) {
+          for (let j = stack.length - 1; j >= 0; j--) {
+            if (stack[j].depth < depth) {
+              parentInfo = stack[j];
+              warnings.push(`Zeile ${i + 1}: Kein direkter Parent gefunden (Tiefe ${depth}), verwende ${parentInfo.depth}`);
+              break;
+            }
+          }
+        }
+      }
+      
+      // Pfad und ID erstellen
+      const parentPath = parentInfo ? parentInfo.path : [];
+      const nodePath = [...parentPath, slug];
+      const id = nodePath.join('/');
+      
+      // Order berechnen
+      const parentId = parentInfo ? parentInfo.id : null;
+      let order = 0;
+      
+      if (parentInfo) {
+        order = parentInfo.childrenCount;
+        parentInfo.childrenCount++;
+      } else {
+        order = childrenMap.get('root') || 0;
+        childrenMap.set('root', order + 1);
+      }
+      
+      // Duplikats-Prüfung
+      const existingCount = idMap.get(id) || 0;
+      const finalId = existingCount > 0 ? `${id}-${existingCount}` : id;
+      idMap.set(id, existingCount + 1);
+      
+      // Semantische Analyse
+      const semantics = detectSemantics(title);
+      
+      // Node erstellen
+      const node: NodeLine = {
+        id: finalId,
+        parent_id: parentId,
+        title,
+        order,
+        depth: parentInfo ? parentInfo.depth + 1 : 0,
+        path: nodePath,
+        ...(semantics.kind && { kind: semantics.kind }),
+        ...(semantics.tags.length > 0 && { tags: semantics.tags }),
+        meta: {
+          source: filename,
+          lineNumber: i + 1,
+          branchPosition,
+          depthCalculated: depth
+        }
+      };
+      
+      result.push(node);
+      maxDepthFound = Math.max(maxDepthFound, node.depth);
+      
+      // Stack aktualisieren - VERBESSERTE LOGIK
+      const stackItem = { 
+        depth: node.depth, 
+        id: finalId, 
+        path: nodePath,
+        childrenCount: 0
+      };
+      
+      // Stack bereinigen: entferne alle mit gleicher oder größerer Tiefe
+      const newStack: typeof stack = [];
+      for (const item of stack) {
+        if (item.depth < node.depth) {
+          newStack.push(item);
+        }
+      }
+      newStack.push(stackItem);
+      stack.length = 0;
+      stack.push(...newStack);
+      
+    } catch (error) {
+      const errorLine = line.trim().slice(0, 60);
+      errors.push(`Zeile ${i + 1} ("${errorLine}..."): ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  
+  // Statistik berechnen
+  const hierarchyLevels = new Set(result.map(n => n.depth)).size;
+  const duplicateCount = Array.from(idMap.values()).filter(count => count > 1).length;
+  
+  return {
+    success: errors.length === 0 && result.length > 0,
+    nodes: result,
+    errors,
+    warnings,
+    format: "tree",
+    stats: {
+      totalLines,
+      parsedLines,
+      skippedLines,
+      duplicateIds: duplicateCount,
+      maxDepth: maxDepthFound,
+      hierarchyLevels,
+      processingTime: Date.now() - startTime
+    }
+  };
+}
+
+// Test-Funktion für spezifische Datei-Analyse
+function analyzeFileStructure(filePath: string): void {
+  console.log(`\n🔬 DETAILANALYSE: ${path.basename(filePath)}`);
+  
+  try {
+    const content = fs.readFileSync(filePath, 'utf8');
+    const lines = content.split(/\r?\n/);
+    
+    let treeLines = 0;
+    let maxIndent = 0;
+    
+    for (let i = 0; i < Math.min(lines.length, 50); i++) {
+      const line = lines[i];
+      if (line.trim() && !line.startsWith('#') && !line.startsWith('```')) {
+        // Finde Branch-Token Position
+        let branchPos = -1;
+        for (const token of config.branchTokens) {
+          const pos = line.indexOf(token);
+          if (pos >= 0) {
+            branchPos = pos;
+            break;
+          }
+        }
+        
+        if (branchPos >= 0) {
+          treeLines++;
+          const depth = Math.floor(branchPos / config.indentSize);
+          maxIndent = Math.max(maxIndent, branchPos);
+          
+          const title = line.substring(branchPos + 2).trim().substring(0, 30);
+          console.log(`   Zeile ${i + 1}: Tiefe ${depth} (Pos: ${branchPos}) - "${title}..."`);
+        }
+      }
+    }
+    
+    console.log(`   📊 Erste 50 Zeilen: ${treeLines} Baum-Zeilen, Max. Einrückung: ${maxIndent} Zeichen`);
+    
+  } catch (error) {
+    console.log(`   ❌ Analyse fehlgeschlagen: ${error}`);
+  }
+}
+
+// Hilfsfunktionen für Ausgabe
+function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(2)}s`;
+}
+
+function printHierarchySummary(nodes: NodeLine[]): void {
+  const depthCount: { [key: number]: number } = {};
+  const parentCount: { [key: string]: number } = {};
+  
+  nodes.forEach(node => {
+    depthCount[node.depth] = (depthCount[node.depth] || 0) + 1;
+    if (node.parent_id) {
+      parentCount[node.parent_id] = (parentCount[node.parent_id] || 0) + 1;
+    }
+  });
+  
+  console.log("📊 Hierarchie-Übersicht:");
+  Object.keys(depthCount).sort((a, b) => parseInt(a) - parseInt(b)).forEach(depth => {
+    console.log(`   Tiefe ${depth}: ${depthCount[parseInt(depth)]} Knoten`);
+  });
+  
+  const topParents = Object.entries(parentCount)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 5);
+  
+  if (topParents.length > 0) {
+    console.log("🏆 Top Elternknoten:");
+    topParents.forEach(([parentId, count]) => {
+      const parentNode = nodes.find(n => n.id === parentId);
+      const title = parentNode ? parentNode.title : parentId;
+      console.log(`   ${title}: ${count} Kinder`);
+    });
+  }
+}
+
+// Hauptfunktion mit erweiterter Analyse
+function main(): void {
+  const args = process.argv.slice(2);
+  const verbose = args.includes('--verbose') || args.includes('-v');
+  const pretty = args.includes('--pretty');
+  const debug = args.includes('--debug');
+  const analyze = args.includes('--analyze');
+  const outputDir = args.find(arg => arg.startsWith('--output='))?.split('=')[1] || config.outputDir;
+  
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+  
+  const baseDir = process.cwd();
+  const mdFiles = fs.readdirSync(baseDir)
+    .filter(f => {
+      const isMd = f.toLowerCase().endsWith('.md');
+      const isInOutputDir = f.toLowerCase().includes(outputDir.toLowerCase());
+      return isMd && !isInOutputDir;
+    })
+    .map(f => path.join(baseDir, f));
+  
+  if (mdFiles.length === 0) {
+    console.log("❌ Keine .md-Dateien gefunden");
+    return;
+  }
+  
+  console.log("🚀 ASCII-TREE PARSER - Version " + config.version);
+  if (debug) console.log("🐛 Debug-Modus aktiviert");
+  if (analyze) console.log("🔬 Analyse-Modus aktiviert");
+  console.log("=".repeat(50));
+  console.log(`📁 Arbeitsverzeichnis: ${baseDir}`);
+  console.log(`📂 Ausgabeverzeichnis: ${outputDir}`);
+  console.log(`📄 Gefundene Dateien: ${mdFiles.length}`);
+  console.log("=".repeat(50));
+  
+  // Datei-Struktur analysieren wenn gewünscht
+  if (analyze) {
+    console.log("\n🔍 DATEI-STRUKTUR ANALYSE:");
+    mdFiles.forEach(filePath => {
+      analyzeFileStructure(filePath);
+    });
+    console.log("\n" + "=".repeat(50));
+  }
+  
+  const allReports: FileReport[] = [];
+  let totalNodes = 0;
+  let totalWarnings = 0;
+  let totalErrors = 0;
+  let totalProcessingTime = 0;
+  let skippedFiles = 0;
+  
+  for (const filePath of mdFiles) {
+    try {
+      const filename = path.basename(filePath);
+      
+      const content = fs.readFileSync(filePath, 'utf8');
+      const format = detectFormat(content);
+      
+      if (format === "rules") {
+        console.log(`⚙️  Überspringe: ${filename} (nur Regeln)`);
+        skippedFiles++;
+        continue;
+      }
+      
+      console.log(`\n🔍 Verarbeite: ${filename} (${format})`);
+      
+      const result = parseTreeStructure(content, filename);
+      result.format = format;
+      
+      if (result.nodes.length > 0) {
+        const outputPath = path.join(outputDir, filename.replace(/\.md$/i, '.jsonl'));
+        
+        let outputContent: string;
+        if (pretty) {
+          outputContent = JSON.stringify(result.nodes, null, 2);
+        } else {
+          outputContent = result.nodes.map(n => JSON.stringify(n)).join('\n');
+        }
+        
+        fs.writeFileSync(outputPath, outputContent, 'utf8');
+        
+        console.log(`✅ ${result.nodes.length} Knoten → ${path.basename(outputPath)}`);
+        console.log(`   ⏱️  ${formatDuration(result.stats.processingTime)}`);
+        console.log(`   📈 Tiefe: ${result.stats.maxDepth}, Ebenen: ${result.stats.hierarchyLevels}`);
+        
+        if (result.stats.duplicateIds > 0) {
+          console.log(`   ⚠️  ${result.stats.duplicateIds} Duplikate bereinigt`);
+        }
+        
+        // Warnung bei flachen Hierarchien
+        if (result.stats.maxDepth <= 1 && result.nodes.length > 10) {
+          console.log(`   🚨 PROBLEM: Flache Hierarchie - Einrückung wird nicht erkannt!`);
+          if (debug) {
+            console.log(`   🔍 Struktur-Beispiel:`);
+            const sampleNodes = result.nodes.slice(0, 5);
+            sampleNodes.forEach(node => {
+              const meta = node.meta as any;
+              console.log(`      - "${node.title}" (Tiefe: ${node.depth}, BranchPos: ${meta.branchPosition})`);
+            });
+          }
+        }
+        
+        totalNodes += result.nodes.length;
+        totalProcessingTime += result.stats.processingTime;
+      } else {
+        console.log(`❌ Keine Knoten gefunden in ${filename}`);
+      }
+      
+      totalWarnings += result.warnings.length;
+      totalErrors += result.errors.length;
+      
+      allReports.push({ filename, result, outputPath: path.join(outputDir, filename.replace(/\.md$/i, '.jsonl')) });
+      
+    } catch (error) {
+      console.log(`💥 Fehler bei ${path.basename(filePath)}: ${error instanceof Error ? error.message : String(error)}`);
+      totalErrors++;
+    }
+  }
+  
+  // Zusammenfassung
+  console.log("\n" + "=".repeat(50));
+  console.log("📊 ZUSAMMENFASSUNG");
+  console.log("=".repeat(50));
+  
+  const processedFiles = allReports.length;
+  console.log(`✅ ${processedFiles}/${mdFiles.length} Dateien verarbeitet`);
+  if (skippedFiles > 0) {
+    console.log(`⏭️  ${skippedFiles} Dateien übersprungen`);
+  }
+  console.log(`📦 ${totalNodes} Knoten exportiert`);
+  console.log(`⏱️  Gesamtzeit: ${formatDuration(totalProcessingTime)}`);
+  console.log(`⚠️  ${totalWarnings} Warnungen`);
+  console.log(`❌ ${totalErrors} Fehler`);
+  
+  if (allReports.length > 0) {
+    const allNodes = allReports.flatMap(report => report.result.nodes);
+    const flatFiles = allReports.filter(report => report.result.stats.maxDepth <= 1 && report.result.nodes.length > 10);
+    
+    console.log(`\n📋 HIERARCHIE-STATUS:`);
+    console.log(`   🏗️  Tiefe Strukturen: ${allReports.length - flatFiles.length} Dateien`);
+    console.log(`   📄 Flache Strukturen: ${flatFiles.length} Dateien`);
+    
+    if (flatFiles.length > 0) {
+      console.log(`   📝 Flache Dateien: ${flatFiles.map(f => f.filename).join(', ')}`);
+    }
+    
+    printHierarchySummary(allNodes);
+  }
+  
+  // Logfile
+  const logPath = path.join(outputDir, "parser-log.json");
+  const logData = {
+    version: config.version,
+    timestamp: new Date().toISOString(),
+    config: {
+      indentSize: config.indentSize,
+      branchTokens: config.branchTokens
+    },
+    summary: {
+      processedFiles,
+      totalFiles: mdFiles.length,
+      skippedFiles,
+      totalNodes,
+      totalWarnings,
+      totalErrors,
+      totalProcessingTime
+    },
+    files: allReports.map(report => ({
+      filename: report.filename,
+      format: report.result.format,
+      nodes: report.result.nodes.length,
+      maxDepth: report.result.stats.maxDepth,
+      errors: report.result.errors.length,
+      warnings: report.result.warnings.length
+    }))
+  };
+  
+  fs.writeFileSync(logPath, JSON.stringify(logData, null, 2), 'utf8');
+  console.log(`\n📝 Logfile: ${logPath}`);
+  
+  console.log("\n🎉 Verarbeitung abgeschlossen!");
+  console.log(`💡 Tipps für Probleme:`);
+  console.log(`   --analyze : Zeigt Datei-Struktur-Analyse`);
+  console.log(`   --debug   : Zeigt Debug-Informationen`);
+  console.log(`   --verbose : Zeigt alle Warnungen/Fehler`);
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  parseTreeStructure,
+  analyzeFileStructure,
+  config
+};

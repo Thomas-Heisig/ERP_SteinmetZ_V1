@@ -1,0 +1,139 @@
+.dashboard-topbar { display: flex; justify-content: space-between; padding: 0.5rem 1rem; background: var(--bg-surface); }
+.topbar-categories   { display: flex; gap: 0.25rem; overflow-x: auto; }
+.topbar-category-btn { background: transparent; border: none; padding: 0.4rem 0.8rem; border-radius: var(--border-radius); cursor: pointer; }
+.topbar-category-btn.active { background: var(--color-primary); color: #fff; }
+.cat-icon   { margin-right: 0.3rem; }
+.topbar-search { display: flex; align-items: center; gap: 0.5rem; }
+.search-filter, .search-input { padding: 0.3rem 0.5rem; border: 1px solid var(--color-muted); border-radius: var(--border-radius); }
+.search-spinner { font-size: 1.2rem; }
+/* Fehlermeldungs‑Overlay */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--bg-surface);
+  border-radius: var(--border-radius);
+  text-align: center;
+  color: var(--text-primary);
+  max-width: 560px;
+  margin: 2rem auto;
+}
+
+/* Titel des Fehlers (groß, fett) */
+.error-title {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: var(--color-error);
+}
+
+/* Fehlermeldungs‑Text – in einem pre‑Block für Zeilen‑Erhalt */
+.error-message {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #fef2f2;           /* leichtes Rot‑Hintergrund‑Tint */
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1.5rem;
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Retry‑Button */
+.retry-btn {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+.retry-btn:hover,
+.retry-btn:focus {
+  background: #0041c4;   /* dunklere Variante */
+}
+/* -----------------------------------------------------------------
+   LoadingScreen – zentrales Layout
+   ----------------------------------------------------------------- */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border-radius: var(--border-radius);
+}
+
+/* animierter Kreis‑Spinner */
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--color-muted);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin-bottom: 1rem;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Text unterhalb des Spinners */
+.loading-message {
+  font-size: 1.1rem;
+  opacity: 0.85;
+}
+/* -----------------------------------------------------------------
+   LoadingScreen – Grundlayout
+   ----------------------------------------------------------------- */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border-radius: var(--border-radius);
+}
+
+/* animierter Kreis‑Spinner */
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid var(--color-muted);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin-bottom: 1rem;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Hinweis‑Text */
+.loading-message {
+  font-size: 1.1rem;
+  opacity: 0.85;
+}
+
+.fc-root {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 480px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.fc-right-column {
+  display: flex;
+  flex-direction: column;
+}

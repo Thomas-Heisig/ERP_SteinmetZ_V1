@@ -1,0 +1,94 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(zeig|zeige|zeigen|an|anzeigen|zeig\\s+mir|zeige\\s+mir)\\s+(.*)",
+      "replies": [
+        "Ich zeige Ihnen gerne $2.",
+        "Gerne, ich rufe die Informationen zu $2 für Sie ab."
+      ],
+      "action": "show_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(such|suche|suchen|finde|finden)\\s+(.*)",
+      "replies": [
+        "Ich suche nach $2 für Sie.",
+        "Lassen Sie mich nach $2 suchen..."
+      ],
+      "action": "search_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(erstelle|erstellen|anlegen|neu)\\s+(.*)",
+      "replies": [
+        "Ich erstelle $2 für Sie.",
+        "Das neue $2 wird angelegt."
+      ],
+      "action": "create_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(änder|ändere|ändern|aktualisiere|aktualisieren)\\s+(.*)",
+      "replies": [
+        "Ich ändere $2 entsprechend Ihrer Vorgaben.",
+        "$2 wird aktualisiert."
+      ],
+      "action": "update_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(lösche|löschen|entferne|entfernen)\\s+(.*)",
+      "replies": [
+        "Ich lösche $2. Sind Sie sicher?",
+        "$2 wird entfernt. Bestätigen Sie bitte."
+      ],
+      "action": "delete_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(importier|importiere|importieren)\\s+(.*)",
+      "replies": [
+        "Ich importiere $2 in das System.",
+        "$2 wird jetzt importiert."
+      ],
+      "action": "import_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(exportier|exportiere|exportieren)\\s+(.*)",
+      "replies": [
+        "Ich exportiere $2.",
+        "$2 wird als Datei bereitgestellt."
+      ],
+      "action": "export_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(filter|filtrier|filtern|filtere)\\s+(.*)",
+      "replies": [
+        "Ich filtere die Daten nach $2.",
+        "Filter $2 wird angewendet."
+      ],
+      "action": "filter_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(sortier|sortiere|sortieren)\\s+(.*)",
+      "replies": [
+        "Ich sortiere die Daten nach $2.",
+        "$2 wird sortiert dargestellt."
+      ],
+      "action": "sort_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(prüfe|überprüfe|validiere|validieren)\\s+(.*)",
+      "replies": [
+        "Ich überprüfe $2 auf Fehler oder Unstimmigkeiten.",
+        "$2 wird validiert."
+      ],
+      "action": "validate_data",
+      "params": ["$2"]
+    }
+  ]
+}

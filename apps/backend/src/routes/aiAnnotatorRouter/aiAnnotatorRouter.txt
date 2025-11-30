@@ -1,0 +1,943 @@
+// SPDX-License-Identifier: MIT  
+// apps/backend/src/routes/aiAnnotatorRouter/aiAnnotatorRouter.ts
+
+import { Router, Request, Response } from "express";
+import aiAnnotatorService, {
+  BatchOperation,
+  NodeForAnnotation,
+  GeneratedMeta,
+  DashboardRule,
+  FormSpec,
+  DatabaseTool
+} from "../../services/aiAnnotatorService.js";
+
+const router = Router();
+const databaseTool = DatabaseTool.getInstance();
+
+/** --------- Erweiterte Hilfsfunktionen --------- */
+function toStringArray(v: unknown): string[] | undefined {
+  if (typeof v === "string") return [v];
+  if (Array.isArray(v)) return (v as unknown[]).filter((x): x is string => typeof x === "string");
+  if (v && typeof v === "object") {
+    const values = Object.values(v as Record<string, unknown>);
+    const flat = values.flatMap(x => (typeof x === "string" ? [x] : []));
+    return flat.length ? flat : undefined;
+  }
+  return undefined;
+}
+
+function toBool(v: unknown, def = false): boolean {
+  if (typeof v === "boolean") return v;
+  if (typeof v === "string") {
+    const s = v.trim().toLowerCase();
+    return s === "true" || s === "1" || s === "yes" || s === "on";
+  }
+  return def;
+}
+
+function toInt(v: unknown, def: number): number {
+  if (typeof v === "number") return v;
+  const n = typeof v === "string" ? parseInt(v, 10) : NaN;
+  return Number.isFinite(n) ? n : def;
+}
+
+function toArray<T>(v: unknown, validator: (x: any) => x is T): T[] {
+  if (Array.isArray(v)) return v.filter(validator);
+  if (typeof v === "string") {
+    try {
+      const parsed = JSON.parse(v);
+      return Array.isArray(parsed) ? parsed.filter(validator) : [];
+    } catch {
+      return v.split(',').map(x => x.trim()).filter(x => x.length > 0) as T[];
+    }
+  }
+  return [];
+}
+
+/** Erweiterte Query-Parameter Typen */
+type NodesQuery = {
+  kinds?: string | string[];
+  missingOnly?: string;
+  limit?: string;
+  offset?: string;
+  search?: string;
+  status?: string | string[];
+  businessArea?: string | string[];
+  complexity?: string | string[];
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+};
+
+// ============ SYSTEM STATUS & HEALTH ============
+
+router.get("/status", async (_req: Request, res: Response) => {
+  try {
+    const status = await aiAnnotatorService.getStatus();
+    res.json({ success: true, data: status });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+router.get("/health", async (_req: Request, res: Response) => {
+  try {
+    const health = await aiAnnotatorService.getSystemHealth();
+    res.json({ success: true, data: health });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+router.get("/validate", async (_req: Request, res: Response) => {
+  try {
+    const result = await aiAnnotatorService.validateConfig();
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+// ============ DATABASE TOOL ENDPOINTS ============
+
+router.get("/database/stats", async (_req: Request, res: Response) => {
+  try {
+    const stats = await databaseTool.getNodeStatistics();
+    res.json({ success: true, data: stats });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+router.get("/database/batches", async (req: Request, res: Response) => {
+  try {
+    const limit = toInt(req.query.limit, 50);
+    const batches = await databaseTool.getBatchOperations(limit);
+    
+    res.json({
+      success: true,
+      data: batches,
+      pagination: { limit, total: batches.length }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+router.delete("/database/batches/cleanup", async (req: Request, res: Response) => {
+  if (process.env.NODE_ENV === "production" && req.query.force !== "true") {
+    return res.status(403).json({ 
+      success: false, 
+      error: "Cleanup in Production erfordert force=true" 
+    });
+  }
+  
+  try {
+    const daysToKeep = toInt(req.query.days, 30);
+    await databaseTool.cleanupOldBatches(daysToKeep);
+    
+    res.json({ 
+      success: true, 
+      message: `Alte Batch-Jobs älter als ${daysToKeep} Tage wurden bereinigt` 
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+// ============ ERWEITERTE NODE MANAGEMENT ============
+
+router.get("/nodes", async (req: Request<{}, any, any, NodesQuery>, res: Response) => {
+  try {
+    const kinds = toStringArray(req.query.kinds);
+    const missingOnly = toBool(req.query.missingOnly, false);
+    const limit = toInt(req.query.limit, 50);
+    const offset = toInt(req.query.offset, 0);
+    const search = typeof req.query.search === "string" ? req.query.search : undefined;
+    const status = toStringArray(req.query.status);
+    const businessArea = toStringArray(req.query.businessArea);
+    const complexity = toStringArray(req.query.complexity);
+    const sortBy = req.query.sortBy || "created_at";
+    const sortOrder = req.query.sortOrder === "asc" ? "asc" : "desc";
+
+    const nodes = await aiAnnotatorService.listCandidates({
+      kinds,
+      missingOnly,
+      limit,
+      offset,
+      search,
+      status,
+      businessArea,
+      complexity
+    });
+
+    // Sortierung (falls benötigt)
+    if (sortBy) {
+      nodes.sort((a, b) => {
+        let aVal = a[sortBy as keyof NodeForAnnotation];
+        let bVal = b[sortBy as keyof NodeForAnnotation];
+        
+        if (sortBy === 'created_at' || sortBy === 'updated_at') {
+          aVal = aVal || '1970-01-01';
+          bVal = bVal || '1970-01-01';
+        }
+        
+        if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    res.json({
+      success: true,
+      data: { nodes },
+      pagination: { limit, offset, total: nodes.length },
+      filters: { kinds, status, businessArea, complexity }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
+router.get("/nodes/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    const nodes = await aiAnnotatorService.listCandidates({ 
+      limit: 1,
+      search: id 
+    });
+    
+    const node = nodes.find((n) => n.id === id);
+    if (!node) {
+      return res.status(404).json({ 
+        success: false, 
+        error: `Knoten ${id} nicht gefunden` 
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      data: { node } 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+router.post("/nodes/:id/validate", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    const nodes = await aiAnnotatorService.listCandidates({ 
+      limit: 1,
+      search: id 
+    });
+    
+    const node = nodes.find((n) => n.id === id);
+    if (!node) {
+      return res.status(404).json({ 
+        success: false, 
+        error: `Knoten ${id} nicht gefunden` 
+      });
+    }
+
+    const validation = await aiAnnotatorService.validateNode(node);
+    
+    res.json({ 
+      success: true, 
+      data: { node, validation } 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+// ============ SINGLE OPERATIONS MIT ERROR CORRECTION ============
+// ============ SINGLE OPERATIONS MIT ERROR CORRECTION ============
+
+/**
+ * 1️⃣ Metadaten-Generierung
+ */
+router.post("/nodes/:id/generate-meta", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
+    const node = nodes.find(n => n.id === id);
+
+    if (!node) {
+      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+    }
+
+    const meta = await aiAnnotatorService.generateMeta(node);
+    await aiAnnotatorService.saveMeta(id, meta);
+
+    res.json({
+      success: true,
+      message: "Metadaten erfolgreich generiert und gespeichert.",
+      data: { node, meta }
+    });
+  } catch (error: any) {
+    console.error("❌ Fehler bei generate-meta:", error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unbekannter Fehler",
+      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+    });
+  }
+});
+
+/**
+ * 2️⃣ Regel-Generierung
+ */
+router.post("/nodes/:id/generate-rule", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { enhanced = true } = req.body;
+
+    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
+    const node = nodes.find(n => n.id === id);
+
+    if (!node) {
+      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+    }
+
+    const rule = await aiAnnotatorService.generateRule(node, enhanced ? 0 : 1);
+    await aiAnnotatorService.saveRule(id, rule);
+
+    res.json({
+      success: true,
+      message: "Regel erfolgreich generiert und gespeichert.",
+      data: { node, rule }
+    });
+  } catch (error: any) {
+    console.error("❌ Fehler bei generate-rule:", error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unbekannter Fehler",
+      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+    });
+  }
+});
+
+/**
+ * 3️⃣ Formular-Generierung
+ */
+router.post("/nodes/:id/generate-form", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
+    const node = nodes.find(n => n.id === id);
+
+    if (!node) {
+      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+    }
+
+    const formSpec = await aiAnnotatorService.generateFormSpec(node);
+    await aiAnnotatorService.saveFormSpec(id, formSpec);
+
+    res.json({
+      success: true,
+      message: "Formular erfolgreich generiert und gespeichert.",
+      data: { node, formSpec }
+    });
+  } catch (error: any) {
+    console.error("❌ Fehler bei generate-form:", error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unbekannter Fehler",
+      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+    });
+  }
+});
+
+/**
+ * 4️⃣ Schema-Erweiterung
+ */
+router.post("/nodes/:id/enhance-schema", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { depth = "basic" } = req.body;
+
+    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
+    const node = nodes.find(n => n.id === id);
+
+    if (!node) {
+      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+    }
+
+    const enhancedSchema = await aiAnnotatorService.enhanceSchema(node);
+
+    res.json({
+      success: true,
+      message: `Schema (${depth}) erfolgreich erweitert.`,
+      data: { node, enhancedSchema }
+    });
+  } catch (error: any) {
+    console.error("❌ Fehler bei enhance-schema:", error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unbekannter Fehler",
+      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+    });
+  }
+});
+
+/**
+ * 5️⃣ Vollständige Annotation (Meta + Regel + Formular + optional Validation)
+ */
+router.post("/nodes/:id/full-annotation", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { includeValidation = true, parallel = true } = req.body;
+
+    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
+    const node = nodes.find(n => n.id === id);
+
+    if (!node) {
+      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+    }
+
+    let meta: any, rule: any, form: any, validation: any = null;
+
+    if (parallel) {
+      [meta, rule, form, validation] = await Promise.all([
+        aiAnnotatorService.generateMeta(node),
+        aiAnnotatorService.generateRule(node),
+        aiAnnotatorService.generateFormSpec(node),
+        includeValidation ? aiAnnotatorService.validateNode(node) : Promise.resolve(null)
+      ]);
+    } else {
+      meta = await aiAnnotatorService.generateMeta(node);
+      rule = await aiAnnotatorService.generateRule(node);
+      form = await aiAnnotatorService.generateFormSpec(node);
+      validation = includeValidation ? await aiAnnotatorService.validateNode(node) : null;
+    }
+
+    if (meta) await aiAnnotatorService.saveMeta(id, { ...meta, rule });
+    if (form) await aiAnnotatorService.saveFormSpec(id, form);
+
+    res.json({
+      success: true,
+      message: "Vollständige Annotation erfolgreich generiert.",
+      data: { node, meta, rule, form, validation }
+    });
+  } catch (error: any) {
+    console.error("❌ Fehler bei full-annotation:", error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unbekannter Fehler",
+      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+    });
+  }
+});
+
+
+
+// ============ ERWEITERTE BATCH OPERATIONS ============
+
+router.post("/batch", async (req: Request, res: Response) => {
+  try {
+    const operation: BatchOperation = req.body;
+    
+    if (!operation.operation || !operation.filters) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Operation und Filters sind erforderlich" 
+      });
+    }
+    
+    // Setze Default-Optionen
+    operation.options = {
+      retryFailed: true,
+      maxRetries: 3,
+      chunkSize: 10,
+      parallelRequests: 2,
+      modelPreference: "balanced",
+      ...operation.options
+    };
+    
+    const result = await aiAnnotatorService.executeBatchOperation(operation);
+    
+    res.json({ 
+      success: true, 
+      data: result 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+router.get("/batch/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const batches = await databaseTool.getBatchOperations(100);
+    const batch = batches.find(b => b.id === id);
+    
+    if (!batch) {
+      return res.status(404).json({
+        success: false,
+        error: `Batch ${id} nicht gefunden`
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: batch
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+router.post("/batch/:id/cancel", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    // In einer realen Implementierung würde hier die Batch-Verarbeitung abgebrochen
+    await databaseTool.updateBatchProgress(id, 0, 'cancelled');
+    
+    res.json({
+      success: true,
+      message: `Batch ${id} wurde abgebrochen`
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+router.post("/classify-pii", async (req: Request, res: Response) => {
+  try {
+    const { nodeIds, detailed = false } = req.body;
+    
+    if (!Array.isArray(nodeIds)) {
+      return res.status(400).json({
+        success: false,
+        error: "nodeIds muss ein Array sein"
+      });
+    }
+
+    const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
+    const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
+    
+    if (nodes.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Keine Knoten gefunden"
+      });
+    }
+
+    const piiResults = await aiAnnotatorService.classifyPii(nodes);
+    
+    res.json({
+      success: true,
+      data: piiResults
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+// ============ VALIDATION & QUALITY ENDPOINTS ============
+
+router.post("/validate-batch", async (req: Request, res: Response) => {
+  try {
+    const { nodeIds, rules = [] } = req.body;
+    
+    if (!Array.isArray(nodeIds)) {
+      return res.status(400).json({
+        success: false,
+        error: "nodeIds muss ein Array sein"
+      });
+    }
+
+    const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
+    const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
+    
+    if (nodes.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Keine Knoten gefunden"
+      });
+    }
+
+    const validationResults = await Promise.all(
+      nodes.map(node => aiAnnotatorService.validateNode(node))
+    );
+    
+    const summary = {
+      total: validationResults.length,
+      valid: validationResults.filter(r => r.valid).length,
+      withErrors: validationResults.filter(r => r.errors.length > 0).length,
+      withWarnings: validationResults.filter(r => r.warnings.length > 0).length,
+      averageSuggestions: validationResults.reduce((sum, r) => sum + r.suggestions.length, 0) / validationResults.length
+    };
+    
+    res.json({
+      success: true,
+      data: {
+        summary,
+        results: validationResults.map((result, index) => ({
+          node: nodes[index],
+          validation: result
+        }))
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+router.get("/quality/report", async (req: Request, res: Response) => {
+  try {
+    const stats = await databaseTool.getNodeStatistics();
+    const batches = await databaseTool.getBatchOperations(50);
+    
+    const qualityReport = {
+      annotation: {
+        progress: stats.annotationProgress,
+        averageConfidence: stats.averageConfidence,
+        distribution: stats.byStatus
+      },
+      batches: {
+        total: batches.length,
+        completed: batches.filter(b => b.status === 'completed').length,
+        failed: batches.filter(b => b.status === 'failed').length,
+        recentSuccessRate: batches.slice(0, 10).filter(b => b.status === 'completed').length / 10
+      },
+      recommendations: [
+        stats.annotationProgress < 50 ? "Batch-Annotation für unvollständige Knoten ausführen" : null,
+        stats.averageConfidence < 0.7 ? "KI-Modell für bessere Konfidenz optimieren" : null,
+        batches.filter(b => b.status === 'failed').length > 5 ? "Fehlerhafte Batches analysieren und wiederholen" : null
+      ].filter(Boolean)
+    };
+    
+    res.json({
+      success: true,
+      data: qualityReport
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+// ============ DASHBOARD REGELN ============
+
+router.get("/rules", async (req: Request, res: Response) => {
+  try {
+    const { type, widget, includeNodes = true } = req.query;
+    
+    const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
+    const nodesWithRules = allNodes.filter(node => node.meta_json?.rule);
+    
+    // Filterung nach Typ/Widget
+    let filteredNodes = nodesWithRules;
+    if (type) {
+      filteredNodes = filteredNodes.filter(node => node.meta_json.rule.type === type);
+    }
+    if (widget) {
+      filteredNodes = filteredNodes.filter(node => node.meta_json.rule.widget === widget);
+    }
+    
+    // Gruppierung
+    const rulesByType: Record<string, NodeForAnnotation[]> = {};
+    const widgetsByType: Record<string, string[]> = {};
+    
+    filteredNodes.forEach(node => {
+      const ruleType = node.meta_json.rule.type;
+      const widget = node.meta_json.rule.widget;
+      
+      if (!rulesByType[ruleType]) {
+        rulesByType[ruleType] = [];
+      }
+      rulesByType[ruleType].push(node);
+      
+      if (widget) {
+        if (!widgetsByType[ruleType]) {
+          widgetsByType[ruleType] = [];
+        }
+        if (!widgetsByType[ruleType].includes(widget)) {
+          widgetsByType[ruleType].push(widget);
+        }
+      }
+    });
+    
+    res.json({
+      success: true,
+      data: {
+        total: filteredNodes.length,
+        byType: rulesByType,
+        widgets: widgetsByType,
+        nodes: includeNodes ? filteredNodes : undefined
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+// ============ ERROR CORRECTION CONFIG ============
+
+router.get("/error-correction/config", async (_req: Request, res: Response) => {
+  try {
+    // Hier könnte die aktuelle Error-Correction Konfiguration zurückgegeben werden
+    const status = await aiAnnotatorService.getStatus();
+    
+    res.json({
+      success: true,
+      data: status.errorCorrection
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+router.put("/error-correction/config", async (req: Request, res: Response) => {
+  if (process.env.NODE_ENV === "production") {
+    return res.status(403).json({ 
+      success: false, 
+      error: "Konfigurationsänderungen nicht in Production verfügbar" 
+    });
+  }
+  
+  try {
+    const config = req.body;
+    // In einer realen Implementierung würde hier die Konfiguration aktualisiert
+    console.log("Error correction config update:", config);
+    
+    res.json({
+      success: true,
+      message: "Konfiguration wurde aktualisiert (simuliert)",
+      data: config
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+// ============ TEST & DEBUG ============
+
+router.post("/debug/prompt", async (req: Request, res: Response) => {
+  if (process.env.NODE_ENV === "production") {
+    return res.status(403).json({ 
+      success: false, 
+      error: "Debug endpoints nicht in Production verfügbar" 
+    });
+  }
+  
+  try {
+    const { nodeId, promptType = "meta", options = {} } = req.body;
+    
+    const nodes = await aiAnnotatorService.listCandidates({ 
+      limit: 1,
+      search: nodeId 
+    });
+    
+    const node = nodes.find((n) => n.id === nodeId);
+    if (!node) {
+      return res.status(404).json({ 
+        success: false, 
+        error: `Knoten ${nodeId} nicht gefunden` 
+      });
+    }
+
+    let prompt: string;
+    switch (promptType) {
+      case "meta":
+        prompt = (aiAnnotatorService as any).buildEnhancedMetaPrompt(node);
+        break;
+      case "rule":
+        prompt = (aiAnnotatorService as any).buildRulePrompt(node);
+        break;
+      case "form":
+        prompt = (aiAnnotatorService as any).buildFormPrompt(node);
+        break;
+      case "simple":
+        prompt = (aiAnnotatorService as any).buildSimpleMetaPrompt(node);
+        break;
+      case "correction":
+        const mockMeta = { description: "Test", tags: [] };
+        const mockErrors = ["Description too short", "No tags provided"];
+        prompt = (aiAnnotatorService as any).buildCorrectionPrompt(node, mockMeta, mockErrors);
+        break;
+      default:
+        return res.status(400).json({ 
+          success: false, 
+          error: "Unbekannter Prompt-Typ" 
+        });
+    }
+    
+    res.json({ 
+      success: true, 
+      data: { node, prompt, length: prompt.length } 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Unknown error" 
+    });
+  }
+});
+
+router.post("/debug/ai-test", async (req: Request, res: Response) => {
+  if (process.env.NODE_ENV === "production") {
+    return res.status(403).json({
+      success: false,
+      error: "Debug endpoints sind in Production deaktiviert"
+    });
+  }
+
+  try {
+    const { prompt, model, provider } = req.body;
+
+    // ✅ Template Literal statt Escape-Wahnsinn
+    const testPrompt =
+      prompt ||
+      `Teste die AI-Verbindung. Antworte mit folgendem JSON:
+{
+  "status": "success",
+  "message": "Verbindung erfolgreich"
+}`;
+
+    // KI-Aufruf
+    const response = await (aiAnnotatorService as any).callAI(testPrompt, "debug");
+
+    // Sichere JSON-Auswertung
+    let parsed: any = null;
+    try {
+      parsed = JSON.parse(response);
+    } catch {
+      parsed = { raw: response };
+    }
+
+    res.json({
+      success: true,
+      data: {
+        prompt: testPrompt,
+        response,
+        parsed
+      }
+    });
+  } catch (error: any) {
+    console.error("❌ Fehler bei /debug/ai-test:", error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+    });
+  }
+});
+
+
+// ============ BATCH TEMPLATES ============
+
+router.get("/batch-templates", async (_req: Request, res: Response) => {
+  const templates = {
+    quick_annotation: {
+      name: "Schnelle Annotation",
+      description: "Schnelle Metadaten-Generierung für alle unannotierten Knoten",
+      operation: "generate_meta",
+      filters: { missingOnly: true },
+      options: {
+        chunkSize: 20,
+        parallelRequests: 3,
+        modelPreference: "fast"
+      }
+    },
+    full_annotation: {
+      name: "Vollständige Annotation", 
+      description: "Umfassende Annotation mit Metadaten, Regeln und Formularen",
+      operation: "full_annotation",
+      filters: { missingOnly: true },
+      options: {
+        chunkSize: 5,
+        parallelRequests: 2,
+        modelPreference: "accurate"
+      }
+    },
+    pii_scan: {
+      name: "PII Scan",
+      description: "PII-Klassifizierung für alle Knoten",
+      operation: "classify_pii", 
+      filters: {},
+      options: {
+        chunkSize: 50,
+        parallelRequests: 5,
+        modelPreference: "balanced"
+      }
+    },
+    quality_check: {
+      name: "Qualitätsprüfung",
+      description: "Validierung aller annotierten Knoten",
+      operation: "validate_nodes",
+      filters: {},
+      options: {
+        chunkSize: 25,
+        parallelRequests: 4
+      }
+    }
+  };
+  
+  res.json({
+    success: true,
+    data: templates
+  });
+});
+
+export default router;
+

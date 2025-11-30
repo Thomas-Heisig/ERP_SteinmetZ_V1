@@ -1,0 +1,19 @@
+/* SPDX-License-Identifier: MIT */
+/* Dark Theme Overrides */
+
+:root[data-theme="dark"] {
+  --fc-bg: #1f2937;
+  --fc-text: #f9fafb;
+  --fc-muted: #9ca3af;
+
+  --fc-border: #374151;
+  --fc-panel-bg: #111827;
+  --fc-sidebar-bg: #1f2937;
+  --fc-footer-bg: #111827;
+
+  --fc-badge-bg: #374151;
+  --fc-badge-text: #f9fafb;
+
+  --fc-code-bg: #1e1e1e;
+  --fc-code-text: #e5e7eb;
+}

@@ -1,0 +1,11 @@
+{
+  "system_version": "1.0",
+  "default_provider": "openai",
+  "default_model": "gpt-4o-mini",
+  "log_level": "info",
+  "max_parallel_requests": 3,
+  "cache_enabled": true,
+  "autosave_interval_min": 30,
+  "diagnostics_enabled": true,
+  "last_updated": "2025-11-04T00:46:35.013Z"
+}

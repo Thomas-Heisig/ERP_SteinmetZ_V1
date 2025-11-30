@@ -1,0 +1,924 @@
+/* ==================== LCARS THEME - STAR TREK STYLE ==================== */
+[data-theme="lcars"] {
+  /* Authentische LCARS Farbpalette */
+  --lcars-orange: #FF9E00;
+  --lcars-mustard: #CC9900;
+  --lcars-lavender: #AA99FF;
+  --lcars-blue: #6699CC;
+  --lcars-pink: #FF99CC;
+  --lcars-purple: #9966CC;
+  --lcars-dark-blue: #336699;
+  --lcars-dark-gray: #222222;
+  --lcars-black: #000000;
+  --lcars-white: #FFFFFF;
+  --lcars-beige: #F8F8F0;
+  
+  /* LCARS Design Tokens - KEINE abgerundeten Ecken */
+  --lcars-radius: 0;
+  --lcars-radius-lg: 0;
+  --lcars-radius-full: 0;
+  
+  /* LCARS Layout Variablen */
+  --lcars-bar-height: 40px;
+  --lcars-padding: 20px;
+  --lcars-margin: 15px;
+  
+  /* LCARS spezifische Variablen */
+  --surface: var(--lcars-black);
+  --surface-elevated: var(--lcars-dark-gray);
+  --border: var(--lcars-orange);
+  --text-primary: var(--lcars-beige);
+  --text-secondary: var(--lcars-lavender);
+  
+  /* Override der Standardvariablen */
+  --primary-50: var(--lcars-lavender);
+  --primary-500: var(--lcars-orange);
+  --primary-600: var(--lcars-mustard);
+  --primary-700: var(--lcars-mustard);
+  
+  --gray-50: var(--lcars-dark-gray);
+  --gray-900: var(--lcars-beige);
+  
+  --success-500: #00CC66;
+  --warning-500: var(--lcars-orange);
+  --error-500: #FF3366;
+  
+  /* LCARS Schatten */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* ==================== LCARS GLOBALE STYLES ==================== */
+[data-theme="lcars"] * {
+  border-radius: 0 !important;
+  font-family: 'LCD', 'Courier New', monospace;
+  letter-spacing: 1px;
+  box-sizing: border-box;
+}
+
+[data-theme="lcars"] body {
+  background-color: var(--lcars-black);
+  color: var(--lcars-beige);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* LCARS Typografie */
+[data-theme="lcars"] h1,
+[data-theme="lcars"] h2,
+[data-theme="lcars"] h3,
+[data-theme="lcars"] h4,
+[data-theme="lcars"] h5,
+[data-theme="lcars"] h6 {
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 var(--lcars-margin) 0;
+  font-family: 'LCD', 'Courier New', monospace;
+}
+
+[data-theme="lcars"] .dashboard-title {
+  font-size: 2.8rem;
+  font-weight: normal;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--lcars-beige);
+  margin: 0;
+  text-shadow: 2px 2px 0 var(--lcars-orange);
+}
+
+/* ==================== LCARS ANIMATIONEN ==================== */
+@keyframes lcars-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes lcars-scan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes lcars-glow {
+  0%, 100% { 
+    box-shadow: 
+      inset 0 0 10px var(--lcars-orange),
+      0 0 10px var(--lcars-orange);
+  }
+  50% { 
+    box-shadow: 
+      inset 0 0 20px var(--lcars-orange),
+      0 0 20px var(--lcars-orange);
+  }
+}
+
+@keyframes lcars-beep {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+}
+
+@keyframes lcars-data-flow {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+
+/* ==================== LCARS LAYOUT SYSTEM ==================== */
+[data-theme="lcars"] .dashboard-root {
+  min-height: 100vh;
+  background: 
+    linear-gradient(45deg, var(--lcars-black) 0%, #111111 100%);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* LCARS Rahmen um den gesamten Bildschirm */
+[data-theme="lcars"] .dashboard-root::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 4px solid var(--lcars-orange);
+  pointer-events: none;
+  z-index: 10000;
+}
+
+/* LCARS Haupt-Layout */
+[data-theme="lcars"] .dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 4px; /* Abstand zum Rahmen */
+}
+
+/* ==================== LCARS HEADER ==================== */
+[data-theme="lcars"] .dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--lcars-padding);
+  height: var(--lcars-bar-height);
+  background: linear-gradient(90deg, 
+    var(--lcars-dark-blue) 0%, 
+    var(--lcars-dark-blue) 30%,
+    var(--lcars-purple) 70%,
+    var(--lcars-purple) 100%);
+  border-bottom: 4px solid var(--lcars-orange);
+  position: relative;
+  overflow: hidden;
+}
+
+/* LCARS Header Scan-Line */
+[data-theme="lcars"] .dashboard-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--lcars-orange), 
+    transparent);
+  animation: lcars-scan 3s linear infinite;
+}
+
+[data-theme="lcars"] .header-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--lcars-margin);
+}
+
+[data-theme="lcars"] .subtitle {
+  font-size: 1.1rem;
+  color: var(--lcars-beige);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+[data-theme="lcars"] .rules-info {
+  font-size: 0.9rem;
+  color: var(--lcars-lavender);
+  text-transform: uppercase;
+}
+
+[data-theme="lcars"] .header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--lcars-margin);
+}
+
+/* ==================== LCARS STATUS DISPLAY ==================== */
+[data-theme="lcars"] .status-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 15px;
+  background: var(--lcars-dark-gray);
+  border: 2px solid var(--lcars-orange);
+  border-left: 10px solid var(--lcars-orange);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="lcars"] .status-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 158, 0, 0.3), 
+    transparent);
+  animation: lcars-data-flow 2s linear infinite;
+}
+
+[data-theme="lcars"] .status-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--lcars-orange);
+  animation: lcars-pulse 2s infinite;
+  position: relative;
+}
+
+[data-theme="lcars"] .status-text {
+  font-weight: normal;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+[data-theme="lcars"] .version-info {
+  font-size: 0.8rem;
+  color: var(--lcars-lavender);
+  padding: 2px 8px;
+  background: var(--lcars-dark-gray);
+  border: 1px solid var(--lcars-lavender);
+  text-transform: uppercase;
+}
+
+/* ==================== LCARS TIME DISPLAY ==================== */
+[data-theme="lcars"] .time-display {
+  text-align: right;
+  padding: 5px 15px;
+  background: var(--lcars-dark-gray);
+  border: 2px solid var(--lcars-lavender);
+  border-right: 10px solid var(--lcars-lavender);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="lcars"] .time-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(170, 153, 255, 0.3), 
+    transparent);
+  animation: lcars-data-flow 3s linear infinite;
+}
+
+[data-theme="lcars"] .time {
+  font-size: 1.3rem;
+  font-weight: normal;
+  color: var(--lcars-beige);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+}
+
+[data-theme="lcars"] .date {
+  font-size: 0.8rem;
+  color: var(--lcars-lavender);
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ==================== LCARS TOPBAR ==================== */
+[data-theme="lcars"] .dashboard-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--lcars-padding);
+  height: var(--lcars-bar-height);
+  background: linear-gradient(90deg, 
+    var(--lcars-dark-gray) 0%,
+    var(--lcars-dark-gray) 20%,
+    #333333 50%,
+    var(--lcars-dark-gray) 80%,
+    var(--lcars-dark-gray) 100%);
+  border-bottom: 4px solid var(--lcars-orange);
+  position: relative;
+}
+
+[data-theme="lcars"] .topbar-categories {
+  display: flex;
+  gap: 5px;
+}
+
+[data-theme="lcars"] .topbar-category-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  height: 30px;
+  border: 2px solid var(--lcars-orange);
+  background: var(--lcars-dark-gray);
+  color: var(--lcars-beige);
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="lcars"] .topbar-category-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 158, 0, 0.4), 
+    transparent);
+  transition: left 0.5s ease;
+}
+
+[data-theme="lcars"] .topbar-category-btn:hover::before {
+  left: 100%;
+}
+
+[data-theme="lcars"] .topbar-category-btn:hover {
+  background: var(--lcars-orange);
+  color: var(--lcars-black);
+  animation: lcars-beep 0.2s ease;
+}
+
+[data-theme="lcars"] .topbar-category-btn.active {
+  background: var(--lcars-orange);
+  color: var(--lcars-black);
+  animation: lcars-glow 2s infinite;
+}
+
+[data-theme="lcars"] .cat-icon {
+  font-size: 1.1rem;
+}
+
+[data-theme="lcars"] .topbar-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-theme="lcars"] .search-filter,
+[data-theme="lcars"] .search-input {
+  padding: 5px 10px;
+  height: 30px;
+  border: 2px solid var(--lcars-lavender);
+  background: var(--lcars-dark-gray);
+  color: var(--lcars-beige);
+  font-family: 'LCD', 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+[data-theme="lcars"] .search-filter:focus,
+[data-theme="lcars"] .search-input:focus {
+  outline: none;
+  border-color: var(--lcars-orange);
+  background: var(--lcars-dark-blue);
+}
+
+[data-theme="lcars"] .search-spinner {
+  animation: spin 1s linear infinite;
+  color: var(--lcars-orange);
+}
+
+/* ==================== LCARS CONTENT AREA ==================== */
+[data-theme="lcars"] .content-area {
+  flex: 1;
+  padding: var(--lcars-padding);
+  background: var(--lcars-black);
+  position: relative;
+  overflow-y: auto;
+}
+
+/* LCARS Raster-Hintergrund */
+[data-theme="lcars"] .content-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(255, 158, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 158, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ==================== LCARS CATEGORIES DASHBOARD ==================== */
+[data-theme="lcars"] .categories-dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+[data-theme="lcars"] .categories-header {
+  padding: var(--lcars-padding);
+  background: linear-gradient(90deg, 
+    var(--lcars-dark-blue) 0%,
+    var(--lcars-dark-blue) 30%,
+    var(--lcars-purple) 70%,
+    var(--lcars-purple) 100%);
+  border: 2px solid var(--lcars-orange);
+  border-left: 15px solid var(--lcars-orange);
+  margin-bottom: var(--lcars-margin);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="lcars"] .categories-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 158, 0, 0.2), 
+    transparent);
+  animation: lcars-scan 4s linear infinite;
+}
+
+[data-theme="lcars"] .categories-header h1 {
+  font-size: 2.2rem;
+  color: var(--lcars-beige);
+  text-shadow: 1px 1px 0 var(--lcars-orange);
+}
+
+[data-theme="lcars"] .categories-header p {
+  font-size: 1rem;
+  color: var(--lcars-lavender);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+[data-theme="lcars"] .categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--lcars-margin);
+}
+
+[data-theme="lcars"] .category-widget {
+  background: linear-gradient(135deg, 
+    var(--lcars-dark-gray) 0%, 
+    #2a2a2a 100%);
+  border: 2px solid var(--lcars-orange);
+  border-left: 12px solid var(--lcars-orange);
+  padding: var(--lcars-padding);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="lcars"] .category-widget::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 158, 0, 0.1), 
+    transparent);
+  transition: left 0.5s ease;
+}
+
+[data-theme="lcars"] .category-widget:hover::before {
+  left: 100%;
+}
+
+[data-theme="lcars"] .category-widget:hover {
+  transform: translateY(-2px);
+  border-color: var(--lcars-lavender);
+  border-left-color: var(--lcars-lavender);
+  animation: lcars-glow 1.5s infinite;
+}
+
+[data-theme="lcars"] .widget-icon {
+  font-size: 2.2rem;
+  text-align: center;
+  color: var(--lcars-orange);
+  margin-bottom: 10px;
+}
+
+[data-theme="lcars"] .widget-content {
+  text-align: center;
+}
+
+[data-theme="lcars"] .widget-title {
+  font-size: 1.3rem;
+  color: var(--lcars-beige);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+[data-theme="lcars"] .widget-kind {
+  font-size: 0.9rem;
+  color: var(--lcars-lavender);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+[data-theme="lcars"] .widget-desc {
+  font-size: 0.95rem;
+  color: var(--lcars-beige);
+  line-height: 1.4;
+  margin-bottom: 15px;
+}
+
+[data-theme="lcars"] .widget-preview {
+  border-top: 1px solid var(--lcars-orange);
+  padding-top: 10px;
+}
+
+[data-theme="lcars"] .child-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--lcars-lavender);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+[data-theme="lcars"] .child-icon {
+  color: var(--lcars-orange);
+}
+
+[data-theme="lcars"] .widget-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--lcars-lavender);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid var(--lcars-orange);
+}
+
+/* ==================== LCARS SEARCH RESULTS ==================== */
+[data-theme="lcars"] .search-results-overlay {
+  background: var(--lcars-dark-gray);
+  border-top: 4px solid var(--lcars-orange);
+  padding: var(--lcars-padding);
+}
+
+[data-theme="lcars"] .search-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--lcars-padding);
+  background: linear-gradient(90deg, 
+    var(--lcars-dark-blue) 0%,
+    var(--lcars-purple) 100%);
+  border: 2px solid var(--lcars-orange);
+  margin-bottom: var(--lcars-margin);
+}
+
+[data-theme="lcars"] .search-results-header h4 {
+  color: var(--lcars-beige);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+[data-theme="lcars"] .close-results {
+  padding: 5px 10px;
+  border: 2px solid var(--lcars-orange);
+  background: var(--lcars-dark-gray);
+  color: var(--lcars-beige);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+[data-theme="lcars"] .close-results:hover {
+  background: var(--lcars-orange);
+  color: var(--lcars-black);
+}
+
+[data-theme="lcars"] .results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--lcars-margin);
+}
+
+[data-theme="lcars"] .result-card {
+  background: linear-gradient(135deg, 
+    var(--lcars-dark-gray) 0%, 
+    #2a2a2a 100%);
+  border: 2px solid var(--lcars-lavender);
+  border-left: 10px solid var(--lcars-lavender);
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+[data-theme="lcars"] .result-card:hover {
+  border-color: var(--lcars-orange);
+  border-left-color: var(--lcars-orange);
+  animation: lcars-glow 1.5s infinite;
+}
+
+[data-theme="lcars"] .result-icon {
+  font-size: 1.5rem;
+  color: var(--lcars-orange);
+  margin-bottom: 8px;
+}
+
+[data-theme="lcars"] .result-title {
+  font-size: 1.1rem;
+  color: var(--lcars-beige);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+[data-theme="lcars"] .result-path {
+  font-size: 0.8rem;
+  color: var(--lcars-lavender);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+[data-theme="lcars"] .result-kind {
+  font-size: 0.8rem;
+  color: var(--lcars-orange);
+  background: var(--lcars-dark-blue);
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ==================== LCARS FAB ==================== */
+[data-theme="lcars"] .fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: var(--lcars-orange);
+  color: var(--lcars-black);
+  border: 2px solid var(--lcars-orange);
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  animation: lcars-pulse 2s infinite;
+}
+
+[data-theme="lcars"] .fab:hover {
+  background: var(--lcars-black);
+  color: var(--lcars-orange);
+  animation: lcars-glow 1s infinite;
+}
+
+/* ==================== LCARS QUICK CHAT ==================== */
+[data-theme="lcars"] .quick-chat-overlay {
+  background: rgba(0, 0, 0, 0.95);
+}
+
+[data-theme="lcars"] .quick-chat-container {
+  background: var(--lcars-dark-gray);
+  border: 4px solid var(--lcars-orange);
+  box-shadow: 0 0 50px rgba(255, 158, 0, 0.7);
+}
+
+[data-theme="lcars"] .quick-chat-header {
+  background: linear-gradient(90deg, 
+    var(--lcars-dark-blue) 0%,
+    var(--lcars-purple) 100%);
+  border-bottom: 4px solid var(--lcars-orange);
+  padding: 15px;
+}
+
+[data-theme="lcars"] .quick-chat-header-left h3 {
+  color: var(--lcars-beige);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+[data-theme="lcars"] .model-info {
+  background: var(--lcars-orange);
+  color: var(--lcars-black);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+[data-theme="lcars"] .quick-chat-tabs {
+  background: var(--lcars-dark-gray);
+  border-bottom: 2px solid var(--lcars-orange);
+}
+
+[data-theme="lcars"] .tab-button {
+  color: var(--lcars-lavender);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid transparent;
+}
+
+[data-theme="lcars"] .tab-button.active {
+  color: var(--lcars-orange);
+  border-bottom-color: var(--lcars-orange);
+}
+
+[data-theme="lcars"] .message-content {
+  background: var(--lcars-dark-gray);
+  border: 2px solid var(--lcars-lavender);
+  color: var(--lcars-beige);
+}
+
+[data-theme="lcars"] .message.user .message-content {
+  background: var(--lcars-dark-blue);
+  border-color: var(--lcars-orange);
+}
+
+/* ==================== LCARS APP HEADER ==================== */
+[data-theme="lcars"] .app-header {
+  background: linear-gradient(90deg, 
+    var(--lcars-dark-blue) 0%,
+    var(--lcars-purple) 100%);
+  border-bottom: 4px solid var(--lcars-orange);
+  padding: 0 var(--lcars-padding);
+  height: var(--lcars-bar-height);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="lcars"] .app-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--lcars-orange), 
+    transparent);
+  animation: lcars-scan 2.5s linear infinite;
+}
+
+[data-theme="lcars"] .brand-name {
+  font-size: 1.4rem;
+  color: var(--lcars-beige);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 0 var(--lcars-orange);
+}
+
+[data-theme="lcars"] .brand-subtitle {
+  font-size: 0.9rem;
+  color: var(--lcars-lavender);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+[data-theme="lcars"] .nav-link {
+  padding: 5px 15px;
+  border: 2px solid var(--lcars-orange);
+  background: var(--lcars-dark-gray);
+  color: var(--lcars-beige);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+[data-theme="lcars"] .nav-link:hover {
+  background: var(--lcars-orange);
+  color: var(--lcars-black);
+}
+
+[data-theme="lcars"] .theme-toggle {
+  padding: 5px 15px;
+  border: 2px solid var(--lcars-orange);
+  background: var(--lcars-dark-gray);
+  color: var(--lcars-beige);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+[data-theme="lcars"] .theme-toggle:hover {
+  background: var(--lcars-orange);
+  color: var(--lcars-black);
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 768px) {
+  [data-theme="lcars"] {
+    --lcars-padding: 10px;
+    --lcars-margin: 10px;
+  }
+  
+  [data-theme="lcars"] .dashboard-title {
+    font-size: 2rem;
+  }
+  
+  [data-theme="lcars"] .categories-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  [data-theme="lcars"] .topbar-categories {
+    flex-wrap: wrap;
+  }
+}
+
+/* ==================== LCARS SOUND EFFECTS PLACEHOLDER ==================== */
+.lcars-sound-beep {
+  /* Beep sound placeholder */
+}
+
+.lcars-sound-alert {
+  /* Alert sound placeholder */
+}
+
+/* ==================== LCARS DATA STREAM EFFECT ==================== */
+.lcars-data-stream {
+  position: relative;
+  overflow: hidden;
+}
+
+.lcars-data-stream::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 158, 0, 0.1),
+    transparent
+  );
+  animation: lcars-data-flow 1.5s linear infinite;
+  pointer-events: none;
+}
+
+/* ==================== LCARS LOADING ANIMATION ==================== */
+[data-theme="lcars"] .loading-spinner {
+  border: 3px solid var(--lcars-dark-gray);
+  border-top: 3px solid var(--lcars-orange);
+  border-radius: 0 !important;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+/* ==================== LCARS SCROLLBAR ==================== */
+[data-theme="lcars"] ::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-theme="lcars"] ::-webkit-scrollbar-track {
+  background: var(--lcars-dark-gray);
+}
+
+[data-theme="lcars"] ::-webkit-scrollbar-thumb {
+  background: var(--lcars-orange);
+}
+
+[data-theme="lcars"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--lcars-mustard);
+}

@@ -1,0 +1,1037 @@
+// apps/backend/src/services/functionsCatalogService.ts
+// SPDX-License-Identifier: MIT
+
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+/* ========================================================================== */
+/* Pfad-Auflösung                                                             */
+/* ========================================================================== */
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Repo-Root heuristisch: .../apps/backend/src/services -> vier Ebenen hoch
+const REPO_ROOT = path.resolve(__dirname, "../../../../");
+
+// JSON-Dateien aus output Verzeichnis lesen
+const FUNCTIONS_JSON_DIR =
+  process.env.FUNCTIONS_JSON_DIR ||
+  path.join(REPO_ROOT, "data", "functions", "output");
+
+/* ========================================================================== */
+/* Typen                                                                      */
+/* ========================================================================== */
+
+export type Severity = "error" | "warn" | "info";
+
+export interface LintFinding {
+  code: string;
+  message: string;
+  severity: Severity;
+  file?: string;
+  nodePath?: string;
+  nodeId?: string;
+}
+
+export interface GlobalRules {
+  version: number;
+  locale: string;
+}
+
+export type NodeKind = 'category' | 'section' | 'record' | 'collection' | 'action' | 'note' | 'group' | 'workflow' | 'report' | 'dataset' | 'item';
+
+export interface NodeMeta {
+  id?: string;
+  kind?: NodeKind;
+  title?: Record<string, string> | string;
+  weight?: number;
+  tags?: string[];
+  icon?: string;
+  description?: Record<string, string> | string;
+  // Erweiterte Metadaten
+  category?: string;
+  area?: string;
+  priority?: 'low' | 'medium' | 'high' | 'critical';
+  status?: 'draft' | 'active' | 'deprecated';
+  lastModified?: string;
+  created?: string;
+}
+
+export interface NodeRBAC {
+  anyOf?: string[];
+  allOf?: string[];
+  noneOf?: string[];
+  mask?: Record<string, string>;
+}
+
+export interface NodeFlags {
+  hidden?: boolean;
+  beta?: boolean;
+  feature?: string;
+}
+
+export interface NodePII {
+  fields?: Record<string, "none" | "low" | "medium" | "high">;
+}
+
+export interface NodeAA {
+  intent: string;
+  steps?: Array<{ id: string; desc: string; gate?: string }>;
+  inputs?: Array<{ name: string; type: string; required?: boolean }>;
+  outputs?: Array<{ name: string; type: string }>;
+}
+
+export interface NodeSchema {
+  $id?: string;
+  type?: string;
+  properties?: Record<string, unknown>;
+  required?: string[];
+  [k: string]: unknown;
+}
+
+export interface CatalogNode {
+  id: string;
+  parent_id?: string | null;
+  title: string;
+  icon?: string;
+  kind: NodeKind;
+  path: string[];
+  weight: number;
+  depth: number;
+  children: CatalogNode[];
+  source: { file: string; lineStart: number; lineEnd?: number };
+  
+  // Erweiterte Felder
+  fileCategory?: string;  // Hauptkategorie aus Dateiname
+  area?: string;          // Bereich (z.B. "Finance", "Production")
+  
+  // Fences (optional)
+  meta?: NodeMeta;
+  rbac?: NodeRBAC;
+  flags?: NodeFlags;
+  pii?: NodePII;
+  aa?: NodeAA;
+  schema?: NodeSchema;
+  
+  warnings?: string[];
+}
+
+/** Menü-Node (gefiltert, für Frontend) */
+export interface MenuNode {
+  id: string;
+  title: string;
+  icon?: string;
+  kind: NodeKind;
+  depth?: number;
+  children?: MenuNode[];
+  metadata?: {
+    area?: string;
+    priority?: string;
+    status?: string;
+  };
+}
+
+/** Kontext für Menü-Filterung */
+export interface MenuContext {
+  roles?: string[];
+  features?: string[];
+  area?: string;  // Bereichsfilter
+}
+
+export interface BuildOptions {
+  baseDir?: string;
+  locale?: string;
+  strict?: boolean;
+  files?: string[];
+}
+
+export interface BuildResult {
+  nodes: CatalogNode[];
+  findings: LintFinding[];
+  warnings: string[];
+  rules: GlobalRules;
+  loadedAt: string;
+  stats: {
+    totalNodes: number;
+    categories: number;
+    maxDepth: number;
+    filesProcessed: number;
+  };
+}
+
+export interface SearchParams {
+  q?: string;
+  kinds?: string[];
+  tags?: string[];
+  area?: string;
+  priority?: string;
+}
+
+/* ========================================================================== */
+/* Default-Regeln                                                             */
+/* ========================================================================== */
+
+const DEFAULT_RULES: GlobalRules = {
+  version: 2,
+  locale: "de",
+};
+
+/* ========================================================================== */
+/* Hilfsfunktionen für Metadaten-Extraktion                                   */
+/* ========================================================================== */
+
+// Extrahiert Kategorie aus Dateinamen (z.B. "_1_DASHBOARD.md" -> "DASHBOARD")
+function extractCategoryFromFilename(filename: string): string {
+  const match = filename.match(/_(\d+)_([^.]+)/);
+  if (match) {
+    return match[2].replace(/-/g, ' ').replace(/_/g, ' ');
+  }
+  return filename.replace('.jsonl', '').replace('.json', '');
+}
+
+// Extrahiert Bereich aus Titel und Pfad
+function extractArea(node: any): string {
+  const title = node.title?.toLowerCase() || '';
+  const path = node.path?.join(' ').toLowerCase() || '';
+  
+  const areaPatterns = {
+    finance: /finanz|controlling|budget|kosten|umsatz|einnahmen|ausgaben/,
+    sales: /vertrieb|sales|kunden|auftrag|angebot|pipeline/,
+    production: /produktion|fertigung|werk|lager|bestand|material/,
+    hr: /personal|hr|mitarbeiter|gehalt|zeiterfassung|recruiting/,
+    marketing: /marketing|kampagne|social|web|online|werbung/,
+    it: /system|it|admin|software|hardware|netzwerk|datenbank/,
+    communication: /kommunikation|email|chat|message|social|kontakt/,
+    analytics: /reporting|analytics|analyse|kennzahl|metric|dashboard/
+  };
+  
+  for (const [area, pattern] of Object.entries(areaPatterns)) {
+    if (pattern.test(title) || pattern.test(path)) {
+      return area;
+    }
+  }
+  
+  return 'general';
+}
+
+// Bestimmt Priorität basierend auf Tiefe und Inhalt
+function determinePriority(node: any): 'low' | 'medium' | 'high' | 'critical' {
+  const title = node.title?.toLowerCase() || '';
+  
+  // Kritische Funktionen
+  if (/(warnung|error|fehler|critical|kritisch|alert|notfall)/.test(title)) {
+    return 'critical';
+  }
+  
+  // Wichtige Funktionen
+  if (/(wichtig|priority|dringend|haupt|core|zentral)/.test(title)) {
+    return 'high';
+  }
+  
+  // Standard-Funktionen
+  if (node.depth <= 2) {
+    return 'medium';
+  }
+  
+  return 'low';
+}
+
+// Extrahiert Tags aus Titel und Inhalt
+function extractTags(node: any): string[] {
+  const tags = new Set<string>();
+  const title = node.title?.toLowerCase() || '';
+  const content = JSON.stringify(node).toLowerCase();
+  
+  // Basis-Tags basierend auf Inhalt
+  const tagPatterns = {
+    kpi: /kpi|kennzahl|metric|leistung|performance/,
+    report: /report|bericht|auswertung|statistik/,
+    dashboard: /dashboard|übersicht|overview/,
+    workflow: /workflow|prozess|ablauf|automatisierung/,
+    data: /daten|data|export|import|migration/,
+    realtime: /realtime|live|echtzeit|sofort/,
+    analysis: /analyse|analysis|auswertung|trend/,
+    monitoring: /monitoring|überwachung|control|tracking/,
+    alert: /alert|warnung|notification|benachrichtigung/,
+    export: /export|download|herunterladen|ausgabe/,
+    import: /import|upload|hochladen|eingabe/
+  };
+  
+  for (const [tag, pattern] of Object.entries(tagPatterns)) {
+    if (pattern.test(title) || pattern.test(content)) {
+      tags.add(tag);
+    }
+  }
+  
+  // Bereich als Tag hinzufügen
+  const area = extractArea(node);
+  if (area !== 'general') {
+    tags.add(area);
+  }
+  
+  return Array.from(tags);
+}
+
+/* ========================================================================== */
+/* JSON-Dateien laden und parsen                                              */
+/* ========================================================================== */
+
+async function readJSONFile(filePath: string): Promise<any[]> {
+  try {
+    const content = await fs.readFile(filePath, "utf-8");
+    const lines = content.split(/\r?\n/).filter(line => line.trim());
+    const parsedLines: any[] = [];
+    
+    for (const line of lines) {
+      try {
+        const obj = JSON.parse(line);
+        parsedLines.push(obj);
+      } catch (error) {
+        console.warn(`Fehler beim Parsen einer Zeile in ${path.basename(filePath)}:`, error);
+        continue;
+      }
+    }
+    
+    return parsedLines;
+  } catch (error) {
+    console.warn(`Fehler beim Lesen von ${filePath}:`, error);
+    return [];
+  }
+}
+
+async function loadGlobalRules(): Promise<GlobalRules> {
+  return DEFAULT_RULES;
+}
+
+/* ========================================================================== */
+/* JSON zu CatalogNode konvertieren mit erweiterten Metadaten                 */
+/* ========================================================================== */
+
+function jsonToCatalogNode(jsonNode: any, sourceFile: string, fileCategory: string): CatalogNode {
+  const area = extractArea(jsonNode);
+  const priority = determinePriority(jsonNode);
+  const tags = extractTags(jsonNode);
+  
+  // Basis-Node erstellen
+  const node: CatalogNode = {
+    id: jsonNode.id,
+    parent_id: jsonNode.parent_id || null,
+    title: jsonNode.title,
+    icon: jsonNode.icon,
+    kind: (jsonNode.kind || 'group') as NodeKind,
+    path: jsonNode.path || [],
+    weight: jsonNode.order || 0,
+    depth: jsonNode.depth || 0,
+    children: [],
+    source: {
+      file: sourceFile,
+      lineStart: jsonNode.meta?.lineNumber || 1
+    },
+    fileCategory,
+    area,
+    
+    // Metadaten erweitern/mergen
+    meta: {
+      ...jsonNode.meta,
+      tags: [...(jsonNode.meta?.tags || []), ...tags],
+      area,
+      priority,
+      status: jsonNode.meta?.status || 'active',
+      lastModified: new Date().toISOString(),
+      created: jsonNode.meta?.created || new Date().toISOString()
+    }
+  };
+  
+  return node;
+}
+
+/* ========================================================================== */
+/* Verbesserte Baum-Struktur mit Hauptkategorie-Organisation                  */
+/* ========================================================================== */
+
+function buildTreeFromFlatNodes(flatNodes: CatalogNode[]): CatalogNode[] {
+  const nodeMap = new Map<string, CatalogNode>();
+  const fileCategories = new Map<string, CatalogNode>(); // Hauptkategorien pro Datei
+  const roots: CatalogNode[] = [];
+
+  // 1. Alle Nodes in Map speichern und Hauptkategorien identifizieren
+  flatNodes.forEach(node => {
+    nodeMap.set(node.id, { ...node, children: [] });
+    
+    // Erste Ebene (depth 0) Nodes sind Hauptkategorien pro Datei
+    if (node.depth === 0 && node.fileCategory) {
+      if (!fileCategories.has(node.fileCategory)) {
+        fileCategories.set(node.fileCategory, node);
+      }
+    }
+  });
+
+  // 2. Kinderbeziehungen aufbauen
+  flatNodes.forEach(node => {
+    const currentNode = nodeMap.get(node.id)!;
+    
+    if (node.parent_id && nodeMap.has(node.parent_id)) {
+      // Hat Parent - als Kind hinzufügen
+      const parent = nodeMap.get(node.parent_id)!;
+      parent.children.push(currentNode);
+    } else {
+      // Kein Parent - potenzieller Root-Node
+      // Nur depth 0 Nodes als Roots behandeln
+      if (node.depth === 0) {
+        roots.push(currentNode);
+      }
+    }
+  });
+
+  // 3. Hauptkategorien organisieren
+  const organizedRoots: CatalogNode[] = [];
+  
+  // Gruppiere nach Hauptkategorien
+  const categoryMap = new Map<string, CatalogNode>();
+  
+  roots.forEach(root => {
+    const category = root.fileCategory || 'Uncategorized';
+    
+    if (!categoryMap.has(category)) {
+      // Erstelle Kategorie-Node
+      const categoryNode: CatalogNode = {
+        id: `category-${category.toLowerCase()}`,
+        title: category,
+        kind: 'category',
+        path: [category],
+        weight: 0,
+        depth: 0,
+        children: [],
+        source: { file: 'system', lineStart: 1 },
+        fileCategory: category,
+        area: extractArea({ title: category }),
+        meta: {
+          title: category,
+          area: extractArea({ title: category }),
+          priority: 'medium',
+          status: 'active'
+        }
+      };
+      categoryMap.set(category, categoryNode);
+      organizedRoots.push(categoryNode);
+    }
+    
+    // Füge Root-Node unter Kategorie hinzu
+    const categoryNode = categoryMap.get(category)!;
+    categoryNode.children.push(root);
+  });
+
+  // 4. Sortierung anwenden
+  const sortChildren = (nodes: CatalogNode[]) => {
+    nodes.sort((a, b) => {
+      // Zuerst nach Gewicht, dann nach Titel
+      if (a.weight !== b.weight) return a.weight - b.weight;
+      return a.title.localeCompare(b.title, 'de');
+    });
+    
+    nodes.forEach(node => {
+      if (node.children.length > 0) {
+        sortChildren(node.children);
+      }
+    });
+  };
+
+  sortChildren(organizedRoots);
+  
+  return organizedRoots.length > 0 ? organizedRoots : roots;
+}
+
+/* ========================================================================== */
+/* JSON-Dateien verarbeiten                                                   */
+/* ========================================================================== */
+
+interface ParsedFile {
+  file: string;
+  nodes: CatalogNode[];
+  findings: LintFinding[];
+  warnings: string[];
+}
+
+async function parseJSONFile(filePath: string, rules: GlobalRules): Promise<ParsedFile> {
+  const findings: LintFinding[] = [];
+  const warnings: string[] = [];
+  const relFile = path.relative(FUNCTIONS_JSON_DIR, filePath);
+  const fileCategory = extractCategoryFromFilename(path.basename(filePath));
+
+  try {
+    const jsonNodes = await readJSONFile(filePath);
+    const catalogNodes = jsonNodes.map(jsonNode => 
+      jsonToCatalogNode(jsonNode, relFile, fileCategory)
+    );
+
+    return {
+      file: relFile,
+      nodes: catalogNodes,
+      findings,
+      warnings
+    };
+  } catch (error) {
+    return {
+      file: relFile,
+      nodes: [],
+      findings: [{
+        code: "PARSE_FAILED",
+        message: `JSON-Datei konnte nicht geparst werden: ${(error as Error)?.message || error}`,
+        severity: "error",
+        file: relFile,
+      }],
+      warnings: [`Parse-Fehler: ${(error as Error)?.message || error}`]
+    };
+  }
+}
+
+/* ========================================================================== */
+/* Linting                                                                    */
+/* ========================================================================== */
+
+function lintTree(allFiles: ParsedFile[], rules: GlobalRules): LintFinding[] {
+  const findings: LintFinding[] = [];
+  const idMap = new Map<string, { file: string; path: string }[]>();
+
+  const walk = (node: CatalogNode, file: string) => {
+    // Duplikat-ID Prüfung
+    const list = idMap.get(node.id) ?? [];
+    list.push({ file, path: node.path.join(" / ") });
+    idMap.set(node.id, list);
+
+    // Validierungen
+    if (!node.id) {
+      findings.push({
+        code: "MISSING_ID",
+        message: "Node hat keine ID",
+        severity: "error",
+        file,
+        nodePath: node.path.join(" / "),
+      });
+    }
+
+    if (!node.title) {
+      findings.push({
+        code: "MISSING_TITLE",
+        message: "Node hat keinen Titel",
+        severity: "warn",
+        file,
+        nodeId: node.id,
+        nodePath: node.path.join(" / "),
+      });
+    }
+
+    node.children.forEach((c) => walk(c, file));
+  };
+
+  for (const pf of allFiles) {
+    pf.nodes.forEach((n) => walk(n, pf.file));
+  }
+
+  // Duplikate melden
+  for (const [id, list] of idMap.entries()) {
+    if (list.length > 1) {
+      const msg = list.map((x) => `${x.file} @ ${x.path}`).join("; ");
+      findings.push({
+        code: "DUPLICATE_ID",
+        message: `ID "${id}" mehrfach verwendet (${msg})`,
+        severity: "error",
+      });
+    }
+  }
+
+  return findings;
+}
+
+/* ========================================================================== */
+/* Erweiterter Menü-Filter mit Bereichs-Filterung                            */
+/* ========================================================================== */
+
+function passesFlags(n: CatalogNode, rules: GlobalRules, ctx: MenuContext): boolean {
+  const flags = n.flags ?? {};
+  const hidden = flags.hidden ?? false;
+  if (hidden) return false;
+
+  if (flags.feature) {
+    const feats = new Set(ctx.features || []);
+    if (!feats.has(flags.feature)) return false;
+  }
+  
+  // Bereichs-Filterung
+  if (ctx.area && n.area !== ctx.area) {
+    return false;
+  }
+  
+  return true;
+}
+
+function passesRBAC(n: CatalogNode, rules: GlobalRules, ctx: MenuContext): boolean {
+  const roles = new Set(ctx.roles || []);
+  const eff: NodeRBAC = n.rbac ?? { anyOf: ["role:user"] };
+
+  if (eff.noneOf && eff.noneOf.some((r) => roles.has(r))) return false;
+  if (eff.allOf && eff.allOf.length > 0) {
+    const allOk = eff.allOf.every((r) => roles.has(r));
+    if (!allOk) return false;
+  }
+  if (eff.anyOf && eff.anyOf.length > 0) {
+    const anyOk = eff.anyOf.some((r) => roles.has(r));
+    if (!anyOk) return false;
+  }
+
+  return true;
+}
+
+function toMenuNode(n: CatalogNode): MenuNode {
+  return {
+    id: n.id,
+    title: n.title,
+    icon: n.icon,
+    kind: n.kind,
+    depth: n.depth,
+    children: n.children.length ? n.children.map(toMenuNode) : undefined,
+    metadata: {
+      area: n.area,
+      priority: n.meta?.priority,
+      status: n.meta?.status
+    }
+  };
+}
+
+function filterMenu(nodes: CatalogNode[], rules: GlobalRules, ctx: MenuContext): MenuNode[] {
+  const out: MenuNode[] = [];
+
+  for (const n of nodes) {
+    if (!passesFlags(n, rules, ctx)) continue;
+    if (!passesRBAC(n, rules, ctx)) continue;
+
+    const childMenu = filterMenu(n.children, rules, ctx);
+
+    if (childMenu.length > 0 || n.children.length === 0) {
+      out.push({
+        id: n.id,
+        title: n.title,
+        icon: n.icon,
+        kind: n.kind,
+        depth: n.depth,
+        children: childMenu.length > 0 ? childMenu : undefined,
+        metadata: {
+          area: n.area,
+          priority: n.meta?.priority,
+          status: n.meta?.status
+        }
+      });
+    }
+  }
+
+  return out;
+}
+
+/* ========================================================================== */
+/* JSON-Dateien auflisten                                                     */
+/* ========================================================================== */
+
+async function listJSONFiles(dir: string): Promise<string[]> {
+  try {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    const out: string[] = [];
+    
+    for (const e of entries) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) continue;
+      if (!/\.jsonl?$/i.test(e.name)) continue;
+      if (/_0_REGELN|parser-log/i.test(e.name)) continue;
+      out.push(p);
+    }
+    
+    return out.sort();
+  } catch (error) {
+    console.warn(`Fehler beim Lesen des Verzeichnisses ${dir}:`, error);
+    return [];
+  }
+}
+
+/* ========================================================================== */
+/* Cache / Singleton                                                          */
+/* ========================================================================== */
+
+let _cache: BuildResult | null = null;
+
+async function buildIndex(opts?: BuildOptions): Promise<BuildResult> {
+  const rules = await loadGlobalRules();
+  const baseDir = opts?.baseDir || FUNCTIONS_JSON_DIR;
+  const files = await listJSONFiles(baseDir);
+
+  if (files.length === 0) {
+    return {
+      rules,
+      nodes: [],
+      findings: [{
+        code: "NO_FILES",
+        message: `Keine JSON-Dateien gefunden in ${baseDir}`,
+        severity: "warn"
+      }],
+      warnings: [`Keine JSON-Dateien in ${baseDir} gefunden`],
+      loadedAt: new Date().toISOString(),
+      stats: {
+        totalNodes: 0,
+        categories: 0,
+        maxDepth: 0,
+        filesProcessed: 0
+      }
+    };
+  }
+
+  const parsed: ParsedFile[] = [];
+  for (const f of files) {
+    parsed.push(await parseJSONFile(f, rules));
+  }
+
+  // Baumstruktur aufbauen
+  const allFlatNodes = parsed.flatMap(p => p.nodes);
+  const forest = buildTreeFromFlatNodes(allFlatNodes);
+
+  // Statistiken berechnen
+  let totalNodes = 0;
+  let maxDepth = 0;
+  const categories = new Set<string>();
+  
+  const calculateStats = (nodes: CatalogNode[]) => {
+    nodes.forEach(node => {
+      totalNodes++;
+      maxDepth = Math.max(maxDepth, node.depth);
+      if (node.kind === 'category') {
+        categories.add(node.title);
+      }
+      calculateStats(node.children);
+    });
+  };
+  
+  calculateStats(forest);
+
+  const stats = {
+    totalNodes,
+    categories: categories.size,
+    maxDepth,
+    filesProcessed: files.length
+  };
+
+  console.log(`[functions] Baumstruktur geladen: ${stats.categories} Kategorien, ${stats.totalNodes} Knoten, Tiefe: ${stats.maxDepth}`);
+
+  const lint = lintTree(parsed, rules);
+
+  return {
+    rules,
+    nodes: forest,
+    findings: [...parsed.flatMap(p => p.findings), ...lint],
+    warnings: parsed.flatMap(p => p.warnings),
+    loadedAt: new Date().toISOString(),
+    stats
+  };
+}
+
+/* ========================================================================== */
+/* Helper: Knoten mit Breadcrumbs finden                                      */
+/* ========================================================================== */
+
+function findNodeWithBreadcrumbs(
+  nodes: CatalogNode[],
+  id: string,
+  trail: Array<{ id: string; title: string }> = []
+): { node: CatalogNode; breadcrumbs: Array<{ id: string; title: string }> } | null {
+  for (const n of nodes) {
+    const nextTrail = [...trail, { id: n.id, title: n.title }];
+    if (n.id === id) return { node: n, breadcrumbs: nextTrail };
+    const hit = findNodeWithBreadcrumbs(n.children, id, nextTrail);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+/* ========================================================================== */
+/* Öffentliche API - FunctionsCatalogService                                 */
+/* ========================================================================== */
+
+export class FunctionsCatalogService {
+  private baseDir: string;
+  private readonly locale: string;
+  private readonly strict: boolean;
+
+  constructor(opts?: BuildOptions) {
+    this.baseDir = opts?.baseDir || FUNCTIONS_JSON_DIR;
+    this.locale = opts?.locale || 'de';
+    this.strict = opts?.strict || false;
+  }
+
+  async buildCatalog(opts?: { files?: string[] }): Promise<BuildResult> {
+    const buildOpts: BuildOptions = {
+      baseDir: this.baseDir,
+      locale: this.locale,
+      strict: this.strict,
+      files: opts?.files
+    };
+
+    return await buildIndex(buildOpts);
+  }
+
+  async refreshFunctionsIndex(): Promise<BuildResult> {
+    _cache = await this.buildCatalog();
+    return _cache;
+  }
+
+  async getFunctionsIndex(): Promise<BuildResult> {
+    if (_cache) return _cache;
+    return await this.refreshFunctionsIndex();
+  }
+
+  async getMenuForContext(ctx: MenuContext): Promise<{ menu: MenuNode[]; loadedAt: string; stats: any }> {
+    const idx = await this.getFunctionsIndex();
+    const menu = filterMenu(idx.nodes, idx.rules, ctx || {});
+    return { menu, loadedAt: idx.loadedAt, stats: idx.stats };
+  }
+
+  async lintFunctions(): Promise<{ findings: LintFinding[]; loadedAt: string }> {
+    const idx = await this.getFunctionsIndex();
+    return { findings: idx.findings, loadedAt: idx.loadedAt };
+  }
+
+  async getNodeById(id: string): Promise<(CatalogNode & {
+    breadcrumbs: Array<{ id: string; title: string }>;
+    ui: {
+      isForm: boolean;
+      isWorkflow: boolean;
+      isReport: boolean;
+      isDataset: boolean;
+      isAction: boolean;
+    };
+  }) | null> {
+    const idx = await this.getFunctionsIndex();
+
+    const hit = findNodeWithBreadcrumbs(idx.nodes, id);
+    if (!hit) return null;
+
+    const { node, breadcrumbs } = hit;
+
+    const ui = {
+      isForm: node.kind === "record" && !!node.schema,
+      isWorkflow: node.kind === "workflow" && !!node.aa,
+      isReport: node.kind === "report",
+      isDataset: node.kind === "dataset",
+      isAction: node.kind === "action",
+    };
+
+    return Object.assign({}, node, { breadcrumbs, ui });
+  }
+
+  async getChildrenForNode(
+    id: string,
+    ctx?: MenuContext
+  ): Promise<{ parent: MenuNode; children: MenuNode[] } | null> {
+    const idx = await this.getFunctionsIndex();
+
+    const hit = findNodeWithBreadcrumbs(idx.nodes, id);
+    if (!hit) return null;
+
+    const parentNode: CatalogNode = hit.node;
+
+    const parent: MenuNode = {
+      id: parentNode.id,
+      title: parentNode.title,
+      icon: parentNode.icon,
+      kind: parentNode.kind,
+      depth: parentNode.depth,
+      metadata: {
+        area: parentNode.area,
+        priority: parentNode.meta?.priority,
+        status: parentNode.meta?.status
+      }
+    };
+
+    if (!ctx) {
+      const children: MenuNode[] = parentNode.children.map((c: CatalogNode) => toMenuNode(c));
+      return { parent, children };
+    }
+
+    const children = filterMenu(parentNode.children, idx.rules, ctx);
+    return { parent, children };
+  }
+
+  async search(params: SearchParams): Promise<Array<{ 
+    id: string; 
+    title: string; 
+    kind: NodeKind; 
+    path: string[]; 
+    score: number; 
+    tags?: string[];
+    area?: string;
+    priority?: string;
+  }>> {
+    const idx = await this.getFunctionsIndex();
+    const q = (params.q || "").toLowerCase();
+    const kinds = params.kinds ? new Set(params.kinds) : undefined;
+    const tagsFilter = params.tags ? new Set(params.tags) : undefined;
+    const areaFilter = params.area;
+
+    const results: Array<{ 
+      id: string; 
+      title: string; 
+      kind: NodeKind; 
+      path: string[]; 
+      score: number; 
+      tags?: string[];
+      area?: string;
+      priority?: string;
+    }> = [];
+
+    const visit = (n: CatalogNode) => {
+      if (kinds && !kinds.has(n.kind)) { n.children.forEach(visit); return; }
+      if (areaFilter && n.area !== areaFilter) { n.children.forEach(visit); return; }
+      
+      const hay = `${n.id} ${n.title} ${(n.meta?.tags || []).join(" ")}`.toLowerCase();
+      let score = 0;
+      
+      if (q) {
+        if (hay.includes(q)) score += 10;
+        if (n.title.toLowerCase().startsWith(q)) score += 5;
+        if (n.id.toLowerCase() === q) score += 20;
+      } else {
+        score = 1;
+      }
+      
+      if (tagsFilter && n.meta?.tags) {
+        const nodeTags = new Set(n.meta.tags.map(t => t.toLowerCase()));
+        const matches = [...tagsFilter].some(t => nodeTags.has(t));
+        if (!matches) score = 0;
+      }
+      
+      if (score > 0) {
+        results.push({ 
+          id: n.id, 
+          title: n.title, 
+          kind: n.kind, 
+          path: n.path, 
+          score, 
+          tags: n.meta?.tags,
+          area: n.area,
+          priority: n.meta?.priority
+        });
+      }
+      
+      n.children.forEach(visit);
+    };
+
+    idx.nodes.forEach(visit);
+    results.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, idx.rules.locale));
+    return results;
+  }
+
+  getRuleSnapshot(): GlobalRules {
+    return _cache?.rules ?? DEFAULT_RULES;
+  }
+
+  getSourceFiles(): string[] {
+    return _cache?.nodes.map(n => n.source.file).filter((v, i, a) => a.indexOf(v) === i) ?? [];
+  }
+  
+  async getNodeCount(): Promise<number> {
+    const idx = await this.getFunctionsIndex();
+    return idx.stats.totalNodes;
+  }
+
+  async setBaseDirectory(newDir: string): Promise<void> {
+    this.baseDir = newDir;
+    _cache = null;
+  }
+
+   async addJSONFiles(filePaths: string[]): Promise<BuildResult> {
+    return await this.refreshFunctionsIndex();
+  }
+
+  /* -----------------------------------------------------------
+     Kompakte Übersicht – wird vom Dashboard (/api/functions) genutzt
+  ----------------------------------------------------------- */
+  async getFunctionsSummary() {
+    try {
+      const index = await this.getFunctionsIndex();
+
+      const totalNodes = index.nodes?.length ?? 0;
+      const categories = Array.isArray(index.nodes)
+        ? index.nodes.filter((n) => Array.isArray(n.children) && n.children.length > 0).length
+        : 0;
+
+      return {
+        loadedAt: index.loadedAt ?? new Date().toISOString(),
+        nodes: totalNodes,
+        categories,
+        warnings: index.warnings ?? [],
+        findings: index.findings ?? [],
+      };
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error('[FunctionsCatalogService] Fehler in getFunctionsSummary:', msg);
+      return {
+        loadedAt: new Date().toISOString(),
+        nodes: 0,
+        categories: 0,
+        warnings: [],
+        findings: [],
+        error: msg,
+      };
+    }
+  }
+}
+
+
+
+// Vereinfachte Exporte (wie zuvor)...
+export async function refreshFunctionsIndex(opts?: BuildOptions): Promise<BuildResult> {
+  const service = new FunctionsCatalogService(opts);
+  return await service.refreshFunctionsIndex();
+}
+
+export async function getFunctionsIndex(opts?: BuildOptions): Promise<BuildResult> {
+  const service = new FunctionsCatalogService(opts);
+  return await service.getFunctionsIndex();
+}
+
+export async function getMenuForContext(ctx: MenuContext, opts?: BuildOptions): Promise<{ menu: MenuNode[]; loadedAt: string; stats: any }> {
+  const service = new FunctionsCatalogService(opts);
+  return await service.getMenuForContext(ctx);
+}
+
+export async function lintFunctions(opts?: BuildOptions): Promise<{ findings: LintFinding[]; loadedAt: string }> {
+  const service = new FunctionsCatalogService(opts);
+  return await service.lintFunctions();
+}
+
+export async function getNodeById(id: string, opts?: BuildOptions): Promise<ReturnType<FunctionsCatalogService['getNodeById']>> {
+  const service = new FunctionsCatalogService(opts);
+  return await service.getNodeById(id);
+}
+
+export async function getChildrenForNode(id: string, ctx?: MenuContext, opts?: BuildOptions): Promise<ReturnType<FunctionsCatalogService['getChildrenForNode']>> {
+  const service = new FunctionsCatalogService(opts);
+  return await service.getChildrenForNode(id, ctx);
+}
+
+export async function searchFunctions(params: SearchParams, opts?: BuildOptions): Promise<ReturnType<FunctionsCatalogService['search']>> {
+  const service = new FunctionsCatalogService(opts);
+  return await service.search(params);
+}
+
+export async function getNodeCount(opts?: BuildOptions): Promise<number> {
+  const service = new FunctionsCatalogService(opts);
+  return await service.getNodeCount();
+}
+
+export async function setFunctionsDirectory(newDir: string, opts?: BuildOptions): Promise<void> {
+  const service = new FunctionsCatalogService(opts);
+  await service.setBaseDirectory(newDir);
+}
+
+export async function addFunctionFiles(filePaths: string[], opts?: BuildOptions): Promise<BuildResult> {
+  const service = new FunctionsCatalogService(opts);
+  return await service.addJSONFiles(filePaths);
+}

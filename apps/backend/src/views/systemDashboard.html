@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP SteinmetZ - System Dashboard</title>
+    <style>
+        /* Simple inline CSS for login to ensure it works */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-form h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #2563eb;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+        .error-message {
+            color: #ef4444;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="systemDashboard.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <div class="login-form">
+            <h1>🔐 Admin Login</h1>
+            <div class="form-group">
+                <label for="username">Benutzername:</label>
+                <input type="text" id="username" value="admin" placeholder="admin">
+            </div>
+            <div class="form-group">
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" value="admin123" placeholder="admin123">
+            </div>
+            <button class="login-btn" id="login-btn">Anmelden</button>
+            <div class="error-message" id="login-error">Falsche Anmeldedaten!</div>
+            <div style="text-align: center; margin-top: 1rem; color: #6b7280; font-size: 0.9rem;">
+                Benutzername: admin<br>Passwort: admin123
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (hidden until login) -->
+    <div id="dashboard" style="display: none;">
+        <div class="container">
+            <header class="header">
+                <h1>🏢 ERP SteinmetZ</h1>
+                <p class="subtitle">System Dashboard & Monitoring</p>
+                <div class="button-group">
+                    <button class="refresh-btn" id="refresh-btn">
+                        🔄 Aktualisieren
+                    </button>
+                    <button class="refresh-btn" id="load-all-btn">
+                        📊 Vollständig laden
+                    </button>
+                    <button class="refresh-btn" id="logout-btn" style="background: var(--danger);">
+                        🚪 Abmelden
+                    </button>
+                </div>
+                <div class="timestamp" id="timestamp"></div>
+            </header>
+
+            <div class="grid">
+                <!-- Service Status -->
+                <div class="card" id="status-card">
+                    <div class="card-header">
+                        <span class="card-icon">📊</span>
+                        <h2 class="card-title">Service Status</h2>
+                    </div>
+                    <div id="status-content">
+                        <div class="loading">Lade Status...</div>
+                    </div>
+                </div>
+
+                <!-- System Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">💻</span>
+                        <h2 class="card-title">System Information</h2>
+                    </div>
+                    <div id="system-content">
+                        <div class="loading">Lade System-Info...</div>
+                    </div>
+                </div>
+
+                <!-- Database Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🗃️</span>
+                        <h2 class="card-title">Datenbank</h2>
+                    </div>
+                    <div id="database-content">
+                        <div class="loading">Lade DB-Info...</div>
+                    </div>
+                </div>
+
+                <!-- AI Annotator Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-icon">🤖</span>
+                        <h2 class="card-title">AI Annotator</h2>
+                    </div>
+                    <div id="ai-content">
+                        <div class="loading">Lade AI-Status...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">⚡</span>
+                    <h2 class="card-title">Quick Actions</h2>
+                </div>
+                <div class="quick-actions" id="quick-actions">
+                    <button class="quick-btn" data-endpoint="/api/health">Health Check</button>
+                    <button class="quick-btn" data-endpoint="/api/functions">Functions</button>
+                    <button class="quick-btn" data-endpoint="/api/ai-annotator/status">AI Status</button>
+                    <button class="quick-btn" data-endpoint="/api/dashboard">Dashboard</button>
+                    <button class="quick-btn" id="quick-load-all">All Data</button>
+                    <button class="quick-btn" id="open-system-api">System API</button>
+                </div>
+            </div>
+
+            <!-- Routes Info mit Tabs -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🛣️</span>
+                    <h2 class="card-title">API Routes</h2>
+                    <span style="margin-left: auto; font-size: 0.9rem; color: var(--secondary);" id="routes-count">
+                        - Routes
+                    </span>
+                </div>
+                
+                <div class="tab-container" id="routes-tab">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="all-routes">Alle Routes</button>
+                        <button class="tab-button" data-tab="ai-routes">AI Routes</button>
+                        <button class="tab-button" data-tab="function-routes">Function Routes</button>
+                    </div>
+                    
+                    <div id="all-routes" class="tab-content active">
+                        <div id="routes-content">
+                            <div class="loading">Lade Routes...</div>
+                        </div>
+                    </div>
+                    
+                    <div id="ai-routes" class="tab-content">
+                        <div id="ai-routes-content">
+                            <div class="loading">Lade AI Routes...</div>
+                        </div>
+                    </div>
+                    
+                    <div id="function-routes" class="tab-content">
+                        <div id="function-routes-content">
+                            <div class="loading">Lade Function Routes...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Functions Catalog Info -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📁</span>
+                    <h2 class="card-title">Functions Katalog</h2>
+                </div>
+                <div id="functions-content">
+                    <div class="loading">Lade Functions-Info...</div>
+                </div>
+            </div>
+
+            <!-- Detailed System Info -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📋</span>
+                    <h2 class="card-title">Detaillierte System-Übersicht</h2>
+                </div>
+                <div id="detailed-content">
+                    <div class="loading">Lade detaillierte Informationen...</div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>ERP SteinmetZ Backend System • <span id="version-info">Version 1.0</span></p>
+                <p>Letzte Aktualisierung: <span id="last-update">-</span></p>
+                <p>Backend: <span id="backend-url">http://localhost:3000</span></p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="systemDashboard.js"></script>
+</body>
+</html>

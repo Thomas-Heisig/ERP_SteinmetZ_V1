@@ -1,0 +1,62 @@
+{
+  "reflections": {
+    "ich": "Sie",
+    "mich": "Sie",
+    "mir": "Ihnen",
+    "mein": "Ihr",
+    "meine": "Ihre",
+    "meiner": "Ihrer",
+    "meines": "Ihres",
+    "meinem": "Ihrem",
+    "meinen": "Ihren",
+
+    "du": "Sie",
+    "dir": "Ihnen",
+    "dein": "Ihr",
+    "deine": "Ihre",
+    "deiner": "Ihrer",
+    "deines": "Ihres",
+    "deinem": "Ihrem",
+    "deinen": "Ihren",
+
+    "ihr": "Sie",
+    "euch": "Ihnen",
+    "euer": "Ihr",
+    "eure": "Ihre",
+    "eurer": "Ihrer",
+    "eures": "Ihres",
+    "eurem": "Ihrem",
+    "euren": "Ihren",
+
+    "wir": "Sie",
+    "uns": "Sie",
+    "unser": "Ihr",
+    "unsere": "Ihre",
+    "unserem": "Ihrem",
+    "unseren": "Ihren",
+
+    "er": "er",
+    "sie": "sie",
+    "es": "es",
+    "ihn": "ihn",
+    "ihm": "ihm",
+    "sein": "sein",
+    "seine": "seine",
+
+    "bin": "sind",
+    "bist": "sind",
+    "ist": "sind",
+    "war": "waren",
+    "warst": "waren",
+    "seid": "sind",
+    "würde": "würden",
+    "habe": "haben",
+    "hast": "haben",
+    "hat": "haben",
+
+    "deinerseits": "Ihrerseits",
+    "meinerseits": "Ihrerseits",
+    "unsererseits": "Ihrerseits",
+    "eurerseits": "Ihrerseits"
+  }
+}

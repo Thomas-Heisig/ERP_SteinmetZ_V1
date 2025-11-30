@@ -1,0 +1,620 @@
+// SPDX-License-Identifier: MIT
+// apps/frontend/src/pages/Dashboard.tsx
+
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import QuickChat from "../components/QuickChat/index.js";
+import { useTheme } from "../contexts/ThemeContext";
+import { useHealth, type HealthStatus } from "../hooks/useHealth";
+import { useFunctionsCatalog, type NodeDetail } from "../hooks/useFunctionsCatalog";
+
+
+/* ---------------------------------------------------------
+   Dashboard – Optimierte Ansicht ohne Sidebar
+--------------------------------------------------------- */
+export default function Dashboard() {
+  const { theme } = useTheme();
+  const backend = import.meta.env.VITE_BACKEND_URL || "";
+  const health = useHealth(backend);
+
+  const config = useMemo(() => ({ baseUrl: backend }), [backend]);
+  const {
+    roots,
+    rootsLoading,
+    rootsError,
+    selectedId,
+    selectNode,
+    node,
+    nodeLoading,
+    nodeError,
+    searchQuery,
+    searchResults,
+    search,
+    searchLoading,
+    reloadIndex,
+    rules,
+  } = useFunctionsCatalog(config);
+
+  const [showChat, setShowChat] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [navigationStack, setNavigationStack] = useState<NodeDetail[]>([]);
+  const [searchFilter, setSearchFilter] = useState<"category" | "function">("category");
+
+  /* ---------------------------------------------------------
+     Navigation-Handler
+  --------------------------------------------------------- */
+  const handleSelectNode = useCallback((id: string) => {
+    selectNode(id);
+  }, [selectNode]);
+
+  const handleBackNavigation = useCallback(() => {
+    if (navigationStack.length > 0) {
+      const previousNode = navigationStack[navigationStack.length - 1];
+      setNavigationStack(prev => prev.slice(0, -1));
+      selectNode(previousNode.id);
+    } else {
+      selectNode("");
+    }
+  }, [navigationStack, selectNode]);
+
+  const handleCategoryClick = useCallback((categoryNode: NodeDetail) => {
+    if (node) {
+      setNavigationStack(prev => [...prev, node]);
+    }
+    selectNode(categoryNode.id);
+  }, [node, selectNode]);
+
+  /* ---------------------------------------------------------
+     ESC schließt Chat
+  --------------------------------------------------------- */
+  const escHandler = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") setShowChat(false);
+  }, []);
+  useEffect(() => {
+    if (showChat) document.addEventListener("keydown", escHandler);
+    return () => document.removeEventListener("keydown", escHandler);
+  }, [showChat, escHandler]);
+
+  /* ---------------------------------------------------------
+     Uhrzeit aktualisieren
+  --------------------------------------------------------- */
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  /* ---------------------------------------------------------
+     Statusfarben
+  --------------------------------------------------------- */
+  const getStatusColor = (status: HealthStatus) => {
+    switch (status) {
+      case "healthy": return "#10b981";
+      case "unhealthy": return "#f59e0b";
+      case "error": return "#ef4444";
+      case "checking": return "#6b7280";
+      default: return "#9ca3af";
+    }
+  };
+  
+  const getStatusText = (status: HealthStatus) => {
+    switch (status) {
+      case "healthy": return "System online";
+      case "unhealthy": return "System gestört";
+      case "error": return "Verbindungsfehler";
+      case "checking": return "Prüfe Status…";
+      default: return "Unbekannt";
+    }
+  };
+  
+  const statusColor = getStatusColor(health.status);
+  const statusText = getStatusText(health.status);
+
+  /* ---------------------------------------------------------
+     Standard-Icons für Kategorien
+  --------------------------------------------------------- */
+  const getDefaultCategoryIcon = (category: NodeDetail): string => {
+    const title = category.title.toLowerCase();
+    const meta = category.meta as any;
+    
+    if (category.icon) return category.icon;
+    
+    if (title.includes('dashboard') || meta?.area === 'analytics') return '📊';
+    if (title.includes('finanz') || meta?.area === 'finance') return '💰';
+    if (title.includes('betrieb') || meta?.area === 'operations') return '🏭';
+    if (title.includes('lager') || title.includes('inventory')) return '📦';
+    if (title.includes('kunden') || title.includes('customer')) return '👥';
+    if (title.includes('system') || meta?.area === 'system') return '⚙️';
+    if (title.includes('report') || title.includes('bericht')) return '📈';
+    if (title.includes('analyse') || title.includes('analytics')) return '🔍';
+    if (title.includes('werkzeug') || title.includes('tool')) return '🛠️';
+    
+    return '📁';
+  };
+
+/* ---------------------------------------------------------
+   Hauptkategorien – Optimierte Widget-Ansicht (sicher)
+--------------------------------------------------------- */
+// --- Debug: Doppelte Kategorie-IDs prüfen (optional)
+useEffect(() => {
+  if (Array.isArray(roots)) {
+    const ids = roots.map(r => r.id);
+    const duplicates = ids.filter((id, idx) => ids.indexOf(id) !== idx);
+    if (duplicates.length > 0) {
+      console.warn("⚠️ Doppelte Kategorie-IDs erkannt:", duplicates);
+    }
+  }
+}, [roots]);
+
+const renderCategoriesOverview = () => {
+  if (rootsLoading) {
+    return (
+      <div className="loading-state">
+        <div className="loading-spinner"></div>
+        <p>Lade Kategorien…</p>
+      </div>
+    );
+  }
+
+  if (rootsError) {
+    return (
+      <div className="error-state">
+        <h3>Fehler beim Laden der Kategorien</h3>
+        <p>{String(rootsError)}</p>
+        <button onClick={() => reloadIndex()} className="retry-btn">
+          Erneut versuchen
+        </button>
+      </div>
+    );
+  }
+
+  if (!Array.isArray(roots) || roots.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="empty-icon">📁</div>
+        <h3>Keine Kategorien gefunden</h3>
+        <p>Es konnten keine Hauptkategorien geladen werden.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="categories-dashboard">
+      <header className="categories-header">
+        <h1>📂 Funktionsbereiche</h1>
+        <p>Wählen Sie einen Bereich, um seine Module zu öffnen</p>
+      </header>
+
+      <div className="categories-grid">
+        {roots.map((category, index) => {
+          if (!category || typeof category !== "object") return null;
+          const meta = (category.meta ?? {}) as Record<string, unknown>;
+          const area = typeof meta.area === "string" ? meta.area : "Allgemein";
+          const priority =
+            typeof meta.priority === "string" ? meta.priority : "Standard";
+          const desc =
+            typeof meta.description === "string"
+              ? meta.description
+              : "Keine Beschreibung verfügbar";
+          const icon = category.icon || getDefaultCategoryIcon(category);
+          const children = Array.isArray(category.children)
+            ? category.children
+            : [];
+
+          return (
+            <div
+              key={`${category.id || "cat"}-${index}`} // 👈 stabile Keys
+              className="category-widget"
+              onClick={() => handleCategoryClick(category)}
+              title={`Öffne Kategorie: ${category.title}`}
+            >
+              <div className="widget-icon">{icon}</div>
+              <div className="widget-content">
+                <div className="widget-header">
+                  <h3 className="widget-title">
+                    {category.title || "Unbenannte Kategorie"}
+                  </h3>
+                  <span className="widget-kind">{category.kind || "category"}</span>
+                </div>
+                <p className="widget-desc">{desc}</p>
+
+                {children.length > 0 && (
+                  <div className="widget-preview">
+                    {children.slice(0, 3).map((child, idx) => (
+                      <div
+                        key={`${child.id || "child"}-${idx}`}
+                        className="child-preview"
+                      >
+                        <span className="child-icon">{child.icon || "📄"}</span>
+                        <span className="child-title">
+                          {child.title || "Unbenannt"}
+                        </span>
+                      </div>
+                    ))}
+                    {children.length > 3 && (
+                      <div className="more-preview">
+                        +{children.length - 3} weitere
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="widget-meta">
+                  <span className="meta-area">🏷 {area}</span>
+                  <span className="meta-priority">⚖️ {priority}</span>
+                  {children.length > 0 && (
+                    <span className="meta-count">
+                      {children.length} Funktion
+                      {children.length > 1 ? "en" : ""}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+
+
+  /* ---------------------------------------------------------
+     Detailansicht für ausgewählten Node
+  --------------------------------------------------------- */
+  const renderNodeDetails = () => {
+    if (nodeLoading) {
+      return (
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <p>Lade Details…</p>
+        </div>
+      );
+    }
+
+    if (nodeError) {
+      return (
+        <div className="error-state">
+          <h3>Fehler beim Laden</h3>
+          <p>{nodeError}</p>
+          <button onClick={() => selectNode(node?.id || '')} className="retry-btn">
+            Erneut versuchen
+          </button>
+        </div>
+      );
+    }
+
+    if (!node) return null;
+
+    return (
+      <div className="node-details">
+        {/* Breadcrumb-Navigation */}
+        <div className="breadcrumb-nav">
+          <button 
+            onClick={handleBackNavigation}
+            className="back-btn"
+            disabled={navigationStack.length === 0 && !selectedId}
+          >
+            ← Zurück
+          </button>
+          <div className="breadcrumb-path">
+            {navigationStack.map((navNode, index) => (
+              <React.Fragment key={navNode.id}>
+                <button 
+                  onClick={() => {
+                    setNavigationStack(prev => prev.slice(0, index));
+                    selectNode(navNode.id);
+                  }}
+                  className="breadcrumb-item"
+                >
+                  {navNode.icon} {navNode.title}
+                </button>
+                <span className="breadcrumb-separator">/</span>
+              </React.Fragment>
+            ))}
+            <span className="breadcrumb-current">
+              {node.icon} {node.title}
+            </span>
+          </div>
+        </div>
+
+        {/* Node-Header */}
+        <header className="node-header">
+          <div className="node-title-section">
+            <span className="node-icon-large">{node.icon || "📄"}</span>
+            <div className="node-title-content">
+              <h1>{node.title}</h1>
+              <div className="node-meta-badges">
+                <span className="node-kind-badge">{node.kind}</span>
+                {node.meta && (node.meta as any).area && (
+                  <span className="node-area-badge">{(node.meta as any).area}</span>
+                )}
+                {node.meta && (node.meta as any).priority && (
+                  <span className="node-priority-badge">{(node.meta as any).priority}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Basisinformationen */}
+        <section className="node-basic-info">
+          <div className="info-grid">
+            <div className="info-item">
+              <label>ID:</label>
+              <span>{node.id}</span>
+            </div>
+            {Array.isArray(node.path) && node.path.length > 0 && (
+              <div className="info-item">
+                <label>Pfad:</label>
+                <span>{node.path.join(" / ")}</span>
+              </div>
+            )}
+            {node.source && (
+              <div className="info-item">
+                <label>Quelle:</label>
+                <span>
+                  {node.source.file}:{node.source.lineStart}
+                  {node.source.lineEnd ? `–${node.source.lineEnd}` : ""}
+                </span>
+              </div>
+            )}
+            {typeof node.weight === "number" && (
+              <div className="info-item">
+                <label>Gewichtung:</label>
+                <span>{node.weight}</span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Meta-Daten */}
+        {node.meta != null && (
+          <section className="node-section">
+            <h3>📋 Meta-Informationen</h3>
+            <div className="section-content">
+              <pre className="code-block">
+                {JSON.stringify(node.meta, null, 2)}
+              </pre>
+            </div>
+          </section>
+        )}
+
+        {/* Arbeitsanweisung */}
+        {node.aa != null && (
+          <section className="node-section">
+            <h3>📝 Arbeitsanweisung</h3>
+            <div className="section-content">
+              <pre className="code-block">
+                {JSON.stringify(node.aa, null, 2)}
+              </pre>
+            </div>
+          </section>
+        )}
+
+        {/* JSON-Schema */}
+        {node.schema != null && (
+          <section className="node-section">
+            <h3>🔧 JSON-Schema</h3>
+            <div className="section-content">
+              <pre className="code-block">
+                {JSON.stringify(node.schema, null, 2)}
+              </pre>
+            </div>
+          </section>
+        )}
+
+        {Array.isArray(node.children) && node.children.length > 0 && (
+          <section className="node-section">
+            <h3>
+              {node.kind === "category" || node.kind === "group"
+                ? "📂 Untergruppen"
+                : "🎯 Unterfunktionen"}{" "}
+              ({node.children.length})
+            </h3>
+
+            <div className="children-grid">
+              {node.children.map((child) => {
+                const c = child as Partial<NodeDetail>;
+                const desc = (c.meta as any)?.description || "";
+                return (
+                  <div
+                    key={c.id}
+                    className="child-card"
+                    onClick={() => {
+                      setNavigationStack((prev) => [...prev, node]);
+                      selectNode(c.id!);
+                    }}
+                  >
+                    <div className="child-header">
+                      <span className="child-icon">{c.icon || "📄"}</span>
+                      <h4 className="child-title">{c.title}</h4>
+                    </div>
+                    <div className="child-kind">{c.kind}</div>
+                    {desc && <p className="child-desc">{desc}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+
+        {/* Warnungen */}
+        {Array.isArray(node.warnings) && node.warnings.length > 0 && (
+          <section className="node-section warnings">
+            <h3>⚠️ Warnungen</h3>
+            <div className="section-content">
+              <ul className="warnings-list">
+                {node.warnings.map((warning, index) => (
+                  <li key={index}>{warning}</li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
+      </div>
+    );
+  };
+
+  /* ---------------------------------------------------------
+     Render-Hauptinhalt
+  --------------------------------------------------------- */
+  const renderContent = () => {
+    if (rootsLoading) {
+      return (
+        <div className="loading-state fullscreen">
+          <div className="loading-spinner large"></div>
+          <p>Lade Funktionskatalog…</p>
+        </div>
+      );
+    }
+
+    if (rootsError) {
+      return (
+        <div className="error-state fullscreen">
+          <h3>Fehler beim Laden</h3>
+          <p>{rootsError}</p>
+          <button onClick={() => reloadIndex()} className="retry-btn">
+            Erneut versuchen
+          </button>
+        </div>
+      );
+    }
+
+    // Zeige Node-Details wenn ein Node ausgewählt ist
+    if (selectedId && node) {
+      return renderNodeDetails();
+    }
+
+    // Standard: Zeige Hauptkategorien-Übersicht
+    return renderCategoriesOverview();
+  };
+
+  /* ---------------------------------------------------------
+     Dashboard-Layout
+  --------------------------------------------------------- */
+  return (
+    <div className={`dashboard-root ${theme}`}>
+      <main className="dashboard-main">
+        {/* Kopfzeile */}
+        <header className="dashboard-header">
+          <div className="header-left">
+            <h1 className="dashboard-title">
+              ERP SteinmetZ <span className="subtitle">Funktionskatalog</span>
+            </h1>
+            {rules && (
+              <div className="rules-info">
+                v{rules.version} • {rules.locale}
+              </div>
+            )}
+          </div>
+          <div className="header-right">
+            <div className="status-display">
+              <span 
+                className="status-dot" 
+                style={{ background: statusColor }}
+                title={statusText}
+              />
+              <span className="status-text">{statusText}</span>
+              {health.version && (
+                <span className="version-info">v{health.version}</span>
+              )}
+            </div>
+            <div className="time-display">
+              <div className="time">{currentTime.toLocaleTimeString("de-DE")}</div>
+              <div className="date">{currentTime.toLocaleDateString("de-DE")}</div>
+            </div>
+          </div>
+        </header>
+        
+        {/* Topbar mit Kategorien und Suche */}
+        <div className="dashboard-topbar">
+          <div className="topbar-categories">
+            {roots
+              .filter((cat) => cat.kind === "category")
+              .map((cat) => (
+                <button
+                  key={cat.id}
+                  className={`topbar-category-btn ${selectedId === cat.id ? "active" : ""}`}
+                  onClick={() => selectNode(cat.id)}
+                  title={cat.title}
+                >
+                  <span className="cat-icon">{cat.icon || "📁"}</span>
+                  <span className="cat-title">{cat.title}</span>
+                </button>
+              ))}
+          </div>
+
+          <div className="topbar-search">
+            <select
+              className="search-filter"
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value as "category" | "function")}
+            >
+              <option value="category">Kategorien</option>
+              <option value="function">Funktionen</option>
+            </select>
+
+            <input
+              type="search"
+              placeholder={`Suche nach ${searchFilter === "category" ? "Kategorien" : "Funktionen"}...`}
+              value={searchQuery}
+              onChange={(e) => search(e.target.value, [searchFilter as any])}
+              className="search-input"
+            />
+            {searchLoading && <div className="search-spinner">🔍</div>}
+          </div>
+        </div>
+
+        {/* Suchergebnisse */}
+        {searchResults.length > 0 && (
+          <div className="search-results-overlay">
+            <div className="search-results">
+              <div className="search-results-header">
+                <h4>Suchergebnisse ({searchResults.length})</h4>
+                <button 
+                  className="close-results" 
+                  onClick={() => search('')}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="results-grid">
+                {searchResults.map((result) => (
+                  <div
+                    key={result.id}
+                    className="result-card"
+                    onClick={() => handleSelectNode(result.id)}
+                  >
+                    <div className="result-icon">{(result as any).icon || "📄"}</div>
+
+                    <div className="result-content">
+                      <div className="result-title">{result.title}</div>
+                      <div className="result-path">{result.path.join(" / ")}</div>
+                      <div className="result-kind">{result.kind}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Hauptinhalt */}
+        <section className="content-area">
+          {renderContent()}
+        </section>
+
+        {/* QuickChat */}
+        <button 
+          className="fab" 
+          onClick={() => setShowChat(true)}
+          title="AI-Assistent öffnen"
+        >
+          💬
+        </button>
+        <QuickChat isOpen={showChat} onClose={() => setShowChat(false)} />
+      </main>
+    </div>
+  );
+}

@@ -1,0 +1,94 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(hash|hashwert)\\s+(.*)",
+      "replies": [
+        "Ich erstelle einen Hash für $2.",
+        "Hash-Erstellung für $2 wird durchgeführt."
+      ],
+      "action": "hash_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(consistent\\s+hashing|konsistentes\\s+hashing)\\s+(.*)",
+      "replies": [
+        "Ich verwalte das konsistente Hashing für $2.",
+        "Consistent-Hashing-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_consistent_hashing",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(distributed\\s+hashing|verteiltes\\s+hashing)\\s+(.*)",
+      "replies": [
+        "Ich verwalte das verteilte Hashing für $2.",
+        "Distributed-Hashing-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_distributed_hashing",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(checksum|prüfsumme)\\s+(.*)",
+      "replies": [
+        "Ich berechne die Prüfsumme für $2.",
+        "Checksum-Berechnung für $2 wird durchgeführt."
+      ],
+      "action": "calculate_checksum",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(signature|signatur)\\s+(erstell|generier|prüf|verify)\\s*(.*)",
+      "replies": [
+        "Ich $2e die Signatur für $3.",
+        "Signaturvorgang für $3 wird ausgeführt."
+      ],
+      "action": "manage_signature",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(vergleiche|vergleich|compare)\\s+(hash|hashes)\\s+(.*)\\s+und\\s+(.*)",
+      "replies": [
+        "Ich vergleiche die Hashwerte von $3 und $4.",
+        "Hash-Vergleich zwischen $3 und $4 wird ausgeführt."
+      ],
+      "action": "compare_hashes",
+      "params": ["$3", "$4"]
+    },
+    {
+      "pattern": "\\b(validate|prüfe|überprüfe|validier|validiere)\\s+(hash|hashwert|integrität)\\s+(von\\s+)?(.*)",
+      "replies": [
+        "Ich überprüfe die Integrität von $4.",
+        "Validierung des Hashwertes für $4 wird durchgeführt."
+      ],
+      "action": "validate_hash",
+      "params": ["$4"]
+    },
+    {
+      "pattern": "\\b(salt|salz)\\s+(erstell|generier|verwende|setz|setze)\\s*(.*)",
+      "replies": [
+        "Ich generiere ein Salt für $3.",
+        "Salt-Erstellung für $3 wird durchgeführt."
+      ],
+      "action": "generate_salt",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(hmac|mac|message\\s+auth|nachrichten\\s+authentifizierung)\\s+(.*)",
+      "replies": [
+        "Ich berechne den HMAC für $2.",
+        "Nachrichtenauthentifizierung für $2 wird durchgeführt."
+      ],
+      "action": "calculate_hmac",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(hash\\s+funktion|hash\\s+algorithm(us|en)?)\\s+(prüfe|wähle|verwend|setze)\\s*(.*)",
+      "replies": [
+        "Ich verwende den Hash-Algorithmus $4.",
+        "Hash-Funktion $4 wird konfiguriert."
+      ],
+      "action": "select_hash_algorithm",
+      "params": ["$4"]
+    }
+  ]
+}

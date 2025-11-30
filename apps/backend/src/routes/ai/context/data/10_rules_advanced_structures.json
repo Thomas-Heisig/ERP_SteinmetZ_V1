@@ -1,0 +1,130 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(binary\\s+search\\s+tree|binärsuchbaum)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den Binärsuchbaum für $2.",
+        "Binary-Search-Tree-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_binary_search_tree",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(graph|netzwerk)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den Graph für $2.",
+        "Graph-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_graph",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(linked\\s+list|verkettete\\s+liste)\\s+(.*)",
+      "replies": [
+        "Ich verwalte die verkettete Liste für $2.",
+        "Linked-List-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_linked_list",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(heap|halde)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den Heap für $2.",
+        "Heap-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_heap",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(priority\\s+queue|prioritätswarteschlange)\\s+(.*)",
+      "replies": [
+        "Ich verwalte die Prioritätswarteschlange für $2.",
+        "Priority-Queue-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_priority_queue",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(trie|präfixbaum)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den Trie (Präfixbaum) für $2.",
+        "Trie-Struktur für $2 wird aufgebaut."
+      ],
+      "action": "manage_trie",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(b\\s*-?tree|bbaum|b-?baum)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den B-Baum für $2.",
+        "B-Tree-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_btree",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(avl\\s*tree|avl\\s*baum)\\s+(.*)",
+      "replies": [
+        "Ich verwalte den AVL-Baum für $2.",
+        "AVL-Tree-Management für $2 wird durchgeführt."
+      ],
+      "action": "manage_avl_tree",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(hash\\s*map|hash\\s*tabelle|caching)\\s+(.*)",
+      "replies": [
+        "Ich verwalte die HashMap für $2.",
+        "Caching-Mechanismus für $2 wird eingerichtet."
+      ],
+      "action": "manage_hashmap_cache",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(graph\\s+(algorithmus|algorithm|algorithms))\\s+(.*)",
+      "replies": [
+        "Ich führe den Graph-Algorithmus für $3 aus.",
+        "Graphenberechnung für $3 wird gestartet."
+      ],
+      "action": "run_graph_algorithm",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(path\\s*find|pfadsuche|shortest\\s*path)\\s+(.*)",
+      "replies": [
+        "Ich berechne den kürzesten Pfad in $2.",
+        "Pfadsuche in $2 wird durchgeführt."
+      ],
+      "action": "find_shortest_path",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(balance|balancier|ausgleich|rebalance)\\s+(baum|tree)\\s+(.*)",
+      "replies": [
+        "Ich balanciere den Baum $3.",
+        "Rebalancing des Baums $3 wird ausgeführt."
+      ],
+      "action": "balance_tree",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(insert|füge|einfüg|add|hinzufüg)\\s+(.*)\\s+in\\s+(baum|tree|struktur|graph)",
+      "replies": [
+        "Ich füge $1 in die Struktur $3 ein.",
+        "Einfügevorgang von $1 in $3 wird durchgeführt."
+      ],
+      "action": "insert_into_structure",
+      "params": ["$1", "$3"]
+    },
+    {
+      "pattern": "\\b(delete|entfern|lösch|remove)\\s+(.*)\\s+aus\\s+(baum|tree|struktur|graph)",
+      "replies": [
+        "Ich entferne $1 aus der Struktur $3.",
+        "Löschvorgang von $1 aus $3 wird durchgeführt."
+      ],
+      "action": "delete_from_structure",
+      "params": ["$1", "$3"]
+    }
+  ]
+}

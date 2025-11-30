@@ -1,0 +1,108 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(security|sicherheit)\\s+(.*)",
+      "replies": [
+        "Ich überprüfe die Sicherheit für $2.",
+        "Security-Check für $2 wird durchgeführt."
+      ],
+      "action": "check_security",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(authenticate|authentifizier)\\s+(.*)",
+      "replies": [
+        "Ich authentifiziere $2.",
+        "Authentifizierung von $2 wird durchgeführt."
+      ],
+      "action": "authenticate_user",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(authorize|autorisiere)\\s+(.*)",
+      "replies": [
+        "Ich autorisiere $2.",
+        "Autorisierung von $2 wird durchgeführt."
+      ],
+      "action": "authorize_user",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(encrypt|verschlüssel)\\s+(.*)",
+      "replies": [
+        "Ich verschlüssele $2.",
+        "Verschlüsselung von $2 wird durchgeführt."
+      ],
+      "action": "encrypt_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(decrypt|entschlüssel)\\s+(.*)",
+      "replies": [
+        "Ich entschlüssele $2.",
+        "Entschlüsselung von $2 wird durchgeführt."
+      ],
+      "action": "decrypt_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(login|anmeldung|melde\\s+mich\\s+an|einloggen)\\b",
+      "replies": [
+        "Ich melde Sie an.",
+        "Anmeldevorgang wird gestartet."
+      ],
+      "action": "user_login"
+    },
+    {
+      "pattern": "\\b(logout|abmeldung|melde\\s+mich\\s+ab|ausloggen)\\b",
+      "replies": [
+        "Ich melde Sie ab.",
+        "Abmeldung wird durchgeführt."
+      ],
+      "action": "user_logout"
+    },
+    {
+      "pattern": "\\b(passwort|password)\\s+(änder|ändere|wechsel|wechseln|zurücksetz|reset)\\b",
+      "replies": [
+        "Ich ändere das Passwort.",
+        "Das Passwort wird aktualisiert."
+      ],
+      "action": "change_password"
+    },
+    {
+      "pattern": "\\b(zugriff|access)\\s+(prüfe|überprüfe|kontrollier|kontrolliere)\\s+(.*)",
+      "replies": [
+        "Ich überprüfe den Zugriff auf $3.",
+        "Zugriffsrechte für $3 werden kontrolliert."
+      ],
+      "action": "check_access",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(protokoll|log|audit)\\s+(anzeig|zeige|prüfe|überprüfe|analysiere|analysier)\\s*(.*)",
+      "replies": [
+        "Ich zeige das Sicherheitsprotokoll für $3.",
+        "Audit-Log von $3 wird analysiert."
+      ],
+      "action": "analyze_security_log",
+      "params": ["$3"]
+    },
+    {
+      "pattern": "\\b(token|schlüssel|api\\s*key)\\s+(erstell|erstelle|generier|generiere|prüfe|überprüfe)\\b",
+      "replies": [
+        "Ich generiere einen neuen Sicherheitsschlüssel.",
+        "Der API-Token wird überprüft."
+      ],
+      "action": "manage_token"
+    },
+    {
+      "pattern": "\\b(berechtigung|rechte)\\s+(prüfe|überprüfe|ändere|aktualisiere)\\s+(.*)",
+      "replies": [
+        "Ich prüfe die Berechtigungen für $3.",
+        "Zugriffsrechte für $3 werden angepasst."
+      ],
+      "action": "manage_permissions",
+      "params": ["$3"]
+    }
+  ]
+}

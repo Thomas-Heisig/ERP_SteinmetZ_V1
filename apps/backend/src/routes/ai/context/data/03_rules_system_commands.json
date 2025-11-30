@@ -1,0 +1,85 @@
+{
+  "eliza_rules": [
+    {
+      "pattern": "\\b(status|prüfe|überprüfe)\\s+(.*)",
+      "replies": [
+        "Ich prüfe den Status von $2.",
+        "Überprüfung von $2 wird durchgeführt."
+      ],
+      "action": "check_status",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(?:was|wie)\\s+ist\\s+der\\s+status\\s+(?:von|der)\\s+(.*)\\??$",
+      "replies": [
+        "Der Status von $1 wird geprüft.",
+        "Ich schaue nach dem aktuellen Stand von $1."
+      ],
+      "action": "check_status",
+      "params": ["$1"]
+    },
+    {
+      "pattern": "\\b(configure|konfigurier)\\s+(.*)",
+      "replies": [
+        "Ich konfiguriere $2.",
+        "Konfiguration von $2 wird durchgeführt."
+      ],
+      "action": "configure_system",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(setup|einricht)\\s+(.*)",
+      "replies": [
+        "Ich richte $2 ein.",
+        "Setup von $2 wird durchgeführt."
+      ],
+      "action": "setup_system",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(starte|start|launch)\\s+(.*)",
+      "replies": [
+        "Ich starte $2.",
+        "$2 wird jetzt gestartet."
+      ],
+      "action": "start_process",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(stoppe|beende|halte|stop)\\s+(.*)",
+      "replies": [
+        "Ich stoppe $2.",
+        "$2 wird beendet."
+      ],
+      "action": "stop_process",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(neu\\s*start|restart|reboote)\\s+(.*)",
+      "replies": [
+        "Ich starte $2 neu.",
+        "Neustart von $2 wird durchgeführt."
+      ],
+      "action": "restart_process",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(zeige|list|liste)\\s+(.*)",
+      "replies": [
+        "Ich zeige Ihnen $2.",
+        "Liste von $2 wird angezeigt."
+      ],
+      "action": "list_data",
+      "params": ["$2"]
+    },
+    {
+      "pattern": "\\b(entferne|lösche|delete|remove)\\s+(.*)",
+      "replies": [
+        "$2 wird gelöscht.",
+        "Ich entferne $2 aus dem System."
+      ],
+      "action": "delete_entry",
+      "params": ["$2"]
+    }
+  ]
+}
