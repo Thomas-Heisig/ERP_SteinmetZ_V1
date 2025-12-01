@@ -30,6 +30,10 @@ import healthRouter from "./routes/systemInfoRouter/health.js";
 import functionsCatalogRouter from "./routes/functionsCatalog/functionsCatalog.js";
 import aiAnnotatorRouter from "./routes/aiAnnotatorRouter/aiAnnotatorRouter.js";
 import systemInfoRouter from "./routes/systemInfoRouter/systemInfoRouter.js";
+import innovationRouter from "./routes/innovation/innovationRouter.js";
+import calendarRouter from "./routes/calendar/calendarRouter.js";
+import quickchatRouter from "./routes/quickchat/quickchatRouter.js";
+import diagnosticsRouter from "./routes/diagnostics/diagnosticsRouter.js";
 
 import { toolRegistry } from "./tools/registry.js";
 import { listRoutesTool } from "./tools/listRoutesTool.js";
@@ -120,6 +124,10 @@ app.use("/api/ai", aiRouter);
 app.use("/api/functions", functionsCatalogRouter);
 app.use("/api/ai-annotator", aiAnnotatorRouter);
 app.use("/api/system", systemInfoRouter);
+app.use("/api/innovation", innovationRouter);
+app.use("/api/calendar", calendarRouter);
+app.use("/api/quickchat", quickchatRouter);
+app.use("/diagnostics", diagnosticsRouter);
 console.log("[router] API-Routen aktiv");
 
 /* --------------------------------------------------------
