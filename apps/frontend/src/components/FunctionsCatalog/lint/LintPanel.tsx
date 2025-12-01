@@ -31,7 +31,6 @@ export default function LintPanel({ findings }: Props) {
               [{f.severity}] {f.code}
             </strong>
             : {f.message}
-
             {f.file && <span> @ {f.file}</span>}
             {f.nodePath && <span> – {f.nodePath}</span>}
             {f.nodeId && <span> (ID: {f.nodeId})</span>}

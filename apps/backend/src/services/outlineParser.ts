@@ -5,17 +5,17 @@
 export type OutlineNode = {
   id: string;
   title: string;
-  depth: number;        // 0 = Wurzel
-  path: string[];       // Titel-Kette bis zu diesem Knoten
-  line: number;         // 1-basierte Zeile
+  depth: number; // 0 = Wurzel
+  path: string[]; // Titel-Kette bis zu diesem Knoten
+  line: number; // 1-basierte Zeile
   children: OutlineNode[];
 };
 
 export type ParseOptions = {
   // heuristische Steuerung
-  allowBullets?: boolean;         // -/*/+ als Baumzeilen
-  allowPlainHeadings?: boolean;   // „🚛 Logistik“ als Root, wenn danach Baum folgt
-  spacePerLevel?: number;         // für reine Space-Einrückung
+  allowBullets?: boolean; // -/*/+ als Baumzeilen
+  allowPlainHeadings?: boolean; // „🚛 Logistik“ als Root, wenn danach Baum folgt
+  spacePerLevel?: number; // für reine Space-Einrückung
 };
 
 const DEFAULT_OPTS: Required<ParseOptions> = {
@@ -24,23 +24,23 @@ const DEFAULT_OPTS: Required<ParseOptions> = {
   spacePerLevel: 2,
 };
 
-const VS16 = /\uFE0F/g;         // Variation Selector-16
-const ZWJ  = /\u200D/g;         // Zero Width Joiner
+const VS16 = /\uFE0F/g; // Variation Selector-16
+const ZWJ = /\u200D/g; // Zero Width Joiner
 const NBSP = /\u00A0/g;
 
 /** Vor-Normalisierung: entfernt Zeichen, die das Matching sprengen, ohne sichtbare Info zu verlieren. */
 function normalizeLine(raw: string): string {
   return raw
-    .normalize('NFKC')
-    .replace(VS16, '')
-    .replace(ZWJ, '')
-    .replace(NBSP, ' ');
+    .normalize("NFKC")
+    .replace(VS16, "")
+    .replace(ZWJ, "")
+    .replace(NBSP, " ");
 }
 
 /** Tiefe aus Einrückung schätzen – robust gegenüber │, |, Tabs und Spaces. */
 function measureDepth(indent: string, spacePerLevel: number): number {
   const pipes = (indent.match(/[│|]/g) || []).length;
-  const spaces = indent.replace(/[^\s]/g, '').replace(/\t/g, '    ').length;
+  const spaces = indent.replace(/[^\s]/g, "").replace(/\t/g, "    ").length;
   const bySpaces = Math.floor(spaces / Math.max(1, spacePerLevel));
   return Math.max(pipes, bySpaces);
 }
@@ -48,19 +48,25 @@ function measureDepth(indent: string, spacePerLevel: number): number {
 /** slug/id-Generator, stabil über Titelkette */
 function slugify(parts: string[]): string {
   return parts
-    .map(p =>
+    .map((p) =>
       p
         .toLowerCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^\p{L}\p{N}\-_.]+/gu, '')
-        .replace(/-+/g, '-')
+        .replace(/\s+/g, "-")
+        .replace(/[^\p{L}\p{N}\-_.]+/gu, "")
+        .replace(/-+/g, "-"),
     )
-    .join('/');
+    .join("/");
 }
 
 /** Hauptparser */
-export function parseOutline(text: string, opts: ParseOptions = {}): OutlineNode[] {
-  const { allowBullets, allowPlainHeadings, spacePerLevel } = { ...DEFAULT_OPTS, ...opts };
+export function parseOutline(
+  text: string,
+  opts: ParseOptions = {},
+): OutlineNode[] {
+  const { allowBullets, allowPlainHeadings, spacePerLevel } = {
+    ...DEFAULT_OPTS,
+    ...opts,
+  };
   const lines = text.split(/\r?\n/);
 
   type StackEntry = { node: OutlineNode; depth: number };
@@ -72,8 +78,8 @@ export function parseOutline(text: string, opts: ParseOptions = {}): OutlineNode
     for (let j = startIdx + 1; j < lines.length; j++) {
       const l = normalizeLine(lines[j]).trimEnd();
       if (!l.trim()) continue;
-      if (/^(?:[│|] ?|[ \t]{1,4})*(?:├|└)[─>]*\s+.+$/.test(l)) return true;  // Baum
-      if (allowBullets && /^\s*[-*+]\s+.+$/.test(l)) return true;            // Bullet
+      if (/^(?:[│|] ?|[ \t]{1,4})*(?:├|└)[─>]*\s+.+$/.test(l)) return true; // Baum
+      if (allowBullets && /^\s*[-*+]\s+.+$/.test(l)) return true; // Bullet
       break;
     }
     return false;
@@ -117,9 +123,11 @@ export function parseOutline(text: string, opts: ParseOptions = {}): OutlineNode
 
     // 2) Baum-Zeile mit Box-Drawing / variablen Bindestrichen / „--->“
     //    indent: Kombination aus │, |, Tabs/Spaces
-    const mTree = line.match(/^(?<indent>(?:[│|] ?|[ \t]{1,4})*)(?:├|└)[─>]*\s*(?<title>.+?)\s*$/);
+    const mTree = line.match(
+      /^(?<indent>(?:[│|] ?|[ \t]{1,4})*)(?:├|└)[─>]*\s*(?<title>.+?)\s*$/,
+    );
     if (mTree && mTree.groups) {
-      const indent = mTree.groups.indent ?? '';
+      const indent = mTree.groups.indent ?? "";
       const depth = measureDepth(indent, spacePerLevel);
       pushAtDepth(mTree.groups.title, depth, i + 1);
       continue;
@@ -129,7 +137,7 @@ export function parseOutline(text: string, opts: ParseOptions = {}): OutlineNode
     if (allowBullets) {
       const mBullet = line.match(/^(\s*)[-*+]\s+(.+?)\s*$/);
       if (mBullet) {
-        const spaces = (mBullet[1] || '').replace(/\t/g, '    ').length;
+        const spaces = (mBullet[1] || "").replace(/\t/g, "    ").length;
         const depth = Math.floor(spaces / spacePerLevel);
         pushAtDepth(mBullet[2], depth, i + 1);
         continue;
@@ -140,7 +148,8 @@ export function parseOutline(text: string, opts: ParseOptions = {}): OutlineNode
     if (allowPlainHeadings && stack.length > 0) {
       // Nur am Zeilenanfang, ohne Branch-/Bullet-Präfixe
       const looksPlain =
-        /^[^\s#*+\-].+/.test(line) && !/^(?:[│|] ?|[ \t]{1,4})*(?:├|└)/.test(line);
+        /^[^\s#*+\-].+/.test(line) &&
+        !/^(?:[│|] ?|[ \t]{1,4})*(?:├|└)/.test(line);
       if (looksPlain && nextLineLooksLikeChild(i)) {
         stack = [];
         pushAtDepth(line.trim(), 0, i + 1);

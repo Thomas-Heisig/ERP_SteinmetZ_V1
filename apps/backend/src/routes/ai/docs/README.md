@@ -1,33 +1,38 @@
-**komplette Backend-System inklusive Workflow-Engine** 
+**komplette Backend-System inklusive Workflow-Engine**
 
 ## 🗂️ **Aktualisierte Vollständige System-Übersicht**
 
 ### **📁 Backend-Services (25 Dateien)**
+
 - **Provider Layer**: 12 KI-Provider
-- **Service Layer**: 10 Core Services  
+- **Service Layer**: 10 Core Services
 - **API Layer**: 1 Router
 - **Storage Layer**: 1 Session Store
 - **Engine Layer**: 1 Workflow Engine
 
 ### **🛠️ Tool-System (9 Dateien)**
+
 - **Registry Core**: 3 Dateien
 - **Tool Sets**: 6 Kategorien (35 Tools)
 
 ### **🔧 Utility-System (7 Dateien)**
+
 - `aiUtils.ts` - KI-spezifische Hilfsfunktionen
 - `cache.ts` - Caching-System
 - `errors.ts` - Fehlerbehandlung
 - `fileUtils.ts` - Dateisystem-Utilities
-- `helpers.ts` - Allgemeine Hilfsfunktionen  
+- `helpers.ts` - Allgemeine Hilfsfunktionen
 - `logger.ts` - Logging-System
 - `validation.ts` - Validierungs-System
 
 ### **📋 Type-Definition (1 Datei)**
+
 - `types.ts` - Umfassende TypeScript Typen
 
 ## 🏗️ **Aktualisierte Systemarchitektur**
 
 ### **Architektur-Ebenen**
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Layer (1)                           │
@@ -65,9 +70,10 @@
 ## ⚙️ **Workflow Engine Features - Detailübersicht**
 
 ### **Unterstützte Schritt-Typen**
+
 ```
 🛠️  tool_call        - Tool-Ausführung
-🔀  if               - Bedingte Ausführung  
+🔀  if               - Bedingte Ausführung
 🔄  loop             - Schleifen-Operation
 📞  workflow_call    - Sub-Workflow Aufruf
 💾  context_update   - Kontext-Management
@@ -80,6 +86,7 @@
 ```
 
 ### **Enterprise Workflow-Fähigkeiten**
+
 - **✅ Komplexe Prozessketten** - Sequenzielle und parallele Ausführung
 - **✅ Bedingte Logik** - If/Else, Switch/Case Unterstützung
 - **✅ Error Handling** - Stop/Skip/Continue Fehlermodi
@@ -92,8 +99,9 @@
 ## 📊 **Aktualisierte Gesamt-Statistiken**
 
 ### **Dateien nach Kategorie**
+
 - **KI-Provider**: 12 Dateien
-- **Core Services**: 10 Dateien  
+- **Core Services**: 10 Dateien
 - **Tools**: 9 Dateien
 - **Utilities**: 7 Dateien
 - **Engines & Storage**: 2 Dateien
@@ -102,6 +110,7 @@
 - **Gesamt**: 42 Backend-Dateien
 
 ### **Erweiterter Funktionsumfang**
+
 - **KI-Modelle**: 50+ unterstützte Modelle
 - **Tools**: 35 spezialisierte Funktionen
 - **Workflow-Schritte**: 12 verschiedene Typen
@@ -112,9 +121,10 @@
 ## 🎯 **Komplette Automatisierungs-Pipeline**
 
 ### **Workflow-Beispiel: Intelligente Bestellabwicklung**
+
 ```typescript
 // 1. Bestellung erfassen (Tool)
-// 2. Lagerbestand prüfen (Tool) 
+// 2. Lagerbestand prüfen (Tool)
 // 3. KI-basierte Lieferzeit-Vorhersage (AI Invoke)
 // 4. Bedingte Benachrichtigung (If + Log)
 // 5. Rechnung erstellen (Tool)
@@ -122,6 +132,7 @@
 ```
 
 ### **KI-gesteuerte Prozessoptimierung**
+
 - **Datenanalyse-Pipelines** - Multi-Step KI-Analysen
 - **Customer Service Workflows** - Automatisierte Kundeninteraktion
 - **Inventory Management** - Intelligente Lageroptimierung
@@ -130,6 +141,7 @@
 ## 🔧 **Technische Exzellenz - Erweitert**
 
 ### **Workflow-spezifische Features**
+
 - **✅ Sichere Ausführung** - Timeouts, Error Boundaries
 - **✅ Context Isolation** - Workflow-spezifische Variablen
 - **✅ Performance Monitoring** - Schritt-für-Schritt Timing
@@ -137,6 +149,7 @@
 - **✅ Cross-Platform** - Konsistente Ausführungsumgebung
 
 ### **Enterprise Integration**
+
 - **✅ ConversationContext** - Nahtlose KI-Kontext-Integration
 - **✅ Tool Registry** - Vollständiger Tool-Zugriff
 - **✅ Session Management** - Persistente Workflow-Zustände
@@ -145,11 +158,13 @@
 ## 🚀 **Erweiterte Einsatzszenarien**
 
 ### **Complex Business Automation**
+
 - **Multi-Step ERP Processes** - Bestellung → Lager → Rechnung → Reporting
 - **KI-gestützte Entscheidungspipelines** - Datenanalyse → Vorhersage → Aktion
 - **Cross-System Integration** - Datenbank → KI → Tools → APIs
 
 ### **Intelligent Process Orchestration**
+
 - **Adaptive Workflows** - Bedingte Pfade basierend auf KI-Ergebnissen
 - **Error Recovery Flows** - Automatische Fehlerbehandlungsroutinen
 - **Resource Optimization** - Dynamische Workflow-Anpassung

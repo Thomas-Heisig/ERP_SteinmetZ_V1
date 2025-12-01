@@ -3,7 +3,7 @@
 
 /**
  * safeFetch – Enhanced fetch wrapper with timeout and error handling
- * 
+ *
  * Features:
  * - Configurable timeout with AbortController
  * - Consistent response structure
@@ -52,16 +52,16 @@ export interface SafeFetchError extends Error {
 
 const DEFAULT_TIMEOUT = 8000;
 const DEFAULT_ERROR_MESSAGES: Record<number, string> = {
-  400: 'Bad Request',
-  401: 'Unauthorized',
-  403: 'Forbidden',
-  404: 'Not Found',
-  408: 'Request Timeout',
-  409: 'Conflict',
-  500: 'Internal Server Error',
-  502: 'Bad Gateway',
-  503: 'Service Unavailable',
-  504: 'Gateway Timeout',
+  400: "Bad Request",
+  401: "Unauthorized",
+  403: "Forbidden",
+  404: "Not Found",
+  408: "Request Timeout",
+  409: "Conflict",
+  500: "Internal Server Error",
+  502: "Bad Gateway",
+  503: "Service Unavailable",
+  504: "Gateway Timeout",
 };
 
 // ============================================================================
@@ -70,11 +70,11 @@ const DEFAULT_ERROR_MESSAGES: Record<number, string> = {
 
 /**
  * Safe fetch wrapper with timeout and consistent error handling
- * 
+ *
  * @param url - The URL to fetch
  * @param options - Fetch options with timeout support
  * @returns Promise with standardized response format
- * 
+ *
  * @example
  * ```typescript
  * const result = await safeFetch<User[]>('/api/users');
@@ -87,12 +87,12 @@ const DEFAULT_ERROR_MESSAGES: Record<number, string> = {
  */
 export async function safeFetch<T = any>(
   url: string,
-  options: SafeFetchOptions = {}
+  options: SafeFetchOptions = {},
 ): Promise<SafeFetchResponse<T>> {
-  const { 
-    timeout = DEFAULT_TIMEOUT, 
+  const {
+    timeout = DEFAULT_TIMEOUT,
     errorMessages = {},
-    ...fetchOptions 
+    ...fetchOptions
   } = options;
 
   const controller = new AbortController();
@@ -103,8 +103,8 @@ export async function safeFetch<T = any>(
       ...fetchOptions,
       signal: controller.signal,
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
         ...fetchOptions.headers,
       },
     });
@@ -118,12 +118,12 @@ export async function safeFetch<T = any>(
     });
 
     // Determine content type and parse accordingly
-    const contentType = response.headers.get('content-type');
-    const isJson = contentType?.includes('application/json') ?? false;
-    const isText = contentType?.includes('text/') ?? false;
+    const contentType = response.headers.get("content-type");
+    const isJson = contentType?.includes("application/json") ?? false;
+    const isText = contentType?.includes("text/") ?? false;
 
     let payload: any;
-    
+
     if (isJson) {
       payload = await response.json();
     } else if (isText) {
@@ -134,8 +134,12 @@ export async function safeFetch<T = any>(
     }
 
     if (!response.ok) {
-      const errorMessage = getErrorMessage(response.status, errorMessages, payload);
-      
+      const errorMessage = getErrorMessage(
+        response.status,
+        errorMessages,
+        payload,
+      );
+
       return {
         ok: false,
         status: response.status,
@@ -152,7 +156,6 @@ export async function safeFetch<T = any>(
       headers,
       url: response.url,
     };
-
   } catch (error: unknown) {
     clearTimeout(timer);
 
@@ -175,56 +178,59 @@ export async function safeFetch<T = any>(
 function getErrorMessage(
   status: number,
   customMessages: Record<number, string>,
-  payload: any
+  payload: any,
 ): string {
   // Priority: custom message → default message → payload message → generic message
   if (customMessages[status]) {
     return customMessages[status];
   }
-  
+
   if (DEFAULT_ERROR_MESSAGES[status]) {
     return DEFAULT_ERROR_MESSAGES[status];
   }
-  
-  if (typeof payload === 'string') {
+
+  if (typeof payload === "string") {
     return payload;
   }
-  
+
   if (payload?.message) {
     return payload.message;
   }
-  
+
   if (payload?.error) {
     return payload.error;
   }
-  
+
   return `HTTP Error ${status}`;
 }
 
 /**
  * Handle different types of fetch errors
  */
-function handleFetchError(error: unknown, url: string): { status: number; message: string } {
+function handleFetchError(
+  error: unknown,
+  url: string,
+): { status: number; message: string } {
   if (error instanceof Error) {
     switch (error.name) {
-      case 'AbortError':
+      case "AbortError":
         return {
           status: 408,
           message: `Request to ${url} timed out`,
         };
-      
-      case 'TypeError':
+
+      case "TypeError":
         return {
           status: 0,
           message: `Network error: ${error.message}`,
         };
-      
-      case 'SyntaxError':
+
+      case "SyntaxError":
         return {
           status: 0,
           message: `Invalid JSON response from ${url}`,
         };
-      
+
       default:
         return {
           status: 0,
@@ -232,7 +238,7 @@ function handleFetchError(error: unknown, url: string): { status: number; messag
         };
     }
   }
-  
+
   return {
     status: 0,
     message: `Unknown error occurred while fetching ${url}`,
@@ -247,23 +253,23 @@ function handleFetchError(error: unknown, url: string): { status: number; messag
  * GET request convenience method
  */
 export async function safeGet<T = any>(
-  url: string, 
-  options: Omit<SafeFetchOptions, 'method'> = {}
+  url: string,
+  options: Omit<SafeFetchOptions, "method"> = {},
 ): Promise<SafeFetchResponse<T>> {
-  return safeFetch<T>(url, { ...options, method: 'GET' });
+  return safeFetch<T>(url, { ...options, method: "GET" });
 }
 
 /**
  * POST request convenience method
  */
 export async function safePost<T = any>(
-  url: string, 
+  url: string,
   data?: any,
-  options: Omit<SafeFetchOptions, 'method' | 'body'> = {}
+  options: Omit<SafeFetchOptions, "method" | "body"> = {},
 ): Promise<SafeFetchResponse<T>> {
   return safeFetch<T>(url, {
     ...options,
-    method: 'POST',
+    method: "POST",
     body: data ? JSON.stringify(data) : undefined,
   });
 }
@@ -272,13 +278,13 @@ export async function safePost<T = any>(
  * PUT request convenience method
  */
 export async function safePut<T = any>(
-  url: string, 
+  url: string,
   data?: any,
-  options: Omit<SafeFetchOptions, 'method' | 'body'> = {}
+  options: Omit<SafeFetchOptions, "method" | "body"> = {},
 ): Promise<SafeFetchResponse<T>> {
   return safeFetch<T>(url, {
     ...options,
-    method: 'PUT',
+    method: "PUT",
     body: data ? JSON.stringify(data) : undefined,
   });
 }
@@ -287,10 +293,10 @@ export async function safePut<T = any>(
  * DELETE request convenience method
  */
 export async function safeDelete<T = any>(
-  url: string, 
-  options: Omit<SafeFetchOptions, 'method'> = {}
+  url: string,
+  options: Omit<SafeFetchOptions, "method"> = {},
 ): Promise<SafeFetchResponse<T>> {
-  return safeFetch<T>(url, { ...options, method: 'DELETE' });
+  return safeFetch<T>(url, { ...options, method: "DELETE" });
 }
 
 // ============================================================================
@@ -322,7 +328,9 @@ export function isServerError(response: SafeFetchResponse): boolean {
  * Check if error is due to timeout
  */
 export function isTimeoutError(response: SafeFetchResponse): boolean {
-  return response.status === 408 || (response.error?.includes('timed out') ?? false);
+  return (
+    response.status === 408 || (response.error?.includes("timed out") ?? false)
+  );
 }
 
 export default safeFetch;

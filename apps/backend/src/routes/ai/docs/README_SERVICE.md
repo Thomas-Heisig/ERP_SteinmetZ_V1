@@ -3,34 +3,40 @@ Basierend auf der analysierten `audioService.ts` Datei, hier sind die erkannten 
 ## 🎙️ **Audio Service - Hauptfunktionen**
 
 ### **Spracherkennung (Speech-to-Text)**
+
 - `transcribeAudio(filePath)` - Wandelt Audio in Text um (Whisper)
 
 ### **Sprachausgabe (Text-to-Speech)**
+
 - `textToSpeech(text, outputPath)` - Erstellt Sprachdatei aus Text
 
 ### **Service-Tests**
+
 - `testAudioEndpoints()` - Prüft Verfügbarkeit der Audio-Endpoints
 
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  config: audioConfig,           // Service-Konfiguration
-  transcribeAudio,               // Spracherkennung
-  textToSpeech,                  // Sprachausgabe
-  testAudioEndpoints             // Endpoint-Tests
-}
+  config: audioConfig, // Service-Konfiguration
+  transcribeAudio, // Spracherkennung
+  textToSpeech, // Sprachausgabe
+  testAudioEndpoints, // Endpoint-Tests
+};
 ```
 
 ## ⚙️ **Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `OPENAI_API_KEY` - API-Schlüssel (erforderlich für beide Dienste)
 - `AUDIO_MODEL` - Whisper Modell (Default: "whisper-1")
 - `TTS_VOICE` - TTS Stimme (Default: "alloy")
 
 ### **Service-Konfiguration**
+
 ```typescript
 audioConfig: AIModuleConfig {
   name: "audioService",
@@ -46,21 +52,25 @@ audioConfig: AIModuleConfig {
 ## 🎤 **Spracherkennung (Whisper)**
 
 ### **Unterstützte Audio-Formate**
+
 - WAV, MP3, M4A, und andere gängige Formate
 
 ### **API-Integration**
+
 - **Endpoint**: `https://api.openai.com/v1/audio/transcriptions`
 - **Methode**: POST mit FormData
-- **Parameter**: 
+- **Parameter**:
   - `file` - Audio-Datei
   - `model` - Whisper Modell
 
 ### **Response-Verarbeitung**
+
 - **Sicheres Parsing** - Type-Safe Response Handling
 - **Fehlerbehandlung** - Robuste Error Management
 - **Logging** - Detaillierte Protokollierung
 
 ### **Response-Struktur**
+
 ```typescript
 AIResponse {
   text: string,                    // Transkribierter Text
@@ -77,11 +87,13 @@ AIResponse {
 ## 🔊 **Sprachausgabe (TTS)**
 
 ### **TTS-Features**
+
 - **Modell**: `gpt-4o-mini-tts` (OpenAI TTS)
 - **Stimmen**: "alloy" (Standard), andere OpenAI TTS Voices
 - **Format**: MP3 Ausgabe
 
 ### **API-Integration**
+
 - **Endpoint**: `https://api.openai.com/v1/audio/speech`
 - **Methode**: POST mit JSON Body
 - **Parameter**:
@@ -90,6 +102,7 @@ AIResponse {
   - `input` - Text für Sprachausgabe
 
 ### **Datei-Management**
+
 - **Automatische Ordner-Erstellung** - `output/` Verzeichnis
 - **Dateinamen-Generierung** - `tts_{timestamp}.mp3`
 - **Buffer-Verarbeitung** - Effiziente Datei-Erstellung
@@ -97,6 +110,7 @@ AIResponse {
 ## 🧪 **Health Check & Testing**
 
 ### **Endpoint-Tests**
+
 ```typescript
 testAudioEndpoints(): Promise<{
   whisper: boolean,    // Whisper API verfügbar
@@ -105,6 +119,7 @@ testAudioEndpoints(): Promise<{
 ```
 
 ### **Test-Implementierung**
+
 - **API-Modell-Liste** - Abruf verfügbarer Modelle
 - **Modell-Erkennung** - Prüfung auf "whisper-1" und TTS-Modelle
 - **Fehlertoleranz** - Graceful Degradation bei Fehlern
@@ -112,18 +127,21 @@ testAudioEndpoints(): Promise<{
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Transkriptions-Fehler**
+
 - Datei-Existenz-Prüfung
 - API-Key Validierung
 - HTTP Status Code Überprüfung
 - Response Format Validierung
 
 ### **TTS-Fehler**
+
 - Ausgabe-Pfad Validierung
 - API-Key Prüfung
 - Netzwerk-Fehlerbehandlung
 - Datei-Schreib-Operationen
 
 ### **Allgemeine Sicherheitsmaßnahmen**
+
 - **Type Safety** - Unknown Type Handling
 - **Timeout Management** - 2 Minuten Timeout
 - **Resource Cleanup** - Ordnermanagement
@@ -131,11 +149,13 @@ testAudioEndpoints(): Promise<{
 ## 📁 **Datei-Management**
 
 ### **Eingabe**
+
 - Relative/Absolute Pfade unterstützt
 - Datei-Existenz-Prüfung
 - Format-Unterstützung
 
 ### **Ausgabe**
+
 - Automatische Output-Ordner-Erstellung
 - Zeitstempel-basierte Dateinamen
 - MP3 Format für Kompatibilität
@@ -143,11 +163,13 @@ testAudioEndpoints(): Promise<{
 ## 🔄 **Integration**
 
 ### **Capabilities**
+
 - `audio` - Audio-Verarbeitung
 - `tools` - Tool-Integration
 - `json` - JSON Response Format
 
 ### **Provider-Anbindung**
+
 - OpenAI API Integration
 - Kompatibel mit KI-Subsystem
 - Einheitliche Response-Strukturen
@@ -159,32 +181,37 @@ Basierend auf der analysierten `chatService.ts` Datei, hier sind die erkannten F
 ## 🧠 **Chat Service - Hauptfunktionen**
 
 ### **Kern-Chat-Funktionen**
+
 - `handleChatRequest(model, messages, options)` - Zentrale Chat-Anfrage-Verarbeitung
 - `handleWorkflow(name, input)` - Workflow-Ausführung
 - `getProviderStatus()` - Status aller Provider abfragen
 - `getChatSystemInfo()` - Systeminformationen abrufen
 
 ### **Tool-Integration**
+
 - `executeToolCalls(toolCalls)` - Führt Tool-Aufrufe aus
 
 ### **Provider-Verfügbarkeit**
+
 - `isProviderAvailable(provider)` - Prüft Provider-Verfügbarkeit
 
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  handleChatRequest,        // Haupt-Chat-Funktion
-  handleWorkflow,           // Workflow-Verwaltung
-  getProviderStatus,        // Provider-Status
-  getChatSystemInfo         // System-Informationen
-}
+  handleChatRequest, // Haupt-Chat-Funktion
+  handleWorkflow, // Workflow-Verwaltung
+  getProviderStatus, // Provider-Status
+  getChatSystemInfo, // System-Informationen
+};
 ```
 
 ## 🔄 **Provider-Routing-System**
 
 ### **Unterstützte Provider**
+
 1. **`openai`** - OpenAI GPT-Modelle
 2. **`azure` / `azureopenai`** - Azure OpenAI Service
 3. **`vertex`** - Google Vertex AI (Gemini)
@@ -195,6 +222,7 @@ export default {
 8. **`custom`** - Benutzerdefinierte APIs
 
 ### **Routing-Logik**
+
 - **Umgebungsvariable**: `AI_PROVIDER` (Standard: "ollama")
 - **Option Override**: `options.provider` überschreibt Standard
 - **Fallback-System**: Automatischer Fallback bei Fehlern
@@ -202,10 +230,12 @@ export default {
 ## ⚙️ **Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `AI_PROVIDER` - Standard-Provider (Default: "ollama")
 - `AI_FALLBACK_ENABLED` - Fallback aktivieren (1/0)
 
 ### **Provider-spezifische Konfiguration**
+
 - **OpenAI**: `OPENAI_API_KEY`
 - **Ollama**: Localhost:11434 Verfügbarkeit
 - **Vertex AI**: `VERTEX_API_KEY`
@@ -214,27 +244,31 @@ export default {
 ## 🛠️ **Tool-Integration**
 
 ### **Tool-Execution Flow**
+
 1. **Erkennung**: Tool-Calls in Provider-Response
 2. **Ausführung**: Über `toolRegistry.call()`
 3. **Ergebnis-Integration**: An Antworttext anhängen
 4. **Fehlerbehandlung**: Pro Tool separate Fehlerbehandlung
 
 ### **Response-Erweiterung**
+
 ```typescript
 // Tool-Ergebnisse werden angehängt:
-response.text += `\n\n${toolResults.join("\n")}`
+response.text += `\n\n${toolResults.join("\n")}`;
 ```
 
 ## 🔁 **Workflow-Integration**
 
 ### **Workflow-Execution**
-- **Flexible Methoden-Unterstützung**: 
+
+- **Flexible Methoden-Unterstützung**:
   - `runWorkflow`
-  - `execute` 
+  - `execute`
   - `start`
 - **Dynamische Erkennung**: Arbeitet mit verschiedenen Workflow-Engine-Implementierungen
 
 ### **Workflow-Response**
+
 ```typescript
 AIResponse {
   text: string,                    // Erfolgsmeldung
@@ -249,6 +283,7 @@ AIResponse {
 ## 📊 **Status & Monitoring**
 
 ### **Provider-Status-Check**
+
 ```typescript
 getProviderStatus(): Promise<Array<{
   provider: string,
@@ -257,6 +292,7 @@ getProviderStatus(): Promise<Array<{
 ```
 
 ### **Verfügbarkeitsprüfung**
+
 - **OpenAI**: API-Key Vorhandensein
 - **Ollama**: Localhost API Erreichbarkeit
 - **Vertex AI**: API-Key Vorhandensein
@@ -264,6 +300,7 @@ getProviderStatus(): Promise<Array<{
 - **Local**: Immer verfügbar
 
 ### **System-Informationen**
+
 ```typescript
 {
   activeProvider: string,          // Aktiver Provider
@@ -276,11 +313,13 @@ getProviderStatus(): Promise<Array<{
 ## 🛡️ **Fehlerbehandlung & Fallback**
 
 ### **Fehlerhierarchie**
+
 1. **Provider-Fehler** - Spezifischer Provider fehlgeschlagen
 2. **Fallback-Provider** - `callFallback()` bei aktiviertem Fallback
 3. **Error-Response** - Strukturierte Fehlerantwort
 
 ### **Fallback-System**
+
 - **Aktivierung**: `AI_FALLBACK_ENABLED=1`
 - **Implementation**: `callFallback()` Provider
 - **Graceful Degradation**: Statt Abbruch
@@ -288,21 +327,25 @@ getProviderStatus(): Promise<Array<{
 ## 🔄 **Integrations-Punkte**
 
 ### **Tool Registry**
+
 - `toolRegistry.getToolDefinitions()` - Tool-Liste
 - `toolRegistry.call()` - Tool-Ausführung
 
 ### **Workflow Engine**
+
 - `workflowEngine.getWorkflowDefinitions()` - Workflow-Liste
 - Dynamische Workflow-Ausführung
 
 ## 📈 **Logging & Monitoring**
 
 ### **Protokollierung**
+
 - **Start**: Provider, Modell, Nachrichtenanzahl
 - **Fehler**: Detaillierte Error-Logs
 - **Workflows**: Workflow-Ausführungen
 
 ### **Metriken**
+
 - Provider-Verfügbarkeit
 - Tool-Ausführungs-Statistiken
 - Workflow-Erfolgsraten
@@ -314,9 +357,11 @@ Basierend auf der analysierten `diagnosticService.ts` Datei, hier sind die erkan
 ## 🩺 **Diagnostic Service - Hauptfunktionen**
 
 ### **Hauptdiagnose-Funktion**
+
 - `runSystemDiagnostics()` - Führt vollständige Systemdiagnose durch
 
 ### **Einzelkomponenten-Checks**
+
 - `checkProviders()` - Prüft Provider-Verfügbarkeit
 - `checkTools()` - Überprüft geladene Tools
 - `checkWorkflows()` - Überprüft registrierte Workflows
@@ -326,20 +371,22 @@ Basierend auf der analysierten `diagnosticService.ts` Datei, hier sind die erkan
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  runSystemDiagnostics,     // Komplette Systemdiagnose
-  checkProviders,           // Provider-Status
-  checkAudio,               // Audio-Systemcheck
-  checkTools,               // Tool-Überprüfung
-  checkWorkflows,           // Workflow-Check
-  checkSystemInfo           // Systeminformationen
-}
+  runSystemDiagnostics, // Komplette Systemdiagnose
+  checkProviders, // Provider-Status
+  checkAudio, // Audio-Systemcheck
+  checkTools, // Tool-Überprüfung
+  checkWorkflows, // Workflow-Check
+  checkSystemInfo, // Systeminformationen
+};
 ```
 
 ## 📊 **Diagnose-Bereiche**
 
 ### **1. Provider-Diagnose**
+
 ```typescript
 {
   list: Array<{ provider: string, available: boolean }>,
@@ -349,6 +396,7 @@ export default {
 ```
 
 ### **2. Tool-Diagnose**
+
 ```typescript
 {
   count: number,           // Anzahl geladener Tools
@@ -357,6 +405,7 @@ export default {
 ```
 
 ### **3. Workflow-Diagnose**
+
 ```typescript
 {
   count: number,           // Anzahl registrierter Workflows
@@ -365,6 +414,7 @@ export default {
 ```
 
 ### **4. Audio-System-Diagnose**
+
 ```typescript
 {
   available: boolean,      // Audio-Services verfügbar
@@ -374,6 +424,7 @@ export default {
 ```
 
 ### **5. System-Informationen**
+
 ```typescript
 {
   hostname: string,        // System-Hostname
@@ -382,7 +433,7 @@ export default {
   cpu: {
     cores: number,         // CPU-Kerne
     load1: number,         // 1-Minuten Load
-    load5: number,         // 5-Minuten Load  
+    load5: number,         // 5-Minuten Load
     load15: number         // 15-Minuten Load
   },
   memory: {
@@ -401,11 +452,13 @@ export default {
 ## 🔍 **Detailierte Prüfungen**
 
 ### **Provider-Verfügbarkeit**
+
 - **Integration**: `getProviderStatus()` aus `chatService`
 - **Automatische Prüfung**: Alle konfigurierten Provider
 - **Fehlertoleranz**: Graceful Degradation bei Fehlern
 
 ### **Audio-System-Prüfung**
+
 - **API-Key Validierung**: `OPENAI_API_KEY` Vorhandensein
 - **Modell-Liste**: Abruf verfügbarer OpenAI-Modelle
 - **Feature-Erkennung**:
@@ -414,6 +467,7 @@ export default {
 - **HTTP Status Überwachung**: API-Erreichbarkeit
 
 ### **Tool & Workflow Inventur**
+
 - **Tool Registry**: `toolRegistry.getToolDefinitions()`
 - **Workflow Engine**: `workflowEngine.getWorkflowDefinitions()`
 - **Fehlerbehandlung**: Separate Error Handling pro Komponente
@@ -421,12 +475,13 @@ export default {
 ## 📈 **Response-Struktur**
 
 ### **Hauptdiagnose-Response**
+
 ```typescript
 AIResponse {
   text: string,                    // Zusammenfassungstext
   data: {
     providers: {...},              // Provider-Status
-    system: {...},                 // System-Info  
+    system: {...},                 // System-Info
     tools: {...},                  // Tool-Status
     workflows: {...},              // Workflow-Status
     audio: {...}                   // Audio-Status
@@ -442,6 +497,7 @@ AIResponse {
 ```
 
 ### **Zusammenfassungs-Text**
+
 ```
 🩺 KI-Systemdiagnose abgeschlossen.
 
@@ -455,11 +511,13 @@ AIResponse {
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Robuste Implementierung**
+
 - **Promise.all()**: Parallele Ausführung aller Checks
 - **Individual Error Handling**: Jeder Check hat eigenes Try-Catch
 - **Graceful Degradation**: Teilweise Ergebnisse bei Teilfehlern
 
 ### **Fehlerprotokollierung**
+
 - Detaillierte Error-Logs pro Komponente
 - Strukturierte Fehlerinformationen
 - Kein Abbruch bei Teilfehlern
@@ -467,12 +525,14 @@ AIResponse {
 ## 🔄 **Integrationen**
 
 ### **Externe Abhängigkeiten**
+
 - **Chat Service**: `getProviderStatus()`
 - **Tool Registry**: Tool-Definitionen
-- **Workflow Engine**: Workflow-Definitionen  
+- **Workflow Engine**: Workflow-Definitionen
 - **Audio Service**: Konfiguration und Modell-Info
 
 ### **System-APIs**
+
 - **OS Module**: CPU, Memory, Uptime Informationen
 - **File System**: Pfad-Validierungen
 - **Fetch API**: Externe API-Checks (OpenAI)
@@ -480,11 +540,13 @@ AIResponse {
 ## 🎯 **Einsatzszenarien**
 
 ### **System-Monitoring**
+
 - Regelmäßige Health-Checks
 - Provider-Verfügbarkeitsüberwachung
 - Ressourcen-Auslastungsmonitoring
 
 ### **Debugging & Support**
+
 - Schnelle Problemdiagnose
 - Komponenten-Statusüberprüfung
 - Systemkonfigurations-Validierung
@@ -496,10 +558,12 @@ Basierend auf der analysierten `embeddingService.ts` Datei, hier sind die erkann
 ## 🧠 **Embedding Service - Hauptfunktionen**
 
 ### **Kern-Embedding-Funktionen**
+
 - `generateEmbeddings(input, options)` - Erzeugt Embeddings für Text(e)
 - `cosineSimilarity(vecA, vecB)` - Berechnet Kosinus-Ähnlichkeit zwischen Vektoren
 
 ### **Provider-spezifische Implementierungen**
+
 - `openAIEmbedding(input, model)` - OpenAI Embeddings
 - `ollamaEmbedding(input, model)` - Ollama Embeddings
 - `huggingFaceEmbedding(input, model)` - HuggingFace Embeddings
@@ -508,16 +572,18 @@ Basierend auf der analysierten `embeddingService.ts` Datei, hier sind die erkann
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  generateEmbeddings,       // Haupt-Embedding-Funktion
-  cosineSimilarity          // Ähnlichkeitsberechnung
-}
+  generateEmbeddings, // Haupt-Embedding-Funktion
+  cosineSimilarity, // Ähnlichkeitsberechnung
+};
 ```
 
 ## ⚙️ **Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `EMBEDDING_PROVIDER` - Standard-Provider (Default: "openai")
 - `EMBEDDING_MODEL` - Standard-Modell (Default: "text-embedding-3-small")
 - `OPENAI_API_KEY` - Für OpenAI Embeddings
@@ -525,6 +591,7 @@ export default {
 - `OLLAMA_API_URL` - Für Ollama Embeddings
 
 ### **Service-Konfiguration**
+
 ```typescript
 embeddingConfig: AIModuleConfig {
   name: "embeddingService",
@@ -539,12 +606,14 @@ embeddingConfig: AIModuleConfig {
 ## 🔄 **Provider-Routing**
 
 ### **Unterstützte Provider**
+
 1. **`openai`** - OpenAI Embedding API
 2. **`ollama`** - Lokale Ollama-Instanz
 3. **`huggingface`** - HuggingFace Inference API
 4. **`local`** - Lokale Dummy-Embeddings
 
 ### **Routing-Logik**
+
 - **Umgebungsvariable**: `EMBEDDING_PROVIDER`
 - **Option Override**: `options.provider` überschreibt Standard
 - **Fallback-System**: Automatische Fehlerbehandlung
@@ -552,6 +621,7 @@ embeddingConfig: AIModuleConfig {
 ## 🌐 **API-Integrationen**
 
 ### **OpenAI Embeddings**
+
 - **Endpoint**: `https://api.openai.com/v1/embeddings`
 - **Request**:
   ```typescript
@@ -563,6 +633,7 @@ embeddingConfig: AIModuleConfig {
 - **Response**: `{ data: [{ embedding: number[] }] }`
 
 ### **Ollama Embeddings**
+
 - **Endpoint**: `http://localhost:11434/api/embeddings`
 - **Request**:
   ```typescript
@@ -574,6 +645,7 @@ embeddingConfig: AIModuleConfig {
 - **Response**: Multiple Formate unterstützt
 
 ### **HuggingFace Embeddings**
+
 - **Endpoint**: `https://api-inference.huggingface.co/pipeline/feature-extraction/{model}`
 - **Request**:
   ```typescript
@@ -586,6 +658,7 @@ embeddingConfig: AIModuleConfig {
 ## 📊 **Response-Struktur**
 
 ### **Embedding-Response**
+
 ```typescript
 AIResponse {
   text: string,                    // Beschreibungstext
@@ -601,6 +674,7 @@ AIResponse {
 ```
 
 ### **Response-Beispiele**
+
 - **OpenAI**: "OpenAI Embeddings erzeugt (3 Vektoren, 1536 Dimensionen)."
 - **Ollama**: "Ollama Embedding erzeugt (4096 Dimensionen)."
 - **HuggingFace**: "HuggingFace Embedding erzeugt (768 Dimensionen)."
@@ -609,11 +683,13 @@ AIResponse {
 ## 🧮 **Ähnlichkeitsberechnung**
 
 ### **Cosine Similarity**
+
 ```typescript
 cosineSimilarity(vecA: number[], vecB: number[]): number
 ```
 
 ### **Berechnungslogik**
+
 - **Formel**: `dot(A,B) / (||A|| * ||B||)`
 - **Validierung**: Vektor-Längen müssen übereinstimmen
 - **Rückgabewert**: Zahl zwischen -1 und 1 (1 = identisch)
@@ -621,32 +697,39 @@ cosineSimilarity(vecA: number[], vecB: number[]): number
 ## 🔍 **Response-Verarbeitung**
 
 ### **Multi-Format Support**
+
 Jeder Provider unterstützt verschiedene Response-Formate:
 
 #### **OpenAI**
+
 - Standard: `data[0].embedding`
 
 #### **Ollama**
+
 1. `embedding` - Direktes Array
 2. `data[0].embedding` - Array in Daten-Objekt
 
 #### **HuggingFace**
+
 1. `[0]` als `number[][]` - Verschachteltes Array
 2. `[0]` als `number[]` - Direktes Array
 3. `embeddings` als `number[][]` - Embeddings Feld
 
 #### **Local**
+
 - Deterministische Dummy-Vektoren basierend auf Text-Input
 
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Robuste Implementierung**
+
 - **API-Key Validierung** für alle externen Provider
 - **HTTP Status Code** Überprüfung
 - **Response Format** Validierung mit Type-Safety
 - **Graceful Degradation** bei Fehlern
 
 ### **Error Responses**
+
 - Strukturierte Fehlermeldungen
 - Detaillierte Protokollierung
 - Meta-Informationen im Response
@@ -654,18 +737,22 @@ Jeder Provider unterstützt verschiedene Response-Formate:
 ## 📈 **Use Cases**
 
 ### **Semantische Suche**
+
 - Vektor-basierte Dokumentensuche
 - Ähnlichkeitsanalyse von Texten
 
 ### **RAG (Retrieval Augmented Generation)**
+
 - Wissensabruf aus Vektor-Datenbanken
 - Kontext-Erweiterung für KI-Modelle
 
 ### **Klassifikation**
+
 - Text-Kategorisierung basierend auf Embeddings
 - Clustering und Gruppierung
 
 ### **Ähnlichkeitsanalyse**
+
 - Content-Matching
 - Duplikatserkennung
 - Recommender Systems
@@ -677,6 +764,7 @@ Basierend auf der analysierten `knowledgeService.ts` Datei, hier sind die erkann
 ## 📚 **Knowledge Service - Hauptfunktionen**
 
 ### **Kern-Wissensfunktionen**
+
 - `loadKnowledgeBase()` - Lädt und indexiert Wissensdatenbank
 - `queryKnowledgeBase(query, limit)` - Führt semantische Suche durch
 - `buildContextFromKnowledge(query)` - Erstellt KI-Kontext aus Wissen
@@ -685,23 +773,26 @@ Basierend auf der analysierten `knowledgeService.ts` Datei, hier sind die erkann
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  loadKnowledgeBase,           // Wissensbasis laden
-  queryKnowledgeBase,          // Semantische Suche
-  buildContextFromKnowledge,   // Kontextaufbereitung
-  getKnowledgeStatus           // Statusabfrage
-}
+  loadKnowledgeBase, // Wissensbasis laden
+  queryKnowledgeBase, // Semantische Suche
+  buildContextFromKnowledge, // Kontextaufbereitung
+  getKnowledgeStatus, // Statusabfrage
+};
 ```
 
 ## 📁 **Datenquellen & Verzeichnisse**
 
 ### **Wissensbasis-Pfade**
+
 1. `ERP_SteinmetZ_V1/data/knowledge` - Projekt-interne Daten
 2. `ERP_SteinmetZ_V1/docs/knowledge` - Dokumentations-Wissen
 3. `F:/KI/ERP_SteinmetZ_V1/knowledge` - Externe KI-Daten
 
 ### **Unterstützte Dateiformate**
+
 - **`.txt`** - Textdateien
 - **`.md`** - Markdown-Dateien
 - **`.json`** - JSON-Daten
@@ -709,20 +800,22 @@ export default {
 ## 🏗️ **Wissensmodell**
 
 ### **Knowledge Entry Struktur**
+
 ```typescript
 interface KnowledgeEntry {
-  id: string;                   // Dateiname als ID
-  title: string;               // Dateiname als Titel
-  content: string;             // Dateiinhalt
-  vector?: number[];           // Embedding-Vektor
-  source?: string;             // Vollständiger Dateipfad
-  updated?: string;            // Änderungsdatum
+  id: string; // Dateiname als ID
+  title: string; // Dateiname als Titel
+  content: string; // Dateiinhalt
+  vector?: number[]; // Embedding-Vektor
+  source?: string; // Vollständiger Dateipfad
+  updated?: string; // Änderungsdatum
 }
 ```
 
 ## 🔍 **Semantische Suchfunktionen**
 
 ### **Suchprozess**
+
 1. **Wissensbasis laden** - Alle Dateien einlesen
 2. **Embeddings generieren** - Für jeden Eintrag Vektoren erstellen
 3. **Query-Vectorisierung** - Suchanfrage in Vektor umwandeln
@@ -730,6 +823,7 @@ interface KnowledgeEntry {
 5. **Ranking & Filtering** - Top-Ergebnisse auswählen
 
 ### **Response-Struktur**
+
 ```typescript
 AIResponse {
   text: string,                    // Zusammenfassung der Ergebnisse
@@ -742,6 +836,7 @@ AIResponse {
 ```
 
 ### **Ergebnis-Formatierung**
+
 ```
 📖 Relevante Wissenseinträge zu "Suchbegriff":
 
@@ -754,11 +849,13 @@ AIResponse {
 ## 🧠 **Kontextaufbereitung**
 
 ### **KI-Kontext-Generierung**
+
 ```typescript
 buildContextFromKnowledge(query): Promise<string>
 ```
 
 ### **Kontext-Format**
+
 ```
 📚 Wissenskontext:
 
@@ -772,6 +869,7 @@ Inhaltsausschnitt (max. 1000 Zeichen)
 ```
 
 ### **Use Cases**
+
 - **RAG (Retrieval Augmented Generation)** - Kontext für KI-Modelle
 - **Chat-Kontext** - Hintergrundwissen für Gespräche
 - **Analyse-Grundlage** - Datenbasis für Entscheidungen
@@ -779,10 +877,12 @@ Inhaltsausschnitt (max. 1000 Zeichen)
 ## 🔄 **Integrationen**
 
 ### **Embedding Service**
+
 - `generateEmbeddings()` - Vektorerzeugung
 - `cosineSimilarity()` - Ähnlichkeitsberechnung
 
 ### **Dateisystem**
+
 - Automatische Datei-Erkennung
 - Encoding-Handling (UTF-8)
 - Metadaten-Extraktion (Änderungsdatum)
@@ -790,6 +890,7 @@ Inhaltsausschnitt (max. 1000 Zeichen)
 ## 📊 **Status & Monitoring**
 
 ### **Status-Informationen**
+
 ```typescript
 {
   provider: "knowledgeService",
@@ -805,11 +906,13 @@ Inhaltsausschnitt (max. 1000 Zeichen)
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Robuste Implementierung**
+
 - **Verzeichnis-Existenzprüfung** - Fehlertolerante Pfad-Verarbeitung
 - **JSON-Parsing Fehlerbehandlung** - Graceful Degradation bei invalid JSON
 - **Leere Wissensbasis** - Sinnvolle Fallback-Responses
 
 ### **Error Responses**
+
 - "❌ Keine Wissensbasis gefunden." - Bei leerem Ergebnis
 - Strukturierte Meta-Informationen
 - Detaillierte Protokollierung
@@ -817,16 +920,19 @@ Inhaltsausschnitt (max. 1000 Zeichen)
 ## 🎯 **Einsatzszenarien**
 
 ### **Semantische Suche**
+
 - Natürlichsprachige Abfragen
 - Inhaltsbasierte Suche (nicht nur Keywords)
 - Relevanz-basiertes Ranking
 
 ### **Wissensmanagement**
+
 - Zentrale Wissenssammlung
 - Automatische Kategorisierung
 - Schneller Zugriff auf Informationen
 
 ### **KI-Integration**
+
 - Kontext-Erweiterung für Chat-Systeme
 - Fakten-basierte Antwortgenerierung
 - Vermeidung von Halluzinationen durch Grounding
@@ -834,11 +940,13 @@ Inhaltsausschnitt (max. 1000 Zeichen)
 ## 📈 **Performance-Optimierungen**
 
 ### **Lazy Loading**
+
 - Wissensbasis wird bei Bedarf geladen
 - Embeddings werden nur einmal pro Eintrag generiert
 - Caching-Mechanismen
 
 ### **Limit-Parameter**
+
 - `limit` Parameter für Ergebnisbegrenzung (Standard: 5)
 - Effiziente Sortierung und Slicing
 
@@ -849,34 +957,38 @@ Basierend auf der analysierten `modelService.ts` Datei, hier sind die erkannten 
 ## 🧠 **Model Service - Hauptfunktionen**
 
 ### **Modell-Verwaltung**
+
 - `listAllModels()` - Liste aller registrierten KI-Modelle
 - `getModelOverview()` - Übersicht aller aktiven Modelle
 - `toggleModel(name, active)` - Aktiviert/Deaktiviert Modelle
 - `registerModel(newModel)` - Registriert neue Modelle dynamisch
 
 ### **Auto-Detection**
+
 - `autoDetectModels()` - Automatische Modell-Erkennung
 - `getModelStatusReport()` - System-Statusbericht
 
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  listAllModels,            // Komplette Modellliste
-  getModelOverview,         // Übersichtsformat
-  toggleModel,              // Modell-Aktivierung
-  registerModel,            // Dynamische Registrierung
-  autoDetectModels,         // Auto-Erkennung
-  getModelStatusReport      // Statusbericht
-}
+  listAllModels, // Komplette Modellliste
+  getModelOverview, // Übersichtsformat
+  toggleModel, // Modell-Aktivierung
+  registerModel, // Dynamische Registrierung
+  autoDetectModels, // Auto-Erkennung
+  getModelStatusReport, // Statusbericht
+};
 ```
 
 ## 📋 **Unterstützte Provider & Modelle**
 
 ### **Integrierte Provider**
+
 1. **OpenAI** - `openaiConfig`
-2. **Vertex AI** - `vertexConfig` 
+2. **Vertex AI** - `vertexConfig`
 3. **Ollama** - `ollamaConfig`
 4. **Local Provider** - `localProviderConfig`
 5. **HuggingFace** - `hfConfig`
@@ -884,12 +996,14 @@ export default {
 7. **Custom Provider** - `customConfig`
 
 ### **Automatisch erkannte Modelle**
+
 - **Lokale Modelle** - Via `scanLocalModels()`
 - **Ollama-Modelle** - Via `listOllamaModels()`
 
 ## 🏗️ **Modell-Konfigurationsstruktur**
 
 ### **AIModuleConfig Interface**
+
 ```typescript
 {
   name: string,                    // Eindeutiger Modellname
@@ -906,10 +1020,11 @@ export default {
 ## 📊 **Übersichts-Funktionen**
 
 ### **Modell-Übersicht**
+
 ```typescript
 getModelOverview(): Array<{
   name: string,
-  provider: string, 
+  provider: string,
   model: string,
   active: boolean,
   capabilities: string[],
@@ -919,6 +1034,7 @@ getModelOverview(): Array<{
 ```
 
 ### **Status-Report**
+
 ```typescript
 {
   timestamp: string,               // Zeitstempel
@@ -939,16 +1055,20 @@ getModelOverview(): Array<{
 ## 🔄 **Dynamische Modell-Verwaltung**
 
 ### **Modell-Aktivierung**
+
 ```typescript
 toggleModel(name: string, active: boolean): AIModuleConfig
 ```
+
 - **Fehlerbehandlung**: Modell-Nicht-Gefunden Fehler
 - **Logging**: Detaillierte Protokollierung
 
 ### **Dynamische Registrierung**
+
 ```typescript
 registerModel(newModel: AIModuleConfig): AIModuleConfig
 ```
+
 - **Validierung**: Name und Provider erforderlich
 - **Update-Logik**: Existierende Modelle werden aktualisiert
 - **Neueintrag**: Neue Modelle werden hinzugefügt
@@ -956,16 +1076,19 @@ registerModel(newModel: AIModuleConfig): AIModuleConfig
 ## 🔍 **Auto-Detection System**
 
 ### **Lokale Modell-Erkennung**
+
 - **Quelle**: `scanLocalModels()` aus Local Provider
 - **Format**: `local-{modellname}`
 - **Capabilities**: `["chat", "completion", "embedding"]`
 
 ### **Ollama Modell-Erkennung**
+
 - **Quelle**: `listOllamaModels()` aus Ollama Provider
 - **Format**: `ollama-{modellname}`
 - **Capabilities**: `["chat", "completion", "tools"]`
 
 ### **Detection-Response**
+
 ```typescript
 AIModuleConfig[] // Array von automatisch erkannten Modell-Konfigurationen
 ```
@@ -973,10 +1096,12 @@ AIModuleConfig[] // Array von automatisch erkannten Modell-Konfigurationen
 ## ⚙️ **Filterung & Aktivierung**
 
 ### **Aktive Modell-Filterung**
+
 - Nur Modelle mit `active: true` werden zurückgegeben
 - Inaktive Modelle bleiben in der Konfiguration erhalten
 
 ### **Provider-Integration**
+
 - Direkter Import aller Provider-Konfigurationen
 - Zentrale Verwaltung aller KI-Module
 - Konsistente Schnittstelle
@@ -984,11 +1109,13 @@ AIModuleConfig[] // Array von automatisch erkannten Modell-Konfigurationen
 ## 📈 **Monitoring & Reporting**
 
 ### **System-Metriken**
+
 - **Modell-Zählung**: Total, Aktiv, Erkannt
 - **Provider-Diversität**: Einzigartige Provider-Typen
 - **System-Ressourcen**: RAM, CPU, Host-Informationen
 
 ### **Logging**
+
 - Modellstatus-Änderungen
 - Registrierungs-Ereignisse
 - Auto-Detection Ergebnisse
@@ -996,16 +1123,19 @@ AIModuleConfig[] // Array von automatisch erkannten Modell-Konfigurationen
 ## 🎯 **Use Cases**
 
 ### **Modell-Management**
+
 - Zentrale Übersicht aller verfügbaren KI-Modelle
 - Dynamische Aktivierung/Deaktivierung
 - Provider-übergreifende Verwaltung
 
 ### **System-Administration**
+
 - Ressourcen-Überwachung
 - Capacity Planning
 - Provider-Auswahl und Load Balancing
 
 ### **Auto-Discovery**
+
 - Automatische Erweiterung der Modell-Palette
 - Integration neuer lokaler Modelle
 - Dynamische Ollama-Modell-Erkennung
@@ -1013,12 +1143,14 @@ AIModuleConfig[] // Array von automatisch erkannten Modell-Konfigurationen
 ## 🔄 **Integrationen**
 
 ### **Provider-Services**
+
 - OpenAI, Azure, Vertex AI Konfigurationen
 - Ollama Local API Integration
 - Local File System Scanning
 - HuggingFace & Custom Provider
 
 ### **System-APIs**
+
 - OS Module für Systeminformationen
 - Dateisystem für Local Models
 - Network APIs für Ollama Detection
@@ -1030,6 +1162,7 @@ Basierend auf der analysierten `settingsService.ts` Datei, hier sind die erkannt
 ## ⚙️ **Settings Service - Hauptfunktionen**
 
 ### **Kern-Einstellungsfunktionen**
+
 - `loadSettings()` - Lädt Systemeinstellungen
 - `saveSettings(settings)` - Speichert Einstellungen
 - `updateSetting(key, value)` - Aktualisiert einzelne Werte
@@ -1037,42 +1170,48 @@ Basierend auf der analysierten `settingsService.ts` Datei, hier sind die erkannt
 - `getSetting(key, fallback)` - Holt einzelnen Wert
 
 ### **Validierung & Migration**
+
 - `validateSettings(settings)` - Validiert Einstellungen
 - `migrateSettings(settings)` - Migriert veraltete Strukturen
 
 ### **Import/Export**
+
 - `exportSettings(targetFile)` - Exportiert Konfiguration
 - `importSettings(sourceFile)` - Importiert Konfiguration
 
 ### **Diagnose**
+
 - `getSettingsStatusReport()` - Systemstatus-Bericht
 
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  loadSettings,              // Einstellungen laden
-  saveSettings,              // Einstellungen speichern
-  updateSetting,             // Einzelwert aktualisieren
-  resetSettings,             // Auf Standard zurücksetzen
-  getSetting,                // Wert abfragen
-  validateSettings,          // Validierung
-  migrateSettings,           // Migration
-  getSettingsStatusReport,   // Statusbericht
-  exportSettings,            // Export-Funktion
-  importSettings             // Import-Funktion
-}
+  loadSettings, // Einstellungen laden
+  saveSettings, // Einstellungen speichern
+  updateSetting, // Einzelwert aktualisieren
+  resetSettings, // Auf Standard zurücksetzen
+  getSetting, // Wert abfragen
+  validateSettings, // Validierung
+  migrateSettings, // Migration
+  getSettingsStatusReport, // Statusbericht
+  exportSettings, // Export-Funktion
+  importSettings, // Import-Funktion
+};
 ```
 
 ## 📁 **Dateisystem-Integration**
 
 ### **Konfigurationspfade**
+
 - **Config Directory**: `./config/`
 - **Settings File**: `./config/ai_settings.json`
 - **Backup Directory**: `./config/backups/`
 
 ### **Backup-System**
+
 - **Automatische Backups**: Vor jedem Speichern
 - **Dateinamen**: `ai_settings_backup_{timestamp}.json`
 - **Zeitstempel-Format**: ISO mit Sanitization
@@ -1080,6 +1219,7 @@ export default {
 ## 🏗️ **Standard-Einstellungen**
 
 ### **Default-Konfiguration**
+
 ```typescript
 DEFAULT_SETTINGS = {
   system_version: "1.0",
@@ -1090,19 +1230,21 @@ DEFAULT_SETTINGS = {
   cache_enabled: true,
   autosave_interval_min: 30,
   diagnostics_enabled: true,
-  last_updated: string // ISO Timestamp
-}
+  last_updated: string, // ISO Timestamp
+};
 ```
 
 ## 🔄 **Einstellungs-Management**
 
 ### **Lade-Logik**
+
 1. **Verzeichnis-Prüfung** - Erstellt Config-Verzeichnis falls nicht vorhanden
 2. **Datei-Existenz** - Erstellt Standarddatei falls fehlend
 3. **Migration** - Automatische Aktualisierung veralteter Strukturen
 4. **Fallback** - Bei Fehlern werden Defaults verwendet
 
 ### **Speicher-Logik**
+
 1. **Backup-Erstellung** - Vor jeder Änderung
 2. **Timestamp-Update** - Automatische Aktualisierung von `last_updated`
 3. **Strukturierte Speicherung** - JSON mit Formatierung
@@ -1111,16 +1253,19 @@ DEFAULT_SETTINGS = {
 ## 🛡️ **Validierung & Migration**
 
 ### **Einstellungs-Validierung**
+
 ```typescript
 validateSettings(settings): string[] // Gibt Problem-Liste zurück
 ```
 
 ### **Validierte Parameter**
+
 - `default_provider` - Muss vorhanden sein
-- `default_model` - Muss vorhanden sein  
+- `default_model` - Muss vorhanden sein
 - `max_parallel_requests` - Muss positive Zahl sein
 
 ### **Migrations-Logik**
+
 - **Vergleich mit Defaults** - Fehlende Schlüssel werden ergänzt
 - **Automatische Speicherung** - Bei Änderungen
 - **Change Tracking** - Protokollierung von Migrationen
@@ -1128,6 +1273,7 @@ validateSettings(settings): string[] // Gibt Problem-Liste zurück
 ## 📊 **Status & Monitoring**
 
 ### **Settings Status Report**
+
 ```typescript
 {
   timestamp: string,               // Aktueller Zeitstempel
@@ -1146,11 +1292,13 @@ validateSettings(settings): string[] // Gibt Problem-Liste zurück
 ## 🔄 **Import/Export-Funktionen**
 
 ### **Export**
+
 - **Zieldatei**: Beliebig wählbarer Pfad
 - **Format**: Strukturierte JSON
 - **Fehlerbehandlung**: Boolean Rückgabe
 
-### **Import** 
+### **Import**
+
 - **Quelldatei**: Externe JSON-Datei
 - **Validierung**: Datei-Existenz und JSON-Parsing
 - **Automatische Speicherung**: Nach erfolgreichem Import
@@ -1158,16 +1306,19 @@ validateSettings(settings): string[] // Gibt Problem-Liste zurück
 ## 🎯 **Use Cases**
 
 ### **System-Konfiguration**
+
 - Zentrale Verwaltung aller KI-Einstellungen
 - Provider- und Modell-Konfiguration
 - Performance-Parameter
 
 ### **Backup & Recovery**
+
 - Automatische Backup-Erstellung
 - Einfache Wiederherstellung
 - Konfigurations-Migration
 
 ### **Administration**
+
 - Runtime-Konfigurationsänderungen
 - System-Statusüberwachung
 - Problemdiagnose
@@ -1175,12 +1326,14 @@ validateSettings(settings): string[] // Gibt Problem-Liste zurück
 ## 📈 **Logging & Protokollierung**
 
 ### **Protokollierte Ereignisse**
+
 - **Einstellungsänderungen** - Key, Old Value, New Value
 - **Backup-Erstellungen** - Backup-Pfade
 - **Migrationen** - Automatische Updates
 - **Import/Export** - Erfolgs-/Fehlerstatus
 
 ### **Log-Level**
+
 - `info` - Normale Operationen
 - `warn` - Validierungsprobleme, Resets
 - `error` - Fehler bei Dateioperationen
@@ -1188,11 +1341,13 @@ validateSettings(settings): string[] // Gibt Problem-Liste zurück
 ## 🔒 **Sicherheitsfeatures**
 
 ### **Datenintegrität**
+
 - **Automatic Backups** - Vor jeder Änderung
 - **Validation** - Kritische Parameter-Überprüfung
 - **Migration** - Forward-Compatibility
 
 ### **Fehlertoleranz**
+
 - **Graceful Degradation** - Fallback zu Defaults bei Fehlern
 - **Robuste Datei-Operationen** - Try-Catch bei allen FS-Operationen
 - **Konsistente Rückgabewerte** - Vorhersehbare Error-Handling
@@ -1204,36 +1359,41 @@ Basierend auf der analysierten `toolService.ts` Datei, hier sind die erkannten F
 ## 🛠️ **Tool Service - Hauptfunktionen**
 
 ### **Tool-Management**
+
 - `loadAvailableTools()` - Lädt verfügbare Tools aus Dateisystem
 - `listRegisteredTools()` - Listet registrierte Tools
 - `reloadTools()` - Lädt Tools neu
 
 ### **Tool-Execution**
+
 - `runTool(toolName, params)` - Führt Tool aus
 - `isToolAvailable(toolName)` - Prüft Tool-Verfügbarkeit
 
 ### **Metadaten & Diagnose**
+
 - `getToolMetadata()` - Holt Tool-Metadaten
 - `getToolServiceStatus()` - Gibt Service-Status zurück
 
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  loadAvailableTools,        // Tool-Discovery
-  listRegisteredTools,       // Registry-Liste
-  runTool,                   // Tool-Ausführung
-  getToolMetadata,           // Metadaten-Abfrage
-  isToolAvailable,           // Verfügbarkeitsprüfung
-  reloadTools,               // Neuladen
-  getToolServiceStatus       // Statusbericht
-}
+  loadAvailableTools, // Tool-Discovery
+  listRegisteredTools, // Registry-Liste
+  runTool, // Tool-Ausführung
+  getToolMetadata, // Metadaten-Abfrage
+  isToolAvailable, // Verfügbarkeitsprüfung
+  reloadTools, // Neuladen
+  getToolServiceStatus, // Statusbericht
+};
 ```
 
 ## ⚙️ **Service-Konfiguration**
 
 ### **Tool Service Config**
+
 ```typescript
 toolServiceConfig: AIModuleConfig {
   name: "toolService",
@@ -1248,11 +1408,13 @@ toolServiceConfig: AIModuleConfig {
 ## 📁 **Tool-Discovery System**
 
 ### **Tool-Verzeichnis**
+
 - **Pfad**: `ERP_SteinmetZ_V1/apps/backend/src/routes/ai/tools`
 - **Dateitypen**: `.ts` und `.js` Dateien
 - **Namensextraktion**: Dateiname ohne Extension wird Tool-Name
 
 ### **Discovery-Prozess**
+
 1. **Verzeichnis-Prüfung** - Existiert das Tool-Verzeichnis?
 2. **Datei-Scan** - Alle TS/JS Dateien finden
 3. **Namen-Extraktion** - Dateinamen ohne Extension
@@ -1261,11 +1423,13 @@ toolServiceConfig: AIModuleConfig {
 ## 🔧 **Tool-Execution System**
 
 ### **Ausführungs-Flow**
+
 ```typescript
 runTool(toolName: string, params: Record<string, any>): Promise<string>
 ```
 
 ### **Ausführungs-Schritte**
+
 1. **Parameter-Validierung** - Tool-Name und Parameter
 2. **Registry-Aufruf** - `toolRegistry.call(toolName, params)`
 3. **Performance-Monitoring** - Laufzeit-Messung
@@ -1273,6 +1437,7 @@ runTool(toolName: string, params: Record<string, any>): Promise<string>
 5. **Error-Handling** - Strukturierte Fehlerbehandlung
 
 ### **Response-Formate**
+
 - **String-Result**: Direkte Rückgabe
 - **Object-Result**: JSON-Stringifiziert mit Metadaten
 - **Error-Result**: Fehlermeldung mit Tool-Name
@@ -1280,24 +1445,28 @@ runTool(toolName: string, params: Record<string, any>): Promise<string>
 ## 📊 **Tool-Metadaten System**
 
 ### **ToolMetadata Interface**
+
 ```typescript
 interface ToolMetadata {
-  name: string;                    // Tool-Name
-  description?: string;           // Beschreibung
-  category?: string;              // Kategorie
+  name: string; // Tool-Name
+  description?: string; // Beschreibung
+  category?: string; // Kategorie
   params?: Record<string, string>; // Parameter-Definition
-  example?: string;               // Beispielaufruf
-  last_used?: string;             // Letzte Verwendung
+  example?: string; // Beispielaufruf
+  last_used?: string; // Letzte Verwendung
 }
 ```
 
 ### **Metadaten-Erkennung**
+
 **Prioritäts-basierte Abfrage**:
+
 1. **`registry.describe()`** - Primäre Metadaten-Quelle
 2. **`registry.getToolDefinitions()`** - Fallback-Quelle
 3. **Basic Fallback** - Nur Namen bei Fehlschlag
 
 ### **Fallback-Logik**
+
 - **Flexible Registry-Integration** - Arbeitet mit verschiedenen Registry-Implementierungen
 - **Graceful Degradation** - Metadaten soweit verfügbar
 - **Konsistente Struktur** - Immer gültige Rückgabe
@@ -1305,6 +1474,7 @@ interface ToolMetadata {
 ## 🔄 **Tool-Reload System**
 
 ### **Neulade-Prozess**
+
 1. **Tool-Discovery** - Neue Tools im Dateisystem finden
 2. **Registry-Reload** - `toolRegistry.reload()` falls verfügbar
 3. **Fallback-Handling** - Statisches Neuladen bei fehlender Reload-Funktion
@@ -1313,6 +1483,7 @@ interface ToolMetadata {
 ## 📈 **Status & Monitoring**
 
 ### **Tool Service Status**
+
 ```typescript
 {
   provider: "toolService",
@@ -1330,11 +1501,13 @@ interface ToolMetadata {
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Robuste Implementierung**
+
 - **Try-Catch Wrapping** - Alle Operationen abgesichert
 - **Registry-Compatibility** - Flexible Anpassung an verschiedene Registry-APIs
 - **Meaningful Errors** - Verständliche Fehlermeldungen
 
 ### **Error Responses**
+
 - **Tool nicht gefunden** - Klare Fehlermeldung
 - **Ausführungsfehler** - Tool-spezifische Fehler
 - **Registry-Fehler** - Metadaten-Abfrage Probleme
@@ -1342,9 +1515,11 @@ interface ToolMetadata {
 ## 🔍 **Verfügbarkeitsprüfung**
 
 ### **Tool-Verfügbarkeit**
+
 ```typescript
 isToolAvailable(toolName: string): boolean
 ```
+
 - **Prüfung**: Über `toolRegistry.list()`
 - **Schnelle Abfrage** - Direkte Registry-Integration
 - **Boolean Rückgabe** - Einfache Integration
@@ -1352,16 +1527,19 @@ isToolAvailable(toolName: string): boolean
 ## 🎯 **Use Cases**
 
 ### **Tool-Management**
+
 - Dynamische Tool-Erkennung
 - Runtime Tool-Registrierung
 - Tool-Metadaten Verwaltung
 
 ### **KI-Integration**
+
 - Tool-Aufrufe von KI-Modellen
 - Parameter-Validierung und Transformation
 - Einheitliche Response-Formate
 
 ### **Administration**
+
 - Tool-Statusüberwachung
 - Performance-Monitoring
 - Debugging und Problemdiagnose
@@ -1369,6 +1547,7 @@ isToolAvailable(toolName: string): boolean
 ## 📊 **Logging & Protokollierung**
 
 ### **Protokollierte Ereignisse**
+
 - **Tool-Discovery** - Gefundene Tools und Anzahl
 - **Tool-Ausführung** - Name, Parameter, Laufzeit
 - **Tool-Fehler** - Fehlermeldungen mit Kontext
@@ -1381,49 +1560,55 @@ Basierend auf der analysierten `translationService.ts` Datei, hier sind die erka
 ## 🌍 **Translation Service - Hauptfunktionen**
 
 ### **Übersetzungsfunktionen**
+
 - `translateText(text, targetLang, engine)` - Übersetzt einzelnen Text
 - `autoTranslate(text, targetLang, engine)` - Automatische Spracherkennung + Übersetzung
 - `translateBatch(texts, targetLang, engine)` - Übersetzt mehrere Texte
 - `detectLanguage(text, engine)` - Erkennt Sprache des Textes
 
 ### **Service-Status**
+
 - `getTranslationStatus()` - Gibt Service-Status zurück
 
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  translateText,            // Einzel-Übersetzung
-  autoTranslate,            // Automatische Übersetzung
-  translateBatch,           // Batch-Übersetzung
-  detectLanguage,           // Spracherkennung
-  getTranslationStatus      // Statusabfrage
-}
+  translateText, // Einzel-Übersetzung
+  autoTranslate, // Automatische Übersetzung
+  translateBatch, // Batch-Übersetzung
+  detectLanguage, // Spracherkennung
+  getTranslationStatus, // Statusabfrage
+};
 ```
 
 ## ⚙️ **Service-Konfiguration**
 
 ### **Translation Config**
+
 ```typescript
 translationConfig = {
   name: "translationService",
-  defaultEngine: "openai",           // Standard-Engine
-  defaultModel: "gpt-4o-mini",       // Standard-Modell
-  fallbackEngine: "vertex",          // Fallback-Engine
+  defaultEngine: "openai", // Standard-Engine
+  defaultModel: "gpt-4o-mini", // Standard-Modell
+  fallbackEngine: "vertex", // Fallback-Engine
   supportedEngines: ["openai", "vertex", "huggingface"], // Unterstützte Engines
-  defaultTargetLang: "Deutsch"       // Standard-Zielsprache
-}
+  defaultTargetLang: "Deutsch", // Standard-Zielsprache
+};
 ```
 
 ## 🔄 **Engine-Routing**
 
 ### **Unterstützte Übersetzungs-Engines**
+
 1. **`openai`** - OpenAI GPT-Modelle (Standard)
 2. **`vertex`** - Google Vertex AI (Gemini)
 3. **`huggingface`** - HuggingFace Inference API
 
 ### **Engine-spezifische Modelle**
+
 - **OpenAI**: `gpt-4o-mini` (Standard)
 - **Vertex AI**: `gemini-1.5-pro`
 - **HuggingFace**: `facebook/m2m100_418M`
@@ -1431,20 +1616,22 @@ translationConfig = {
 ## 📝 **Übersetzungsprozess**
 
 ### **Prompt-Struktur**
+
 ```typescript
 ChatMessage[] = [
-  { 
-    role: "system", 
-    content: `Übersetze den folgenden Text präzise ins ${targetLang}.` 
+  {
+    role: "system",
+    content: `Übersetze den folgenden Text präzise ins ${targetLang}.`
   },
-  { 
-    role: "user", 
-    content: text 
+  {
+    role: "user",
+    content: text
   }
 ]
 ```
 
 ### **Response-Verarbeitung**
+
 - **Text-Extraktion**: `response.text`
 - **Meta-Informationen**: Engine, Zielsprache
 - **Fehlerbehandlung**: Strukturierte Error-Responses
@@ -1452,16 +1639,19 @@ ChatMessage[] = [
 ## 🧠 **Spracherkennung**
 
 ### **Detect Language Prozess**
+
 ```typescript
 detectLanguage(text, engine): Promise<string>
 ```
 
 ### **Prompt für Spracherkennung**
+
 ```
 "Bestimme die Sprache des folgenden Textes und antworte nur mit dem Sprachennamen (z. B. 'Deutsch', 'Englisch', 'Französisch')."
 ```
 
 ### **Unterstützte Engines für Spracherkennung**
+
 - **OpenAI** - Primäre Engine
 - **Vertex AI** - Alternative Engine
 - **HuggingFace** - Nicht unterstützt (Fallback zu OpenAI)
@@ -1469,18 +1659,20 @@ detectLanguage(text, engine): Promise<string>
 ## 🔄 **Automatische Übersetzung**
 
 ### **Auto-Translate Flow**
+
 1. **Spracherkennung** - `detectLanguage()`
 2. **Vergleich** - Prüfung ob Übersetzung nötig
 3. **Übersetzung** - Nur bei unterschiedlichen Sprachen
 4. **Optimierung** - Überspringen bei gleicher Sprache
 
 ### **Response bei gleicher Sprache**
+
 ```typescript
 {
   text: originalText,
-  meta: { 
-    info: "Keine Übersetzung nötig", 
-    language: detectedLanguage 
+  meta: {
+    info: "Keine Übersetzung nötig",
+    language: detectedLanguage
   }
 }
 ```
@@ -1488,11 +1680,13 @@ detectLanguage(text, engine): Promise<string>
 ## 📦 **Batch-Übersetzung**
 
 ### **Batch Processing**
+
 ```typescript
 translateBatch(texts, targetLang, engine): Promise<AIResponse[]>
 ```
 
 ### **Verarbeitungslogik**
+
 - **Sequentiell** - Texte werden nacheinander verarbeitet
 - **Einzelaufrufe** - Jeder Text einzeln übersetzt
 - **Array-Rückgabe** - Ergebnisse in gleicher Reihenfolge
@@ -1500,6 +1694,7 @@ translateBatch(texts, targetLang, engine): Promise<AIResponse[]>
 ## 📊 **Response-Strukturen**
 
 ### **Erfolgs-Response**
+
 ```typescript
 AIResponse {
   text: string,                    // Übersetzter Text
@@ -1512,6 +1707,7 @@ AIResponse {
 ```
 
 ### **Fehler-Response**
+
 ```typescript
 {
   text: string,                    // Fehlermeldung
@@ -1526,11 +1722,13 @@ AIResponse {
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Robuste Implementierung**
+
 - **Engine-Fallback** - Automatischer Fallback bei Fehlern
 - **Timeout-Handling** - Netzwerk-Fehlerbehandlung
 - **Response-Validierung** - Prüfung auf gültige Antwort
 
 ### **Error-Logging**
+
 - Detaillierte Fehlerprotokollierung
 - Engine-spezifische Fehlermeldungen
 - Kontext-Informationen
@@ -1538,6 +1736,7 @@ AIResponse {
 ## 📈 **Monitoring & Status**
 
 ### **Service-Status**
+
 ```typescript
 {
   service: "translationService",
@@ -1550,16 +1749,19 @@ AIResponse {
 ## 🎯 **Use Cases**
 
 ### **Einzel-Übersetzungen**
+
 - Direkte Text-Übersetzung
 - Spezifische Sprach-Kombinationen
 - Engine-Auswahl nach Bedarf
 
 ### **Automatische Übersetzung**
+
 - Unbekannte Eingabesprachen
 - Dynamische Sprach-Erkennung
 - Intelligente Fallbacks
 
 ### **Batch-Verarbeitung**
+
 - Massen-Übersetzungen
 - Dokumenten-Verarbeitung
 - Effiziente Bulk-Operations
@@ -1567,11 +1769,13 @@ AIResponse {
 ## 🔍 **Performance-Optimierungen**
 
 ### **Caching-Potential**
+
 - Spracherkennung-Ergebnisse
 - Häufige Übersetzungs-Paare
 - Engine-Auswahl basierend auf Verfügbarkeit
 
 ### **Resource Management**
+
 - Gezielte Engine-Nutzung
 - Effiziente Prompt-Konstruktion
 - Minimale API-Aufrufe bei Auto-Translate
@@ -1583,32 +1787,37 @@ Basierend auf der analysierten `visionService.ts` Datei, hier sind die erkannten
 ## 📸 **Vision Service - Hauptfunktionen**
 
 ### **Bildanalyse-Funktionen**
+
 - `analyzeImage(imagePath, instruction, engine)` - Analysiert einzelnes Bild
 - `analyzeMultipleImages(imagePaths, instruction, engine)` - Analysiert mehrere Bilder
 - `extractTextFromImage(imagePath, engine)` - Texterkennung (OCR)
 
 ### **Hilfsfunktionen**
+
 - `isImageFile(filePath)` - Prüft Bildformat
 - `encodeImageToBase64(filePath)` - Kodiert Bild zu Base64
 
 ### **Service-Status**
+
 - `getVisionStatus()` - Gibt Service-Status zurück
 
 ## 🔧 **Service Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  analyzeImage,              // Einzelbild-Analyse
-  analyzeMultipleImages,     // Mehrfachbild-Analyse
-  extractTextFromImage,      // OCR-Texterkennung
-  getVisionStatus            // Statusabfrage
-}
+  analyzeImage, // Einzelbild-Analyse
+  analyzeMultipleImages, // Mehrfachbild-Analyse
+  extractTextFromImage, // OCR-Texterkennung
+  getVisionStatus, // Statusabfrage
+};
 ```
 
 ## ⚙️ **Service-Konfiguration**
 
 ### **Vision Config**
+
 ```typescript
 visionConfig: AIModuleConfig {
   name: "visionService",
@@ -1625,11 +1834,13 @@ visionConfig: AIModuleConfig {
 ## 🌐 **Engine-Routing**
 
 ### **Unterstützte Vision-Engines**
+
 1. **`openai`** - OpenAI Vision API (Standard)
 2. **`vertex`** - Google Vertex AI (Gemini Vision)
 3. **`huggingface`** - HuggingFace Inference API
 
 ### **Engine-spezifische Modelle**
+
 - **OpenAI**: `gpt-4o` (Standard), `gpt-4o-mini`
 - **Vertex AI**: `gemini-1.5-pro-vision`
 - **HuggingFace**: `Salesforce/blip-image-captioning-large`
@@ -1637,6 +1848,7 @@ visionConfig: AIModuleConfig {
 ## 📁 **Bildverarbeitung**
 
 ### **Unterstützte Bildformate**
+
 - **PNG** - `.png`
 - **JPEG** - `.jpg`, `.jpeg`
 - **GIF** - `.gif`
@@ -1645,6 +1857,7 @@ visionConfig: AIModuleConfig {
 - **TIFF** - `.tiff`
 
 ### **Base64 Encoding**
+
 - **Automatische Konvertierung** - Bilder zu Base64 Strings
 - **Data URL Format** - `data:image/jpeg;base64,{base64String}`
 - **Datei-Existenzprüfung** - Validierung vor Verarbeitung
@@ -1652,18 +1865,20 @@ visionConfig: AIModuleConfig {
 ## 🧠 **Bildanalyse-Prozess**
 
 ### **Analyse-Prompts**
+
 ```typescript
 // Standard-Prompt für Einzelbildanalyse
-"Beschreibe den Inhalt des Bildes detailliert."
+"Beschreibe den Inhalt des Bildes detailliert.";
 
-// OCR-Prompt für Texterkennung  
-"Erkenne und gib den im Bild enthaltenen Text exakt wieder."
+// OCR-Prompt für Texterkennung
+"Erkenne und gib den im Bild enthaltenen Text exakt wieder.";
 
 // Multi-Image Prompt
-"Analysiere die Gemeinsamkeiten und Unterschiede zwischen den Bildern."
+"Analysiere die Gemeinsamkeiten und Unterschiede zwischen den Bildern.";
 ```
 
 ### **OpenAI Vision Integration**
+
 ```typescript
 {
   model: "gpt-4o",
@@ -1671,9 +1886,9 @@ visionConfig: AIModuleConfig {
     role: "user",
     content: [
       { type: "text", text: instruction },
-      { 
-        type: "image_url", 
-        image_url: `data:image/jpeg;base64,${base64}` 
+      {
+        type: "image_url",
+        image_url: `data:image/jpeg;base64,${base64}`
       }
     ]
   }]
@@ -1681,6 +1896,7 @@ visionConfig: AIModuleConfig {
 ```
 
 ### **Provider-Integration**
+
 - **OpenAI**: Direkte Vision API Integration
 - **Vertex AI**: `callVertexAI()` mit Vision-Modell
 - **HuggingFace**: `callHuggingFace()` mit Image-Captioning Modell
@@ -1688,6 +1904,7 @@ visionConfig: AIModuleConfig {
 ## 📊 **Response-Strukturen**
 
 ### **Erfolgs-Response**
+
 ```typescript
 AIResponse {
   text: string,                    // Analyse-Ergebnis
@@ -1700,6 +1917,7 @@ AIResponse {
 ```
 
 ### **Multi-Image Response**
+
 ```typescript
 {
   text: string,                    // Kombinierte Ergebnisse
@@ -1712,6 +1930,7 @@ AIResponse {
 ```
 
 ### **Fehler-Response**
+
 ```typescript
 {
   text: string,                    // Fehlermeldung
@@ -1722,11 +1941,13 @@ AIResponse {
 ## 🔍 **Spezialfunktionen**
 
 ### **Texterkennung (OCR)**
+
 - **Spezialisierter Prompt** - Exakte Textextraktion
 - **Engine-Kompatibilität** - Funktioniert mit allen unterstützten Engines
 - **Use Cases** - Dokumentenverarbeitung, Screenshot-Analyse
 
 ### **Multi-Bildanalyse**
+
 - **Sequenzielle Verarbeitung** - Bilder nacheinander analysieren
 - **Kombinierte Ergebnisse** - Einheitliche Response mit allen Ergebnissen
 - **Vergleichende Analyse** - Gemeinsamkeiten und Unterschiede
@@ -1734,11 +1955,13 @@ AIResponse {
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Validierung**
+
 - **Dateiformat-Prüfung** - Nur unterstützte Bildformate
 - **Datei-Existenz** - Pfad-Validierung
 - **Base64-Encoding** - Fehlerbehandlung bei Konvertierung
 
 ### **Error-Types**
+
 - **Ungültiges Format** - Bei nicht unterstützten Dateitypen
 - **Datei nicht gefunden** - Bei fehlenden Bildern
 - **API-Fehler** - Bei Provider-Problemen
@@ -1747,6 +1970,7 @@ AIResponse {
 ## 📈 **Monitoring & Status**
 
 ### **Vision Status**
+
 ```typescript
 {
   provider: "visionService",
@@ -1760,21 +1984,25 @@ AIResponse {
 ## 🎯 **Use Cases**
 
 ### **Bildbeschreibung**
+
 - Automatische Alt-Texte für Bilder
 - Barrierefreiheit für visuelle Inhalte
 - Inhaltsanalyse und -kategorisierung
 
 ### **Texterkennung**
+
 - Dokumenten-Digitalisierung
 - Screenshot-Verarbeitung
 - Schilder- und Label-Erkennung
 
 ### **Vergleichende Analyse**
+
 - Produktvergleiche
 - Qualitätskontrolle
 - Veränderungserkennung
 
 ### **Objekt-Erkennung**
+
 - Inventarmanagement
 - Sicherheitsüberwachung
 - Automatisierte Katalogisierung
@@ -1782,11 +2010,13 @@ AIResponse {
 ## 🔄 **Integrationen**
 
 ### **Provider-Services**
+
 - **OpenAI Provider** - Für GPT-4o Vision
 - **Vertex AI Provider** - Für Gemini Vision
 - **HuggingFace Provider** - Für Open-Source Vision-Modelle
 
 ### **Dateisystem**
+
 - Flexible Pfad-Unterstützung
 - Automatische Format-Erkennung
 - Effiziente Base64-Konvertierung
@@ -1798,6 +2028,7 @@ Basierend auf der analysierten `sessionStore.ts` Datei, hier sind die erkannten 
 ## 💾 **Session Store - Hauptfunktionen**
 
 ### **Session-Management**
+
 - `createSession(model, provider)` - Erstellt neue Session
 - `getSession(id)` - Ruft Session ab
 - `updateSession(id, message)` - Aktualisiert Session mit neuer Nachricht
@@ -1805,11 +2036,13 @@ Basierend auf der analysierten `sessionStore.ts` Datei, hier sind die erkannten 
 - `listSessions()` - Listet alle Sessions
 
 ### **Erweiterte Funktionen**
+
 - `findSessions(filter)` - Filtert Sessions nach Kriterien
 - `cleanupOldSessions(maxAgeDays)` - Bereinigt alte Sessions
 - `getSessionStatus()` - Gibt Store-Status zurück
 
 ### **Persistenz-Funktionen**
+
 - `saveSessionToFile(session)` - Speichert Session auf Disk
 - `loadAllSessions()` - Lädt alle gespeicherten Sessions
 - `deleteSessionFile(id)` - Löscht Session-Datei
@@ -1817,44 +2050,48 @@ Basierend auf der analysierten `sessionStore.ts` Datei, hier sind die erkannten 
 ## 🔧 **Store Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  createSession,            // Neue Session erstellen
-  getSession,               // Session abrufen
-  updateSession,            // Session aktualisieren
-  removeSession,            // Session löschen
-  listSessions,             // Alle Sessions auflisten
-  findSessions,             // Sessions filtern
-  getSessionStatus,         // Store-Status
-  loadAllSessions,          // Persistenz laden
-  cleanupOldSessions        // Bereinigung
-}
+  createSession, // Neue Session erstellen
+  getSession, // Session abrufen
+  updateSession, // Session aktualisieren
+  removeSession, // Session löschen
+  listSessions, // Alle Sessions auflisten
+  findSessions, // Sessions filtern
+  getSessionStatus, // Store-Status
+  loadAllSessions, // Persistenz laden
+  cleanupOldSessions, // Bereinigung
+};
 ```
 
 ## 🏗️ **Session-Struktur**
 
 ### **ChatSession Interface**
+
 ```typescript
 interface ChatSession {
-  id: string;                    // Eindeutige Session-ID
-  model: string;                 // Verwendetes KI-Modell
-  provider?: string;             // KI-Provider
-  messages: ChatMessage[];       // Nachrichtenverlauf
-  createdAt: string;             // Erstellungszeitpunkt (ISO)
-  updatedAt: string;             // Letzte Aktualisierung (ISO)
-  tokensUsed?: number;           // Verwendete Tokens
-  meta?: Record<string, any>;    // Zusätzliche Metadaten
+  id: string; // Eindeutige Session-ID
+  model: string; // Verwendetes KI-Modell
+  provider?: string; // KI-Provider
+  messages: ChatMessage[]; // Nachrichtenverlauf
+  createdAt: string; // Erstellungszeitpunkt (ISO)
+  updatedAt: string; // Letzte Aktualisierung (ISO)
+  tokensUsed?: number; // Verwendete Tokens
+  meta?: Record<string, any>; // Zusätzliche Metadaten
 }
 ```
 
 ## 💽 **Speichersystem**
 
 ### **In-Memory Store**
+
 - **Map-basiert** - `chatSessions: Map<string, ChatSession>`
 - **Schneller Zugriff** - Direkter Speicherzugriff
 - **Automatische Verwaltung** - Integrierte CRUD-Operationen
 
 ### **Persistente Speicherung**
+
 - **Aktivierung**: `PERSIST_SESSIONS = true` (Konfigurierbar)
 - **Verzeichnis**: `./data/sessions/`
 - **Dateiformat**: JSON mit Formatierung
@@ -1863,33 +2100,40 @@ interface ChatSession {
 ## 🔄 **Session-Lebenszyklus**
 
 ### **Erstellung**
+
 ```typescript
 createSession(model: string, provider?: string): ChatSession
 ```
+
 - **ID-Generierung**: `chat_{UUID}`
 - **Zeitstempel**: Automatische Erstellung
 - **Initialisierung**: Leerer Nachrichtenverlauf
 
 ### **Aktualisierung**
+
 ```typescript
 updateSession(id: string, message: ChatMessage | AIResponse): ChatSession
 ```
+
 - **Nachrichtenhinzufügung**: Push zur Messages-Liste
 - **Timestamp-Update**: Automatische Aktualisierung
 - **Response-Adaptierung**: Konvertiert AIResponse zu ChatMessage
 
 ### **Löschung**
+
 - **Memory Cleanup**: Entfernt aus Map
 - **File Cleanup**: Löscht JSON-Datei (falls persistent)
 
 ## 📁 **Dateisystem-Integration**
 
 ### **Automatisches Laden**
+
 - **Startup Initialization**: Beim Modul-Import
 - **Bulk Loading**: Alle JSON-Dateien im Session-Verzeichnis
 - **Fehlertoleranz**: Fehlerhafte Dateien werden übersprungen
 
 ### **Backup & Recovery**
+
 - **Automatische Sicherung**: Bei jeder Änderung
 - **Consistency Checks**: JSON-Parsing mit Error-Handling
 - **Graceful Degradation**: Funktioniert auch ohne Persistenz
@@ -1897,19 +2141,23 @@ updateSession(id: string, message: ChatMessage | AIResponse): ChatSession
 ## 🧹 **Bereinigungsfunktionen**
 
 ### **Automatic Cleanup**
+
 ```typescript
 cleanupOldSessions(maxAgeDays = 7): number
 ```
 
 ### **Bereinigungslogik**
+
 - **Altersprüfung**: Basierend auf `updatedAt`
 - **Standard**: 7 Tage (konfigurierbar)
 - **Startup Cleanup**: Automatisch beim Initialisieren (14 Tage)
 
 ### **Filter-Funktionen**
+
 ```typescript
 findSessions(filter: { model?: string; provider?: string }): ChatSession[]
 ```
+
 - **Modell-Filter**: Nach spezifischem KI-Modell
 - **Provider-Filter**: Nach KI-Provider
 - **Kombinierte Filter**: Mehrere Kriterien gleichzeitig
@@ -1917,6 +2165,7 @@ findSessions(filter: { model?: string; provider?: string }): ChatSession[]
 ## 📊 **Monitoring & Status**
 
 ### **Session Status**
+
 ```typescript
 {
   total: number,                 // Gesamtzahl der Sessions
@@ -1929,11 +2178,13 @@ findSessions(filter: { model?: string; provider?: string }): ChatSession[]
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Robuste Implementierung**
+
 - **Session nicht gefunden**: Gibt `null` zurück
 - **Datei-Operationen**: Try-Catch bei allen FS-Operationen
 - **JSON-Parsing**: Fehlertolerantes Parsing von Session-Dateien
 
 ### **Error-Logging**
+
 - **Session-Erstellung**: Erfolgsprotokollierung
 - **Speicherfehler**: Detaillierte Error-Logs
 - **Ladefehler**: Warnungen bei fehlerhaften Dateien
@@ -1941,16 +2192,19 @@ findSessions(filter: { model?: string; provider?: string }): ChatSession[]
 ## 🎯 **Use Cases**
 
 ### **Chat-Historie**
+
 - Persistenter Nachrichtenverlauf
 - Kontext-Erhaltung über mehrere Anfragen
 - Token-Tracking für Cost Management
 
 ### **Session-Management**
+
 - Mehrere parallele Chat-Sessions
 - Benutzer-spezifische Konversationen
 - Modell- und Provider-Isolation
 
 ### **Analytics & Debugging**
+
 - Nutzungsstatistiken
 - Performance-Monitoring
 - Problemdiagnose durch Session-Review
@@ -1958,14 +2212,15 @@ findSessions(filter: { model?: string; provider?: string }): ChatSession[]
 ## 🔄 **Integrationen**
 
 ### **KI-System-Integration**
+
 - **Provider-Agnostisch**: Unterstützt alle KI-Provider
 - **Message-Typen**: Kompatibel mit ChatMessage und AIResponse
 - **Metadata-Support**: Erweiterbare Session-Metadaten
 
 ### **System-Integration**
+
 - **File System**: Persistente Speicherung
 - **Crypto Module**: Sichere ID-Generierung
 - **Date-Handling**: ISO-Format Zeitstempel
 
 Der Session Store bietet eine vollständige Session-Management-Lösung mit persistenter Speicherung, automatischer Bereinigung und robustem Fehlerhandling für das ERP-KI-System.
-

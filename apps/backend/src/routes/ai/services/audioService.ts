@@ -21,7 +21,8 @@ export const audioConfig: AIModuleConfig = {
   name: "audioService",
   provider: "openai",
   model: process.env.AUDIO_MODEL ?? "whisper-1",
-  description: "Audioverarbeitung: Speech-to-Text & Text-to-Speech (OpenAI Whisper + TTS)",
+  description:
+    "Audioverarbeitung: Speech-to-Text & Text-to-Speech (OpenAI Whisper + TTS)",
   capabilities: ["audio", "tools", "json"],
   active: true,
   timeout_ms: 120000, // 2 Minuten
@@ -47,7 +48,11 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
 
   try {
     const formData = new FormData();
-    formData.append("file", fs.createReadStream(filePath), path.basename(filePath));
+    formData.append(
+      "file",
+      fs.createReadStream(filePath),
+      path.basename(filePath),
+    );
     formData.append("model", audioConfig.model);
 
     const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
@@ -107,7 +112,6 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
   }
 }
 
-
 /* ========================================================================== */
 /* 🔊 Sprachausgabe (Text-to-Speech)                                         */
 /* ========================================================================== */
@@ -118,7 +122,7 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
  */
 export async function textToSpeech(
   text: string,
-  outputPath: string = path.resolve("output", `tts_${Date.now()}.mp3`)
+  outputPath: string = path.resolve("output", `tts_${Date.now()}.mp3`),
 ): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY fehlt.");
@@ -150,7 +154,10 @@ export async function textToSpeech(
     const buffer = Buffer.from(await res.arrayBuffer());
     fs.writeFileSync(outputPath, buffer);
 
-    log("info", "TTS-Datei erstellt", { file: outputPath, size: buffer.length });
+    log("info", "TTS-Datei erstellt", {
+      file: outputPath,
+      size: buffer.length,
+    });
 
     return outputPath;
   } catch (err: any) {
@@ -218,7 +225,6 @@ export async function testAudioEndpoints(): Promise<Record<string, boolean>> {
     return { whisper: false, tts: false };
   }
 }
-
 
 /* ========================================================================== */
 /* 🧾 Default-Export                                                         */

@@ -9,13 +9,13 @@
 
 /** Rollen in der Konversation */
 export type Role =
-  | 'system'
-  | 'user'
-  | 'assistant'
-  | 'observer'
-  | 'controller'
-  | 'router'
-  | 'function'; // Hinzugefügt für Funktionsaufrufe
+  | "system"
+  | "user"
+  | "assistant"
+  | "observer"
+  | "controller"
+  | "router"
+  | "function"; // Hinzugefügt für Funktionsaufrufe
 
 /** Grundstruktur einer Chatnachricht */
 export interface ChatMessage {
@@ -24,12 +24,17 @@ export interface ChatMessage {
   timestamp?: string;
   metadata?: {
     intent?: string;
-    sentiment?: 'positive' | 'neutral' | 'negative' | 'critical' | 'questioning';
+    sentiment?:
+      | "positive"
+      | "neutral"
+      | "negative"
+      | "critical"
+      | "questioning";
     topic?: string;
     tokens?: number;
     model?: string;
     confidence?: number;
-    origin?: 'manual' | 'automated' | 'imported';
+    origin?: "manual" | "automated" | "imported";
     language?: string;
     source_tool?: string;
     // Ergänzungen für erweiterte Metadaten
@@ -90,7 +95,7 @@ export interface FallbackConfig {
   models?: Record<string, AIModuleConfig>;
   preferences?: Record<string, any>;
   defaults?: Record<string, any>;
-  environment?: 'development' | 'production' | 'test';
+  environment?: "development" | "production" | "test";
   version?: string;
   // Ergänzungen für erweiterte Konfiguration
   security?: {
@@ -99,7 +104,7 @@ export interface FallbackConfig {
     require_authentication?: boolean;
   };
   logging?: {
-    level: 'error' | 'warn' | 'info' | 'debug';
+    level: "error" | "warn" | "info" | "debug";
     retain_days: number;
   };
 }
@@ -171,25 +176,25 @@ export interface ToolRegistryEntry extends ToolMetadata {
 /* ========================================================================== */
 
 export type WorkflowStepType =
-  | 'tool_call'
-  | 'if'
-  | 'loop'
-  | 'workflow_call'
-  | 'context_update'
-  | 'transform'
-  | 'log'
-  | 'wait'
-  | 'api_request'
-  | 'ai_invoke'
-  | 'parallel'
-  | 'switch'
-  | 'error_handler'
-  | 'variable_set'
-  | 'variable_clear'
-  | 'end'
-  | 'event_emit'
-  | 'data_validation' // Neu: Datenvalidierungsschritt
-  | 'notification';   // Neu: Benachrichtigungsschnittstelle
+  | "tool_call"
+  | "if"
+  | "loop"
+  | "workflow_call"
+  | "context_update"
+  | "transform"
+  | "log"
+  | "wait"
+  | "api_request"
+  | "ai_invoke"
+  | "parallel"
+  | "switch"
+  | "error_handler"
+  | "variable_set"
+  | "variable_clear"
+  | "end"
+  | "event_emit"
+  | "data_validation" // Neu: Datenvalidierungsschritt
+  | "notification"; // Neu: Benachrichtigungsschnittstelle
 
 /**
  * Repräsentiert einen einzelnen Schritt innerhalb eines Workflows.
@@ -223,7 +228,7 @@ export interface WorkflowStep {
     map?: Record<string, string>;
     // Ergänzungen für erweiterte Transformationen
     filter?: (item: any) => boolean;
-    format?: 'json' | 'csv' | 'xml';
+    format?: "json" | "csv" | "xml";
   };
 
   /** Zeitlimit (in Millisekunden) für den Schritt */
@@ -261,7 +266,7 @@ export interface WorkflowStep {
     steps: WorkflowStep[];
     // Ergänzungen für parallele Ausführung
     timeout_ms?: number;
-    merge_strategy?: 'first' | 'all' | 'race';
+    merge_strategy?: "first" | "all" | "race";
   }[];
 
   /** Neu: Für `loop`-Schritte */
@@ -275,7 +280,7 @@ export interface WorkflowStep {
   /** Neu: Für `data_validation`-Schritte */
   validation_rules?: Array<{
     field: string;
-    type: 'string' | 'number' | 'boolean' | 'array' | 'object';
+    type: "string" | "number" | "boolean" | "array" | "object";
     required?: boolean;
     min?: number;
     max?: number;
@@ -284,7 +289,7 @@ export interface WorkflowStep {
 
   /** Neu: Für `notification`-Schritte */
   notification?: {
-    type: 'email' | 'slack' | 'webhook' | 'internal';
+    type: "email" | "slack" | "webhook" | "internal";
     target: string;
     template: string;
     data_mapping?: Record<string, string>;
@@ -305,7 +310,7 @@ export interface WorkflowDefinition {
   steps: WorkflowStep[];
 
   /** Fehlerstrategie auf Workflow-Ebene */
-  on_error?: 'continue' | 'stop' | 'skip' | 'rollback';
+  on_error?: "continue" | "stop" | "skip" | "rollback";
 
   /** Zusatzinformationen (Autor, Kategorie etc.) */
   metadata?: Record<string, any>;
@@ -333,7 +338,7 @@ export interface WorkflowDefinition {
 
   /** Ergänzungen für erweiterte Workflow-Funktionen */
   triggers?: Array<{
-    type: 'manual' | 'schedule' | 'event' | 'api';
+    type: "manual" | "schedule" | "event" | "api";
     config: Record<string, any>;
   }>;
 
@@ -409,10 +414,10 @@ export interface ConversationState {
   [key: string]: any;
   preferences?: Record<string, any>;
   history_length?: number;
-  sentiment?: 'positive' | 'neutral' | 'negative' | 'critical' | 'questioning';
+  sentiment?: "positive" | "neutral" | "negative" | "critical" | "questioning";
   current_topic?: string;
   intent?: string;
-  confidence?: 'low' | 'medium' | 'high';
+  confidence?: "low" | "medium" | "high";
   updated_at?: string;
   active_workflow?: string;
   last_tool_used?: string;
@@ -423,8 +428,8 @@ export interface ConversationState {
   language?: string;
   timezone?: string;
   allowed_actions?: string[];
-  security_level?: 'low' | 'medium' | 'high';
-  conversation_phase?: 'initial' | 'middle' | 'final';
+  security_level?: "low" | "medium" | "high";
+  conversation_phase?: "initial" | "middle" | "final";
   pending_actions?: Array<{
     action: string;
     params: Record<string, any>;
@@ -480,22 +485,22 @@ export interface SystemMetrics {
  * Unterstützte KI-Provider im ERP_SteinmetZ-System.
  */
 export type Provider =
-  | 'openai'
-  | 'anthropic'
-  | 'local'
-  | 'ollama'
-  | 'fallback'
-  | 'custom'
-  | 'huggingface'
-  | 'azure'
-  | 'vertex'
-  | 'embedding'
-  | 'workflow'
-  | 'diagnostic'
-  | 'mock'; // Neu: Für Testzwecke
+  | "openai"
+  | "anthropic"
+  | "local"
+  | "ollama"
+  | "fallback"
+  | "custom"
+  | "huggingface"
+  | "azure"
+  | "vertex"
+  | "embedding"
+  | "workflow"
+  | "diagnostic"
+  | "mock"; // Neu: Für Testzwecke
 
 /** Typisierte Modell-ID */
-export type AnyModelId = string & { __brand?: 'AnyModelId' };
+export type AnyModelId = string & { __brand?: "AnyModelId" };
 
 /* -------------------------------------------------------------------------- */
 /* 🧩 KI-Modul-Konfiguration - VERBESSERT */
@@ -507,28 +512,34 @@ export interface AIModuleConfig {
   model: string;
   temperature?: number;
   max_tokens?: number;
-  role?: 'assistant' | 'analyzer' | 'controller' | 'router' | 'observer' | 'specialist';
+  role?:
+    | "assistant"
+    | "analyzer"
+    | "controller"
+    | "router"
+    | "observer"
+    | "specialist";
   endpoint?: string;
   api_key_env?: string;
   api_key_value?: string;
   capabilities?: (
-    | 'chat'
-    | 'completion'
-    | 'embedding'
-    | 'translation'
-    | 'summarization'
-    | 'text'
-    | 'audio'
-    | 'vision'
-    | 'code'
-    | 'tools'
-    | 'workflow'
-    | 'json'
-    | 'json_mode'
-    | 'speech'
-    | 'reasoning'
-    | 'tool_calls'
-    | 'multimodal' // Neu: Für multimodale Modelle
+    | "chat"
+    | "completion"
+    | "embedding"
+    | "translation"
+    | "summarization"
+    | "text"
+    | "audio"
+    | "vision"
+    | "code"
+    | "tools"
+    | "workflow"
+    | "json"
+    | "json_mode"
+    | "speech"
+    | "reasoning"
+    | "tool_calls"
+    | "multimodal" // Neu: Für multimodale Modelle
   )[];
   active?: boolean;
   timeout_ms?: number;
@@ -540,7 +551,14 @@ export interface AIModuleConfig {
   last_latency_ms?: number;
   streaming?: boolean;
   cacheable?: boolean;
-  category?: 'general' | 'system' | 'analysis' | 'research' | 'training' | 'fallback' | 'custom';
+  category?:
+    | "general"
+    | "system"
+    | "analysis"
+    | "research"
+    | "training"
+    | "fallback"
+    | "custom";
   meta?: Record<string, any>;
   // Ergänzungen für erweiterte Modulkonfiguration
   health_check_endpoint?: string;
@@ -578,19 +596,25 @@ export interface AIAgentConfig {
   environment?: string;
   // Ergänzungen für erweiterte Agentenkonfiguration
   memory_config?: {
-    type: 'short_term' | 'long_term' | 'hybrid';
+    type: "short_term" | "long_term" | "hybrid";
     max_context_length?: number;
   };
   tool_restrictions?: string[];
   allowed_domains?: string[];
   personality_traits?: string[];
-  communication_style?: 'formal' | 'casual' | 'technical' | 'friendly';
+  communication_style?: "formal" | "casual" | "technical" | "friendly";
 }
 
 export interface AIAgentStatus {
   name: string;
   model: string;
-  state: 'idle' | 'running' | 'error' | 'initializing' | 'paused' | 'terminated';
+  state:
+    | "idle"
+    | "running"
+    | "error"
+    | "initializing"
+    | "paused"
+    | "terminated";
   last_activity?: string;
   error_message?: string;
   total_requests?: number;
@@ -629,7 +653,7 @@ export interface AIClusterState {
   avg_latency_ms: number;
   started_at?: string;
   active_providers?: Provider[];
-  mode?: 'operational' | 'degraded' | 'maintenance' | 'recovering';
+  mode?: "operational" | "degraded" | "maintenance" | "recovering";
   metrics?: {
     tokens_generated?: number;
     avg_tokens_per_call?: number;
@@ -643,7 +667,7 @@ export interface AIClusterState {
   config_snapshot?: Record<string, any>;
   // Ergänzungen für erweiterten Cluster-Zustand
   load_balancing?: {
-    strategy: 'round_robin' | 'least_connections' | 'weighted';
+    strategy: "round_robin" | "least_connections" | "weighted";
     weights?: Record<string, number>;
   };
   health_check?: {
@@ -653,7 +677,7 @@ export interface AIClusterState {
   };
   scaling_recommendations?: Array<{
     agent: string;
-    action: 'scale_up' | 'scale_down' | 'maintain';
+    action: "scale_up" | "scale_down" | "maintain";
     reason: string;
   }>;
 }
@@ -675,7 +699,7 @@ export interface AIOptions {
     description: string;
     parameters: Record<string, any>;
   }>;
-  tool_choice?: 'auto' | 'none' | 'required';
+  tool_choice?: "auto" | "none" | "required";
   stop_sequences?: string[];
   frequency_penalty?: number;
   presence_penalty?: number;
@@ -694,13 +718,13 @@ export interface ModelResponse {
     parameters: Record<string, any>;
     // Ergänzungen für erweiterte Tool-Aufrufe
     id?: string;
-    type?: 'function';
+    type?: "function";
   }>;
   success?: boolean;
   errors?: string[];
   meta?: Record<string, any>;
   // Ergänzungen für erweiterte Antworten
-  finish_reason?: 'stop' | 'length' | 'tool_calls' | 'content_filter';
+  finish_reason?: "stop" | "length" | "tool_calls" | "content_filter";
   usage?: {
     prompt_tokens: number;
     completion_tokens: number;
@@ -711,7 +735,7 @@ export interface ModelResponse {
 export type ProviderFunction = (
   model: string,
   messages: ChatMessage[],
-  options?: AIOptions
+  options?: AIOptions,
 ) => Promise<ModelResponse | string>;
 
 /* ========================================================================== */
@@ -734,7 +758,7 @@ export interface AuditLogEntry {
   // Ergänzungen für erweiterte Audit-Logs
   session_id?: string;
   resource_id?: string;
-  severity?: 'low' | 'medium' | 'high' | 'critical';
+  severity?: "low" | "medium" | "high" | "critical";
   compliance_tags?: string[];
   data_changes?: Array<{
     field: string;
@@ -748,34 +772,40 @@ export interface AuditLogEntry {
 /* ========================================================================== */
 
 export type MessageCategory =
-  | 'greetings'
-  | 'thanks'
-  | 'goodbye'
-  | 'orders'
-  | 'inventory'
-  | 'customers'
-  | 'invoices'
-  | 'products'
-  | 'pricing'
-  | 'calculations'
-  | 'file_operations'
-  | 'system_info'
-  | 'system_monitoring'
-  | 'system_health'
-  | 'system_security'
-  | 'database'
-  | 'ai'
-  | 'workflow'
-  | 'research'
-  | 'project'
-  | 'code'
-  | 'communication'
-  | 'training'
-  | 'unknown'
-  | 'compliance' // Neu: Für Compliance-bezogene Nachrichten
-  | 'reporting'; // Neu: Für Berichtswesen
+  | "greetings"
+  | "thanks"
+  | "goodbye"
+  | "orders"
+  | "inventory"
+  | "customers"
+  | "invoices"
+  | "products"
+  | "pricing"
+  | "calculations"
+  | "file_operations"
+  | "system_info"
+  | "system_monitoring"
+  | "system_health"
+  | "system_security"
+  | "database"
+  | "ai"
+  | "workflow"
+  | "research"
+  | "project"
+  | "code"
+  | "communication"
+  | "training"
+  | "unknown"
+  | "compliance" // Neu: Für Compliance-bezogene Nachrichten
+  | "reporting"; // Neu: Für Berichtswesen
 
-export type ConfigSource = 'json' | 'defaults' | 'database' | 'env' | 'dynamic' | 'api';
+export type ConfigSource =
+  | "json"
+  | "defaults"
+  | "database"
+  | "env"
+  | "dynamic"
+  | "api";
 
 /* ========================================================================== */
 /* 💬 Sessions - VERBESSERT */
@@ -793,7 +823,7 @@ export interface ChatSession {
   // Ergänzungen für erweiterte Session-Verwaltung
   user_id?: string;
   organization_id?: string;
-  status?: 'active' | 'paused' | 'completed' | 'archived';
+  status?: "active" | "paused" | "completed" | "archived";
   settings?: {
     auto_save?: boolean;
     max_history_length?: number;
@@ -839,7 +869,7 @@ export interface PipelineRun {
   initiator?: string;
   // Ergänzungen für erweiterte Pipeline-Runs
   trigger?: {
-    type: 'manual' | 'scheduled' | 'event';
+    type: "manual" | "scheduled" | "event";
     source: string;
   };
   performance_metrics?: {
@@ -900,7 +930,7 @@ export type SanitizeMessagesFn = (messages: ChatMessage[]) => ChatMessage[];
 export type WithTimeoutFn = <T>(promise: Promise<T>, ms?: number) => Promise<T>;
 export type ToolExecutionFn = (
   name: string,
-  params?: Record<string, any>
+  params?: Record<string, any>,
 ) => Promise<ToolResult>;
 
 // Neue Utility-Typen
@@ -940,8 +970,8 @@ export interface KnowledgeItem {
   related_tools?: string[];
   // Ergänzungen für erweitertes Wissensmanagement
   category?: string;
-  priority?: 'low' | 'medium' | 'high' | 'critical';
-  access_level?: 'public' | 'internal' | 'restricted';
+  priority?: "low" | "medium" | "high" | "critical";
+  access_level?: "public" | "internal" | "restricted";
   validity_period?: {
     valid_from: string;
     valid_until: string;
@@ -975,9 +1005,9 @@ export type { ChatMessage as BaseChatMessage };
 export interface ErrorHandlingConfig {
   max_retries: number;
   retry_delay_ms: number;
-  fallback_strategy: 'continue' | 'stop' | 'use_default';
+  fallback_strategy: "continue" | "stop" | "use_default";
   notify_on_critical: boolean;
-  log_level: 'error' | 'warn' | 'info';
+  log_level: "error" | "warn" | "info";
 }
 
 /** Für Caching-System */
@@ -985,7 +1015,7 @@ export interface CacheConfig {
   enabled: boolean;
   ttl_ms: number;
   max_size_mb: number;
-  strategy: 'lru' | 'fifo' | 'ttl';
+  strategy: "lru" | "fifo" | "ttl";
   persist_to_disk: boolean;
 }
 
@@ -996,7 +1026,7 @@ export interface SecurityContext {
   permissions: string[];
   organization_id?: string;
   session_attributes: Record<string, any>;
-  auth_method: 'jwt' | 'api_key' | 'session' | 'none';
+  auth_method: "jwt" | "api_key" | "session" | "none";
 }
 
 /** Für Event-System */
@@ -1005,7 +1035,7 @@ export interface SystemEvent {
   source: string;
   timestamp: string;
   data: Record<string, any>;
-  severity: 'info' | 'warning' | 'error' | 'critical';
+  severity: "info" | "warning" | "error" | "critical";
   correlation_id?: string;
 }
 

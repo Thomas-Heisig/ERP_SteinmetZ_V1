@@ -3,7 +3,7 @@
 Einleitung (kurz):
 Ziel ist ein instruction-driven ERP, in dem fachliche Abläufe als Arbeitsanweisungen (AA/DSL) und JSON-Schemas beschrieben sind. Eine KI-Schicht moderiert Eingaben und ruft deterministische Services auf (Persistenz, Nummernkreise, Steuern, RBAC). Navigation und Dashboards entstehen regelbasiert aus Modul-Manifesten. RAG wird ausschließlich für Text-/Webquellen genutzt; Kernzahlen werden deterministisch berechnet. Nachfolgend die strukturierte Konzeptfassung – ohne Code, mit klaren Leitplanken und messbaren Kriterien.
 
-1) 🎯 Zielbild & Geltungsbereich
+1. 🎯 Zielbild & Geltungsbereich
 
 Instruction-driven ERP: Fachprozesse als Arbeitsanweisungen (AA/DSL) + JSON-Schemas.
 
@@ -13,7 +13,7 @@ Automatische Navigation/Dashboards aus Manifesten und Regeln.
 
 RAG nur für Texte/Web; Kernzahlen ausschließlich deterministisch.
 
-2) 🧱 Kernarchitektur (Monorepo)
+2. 🧱 Kernarchitektur (Monorepo)
 
 Frontend: React/Next.js (App-Shell, KI-Drawer „Wie kann ich helfen?“, Formular-Dialoge, Progress-Banner).
 
@@ -27,7 +27,7 @@ Mehrsprachigkeit: i18n-Kataloge pro Modul, Fallback-Sprache, Linting/CI für Üb
 
 Deterministischer Kern: Nummernkreise, Steuer/XRechnung/ZUGFeRD, Fristen, GoBD-Journal, RBAC – testbar, nachvollziehbar.
 
-3) 🧭 Navigation & 📊 Dashboards (regelbasiert)
+3. 🧭 Navigation & 📊 Dashboards (regelbasiert)
 
 Menüstruktur: JSONLogic-Regeln platzieren Einträge deterministisch; Preview/Approval vor Commit.
 
@@ -35,7 +35,7 @@ Unter-Dashboards: Widgets aus Manifesten; Ranking nach Score (Priorität, Nutzun
 
 Beweis: Snapshot-Tests – gleiches Manifest ⇒ gleicher Navigations/Dashboard-Plan.
 
-4) 🗂️ Daten & 📐 Schemata
+4. 🗂️ Daten & 📐 Schemata
 
 JSON-Schemas für alle Formulare (Renderer + serverseitige Validierung).
 
@@ -45,7 +45,7 @@ Feld-Registry: Zusatzfelder mit Typ, RBAC, PII-Klasse, Retention; Lebenszyklus p
 
 Event/Audit: Prompt/Antwort-Hashes, Validator-Berichte, DB-Diffs; Unveränderbarkeit nach „sent/posted“.
 
-5) 🤖 KI-Orchestrierung & ⤴️ De/Eskalation
+5. 🤖 KI-Orchestrierung & ⤴️ De/Eskalation
 
 Stufenmodell
 
@@ -63,7 +63,7 @@ Redaktion/Maskierung vor Eskalation: PII-Filter (keine Bank/Payroll-PII), Platzh
 
 Session-Memory: externer Sitzungszustand (Facts/To-Dos/Entscheidungen), Turn-Summaries; verhindert „Vergessen“.
 
-6) 🔎 RAG & 🌐 Recherche
+6. 🔎 RAG & 🌐 Recherche
 
 Einsatzgebiet: interne Dokumente (PDF, Mails, Handbücher) + Web-Quellen.
 
@@ -71,7 +71,7 @@ Pipeline: Hybrid Retrieval (BM25 + Vektor) → Reranking → Zitate Pflicht; Met
 
 Preisvergleich/Großhandel: Fetcher → Tabellen-Extraktion/Einheiten-Normierung (Netto/Brutto, Staffel) → Vergleichstabelle → Freigabe vor externem Versand.
 
-7) 🔄 Prozesse & Workflows
+7. 🔄 Prozesse & Workflows
 
 AA/DSL: Schritte, Freigaben, Policies je Prozess (z. B. Onboarding, Rechnung).
 
@@ -79,7 +79,7 @@ Freigabe-Gates: z. B. Finance/HR vor kritischen Aktionen.
 
 Zustandsautomaten: Case, Invoice, Field-Def – klare Transitionen (z. B. draft → validated → sent).
 
-8) 🌙 Nachtläufe & ⚙️ Automatisierung
+8. 🌙 Nachtläufe & ⚙️ Automatisierung
 
 Job-Queue:
 
@@ -93,7 +93,7 @@ search_index (RAG-Rebuild).
 
 Keine stillen Direkt-Writes: Patches nur mit Schwellen/Approval.
 
-9) 🔐 Sicherheit & ⚖️ Compliance
+9. 🔐 Sicherheit & ⚖️ Compliance
 
 RBAC/ABAC inkl. Feld-Maskierung; Server-Checks unabhängig von Navigation.
 
@@ -103,7 +103,7 @@ GoBD: lückenlose Nummernkreise, Unveränderbarkeit nach Versand/Buchung, Storno
 
 DLP: Domain-Allowlist für Web-Zugriffe; keine Geheimnisse/PII an Fremdsysteme ohne AV-Vertrag.
 
-10) 📏 Qualität & Nachweise (Abnahmekriterien)
+10. 📏 Qualität & Nachweise (Abnahmekriterien)
 
 Schema-Validität ≥ 99,5 % (1 000 Testruns/Prozess).
 
@@ -121,7 +121,7 @@ Navigation: identisches Manifest ⇒ identischer Plan (Snapshot-Tests).
 
 Security: 0 unautorisierte Tool-Calls; 0 PII-Lecks in Redaktions-Tests.
 
-11) 🧩 Governance & 🛠️ Betrieb
+11. 🧩 Governance & 🛠️ Betrieb
 
 Versionierte Manifeste/Regeln mit Preview-Diff & Approval; Rollback-Pfad.
 
@@ -129,7 +129,7 @@ Observability: Logs, Traces, Metriken; Feature-Usage-Telemetrie (Widget-Ranking)
 
 Feature-Flags & Shadow-Mode für neue KI-Stufen/Regeln; kontrollierter Rollout.
 
-12) 📦 Erweiterbarkeit & 📈 Skalierung
+12. 📦 Erweiterbarkeit & 📈 Skalierung
 
 Module als Pakete (Front+Back-Logik) im Monorepo; BFF-Routen in einem API-Service.
 
@@ -139,7 +139,7 @@ Mehrsprachigkeit nachrüstbar: neue Locale-Datei + Linting + CI-Checks.
 
 Performanz: Materialized Views, Caching, asynchrone Jobs, Modell-Quantisierung.
 
-13) 🗺️ Projektphasen (MVP → Ausbau)
+13. 🗺️ Projektphasen (MVP → Ausbau)
 
 Fundament (2–3 Wo.): Case/Session, Form-Renderer, JSON-Schemas, To-Dos, Audit, RBAC.
 
@@ -153,7 +153,7 @@ RAG & Web (2 Wo.): Dokumenten-RAG mit Zitaten; Preisvergleich-Toolchain.
 
 De/Eskalation via Ollama (1–2 Wo.): Consultant-Pläne, Redaktion/Policy; Shadow-Mode → Live.
 
-14) ⚠️ Risiken & 🚧 Gegenmaßnahmen
+14. ⚠️ Risiken & 🚧 Gegenmaßnahmen
 
 Schema-Wildwuchs → Feld-Registry + Linting + Approval + Deprecation-Pfad.
 
@@ -167,7 +167,7 @@ Performance-Engpässe → Indizes/Views, Caching, Batch-Jobs, Quantisierung; Esk
 
 Drittanbieter-Abhängigkeiten → AV-Verträge, No-Retention, EU-Region; Fallback auf lokale Stufen.
 
-15) 🔎 Offene Punkte & Annahmen
+15. 🔎 Offene Punkte & Annahmen
 
 Lizenz/Lokalisierung für XRechnung/ZUGFeRD-Validatoren.
 

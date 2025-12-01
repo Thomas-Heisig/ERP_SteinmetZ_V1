@@ -64,7 +64,8 @@ export class ToolRegistry {
 
     // Sichere Standardwerte
     fn.registeredAt = new Date().toISOString();
-    fn.description = fn.description ?? `Tool ${name} (keine Beschreibung vorhanden)`;
+    fn.description =
+      fn.description ?? `Tool ${name} (keine Beschreibung vorhanden)`;
     fn.parameters = fn.parameters ?? {};
     fn.category = fn.category ?? "general";
     fn.version = fn.version ?? "1.0";
@@ -79,10 +80,17 @@ export class ToolRegistry {
     }
 
     this.emit("register", { name, alias });
-    log("info", `Tool registriert: ${name}${alias ? ` (Alias: ${alias})` : ""}`);
+    log(
+      "info",
+      `Tool registriert: ${name}${alias ? ` (Alias: ${alias})` : ""}`,
+    );
   }
 
-  async registerAsync(name: string, fnPromise: Promise<ToolFunction>, alias?: string): Promise<void> {
+  async registerAsync(
+    name: string,
+    fnPromise: Promise<ToolFunction>,
+    alias?: string,
+  ): Promise<void> {
     const fn = await fnPromise;
     this.register(name, fn, alias);
   }
@@ -129,13 +137,15 @@ export class ToolRegistry {
   async call(
     name: string,
     params: Record<string, any> = {},
-    opts: { timeout?: number; sandbox?: boolean; source?: string } = {}
+    opts: { timeout?: number; sandbox?: boolean; source?: string } = {},
   ): Promise<any> {
     const realName = this.aliases.get(name) ?? name;
     const tool = this.tools.get(realName);
     if (!tool) {
       const available = Array.from(this.tools.keys()).join(", ") || "keine";
-      throw new Error(`Tool '${name}' nicht gefunden. Verfügbare Tools: ${available}`);
+      throw new Error(
+        `Tool '${name}' nicht gefunden. Verfügbare Tools: ${available}`,
+      );
     }
 
     const start = Date.now();
@@ -146,7 +156,10 @@ export class ToolRegistry {
         tool(params),
         opts.timeout
           ? new Promise((_r, reject) =>
-              setTimeout(() => reject(new Error(`Timeout nach ${opts.timeout} ms`)), opts.timeout)
+              setTimeout(
+                () => reject(new Error(`Timeout nach ${opts.timeout} ms`)),
+                opts.timeout,
+              ),
             )
           : new Promise(() => {}),
       ]);
@@ -195,7 +208,7 @@ export class ToolRegistry {
         (t) =>
           t.name.toLowerCase().includes(key) ||
           (t.description?.toLowerCase().includes(key) ?? false) ||
-          (t.category?.toLowerCase().includes(key) ?? false)
+          (t.category?.toLowerCase().includes(key) ?? false),
       )
       .map((t) => t.name);
   }
@@ -204,7 +217,10 @@ export class ToolRegistry {
    * 🧠 Ereignisbehandlung (Hooks)
    * ───────────────────────────────────────────── */
 
-  on(event: "register" | "beforeCall" | "afterCall" | "unregister" | "clear", handler: (info: any) => void) {
+  on(
+    event: "register" | "beforeCall" | "afterCall" | "unregister" | "clear",
+    handler: (info: any) => void,
+  ) {
     if (!this.listeners[event]) this.listeners[event] = [];
     this.listeners[event].push(handler);
   }
@@ -214,7 +230,10 @@ export class ToolRegistry {
       try {
         cb(data);
       } catch (err) {
-        log("warn", `Listener-Fehler für Event '${event}': ${(err as Error).message}`);
+        log(
+          "warn",
+          `Listener-Fehler für Event '${event}': ${(err as Error).message}`,
+        );
       }
     });
   }
@@ -284,7 +303,7 @@ export class ToolRegistry {
         Parameter: Object.keys(t.parameters || {}).join(", ") || "–",
         Version: t.version ?? "—",
         Eingeschränkt: t.restricted ? "Ja" : "Nein",
-      }))
+      })),
     );
   }
 

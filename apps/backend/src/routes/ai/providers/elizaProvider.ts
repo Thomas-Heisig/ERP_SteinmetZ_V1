@@ -6,8 +6,8 @@
  * Unterstützt Tool-Calls, Workflows und kontextabhängige Antworten.
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
+import fs from "node:fs";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type {
   ChatMessage,
@@ -16,11 +16,11 @@ import type {
   ConversationState,
   Provider,
   ToolResult,
-  WorkflowDefinition
-} from '../types/types.js';
-import { toolRegistry } from '../tools/registry.js';
-import { workflowEngine } from '../workflows/workflowEngine.js';
-import { ConversationContext } from '../context/conversationContext.js';
+  WorkflowDefinition,
+} from "../types/types.js";
+import { toolRegistry } from "../tools/registry.js";
+import { workflowEngine } from "../workflows/workflowEngine.js";
+import { ConversationContext } from "../context/conversationContext.js";
 
 /* ========================================================================== */
 /* 🧱 Hilfsfunktionen - VERBESSERT */
@@ -33,13 +33,13 @@ function pick<T>(arr: T[]): T | undefined {
 }
 
 function pickFromPool(pool?: string[][]): string {
-  if (!pool || !Array.isArray(pool) || pool.length === 0) return '';
+  if (!pool || !Array.isArray(pool) || pool.length === 0) return "";
   const group = pick(pool) ?? [];
-  return pick(group as string[]) ?? '';
+  return pick(group as string[]) ?? "";
 }
 
 function isValidString(str: any): str is string {
-  return typeof str === 'string' && str.trim().length > 0;
+  return typeof str === "string" && str.trim().length > 0;
 }
 
 /* ========================================================================== */
@@ -75,7 +75,6 @@ const CONTEXT_DIR = path.resolve(__dirname, "../context");
 const DATA_DIR = path.join(CONTEXT_DIR, "data");
 const CONFIG_PATH = path.join(CONTEXT_DIR, "context.json");
 
-
 /**
  * Lädt und validiert Eliza-Konfiguration mit erweiterter Fehlerbehandlung
  */
@@ -85,21 +84,21 @@ function loadElizaConfig(): ElizaConfig {
       unknown: [
         [
           "Entschuldigung, ich bin mir nicht sicher, was Sie meinen.",
-          "Könnten Sie das bitte anders formulieren?"
+          "Könnten Sie das bitte anders formulieren?",
         ],
         [
           "Das verstehe ich nicht ganz. Könnten Sie es anders erklären?",
-          "Ich benötige mehr Informationen, um Ihnen zu helfen."
-        ]
-      ]
+          "Ich benötige mehr Informationen, um Ihnen zu helfen.",
+        ],
+      ],
     },
     eliza_rules: [],
     reflections: {},
     metadata: {
       version: "1.0.0-default",
       description: "Standard-Eliza-Konfiguration",
-      last_updated: new Date().toISOString()
-    }
+      last_updated: new Date().toISOString(),
+    },
   };
 
   try {
@@ -109,7 +108,7 @@ function loadElizaConfig(): ElizaConfig {
       pools: { ...defaultConfig.pools },
       eliza_rules: [],
       reflections: {},
-      metadata: { ...defaultConfig.metadata }
+      metadata: { ...defaultConfig.metadata },
     };
 
     let configFound = false;
@@ -118,11 +117,12 @@ function loadElizaConfig(): ElizaConfig {
     if (fs.existsSync(DATA_DIR)) {
       console.log(`✅ [ELIZA] Verzeichnis gefunden: ${DATA_DIR}`);
 
-      const files = fs.readdirSync(DATA_DIR)
-        .filter(f => f.toLowerCase().endsWith(".json"))
+      const files = fs
+        .readdirSync(DATA_DIR)
+        .filter((f) => f.toLowerCase().endsWith(".json"))
         .sort((a, b) => {
-          const numA = parseInt(a.split('_')[0]) || 0;
-          const numB = parseInt(b.split('_')[0]) || 0;
+          const numA = parseInt(a.split("_")[0]) || 0;
+          const numB = parseInt(b.split("_")[0]) || 0;
           return numA - numB;
         });
 
@@ -139,16 +139,24 @@ function loadElizaConfig(): ElizaConfig {
           if (validateConfigPart(part, file)) {
             if (part.pools && typeof part.pools === "object") {
               Object.assign(combined.pools, part.pools);
-              console.log(`  ➕ Pools hinzugefügt: ${Object.keys(part.pools).length}`);
+              console.log(
+                `  ➕ Pools hinzugefügt: ${Object.keys(part.pools).length}`,
+              );
             }
             if (part.eliza_rules && Array.isArray(part.eliza_rules)) {
-              const validRules = part.eliza_rules.filter(r => r?.pattern && Array.isArray(r?.replies));
+              const validRules = part.eliza_rules.filter(
+                (r) => r?.pattern && Array.isArray(r?.replies),
+              );
               combined.eliza_rules.push(...validRules);
-              console.log(`  ➕ Regeln hinzugefügt: ${validRules.length}/${part.eliza_rules.length}`);
+              console.log(
+                `  ➕ Regeln hinzugefügt: ${validRules.length}/${part.eliza_rules.length}`,
+              );
             }
             if (part.reflections && typeof part.reflections === "object") {
               Object.assign(combined.reflections, part.reflections);
-              console.log(`  ➕ Reflexionen hinzugefügt: ${Object.keys(part.reflections).length}`);
+              console.log(
+                `  ➕ Reflexionen hinzugefügt: ${Object.keys(part.reflections).length}`,
+              );
             }
             if (part.metadata && typeof part.metadata === "object") {
               Object.assign(combined.metadata!, part.metadata);
@@ -157,7 +165,9 @@ function loadElizaConfig(): ElizaConfig {
             configFound = true;
           }
         } catch (err: any) {
-          console.warn(`⚠️ [ELIZA] Fehler beim Lesen/Parsen von ${file}: ${err.message}`);
+          console.warn(
+            `⚠️ [ELIZA] Fehler beim Lesen/Parsen von ${file}: ${err.message}`,
+          );
         }
       }
 
@@ -168,7 +178,9 @@ function loadElizaConfig(): ElizaConfig {
 
     // 2) Fallback: context.json
     if (!configFound && fs.existsSync(CONFIG_PATH)) {
-      console.log(`📘 [ELIZA] Fallback – context.json gefunden unter: ${CONFIG_PATH}`);
+      console.log(
+        `📘 [ELIZA] Fallback – context.json gefunden unter: ${CONFIG_PATH}`,
+      );
       try {
         const raw = fs.readFileSync(CONFIG_PATH, "utf8");
         const cfg = JSON.parse(raw) as ElizaConfig;
@@ -189,10 +201,14 @@ function loadElizaConfig(): ElizaConfig {
 
           CONFIG_SOURCE = "json";
           configFound = true;
-          console.log(`📄 [ELIZA] context.json geladen (${cfg.eliza_rules?.length ?? 0} Regeln)`);
+          console.log(
+            `📄 [ELIZA] context.json geladen (${cfg.eliza_rules?.length ?? 0} Regeln)`,
+          );
         }
       } catch (err: any) {
-        console.warn(`⚠️ [ELIZA] Fehler beim Laden von context.json: ${err.message}`);
+        console.warn(
+          `⚠️ [ELIZA] Fehler beim Laden von context.json: ${err.message}`,
+        );
       }
     }
 
@@ -208,27 +224,32 @@ function loadElizaConfig(): ElizaConfig {
     console.log(`  • Pools: ${totalPools}`);
 
     if (!configFound) {
-      console.warn("⚠️ [ELIZA] Keine gültige Konfiguration gefunden – verwende Default-Konfiguration.");
+      console.warn(
+        "⚠️ [ELIZA] Keine gültige Konfiguration gefunden – verwende Default-Konfiguration.",
+      );
       return defaultConfig; // <- garantierter Rückgabepfad
     }
 
     return combined; // <- regulärer Rückgabepfad
   } catch (err: any) {
-    console.error(`❌ [ELIZA] Kritischer Fehler beim Laden der Konfiguration: ${err.message}`);
+    console.error(
+      `❌ [ELIZA] Kritischer Fehler beim Laden der Konfiguration: ${err.message}`,
+    );
     return defaultConfig; // <- Fallback bei Exceptions
   }
 }
 
-
 // Konfigurations-Validierung
 function validateConfigPart(part: any, filename: string): boolean {
-  if (typeof part !== 'object' || part === null) {
-    console.warn(`⚠️ [ELIZA] Ungültige Konfiguration in ${filename}: Kein Objekt`);
+  if (typeof part !== "object" || part === null) {
+    console.warn(
+      `⚠️ [ELIZA] Ungültige Konfiguration in ${filename}: Kein Objekt`,
+    );
     return false;
   }
 
   // Validiere Pools
-  if (part.pools && typeof part.pools !== 'object') {
+  if (part.pools && typeof part.pools !== "object") {
     console.warn(`⚠️ [ELIZA] Ungültige pools in ${filename}`);
     return false;
   }
@@ -240,7 +261,7 @@ function validateConfigPart(part: any, filename: string): boolean {
   }
 
   // Validiere Reflections
-  if (part.reflections && typeof part.reflections !== 'object') {
+  if (part.reflections && typeof part.reflections !== "object") {
     console.warn(`⚠️ [ELIZA] Ungültige reflections in ${filename}`);
     return false;
   }
@@ -256,11 +277,15 @@ const ELIZA_CONFIG = loadElizaConfig();
 /* ========================================================================== */
 
 class ElizaEngine {
-  private rules: (ElizaRule & { compiled: RegExp; priority: number; enabled: boolean })[] = [];
+  private rules: (ElizaRule & {
+    compiled: RegExp;
+    priority: number;
+    enabled: boolean;
+  })[] = [];
   private stats = {
     totalMatches: 0,
     matchesByPriority: {} as Record<number, number>,
-    lastMatchTime: null as string | null
+    lastMatchTime: null as string | null,
   };
 
   constructor() {
@@ -270,10 +295,14 @@ class ElizaEngine {
   /** Kompiliert alle Regex-Regeln mit erweiterter Validierung */
   private compileRules(): void {
     this.rules = (ELIZA_CONFIG.eliza_rules || [])
-      .filter(rule => {
+      .filter((rule) => {
         // Filter nur gültige und aktivierte Regeln
         if (rule.enabled === false) return false;
-        if (!rule.pattern || !Array.isArray(rule.replies) || rule.replies.length === 0) {
+        if (
+          !rule.pattern ||
+          !Array.isArray(rule.replies) ||
+          rule.replies.length === 0
+        ) {
           console.warn(`⚠️ [ELIZA] Ungültige Regel ignoriert:`, rule.pattern);
           return false;
         }
@@ -283,12 +312,15 @@ class ElizaEngine {
         try {
           return {
             ...rule,
-            compiled: new RegExp(rule.pattern, 'i'),
+            compiled: new RegExp(rule.pattern, "i"),
             priority: rule.priority ?? 1,
-            enabled: rule.enabled !== false
+            enabled: rule.enabled !== false,
           };
         } catch (err: any) {
-          console.warn(`⚠️ [ELIZA] Fehler beim Kompilieren der Regel "${rule.pattern}":`, err.message);
+          console.warn(
+            `⚠️ [ELIZA] Fehler beim Kompilieren der Regel "${rule.pattern}":`,
+            err.message,
+          );
           return null;
         }
       })
@@ -296,14 +328,16 @@ class ElizaEngine {
 
     // Sortiere nach Priorität (höhere zuerst)
     this.rules.sort((a, b) => b.priority - a.priority);
-    
-    console.log(`✅ [ELIZA] ${this.rules.length} Regeln kompiliert und sortiert`);
+
+    console.log(
+      `✅ [ELIZA] ${this.rules.length} Regeln kompiliert und sortiert`,
+    );
   }
 
   /** Wendet Reflexionsregeln auf den Text an */
   private reflect(input: string): string {
     if (!isValidString(input)) return input;
-    
+
     const tokens = input.split(/(\s+)/);
     return tokens
       .map((token) => {
@@ -313,13 +347,13 @@ class ElizaEngine {
         }
         return token;
       })
-      .join('');
+      .join("");
   }
 
   /** Hauptverarbeitung: versucht, eine passende Regel zu finden */
   async apply(
     message: string,
-    context: ConversationState
+    context: ConversationState,
   ): Promise<AIResponse | null> {
     if (!isValidString(message)) {
       return null;
@@ -329,8 +363,8 @@ class ElizaEngine {
     const lowerMsg = msg.toLowerCase();
 
     // 1️⃣ Sonderfall Wikipedia
-    if (lowerMsg.includes('wikipedia')) {
-      const query = msg.replace(/.*wikipedia\s+/i, '').trim();
+    if (lowerMsg.includes("wikipedia")) {
+      const query = msg.replace(/.*wikipedia\s+/i, "").trim();
       if (query) {
         return await this.handleWikipediaSearch(query);
       }
@@ -339,7 +373,7 @@ class ElizaEngine {
     // 2️⃣ Regelmatching
     for (const rule of this.rules) {
       if (!rule.enabled) continue;
-      
+
       try {
         const match = lowerMsg.match(rule.compiled);
         if (!match) continue;
@@ -351,15 +385,18 @@ class ElizaEngine {
 
         // Statistiken aktualisieren
         this.stats.totalMatches++;
-        this.stats.matchesByPriority[rule.priority] = (this.stats.matchesByPriority[rule.priority] || 0) + 1;
+        this.stats.matchesByPriority[rule.priority] =
+          (this.stats.matchesByPriority[rule.priority] || 0) + 1;
         this.stats.lastMatchTime = new Date().toISOString();
 
         // Antwort generieren
         const response = await this.generateResponse(rule, match, context);
         return response;
-
       } catch (err: any) {
-        console.warn(`⚠️ [ELIZA] Fehler bei Regel-Auswertung "${rule.pattern}":`, err.message);
+        console.warn(
+          `⚠️ [ELIZA] Fehler bei Regel-Auswertung "${rule.pattern}":`,
+          err.message,
+        );
       }
     }
 
@@ -368,10 +405,17 @@ class ElizaEngine {
   }
 
   /** Überprüft Regel-Kontext-Anforderungen */
-  private checkRuleContext(requiredContext: string[], context: ConversationState): boolean {
-    return requiredContext.every(ctxKey => {
+  private checkRuleContext(
+    requiredContext: string[],
+    context: ConversationState,
+  ): boolean {
+    return requiredContext.every((ctxKey) => {
       const contextValue = context[ctxKey];
-      return contextValue !== undefined && contextValue !== false && contextValue !== null;
+      return (
+        contextValue !== undefined &&
+        contextValue !== false &&
+        contextValue !== null
+      );
     });
   }
 
@@ -379,34 +423,36 @@ class ElizaEngine {
   private async generateResponse(
     rule: ElizaRule & { compiled: RegExp; priority: number; enabled: boolean },
     match: RegExpMatchArray,
-    context: ConversationState
+    context: ConversationState,
   ): Promise<AIResponse> {
     // Antworttext generieren
-    let text = pick(rule.replies) ?? '';
+    let text = pick(rule.replies) ?? "";
     for (let i = 1; i < match.length; i++) {
-      const replacement = match[i] ? this.reflect(match[i]) : '';
-      text = text.replace(new RegExp(`\\$${i}`, 'g'), replacement);
+      const replacement = match[i] ? this.reflect(match[i]) : "";
+      text = text.replace(new RegExp(`\\$${i}`, "g"), replacement);
     }
 
-    const response: AIResponse = { 
+    const response: AIResponse = {
       text,
       action: rule.action,
       meta: {
-        provider: 'eliza' as Provider,
-        model: 'eliza-engine',
+        provider: "eliza" as Provider,
+        model: "eliza-engine",
         confidence: rule.confidence_threshold || 0.7,
-        source: 'rule_based',
+        source: "rule_based",
         matched_rule: rule.pattern,
-        rule_priority: rule.priority
-      }
+        rule_priority: rule.priority,
+      },
     };
 
     // Tool-Calls verarbeiten
     if (rule.tool_call) {
-      response.tool_calls = [{ 
-        name: rule.tool_call, 
-        parameters: this.extractToolParameters(rule, match) 
-      }];
+      response.tool_calls = [
+        {
+          name: rule.tool_call,
+          parameters: this.extractToolParameters(rule, match),
+        },
+      ];
     }
 
     // Kontext-Update
@@ -414,19 +460,22 @@ class ElizaEngine {
       matched_rule: rule.pattern,
       rule_priority: rule.priority,
       timestamp: new Date().toISOString(),
-      ...context
+      ...context,
     };
 
     return response;
   }
 
   /** Extrahiert Parameter für Tool-Aufrufe aus Regex-Matches */
-  private extractToolParameters(rule: ElizaRule, match: RegExpMatchArray): Record<string, any> {
+  private extractToolParameters(
+    rule: ElizaRule,
+    match: RegExpMatchArray,
+  ): Record<string, any> {
     const params: Record<string, any> = {};
-    
+
     if (rule.params && Array.isArray(rule.params)) {
       rule.params.forEach((param, index) => {
-        if (param.startsWith('$') && match[index + 1]) {
+        if (param.startsWith("$") && match[index + 1]) {
           const paramName = param.substring(1); // Entferne $ prefix
           params[paramName] = match[index + 1];
         } else {
@@ -434,51 +483,54 @@ class ElizaEngine {
         }
       });
     }
-    
+
     return params;
   }
 
   /** Behandelt Wikipedia-Suche */
   private async handleWikipediaSearch(query: string): Promise<AIResponse> {
     try {
-      const result = await toolRegistry.call('wikipedia_search', { query });
+      const result = await toolRegistry.call("wikipedia_search", { query });
       return {
-        text: `Wikipedia-Ergebnis für "${query}":\n${result?.result ?? '(keine Daten gefunden)'}`,
-        action: 'wikipedia_search',
+        text: `Wikipedia-Ergebnis für "${query}":\n${result?.result ?? "(keine Daten gefunden)"}`,
+        action: "wikipedia_search",
         data: result,
         meta: {
-          provider: 'eliza',
-          model: 'wikipedia-tool',
-          source: 'tool_call'
-        }
+          provider: "eliza",
+          model: "wikipedia-tool",
+          source: "tool_call",
+        },
       };
     } catch (err: any) {
       return {
         text: `Fehler bei Wikipedia-Suche für "${query}": ${err.message ?? err}`,
         errors: [String(err)],
         meta: {
-          provider: 'eliza',
-          model: 'wikipedia-tool',
-          source: 'tool_error'
-        }
+          provider: "eliza",
+          model: "wikipedia-tool",
+          source: "tool_error",
+        },
       };
     }
   }
 
   getStats() {
-    const byPriority = this.rules.reduce((acc, r) => {
-      acc[r.priority] = (acc[r.priority] ?? 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
+    const byPriority = this.rules.reduce(
+      (acc, r) => {
+        acc[r.priority] = (acc[r.priority] ?? 0) + 1;
+        return acc;
+      },
+      {} as Record<number, number>,
+    );
 
     return {
       total_rules: this.rules.length,
-      active_rules: this.rules.filter(r => r.enabled).length,
+      active_rules: this.rules.filter((r) => r.enabled).length,
       rules_by_priority: byPriority,
       patterns_with_tools: this.rules.filter((r) => r.tool_call).length,
       patterns_with_actions: this.rules.filter((r) => r.action).length,
       match_statistics: this.stats,
-      config_source: CONFIG_SOURCE
+      config_source: CONFIG_SOURCE,
     };
   }
 
@@ -487,11 +539,11 @@ class ElizaEngine {
     try {
       const compiledRule = {
         ...rule,
-        compiled: new RegExp(rule.pattern, 'i'),
+        compiled: new RegExp(rule.pattern, "i"),
         priority: rule.priority ?? 1,
-        enabled: rule.enabled !== false
+        enabled: rule.enabled !== false,
       };
-      
+
       this.rules.push(compiledRule);
       this.rules.sort((a, b) => b.priority - a.priority);
       console.log(`✅ [ELIZA] Neue Regel hinzugefügt: ${rule.pattern}`);
@@ -522,27 +574,31 @@ export class ElizaProvider {
       fallbackResponses: [
         "Das habe ich nicht verstanden. Könnten Sie es anders formulieren?",
         "Entschuldigung, ich bin mir nicht sicher, was Sie meinen.",
-        "Könnten Sie das bitte näher erläutern?"
+        "Könnten Sie das bitte näher erläutern?",
       ],
-      ...config
+      ...config,
     };
-    
-    console.log(`✅ [ELIZA] Provider initialisiert (Session: ${this.sessionId})`);
+
+    console.log(
+      `✅ [ELIZA] Provider initialisiert (Session: ${this.sessionId})`,
+    );
   }
 
   /** Hauptantwort-Handler mit erweiterter Funktionalität */
   async respond(messages: ChatMessage[]): Promise<AIResponse> {
     const startTime = Date.now();
-    
+
     try {
       // Historie und Kontext aktualisieren
       this.history = messages.slice(-(this.config.maxHistoryLength || 25));
       this.context.update(this.history);
-      
-      const lastMsg = this.history[this.history.length - 1]?.content ?? '';
-      
+
+      const lastMsg = this.history[this.history.length - 1]?.content ?? "";
+
       if (!isValidString(lastMsg)) {
-        return this.createErrorResponse('Leere oder ungültige Nachricht erhalten');
+        return this.createErrorResponse(
+          "Leere oder ungültige Nachricht erhalten",
+        );
       }
 
       // 1️⃣ Befehle / Diagnostik
@@ -550,7 +606,10 @@ export class ElizaProvider {
       if (commandResp) return commandResp;
 
       // 2️⃣ Regelbasierte Antwort
-      const elizaResp = await this.engine.apply(lastMsg, this.context.getContext());
+      const elizaResp = await this.engine.apply(
+        lastMsg,
+        this.context.getContext(),
+      );
       if (elizaResp) {
         // Tool-Calls ausführen falls aktiviert
         if (this.config.enableToolCalls && elizaResp.tool_calls?.length) {
@@ -562,7 +621,7 @@ export class ElizaProvider {
         elizaResp.context_update = {
           ...elizaResp.context_update,
           ...this.context.getContext(),
-          response_source: 'eliza_engine'
+          response_source: "eliza_engine",
         };
 
         // Metadaten hinzufügen
@@ -570,7 +629,7 @@ export class ElizaProvider {
           ...elizaResp.meta,
           response_time_ms: Date.now() - startTime,
           session_id: this.sessionId,
-          history_length: this.history.length
+          history_length: this.history.length,
         };
 
         return elizaResp;
@@ -578,7 +637,6 @@ export class ElizaProvider {
 
       // 3️⃣ Kategorie-Fallback
       return this.createFallbackResponse();
-
     } catch (error: any) {
       console.error(`❌ [ELIZA] Fehler in respond:`, error);
       return this.createErrorResponse(`Interner Fehler: ${error.message}`);
@@ -590,17 +648,17 @@ export class ElizaProvider {
   /* ====================================================================== */
   private async executeToolCalls(tool_calls: any[]): Promise<ToolResult[]> {
     if (!this.config.enableToolCalls) {
-      return [{ success: false, error: 'Tool calls are disabled' }];
+      return [{ success: false, error: "Tool calls are disabled" }];
     }
 
     const results: ToolResult[] = [];
-    
+
     for (const call of tool_calls) {
       const startTime = Date.now();
-      
+
       try {
-        if (!call.name || typeof call.name !== 'string') {
-          throw new Error('Ungültiger Tool-Name');
+        if (!call.name || typeof call.name !== "string") {
+          throw new Error("Ungültiger Tool-Name");
         }
 
         const res = await toolRegistry.call(call.name, call.parameters || {});
@@ -609,7 +667,7 @@ export class ElizaProvider {
           data: res,
           runtime_ms: Date.now() - startTime,
           source_tool: call.name,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       } catch (err: any) {
         results.push({
@@ -617,26 +675,26 @@ export class ElizaProvider {
           error: err.message,
           runtime_ms: Date.now() - startTime,
           source_tool: call.name,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
     }
-    
+
     return results;
   }
 
   private formatToolResults(results: ToolResult[]): string {
-    if (results.length === 0) return '';
-    
-    const formatted = results.map(result => {
+    if (results.length === 0) return "";
+
+    const formatted = results.map((result) => {
       if (result.success) {
         return `✅ ${result.source_tool}: Erfolgreich ausgeführt (${result.runtime_ms}ms)`;
       } else {
         return `❌ ${result.source_tool}: Fehler - ${result.error}`;
       }
     });
-    
-    return `\n\n**Tool-Ergebnisse:**\n${formatted.join('\n')}`;
+
+    return `\n\n**Tool-Ergebnisse:**\n${formatted.join("\n")}`;
   }
 
   /* ====================================================================== */
@@ -646,16 +704,16 @@ export class ElizaProvider {
     const command = msg.trim().toLowerCase();
 
     const commandHandlers: Record<string, () => AIResponse> = {
-      '?help': () => this.showHelp(),
-      '/help': () => this.showHelp(),
-      'hilfe': () => this.showHelp(),
-      '?tools': () => this.showTools(),
-      '?workflows': () => this.showWorkflows(),
-      '?config': () => this.showConfig(),
-      '?session': () => this.showSession(),
-      '?stats': () => this.showStats(),
-      '?rules': () => this.showRules(),
-      '?status': () => this.showStatus()
+      "?help": () => this.showHelp(),
+      "/help": () => this.showHelp(),
+      hilfe: () => this.showHelp(),
+      "?tools": () => this.showTools(),
+      "?workflows": () => this.showWorkflows(),
+      "?config": () => this.showConfig(),
+      "?session": () => this.showSession(),
+      "?stats": () => this.showStats(),
+      "?rules": () => this.showRules(),
+      "?status": () => this.showStatus(),
     };
 
     const handler = commandHandlers[command];
@@ -674,39 +732,41 @@ export class ElizaProvider {
 • ?rules – Zeigt Regel-Statistiken
 • ?status – Zeigt Systemstatus\n
 **Allgemeine Nutzung:**
-Der Eliza Provider verarbeitet natürliche Sprache und führt automatisch Tools aus, wenn passende Regeln gefunden werden.`
+Der Eliza Provider verarbeitet natürliche Sprache und führt automatisch Tools aus, wenn passende Regeln gefunden werden.`,
     };
   }
 
   private showTools(): AIResponse {
     const categories = toolRegistry.getToolsByCategory();
-    let output = '## Verfügbare Tools\n\n';
-    
+    let output = "## Verfügbare Tools\n\n";
+
     for (const [category, tools] of Object.entries(categories)) {
       output += `**${category.toUpperCase()}**\n`;
-      tools.forEach(tool => {
-        output += `• **${tool.name}** – ${tool.description || 'Keine Beschreibung'}\n`;
+      tools.forEach((tool) => {
+        output += `• **${tool.name}** – ${tool.description || "Keine Beschreibung"}\n`;
       });
-      output += '\n';
+      output += "\n";
     }
-    
+
     return { text: output };
   }
 
   private showWorkflows(): AIResponse {
-  const defs = workflowEngine.getWorkflowDefinitions();
+    const defs = workflowEngine.getWorkflowDefinitions();
 
-  if (defs.length === 0) {
-    return { text: 'Keine Workflows definiert.' };
+    if (defs.length === 0) {
+      return { text: "Keine Workflows definiert." };
+    }
+
+    const output = defs
+      .map(
+        (w: any) =>
+          `• **${w.name || w.id}** – ${w.description || "Keine Beschreibung"} (${Array.isArray(w.steps) ? w.steps.length : w.steps || 0} Schritte)`,
+      )
+      .join("\n");
+
+    return { text: `## Aktive Workflows\n\n${output}` };
   }
-
-  const output = defs.map((w: any) =>
-    `• **${w.name || w.id}** – ${w.description || 'Keine Beschreibung'} (${Array.isArray(w.steps) ? w.steps.length : w.steps || 0} Schritte)`
-  ).join('\n');
-
-  return { text: `## Aktive Workflows\n\n${output}` };
-}
-
 
   private showConfig(): AIResponse {
     const stats = this.engine.getStats();
@@ -717,13 +777,13 @@ Der Eliza Provider verarbeitet natürliche Sprache und führt automatisch Tools 
 • **Tools:** ${toolRegistry.getToolDefinitions().length}
 • **Workflows:** ${workflowEngine.getWorkflowDefinitions().length}
 • **Session:** ${this.sessionId}
-• **Gestartet:** ${new Date(this.startTime).toLocaleString('de-DE')}`
+• **Gestartet:** ${new Date(this.startTime).toLocaleString("de-DE")}`,
     };
   }
 
   private showSession(): AIResponse {
     return {
-      text: JSON.stringify(this.getSessionInfo(), null, 2)
+      text: JSON.stringify(this.getSessionInfo(), null, 2),
     };
   }
 
@@ -732,10 +792,10 @@ Der Eliza Provider verarbeitet natürliche Sprache und führt automatisch Tools 
     return {
       text: `## Systemstatistiken\n
 • **Nachrichten:** ${context.history_length || 0}
-• **Aktives Thema:** ${context.current_topic || 'Unbekannt'}
-• **Stimmung:** ${context.sentiment || 'Neutral'}
-• **Kontext-Confidence:** ${context.confidence || 'Niedrig'}
-• **Response Time Avg:** ${context.stats?.averageResponseTime?.toFixed(2) || '0'}ms`
+• **Aktives Thema:** ${context.current_topic || "Unbekannt"}
+• **Stimmung:** ${context.sentiment || "Neutral"}
+• **Kontext-Confidence:** ${context.confidence || "Niedrig"}
+• **Response Time Avg:** ${context.stats?.averageResponseTime?.toFixed(2) || "0"}ms`,
     };
   }
 
@@ -746,9 +806,11 @@ Der Eliza Provider verarbeitet natürliche Sprache und führt automatisch Tools 
 • **Gesamt:** ${stats.total_rules} Regeln
 • **Aktiv:** ${stats.active_rules} Regeln
 • **Treffer gesamt:** ${stats.match_statistics.totalMatches}
-• **Letzter Treffer:** ${stats.match_statistics.lastMatchTime ? new Date(stats.match_statistics.lastMatchTime).toLocaleString('de-DE') : 'Nie'}\n
+• **Letzter Treffer:** ${stats.match_statistics.lastMatchTime ? new Date(stats.match_statistics.lastMatchTime).toLocaleString("de-DE") : "Nie"}\n
 **Verteilung nach Priorität:**
-${Object.entries(stats.rules_by_priority).map(([prio, count]) => `• Priorität ${prio}: ${count} Regeln`).join('\n')}`
+${Object.entries(stats.rules_by_priority)
+  .map(([prio, count]) => `• Priorität ${prio}: ${count} Regeln`)
+  .join("\n")}`,
     };
   }
 
@@ -759,9 +821,9 @@ ${Object.entries(stats.rules_by_priority).map(([prio, count]) => `• Priorität
 • **Status:** ✅ Betriebsbereit
 • **Session-ID:** ${this.sessionId}
 • **Laufzeit:** ${this.getUptime()}
-• **Tool-Calls:** ${this.config.enableToolCalls ? '✅ Aktiviert' : '❌ Deaktiviert'}
-• **Workflows:** ${this.config.enableWorkflows ? '✅ Aktiviert' : '❌ Deaktiviert'}
-• **Debug-Modus:** ${this.config.debugMode ? '✅ Aktiv' : '❌ Inaktiv'}`
+• **Tool-Calls:** ${this.config.enableToolCalls ? "✅ Aktiviert" : "❌ Deaktiviert"}
+• **Workflows:** ${this.config.enableWorkflows ? "✅ Aktiviert" : "❌ Deaktiviert"}
+• **Debug-Modus:** ${this.config.debugMode ? "✅ Aktiv" : "❌ Inaktiv"}`,
     };
   }
 
@@ -778,27 +840,27 @@ ${Object.entries(stats.rules_by_priority).map(([prio, count]) => `• Priorität
   getSessionInfo() {
     const context = this.context.getContext();
     const engineStats = this.engine.getStats();
-    
+
     return {
       session: {
         id: this.sessionId,
         start_time: this.startTime,
         uptime: this.getUptime(),
-        message_count: this.history.length
+        message_count: this.history.length,
       },
       context: {
         current_topic: context.current_topic,
         sentiment: context.sentiment,
         confidence: context.confidence,
-        history_length: context.history_length
+        history_length: context.history_length,
       },
       engine: engineStats,
       config: {
         source: CONFIG_SOURCE,
         max_history: this.config.maxHistoryLength,
         tool_calls_enabled: this.config.enableToolCalls,
-        workflows_enabled: this.config.enableWorkflows
-      }
+        workflows_enabled: this.config.enableWorkflows,
+      },
     };
   }
 
@@ -806,18 +868,19 @@ ${Object.entries(stats.rules_by_priority).map(([prio, count]) => `• Priorität
   /* 🔧 Utility-Methoden                                                   */
   /* ====================================================================== */
   private createFallbackResponse(): AIResponse {
-    const fallbackText = pick(this.config.fallbackResponses!) || 
-                        pickFromPool(ELIZA_CONFIG.pools['unknown']) ||
-                        'Entschuldigung, ich bin mir nicht sicher, was Sie meinen.';
-    
+    const fallbackText =
+      pick(this.config.fallbackResponses!) ||
+      pickFromPool(ELIZA_CONFIG.pools["unknown"]) ||
+      "Entschuldigung, ich bin mir nicht sicher, was Sie meinen.";
+
     return {
       text: fallbackText,
       meta: {
-        provider: 'eliza',
-        model: 'fallback',
-        source: 'fallback',
-        confidence: 0.1
-      }
+        provider: "eliza",
+        model: "fallback",
+        source: "fallback",
+        confidence: 0.1,
+      },
     };
   }
 
@@ -826,11 +889,11 @@ ${Object.entries(stats.rules_by_priority).map(([prio, count]) => `• Priorität
       text: `Es ist ein Fehler aufgetreten: ${error}`,
       errors: [error],
       meta: {
-        provider: 'eliza', 
-        model: 'error',
-        source: 'error',
-        confidence: 0
-      }
+        provider: "eliza",
+        model: "error",
+        source: "error",
+        confidence: 0,
+      },
     };
   }
 
@@ -853,7 +916,9 @@ ${Object.entries(stats.rules_by_priority).map(([prio, count]) => `• Priorität
     this.context.clear();
     this.sessionId = `eliza_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     this.startTime = new Date().toISOString();
-    console.log(`✅ [ELIZA] Session zurückgesetzt (neue ID: ${this.sessionId})`);
+    console.log(
+      `✅ [ELIZA] Session zurückgesetzt (neue ID: ${this.sessionId})`,
+    );
   }
 }
 

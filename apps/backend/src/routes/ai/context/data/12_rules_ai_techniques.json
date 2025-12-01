@@ -20,10 +20,7 @@
     },
     {
       "pattern": "\\b(learn|lern|lernen)\\s+(.*)",
-      "replies": [
-        "Ich lerne aus $2.",
-        "Lernprozess für $2 wird gestartet."
-      ],
+      "replies": ["Ich lerne aus $2.", "Lernprozess für $2 wird gestartet."],
       "action": "learn_from_data",
       "params": ["$2"]
     },
@@ -65,10 +62,7 @@
     },
     {
       "pattern": "\\b(generier|generiere|erstell|erzeuge|create)\\s+(.*)",
-      "replies": [
-        "Ich generiere $2.",
-        "Erstellung von $2 wird durchgeführt."
-      ],
+      "replies": ["Ich generiere $2.", "Erstellung von $2 wird durchgeführt."],
       "action": "generate_data",
       "params": ["$2"]
     },
@@ -128,10 +122,7 @@
     },
     {
       "pattern": "\\b(model|modell)\\s+(speicher|save|lade|load)\\s*(.*)",
-      "replies": [
-        "Ich $2 das Modell $3.",
-        "Modell $3 wird $2."
-      ],
+      "replies": ["Ich $2 das Modell $3.", "Modell $3 wird $2."],
       "action": "manage_model_storage",
       "params": ["$3"]
     }

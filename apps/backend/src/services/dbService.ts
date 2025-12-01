@@ -11,7 +11,11 @@ import { fileURLToPath } from "node:url";
 // Typdefinitionen (nur für statische Analyse)
 // -------------------------------------------------------------------
 import type { FormSpec } from "./aiAnnotatorService.js";
-import type { BuildResult, CatalogNode, NodeKind } from "./functionsCatalogService.js";
+import type {
+  BuildResult,
+  CatalogNode,
+  NodeKind,
+} from "./functionsCatalogService.js";
 
 // -------------------------------------------------------------------
 // Zod Auto-Korrektur Funktionen
@@ -22,132 +26,155 @@ import type { BuildResult, CatalogNode, NodeKind } from "./functionsCatalogServi
  */
 function autoCorrectKind(kind: string): NodeKind {
   const validKinds: NodeKind[] = [
-    'category', 'section', 'record', 'collection', 
-    'action', 'note', 'group', 'workflow', 
-    'report', 'dataset', 'item'
+    "category",
+    "section",
+    "record",
+    "collection",
+    "action",
+    "note",
+    "group",
+    "workflow",
+    "report",
+    "dataset",
+    "item",
   ];
-  
+
   const normalized = kind.toLowerCase().trim();
-  
+
   // Direkte Übereinstimmung
   if (validKinds.includes(normalized as NodeKind)) {
     return normalized as NodeKind;
   }
-  
+
   // Erweiterte Korrektur-Tabelle
   const correctionMap: Record<string, NodeKind> = {
     // Deutsche Begriffe
-    'kategorie': 'category',
-    'kategory': 'category', 
-    'categorie': 'category',
-    'sektion': 'section',
-    'bereich': 'section',
-    'abteilung': 'section',
-    'aktion': 'action',
-    'funktion': 'action',
-    'operation': 'action',
-    'vorgang': 'action',
-    'workflow': 'workflow',
-    'arbeitsablauf': 'workflow',
-    'prozess': 'workflow',
-    'gruppe': 'group',
-    'team': 'group',
-    'datensatz': 'dataset',
-    'daten': 'dataset',
-    'datenmenge': 'dataset',
-    'record': 'record',
-    'eintrag': 'record',
-    'collection': 'collection',
-    'sammlung': 'collection',
-    'kollektion': 'collection',
-    'note': 'note',
-    'notiz': 'note',
-    'hinweis': 'note',
-    'report': 'report',
-    'bericht': 'report',
-    'auswertung': 'report',
-    'item': 'item',
-    'element': 'item',
-    'objekt': 'item',
-    
+    kategorie: "category",
+    kategory: "category",
+    categorie: "category",
+    sektion: "section",
+    bereich: "section",
+    abteilung: "section",
+    aktion: "action",
+    funktion: "action",
+    operation: "action",
+    vorgang: "action",
+    workflow: "workflow",
+    arbeitsablauf: "workflow",
+    prozess: "workflow",
+    gruppe: "group",
+    team: "group",
+    datensatz: "dataset",
+    daten: "dataset",
+    datenmenge: "dataset",
+    record: "record",
+    eintrag: "record",
+    collection: "collection",
+    sammlung: "collection",
+    kollektion: "collection",
+    note: "note",
+    notiz: "note",
+    hinweis: "note",
+    report: "report",
+    bericht: "report",
+    auswertung: "report",
+    item: "item",
+    element: "item",
+    objekt: "item",
+
     // Typische Tippfehler
-    'cateogry': 'category',
-    'sction': 'section',
-    'aciton': 'action',
-    'workfow': 'workflow',
-    'gropu': 'group',
-    'datasett': 'dataset',
-    'recrod': 'record',
-    'collecton': 'collection',
-    'not': 'note',
-    'reprot': 'report',
-    'itme': 'item'
+    cateogry: "category",
+    sction: "section",
+    aciton: "action",
+    workfow: "workflow",
+    gropu: "group",
+    datasett: "dataset",
+    recrod: "record",
+    collecton: "collection",
+    not: "note",
+    reprot: "report",
+    itme: "item",
   };
-  
+
   // Versuche direkte Korrektur
   if (correctionMap[normalized]) {
     return correctionMap[normalized];
   }
-  
+
   // Versuche Teil-Übereinstimmungen
   for (const [wrong, correct] of Object.entries(correctionMap)) {
     if (normalized.includes(wrong) || wrong.includes(normalized)) {
       return correct;
     }
   }
-  
+
   // Fallback basierend auf Kontext
-  if (normalized.includes('cat')) return 'category';
-  if (normalized.includes('sec')) return 'section';
-  if (normalized.includes('act')) return 'action';
-  if (normalized.includes('work') || normalized.includes('flow')) return 'workflow';
-  if (normalized.includes('group') || normalized.includes('team')) return 'group';
-  if (normalized.includes('data')) return 'dataset';
-  if (normalized.includes('rec')) return 'record';
-  if (normalized.includes('collec')) return 'collection';
-  if (normalized.includes('note') || normalized.includes('notiz')) return 'note';
-  if (normalized.includes('rep') || normalized.includes('bericht')) return 'report';
-  
+  if (normalized.includes("cat")) return "category";
+  if (normalized.includes("sec")) return "section";
+  if (normalized.includes("act")) return "action";
+  if (normalized.includes("work") || normalized.includes("flow"))
+    return "workflow";
+  if (normalized.includes("group") || normalized.includes("team"))
+    return "group";
+  if (normalized.includes("data")) return "dataset";
+  if (normalized.includes("rec")) return "record";
+  if (normalized.includes("collec")) return "collection";
+  if (normalized.includes("note") || normalized.includes("notiz"))
+    return "note";
+  if (normalized.includes("rep") || normalized.includes("bericht"))
+    return "report";
+
   // Finaler Fallback
-  return 'item';
+  return "item";
 }
 
 /**
  * Erweiterte Korrektur für komplexe Fälle
  */
-function attemptAdvancedCorrection(rawData: any, lineIndex: number, fileName: string): any {
+function attemptAdvancedCorrection(
+  rawData: any,
+  lineIndex: number,
+  fileName: string,
+): any {
   try {
     // Tiefe Kopie der Daten für Korrektur-Versuche
     const correctedData = { ...rawData };
-    
+
     // 1. Korrektur für kind-Feld
     if (correctedData.kind) {
       const originalKind = correctedData.kind;
       correctedData.kind = autoCorrectKind(originalKind);
-      
+
       if (originalKind !== correctedData.kind) {
-        console.log(`🔄 [Auto-Correct] ${fileName}:${lineIndex + 1} kind "${originalKind}" → "${correctedData.kind}"`);
+        console.log(
+          `🔄 [Auto-Correct] ${fileName}:${lineIndex + 1} kind "${originalKind}" → "${correctedData.kind}"`,
+        );
       }
     }
-    
+
     // 2. Sicherstellen, dass Pfad ein Array ist
     if (correctedData.path && !Array.isArray(correctedData.path)) {
-      if (typeof correctedData.path === 'string') {
+      if (typeof correctedData.path === "string") {
         correctedData.path = [correctedData.path];
-        console.log(`🔄 [Auto-Correct] ${fileName}:${lineIndex + 1} path als String → Array konvertiert`);
+        console.log(
+          `🔄 [Auto-Correct] ${fileName}:${lineIndex + 1} path als String → Array konvertiert`,
+        );
       } else {
         correctedData.path = [];
       }
     }
-    
+
     // 3. Standardwerte für optionale Felder setzen
     if (!correctedData.children) correctedData.children = [];
     if (!correctedData.weight) correctedData.weight = 1;
-    if (!correctedData.icon) correctedData.icon = '';
-    
+    if (!correctedData.icon) correctedData.icon = "";
+
     return correctedData;
   } catch (error) {
-    console.error(`❌ [Advanced Correction Failed] ${fileName}:${lineIndex + 1}:`, error);
+    console.error(
+      `❌ [Advanced Correction Failed] ${fileName}:${lineIndex + 1}:`,
+      error,
+    );
     return rawData;
   }
 }
@@ -200,7 +227,7 @@ class DatabaseSchemaError extends Error {
 // Konfiguration und Typdefinitionen
 // -------------------------------------------------------------------
 
-type Driver = 'sqlite' | 'postgres';
+type Driver = "sqlite" | "postgres";
 
 interface DatabaseConfig {
   driver: Driver;
@@ -220,7 +247,7 @@ interface QueryStats {
 }
 
 interface HealthStatus {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: "healthy" | "degraded" | "unhealthy";
   driver: Driver;
   latency?: number;
   error?: string;
@@ -270,7 +297,7 @@ const SCHEMAS = {
         CHECK (sync_state IN ('ok','changed','error'))
     )
   `,
-  
+
   functions_edges: `
     CREATE TABLE IF NOT EXISTS functions_edges (
       parent_id TEXT NOT NULL,
@@ -370,7 +397,7 @@ const SCHEMAS = {
       executed_at TEXT DEFAULT (datetime('now')),
       checksum TEXT
     )
-  `
+  `,
 };
 
 // KORRIGIERTE INDEX-DEFINITIONEN - nur für existierende Spalten
@@ -399,7 +426,7 @@ const INDEXES = [
   `CREATE INDEX IF NOT EXISTS idx_annotation_status ON annotations(status)`,
 
   // audit_log - NUR für existierende Spalten
-  `CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log(created_at)`
+  `CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log(created_at)`,
 ];
 
 // -------------------------------------------------------------------
@@ -409,11 +436,11 @@ const INDEXES = [
 /** Treiber valide aus ENV lesen */
 function resolveDriver(): Driver {
   const raw = process.env.DB_DRIVER?.toLowerCase();
-  if (raw === 'postgres' || raw === 'pg') return 'postgres';
-  if (raw === 'sqlite' || !raw) return 'sqlite';
-  
+  if (raw === "postgres" || raw === "pg") return "postgres";
+  if (raw === "sqlite" || !raw) return "sqlite";
+
   console.warn(`⚠️ Unbekannter DB_DRIVER='${raw}', nutze sqlite`);
-  return 'sqlite';
+  return "sqlite";
 }
 
 /** Projektverzeichnisse */
@@ -427,18 +454,18 @@ const REPO_ROOT = process.env.REPO_ROOT || process.cwd();
 const SQLITE_FILE =
   process.env.SQLITE_FILE ||
   process.env.DATABASE_PATH ||
-  path.join(REPO_ROOT, 'data', 'dev.sqlite3');
+  path.join(REPO_ROOT, "data", "dev.sqlite3");
 
 /** Postgres-URL (höher validiert) */
 function resolvePgUrl() {
   if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
 
   if (process.env.PGHOST) {
-    const user = encodeURIComponent(process.env.PGUSER || 'postgres');
-    const pass = encodeURIComponent(process.env.PGPASSWORD || '');
+    const user = encodeURIComponent(process.env.PGUSER || "postgres");
+    const pass = encodeURIComponent(process.env.PGPASSWORD || "");
     const host = process.env.PGHOST;
-    const port = process.env.PGPORT || '5432';
-    const db   = process.env.PGDATABASE || 'postgres';
+    const port = process.env.PGPORT || "5432";
+    const db = process.env.PGDATABASE || "postgres";
     return `postgres://${user}:${pass}@${host}:${port}/${db}`;
   }
 
@@ -452,7 +479,10 @@ function resolvePgUrl() {
 interface SqlApi {
   init(): Promise<void>;
   exec(sql: string, params?: any[]): Promise<void>;
-  run<T = any>(sql: string, params?: any[]): Promise<{ changes?: number; lastID?: number }>;
+  run<T = any>(
+    sql: string,
+    params?: any[],
+  ): Promise<{ changes?: number; lastID?: number }>;
   all<T = any>(sql: string, params?: any[]): Promise<T[]>;
   get<T = any>(sql: string, params?: any[]): Promise<T | undefined>;
   transaction<T>(fn: () => Promise<T>): Promise<T>;
@@ -484,15 +514,15 @@ class SqliteApi implements SqlApi {
     await fs.mkdir(dir, { recursive: true });
 
     try {
-      this.db = new mod.default(sqliteFile, { 
+      this.db = new mod.default(sqliteFile, {
         fileMustExist: false,
-        timeout: this.config.timeout || 5000
+        timeout: this.config.timeout || 5000,
       });
     } catch (err: any) {
       throw new DatabaseConnectionError(
         `SQLite konnte nicht geöffnet werden: ${err.message}`,
-        'sqlite',
-        sqliteFile
+        "sqlite",
+        sqliteFile,
       );
     }
 
@@ -511,7 +541,10 @@ class SqliteApi implements SqlApi {
     try {
       this.db.pragma(statement);
     } catch (err: any) {
-      console.warn(`⚠️ [SQLite] PRAGMA '${statement}' fehlgeschlagen:`, err.message);
+      console.warn(
+        `⚠️ [SQLite] PRAGMA '${statement}' fehlgeschlagen:`,
+        err.message,
+      );
     }
   }
 
@@ -524,13 +557,16 @@ class SqliteApi implements SqlApi {
         this.db.exec(ddl);
         console.log(`✅ [SQLite] Table ${name} ensured`);
       } catch (err: any) {
-        console.warn(`⚠️ [SQLite] Tabelle ${name} konnte nicht erstellt werden:`, err.message);
+        console.warn(
+          `⚠️ [SQLite] Tabelle ${name} konnte nicht erstellt werden:`,
+          err.message,
+        );
       }
     }
 
     // Fehlende Spalten ergänzen
     await this.addMissingColumns();
-    
+
     // Nur sichere Indizes erstellen
     await this.createSafeIndexes();
 
@@ -556,7 +592,7 @@ class SqliteApi implements SqlApi {
       manual_locked: "BOOLEAN DEFAULT 0",
       content_hash: "TEXT",
       category: "TEXT",
-      attributes: "TEXT"
+      attributes: "TEXT",
     };
 
     for (const [col, def] of Object.entries(missingColumns)) {
@@ -571,27 +607,36 @@ class SqliteApi implements SqlApi {
     }
 
     // Fehlende Spalten in functions_edges prüfen - OHNE DEFAULT für created_at
-    const edgesColInfo = this.db.prepare("PRAGMA table_info(functions_edges)").all();
+    const edgesColInfo = this.db
+      .prepare("PRAGMA table_info(functions_edges)")
+      .all();
     const edgesExistingCols = new Set(edgesColInfo.map((c: any) => c.name));
 
     const edgesMissingCols = {
       weight: "INTEGER DEFAULT 1",
       relationship_type: "TEXT DEFAULT 'contains'",
-      created_at: "TEXT" // Ohne DEFAULT-Wert für SQLite-Kompatibilität
+      created_at: "TEXT", // Ohne DEFAULT-Wert für SQLite-Kompatibilität
     };
 
     for (const [col, def] of Object.entries(edgesMissingCols)) {
       if (!edgesExistingCols.has(col)) {
         try {
-          console.log(`🧩 [SQLite] Adding missing column to functions_edges: ${col}`);
+          console.log(
+            `🧩 [SQLite] Adding missing column to functions_edges: ${col}`,
+          );
           this.db.exec(`ALTER TABLE functions_edges ADD COLUMN ${col} ${def}`);
-          
+
           // Für created_at: Nach dem Hinzufügen Standardwert setzen
-          if (col === 'created_at') {
-            this.db.exec(`UPDATE functions_edges SET created_at = datetime('now') WHERE created_at IS NULL`);
+          if (col === "created_at") {
+            this.db.exec(
+              `UPDATE functions_edges SET created_at = datetime('now') WHERE created_at IS NULL`,
+            );
           }
         } catch (err: any) {
-          console.warn(`⚠️ [SQLite] Could not add column ${col} to functions_edges:`, err.message);
+          console.warn(
+            `⚠️ [SQLite] Could not add column ${col} to functions_edges:`,
+            err.message,
+          );
         }
       }
     }
@@ -603,7 +648,10 @@ class SqliteApi implements SqlApi {
       try {
         this.db.exec(idx);
       } catch (err: any) {
-        console.warn(`⚠️ [SQLite] Could not create index (skipping):`, err.message);
+        console.warn(
+          `⚠️ [SQLite] Could not create index (skipping):`,
+          err.message,
+        );
         console.warn(`  SQL: ${idx.substring(0, 100)}...`);
       }
     }
@@ -674,30 +722,30 @@ class PostgresApi implements SqlApi {
 
     const mod: any = await import("pg");
     const pgUrl = this.config.postgresUrl || resolvePgUrl();
-    
+
     if (!pgUrl) {
       throw new DatabaseConnectionError(
         "DATABASE_URL (oder PGHOST/PGUSER/...) nicht gesetzt",
-        'postgres'
+        "postgres",
       );
     }
 
     const { Pool } = mod;
-    this.pool = new Pool({ 
+    this.pool = new Pool({
       connectionString: pgUrl,
       max: this.config.maxConnections || 10,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: this.config.timeout || 5000
+      connectionTimeoutMillis: this.config.timeout || 5000,
     });
 
     // Connection error handling
-    this.pool.on('error', (err: Error) => {
-      console.error('❌ [PostgreSQL] Unexpected pool error:', err);
+    this.pool.on("error", (err: Error) => {
+      console.error("❌ [PostgreSQL] Unexpected pool error:", err);
     });
 
     await this.ensureBaseSchema();
     this.initialized = true;
-    console.log('✅ [PostgreSQL] Database initialized successfully');
+    console.log("✅ [PostgreSQL] Database initialized successfully");
   }
 
   private async ensureBaseSchema(): Promise<void> {
@@ -707,22 +755,28 @@ class PostgresApi implements SqlApi {
     for (const [tableName, schema] of Object.entries(SCHEMAS)) {
       try {
         const pgSchema = schema
-          .replace(/CREATE TABLE IF NOT EXISTS/g, 'CREATE TABLE IF NOT EXISTS')
-          .replace(/TEXT DEFAULT \(datetime\('now'\)\)/g, 'TIMESTAMPTZ DEFAULT now()')
-          .replace(/BOOLEAN DEFAULT 0/g, 'BOOLEAN DEFAULT false')
-          .replace(/INTEGER PRIMARY KEY AUTOINCREMENT/g, 'SERIAL PRIMARY KEY')
-          .replace(/JSON/g, 'JSONB');
-        
+          .replace(/CREATE TABLE IF NOT EXISTS/g, "CREATE TABLE IF NOT EXISTS")
+          .replace(
+            /TEXT DEFAULT \(datetime\('now'\)\)/g,
+            "TIMESTAMPTZ DEFAULT now()",
+          )
+          .replace(/BOOLEAN DEFAULT 0/g, "BOOLEAN DEFAULT false")
+          .replace(/INTEGER PRIMARY KEY AUTOINCREMENT/g, "SERIAL PRIMARY KEY")
+          .replace(/JSON/g, "JSONB");
+
         await this.exec(pgSchema);
         console.log(`✅ [PostgreSQL] Table ${tableName} ensured`);
       } catch (err: any) {
-        console.warn(`⚠️ [PostgreSQL] Fehler beim Erstellen von Tabelle ${tableName}:`, err.message);
+        console.warn(
+          `⚠️ [PostgreSQL] Fehler beim Erstellen von Tabelle ${tableName}:`,
+          err.message,
+        );
       }
     }
 
     // Fehlende Spalten ergänzen
     await this.addMissingColumns();
-    
+
     // Nur sichere Indizes erstellen
     await this.createSafeIndexes();
 
@@ -753,16 +807,21 @@ class PostgresApi implements SqlApi {
       manual_locked: "BOOLEAN DEFAULT false",
       content_hash: "TEXT",
       category: "TEXT",
-      attributes: "JSONB"
+      attributes: "JSONB",
     };
 
     for (const [col, def] of Object.entries(expectedColumns)) {
       if (!existingCols.has(col)) {
         try {
           console.log(`🧩 [PostgreSQL] Füge fehlende Spalte hinzu: ${col}`);
-          await this.exec(`ALTER TABLE functions_nodes ADD COLUMN ${col} ${def};`);
+          await this.exec(
+            `ALTER TABLE functions_nodes ADD COLUMN ${col} ${def};`,
+          );
         } catch (err: any) {
-          console.warn(`⚠️ [PostgreSQL] Konnte Spalte ${col} nicht hinzufügen:`, err.message);
+          console.warn(
+            `⚠️ [PostgreSQL] Konnte Spalte ${col} nicht hinzufügen:`,
+            err.message,
+          );
         }
       }
     }
@@ -772,11 +831,14 @@ class PostgresApi implements SqlApi {
     for (const indexSql of INDEXES) {
       try {
         const pgIndex = indexSql
-          .replace(/CREATE INDEX IF NOT EXISTS/g, 'CREATE INDEX IF NOT EXISTS')
-          .replace(/JSON/g, 'JSONB');
+          .replace(/CREATE INDEX IF NOT EXISTS/g, "CREATE INDEX IF NOT EXISTS")
+          .replace(/JSON/g, "JSONB");
         await this.exec(pgIndex);
       } catch (err: any) {
-        console.warn(`⚠️ [PostgreSQL] Konnte Index nicht erstellen (skipping):`, err.message);
+        console.warn(
+          `⚠️ [PostgreSQL] Konnte Index nicht erstellen (skipping):`,
+          err.message,
+        );
         console.warn(`  SQL: ${indexSql.substring(0, 100)}...`);
       }
     }
@@ -798,18 +860,20 @@ class PostgresApi implements SqlApi {
 
   async run<T = any>(
     sql: string,
-    params: any[] = []
+    params: any[] = [],
   ): Promise<{ changes?: number; lastID?: number }> {
     const startTime = Date.now();
     const client = await this.useClient();
     try {
       const r = await client.query(sql, params);
       const duration = Date.now() - startTime;
-      
-      if (process.env.NODE_ENV === 'development' && duration > 100) {
-        console.log(`🐌 [DB] Slow query (${duration}ms): ${sql.substring(0, 100)}...`);
+
+      if (process.env.NODE_ENV === "development" && duration > 100) {
+        console.log(
+          `🐌 [DB] Slow query (${duration}ms): ${sql.substring(0, 100)}...`,
+        );
       }
-      
+
       return { changes: r.rowCount ?? undefined, lastID: undefined };
     } finally {
       if (!this.txClient) client.release();
@@ -822,11 +886,13 @@ class PostgresApi implements SqlApi {
     try {
       const r = await client.query(sql, params);
       const duration = Date.now() - startTime;
-      
-      if (process.env.NODE_ENV === 'development' && duration > 100) {
-        console.log(`🐌 [DB] Slow query (${duration}ms): ${sql.substring(0, 100)}...`);
+
+      if (process.env.NODE_ENV === "development" && duration > 100) {
+        console.log(
+          `🐌 [DB] Slow query (${duration}ms): ${sql.substring(0, 100)}...`,
+        );
       }
-      
+
       return r.rows as T[];
     } finally {
       if (!this.txClient) client.release();
@@ -839,11 +905,13 @@ class PostgresApi implements SqlApi {
     try {
       const r = await client.query(sql, params);
       const duration = Date.now() - startTime;
-      
-      if (process.env.NODE_ENV === 'development' && duration > 100) {
-        console.log(`🐌 [DB] Slow query (${duration}ms): ${sql.substring(0, 100)}...`);
+
+      if (process.env.NODE_ENV === "development" && duration > 100) {
+        console.log(
+          `🐌 [DB] Slow query (${duration}ms): ${sql.substring(0, 100)}...`,
+        );
       }
-      
+
       return (r.rows[0] as T) ?? undefined;
     } finally {
       if (!this.txClient) client.release();
@@ -906,12 +974,13 @@ class DatabaseService {
       timeout: 5000,
       enableWAL: true,
       retryAttempts: 3,
-      ...config
+      ...config,
     };
 
-    this.api = this.config.driver === "postgres" 
-      ? new PostgresApi(this.config)
-      : new SqliteApi(this.config);
+    this.api =
+      this.config.driver === "postgres"
+        ? new PostgresApi(this.config)
+        : new SqliteApi(this.config);
   }
 
   /**
@@ -925,7 +994,10 @@ class DatabaseService {
       this.isInitialized = true;
       console.log(`✅ [DB] Database ready (${this.config.driver})`);
     } catch (err: any) {
-      console.error(`❌ [DB] Initialization failed (${this.config.driver}):`, err.message);
+      console.error(
+        `❌ [DB] Initialization failed (${this.config.driver}):`,
+        err.message,
+      );
       throw err;
     }
   }
@@ -936,12 +1008,16 @@ class DatabaseService {
     }
   }
 
-  private trackQueryStats(sql: string, duration: number, rowCount?: number): void {
+  private trackQueryStats(
+    sql: string,
+    duration: number,
+    rowCount?: number,
+  ): void {
     this.queryStats.push({
       sql,
       duration,
       rowCount,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     // Alte Einträge entfernen
@@ -950,7 +1026,11 @@ class DatabaseService {
     }
   }
 
-  private enhanceError(error: any, sql: string, params: any[] = []): DatabaseError {
+  private enhanceError(
+    error: any,
+    sql: string,
+    params: any[] = [],
+  ): DatabaseError {
     const message = error?.message
       ? `Database Error: ${error.message}`
       : "Database Error (unbekannter Fehler)";
@@ -965,7 +1045,7 @@ class DatabaseService {
   async exec(sql: string, params: any[] = []): Promise<void> {
     await this.ensureInitialized();
     const startTime = Date.now();
-    
+
     try {
       await this.api.exec(sql, params);
       this.trackQueryStats(sql, Date.now() - startTime);
@@ -977,11 +1057,11 @@ class DatabaseService {
 
   async run<T = any>(
     sql: string,
-    params: any[] = []
+    params: any[] = [],
   ): Promise<{ changes?: number; lastID?: number }> {
     await this.ensureInitialized();
     const startTime = Date.now();
-    
+
     try {
       const result = await this.api.run<T>(sql, params);
       this.trackQueryStats(sql, Date.now() - startTime, result.changes);
@@ -995,7 +1075,7 @@ class DatabaseService {
   async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
     await this.ensureInitialized();
     const startTime = Date.now();
-    
+
     try {
       const result = await this.api.all<T>(sql, params);
       this.trackQueryStats(sql, Date.now() - startTime, result.length);
@@ -1009,7 +1089,7 @@ class DatabaseService {
   async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
     await this.ensureInitialized();
     const startTime = Date.now();
-    
+
     try {
       const result = await this.api.get<T>(sql, params);
       this.trackQueryStats(sql, Date.now() - startTime, result ? 1 : 0);
@@ -1022,7 +1102,7 @@ class DatabaseService {
 
   async transaction<T>(fn: () => Promise<T>): Promise<T> {
     await this.ensureInitialized();
-    
+
     try {
       return await this.api.transaction(fn);
     } catch (err: any) {
@@ -1050,16 +1130,21 @@ class DatabaseService {
   /** Aktualisiert das Formular eines Knotens. */
   async updateFunctionsNodeForm(id: string, form: FormSpec): Promise<void> {
     await this.ensureInitialized();
-    
+
     try {
-      const formJson = this.config.driver === "postgres" ? form : JSON.stringify(form);
-      const sql = this.config.driver === "postgres"
-        ? `UPDATE functions_nodes SET form_json = $1::jsonb, updated_at = now() WHERE id = $2`
-        : `UPDATE functions_nodes SET form_json = json(?), updated_at = datetime('now') WHERE id = ?`;
+      const formJson =
+        this.config.driver === "postgres" ? form : JSON.stringify(form);
+      const sql =
+        this.config.driver === "postgres"
+          ? `UPDATE functions_nodes SET form_json = $1::jsonb, updated_at = now() WHERE id = $2`
+          : `UPDATE functions_nodes SET form_json = json(?), updated_at = datetime('now') WHERE id = ?`;
 
       await this.run(sql, [formJson, id]);
     } catch (err: any) {
-      console.error(`❌ [DB] Error in updateFunctionsNodeForm(${id}):`, err.message);
+      console.error(
+        `❌ [DB] Error in updateFunctionsNodeForm(${id}):`,
+        err.message,
+      );
       throw err;
     }
   }
@@ -1067,45 +1152,60 @@ class DatabaseService {
   /** Aktualisiert die Metadaten eines Knotens. */
   async updateFunctionsNodeMeta(id: string, meta: unknown): Promise<void> {
     await this.ensureInitialized();
-    
+
     try {
-      const payload = this.config.driver === "postgres" ? (meta as object) : JSON.stringify(meta);
-      const sql = this.config.driver === "postgres"
-        ? `UPDATE functions_nodes SET meta_json = $1::jsonb, updated_at = now() WHERE id = $2`
-        : `UPDATE functions_nodes SET meta_json = ?, updated_at = datetime('now') WHERE id = ?`;
+      const payload =
+        this.config.driver === "postgres"
+          ? (meta as object)
+          : JSON.stringify(meta);
+      const sql =
+        this.config.driver === "postgres"
+          ? `UPDATE functions_nodes SET meta_json = $1::jsonb, updated_at = now() WHERE id = $2`
+          : `UPDATE functions_nodes SET meta_json = ?, updated_at = datetime('now') WHERE id = ?`;
 
       await this.run(sql, [payload, id]);
     } catch (err: any) {
-      console.error(`❌ [DB] Error in updateFunctionsNodeMeta(${id}):`, err.message);
+      console.error(
+        `❌ [DB] Error in updateFunctionsNodeMeta(${id}):`,
+        err.message,
+      );
       throw err;
     }
   }
 
   /** Importiert den Funktionskatalog komplett (mit Upsert-Logik und Auto-Korrektur) */
-  async upsertFunctionsCatalog(result: BuildResult): Promise<{ nodes: number; edges: number }> {
+  async upsertFunctionsCatalog(
+    result: BuildResult,
+  ): Promise<{ nodes: number; edges: number }> {
     await this.ensureInitialized();
-    
+
     let nodeCount = 0;
     let edgeCount = 0;
     let correctedCount = 0;
 
     const toJsonParam = (obj: unknown): string | object | null => {
       if (obj == null) return null;
-      return this.config.driver === "postgres" ? (obj as object) : JSON.stringify(obj);
+      return this.config.driver === "postgres"
+        ? (obj as object)
+        : JSON.stringify(obj);
     };
 
     const insertNode = async (n: CatalogNode) => {
       // Auto-Korrektur für kind-Werte vor dem Einfügen
       const originalKind = n.kind;
       const correctedKind = autoCorrectKind(originalKind);
-      
+
       if (originalKind !== correctedKind) {
         correctedCount++;
-        console.log(`🔄 [DB Auto-Correct] ${n.id}: kind "${originalKind}" → "${correctedKind}"`);
+        console.log(
+          `🔄 [DB Auto-Correct] ${n.id}: kind "${originalKind}" → "${correctedKind}"`,
+        );
         n.kind = correctedKind;
       }
 
-      const sql = this.config.driver === "postgres" ? `
+      const sql =
+        this.config.driver === "postgres"
+          ? `
         INSERT INTO functions_nodes
         (id, title, kind, icon, path_json, weight, meta_json, rbac_json, flags_json, pii_json, aa_json, schema_json, source_file, source_line_start)
         VALUES ($1,$2,$3,$4,$5::jsonb,$6,$7::jsonb,$8::jsonb,$9::jsonb,$10::jsonb,$11::jsonb,$12::jsonb,$13,$14)
@@ -1123,7 +1223,7 @@ class DatabaseService {
           schema_json = EXCLUDED.schema_json,
           source_file = EXCLUDED.source_file,
           source_line_start = EXCLUDED.source_line_start`
-      : `
+          : `
         INSERT INTO functions_nodes
         (id, title, kind, icon, path_json, weight, meta_json, rbac_json, flags_json, pii_json, aa_json, schema_json, source_file, source_line_start)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -1165,14 +1265,18 @@ class DatabaseService {
 
     const insertEdge = async (parentId: string, childId: string) => {
       try {
-        const sql = this.config.driver === "postgres"
-          ? `INSERT INTO functions_edges (parent_id, child_id) VALUES ($1, $2) ON CONFLICT (parent_id, child_id) DO NOTHING`
-          : `INSERT OR IGNORE INTO functions_edges (parent_id, child_id) VALUES (?, ?)`;
+        const sql =
+          this.config.driver === "postgres"
+            ? `INSERT INTO functions_edges (parent_id, child_id) VALUES ($1, $2) ON CONFLICT (parent_id, child_id) DO NOTHING`
+            : `INSERT OR IGNORE INTO functions_edges (parent_id, child_id) VALUES (?, ?)`;
 
         await this.run(sql, [parentId, childId]);
         edgeCount++;
       } catch (err: any) {
-        console.warn(`⚠️ [DB] Could not insert edge (${parentId} → ${childId}):`, err.message);
+        console.warn(
+          `⚠️ [DB] Could not insert edge (${parentId} → ${childId}):`,
+          err.message,
+        );
       }
     };
 
@@ -1188,7 +1292,7 @@ class DatabaseService {
       // Bestehende Daten löschen
       await this.exec("DELETE FROM functions_edges");
       await this.exec("DELETE FROM functions_nodes");
-      
+
       // Neue Daten einfügen
       for (const root of result.nodes) {
         await walk(root, null);
@@ -1198,8 +1302,10 @@ class DatabaseService {
     if (correctedCount > 0) {
       console.log(`🔄 [DB] ${correctedCount} Knoten automatisch korrigiert`);
     }
-    
-    console.log(`✅ [DB] Catalog successfully saved (${nodeCount} nodes, ${edgeCount} edges).`);
+
+    console.log(
+      `✅ [DB] Catalog successfully saved (${nodeCount} nodes, ${edgeCount} edges).`,
+    );
     return { nodes: nodeCount, edges: edgeCount };
   }
 
@@ -1210,14 +1316,14 @@ class DatabaseService {
   async batchInsert(
     table: string,
     records: any[],
-    batchSize: number = 100
+    batchSize: number = 100,
   ): Promise<{
     inserted: number;
     errors: Array<{ batch: number; error: string }>;
     corrected: number;
   }> {
     await this.ensureInitialized();
-    
+
     if (!Array.isArray(records) || records.length === 0) {
       return { inserted: 0, errors: [], corrected: 0 };
     }
@@ -1225,15 +1331,15 @@ class DatabaseService {
     const results = {
       inserted: 0,
       errors: [] as Array<{ batch: number; error: string }>,
-      corrected: 0
+      corrected: 0,
     };
 
     for (let i = 0; i < records.length; i += batchSize) {
       const batch = records.slice(i, i + batchSize);
-      
+
       // Auto-Korrektur für die Batch-Daten
-      const correctedBatch = batch.map(record => {
-        if (table === 'functions_nodes' && record.kind) {
+      const correctedBatch = batch.map((record) => {
+        if (table === "functions_nodes" && record.kind) {
           const originalKind = record.kind;
           const correctedKind = autoCorrectKind(originalKind);
           if (originalKind !== correctedKind) {
@@ -1246,8 +1352,8 @@ class DatabaseService {
 
       const first = correctedBatch[0];
       const columnCount = Array.isArray(first) ? first.length : 1;
-      const rowPlaceholder = `(${Array(columnCount).fill('?').join(',')})`;
-      const placeholders = correctedBatch.map(() => rowPlaceholder).join(',');
+      const rowPlaceholder = `(${Array(columnCount).fill("?").join(",")})`;
+      const placeholders = correctedBatch.map(() => rowPlaceholder).join(",");
 
       const sql = `INSERT OR REPLACE INTO ${table} VALUES ${placeholders}`;
 
@@ -1261,7 +1367,10 @@ class DatabaseService {
           batch: i / batchSize + 1,
           error: message,
         });
-        console.error(`❌ [DB] Batch insert failed (Batch ${i / batchSize + 1}):`, message);
+        console.error(
+          `❌ [DB] Batch insert failed (Batch ${i / batchSize + 1}):`,
+          message,
+        );
       }
     }
 
@@ -1276,28 +1385,28 @@ class DatabaseService {
     try {
       await this.ensureInitialized();
       const startTime = Date.now();
-      await this.get('SELECT 1 as health_check');
+      await this.get("SELECT 1 as health_check");
       const latency = Date.now() - startTime;
 
       return {
-        status: 'healthy',
+        status: "healthy",
         driver: this.config.driver,
         latency,
         details: {
           initialized: this.isInitialized,
-          queryStatsCount: this.queryStats.length
-        }
+          queryStatsCount: this.queryStats.length,
+        },
       };
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      
+
       return {
-        status: 'unhealthy',
+        status: "unhealthy",
         driver: this.config.driver,
         error: message,
         details: {
-          initialized: this.isInitialized
-        }
+          initialized: this.isInitialized,
+        },
       };
     }
   }
@@ -1305,7 +1414,7 @@ class DatabaseService {
   async getStats() {
     try {
       await this.ensureInitialized();
-      
+
       const stats = await this.all(`
         SELECT 
           (SELECT COUNT(*) FROM functions_nodes) as total_nodes,
@@ -1316,31 +1425,34 @@ class DatabaseService {
           (SELECT COUNT(*) FROM ai_annotations_log) as total_ai_operations,
           (SELECT COUNT(*) FROM audit_log) as total_audit_entries
       `);
-      
+
       return {
         ...stats[0],
-        queryPerformance: this.getQueryPerformance()
+        queryPerformance: this.getQueryPerformance(),
       };
     } catch (error) {
-      console.error('❌ [DB] Error getting stats:', error);
+      console.error("❌ [DB] Error getting stats:", error);
       return {};
     }
   }
 
   private getQueryPerformance() {
     if (this.queryStats.length === 0) return {};
-    
-    const durations = this.queryStats.map(q => q.duration);
+
+    const durations = this.queryStats.map((q) => q.duration);
     const avgDuration = durations.reduce((a, b) => a + b, 0) / durations.length;
     const maxDuration = Math.max(...durations);
-    const slowQueries = this.queryStats.filter(q => q.duration > 100).length;
+    const slowQueries = this.queryStats.filter((q) => q.duration > 100).length;
 
     return {
       totalQueries: this.queryStats.length,
       averageDuration: Math.round(avgDuration),
       maxDuration,
       slowQueries,
-      slowQueryPercentage: (slowQueries / this.queryStats.length * 100).toFixed(1)
+      slowQueryPercentage: (
+        (slowQueries / this.queryStats.length) *
+        100
+      ).toFixed(1),
     };
   }
 
@@ -1355,14 +1467,14 @@ class DatabaseService {
     }
 
     await this.ensureInitialized();
-    
+
     let targetPath = backupPath;
     if (!targetPath) {
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       targetPath = path.join(
         __dirname,
         "../../../backups",
-        `database-backup-${timestamp}.sqlite`
+        `database-backup-${timestamp}.sqlite`,
       );
     }
 
@@ -1376,7 +1488,7 @@ class DatabaseService {
 
   async vacuum(): Promise<void> {
     await this.ensureInitialized();
-    
+
     try {
       if (this.config.driver === "sqlite") {
         await this.exec("VACUUM");
@@ -1397,7 +1509,7 @@ class DatabaseService {
     if (this.api) {
       await this.api.close();
       this.isInitialized = false;
-      console.log('🔒 [DB] Database connection closed');
+      console.log("🔒 [DB] Database connection closed");
     }
   }
 
@@ -1421,7 +1533,9 @@ class DatabaseService {
   autoCorrectNode(node: CatalogNode): CatalogNode {
     const correctedKind = autoCorrectKind(node.kind);
     if (node.kind !== correctedKind) {
-      console.log(`🔄 [DB Auto-Correct] ${node.id}: "${node.kind}" → "${correctedKind}"`);
+      console.log(
+        `🔄 [DB Auto-Correct] ${node.id}: "${node.kind}" → "${correctedKind}"`,
+      );
       return { ...node, kind: correctedKind };
     }
     return node;
@@ -1429,7 +1543,7 @@ class DatabaseService {
 
   /** Korrigiert automatisch kind-Werte in einer Liste von Knoten */
   autoCorrectNodes(nodes: CatalogNode[]): CatalogNode[] {
-    return nodes.map(node => this.autoCorrectNode(node));
+    return nodes.map((node) => this.autoCorrectNode(node));
   }
 }
 
@@ -1458,5 +1572,10 @@ process.on("beforeExit", shutdown);
 // Export der Auto-Korrektur Funktionen für andere Module
 export { autoCorrectKind, attemptAdvancedCorrection };
 export default db;
-export { DatabaseService, DatabaseError, DatabaseConnectionError, DatabaseSchemaError };
+export {
+  DatabaseService,
+  DatabaseError,
+  DatabaseConnectionError,
+  DatabaseSchemaError,
+};
 export type { DatabaseConfig, HealthStatus, QueryStats };

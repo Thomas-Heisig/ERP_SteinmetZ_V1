@@ -3,7 +3,7 @@
  * ---------------------------------------------------------
  * Universeller Übersetzungsdienst für das ERP_SteinmetZ KI-System.
  * Unterstützt OpenAI, Vertex AI, HuggingFace und lokale Modelle.
- * 
+ *
  * Funktionen:
  *  - Textübersetzung (einzeln oder als Liste)
  *  - Automatische Spracherkennung
@@ -43,10 +43,16 @@ export const translationConfig = {
 export async function translateText(
   text: string,
   targetLang: string = translationConfig.defaultTargetLang,
-  engine: "openai" | "vertex" | "huggingface" = translationConfig.defaultEngine as any
+  engine:
+    | "openai"
+    | "vertex"
+    | "huggingface" = translationConfig.defaultEngine as any,
 ): Promise<AIResponse> {
   const messages: ChatMessage[] = [
-    { role: "system", content: `Übersetze den folgenden Text präzise ins ${targetLang}.` },
+    {
+      role: "system",
+      content: `Übersetze den folgenden Text präzise ins ${targetLang}.`,
+    },
     { role: "user", content: text },
   ];
 
@@ -98,7 +104,10 @@ export async function translateText(
  */
 export async function detectLanguage(
   text: string,
-  engine: "openai" | "vertex" | "huggingface" = translationConfig.defaultEngine as any
+  engine:
+    | "openai"
+    | "vertex"
+    | "huggingface" = translationConfig.defaultEngine as any,
 ): Promise<string> {
   const messages: ChatMessage[] = [
     {
@@ -132,14 +141,20 @@ export async function detectLanguage(
 export async function autoTranslate(
   text: string,
   targetLang: string = "Deutsch",
-  engine: "openai" | "vertex" | "huggingface" = translationConfig.defaultEngine as any
+  engine:
+    | "openai"
+    | "vertex"
+    | "huggingface" = translationConfig.defaultEngine as any,
 ): Promise<AIResponse> {
   try {
     const detected = await detectLanguage(text, engine);
     log("info", "Automatische Spracherkennung", { detected });
 
     if (detected.toLowerCase() === targetLang.toLowerCase()) {
-      return { text: text, meta: { info: "Keine Übersetzung nötig", language: detected } };
+      return {
+        text: text,
+        meta: { info: "Keine Übersetzung nötig", language: detected },
+      };
     }
 
     return await translateText(text, targetLang, engine);
@@ -158,7 +173,10 @@ export async function autoTranslate(
 export async function translateBatch(
   texts: string[],
   targetLang = "Deutsch",
-  engine: "openai" | "vertex" | "huggingface" = translationConfig.defaultEngine as any
+  engine:
+    | "openai"
+    | "vertex"
+    | "huggingface" = translationConfig.defaultEngine as any,
 ): Promise<AIResponse[]> {
   const results: AIResponse[] = [];
   for (const t of texts) {

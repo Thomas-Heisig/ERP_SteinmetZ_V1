@@ -47,7 +47,8 @@ const DEFAULT_SETTINGS: Record<string, any> = {
  */
 export function loadSettings(): Record<string, any> {
   try {
-    if (!fs.existsSync(CONFIG_DIR)) fs.mkdirSync(CONFIG_DIR, { recursive: true });
+    if (!fs.existsSync(CONFIG_DIR))
+      fs.mkdirSync(CONFIG_DIR, { recursive: true });
 
     if (!fs.existsSync(SETTINGS_FILE)) {
       log("warn", "Einstellungsdatei fehlt – Standardwerte werden erstellt.");
@@ -69,8 +70,10 @@ export function loadSettings(): Record<string, any> {
  */
 export function saveSettings(settings: Record<string, any>): boolean {
   try {
-    if (!fs.existsSync(CONFIG_DIR)) fs.mkdirSync(CONFIG_DIR, { recursive: true });
-    if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
+    if (!fs.existsSync(CONFIG_DIR))
+      fs.mkdirSync(CONFIG_DIR, { recursive: true });
+    if (!fs.existsSync(BACKUP_DIR))
+      fs.mkdirSync(BACKUP_DIR, { recursive: true });
 
     const backupName = `ai_settings_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
     const backupPath = path.join(BACKUP_DIR, backupName);
@@ -87,7 +90,9 @@ export function saveSettings(settings: Record<string, any>): boolean {
     log("info", "Einstellungen gespeichert", { keys: Object.keys(settings) });
     return true;
   } catch (err: any) {
-    log("error", "Fehler beim Speichern der Einstellungen", { error: err.message });
+    log("error", "Fehler beim Speichern der Einstellungen", {
+      error: err.message,
+    });
     return false;
   }
 }
@@ -132,7 +137,9 @@ export function getSetting<T = any>(key: string, fallback?: T): T {
 /**
  * Prüft und aktualisiert alte Konfigurationsstrukturen.
  */
-export function migrateSettings(settings: Record<string, any>): Record<string, any> {
+export function migrateSettings(
+  settings: Record<string, any>,
+): Record<string, any> {
   let changed = false;
 
   for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
@@ -156,9 +163,13 @@ export function migrateSettings(settings: Record<string, any>): Record<string, a
 export function validateSettings(settings: Record<string, any>): string[] {
   const issues: string[] = [];
 
-  if (!settings.default_provider) issues.push("Kein Standard-Provider definiert.");
+  if (!settings.default_provider)
+    issues.push("Kein Standard-Provider definiert.");
   if (!settings.default_model) issues.push("Kein Standardmodell gesetzt.");
-  if (typeof settings.max_parallel_requests !== "number" || settings.max_parallel_requests <= 0)
+  if (
+    typeof settings.max_parallel_requests !== "number" ||
+    settings.max_parallel_requests <= 0
+  )
     issues.push("Ungültiger Wert für max_parallel_requests.");
 
   if (issues.length > 0) {
@@ -217,7 +228,8 @@ export function exportSettings(targetFile: string): boolean {
  */
 export function importSettings(sourceFile: string): boolean {
   try {
-    if (!fs.existsSync(sourceFile)) throw new Error(`Datei nicht gefunden: ${sourceFile}`);
+    if (!fs.existsSync(sourceFile))
+      throw new Error(`Datei nicht gefunden: ${sourceFile}`);
     const data = fs.readFileSync(sourceFile, "utf8");
     const imported = JSON.parse(data);
     saveSettings(imported);

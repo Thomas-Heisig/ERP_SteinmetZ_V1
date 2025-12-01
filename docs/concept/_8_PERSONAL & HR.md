@@ -1157,11 +1157,12 @@
 └── 🤖 KI-gestützte Feedback-Analyse
 
 Funktionsbeschreibung: Personal & HR (HCM)
-1) Zielbild & Grundprinzipien
+
+1. Zielbild & Grundprinzipien
 
 Zentrale Personen- und Vertragsakte mit vollständiger Historisierung, revisionssicheren Workflows und klarer Rollen-/Rechte-Trennung (HR, Führung, Mitarbeitende, Prüfer).
 
-Rechtskonforme Arbeitszeit-, Abwesenheits- und Dokumentenprozesse inkl. Nachweisbarkeit (Audit-Trail) und minimaler Datenerhebung nach DSGVO/BDSG. Rechtsgrundlagen für die Verarbeitung: u. a. Art. 6 DSGVO (v. a. lit. b, c, f) und – bei besonderen Kategorien – Art. 9 DSGVO (z. B. lit. b), ergänzt um § 26 BDSG (Beschäftigtendaten). 
+Rechtskonforme Arbeitszeit-, Abwesenheits- und Dokumentenprozesse inkl. Nachweisbarkeit (Audit-Trail) und minimaler Datenerhebung nach DSGVO/BDSG. Rechtsgrundlagen für die Verarbeitung: u. a. Art. 6 DSGVO (v. a. lit. b, c, f) und – bei besonderen Kategorien – Art. 9 DSGVO (z. B. lit. b), ergänzt um § 26 BDSG (Beschäftigtendaten).
 Buzer
 +2
 Hensche
@@ -1171,18 +1172,18 @@ Pflicht zur Arbeitszeiterfassung: seit BAG-Beschluss 1 ABR 22/21 haben Arbeitgeb
 
 Materiell-rechtliche Leitplanken (Auszug DE/EU):
 
-Arbeitszeit: Regelmäßig max. 8 Std./Tag, erweiterbar auf 10 Std. bei Ausgleich; Sonn-/Feiertagsarbeit nur in Ausnahmen. Pausen ab > 6 Std. mind. 30 Min., ab > 9 Std. 45 Min. (ArbZG). 
+Arbeitszeit: Regelmäßig max. 8 Std./Tag, erweiterbar auf 10 Std. bei Ausgleich; Sonn-/Feiertagsarbeit nur in Ausnahmen. Pausen ab > 6 Std. mind. 30 Min., ab > 9 Std. 45 Min. (ArbZG).
 Händlerbund
 +1
 
-Mindesturlaub: BUrlG-Mindestmaß 24 Werktage (Sechs-Tage-Woche) ⇒ 20 Arbeitstage bei Fünf-Tage-Woche. 
+Mindesturlaub: BUrlG-Mindestmaß 24 Werktage (Sechs-Tage-Woche) ⇒ 20 Arbeitstage bei Fünf-Tage-Woche.
 Wikipedia
 +1
 
-Mindestlohn / Schutzgesetze (MiLoG, MuSchG, JArbSchG) müssen in Workflows/Prüfungen abbildbar sein. 
+Mindestlohn / Schutzgesetze (MiLoG, MuSchG, JArbSchG) müssen in Workflows/Prüfungen abbildbar sein.
 Jephi online Zeiterfassung
 
-2) Datenmodell (Kerneinheiten)
+2. Datenmodell (Kerneinheiten)
 
 Mitarbeiter (ID, Organisationszuordnung, Status, Eintritt/Austritt, Vertragsart, Arbeitszeitmodell, Kostenstelle).
 
@@ -1202,10 +1203,10 @@ Recruiting-Entitäten (Stellen, Bewerber, Prozessstatus, Interview/Score, Dokume
 
 Audit-Objekte (Änderungs-/Zugriffsprotokolle).
 
-3) Prozessdesign je Modul (kernverdichtet)
-3.1 Stammdaten & Dokumente
+3. Prozessdesign je Modul (kernverdichtet)
+   3.1 Stammdaten & Dokumente
 
-Onboarding-Checkliste erzeugt Pflichtfelder, Zugänge (SSO), Rechte und Aktenstruktur; Dokumente eingangsgestützt (E-Mail/Scan/OCR) in die Personalakte mit Versionierung, Volltextsuche, Aufbewahrungsfristen und Zugriff nach Need-to-Know. Rechtsgrundlagen und Zwecke sind je Dokumenttyp hinterlegt; sensible Daten nur mit gesondertem Schutz und Löschkonzept. (DSGVO Art. 6/9; § 26 BDSG). 
+Onboarding-Checkliste erzeugt Pflichtfelder, Zugänge (SSO), Rechte und Aktenstruktur; Dokumente eingangsgestützt (E-Mail/Scan/OCR) in die Personalakte mit Versionierung, Volltextsuche, Aufbewahrungsfristen und Zugriff nach Need-to-Know. Rechtsgrundlagen und Zwecke sind je Dokumenttyp hinterlegt; sensible Daten nur mit gesondertem Schutz und Löschkonzept. (DSGVO Art. 6/9; § 26 BDSG).
 Buzer
 +2
 Hensche
@@ -1235,7 +1236,7 @@ Tages-Saldo = Tages-Ist − Tages-Soll (gemäß Arbeitszeitmodell)
 
 Regeln: BUrlG-Mindesturlaub und betriebliche Mehr-Ansprüche; Pro-rata bei Ein-/Austritt; Übertrag gem. Policy; Krankheit während Urlaub neutralisiert Tage mit AU-Nachweis.
 
-Umrechnung: Mindesturlaub 24 Werktage (6-Tage-Woche) ⇒ 20 Arbeitstage (5-Tage-Woche); für atypische Modelle lineare Umrechnung (skalierbar auf 3/4/6-Tage-Modelle). 
+Umrechnung: Mindesturlaub 24 Werktage (6-Tage-Woche) ⇒ 20 Arbeitstage (5-Tage-Woche); für atypische Modelle lineare Umrechnung (skalierbar auf 3/4/6-Tage-Modelle).
 Wikipedia
 
 Resturlaub-Formel (vereinfachte Praxis):
@@ -1255,7 +1256,7 @@ Rollenmodell: HR-Admin, HR-Sachbearbeitung, Führungskraft, Mitarbeiter/in, Prü
 
 Protokolle: lückenlose Änderungs- und Zugriffslogs; Berichte für ArbZG-Nachweise, Urlaubskonten, Dokumenten-Fristen.
 
-Gesetzliche Leitplanken im System hinterlegt (ArbZG-Grenzen, Pausen, Sonntagsarbeit; MuSchG/JArbSchG-Checks). 
+Gesetzliche Leitplanken im System hinterlegt (ArbZG-Grenzen, Pausen, Sonntagsarbeit; MuSchG/JArbSchG-Checks).
 Händlerbund
 +2
 Gesetze im Internet
@@ -1279,7 +1280,7 @@ Nachfolge- und Karriereplanung: transparente Kriterien, dokumentierte Entscheidu
 
 Formulare/Umfragen (auch anonym), regelmäßige Entwicklungsgespräche mit Zielvereinbarungen, Beschlüsse verfolgen (Maßnahmenboard).
 
-4) Kennzahlen (prägnant, messbar)
+4. Kennzahlen (prägnant, messbar)
 
 Arbeitszeit/Compliance: Anteil vollständiger Tagesbuchungen, Pausenregel-Trefferquote, ArbZG-Abweichungen/Woche, Korrekturrate.
 
@@ -1289,7 +1290,7 @@ Recruiting: Time-to-Hire, Cost-per-Hire, Funnel-Konversionsraten, Quality-of-Hir
 
 Entwicklung: Zertifikats-Gültigkeitsquote, Skill-Coverage je Rolle, Schulungs-ROI-Proxy (Transfer-Scores).
 
-5) Schnittstellen
+5. Schnittstellen
 
 SSO/IDM (Azure AD/Entra, Keycloak, AD FS) – automatische Rollenzuteilung nach Organisation.
 
@@ -1299,27 +1300,27 @@ Kalender/Kommunikation – Outlook/Google, E-Mail, Push/SMS.
 
 DMS – rechtssichere Archivierung, Retention-Pläne.
 
-6) Prüf- & Rechtslogik (konkret hinterlegt)
+6. Prüf- & Rechtslogik (konkret hinterlegt)
 
-Arbeitszeit-Grenzen: Tages- und Wochenlimits, Sonn-/Feiertagsausnahmen mit Dokumentationspflicht (ArbZG). 
+Arbeitszeit-Grenzen: Tages- und Wochenlimits, Sonn-/Feiertagsausnahmen mit Dokumentationspflicht (ArbZG).
 Händlerbund
 +1
 
 Zeiterfassungspflicht: System vorhanden, Nachvollziehbarkeit (Original/Korrektur), Rollen für Korrekturen (BAG 1 ABR 22/21; EuGH C-55/18).
 
-Urlaub: Mindestmaß, Umrechnung, Verfall/Übertrag nach Policy (BUrlG-Mindestmaß belegt). 
+Urlaub: Mindestmaß, Umrechnung, Verfall/Übertrag nach Policy (BUrlG-Mindestmaß belegt).
 Wikipedia
 
-Datenschutz: Zweckbindung, Datenminimierung, Betroffenenrechte, besondere Kategorien gesondert (DSGVO Art. 6/9; § 26 BDSG). 
+Datenschutz: Zweckbindung, Datenminimierung, Betroffenenrechte, besondere Kategorien gesondert (DSGVO Art. 6/9; § 26 BDSG).
 Buzer
 +2
 Hensche
 +2
 
-7) Rechenlogik (Beispiele)
+7. Rechenlogik (Beispiele)
 
 A) Pro-rata-Urlaub bei Eintritt/Austritt
-Jahresanspruch_pro_rata = Jahresanspruch * (beschäftigte_Kalendermonate / 12)
+Jahresanspruch_pro_rata = Jahresanspruch \* (beschäftigte_Kalendermonate / 12)
 (Plus evtl. tarifliche/vertragliche Sonderregeln.)
 
 B) Resturlaub zum Stichtag
@@ -1330,7 +1331,7 @@ Saldo_Tag = (Ende − Beginn − Pause) − Soll
 Saldo_Monat = Σ(Saldo_Tag)
 Regeln zu Zuschlägen (Nacht/Sonntag) nur berechnet, nicht „automatisch genehmigt“.
 
-8) Qualität, Sicherheit, Betrieb
+8. Qualität, Sicherheit, Betrieb
 
 Vier-Augen-Prinzip bei kritischen Änderungen (Verträge, Gehalt, Korrekturen).
 
@@ -1338,7 +1339,7 @@ Berechtigungs-Rezertifizierung quartalsweise; Audit-Reports exportierbar.
 
 Lösch-/Aufbewahrungs­konzept pro Dokument/Datensatz (Konfigurationstabelle mit Zweck, Rechtsgrund, Frist, Trigger).
 
-9) Einführung (12-Wochen-MVP, schlank)
+9. Einführung (12-Wochen-MVP, schlank)
 
 W1–2: Scope finalisieren, Rechts-/BR-Abgleich, Datenmodell & Rollen.
 
@@ -1352,7 +1353,7 @@ W9–10: Schulungen, Go-Live Pilot (2–3 Bereiche), Korrekturschleife.
 
 W11–12: Rollout, Betriebsvereinbarung finalisieren, Audit-Doku bündeln.
 
-10) Offene Punkte (ehrlich benannt)
+10. Offene Punkte (ehrlich benannt)
 
 Gesetzgeberische Feinspezifik zur elektronischen Erfassung: politisch weiter in Bewegung; System sollte sowohl manuelle als auch elektronische Kanäle unterstützen und revisionssicher dokumentieren. (BAG-Pflicht zur Erfassung gilt; Detailpflichten können sich ändern.)
 
@@ -1360,20 +1361,20 @@ Aufbewahrungsfristen: variieren je Dokumenttyp und Rechtsgebiet; es ist eine bet
 
 Belegstellen (Auswahl, für die zentralen Aussagen)
 
-ArbZG (Arbeitszeitgrenzen, Sonn-/Feiertag): gesetze-im-internet.de. 
+ArbZG (Arbeitszeitgrenzen, Sonn-/Feiertag): gesetze-im-internet.de.
 Händlerbund
 +1
 
 BAG 1 ABR 22/21 (Pflicht zur Arbeitszeiterfassung, 13.09.2022) & EuGH C-55/18 (objektiv/verlässlich/zugänglich).
 
-BUrlG Mindesturlaub (24 Werktage = 20 Tage bei 5-Tage-Woche). 
+BUrlG Mindesturlaub (24 Werktage = 20 Tage bei 5-Tage-Woche).
 Wikipedia
 
-DSGVO Art. 6/9 und § 26 BDSG (Rechtsgrundlagen Beschäftigtendaten). 
+DSGVO Art. 6/9 und § 26 BDSG (Rechtsgrundlagen Beschäftigtendaten).
 Buzer
 +2
 Hensche
 +2
 
-MiLoG/MuSchG/JArbSchG (weitere Schutzrahmen). 
+MiLoG/MuSchG/JArbSchG (weitere Schutzrahmen).
 Jephi online Zeiterfassung

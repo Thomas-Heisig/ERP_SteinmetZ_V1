@@ -119,7 +119,8 @@ class CatalogLogger {
   private readonly prefix = "[FunctionsCatalog]";
 
   constructor(enabled: boolean = true) {
-    this.enabled = enabled && (import.meta as any)?.env?.NODE_ENV !== "production";
+    this.enabled =
+      enabled && (import.meta as any)?.env?.NODE_ENV !== "production";
   }
 
   info(message: string, data?: any) {
@@ -165,12 +166,16 @@ function validateBaseUrl(url: string): boolean {
 
 function sanitizeContext(context: MenuContext): MenuContext {
   return {
-    roles: Array.isArray(context.roles) ? context.roles.filter(role => 
-      typeof role === "string" && role.length > 0
-    ) : [],
-    features: Array.isArray(context.features) ? context.features.filter(feature =>
-      typeof feature === "string" && feature.length > 0
-    ) : []
+    roles: Array.isArray(context.roles)
+      ? context.roles.filter(
+          (role) => typeof role === "string" && role.length > 0,
+        )
+      : [],
+    features: Array.isArray(context.features)
+      ? context.features.filter(
+          (feature) => typeof feature === "string" && feature.length > 0,
+        )
+      : [],
   };
 }
 
@@ -206,9 +211,11 @@ export interface UseFunctionsCatalogReturn {
   roots: NodeDetail[];
   rootsLoading: boolean;
   rootsError: string | null;
-  
+
   // API
-  setContext: (context: MenuContext | ((prev: MenuContext) => MenuContext)) => void;
+  setContext: (
+    context: MenuContext | ((prev: MenuContext) => MenuContext),
+  ) => void;
   reloadIndex: () => Promise<void>;
   selectNode: (id: string) => void;
   search: (query: string, kinds?: NodeKind[], tags?: string[]) => void;
@@ -217,19 +224,23 @@ export interface UseFunctionsCatalogReturn {
   loadRoots: () => Promise<void>;
 }
 
-export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFunctionsCatalogReturn {
+export function useFunctionsCatalog(
+  options?: UseFunctionsCatalogOptions,
+): UseFunctionsCatalogReturn {
   // Konfiguration mit useMemo statt useState für stabilen Wert
   const config = useMemo(() => {
     const baseUrl = options?.baseUrl || getDefaultBaseUrl();
     const sanitizedUrl = sanitizeUrl(baseUrl);
-    
+
     if (baseUrl && !validateBaseUrl(baseUrl)) {
-      console.warn(`[FunctionsCatalog] Ungültige baseUrl: ${baseUrl}, verwende relative Pfade`);
+      console.warn(
+        `[FunctionsCatalog] Ungültige baseUrl: ${baseUrl}, verwende relative Pfade`,
+      );
     }
 
     return {
       baseUrl: sanitizedUrl,
-      enableLogging: options?.enableLogging ?? true
+      enableLogging: options?.enableLogging ?? true,
     };
   }, [options?.baseUrl, options?.enableLogging]);
 
@@ -237,7 +248,7 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
   const logger = useRef(new CatalogLogger(config.enableLogging));
 
   const [context, setContext] = useState<MenuContext>(
-    sanitizeContext(options?.initialContext || {})
+    sanitizeContext(options?.initialContext || {}),
   );
 
   const [menu, setMenu] = useState<MenuNode[]>([]);
@@ -275,50 +286,55 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
   const abortRoots = useRef<AbortController | null>(null);
 
   /* ----- Sichere Fetch-Funktion ----- */
-  const jsonFetch = useCallback(async <T = any>(
-    endpoint: string,
-    init?: RequestInit,
-    signal?: AbortSignal
-  ): Promise<T> => {
-    const url = config.baseUrl ? `${config.baseUrl}${endpoint}` : endpoint;
-    
-    logger.current.debug(`Fetch: ${url}`, {
-      method: init?.method || "GET",
-      hasBody: !!init?.body
-    });
+  const jsonFetch = useCallback(
+    async <T = any>(
+      endpoint: string,
+      init?: RequestInit,
+      signal?: AbortSignal,
+    ): Promise<T> => {
+      const url = config.baseUrl ? `${config.baseUrl}${endpoint}` : endpoint;
 
-    try {
-      const response = await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(init?.headers || {}),
-        },
-        ...init,
-        signal,
+      logger.current.debug(`Fetch: ${url}`, {
+        method: init?.method || "GET",
+        hasBody: !!init?.body,
       });
 
-      if (!response.ok) {
-        const text = await response.text().catch(() => "Unknown error");
-        logger.current.error(`HTTP ${response.status} für ${url}`, text);
-        throw new Error(`HTTP ${response.status}: ${text || response.statusText}`);
-      }
+      try {
+        const response = await fetch(url, {
+          headers: {
+            "Content-Type": "application/json",
+            ...(init?.headers || {}),
+          },
+          ...init,
+          signal,
+        });
 
-      const data = await response.json();
-      logger.current.debug(`Erfolgreiche Antwort von ${url}`, {
-        success: data.success,
-        dataLength: JSON.stringify(data).length
-      });
-      
-      return data;
-    } catch (error: any) {
-      if (error.name === "AbortError") {
-        logger.current.debug("Request abgebrochen", url);
+        if (!response.ok) {
+          const text = await response.text().catch(() => "Unknown error");
+          logger.current.error(`HTTP ${response.status} für ${url}`, text);
+          throw new Error(
+            `HTTP ${response.status}: ${text || response.statusText}`,
+          );
+        }
+
+        const data = await response.json();
+        logger.current.debug(`Erfolgreiche Antwort von ${url}`, {
+          success: data.success,
+          dataLength: JSON.stringify(data).length,
+        });
+
+        return data;
+      } catch (error: any) {
+        if (error.name === "AbortError") {
+          logger.current.debug("Request abgebrochen", url);
+          throw error;
+        }
+        logger.current.error(`Fetch-Fehler für ${url}`, error);
         throw error;
       }
-      logger.current.error(`Fetch-Fehler für ${url}`, error);
-      throw error;
-    }
-  }, [config.baseUrl]);
+    },
+    [config.baseUrl],
+  );
 
   /* ----- Regeln laden (einmalig) ----- */
   const loadRules = useCallback(async () => {
@@ -329,21 +345,22 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
     try {
       setRulesLoading(true);
       logger.current.info("Lade Regeln...");
-      
-      const data = await jsonFetch<{ success: boolean; rules: FunctionsRulesSnapshot }>(
-        "/api/functions/rules",
-        undefined,
-        ac.signal
-      );
-      
+
+      const data = await jsonFetch<{
+        success: boolean;
+        rules: FunctionsRulesSnapshot;
+      }>("/api/functions/rules", undefined, ac.signal);
+
       if (data.success) {
         setRules(data.rules);
         logger.current.info("Regeln erfolgreich geladen", {
           version: data.rules.version,
-          locale: data.rules.locale
+          locale: data.rules.locale,
         });
       } else {
-        logger.current.warn("Regeln konnten nicht geladen werden - success=false");
+        logger.current.warn(
+          "Regeln konnten nicht geladen werden - success=false",
+        );
       }
     } catch (error: any) {
       if (error.name === "AbortError") return;
@@ -354,53 +371,62 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
   }, [jsonFetch]);
 
   /* ----- Menü laden (bei Context-Änderung) ----- */
-  const loadMenu = useCallback(async (ctx: MenuContext) => {
-    abortMenu.current?.abort();
-    const ac = new AbortController();
-    abortMenu.current = ac;
-    
-    const sanitizedCtx = sanitizeContext(ctx);
-    
-    try {
-      setMenuLoading(true);
-      setMenuError(null);
-      logger.current.info("Lade Menü...", { context: sanitizedCtx });
+  const loadMenu = useCallback(
+    async (ctx: MenuContext) => {
+      abortMenu.current?.abort();
+      const ac = new AbortController();
+      abortMenu.current = ac;
 
-      const data = await jsonFetch<{ success: boolean; menu: MenuNode[]; loadedAt?: string }>(
-        "/api/functions/menu",
-        { 
-          method: "POST", 
-          body: JSON.stringify(sanitizedCtx) 
-        },
-        ac.signal
-      );
-      
-      if (data.success) {
-        setMenu(data.menu || []);
-        if (data.loadedAt) {
-          setLoadedAt(data.loadedAt);
+      const sanitizedCtx = sanitizeContext(ctx);
+
+      try {
+        setMenuLoading(true);
+        setMenuError(null);
+        logger.current.info("Lade Menü...", { context: sanitizedCtx });
+
+        const data = await jsonFetch<{
+          success: boolean;
+          menu: MenuNode[];
+          loadedAt?: string;
+        }>(
+          "/api/functions/menu",
+          {
+            method: "POST",
+            body: JSON.stringify(sanitizedCtx),
+          },
+          ac.signal,
+        );
+
+        if (data.success) {
+          setMenu(data.menu || []);
+          if (data.loadedAt) {
+            setLoadedAt(data.loadedAt);
+          }
+          logger.current.info("Menü erfolgreich geladen", {
+            nodeCount: data.menu?.length || 0,
+            loadedAt: data.loadedAt,
+          });
+        } else {
+          setMenu([]);
+          logger.current.warn(
+            "Menü konnte nicht geladen werden - success=false",
+          );
         }
-        logger.current.info("Menü erfolgreich geladen", {
-          nodeCount: data.menu?.length || 0,
-          loadedAt: data.loadedAt
-        });
-      } else {
+      } catch (error: any) {
+        if (error?.name === "AbortError") {
+          logger.current.debug("Menü-Request abgebrochen");
+          return;
+        }
+        const errorMsg = error?.message || "Menü konnte nicht geladen werden";
+        setMenuError(errorMsg);
         setMenu([]);
-        logger.current.warn("Menü konnte nicht geladen werden - success=false");
+        logger.current.error("Fehler beim Laden des Menüs", error);
+      } finally {
+        setMenuLoading(false);
       }
-    } catch (error: any) {
-      if (error?.name === "AbortError") {
-        logger.current.debug("Menü-Request abgebrochen");
-        return;
-      }
-      const errorMsg = error?.message || "Menü konnte nicht geladen werden";
-      setMenuError(errorMsg);
-      setMenu([]);
-      logger.current.error("Fehler beim Laden des Menüs", error);
-    } finally {
-      setMenuLoading(false);
-    }
-  }, [jsonFetch]);
+    },
+    [jsonFetch],
+  );
 
   /* ----- Node laden ----- */
   const loadNode = useCallback(
@@ -415,7 +441,7 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
       abortNode.current?.abort();
       const ac = new AbortController();
       abortNode.current = ac;
-      
+
       try {
         setNodeLoading(true);
         setNodeError(null);
@@ -424,18 +450,20 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
         const data = await jsonFetch<{ success: boolean; node: NodeDetail }>(
           `/api/functions/nodes/${encodeURIComponent(sanitizedId)}`,
           undefined,
-          ac.signal
+          ac.signal,
         );
-        
+
         if (data.success) {
           setNode(data.node);
           logger.current.debug(`Node ${sanitizedId} erfolgreich geladen`, {
             title: data.node.title,
-            kind: data.node.kind
+            kind: data.node.kind,
           });
         } else {
           setNode(null);
-          logger.current.warn(`Node ${sanitizedId} nicht gefunden - success=false`);
+          logger.current.warn(
+            `Node ${sanitizedId} nicht gefunden - success=false`,
+          );
         }
       } catch (error: any) {
         if (error?.name === "AbortError") {
@@ -445,12 +473,15 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
         setNode(null);
         const errorMsg = error?.message || "Knoten konnte nicht geladen werden";
         setNodeError(errorMsg);
-        logger.current.error(`Fehler beim Laden von Node ${sanitizedId}`, error);
+        logger.current.error(
+          `Fehler beim Laden von Node ${sanitizedId}`,
+          error,
+        );
       } finally {
         setNodeLoading(false);
       }
     },
-    [jsonFetch]
+    [jsonFetch],
   );
 
   /* ----- Lint laden (optional für Admin/Debug) ----- */
@@ -463,16 +494,15 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
       setLintLoading(true);
       logger.current.info("Lade Lint-Ergebnisse...");
 
-      const data = await jsonFetch<{ success: boolean; findings: LintFinding[] }>(
-        "/api/functions/lint",
-        undefined,
-        ac.signal
-      );
-      
+      const data = await jsonFetch<{
+        success: boolean;
+        findings: LintFinding[];
+      }>("/api/functions/lint", undefined, ac.signal);
+
       if (data.success) {
         setFindings(data.findings || []);
         logger.current.info("Lint-Ergebnisse geladen", {
-          findingCount: data.findings?.length || 0
+          findingCount: data.findings?.length || 0,
         });
       }
     } catch (error: any) {
@@ -498,20 +528,24 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
       const data = await jsonFetch<{ success: boolean; nodes: NodeDetail[] }>(
         `/api/functions/index?kinds=category&flat=1`,
         undefined,
-        ac.signal
+        ac.signal,
       );
-      
+
       if (data.success) {
         // nur echte Datei-Roots: path.length === 1
-        const top = (data.nodes || []).filter(n => Array.isArray(n.path) && n.path.length === 1);
+        const top = (data.nodes || []).filter(
+          (n) => Array.isArray(n.path) && n.path.length === 1,
+        );
         setRoots(top);
         logger.current.info("Roots erfolgreich geladen", {
           rootCount: top.length,
-          totalNodes: data.nodes?.length || 0
+          totalNodes: data.nodes?.length || 0,
         });
       } else {
         setRoots([]);
-        logger.current.warn("Roots konnten nicht geladen werden - success=false");
+        logger.current.warn(
+          "Roots konnten nicht geladen werden - success=false",
+        );
       }
     } catch (error: any) {
       if (error?.name === "AbortError") {
@@ -531,19 +565,19 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
   const reloadIndex = useCallback(async () => {
     try {
       logger.current.info("Starte Index-Reload...");
-      
+
       await jsonFetch<{ success: boolean; loadedAt?: string }>(
-        "/api/functions/reload", 
-        { method: "POST" }
+        "/api/functions/reload",
+        { method: "POST" },
       );
-      
+
       await loadMenu(context);
       await loadRoots();
-      
+
       if (selectedId) {
         await loadNode(selectedId);
       }
-      
+
       logger.current.info("Index-Reload abgeschlossen");
     } catch (error: any) {
       logger.current.error("Fehler beim Index-Reload", error);
@@ -555,7 +589,7 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
   const search = useCallback(
     async (query: string, kinds?: NodeKind[], tags?: string[]) => {
       const sanitizedQuery = typeof query === "string" ? query.trim() : "";
-      
+
       if (searchTimer.current) {
         window.clearTimeout(searchTimer.current);
         searchTimer.current = null;
@@ -572,33 +606,40 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
         abortSearch.current?.abort();
         const ac = new AbortController();
         abortSearch.current = ac;
-        
+
         try {
           setSearchLoading(true);
-          logger.current.debug("Starte Suche", { query: sanitizedQuery, kinds, tags });
+          logger.current.debug("Starte Suche", {
+            query: sanitizedQuery,
+            kinds,
+            tags,
+          });
 
           const params = new URLSearchParams();
           params.set("q", sanitizedQuery);
-          
+
           if (kinds?.length) {
             params.set("kinds", kinds.join(","));
           }
-          
+
           if (tags?.length) {
             params.set("tags", tags.join(","));
           }
 
-          const data = await jsonFetch<{ success: boolean; results: SearchResult[] }>(
+          const data = await jsonFetch<{
+            success: boolean;
+            results: SearchResult[];
+          }>(
             `/api/functions/search?${params.toString()}`,
             undefined,
-            ac.signal
+            ac.signal,
           );
-          
+
           if (data.success) {
             setSearchResults(data.results || []);
             logger.current.debug("Suche abgeschlossen", {
               query: sanitizedQuery,
-              resultCount: data.results?.length || 0
+              resultCount: data.results?.length || 0,
             });
           }
         } catch (error: any) {
@@ -609,7 +650,7 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
         }
       }, 300);
     },
-    [jsonFetch]
+    [jsonFetch],
   );
 
   /* ----- Auswahl setzen ----- */
@@ -619,23 +660,27 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
         logger.current.warn("Ungültige Node-ID für Auswahl", id);
         return;
       }
-      
+
       setSelectedId(id);
       if (id) {
         logger.current.debug("Wähle Node aus", { id });
         void loadNode(id);
       }
     },
-    [loadNode]
+    [loadNode],
   );
 
   /* ----- Kontext setzen (sicher) ----- */
-  const setSafeContext = useCallback((newContext: MenuContext | ((prev: MenuContext) => MenuContext)) => {
-    setContext(prev => {
-      const nextContext = typeof newContext === "function" ? newContext(prev) : newContext;
-      return sanitizeContext(nextContext);
-    });
-  }, []);
+  const setSafeContext = useCallback(
+    (newContext: MenuContext | ((prev: MenuContext) => MenuContext)) => {
+      setContext((prev) => {
+        const nextContext =
+          typeof newContext === "function" ? newContext(prev) : newContext;
+        return sanitizeContext(nextContext);
+      });
+    },
+    [],
+  );
 
   /* ----- Effekte ----- */
   useEffect(() => {
@@ -651,14 +696,14 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
   useEffect(() => {
     return () => {
       logger.current.debug("Cleanup: Breche alle laufenden Requests ab");
-      
+
       abortMenu.current?.abort();
       abortNode.current?.abort();
       abortSearch.current?.abort();
       abortRules.current?.abort();
       abortLint.current?.abort();
       abortRoots.current?.abort();
-      
+
       if (searchTimer.current) {
         window.clearTimeout(searchTimer.current);
       }
@@ -675,41 +720,66 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
       loadNode,
       loadRoots,
     }),
-    [setSafeContext, reloadIndex, search, selectNode, loadLint, loadNode, loadRoots]
+    [
+      setSafeContext,
+      reloadIndex,
+      search,
+      selectNode,
+      loadLint,
+      loadNode,
+      loadRoots,
+    ],
   );
 
-  const state = useMemo(() => ({
-    rules,
-    menu,
-    node,
-    searchResults,
-    findings,
-    loadedAt,
-    selectedId,
-    searchQuery,
-    menuLoading,
-    menuError,
-    nodeLoading,
-    nodeError,
-    searchLoading,
-    lintLoading,
-    rulesLoading,
-    roots,
-    rootsLoading,
-    rootsError,
-  }), [
-    rules, menu, node, searchResults, findings, loadedAt,
-    selectedId, searchQuery, menuLoading, menuError, nodeLoading,
-    nodeError, searchLoading, lintLoading, rulesLoading,
-    roots, rootsLoading, rootsError
-  ]);
+  const state = useMemo(
+    () => ({
+      rules,
+      menu,
+      node,
+      searchResults,
+      findings,
+      loadedAt,
+      selectedId,
+      searchQuery,
+      menuLoading,
+      menuError,
+      nodeLoading,
+      nodeError,
+      searchLoading,
+      lintLoading,
+      rulesLoading,
+      roots,
+      rootsLoading,
+      rootsError,
+    }),
+    [
+      rules,
+      menu,
+      node,
+      searchResults,
+      findings,
+      loadedAt,
+      selectedId,
+      searchQuery,
+      menuLoading,
+      menuError,
+      nodeLoading,
+      nodeError,
+      searchLoading,
+      lintLoading,
+      rulesLoading,
+      roots,
+      rootsLoading,
+      rootsError,
+    ],
+  );
 
   logger.current.debug("Hook-Zustand", {
     menuItems: menu.length,
     selectedId,
     searchQueryLength: searchQuery.length,
     searchResults: searchResults.length,
-    rootsCount: roots.length
+    rootsCount: roots.length,
   });
 
   return {
@@ -717,4 +787,3 @@ export function useFunctionsCatalog(options?: UseFunctionsCatalogOptions): UseFu
     ...api,
   };
 }
-

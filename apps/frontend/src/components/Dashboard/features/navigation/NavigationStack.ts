@@ -3,7 +3,7 @@
 
 /**
  * NavigationStack - Advanced navigation stack utilities with enhanced functionality
- * 
+ *
  * Features:
  * - Pure functional navigation operations
  * - Advanced stack manipulation (replace, insert, remove)
@@ -11,7 +11,7 @@
  * - Stack persistence utilities
  * - Navigation analytics and metrics
  * - Type-safe operations with comprehensive error handling
- * 
+ *
  * These are pure utility functions that can be used by reducers, managers, or external modules.
  */
 
@@ -55,7 +55,7 @@ const DEFAULT_MAX_SIZE = 100;
 const DEFAULT_OPTIONS: Required<NavigationStackOptions> = {
   maxSize: DEFAULT_MAX_SIZE,
   duplicatePrevention: true,
-  autoPrune: true
+  autoPrune: true,
 };
 
 // ============================================================================
@@ -65,13 +65,15 @@ const DEFAULT_OPTIONS: Required<NavigationStackOptions> = {
 /**
  * Creates an empty navigation stack with optional configuration
  */
-export function createEmptyStack(options: NavigationStackOptions = {}): NavigationStackState {
+export function createEmptyStack(
+  options: NavigationStackOptions = {},
+): NavigationStackState {
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
-  
+
   return {
     history: [],
     index: -1,
-    maxSize: mergedOptions.maxSize
+    maxSize: mergedOptions.maxSize,
   };
 }
 
@@ -115,7 +117,7 @@ export function next(state: NavigationStackState): NavigationEntry | null {
 export function push(
   state: NavigationStackState,
   entry: NavigationEntry,
-  options: NavigationStackOptions = {}
+  options: NavigationStackOptions = {},
 ): NavigationStackState {
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
   let history = state.history;
@@ -124,8 +126,10 @@ export function push(
   // Validate the new entry
   const validation = validateNavigationEntry(entry);
   if (!validation.isValid) {
-    console.warn('Invalid navigation entry:', validation.errors);
-    throw new Error(`Invalid navigation entry: ${validation.errors.join(', ')}`);
+    console.warn("Invalid navigation entry:", validation.errors);
+    throw new Error(
+      `Invalid navigation entry: ${validation.errors.join(", ")}`,
+    );
   }
 
   // Remove forward history if we're not at the end
@@ -147,7 +151,7 @@ export function push(
   const newIndex = newHistory.length - 1;
 
   // Apply size limits if needed
-  const finalHistory = mergedOptions.autoPrune 
+  const finalHistory = mergedOptions.autoPrune
     ? pruneHistory(newHistory, mergedOptions.maxSize!)
     : newHistory;
   const finalIndex = Math.min(newIndex, finalHistory.length - 1);
@@ -155,7 +159,7 @@ export function push(
   return {
     history: finalHistory,
     index: finalIndex,
-    maxSize: state.maxSize
+    maxSize: state.maxSize,
   };
 }
 
@@ -170,7 +174,7 @@ export function pop(state: NavigationStackState): NavigationStackState {
   return {
     history: state.history,
     index: state.index - 1,
-    maxSize: state.maxSize
+    maxSize: state.maxSize,
   };
 }
 
@@ -185,7 +189,7 @@ export function forward(state: NavigationStackState): NavigationStackState {
   return {
     history: state.history,
     index: state.index + 1,
-    maxSize: state.maxSize
+    maxSize: state.maxSize,
   };
 }
 
@@ -194,7 +198,7 @@ export function forward(state: NavigationStackState): NavigationStackState {
  */
 export function replace(
   state: NavigationStackState,
-  entry: NavigationEntry
+  entry: NavigationEntry,
 ): NavigationStackState {
   if (state.index < 0 || state.index >= state.history.length) {
     return push(state, entry);
@@ -202,7 +206,7 @@ export function replace(
 
   const validation = validateNavigationEntry(entry);
   if (!validation.isValid) {
-    console.warn('Invalid navigation entry:', validation.errors);
+    console.warn("Invalid navigation entry:", validation.errors);
     return state;
   }
 
@@ -212,7 +216,7 @@ export function replace(
   return {
     history: newHistory,
     index: state.index,
-    maxSize: state.maxSize
+    maxSize: state.maxSize,
   };
 }
 
@@ -223,14 +227,18 @@ export function replace(
 /**
  * Clears the entire navigation stack
  */
-export function clearStack(options: NavigationStackOptions = {}): NavigationStackState {
+export function clearStack(
+  options: NavigationStackOptions = {},
+): NavigationStackState {
   return createEmptyStack(options);
 }
 
 /**
  * Clears all entries after the current index (forward history)
  */
-export function clearForward(state: NavigationStackState): NavigationStackState {
+export function clearForward(
+  state: NavigationStackState,
+): NavigationStackState {
   if (state.index >= state.history.length - 1) {
     return state; // No forward history to clear
   }
@@ -238,34 +246,40 @@ export function clearForward(state: NavigationStackState): NavigationStackState 
   return {
     history: state.history.slice(0, state.index + 1),
     index: state.index,
-    maxSize: state.maxSize
+    maxSize: state.maxSize,
   };
 }
 
 /**
  * Jumps to a specific point in the history
  */
-export function jumpToIndex(state: NavigationStackState, targetIndex: number): NavigationStackState {
+export function jumpToIndex(
+  state: NavigationStackState,
+  targetIndex: number,
+): NavigationStackState {
   if (targetIndex < 0 || targetIndex >= state.history.length) {
-    console.warn('Invalid target index:', targetIndex);
+    console.warn("Invalid target index:", targetIndex);
     return state;
   }
 
   return {
     history: state.history,
     index: targetIndex,
-    maxSize: state.maxSize
+    maxSize: state.maxSize,
   };
 }
 
 /**
  * Finds and jumps to an entry by ID
  */
-export function jumpToEntry(state: NavigationStackState, entryId: string): NavigationStackState {
-  const targetIndex = state.history.findIndex(entry => entry.id === entryId);
-  
+export function jumpToEntry(
+  state: NavigationStackState,
+  entryId: string,
+): NavigationStackState {
+  const targetIndex = state.history.findIndex((entry) => entry.id === entryId);
+
   if (targetIndex === -1) {
-    console.warn('Entry not found:', entryId);
+    console.warn("Entry not found:", entryId);
     return state;
   }
 
@@ -275,14 +289,17 @@ export function jumpToEntry(state: NavigationStackState, entryId: string): Navig
 /**
  * Removes a specific entry from the history
  */
-export function removeEntry(state: NavigationStackState, entryId: string): NavigationStackState {
-  const entryIndex = state.history.findIndex(entry => entry.id === entryId);
-  
+export function removeEntry(
+  state: NavigationStackState,
+  entryId: string,
+): NavigationStackState {
+  const entryIndex = state.history.findIndex((entry) => entry.id === entryId);
+
   if (entryIndex === -1) {
     return state; // Entry not found
   }
 
-  const newHistory = state.history.filter(entry => entry.id !== entryId);
+  const newHistory = state.history.filter((entry) => entry.id !== entryId);
   let newIndex = state.index;
 
   // Adjust current index if we removed the current entry or an entry before it
@@ -298,7 +315,7 @@ export function removeEntry(state: NavigationStackState, entryId: string): Navig
   return {
     history: newHistory,
     index: newIndex,
-    maxSize: state.maxSize
+    maxSize: state.maxSize,
   };
 }
 
@@ -355,66 +372,73 @@ export function isFull(state: NavigationStackState): boolean {
 /**
  * Validates a navigation entry
  */
-export function validateNavigationEntry(entry: NavigationEntry): NavigationValidationResult {
+export function validateNavigationEntry(
+  entry: NavigationEntry,
+): NavigationValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
   // Required field checks
-  if (!entry.id || typeof entry.id !== 'string') {
-    errors.push('Entry must have a valid string ID');
+  if (!entry.id || typeof entry.id !== "string") {
+    errors.push("Entry must have a valid string ID");
   }
 
-  if (!entry.view || typeof entry.view !== 'string') {
-    errors.push('Entry must have a valid view identifier');
+  if (!entry.view || typeof entry.view !== "string") {
+    errors.push("Entry must have a valid view identifier");
   }
 
   if (!entry.timestamp || !(entry.timestamp instanceof Date)) {
-    errors.push('Entry must have a valid timestamp');
+    errors.push("Entry must have a valid timestamp");
   }
 
-  if (!entry.title || typeof entry.title !== 'string') {
-    warnings.push('Entry should have a descriptive title');
+  if (!entry.title || typeof entry.title !== "string") {
+    warnings.push("Entry should have a descriptive title");
   }
 
   // Parameter validation
-  if (entry.params && typeof entry.params !== 'object') {
-    errors.push('Params must be an object if provided');
+  if (entry.params && typeof entry.params !== "object") {
+    errors.push("Params must be an object if provided");
   }
 
   // ID format validation (optional)
   if (entry.id && entry.id.length > 100) {
-    warnings.push('Entry ID is unusually long');
+    warnings.push("Entry ID is unusually long");
   }
 
   return {
     isValid: errors.length === 0,
     errors,
-    warnings
+    warnings,
   };
 }
 
 /**
  * Sanitizes a navigation entry (creates a clean copy)
  */
-export function sanitizeNavigationEntry(entry: Partial<NavigationEntry>): NavigationEntry {
+export function sanitizeNavigationEntry(
+  entry: Partial<NavigationEntry>,
+): NavigationEntry {
   const now = new Date();
-  
+
   return {
     id: entry.id || generateEntryId(),
-    view: entry.view || 'unknown',
+    view: entry.view || "unknown",
     params: entry.params || {},
     timestamp: entry.timestamp || now,
-    title: entry.title || 'Untitled',
-    ...entry
+    title: entry.title || "Untitled",
+    ...entry,
   };
 }
 
 /**
  * Compares two navigation entries for equality
  */
-export function areEntriesEqual(a: NavigationEntry, b: NavigationEntry): boolean {
+export function areEntriesEqual(
+  a: NavigationEntry,
+  b: NavigationEntry,
+): boolean {
   if (a === b) return true;
-  
+
   return (
     a.id === b.id &&
     a.view === b.view &&
@@ -438,7 +462,10 @@ export function generateEntryId(): string {
 /**
  * Prunes the history to fit within maximum size
  */
-function pruneHistory(history: NavigationEntry[], maxSize: number): NavigationEntry[] {
+function pruneHistory(
+  history: NavigationEntry[],
+  maxSize: number,
+): NavigationEntry[] {
   if (history.length <= maxSize) {
     return history;
   }
@@ -453,24 +480,26 @@ function pruneHistory(history: NavigationEntry[], maxSize: number): NavigationEn
 export function createNavigationEntry(
   view: string,
   params: NavigationParams = {},
-  title?: string
+  title?: string,
 ): NavigationEntry {
   return {
     id: generateEntryId(),
     view,
     params,
     timestamp: new Date(),
-    title: title || view
+    title: title || view,
   };
 }
 
 /**
  * Calculates navigation metrics for analytics
  */
-export function calculateMetrics(state: NavigationStackState): NavigationMetrics {
+export function calculateMetrics(
+  state: NavigationStackState,
+): NavigationMetrics {
   const viewCounts: Record<string, number> = {};
-  
-  state.history.forEach(entry => {
+
+  state.history.forEach((entry) => {
     viewCounts[entry.view] = (viewCounts[entry.view] || 0) + 1;
   });
 
@@ -484,7 +513,7 @@ export function calculateMetrics(state: NavigationStackState): NavigationMetrics
     backOperations: Math.max(0, state.history.length - state.index - 1),
     forwardOperations: state.index,
     averageStackDepth: state.history.length,
-    mostVisitedViews: mostVisited
+    mostVisitedViews: mostVisited,
   };
 }
 
@@ -494,12 +523,12 @@ export function calculateMetrics(state: NavigationStackState): NavigationMetrics
 export function serializeStack(state: NavigationStackState): string {
   const serializableState = {
     ...state,
-    history: state.history.map(entry => ({
+    history: state.history.map((entry) => ({
       ...entry,
-      timestamp: entry.timestamp.toISOString()
-    }))
+      timestamp: entry.timestamp.toISOString(),
+    })),
   };
-  
+
   return JSON.stringify(serializableState);
 }
 
@@ -509,16 +538,16 @@ export function serializeStack(state: NavigationStackState): string {
 export function deserializeStack(serialized: string): NavigationStackState {
   try {
     const parsed = JSON.parse(serialized);
-    
+
     return {
       ...parsed,
       history: parsed.history.map((entry: any) => ({
         ...entry,
-        timestamp: new Date(entry.timestamp)
-      }))
+        timestamp: new Date(entry.timestamp),
+      })),
     };
   } catch (error) {
-    console.error('Failed to deserialize navigation stack:', error);
+    console.error("Failed to deserialize navigation stack:", error);
     return createEmptyStack();
   }
 }
@@ -554,5 +583,5 @@ export default {
   createNavigationEntry,
   calculateMetrics,
   serializeStack,
-  deserializeStack
+  deserializeStack,
 };

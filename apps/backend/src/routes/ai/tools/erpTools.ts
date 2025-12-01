@@ -4,31 +4,35 @@
  * Unterstützt SQLite, PostgreSQL, MySQL (über die universellen DB-Tools).
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
-import type { ToolFunction } from './registry.js';
-import { toolRegistry } from './registry.js';
+import fs from "node:fs";
+import path from "node:path";
+import type { ToolFunction } from "./registry.js";
+import { toolRegistry } from "./registry.js";
 
 /* ─────────────────────────────────────────────
  * 🔧 Hilfsfunktionen
  * ───────────────────────────────────────────── */
 
 async function findPrimaryDatabase(): Promise<string | null> {
-  const baseDir = path.resolve('./data');
+  const baseDir = path.resolve("./data");
   if (!fs.existsSync(baseDir)) return null;
   const dbFiles = await fs.promises.readdir(baseDir);
-  const sqlite = dbFiles.find(f => /\.(db|sqlite|sqlite3)$/i.test(f));
+  const sqlite = dbFiles.find((f) => /\.(db|sqlite|sqlite3)$/i.test(f));
   return sqlite ? path.join(baseDir, sqlite) : null;
 }
 
-async function ensureTable(dbFile: string, tableName: string, ddl: string): Promise<void> {
-  const exists = await toolRegistry.call('query_database', {
+async function ensureTable(
+  dbFile: string,
+  tableName: string,
+  ddl: string,
+): Promise<void> {
+  const exists = await toolRegistry.call("query_database", {
     file: dbFile,
     query: `SELECT name FROM sqlite_master WHERE type='table' AND name=?;`,
     params: [tableName],
   });
   if (exists.count === 0) {
-    await toolRegistry.call('query_database', { file: dbFile, query: ddl });
+    await toolRegistry.call("query_database", { file: dbFile, query: ddl });
   }
 }
 
@@ -45,7 +49,7 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
     products,
     deliveryDate,
     database,
-    status = 'offen',
+    status = "offen",
   }: {
     customer: string;
     products: Array<{ name: string; price: number; quantity: number }>;
@@ -55,14 +59,14 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
   }) => {
     try {
       if (!customer || !Array.isArray(products) || products.length === 0)
-        throw new Error('Kunde und Produktliste erforderlich.');
+        throw new Error("Kunde und Produktliste erforderlich.");
 
       const dbFile = database || (await findPrimaryDatabase());
-      if (!dbFile) throw new Error('Keine ERP-Datenbank gefunden.');
+      if (!dbFile) throw new Error("Keine ERP-Datenbank gefunden.");
 
       await ensureTable(
         dbFile,
-        'orders',
+        "orders",
         `CREATE TABLE IF NOT EXISTS orders (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           customer TEXT,
@@ -70,16 +74,16 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
           status TEXT,
           delivery_date TEXT,
           created_at TEXT
-        );`
+        );`,
       );
 
       const total = products.reduce(
         (sum, p) => sum + (Number(p.price) || 0) * (Number(p.quantity) || 1),
-        0
+        0,
       );
       const now = new Date().toISOString();
 
-      await toolRegistry.call('query_database', {
+      await toolRegistry.call("query_database", {
         file: dbFile,
         query: `INSERT INTO orders (customer, total, status, delivery_date, created_at)
                 VALUES (?, ?, ?, ?, ?)`,
@@ -100,16 +104,17 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
     }
   }) as ToolFunction;
 
-  createOrderTool.description = 'Legt eine neue Bestellung mit Summierung und Status in der ERP-Datenbank an.';
+  createOrderTool.description =
+    "Legt eine neue Bestellung mit Summierung und Status in der ERP-Datenbank an.";
   createOrderTool.parameters = {
-    customer: 'Kundenname',
-    products: 'Array mit Produktobjekten (name, price, quantity)',
-    deliveryDate: 'Optionales Lieferdatum',
-    database: 'Pfad zur Datenbankdatei (optional)',
-    status: 'Status der Bestellung (offen, abgeschlossen, storniert)',
+    customer: "Kundenname",
+    products: "Array mit Produktobjekten (name, price, quantity)",
+    deliveryDate: "Optionales Lieferdatum",
+    database: "Pfad zur Datenbankdatei (optional)",
+    status: "Status der Bestellung (offen, abgeschlossen, storniert)",
   };
-  createOrderTool.category = 'erp_operations';
-  toolRegistryInstance.register('create_order', createOrderTool);
+  createOrderTool.category = "erp_operations";
+  toolRegistryInstance.register("create_order", createOrderTool);
 
   /* ─────────────────────────────────────────────
    * 🔍 Bestellungen abrufen
@@ -125,11 +130,11 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
   }) => {
     try {
       const dbFile = database || (await findPrimaryDatabase());
-      if (!dbFile) throw new Error('Keine ERP-Datenbank gefunden.');
+      if (!dbFile) throw new Error("Keine ERP-Datenbank gefunden.");
 
       await ensureTable(
         dbFile,
-        'orders',
+        "orders",
         `CREATE TABLE IF NOT EXISTS orders (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           customer TEXT,
@@ -137,7 +142,7 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
           status TEXT,
           delivery_date TEXT,
           created_at TEXT
-        );`
+        );`,
       );
 
       const query = status
@@ -145,7 +150,11 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
         : `SELECT * FROM orders ORDER BY created_at DESC LIMIT ?`;
 
       const params = status ? [`%${status}%`, limit] : [limit];
-      const result = await toolRegistry.call('query_database', { file: dbFile, query, params });
+      const result = await toolRegistry.call("query_database", {
+        file: dbFile,
+        query,
+        params,
+      });
 
       return {
         success: true,
@@ -159,10 +168,15 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
     }
   }) as ToolFunction;
 
-  listOrdersTool.description = 'Listet Bestellungen, optional nach Status gefiltert.';
-  listOrdersTool.parameters = { database: 'Pfad zur Datenbank', limit: 'Maximale Anzahl', status: 'Filterstatus' };
-  listOrdersTool.category = 'erp_operations';
-  toolRegistryInstance.register('list_orders', listOrdersTool);
+  listOrdersTool.description =
+    "Listet Bestellungen, optional nach Status gefiltert.";
+  listOrdersTool.parameters = {
+    database: "Pfad zur Datenbank",
+    limit: "Maximale Anzahl",
+    status: "Filterstatus",
+  };
+  listOrdersTool.category = "erp_operations";
+  toolRegistryInstance.register("list_orders", listOrdersTool);
 
   /* ─────────────────────────────────────────────
    * 📦 Lagerbestand prüfen / Artikel abrufen
@@ -176,20 +190,20 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
   }) => {
     try {
       const dbFile = database || (await findPrimaryDatabase());
-      if (!dbFile) throw new Error('Keine ERP-Datenbank gefunden.');
+      if (!dbFile) throw new Error("Keine ERP-Datenbank gefunden.");
 
       await ensureTable(
         dbFile,
-        'inventory',
+        "inventory",
         `CREATE TABLE IF NOT EXISTS inventory (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           product TEXT,
           stock INTEGER,
           updated_at TEXT
-        );`
+        );`,
       );
 
-      const result = await toolRegistry.call('query_database', {
+      const result = await toolRegistry.call("query_database", {
         file: dbFile,
         query: `SELECT * FROM inventory WHERE product LIKE ? LIMIT 10`,
         params: [`%${product}%`],
@@ -207,10 +221,14 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
     }
   }) as ToolFunction;
 
-  checkInventoryTool.description = 'Sucht Produkte im Lagerbestand nach Namen oder Teilbegriff.';
-  checkInventoryTool.parameters = { product: 'Suchbegriff', database: 'Pfad zur Datenbankdatei' };
-  checkInventoryTool.category = 'erp_operations';
-  toolRegistryInstance.register('check_inventory', checkInventoryTool);
+  checkInventoryTool.description =
+    "Sucht Produkte im Lagerbestand nach Namen oder Teilbegriff.";
+  checkInventoryTool.parameters = {
+    product: "Suchbegriff",
+    database: "Pfad zur Datenbankdatei",
+  };
+  checkInventoryTool.category = "erp_operations";
+  toolRegistryInstance.register("check_inventory", checkInventoryTool);
 
   /* ─────────────────────────────────────────────
    * 💰 Rechnungen abrufen / prüfen
@@ -224,18 +242,18 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
   }) => {
     try {
       const dbFile = database || (await findPrimaryDatabase());
-      if (!dbFile) throw new Error('Keine ERP-Datenbank gefunden.');
+      if (!dbFile) throw new Error("Keine ERP-Datenbank gefunden.");
 
       await ensureTable(
         dbFile,
-        'invoices',
+        "invoices",
         `CREATE TABLE IF NOT EXISTS invoices (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           order_id INTEGER,
           amount REAL,
           status TEXT,
           date TEXT
-        );`
+        );`,
       );
 
       const query = status
@@ -243,17 +261,30 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
         : `SELECT * FROM invoices ORDER BY date DESC`;
       const params = status ? [`%${status}%`] : [];
 
-      const result = await toolRegistry.call('query_database', { file: dbFile, query, params });
-      return { success: true, invoices: result.results, count: result.count, database: dbFile };
+      const result = await toolRegistry.call("query_database", {
+        file: dbFile,
+        query,
+        params,
+      });
+      return {
+        success: true,
+        invoices: result.results,
+        count: result.count,
+        database: dbFile,
+      };
     } catch (err) {
       return { success: false, error: String(err) };
     }
   }) as ToolFunction;
 
-  listInvoicesTool.description = 'Listet Rechnungen, optional nach Status gefiltert.';
-  listInvoicesTool.parameters = { database: 'Pfad zur Datenbank', status: 'Filterstatus' };
-  listInvoicesTool.category = 'erp_operations';
-  toolRegistryInstance.register('list_invoices', listInvoicesTool);
+  listInvoicesTool.description =
+    "Listet Rechnungen, optional nach Status gefiltert.";
+  listInvoicesTool.parameters = {
+    database: "Pfad zur Datenbank",
+    status: "Filterstatus",
+  };
+  listInvoicesTool.category = "erp_operations";
+  toolRegistryInstance.register("list_invoices", listInvoicesTool);
 
   /* ─────────────────────────────────────────────
    * 🧾 Rechnung erstellen (automatisch)
@@ -261,7 +292,7 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
   const createInvoiceTool = (async ({
     orderId,
     amount,
-    status = 'offen',
+    status = "offen",
     database,
   }: {
     orderId: number;
@@ -271,23 +302,23 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
   }) => {
     try {
       const dbFile = database || (await findPrimaryDatabase());
-      if (!dbFile) throw new Error('Keine ERP-Datenbank gefunden.');
+      if (!dbFile) throw new Error("Keine ERP-Datenbank gefunden.");
 
       await ensureTable(
         dbFile,
-        'invoices',
+        "invoices",
         `CREATE TABLE IF NOT EXISTS invoices (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           order_id INTEGER,
           amount REAL,
           status TEXT,
           date TEXT
-        );`
+        );`,
       );
 
       const date = new Date().toISOString();
 
-      await toolRegistry.call('query_database', {
+      await toolRegistry.call("query_database", {
         file: dbFile,
         query: `INSERT INTO invoices (order_id, amount, status, date) VALUES (?, ?, ?, ?)`,
         params: [orderId, amount, status, date],
@@ -306,13 +337,14 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
     }
   }) as ToolFunction;
 
-  createInvoiceTool.description = 'Erstellt eine Rechnung zu einem bestehenden Auftrag.';
+  createInvoiceTool.description =
+    "Erstellt eine Rechnung zu einem bestehenden Auftrag.";
   createInvoiceTool.parameters = {
-    orderId: 'ID des zugehörigen Auftrags',
-    amount: 'Betrag der Rechnung',
-    status: 'Status (z. B. offen, bezahlt)',
-    database: 'Pfad zur Datenbank',
+    orderId: "ID des zugehörigen Auftrags",
+    amount: "Betrag der Rechnung",
+    status: "Status (z. B. offen, bezahlt)",
+    database: "Pfad zur Datenbank",
   };
-  createInvoiceTool.category = 'erp_operations';
-  toolRegistryInstance.register('create_invoice', createInvoiceTool);
+  createInvoiceTool.category = "erp_operations";
+  toolRegistryInstance.register("create_invoice", createInvoiceTool);
 }

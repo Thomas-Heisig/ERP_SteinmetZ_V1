@@ -11,7 +11,6 @@ Die exakten Mountpoints hängen von deiner index.ts / app.ts ab, typische Beispi
 app.use("/api/health", healthRouter);
 app.use("/api/system", systemInfoRouter);
 
-
 Im Folgenden wird von diesen Prefixen ausgegangen.
 
 1. Health Router (/api/health)
@@ -26,7 +25,6 @@ type LogicalStatus = "healthy" | "degraded" | "unhealthy";
 
 computeStatus(details: Record<string, boolean>): LogicalStatus
 
-
 healthy – alle Detail-Checks sind true
 
 degraded – mindestens ein Check true, aber nicht alle
@@ -36,13 +34,13 @@ unhealthy – alle Checks false
 Alle JSON-Antworten basieren auf:
 
 basePayload(status, details) => {
-  status,              // "healthy" | "degraded" | "unhealthy"
-  timestamp,           // ISO-Zeitstempel
-  version,             // aus npm_package_version oder "unknown"
-  environment,         // NODE_ENV oder "development"
-  uptime,              // Sekunden
-  memory,              // process.memoryUsage()
-  details              // Detail-Matrix, s.u.
+status, // "healthy" | "degraded" | "unhealthy"
+timestamp, // ISO-Zeitstempel
+version, // aus npm_package_version oder "unknown"
+environment, // NODE_ENV oder "development"
+uptime, // Sekunden
+memory, // process.memoryUsage()
+details // Detail-Matrix, s.u.
 }
 
 1.2 GET /api/health – Liveness
@@ -56,30 +54,28 @@ Header: Cache-Control: no-store
 Details enthalten u. a.:
 
 const details = {
-  processUp: true,
-  hasOpenAIKey: !!process.env.OPENAI_API_KEY,
-  hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
-  hasOllamaUrl: !!process.env.OLLAMA_BASE_URL,
+processUp: true,
+hasOpenAIKey: !!process.env.OPENAI_API_KEY,
+hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
+hasOllamaUrl: !!process.env.OLLAMA_BASE_URL,
 };
-
 
 Beispielantwort:
 
 {
-  "status": "degraded",
-  "timestamp": "2025-02-01T12:00:00.000Z",
-  "version": "1.0.0",
-  "environment": "development",
-  "uptime": 1234.56,
-  "memory": { "...": "process.memoryUsage()" },
-  "details": {
-    "processUp": true,
-    "hasOpenAIKey": true,
-    "hasAnthropicKey": false,
-    "hasOllamaUrl": true
-  }
+"status": "degraded",
+"timestamp": "2025-02-01T12:00:00.000Z",
+"version": "1.0.0",
+"environment": "development",
+"uptime": 1234.56,
+"memory": { "...": "process.memoryUsage()" },
+"details": {
+"processUp": true,
+"hasOpenAIKey": true,
+"hasAnthropicKey": false,
+"hasOllamaUrl": true
 }
-
+}
 
 Hinweis: Bei einem Fehler im Handler selbst wird trotzdem 200 zurückgegeben, aber mit status: "degraded".
 
@@ -100,20 +96,19 @@ Verwendet dieselben Detail-Flags wie / plus ggf. spätere Checks (z. B. Pings).
 Beispielantwort bei fehlenden Keys:
 
 {
-  "status": "degraded",
-  "timestamp": "...",
-  "version": "1.0.0",
-  "environment": "production",
-  "uptime": 234.12,
-  "memory": { "...": "process.memoryUsage()" },
-  "details": {
-    "processUp": true,
-    "hasOpenAIKey": false,
-    "hasAnthropicKey": false,
-    "hasOllamaUrl": true
-  }
+"status": "degraded",
+"timestamp": "...",
+"version": "1.0.0",
+"environment": "production",
+"uptime": 234.12,
+"memory": { "...": "process.memoryUsage()" },
+"details": {
+"processUp": true,
+"hasOpenAIKey": false,
+"hasAnthropicKey": false,
+"hasOllamaUrl": true
 }
-
+}
 
 Bei internen Fehlern:
 
@@ -155,7 +150,6 @@ Alle Routen nutzen:
 
 function handleError(res, label, error, status = 500)
 
-
 loggt einen konsistenten Fehler
 
 gibt JSON zurück:
@@ -164,7 +158,6 @@ gibt JSON zurück:
 
 2.2 Express-App-Auflösung
 function resolveApp(req: Request): Application
-
 
 Primär über req.app
 
@@ -191,8 +184,8 @@ AI/Functions/Services-Status
 Antwortstruktur:
 
 {
-  "success": true,
-  "data": { "..." : "Overview-Objekt" }
+"success": true,
+"data": { "..." : "Overview-Objekt" }
 }
 
 2.4 GET /api/system/routes – registrierte Routen
@@ -201,19 +194,19 @@ Zweck: Übersicht aller bekannten Express-Routen.
 
 Verwendet intern systemInfoService.getRegisteredRoutes(app).
 
-Spezialfall: Wenn app._router.stack noch nicht initialisiert ist, wird einmalig eine Dummy-Route /__init_router__ registriert, um den Stack aufzubauen. Falls der Stack danach immer noch nicht verfügbar ist, wird eine Fehlermeldung zurückgegeben.
+Spezialfall: Wenn app.\_router.stack noch nicht initialisiert ist, wird einmalig eine Dummy-Route /**init_router** registriert, um den Stack aufzubauen. Falls der Stack danach immer noch nicht verfügbar ist, wird eine Fehlermeldung zurückgegeben.
 
 Antwort (Beispiel):
 
 {
-  "success": true,
-  "data": {
-    "count": 42,
-    "endpoints": [
-      { "method": "GET", "path": "/api/health" },
-      { "method": "GET", "path": "/api/system" }
-    ]
-  }
+"success": true,
+"data": {
+"count": 42,
+"endpoints": [
+{ "method": "GET", "path": "/api/health" },
+{ "method": "GET", "path": "/api/system" }
+]
+}
 }
 
 2.5 GET /api/system/database – Datenbankinformationen
@@ -225,14 +218,14 @@ Intern: systemInfoService.getDatabaseInfo().
 Beispielstruktur:
 
 {
-  "success": true,
-  "data": {
-    "connected": true,
-    "client": "postgres",
-    "database": "erp",
-    "version": "16.1",
-    "pool": { "max": 10, "used": 2 }
-  }
+"success": true,
+"data": {
+"connected": true,
+"client": "postgres",
+"database": "erp",
+"version": "16.1",
+"pool": { "max": 10, "used": 2 }
+}
 }
 
 2.6 GET /api/system/system – Systeminformationen
@@ -262,13 +255,13 @@ Intern: systemInfoService.getServiceStatus().
 Beispielinhalt (abhängig vom Service):
 
 {
-  "success": true,
-  "data": {
-    "database": { "connected": true },
-    "ai": { "available": true },
-    "functions": { "loaded": true },
-    "timestamp": "..."
-  }
+"success": true,
+"data": {
+"database": { "connected": true },
+"ai": { "available": true },
+"functions": { "loaded": true },
+"timestamp": "..."
+}
 }
 
 2.8 GET /api/system/health – Health-Check (SystemInfo)
@@ -280,7 +273,6 @@ Logik:
 const status = await systemInfoService.getServiceStatus();
 const healthy = status.database.connected;
 
-
 HTTP-Status:
 
 200 wenn healthy === true
@@ -290,14 +282,14 @@ HTTP-Status:
 Antwort:
 
 {
-  "success": true,
-  "status": "healthy",
-  "timestamp": "2025-02-01T12:00:00.000Z",
-  "services": {
-    "database": true,
-    "functions": true,
-    "ai": true
-  }
+"success": true,
+"status": "healthy",
+"timestamp": "2025-02-01T12:00:00.000Z",
+"services": {
+"database": true,
+"functions": true,
+"ai": true
+}
 }
 
 2.9 GET /api/system/environment – Environment (sanitiziert)
@@ -317,16 +309,16 @@ Intern: systemInfoService.getDependenciesSummary().
 Beispiel:
 
 {
-  "success": true,
-  "data": {
-    "dependencies": {
-      "express": "4.19.0",
-      "pg": "8.11.5"
-    },
-    "devDependencies": {
-      "typescript": "5.7.0"
-    }
-  }
+"success": true,
+"data": {
+"dependencies": {
+"express": "4.19.0",
+"pg": "8.11.5"
+},
+"devDependencies": {
+"typescript": "5.7.0"
+}
+}
 }
 
 2.11 GET /api/system/diagnostics – Diagnostics
@@ -354,13 +346,13 @@ Intern: systemInfoService.getBackendFeatureFlags().
 Beispiel:
 
 {
-  "success": true,
-  "data": {
-    "audioProcessing": true,
-    "fileUpload": true,
-    "workflows": false,
-    "knowledgeBase": true
-  }
+"success": true,
+"data": {
+"audioProcessing": true,
+"fileUpload": true,
+"workflows": false,
+"knowledgeBase": true
+}
 }
 
 2.13 GET /api/system/resources – Ressourcenauslastung
@@ -386,17 +378,17 @@ Intern: systemInfoService.getFunctionsSummary().
 Beispiel:
 
 {
-  "success": true,
-  "data": {
-    "loadedAt": "...",
-    "totalNodes": 180,
-    "categories": {
-      "erp_operations": 40,
-      "audio": 5
-    },
-    "warnings": [],
-    "findings": []
-  }
+"success": true,
+"data": {
+"loadedAt": "...",
+"totalNodes": 180,
+"categories": {
+"erp_operations": 40,
+"audio": 5
+},
+"warnings": [],
+"findings": []
+}
 }
 
 3. Zusammenspiel
@@ -419,4 +411,4 @@ Beide Router ergänzen sich:
 
 /api/health → klein, billig, immer verfügbar
 
-/api/system/* → breitere Sicht, aber schwerer
+/api/system/\* → breitere Sicht, aber schwerer

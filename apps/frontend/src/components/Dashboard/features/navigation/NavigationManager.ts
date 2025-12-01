@@ -3,7 +3,7 @@
 
 /**
  * NavigationManager - Advanced navigation flow controller for the dashboard
- * 
+ *
  * Features:
  * - Comprehensive history management with configurable limits
  * - Advanced navigation operations (replace, jump, remove)
@@ -12,7 +12,7 @@
  * - Persistence and restoration capabilities
  * - Analytics and metrics tracking
  * - Middleware support for extensibility
- * 
+ *
  * Pure business logic - no UI components
  */
 
@@ -50,7 +50,7 @@ import {
   deserializeStack,
   type NavigationStackState,
   type NavigationStackOptions,
-  type NavigationMetrics
+  type NavigationMetrics,
 } from "./NavigationStack";
 
 // ============================================================================
@@ -62,10 +62,24 @@ export interface NavigationEventMap {
   navigationChanged: NavigationEventDetail;
   navigationCancelled: { entry: NavigationEntry; reason: string };
   navigationError: { entry: NavigationEntry; errors: string[] };
-  entryRemoved: { entryId: string; from: NavigationEntry | null; to: NavigationEntry | null; timestamp: Date };
-  historyCleared: { type: string; from: NavigationEntry | null; to: NavigationEntry | null; timestamp: Date };
+  entryRemoved: {
+    entryId: string;
+    from: NavigationEntry | null;
+    to: NavigationEntry | null;
+    timestamp: Date;
+  };
+  historyCleared: {
+    type: string;
+    from: NavigationEntry | null;
+    to: NavigationEntry | null;
+    timestamp: Date;
+  };
   stateRestored: { state: NavigationStackState; timestamp: Date };
-  stateImported: { from: NavigationEntry | null; to: NavigationEntry | null; timestamp: Date };
+  stateImported: {
+    from: NavigationEntry | null;
+    to: NavigationEntry | null;
+    timestamp: Date;
+  };
 }
 
 export interface NavigationManagerOptions extends NavigationStackOptions {
@@ -84,7 +98,10 @@ export interface NavigationEventDetail {
 }
 
 export interface NavigationMiddleware {
-  (entry: NavigationEntry, operation: string): NavigationEntry | null | Promise<NavigationEntry | null>;
+  (
+    entry: NavigationEntry,
+    operation: string,
+  ): NavigationEntry | null | Promise<NavigationEntry | null>;
 }
 
 // ============================================================================
@@ -97,21 +114,22 @@ export class NavigationManager implements NavigationManagerInterface {
   private eventTarget: EventTarget;
   private middlewares: NavigationMiddleware[] = [];
 
-  private static readonly DEFAULT_OPTIONS: Required<NavigationManagerOptions> = {
-    maxSize: 100,
-    duplicatePrevention: true,
-    autoPrune: true,
-    enableEvents: true,
-    enablePersistence: false,
-    persistenceKey: 'dashboard_navigation',
-    enableAnalytics: true
-  };
+  private static readonly DEFAULT_OPTIONS: Required<NavigationManagerOptions> =
+    {
+      maxSize: 100,
+      duplicatePrevention: true,
+      autoPrune: true,
+      enableEvents: true,
+      enablePersistence: false,
+      persistenceKey: "dashboard_navigation",
+      enableAnalytics: true,
+    };
 
   constructor(options: NavigationManagerOptions = {}) {
     this.options = { ...NavigationManager.DEFAULT_OPTIONS, ...options };
     this.state = createEmptyStack(this.options);
     this.eventTarget = new EventTarget();
-    
+
     this.initialize();
   }
 
@@ -126,7 +144,7 @@ export class NavigationManager implements NavigationManagerInterface {
 
     // Set up beforeunload handler for persistence
     if (this.options.enablePersistence) {
-      window.addEventListener('beforeunload', this.persistState.bind(this));
+      window.addEventListener("beforeunload", this.persistState.bind(this));
     }
   }
 
@@ -139,16 +157,16 @@ export class NavigationManager implements NavigationManagerInterface {
    */
   async navigate(view: string, params: NavigationParams = {}): Promise<void> {
     const entry = createNavigationEntry(view, params, params?.title as string);
-    
+
     // Run middlewares
     let processedEntry = entry;
     for (const middleware of this.middlewares) {
-      const result = await middleware(processedEntry, 'navigate');
+      const result = await middleware(processedEntry, "navigate");
       if (result === null) {
         // Navigation was cancelled by middleware
-        this.dispatchEvent('navigationCancelled', { 
-          entry: processedEntry, 
-          reason: 'middleware' 
+        this.dispatchEvent("navigationCancelled", {
+          entry: processedEntry,
+          reason: "middleware",
         });
         return;
       }
@@ -158,23 +176,25 @@ export class NavigationManager implements NavigationManagerInterface {
     // Validate the entry
     const validation = validateNavigationEntry(processedEntry);
     if (!validation.isValid) {
-      console.error('Navigation validation failed:', validation.errors);
-      this.dispatchEvent('navigationError', { 
-        entry: processedEntry, 
-        errors: validation.errors 
+      console.error("Navigation validation failed:", validation.errors);
+      this.dispatchEvent("navigationError", {
+        entry: processedEntry,
+        errors: validation.errors,
       });
-      throw new Error(`Navigation validation failed: ${validation.errors.join(', ')}`);
+      throw new Error(
+        `Navigation validation failed: ${validation.errors.join(", ")}`,
+      );
     }
 
     const previousEntry = current(this.state);
     this.state = push(this.state, processedEntry, this.options);
     const newEntry = current(this.state);
 
-    this.dispatchEvent('navigationChanged', {
+    this.dispatchEvent("navigationChanged", {
       from: previousEntry,
       to: newEntry,
-      operation: 'navigate',
-      timestamp: new Date()
+      operation: "navigate",
+      timestamp: new Date(),
     });
 
     this.persistState();
@@ -192,11 +212,11 @@ export class NavigationManager implements NavigationManagerInterface {
     this.state = pop(this.state);
     const newEntry = current(this.state);
 
-    this.dispatchEvent('navigationChanged', {
+    this.dispatchEvent("navigationChanged", {
       from: previousEntry,
       to: newEntry,
-      operation: 'goBack',
-      timestamp: new Date()
+      operation: "goBack",
+      timestamp: new Date(),
     });
 
     this.persistState();
@@ -214,11 +234,11 @@ export class NavigationManager implements NavigationManagerInterface {
     this.state = forward(this.state);
     const newEntry = current(this.state);
 
-    this.dispatchEvent('navigationChanged', {
+    this.dispatchEvent("navigationChanged", {
       from: previousEntry,
       to: newEntry,
-      operation: 'goForward',
-      timestamp: new Date()
+      operation: "goForward",
+      timestamp: new Date(),
     });
 
     this.persistState();
@@ -229,15 +249,15 @@ export class NavigationManager implements NavigationManagerInterface {
    */
   async replace(view: string, params: NavigationParams = {}): Promise<void> {
     const entry = createNavigationEntry(view, params, params?.title as string);
-    
+
     // Run middlewares
     let processedEntry = entry;
     for (const middleware of this.middlewares) {
-      const result = await middleware(processedEntry, 'replace');
+      const result = await middleware(processedEntry, "replace");
       if (result === null) {
-        this.dispatchEvent('navigationCancelled', { 
-          entry: processedEntry, 
-          reason: 'middleware' 
+        this.dispatchEvent("navigationCancelled", {
+          entry: processedEntry,
+          reason: "middleware",
         });
         return;
       }
@@ -248,11 +268,11 @@ export class NavigationManager implements NavigationManagerInterface {
     this.state = replace(this.state, processedEntry);
     const newEntry = current(this.state);
 
-    this.dispatchEvent('navigationChanged', {
+    this.dispatchEvent("navigationChanged", {
       from: previousEntry,
       to: newEntry,
-      operation: 'replace',
-      timestamp: new Date()
+      operation: "replace",
+      timestamp: new Date(),
     });
 
     this.persistState();
@@ -270,11 +290,11 @@ export class NavigationManager implements NavigationManagerInterface {
     this.state = jumpToIndex(this.state, targetIndex);
     const newEntry = current(this.state);
 
-    this.dispatchEvent('navigationChanged', {
+    this.dispatchEvent("navigationChanged", {
       from: previousEntry,
       to: newEntry,
-      operation: 'jumpToIndex',
-      timestamp: new Date()
+      operation: "jumpToIndex",
+      timestamp: new Date(),
     });
 
     this.persistState();
@@ -288,11 +308,11 @@ export class NavigationManager implements NavigationManagerInterface {
     this.state = jumpToEntry(this.state, entryId);
     const newEntry = current(this.state);
 
-    this.dispatchEvent('navigationChanged', {
+    this.dispatchEvent("navigationChanged", {
       from: previousEntry,
       to: newEntry,
-      operation: 'jumpToEntry',
-      timestamp: new Date()
+      operation: "jumpToEntry",
+      timestamp: new Date(),
     });
 
     this.persistState();
@@ -306,11 +326,11 @@ export class NavigationManager implements NavigationManagerInterface {
     this.state = removeEntry(this.state, entryId);
     const newEntry = current(this.state);
 
-    this.dispatchEvent('entryRemoved', {
+    this.dispatchEvent("entryRemoved", {
       entryId,
       from: previousEntry,
       to: newEntry,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.persistState();
@@ -324,11 +344,11 @@ export class NavigationManager implements NavigationManagerInterface {
     this.state = clearForward(this.state);
     const newEntry = current(this.state);
 
-    this.dispatchEvent('historyCleared', {
-      type: 'forward',
+    this.dispatchEvent("historyCleared", {
+      type: "forward",
       from: previousEntry,
       to: newEntry,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.persistState();
@@ -418,12 +438,12 @@ export class NavigationManager implements NavigationManagerInterface {
   clear(): void {
     const previousEntry = current(this.state);
     this.state = clearStack(this.options);
-    
-    this.dispatchEvent('historyCleared', {
-      type: 'all',
+
+    this.dispatchEvent("historyCleared", {
+      type: "all",
       from: previousEntry,
       to: null,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.persistState();
@@ -445,9 +465,12 @@ export class NavigationManager implements NavigationManagerInterface {
    */
   addEventListener<K extends keyof NavigationEventMap>(
     type: K,
-    listener: (event: CustomEvent<NavigationEventMap[K]>) => void
+    listener: (event: CustomEvent<NavigationEventMap[K]>) => void,
   ): void {
-    this.eventTarget.addEventListener(type as string, listener as EventListener);
+    this.eventTarget.addEventListener(
+      type as string,
+      listener as EventListener,
+    );
   }
 
   /**
@@ -455,9 +478,12 @@ export class NavigationManager implements NavigationManagerInterface {
    */
   removeEventListener<K extends keyof NavigationEventMap>(
     type: K,
-    listener: (event: CustomEvent<NavigationEventMap[K]>) => void
+    listener: (event: CustomEvent<NavigationEventMap[K]>) => void,
   ): void {
-    this.eventTarget.removeEventListener(type as string, listener as EventListener);
+    this.eventTarget.removeEventListener(
+      type as string,
+      listener as EventListener,
+    );
   }
 
   /**
@@ -465,7 +491,7 @@ export class NavigationManager implements NavigationManagerInterface {
    */
   private dispatchEvent<K extends keyof NavigationEventMap>(
     type: K,
-    detail: NavigationEventMap[K]
+    detail: NavigationEventMap[K],
   ): void {
     if (!this.options.enableEvents) return;
 
@@ -508,7 +534,7 @@ export class NavigationManager implements NavigationManagerInterface {
       const serialized = serializeStack(this.state);
       localStorage.setItem(this.options.persistenceKey, serialized);
     } catch (error) {
-      console.error('Failed to persist navigation state:', error);
+      console.error("Failed to persist navigation state:", error);
     }
   }
 
@@ -522,13 +548,13 @@ export class NavigationManager implements NavigationManagerInterface {
       const serialized = localStorage.getItem(this.options.persistenceKey);
       if (serialized) {
         this.state = deserializeStack(serialized);
-        this.dispatchEvent('stateRestored', {
+        this.dispatchEvent("stateRestored", {
           state: this.state,
-          timestamp: new Date()
+          timestamp: new Date(),
         });
       }
     } catch (error) {
-      console.error('Failed to restore navigation state:', error);
+      console.error("Failed to restore navigation state:", error);
       // Fall back to empty state
       this.state = createEmptyStack(this.options);
     }
@@ -550,16 +576,16 @@ export class NavigationManager implements NavigationManagerInterface {
       this.state = deserializeStack(serializedState);
       const newEntry = current(this.state);
 
-      this.dispatchEvent('stateImported', {
+      this.dispatchEvent("stateImported", {
         from: previousEntry,
         to: newEntry,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
 
       this.persistState();
     } catch (error) {
-      console.error('Failed to import navigation state:', error);
-      throw new Error('Invalid navigation state format');
+      console.error("Failed to import navigation state:", error);
+      throw new Error("Invalid navigation state format");
     }
   }
 
@@ -572,9 +598,12 @@ export class NavigationManager implements NavigationManagerInterface {
    */
   updateOptions(newOptions: Partial<NavigationManagerOptions>): void {
     this.options = { ...this.options, ...newOptions };
-    
+
     // Recreate stack with new options if size-related options changed
-    if (newOptions.maxSize !== undefined || newOptions.autoPrune !== undefined) {
+    if (
+      newOptions.maxSize !== undefined ||
+      newOptions.autoPrune !== undefined
+    ) {
       this.state = createEmptyStack(this.options);
     }
   }
@@ -595,12 +624,12 @@ export class NavigationManager implements NavigationManagerInterface {
    */
   destroy(): void {
     if (this.options.enablePersistence) {
-      window.removeEventListener('beforeunload', this.persistState.bind(this));
+      window.removeEventListener("beforeunload", this.persistState.bind(this));
     }
-    
+
     this.middlewares = [];
     this.state = createEmptyStack();
-    
+
     // Clear all event listeners
     this.eventTarget = new EventTarget();
   }

@@ -1,4 +1,5 @@
-## 🤝 VERTRIEB 
+## 🤝 VERTRIEB
+
 ├── 👥 CRM (Kundenbeziehungsmanagement)
 │ ├── 👤 Kundenstamm
 │ │ ├── 🎯 360° Kundenansicht

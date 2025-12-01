@@ -5,12 +5,12 @@
 // Type Definitions
 // ============================================================================
 
-export type ClassValue = 
-  | string 
-  | number 
-  | boolean 
-  | undefined 
-  | null 
+export type ClassValue =
+  | string
+  | number
+  | boolean
+  | undefined
+  | null
   | Record<string, boolean>
   | ClassArray;
 
@@ -31,32 +31,32 @@ export interface ClsOptions {
 
 /**
  * Advanced CSS class name composition utility
- * 
+ *
  * Features:
  * - Handles strings, arrays, objects, and nested structures
  * - Removes falsy values (undefined, null, false, '', 0)
  * - Deduplicates class names
  * - Customizable separator and filtering
  * - Type-safe with comprehensive TypeScript support
- * 
+ *
  * @param inputs - Class name inputs to combine
  * @param options - Configuration options
  * @returns Combined CSS class string
- * 
+ *
  * @example
  * ```typescript
  * // Basic usage
  * cls('btn', 'btn-primary', isLoading && 'loading');
  * // → 'btn btn-primary loading'
- * 
+ *
  * // With objects
  * cls('btn', { 'btn-primary': isPrimary, 'btn-disabled': isDisabled });
  * // → 'btn btn-primary'
- * 
+ *
  * // With arrays
  * cls(['btn', 'btn-large'], ['btn-primary', null, undefined]);
  * // → 'btn btn-large btn-primary'
- * 
+ *
  * // With options
  * cls('foo', 'foo', 'bar', { separator: '_', dedupe: true });
  * // → 'foo_bar'
@@ -67,17 +67,14 @@ export function cls(
 ): string {
   // Extract options from last argument if it's an object without class-like properties
   const lastInput = inputs[inputs.length - 1];
-  const options: ClsOptions = (typeof lastInput === 'object' && 
-                              !Array.isArray(lastInput) && 
-                              !isClassObject(lastInput)) 
-    ? (inputs.pop() as ClsOptions) 
-    : {};
+  const options: ClsOptions =
+    typeof lastInput === "object" &&
+    !Array.isArray(lastInput) &&
+    !isClassObject(lastInput)
+      ? (inputs.pop() as ClsOptions)
+      : {};
 
-  const {
-    separator = ' ',
-    dedupe = false,
-    filter = () => true
-  } = options;
+  const { separator = " ", dedupe = false, filter = () => true } = options;
 
   const classNames: string[] = [];
 
@@ -85,12 +82,12 @@ export function cls(
   for (const input of inputs) {
     if (!input) continue;
 
-    if (typeof input === 'string') {
+    if (typeof input === "string") {
       addClassName(classNames, input, filter);
       continue;
     }
 
-    if (typeof input === 'number') {
+    if (typeof input === "number") {
       addClassName(classNames, String(input), filter);
       continue;
     }
@@ -100,7 +97,7 @@ export function cls(
       continue;
     }
 
-    if (typeof input === 'object' && isClassObject(input)) {
+    if (typeof input === "object" && isClassObject(input)) {
       processObject(input as Record<string, boolean>, classNames, filter);
       continue;
     }
@@ -122,20 +119,20 @@ export function cls(
 function isClassObject(obj: any): boolean {
   if (Array.isArray(obj)) return false;
   if (obj === null) return false;
-  
+
   // Exclude ClsOptions by checking for known option keys
-  if ('separator' in obj || 'dedupe' in obj || 'filter' in obj) {
+  if ("separator" in obj || "dedupe" in obj || "filter" in obj) {
     return false;
   }
-  
+
   // Check if object has any non-class-like properties
   // Class condition objects typically have boolean values
   for (const value of Object.values(obj)) {
-    if (typeof value !== 'boolean') {
+    if (typeof value !== "boolean") {
       return false;
     }
   }
-  
+
   return Object.keys(obj).length > 0;
 }
 
@@ -143,9 +140,9 @@ function isClassObject(obj: any): boolean {
  * Add a class name to the list if it passes the filter
  */
 function addClassName(
-  classNames: string[], 
-  className: string, 
-  filter: (className: string) => boolean
+  classNames: string[],
+  className: string,
+  filter: (className: string) => boolean,
 ): void {
   const trimmed = className.trim();
   if (trimmed && filter(trimmed)) {
@@ -157,19 +154,19 @@ function addClassName(
  * Process array input recursively
  */
 function processArray(
-  arr: ClassArray, 
-  classNames: string[], 
-  filter: (className: string) => boolean
+  arr: ClassArray,
+  classNames: string[],
+  filter: (className: string) => boolean,
 ): void {
   for (const item of arr) {
     if (!item) continue;
 
-    if (typeof item === 'string') {
+    if (typeof item === "string") {
       addClassName(classNames, item, filter);
       continue;
     }
 
-    if (typeof item === 'number') {
+    if (typeof item === "number") {
       addClassName(classNames, String(item), filter);
       continue;
     }
@@ -179,7 +176,7 @@ function processArray(
       continue;
     }
 
-    if (typeof item === 'object' && isClassObject(item)) {
+    if (typeof item === "object" && isClassObject(item)) {
       processObject(item as Record<string, boolean>, classNames, filter);
       continue;
     }
@@ -190,9 +187,9 @@ function processArray(
  * Process object input (conditional classes)
  */
 function processObject(
-  obj: Record<string, boolean>, 
-  classNames: string[], 
-  filter: (className: string) => boolean
+  obj: Record<string, boolean>,
+  classNames: string[],
+  filter: (className: string) => boolean,
 ): void {
   for (const [className, condition] of Object.entries(obj)) {
     if (condition && className) {
@@ -208,9 +205,7 @@ function processObject(
 /**
  * cls function with default deduplication enabled
  */
-export function clsx(
-  ...inputs: ClassValue[]
-): string {
+export function clsx(...inputs: ClassValue[]): string {
   return cls(...inputs, { dedupe: true });
 }
 
@@ -237,11 +232,9 @@ export function clsWithFilter(
 /**
  * cls function that returns an array of class names instead of a string
  */
-export function clsArray(
-  ...inputs: ClassValue[]
-): string[] {
+export function clsArray(...inputs: ClassValue[]): string[] {
   const result = cls(...inputs, { dedupe: true });
-  return result ? result.split(' ').filter(Boolean) : [];
+  return result ? result.split(" ").filter(Boolean) : [];
 }
 
 // ============================================================================
@@ -252,7 +245,7 @@ export function clsArray(
  * Create a conditional class object with type safety
  */
 export function classes(
-  conditions: Record<string, boolean>
+  conditions: Record<string, boolean>,
 ): Record<string, boolean> {
   return conditions;
 }
@@ -263,7 +256,7 @@ export function classes(
 export function when(
   condition: boolean,
   truthyClass: string,
-  falsyClass: string = ''
+  falsyClass: string = "",
 ): string {
   return condition ? truthyClass : falsyClass;
 }
@@ -274,7 +267,7 @@ export function when(
 export function switchClass<T extends string | number>(
   value: T,
   cases: Record<T, string>,
-  defaultClass: string = ''
+  defaultClass: string = "",
 ): string {
   return cases[value] || defaultClass;
 }
@@ -287,8 +280,8 @@ export function switchClass<T extends string | number>(
  * Validate if a string contains valid CSS class names
  */
 export function isValidClassName(className: string): boolean {
-  if (!className || typeof className !== 'string') return false;
-  
+  if (!className || typeof className !== "string") return false;
+
   // Basic CSS class name validation
   const cssClassRegex = /^-?[_a-zA-Z]+[_a-zA-Z0-9-]*$/;
   return cssClassRegex.test(className);
@@ -299,14 +292,14 @@ export function isValidClassName(className: string): boolean {
  */
 export function sanitizeClassNames(
   input: string | string[],
-  options: { strict?: boolean } = {}
+  options: { strict?: boolean } = {},
 ): string {
   const classNames = Array.isArray(input) ? input : input.split(/\s+/);
-  const validClassNames = classNames.filter(className => 
-    options.strict ? isValidClassName(className) : Boolean(className?.trim())
+  const validClassNames = classNames.filter((className) =>
+    options.strict ? isValidClassName(className) : Boolean(className?.trim()),
   );
-  
-  return validClassNames.join(' ');
+
+  return validClassNames.join(" ");
 }
 
 /**
@@ -316,15 +309,15 @@ export function mergeClasses(
   ...classStrings: (string | undefined | null)[]
 ): string {
   const allClassNames: string[] = [];
-  
+
   for (const classString of classStrings) {
     if (!classString) continue;
-    
+
     const names = classString.split(/\s+/).filter(Boolean);
     allClassNames.push(...names);
   }
-  
-  return [...new Set(allClassNames)].join(' ');
+
+  return [...new Set(allClassNames)].join(" ");
 }
 
 // ============================================================================

@@ -8,8 +8,8 @@ export default {
       status: {
         healthy: "Система работает нормально",
         degraded: "Система работает с ограничениями",
-        unhealthy: "Система недоступна"
-      }
+        unhealthy: "Система недоступна",
+      },
     },
 
     // Категории
@@ -17,7 +17,7 @@ export default {
       title: "Разделы",
       count: "Доступно разделов: {{count}}",
       emptyTitle: "Разделы не найдены",
-      emptyDescription: "Для выбранных условий нет доступных категорий."
+      emptyDescription: "Для выбранных условий нет доступных категорий.",
     },
 
     online: "Система онлайн",
@@ -27,7 +27,7 @@ export default {
     unknown: "Неизвестно",
 
     loading: {
-      message: "Загрузка данных…"
+      message: "Загрузка данных…",
     },
 
     search: {
@@ -38,19 +38,19 @@ export default {
       placeholder: "Поиск по {{type}}…",
       input: "Поле поиска",
       loading: "Поиск…",
-      noResults: "Ничего не найдено"
+      noResults: "Ничего не найдено",
     },
 
     errorScreen: {
       title: "Ошибка при загрузке",
-      retryButton: "Повторить"
+      retryButton: "Повторить",
     },
 
     navigation: {
       overview: "Обзор",
       catalog: "Функции",
       ai: "AI-аннотация",
-      settings: "Настройки"
+      settings: "Настройки",
     },
 
     openChat: "Открыть чат",
@@ -58,20 +58,20 @@ export default {
       inputPlaceholder: "Введите сообщение…",
       send: "Отправить",
       newSession: "Новая сессия",
-      loading: "Обработка ответа…"
+      loading: "Обработка ответа…",
     },
 
     models: {
       title: "Модели",
       provider: "Провайдер",
       capabilities: "Возможности",
-      noModels: "Нет доступных моделей"
+      noModels: "Нет доступных моделей",
     },
 
     tools: {
       title: "Инструменты",
       run: "Выполнить",
-      noTools: "Нет зарегистрированных инструментов"
+      noTools: "Нет зарегистрированных инструментов",
     },
 
     system: {
@@ -88,7 +88,7 @@ export default {
       ai: "Статус ИИ",
       statusHealthy: "Работает",
       statusUnhealthy: "Недоступно",
-      statusDegraded: "Ограничено"
+      statusDegraded: "Ограничено",
     },
 
     languageSwitcher: "Выбор языка",
@@ -99,7 +99,7 @@ export default {
       close: "Закрыть",
       reload: "Обновить",
       details: "Детали",
-      unknown: "Неизвестно"
-    }
-  }
+      unknown: "Неизвестно",
+    },
+  },
 };

@@ -3,7 +3,7 @@
  * ---------------------------------------------------------
  * KI-gestützte Bildanalyse, Objekterkennung und visuelles Verständnis.
  * Unterstützt OpenAI (GPT-4o), Vertex AI (Gemini), HuggingFace und lokale Modelle.
- * 
+ *
  * Funktionen:
  *  - Beschreibung von Bildern
  *  - Text- und Objekterkennung (OCR, tags)
@@ -15,7 +15,11 @@ import fs from "node:fs";
 import path from "node:path";
 import fetch from "node-fetch";
 import { log } from "../utils/logger.js";
-import type { AIResponse, AIModuleConfig, ChatMessage } from "../types/types.js";
+import type {
+  AIResponse,
+  AIModuleConfig,
+  ChatMessage,
+} from "../types/types.js";
 import { callOpenAI } from "../providers/openaiProvider.js";
 import { callVertexAI } from "../providers/vertexAIProvider.js";
 import { callHuggingFace } from "../providers/huggingfaceProvider.js";
@@ -28,7 +32,8 @@ export const visionConfig: AIModuleConfig = {
   name: "visionService",
   provider: "openai",
   model: process.env.VISION_MODEL ?? "gpt-4o",
-  description: "Verarbeitet Bilder, erkennt Objekte, Text und visuelle Zusammenhänge.",
+  description:
+    "Verarbeitet Bilder, erkennt Objekte, Text und visuelle Zusammenhänge.",
   capabilities: ["vision", "json_mode", "reasoning"],
   active: true,
   max_tokens: 1500,
@@ -46,7 +51,8 @@ export function isImageFile(filePath: string): boolean {
 
 /** Liest Bilddatei als Base64. */
 export function encodeImageToBase64(filePath: string): string {
-  if (!fs.existsSync(filePath)) throw new Error(`Datei nicht gefunden: ${filePath}`);
+  if (!fs.existsSync(filePath))
+    throw new Error(`Datei nicht gefunden: ${filePath}`);
   const buffer = fs.readFileSync(filePath);
   return buffer.toString("base64");
 }
@@ -66,10 +72,13 @@ interface OpenAIVisionResponse {
 export async function analyzeImage(
   imagePath: string,
   instruction = "Beschreibe den Inhalt des Bildes detailliert.",
-  engine: "openai" | "vertex" | "huggingface" = "openai"
+  engine: "openai" | "vertex" | "huggingface" = "openai",
 ): Promise<AIResponse> {
   if (!isImageFile(imagePath)) {
-    return { text: `❌ Ungültiges Format: ${imagePath}`, errors: ["Unsupported file type"] };
+    return {
+      text: `❌ Ungültiges Format: ${imagePath}`,
+      errors: ["Unsupported file type"],
+    };
   }
 
   const base64 = encodeImageToBase64(imagePath);
@@ -78,12 +87,13 @@ export async function analyzeImage(
   const messages: ChatMessage[] = [
     {
       role: "system",
-      content: "Du bist ein KI-System für visuelle Analyse. Beantworte in natürlicher Sprache."
+      content:
+        "Du bist ein KI-System für visuelle Analyse. Beantworte in natürlicher Sprache.",
     },
     {
       role: "user",
-      content: `${instruction}\nDateiname: ${fileName}`
-    }
+      content: `${instruction}\nDateiname: ${fileName}`,
+    },
   ];
 
   try {
@@ -97,7 +107,7 @@ export async function analyzeImage(
       case "huggingface":
         result = await callHuggingFace(
           "Salesforce/blip-image-captioning-large",
-          [{ role: "user", content: `Bildbeschreibung: ${instruction}` }]
+          [{ role: "user", content: `Bildbeschreibung: ${instruction}` }],
         );
         break;
 
@@ -109,7 +119,7 @@ export async function analyzeImage(
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
           },
           body: JSON.stringify({
             model: visionConfig.model,
@@ -120,12 +130,12 @@ export async function analyzeImage(
                   { type: "text", text: instruction },
                   {
                     type: "image_url",
-                    image_url: `data:image/jpeg;base64,${base64}`
-                  }
-                ]
-              }
-            ]
-          })
+                    image_url: `data:image/jpeg;base64,${base64}`,
+                  },
+                ],
+              },
+            ],
+          }),
         });
 
         if (!res.ok) {
@@ -137,13 +147,11 @@ export async function analyzeImage(
         const json = await res.json();
         const data = json as OpenAIVisionResponse;
 
-        const reply =
-          data.choices?.[0]?.message?.content ||
-          "(keine Antwort)";
+        const reply = data.choices?.[0]?.message?.content || "(keine Antwort)";
 
         result = {
           text: reply,
-          meta: { provider: "openai", model: visionConfig.model }
+          meta: { provider: "openai", model: visionConfig.model },
         };
         break;
     }
@@ -155,19 +163,17 @@ export async function analyzeImage(
       meta: {
         ...result.meta,
         file: fileName,
-        engine
-      }
+        engine,
+      },
     };
-
   } catch (err: any) {
     log("error", "VisionService Fehler", { error: err.message });
     return {
       text: `❌ Fehler bei Analyse: ${err.message}`,
-      errors: [err.message]
+      errors: [err.message],
     };
   }
 }
-
 
 /* ========================================================================== */
 /* 🧩 Multi-Bildanalyse                                                      */
@@ -179,7 +185,7 @@ export async function analyzeImage(
 export async function analyzeMultipleImages(
   imagePaths: string[],
   instruction = "Analysiere die Gemeinsamkeiten und Unterschiede zwischen den Bildern.",
-  engine: "openai" | "vertex" | "huggingface" = "openai"
+  engine: "openai" | "vertex" | "huggingface" = "openai",
 ): Promise<AIResponse> {
   const validPaths = imagePaths.filter(isImageFile);
   if (validPaths.length === 0) {
@@ -194,7 +200,11 @@ export async function analyzeMultipleImages(
 
   return {
     text: results.join("\n\n"),
-    meta: { provider: engine, model: visionConfig.model, images: validPaths.length },
+    meta: {
+      provider: engine,
+      model: visionConfig.model,
+      images: validPaths.length,
+    },
   };
 }
 
@@ -207,7 +217,7 @@ export async function analyzeMultipleImages(
  */
 export async function extractTextFromImage(
   imagePath: string,
-  engine: "openai" | "vertex" | "huggingface" = "openai"
+  engine: "openai" | "vertex" | "huggingface" = "openai",
 ): Promise<AIResponse> {
   const prompt = "Erkenne und gib den im Bild enthaltenen Text exakt wieder.";
   return analyzeImage(imagePath, prompt, engine);

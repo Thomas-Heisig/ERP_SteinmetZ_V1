@@ -26,61 +26,63 @@ export interface DashboardContextType {
 // ==================== ACTION TYPES ====================
 export type DashboardAction =
   // ROOT ACTIONS
-  | { type: 'LOAD_ROOTS_START' }
-  | { type: 'LOAD_ROOTS_SUCCESS'; payload: NodeDetail[] }
-  | { type: 'LOAD_ROOTS_ERROR'; payload: unknown }
-  
+  | { type: "LOAD_ROOTS_START" }
+  | { type: "LOAD_ROOTS_SUCCESS"; payload: NodeDetail[] }
+  | { type: "LOAD_ROOTS_ERROR"; payload: unknown }
+
   // NODE ACTIONS
-  | { type: 'SELECT_NODE'; payload: string }
-  | { type: 'LOAD_NODE_START' }
-  | { type: 'LOAD_NODE_SUCCESS'; payload: NodeDetail }
-  | { type: 'LOAD_NODE_ERROR'; payload: unknown }
-  
+  | { type: "SELECT_NODE"; payload: string }
+  | { type: "LOAD_NODE_START" }
+  | { type: "LOAD_NODE_SUCCESS"; payload: NodeDetail }
+  | { type: "LOAD_NODE_ERROR"; payload: unknown }
+
   // SEARCH ACTIONS
-  | { type: 'SET_SEARCH_QUERY'; payload: string }
+  | { type: "SET_SEARCH_QUERY"; payload: string }
   | { type: "SET_SEARCH_FILTERS"; payload: SearchFilters }
-  | { type: 'SET_SEARCH_ACTIVE'; payload: boolean }
-  | { type: 'SEARCH_START' }
-  | { type: 'SEARCH_SUCCESS'; payload: { query: string; results: SearchResult[] } }
-  | { type: 'SEARCH_CLEAR' }
-  
+  | { type: "SET_SEARCH_ACTIVE"; payload: boolean }
+  | { type: "SEARCH_START" }
+  | {
+      type: "SEARCH_SUCCESS";
+      payload: { query: string; results: SearchResult[] };
+    }
+  | { type: "SEARCH_CLEAR" }
+
   // NAVIGATION ACTIONS
-  | { type: 'NAV_PUSH'; payload: NavigationEntry }
-  | { type: 'NAV_POP' }
-  | { type: 'NAV_CLEAR' }
-  
+  | { type: "NAV_PUSH"; payload: NavigationEntry }
+  | { type: "NAV_POP" }
+  | { type: "NAV_CLEAR" }
+
   // HEALTH ACTIONS
-  | { type: 'SET_HEALTH_STATUS'; payload: DashboardHealthState }
-  | { type: 'HEALTH_UPDATE'; payload: DashboardHealthState }
-  
+  | { type: "SET_HEALTH_STATUS"; payload: DashboardHealthState }
+  | { type: "HEALTH_UPDATE"; payload: DashboardHealthState }
+
   // UI ACTIONS
-  | { type: 'SET_THEME'; payload: 'light' | 'dark' | 'lcars' }
-  | { type: 'SET_LANGUAGE'; payload: string }
-  | { type: 'TOGGLE_CHAT' }
+  | { type: "SET_THEME"; payload: "light" | "dark" | "lcars" }
+  | { type: "SET_LANGUAGE"; payload: string }
+  | { type: "TOGGLE_CHAT" }
 
   // *** ADD THIS — Layoutwechsel für Builder ***
-  | { type: 'SET_LAYOUT'; payload: DashboardLayout }
+  | { type: "SET_LAYOUT"; payload: DashboardLayout }
 
   // Falls weiterhin benötigt:
-  | { type: 'SET_LAYOUT_MODE'; payload: 'mobile' | 'tablet' | 'desktop' }
-  
-  // LOADING ACTIONS
-  | { type: 'SET_LOADING'; payload: { key: string; value: boolean } }
-  
-  // ERROR ACTIONS
-  | { type: 'SET_ERROR'; payload: { key: string; value: unknown } }
-  | { type: 'CLEAR_ERRORS' }
-  
-  // CACHE ACTIONS
-  | { type: 'CACHE_SET_NODE'; payload: NodeDetail }
-  
-  // TIMESTAMP ACTIONS
-  | { type: 'SET_LAST_UPDATED'; payload: Date }
-  
-  // CONFIGURATION ACTIONS
-  | { type: 'SET_CONFIG'; payload: Partial<DashboardConfig> }
-  | { type: 'SET_SYSTEM_INFO'; payload: Partial<SystemInfoState> };
+  | { type: "SET_LAYOUT_MODE"; payload: "mobile" | "tablet" | "desktop" }
 
+  // LOADING ACTIONS
+  | { type: "SET_LOADING"; payload: { key: string; value: boolean } }
+
+  // ERROR ACTIONS
+  | { type: "SET_ERROR"; payload: { key: string; value: unknown } }
+  | { type: "CLEAR_ERRORS" }
+
+  // CACHE ACTIONS
+  | { type: "CACHE_SET_NODE"; payload: NodeDetail }
+
+  // TIMESTAMP ACTIONS
+  | { type: "SET_LAST_UPDATED"; payload: Date }
+
+  // CONFIGURATION ACTIONS
+  | { type: "SET_CONFIG"; payload: Partial<DashboardConfig> }
+  | { type: "SET_SYSTEM_INFO"; payload: Partial<SystemInfoState> };
 
 export interface DashboardActions {
   // ==================== CATALOG ====================
@@ -102,7 +104,7 @@ export interface DashboardActions {
   clearNavigation: () => void;
 
   // ==================== UI ====================
-  setTheme: (theme: 'light' | 'dark' | 'lcars') => void;
+  setTheme: (theme: "light" | "dark" | "lcars") => void;
   setLanguage: (language: string) => void;
   toggleChat: () => void;
 
@@ -110,7 +112,7 @@ export interface DashboardActions {
    * Nur Layout-Mode (mobile/tablet/desktop)
    * -> gehört zu DashboardUIState
    */
-  setLayoutMode: (mode: 'mobile' | 'tablet' | 'desktop') => void;
+  setLayoutMode: (mode: "mobile" | "tablet" | "desktop") => void;
 
   /**
    * Komplettes Dashboard-Layout setzen (Builder)
@@ -132,20 +134,18 @@ export interface CategoryColor {
   text: string;
 }
 
-export type IconMode = 'emoji' | 'lucide';
+export type IconMode = "emoji" | "lucide";
 
-export type NodeIcon =
-  | string
-  | React.ReactNode;
+export type NodeIcon = string | React.ReactNode;
 
 export function getNodeIcon(type: NodeType, mode: IconMode): NodeIcon {
   // Implementation placeholder
-  return '';
+  return "";
 }
 
 export function getCategoryColor(categoryId: string): CategoryColor {
   // Implementation placeholder
-  return { primary: '', text: '' };
+  return { primary: "", text: "" };
 }
 
 // ==================== STATE SUB-TYPES ====================
@@ -187,8 +187,8 @@ export interface DashboardUIState {
   quickChatOpen: boolean;
   currentTime: Date;
   searchOverlayVisible: boolean;
-  layout: 'mobile' | 'tablet' | 'desktop';
-  layoutMode: 'mobile' | 'tablet' | 'desktop';
+  layout: "mobile" | "tablet" | "desktop";
+  layoutMode: "mobile" | "tablet" | "desktop";
   theme?: UITheme;
   language?: string;
   viewMode?: ViewMode;
@@ -207,10 +207,7 @@ export interface DashboardCatalogState {
   lastUpdated?: Date;
 }
 
-
-
 export interface DashboardBuilderState {
-
   /** Vom Builder erzeugte Widgets (abstrakte Widget-Beschreibungen) */
   renderedWidgets: WidgetInstance[];
 
@@ -231,10 +228,9 @@ export interface DashboardBuilderState {
   };
 }
 
-
 export interface DashboardSettingsState {
   language: string;
-  theme: 'light' | 'dark' | 'lcars';
+  theme: "light" | "dark" | "lcars";
 }
 
 export interface LoadingState {
@@ -294,14 +290,14 @@ export interface NodeDetail {
   size?: NodeSize;
 }
 
-export type NodeType = 
-  | 'CARD'
-  | 'CHART'
-  | 'TABLE'
-  | 'FORM'
-  | 'CUSTOM'
-  | 'CATEGORY'
-  | 'ROOT';
+export type NodeType =
+  | "CARD"
+  | "CHART"
+  | "TABLE"
+  | "FORM"
+  | "CUSTOM"
+  | "CATEGORY"
+  | "ROOT";
 
 export interface NodeData {
   title: string;
@@ -319,7 +315,7 @@ export interface NodeConfig {
   isResizable: boolean;
   isCollapsible: boolean;
   isEditable: boolean;
-  visibility: 'VISIBLE' | 'HIDDEN' | 'MINIMIZED';
+  visibility: "VISIBLE" | "HIDDEN" | "MINIMIZED";
   [key: string]: any;
 }
 
@@ -337,7 +333,7 @@ export interface NodeMetadata {
 // ==================== SEARCH TYPES ====================
 export interface SearchResult {
   id: string;
-  type: 'NODE' | 'CATEGORY' | 'DATA';
+  type: "NODE" | "CATEGORY" | "DATA";
   title: string;
   description?: string;
   category?: string;
@@ -354,12 +350,7 @@ export interface SearchMetadata {
   [key: string]: any;
 }
 
-export type SearchFilter = 
-  | 'category'
-  | 'type'
-  | 'tag'
-  | 'date'
-  | string;
+export type SearchFilter = "category" | "type" | "tag" | "date" | string;
 
 export interface SearchFilters {
   categories: string[];
@@ -375,8 +366,8 @@ export interface DateRange {
 }
 
 export interface SortCriteria {
-  field: 'RELEVANCE' | 'DATE' | 'TITLE';
-  direction: 'ASC' | 'DESC';
+  field: "RELEVANCE" | "DATE" | "TITLE";
+  direction: "ASC" | "DESC";
 }
 
 export interface SearchManager {
@@ -409,12 +400,12 @@ export interface NavigationManager {
 }
 
 // ==================== HEALTH TYPES ====================
-export type HealthStatus = 
-  | 'checking'
-  | 'healthy'
-  | 'degraded'
-  | 'unhealthy'
-  | 'unknown';
+export type HealthStatus =
+  | "checking"
+  | "healthy"
+  | "degraded"
+  | "unhealthy"
+  | "unknown";
 
 export interface HealthStatusDetailed {
   overall: HealthLevel;
@@ -427,11 +418,7 @@ export interface HealthStatusDetailed {
   details?: Record<string, any>;
 }
 
-export type HealthLevel = 
-  | 'HEALTHY'
-  | 'DEGRADED'
-  | 'UNHEALTHY'
-  | 'UNKNOWN';
+export type HealthLevel = "HEALTHY" | "DEGRADED" | "UNHEALTHY" | "UNKNOWN";
 
 export interface ComponentHealth {
   name: string;
@@ -521,7 +508,7 @@ export interface NodeSize {
 }
 
 export interface DashboardLayout {
-  type: 'GRID' | 'FREE' | 'CATEGORY';
+  type: "GRID" | "FREE" | "CATEGORY";
   columns: number;
   rowHeight: number;
   breakpoints: LayoutBreakpoints;
@@ -546,8 +533,6 @@ export interface Category {
   nodeIds: string[];
 }
 
-
-
 // Node Builder Types
 export interface NodeBuilderOptions {
   validate?: boolean;
@@ -556,10 +541,10 @@ export interface NodeBuilderOptions {
 }
 
 // ==================== UI & THEME TYPES ====================
-export type ViewMode = 'VIEW' | 'EDIT' | 'PREVIEW';
+export type ViewMode = "VIEW" | "EDIT" | "PREVIEW";
 
 export interface UITheme {
-  mode: 'LIGHT' | 'DARK' | 'AUTO';
+  mode: "LIGHT" | "DARK" | "AUTO";
   colors: ThemeColors;
   spacing: ThemeSpacing;
   typography: ThemeTypography;
@@ -604,13 +589,13 @@ export interface FormField {
   [key: string]: any;
 }
 
-export type FieldType = 
-  | 'TEXT'
-  | 'NUMBER'
-  | 'SELECT'
-  | 'DATE'
-  | 'BOOLEAN'
-  | 'FILE';
+export type FieldType =
+  | "TEXT"
+  | "NUMBER"
+  | "SELECT"
+  | "DATE"
+  | "BOOLEAN"
+  | "FILE";
 
 export interface ValidationRule {
   pattern?: RegExp;
@@ -632,12 +617,7 @@ export interface ChartConfig {
   [key: string]: any;
 }
 
-export type ChartType = 
-  | 'BAR'
-  | 'LINE'
-  | 'PIE'
-  | 'AREA'
-  | 'SCATTER';
+export type ChartType = "BAR" | "LINE" | "PIE" | "AREA" | "SCATTER";
 
 export interface TableConfig {
   columns: TableColumn[];
@@ -733,7 +713,11 @@ export interface UseDashboardSearch {
 }
 
 export interface UseDashboardShortcuts {
-  registerShortcut: (key: string, handler: () => void, description: string) => void;
+  registerShortcut: (
+    key: string,
+    handler: () => void,
+    description: string,
+  ) => void;
   unregisterShortcut: (key: string) => void;
   showHelp: () => void;
 }
@@ -767,16 +751,11 @@ export interface Permission {
   [key: string]: any;
 }
 
-export type Action = 
-  | 'READ'
-  | 'WRITE'
-  | 'DELETE'
-  | 'CREATE'
-  | 'ADMIN';
+export type Action = "READ" | "WRITE" | "DELETE" | "CREATE" | "ADMIN";
 
 export interface Constraint {
   field: string;
-  operator: 'EQ' | 'NEQ' | 'GT' | 'LT' | 'IN';
+  operator: "EQ" | "NEQ" | "GT" | "LT" | "IN";
   value: any;
   [key: string]: any;
 }
@@ -800,14 +779,10 @@ export interface DataSource {
   [key: string]: any;
 }
 
-export type DataSourceType = 
-  | 'REST'
-  | 'WEBSOCKET'
-  | 'GRAPHQL'
-  | 'DATABASE';
+export type DataSourceType = "REST" | "WEBSOCKET" | "GRAPHQL" | "DATABASE";
 
 export interface AuthConfig {
-  type: 'BEARER' | 'BASIC' | 'API_KEY';
+  type: "BEARER" | "BASIC" | "API_KEY";
   token?: string;
   username?: string;
   password?: string;
@@ -818,7 +793,7 @@ export interface AuthConfig {
 export interface RetryPolicy {
   maxRetries: number;
   timeout: number;
-  backoff: 'LINEAR' | 'EXPONENTIAL';
+  backoff: "LINEAR" | "EXPONENTIAL";
   [key: string]: any;
 }
 
@@ -907,19 +882,16 @@ export interface DashboardHeaderProps {
   [key: string]: any;
 }
 
-
 export interface CategoryGridProps {
   categories: Category[];
   onCategorySelect: (category: Category) => void;
   onCategoryEdit?: (category: Category) => void;
   onCategoryDelete?: (categoryId: string) => void;
-  displayMode?: 'grid' | 'list';
+  displayMode?: "grid" | "list";
   isLoading?: boolean;
   emptyStateMessage?: string;
   className?: string;
 }
-
-
 
 export interface SearchOverlayProps {
   isOpen: boolean;
@@ -933,30 +905,33 @@ export interface SearchOverlayProps {
 export interface HealthStatusBadgeProps {
   status: HealthStatus;
   health?: DashboardHealthState;
-  size?: 'SMALL' | 'MEDIUM' | 'LARGE';
+  size?: "SMALL" | "MEDIUM" | "LARGE";
   showText?: boolean;
   onClick?: () => void;
 }
 
 export interface QuickChatButtonProps {
-  position?: 'BOTTOM_LEFT' | 'BOTTOM_RIGHT';
-  variant?: 'FLOATING' | 'STATIC';
+  position?: "BOTTOM_LEFT" | "BOTTOM_RIGHT";
+  variant?: "FLOATING" | "STATIC";
   onClick?: () => void;
   isOpen?: boolean;
 }
 
 // ==================== EVENT TYPES ====================
 export interface DashboardEventMap {
-  'node.added': { node: NodeDetail };
-  'node.updated': { node: NodeDetail; previous: NodeDetail };
-  'node.deleted': { nodeId: string };
-  'layout.changed': { layout: DashboardLayout };
-  'search.executed': { query: string; results: SearchResult[] };
-  'navigation.changed': { from: NavigationEntry; to: NavigationEntry };
-  'health.statusChanged': { status: HealthStatus; health: DashboardHealthState };
-  'error.occurred': { error: Error; context: string };
-  'theme.changed': { theme: string };
-  'language.changed': { language: string };
+  "node.added": { node: NodeDetail };
+  "node.updated": { node: NodeDetail; previous: NodeDetail };
+  "node.deleted": { nodeId: string };
+  "layout.changed": { layout: DashboardLayout };
+  "search.executed": { query: string; results: SearchResult[] };
+  "navigation.changed": { from: NavigationEntry; to: NavigationEntry };
+  "health.statusChanged": {
+    status: HealthStatus;
+    health: DashboardHealthState;
+  };
+  "error.occurred": { error: Error; context: string };
+  "theme.changed": { theme: string };
+  "language.changed": { language: string };
 }
 
 export type DashboardEvent = keyof DashboardEventMap;
@@ -1001,18 +976,17 @@ export const initialDashboardState: DashboardState = {
     nodeError: null,
   },
   builder: {
-  renderedWidgets: [],
-  activeLayout: "GRID",
-  layout: {
-    type: "GRID",
-    columns: 12,
-    rowHeight: 30,
-    breakpoints: { xs: 1, sm: 2, md: 4, lg: 8, xl: 12 },
-    categories: []
+    renderedWidgets: [],
+    activeLayout: "GRID",
+    layout: {
+      type: "GRID",
+      columns: 12,
+      rowHeight: 30,
+      breakpoints: { xs: 1, sm: 2, md: 4, lg: 8, xl: 12 },
+      categories: [],
+    },
+    widgets: {}, // Registry wird später gefüllt
   },
-  widgets: {}, // Registry wird später gefüllt
-},
-
 
   settings: {
     language: "de",

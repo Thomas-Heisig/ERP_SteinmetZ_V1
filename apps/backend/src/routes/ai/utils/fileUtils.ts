@@ -39,7 +39,11 @@ export function ensureDir(dirPath: string): void {
   try {
     if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
   } catch (err: any) {
-    throw new FileSystemError(dirPath, "Verzeichnis konnte nicht erstellt werden", { error: err.message });
+    throw new FileSystemError(
+      dirPath,
+      "Verzeichnis konnte nicht erstellt werden",
+      { error: err.message },
+    );
   }
 }
 
@@ -68,15 +72,23 @@ export async function readTextFile(filePath: string): Promise<string> {
     const data = await fsp.readFile(filePath, "utf8");
     return data;
   } catch (err: any) {
-    log("error", `❌ Fehler beim Lesen der Datei`, { filePath, error: err.message });
-    throw new FileSystemError(filePath, "Fehler beim Lesen", { error: err.message });
+    log("error", `❌ Fehler beim Lesen der Datei`, {
+      filePath,
+      error: err.message,
+    });
+    throw new FileSystemError(filePath, "Fehler beim Lesen", {
+      error: err.message,
+    });
   }
 }
 
 /**
  * Schreibt eine Textdatei sicher (mit Backup und atomischem Schreiben).
  */
-export async function writeTextFile(filePath: string, content: string): Promise<void> {
+export async function writeTextFile(
+  filePath: string,
+  content: string,
+): Promise<void> {
   try {
     ensureDir(path.dirname(filePath));
 
@@ -92,9 +104,14 @@ export async function writeTextFile(filePath: string, content: string): Promise<
     await fsp.writeFile(tempPath, content, "utf8");
     await fsp.rename(tempPath, filePath);
 
-    log("info", `💾 Datei gespeichert`, { filePath, size: Buffer.byteLength(content) });
+    log("info", `💾 Datei gespeichert`, {
+      filePath,
+      size: Buffer.byteLength(content),
+    });
   } catch (err: any) {
-    throw new FileSystemError(filePath, "Fehler beim Schreiben", { error: err.message });
+    throw new FileSystemError(filePath, "Fehler beim Schreiben", {
+      error: err.message,
+    });
   }
 }
 
@@ -108,7 +125,9 @@ export async function deleteFile(filePath: string): Promise<boolean> {
     log("info", `🗑️ Datei gelöscht`, { filePath });
     return true;
   } catch (err: any) {
-    throw new FileSystemError(filePath, "Fehler beim Löschen", { error: err.message });
+    throw new FileSystemError(filePath, "Fehler beim Löschen", {
+      error: err.message,
+    });
   }
 }
 
@@ -124,7 +143,10 @@ export async function readJsonFile<T = any>(filePath: string): Promise<T> {
     const data = await fsp.readFile(filePath, "utf8");
     return JSON.parse(data) as T;
   } catch (err: any) {
-    log("warn", "⚠️ Fehler beim Lesen von JSON", { filePath, error: err.message });
+    log("warn", "⚠️ Fehler beim Lesen von JSON", {
+      filePath,
+      error: err.message,
+    });
     return {} as T;
   }
 }
@@ -132,7 +154,10 @@ export async function readJsonFile<T = any>(filePath: string): Promise<T> {
 /**
  * Schreibt ein JSON-Objekt schön formatiert.
  */
-export async function writeJsonFile(filePath: string, data: any): Promise<void> {
+export async function writeJsonFile(
+  filePath: string,
+  data: any,
+): Promise<void> {
   const json = JSON.stringify(data, null, 2);
   await writeTextFile(filePath, json);
 }
@@ -145,20 +170,30 @@ export async function readYamlFile<T = any>(filePath: string): Promise<T> {
     const text = await fsp.readFile(filePath, "utf8");
     return yaml.parse(text) as T;
   } catch (err: any) {
-    log("error", "Fehler beim Lesen von YAML", { filePath, error: err.message });
-    throw new FileSystemError(filePath, "Fehler beim Lesen von YAML", { error: err.message });
+    log("error", "Fehler beim Lesen von YAML", {
+      filePath,
+      error: err.message,
+    });
+    throw new FileSystemError(filePath, "Fehler beim Lesen von YAML", {
+      error: err.message,
+    });
   }
 }
 
 /**
  * Schreibt YAML-Dateien.
  */
-export async function writeYamlFile(filePath: string, data: any): Promise<void> {
+export async function writeYamlFile(
+  filePath: string,
+  data: any,
+): Promise<void> {
   try {
     const yamlText = yaml.stringify(data);
     await writeTextFile(filePath, yamlText);
   } catch (err: any) {
-    throw new FileSystemError(filePath, "Fehler beim Schreiben von YAML", { error: err.message });
+    throw new FileSystemError(filePath, "Fehler beim Schreiben von YAML", {
+      error: err.message,
+    });
   }
 }
 
@@ -169,7 +204,10 @@ export async function writeYamlFile(filePath: string, data: any): Promise<void> 
 /**
  * Erstellt eine temporäre Datei mit Inhalt und gibt Pfad zurück.
  */
-export async function createTempFile(prefix = "tmp_", content = ""): Promise<string> {
+export async function createTempFile(
+  prefix = "tmp_",
+  content = "",
+): Promise<string> {
   const filePath = path.join(os.tmpdir(), `${prefix}${Date.now()}.tmp`);
   await fsp.writeFile(filePath, content, "utf8");
   return filePath;

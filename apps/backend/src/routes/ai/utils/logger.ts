@@ -15,7 +15,10 @@ import path from "node:path";
 
 const LOG_TO_FILE = process.env.LOG_TO_FILE === "true";
 const LOG_DIR = path.resolve("logs");
-const LOG_FILE = path.join(LOG_DIR, `app_${new Date().toISOString().split("T")[0]}.log`);
+const LOG_FILE = path.join(
+  LOG_DIR,
+  `app_${new Date().toISOString().split("T")[0]}.log`,
+);
 
 if (LOG_TO_FILE && !fs.existsSync(LOG_DIR)) {
   fs.mkdirSync(LOG_DIR, { recursive: true });
@@ -26,8 +29,8 @@ if (LOG_TO_FILE && !fs.existsSync(LOG_DIR)) {
 /* ========================================================================== */
 
 const COLORS = {
-  info: "\x1b[36m%s\x1b[0m",  // Cyan
-  warn: "\x1b[33m%s\x1b[0m",  // Gelb
+  info: "\x1b[36m%s\x1b[0m", // Cyan
+  warn: "\x1b[33m%s\x1b[0m", // Gelb
   error: "\x1b[31m%s\x1b[0m", // Rot
   debug: "\x1b[35m%s\x1b[0m", // Magenta
 };
@@ -54,7 +57,10 @@ export function log(level: LogLevel, msg: string, data?: any): void {
   // CLI-Ausgabe (mit Farbe)
   if (process.stdout.isTTY) {
     const color = COLORS[level] || "%s";
-    console.log(color, `[${entry.level.toUpperCase()}] ${entry.ts} - ${entry.msg}`);
+    console.log(
+      color,
+      `[${entry.level.toUpperCase()}] ${entry.ts} - ${entry.msg}`,
+    );
     if (data) console.dir(data, { depth: 4, colors: true });
   } else {
     console.log(jsonLine);

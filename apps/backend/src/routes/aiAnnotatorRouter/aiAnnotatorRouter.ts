@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT  
+// SPDX-License-Identifier: MIT
 // apps/backend/src/routes/aiAnnotatorRouter/aiAnnotatorRouter.ts
 
 import { Router, Request, Response } from "express";
@@ -8,7 +8,7 @@ import aiAnnotatorService, {
   GeneratedMeta,
   DashboardRule,
   FormSpec,
-  DatabaseTool
+  DatabaseTool,
 } from "../../services/aiAnnotatorService.js";
 
 const router = Router();
@@ -17,10 +17,11 @@ const databaseTool = DatabaseTool.getInstance();
 /** --------- Erweiterte Hilfsfunktionen --------- */
 function toStringArray(v: unknown): string[] | undefined {
   if (typeof v === "string") return [v];
-  if (Array.isArray(v)) return (v as unknown[]).filter((x): x is string => typeof x === "string");
+  if (Array.isArray(v))
+    return (v as unknown[]).filter((x): x is string => typeof x === "string");
   if (v && typeof v === "object") {
     const values = Object.values(v as Record<string, unknown>);
-    const flat = values.flatMap(x => (typeof x === "string" ? [x] : []));
+    const flat = values.flatMap((x) => (typeof x === "string" ? [x] : []));
     return flat.length ? flat : undefined;
   }
   return undefined;
@@ -48,7 +49,10 @@ function toArray<T>(v: unknown, validator: (x: any) => x is T): T[] {
       const parsed = JSON.parse(v);
       return Array.isArray(parsed) ? parsed.filter(validator) : [];
     } catch {
-      return v.split(',').map(x => x.trim()).filter(x => x.length > 0) as T[];
+      return v
+        .split(",")
+        .map((x) => x.trim())
+        .filter((x) => x.length > 0) as T[];
     }
   }
   return [];
@@ -112,11 +116,11 @@ router.get("/database/batches", async (req: Request, res: Response) => {
   try {
     const limit = toInt(req.query.limit, 50);
     const batches = await databaseTool.getBatchOperations(limit);
-    
+
     res.json({
       success: true,
       data: batches,
-      pagination: { limit, total: batches.length }
+      pagination: { limit, total: batches.length },
     });
   } catch (error) {
     res.status(500).json({
@@ -126,93 +130,100 @@ router.get("/database/batches", async (req: Request, res: Response) => {
   }
 });
 
-router.delete("/database/batches/cleanup", async (req: Request, res: Response) => {
-  if (process.env.NODE_ENV === "production" && req.query.force !== "true") {
-    return res.status(403).json({ 
-      success: false, 
-      error: "Cleanup in Production erfordert force=true" 
-    });
-  }
-  
-  try {
-    const daysToKeep = toInt(req.query.days, 30);
-    await databaseTool.cleanupOldBatches(daysToKeep);
-    
-    res.json({ 
-      success: true, 
-      message: `Alte Batch-Jobs älter als ${daysToKeep} Tage wurden bereinigt` 
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+router.delete(
+  "/database/batches/cleanup",
+  async (req: Request, res: Response) => {
+    if (process.env.NODE_ENV === "production" && req.query.force !== "true") {
+      return res.status(403).json({
+        success: false,
+        error: "Cleanup in Production erfordert force=true",
+      });
+    }
+
+    try {
+      const daysToKeep = toInt(req.query.days, 30);
+      await databaseTool.cleanupOldBatches(daysToKeep);
+
+      res.json({
+        success: true,
+        message: `Alte Batch-Jobs älter als ${daysToKeep} Tage wurden bereinigt`,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+);
 
 // ============ ERWEITERTE NODE MANAGEMENT ============
 
-router.get("/nodes", async (req: Request<{}, any, any, NodesQuery>, res: Response) => {
-  try {
-    const kinds = toStringArray(req.query.kinds);
-    const missingOnly = toBool(req.query.missingOnly, false);
-    const limit = toInt(req.query.limit, 50);
-    const offset = toInt(req.query.offset, 0);
-    const search = typeof req.query.search === "string" ? req.query.search : undefined;
-    const status = toStringArray(req.query.status);
-    const businessArea = toStringArray(req.query.businessArea);
-    const complexity = toStringArray(req.query.complexity);
+router.get(
+  "/nodes",
+  async (req: Request<{}, any, any, NodesQuery>, res: Response) => {
+    try {
+      const kinds = toStringArray(req.query.kinds);
+      const missingOnly = toBool(req.query.missingOnly, false);
+      const limit = toInt(req.query.limit, 50);
+      const offset = toInt(req.query.offset, 0);
+      const search =
+        typeof req.query.search === "string" ? req.query.search : undefined;
+      const status = toStringArray(req.query.status);
+      const businessArea = toStringArray(req.query.businessArea);
+      const complexity = toStringArray(req.query.complexity);
 
-    const nodes = await aiAnnotatorService.listCandidates({
-      kinds,
-      missingOnly,
-      limit,
-      offset,
-      search,
-      status,
-      businessArea,
-      complexity
-    });
+      const nodes = await aiAnnotatorService.listCandidates({
+        kinds,
+        missingOnly,
+        limit,
+        offset,
+        search,
+        status,
+        businessArea,
+        complexity,
+      });
 
-    res.json({
-      success: true,
-      data: { nodes },
-      pagination: { limit, offset, total: nodes.length },
-      filters: { kinds, status, businessArea, complexity }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+      res.json({
+        success: true,
+        data: { nodes },
+        pagination: { limit, offset, total: nodes.length },
+        filters: { kinds, status, businessArea, complexity },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+);
 
 router.get("/nodes/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
-    const nodes = await aiAnnotatorService.listCandidates({ 
+
+    const nodes = await aiAnnotatorService.listCandidates({
       limit: 1,
-      search: id 
+      search: id,
     });
-    
+
     const node = nodes.find((n) => n.id === id);
     if (!node) {
-      return res.status(404).json({ 
-        success: false, 
-        error: `Knoten ${id} nicht gefunden` 
+      return res.status(404).json({
+        success: false,
+        error: `Knoten ${id} nicht gefunden`,
       });
     }
 
-    res.json({ 
-      success: true, 
-      data: { node } 
+    res.json({
+      success: true,
+      data: { node },
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -220,30 +231,30 @@ router.get("/nodes/:id", async (req: Request, res: Response) => {
 router.post("/nodes/:id/validate", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
-    const nodes = await aiAnnotatorService.listCandidates({ 
+
+    const nodes = await aiAnnotatorService.listCandidates({
       limit: 1,
-      search: id 
+      search: id,
     });
-    
+
     const node = nodes.find((n) => n.id === id);
     if (!node) {
-      return res.status(404).json({ 
-        success: false, 
-        error: `Knoten ${id} nicht gefunden` 
+      return res.status(404).json({
+        success: false,
+        error: `Knoten ${id} nicht gefunden`,
       });
     }
 
     const validation = await aiAnnotatorService.validateNode(node);
-    
-    res.json({ 
-      success: true, 
-      data: { node, validation } 
+
+    res.json({
+      success: true,
+      data: { node, validation },
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -254,11 +265,16 @@ router.post("/nodes/:id/generate-meta", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+    const nodes = await aiAnnotatorService.listCandidates({
+      limit: 1,
+      search: id,
+    });
+    const node = nodes.find((n) => n.id === id);
 
     if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      return res
+        .status(404)
+        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
     }
 
     const meta = await aiAnnotatorService.generateMeta(node);
@@ -267,14 +283,15 @@ router.post("/nodes/:id/generate-meta", async (req: Request, res: Response) => {
     res.json({
       success: true,
       message: "Metadaten erfolgreich generiert und gespeichert.",
-      data: { node, meta }
+      data: { node, meta },
     });
   } catch (error: any) {
     console.error("❌ Fehler bei generate-meta:", error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : "Unbekannter Fehler",
-      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+      details:
+        process.env.NODE_ENV === "development" ? error?.stack : undefined,
     });
   }
 });
@@ -283,11 +300,16 @@ router.post("/nodes/:id/generate-rule", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+    const nodes = await aiAnnotatorService.listCandidates({
+      limit: 1,
+      search: id,
+    });
+    const node = nodes.find((n) => n.id === id);
 
     if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      return res
+        .status(404)
+        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
     }
 
     const rule = await aiAnnotatorService.generateRule(node);
@@ -296,14 +318,15 @@ router.post("/nodes/:id/generate-rule", async (req: Request, res: Response) => {
     res.json({
       success: true,
       message: "Regel erfolgreich generiert und gespeichert.",
-      data: { node, rule }
+      data: { node, rule },
     });
   } catch (error: any) {
     console.error("❌ Fehler bei generate-rule:", error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : "Unbekannter Fehler",
-      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+      details:
+        process.env.NODE_ENV === "development" ? error?.stack : undefined,
     });
   }
 });
@@ -312,11 +335,16 @@ router.post("/nodes/:id/generate-form", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+    const nodes = await aiAnnotatorService.listCandidates({
+      limit: 1,
+      search: id,
+    });
+    const node = nodes.find((n) => n.id === id);
 
     if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      return res
+        .status(404)
+        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
     }
 
     const formSpec = await aiAnnotatorService.generateFormSpec(node);
@@ -325,105 +353,131 @@ router.post("/nodes/:id/generate-form", async (req: Request, res: Response) => {
     res.json({
       success: true,
       message: "Formular erfolgreich generiert und gespeichert.",
-      data: { node, formSpec }
+      data: { node, formSpec },
     });
   } catch (error: any) {
     console.error("❌ Fehler bei generate-form:", error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : "Unbekannter Fehler",
-      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+      details:
+        process.env.NODE_ENV === "development" ? error?.stack : undefined,
     });
   }
 });
 
-router.post("/nodes/:id/enhance-schema", async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
+router.post(
+  "/nodes/:id/enhance-schema",
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+      const nodes = await aiAnnotatorService.listCandidates({
+        limit: 1,
+        search: id,
+      });
+      const node = nodes.find((n) => n.id === id);
 
-    if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      if (!node) {
+        return res
+          .status(404)
+          .json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      }
+
+      const enhancedSchema = await aiAnnotatorService.enhanceSchema(node);
+
+      res.json({
+        success: true,
+        message: "Schema erfolgreich erweitert.",
+        data: { node, enhancedSchema },
+      });
+    } catch (error: any) {
+      console.error("❌ Fehler bei enhance-schema:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unbekannter Fehler",
+        details:
+          process.env.NODE_ENV === "development" ? error?.stack : undefined,
+      });
     }
+  },
+);
 
-    const enhancedSchema = await aiAnnotatorService.enhanceSchema(node);
+router.post(
+  "/nodes/:id/full-annotation",
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { includeValidation = true, parallel = true } = req.body;
 
-    res.json({
-      success: true,
-      message: "Schema erfolgreich erweitert.",
-      data: { node, enhancedSchema }
-    });
-  } catch (error: any) {
-    console.error("❌ Fehler bei enhance-schema:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unbekannter Fehler",
-      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
-    });
-  }
-});
+      const nodes = await aiAnnotatorService.listCandidates({
+        limit: 1,
+        search: id,
+      });
+      const node = nodes.find((n) => n.id === id);
 
-router.post("/nodes/:id/full-annotation", async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { includeValidation = true, parallel = true } = req.body;
+      if (!node) {
+        return res
+          .status(404)
+          .json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      }
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+      let meta: any,
+        rule: any,
+        form: any,
+        validation: any = null;
 
-    if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      if (parallel) {
+        [meta, rule, form, validation] = await Promise.all([
+          aiAnnotatorService.generateMeta(node),
+          aiAnnotatorService.generateRule(node),
+          aiAnnotatorService.generateFormSpec(node),
+          includeValidation
+            ? aiAnnotatorService.validateNode(node)
+            : Promise.resolve(null),
+        ]);
+      } else {
+        meta = await aiAnnotatorService.generateMeta(node);
+        rule = await aiAnnotatorService.generateRule(node);
+        form = await aiAnnotatorService.generateFormSpec(node);
+        validation = includeValidation
+          ? await aiAnnotatorService.validateNode(node)
+          : null;
+      }
+
+      if (meta) await aiAnnotatorService.saveMeta(id, { ...meta, rule });
+      if (form) await aiAnnotatorService.saveFormSpec(id, form);
+
+      res.json({
+        success: true,
+        message: "Vollständige Annotation erfolgreich generiert.",
+        data: { node, meta, rule, form, validation },
+      });
+    } catch (error: any) {
+      console.error("❌ Fehler bei full-annotation:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unbekannter Fehler",
+        details:
+          process.env.NODE_ENV === "development" ? error?.stack : undefined,
+      });
     }
-
-    let meta: any, rule: any, form: any, validation: any = null;
-
-    if (parallel) {
-      [meta, rule, form, validation] = await Promise.all([
-        aiAnnotatorService.generateMeta(node),
-        aiAnnotatorService.generateRule(node),
-        aiAnnotatorService.generateFormSpec(node),
-        includeValidation ? aiAnnotatorService.validateNode(node) : Promise.resolve(null)
-      ]);
-    } else {
-      meta = await aiAnnotatorService.generateMeta(node);
-      rule = await aiAnnotatorService.generateRule(node);
-      form = await aiAnnotatorService.generateFormSpec(node);
-      validation = includeValidation ? await aiAnnotatorService.validateNode(node) : null;
-    }
-
-    if (meta) await aiAnnotatorService.saveMeta(id, { ...meta, rule });
-    if (form) await aiAnnotatorService.saveFormSpec(id, form);
-
-    res.json({
-      success: true,
-      message: "Vollständige Annotation erfolgreich generiert.",
-      data: { node, meta, rule, form, validation }
-    });
-  } catch (error: any) {
-    console.error("❌ Fehler bei full-annotation:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unbekannter Fehler",
-      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
-    });
-  }
-});
+  },
+);
 
 // ============ ERWEITERTE BATCH OPERATIONS ============
 
 router.post("/batch", async (req: Request, res: Response) => {
   try {
     const operation: BatchOperation = req.body;
-    
+
     if (!operation.operation || !operation.filters) {
-      return res.status(400).json({ 
-        success: false, 
-        error: "Operation und Filters sind erforderlich" 
+      return res.status(400).json({
+        success: false,
+        error: "Operation und Filters sind erforderlich",
       });
     }
-    
+
     // Setze Default-Optionen
     operation.options = {
       retryFailed: true,
@@ -431,19 +485,19 @@ router.post("/batch", async (req: Request, res: Response) => {
       chunkSize: 10,
       parallelRequests: 2,
       modelPreference: "balanced",
-      ...operation.options
+      ...operation.options,
     };
-    
+
     const result = await aiAnnotatorService.executeBatchOperation(operation);
-    
-    res.json({ 
-      success: true, 
-      data: result 
+
+    res.json({
+      success: true,
+      data: result,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -452,23 +506,23 @@ router.get("/batch/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const batches = await databaseTool.getBatchOperations(100);
-    const batch = batches.find(b => b.id === id);
-    
+    const batch = batches.find((b) => b.id === id);
+
     if (!batch) {
       return res.status(404).json({
         success: false,
-        error: `Batch ${id} nicht gefunden`
+        error: `Batch ${id} nicht gefunden`,
       });
     }
-    
+
     res.json({
       success: true,
-      data: batch
+      data: batch,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -476,18 +530,18 @@ router.get("/batch/:id", async (req: Request, res: Response) => {
 router.post("/batch/:id/cancel", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
+
     // In einer realen Implementierung würde hier die Batch-Verarbeitung abgebrochen
-    await databaseTool.updateBatchProgress(id, 0, 'cancelled');
-    
+    await databaseTool.updateBatchProgress(id, 0, "cancelled");
+
     res.json({
       success: true,
-      message: `Batch ${id} wurde abgebrochen`
+      message: `Batch ${id} wurde abgebrochen`,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -495,34 +549,34 @@ router.post("/batch/:id/cancel", async (req: Request, res: Response) => {
 router.post("/classify-pii", async (req: Request, res: Response) => {
   try {
     const { nodeIds, detailed = false } = req.body;
-    
+
     if (!Array.isArray(nodeIds)) {
       return res.status(400).json({
         success: false,
-        error: "nodeIds muss ein Array sein"
+        error: "nodeIds muss ein Array sein",
       });
     }
 
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
     const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
-    
+
     if (nodes.length === 0) {
       return res.status(404).json({
         success: false,
-        error: "Keine Knoten gefunden"
+        error: "Keine Knoten gefunden",
       });
     }
 
     const piiResults = await aiAnnotatorService.classifyPii(nodes);
-    
+
     res.json({
       success: true,
-      data: piiResults
+      data: piiResults,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -532,50 +586,53 @@ router.post("/classify-pii", async (req: Request, res: Response) => {
 router.post("/validate-batch", async (req: Request, res: Response) => {
   try {
     const { nodeIds, rules = [] } = req.body;
-    
+
     if (!Array.isArray(nodeIds)) {
       return res.status(400).json({
         success: false,
-        error: "nodeIds muss ein Array sein"
+        error: "nodeIds muss ein Array sein",
       });
     }
 
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
     const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
-    
+
     if (nodes.length === 0) {
       return res.status(404).json({
         success: false,
-        error: "Keine Knoten gefunden"
+        error: "Keine Knoten gefunden",
       });
     }
 
     const validationResults = await Promise.all(
-      nodes.map(node => aiAnnotatorService.validateNode(node))
+      nodes.map((node) => aiAnnotatorService.validateNode(node)),
     );
-    
+
     const summary = {
       total: validationResults.length,
-      valid: validationResults.filter(r => r.valid).length,
-      withErrors: validationResults.filter(r => r.errors.length > 0).length,
-      withWarnings: validationResults.filter(r => r.warnings.length > 0).length,
-      averageSuggestions: validationResults.reduce((sum, r) => sum + r.suggestions.length, 0) / validationResults.length
+      valid: validationResults.filter((r) => r.valid).length,
+      withErrors: validationResults.filter((r) => r.errors.length > 0).length,
+      withWarnings: validationResults.filter((r) => r.warnings.length > 0)
+        .length,
+      averageSuggestions:
+        validationResults.reduce((sum, r) => sum + r.suggestions.length, 0) /
+        validationResults.length,
     };
-    
+
     res.json({
       success: true,
       data: {
         summary,
         results: validationResults.map((result, index) => ({
           node: nodes[index],
-          validation: result
-        }))
-      }
+          validation: result,
+        })),
+      },
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -584,34 +641,42 @@ router.get("/quality/report", async (req: Request, res: Response) => {
   try {
     const stats = await databaseTool.getNodeStatistics();
     const batches = await databaseTool.getBatchOperations(50);
-    
+
     const qualityReport = {
       annotation: {
         progress: stats.annotationProgress,
         averageConfidence: stats.averageConfidence,
-        distribution: stats.byStatus
+        distribution: stats.byStatus,
       },
       batches: {
         total: batches.length,
-        completed: batches.filter(b => b.status === 'completed').length,
-        failed: batches.filter(b => b.status === 'failed').length,
-        recentSuccessRate: batches.slice(0, 10).filter(b => b.status === 'completed').length / 10
+        completed: batches.filter((b) => b.status === "completed").length,
+        failed: batches.filter((b) => b.status === "failed").length,
+        recentSuccessRate:
+          batches.slice(0, 10).filter((b) => b.status === "completed").length /
+          10,
       },
       recommendations: [
-        stats.annotationProgress < 50 ? "Batch-Annotation für unvollständige Knoten ausführen" : null,
-        stats.averageConfidence < 0.7 ? "KI-Modell für bessere Konfidenz optimieren" : null,
-        batches.filter(b => b.status === 'failed').length > 5 ? "Fehlerhafte Batches analysieren und wiederholen" : null
-      ].filter(Boolean)
+        stats.annotationProgress < 50
+          ? "Batch-Annotation für unvollständige Knoten ausführen"
+          : null,
+        stats.averageConfidence < 0.7
+          ? "KI-Modell für bessere Konfidenz optimieren"
+          : null,
+        batches.filter((b) => b.status === "failed").length > 5
+          ? "Fehlerhafte Batches analysieren und wiederholen"
+          : null,
+      ].filter(Boolean),
     };
-    
+
     res.json({
       success: true,
-      data: qualityReport
+      data: qualityReport,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -621,32 +686,36 @@ router.get("/quality/report", async (req: Request, res: Response) => {
 router.get("/rules", async (req: Request, res: Response) => {
   try {
     const { type, widget, includeNodes = true } = req.query;
-    
+
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
-    const nodesWithRules = allNodes.filter(node => node.meta_json?.rule);
-    
+    const nodesWithRules = allNodes.filter((node) => node.meta_json?.rule);
+
     // Filterung nach Typ/Widget
     let filteredNodes = nodesWithRules;
     if (type) {
-      filteredNodes = filteredNodes.filter(node => node.meta_json.rule.type === type);
+      filteredNodes = filteredNodes.filter(
+        (node) => node.meta_json.rule.type === type,
+      );
     }
     if (widget) {
-      filteredNodes = filteredNodes.filter(node => node.meta_json.rule.widget === widget);
+      filteredNodes = filteredNodes.filter(
+        (node) => node.meta_json.rule.widget === widget,
+      );
     }
-    
+
     // Gruppierung
     const rulesByType: Record<string, NodeForAnnotation[]> = {};
     const widgetsByType: Record<string, string[]> = {};
-    
-    filteredNodes.forEach(node => {
+
+    filteredNodes.forEach((node) => {
       const ruleType = node.meta_json.rule.type;
       const widget = node.meta_json.rule.widget;
-      
+
       if (!rulesByType[ruleType]) {
         rulesByType[ruleType] = [];
       }
       rulesByType[ruleType].push(node);
-      
+
       if (widget) {
         if (!widgetsByType[ruleType]) {
           widgetsByType[ruleType] = [];
@@ -656,20 +725,20 @@ router.get("/rules", async (req: Request, res: Response) => {
         }
       }
     });
-    
+
     res.json({
       success: true,
       data: {
         total: filteredNodes.length,
         byType: rulesByType,
         widgets: widgetsByType,
-        nodes: includeNodes ? filteredNodes : undefined
-      }
+        nodes: includeNodes ? filteredNodes : undefined,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -679,15 +748,15 @@ router.get("/rules", async (req: Request, res: Response) => {
 router.get("/ai/models", async (_req: Request, res: Response) => {
   try {
     const modelStats = await aiAnnotatorService.getModelStatistics();
-    
+
     res.json({
       success: true,
-      data: modelStats
+      data: modelStats,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -695,15 +764,15 @@ router.get("/ai/models", async (_req: Request, res: Response) => {
 router.post("/ai/optimize", async (_req: Request, res: Response) => {
   try {
     const optimization = await aiAnnotatorService.optimizeConfiguration();
-    
+
     res.json({
       success: true,
-      data: optimization
+      data: optimization,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -714,41 +783,41 @@ router.get("/error-correction/config", async (_req: Request, res: Response) => {
   try {
     // Hier könnte die aktuelle Error-Correction Konfiguration zurückgegeben werden
     const status = await aiAnnotatorService.getStatus();
-    
+
     res.json({
       success: true,
-      data: status.errorCorrection
+      data: status.errorCorrection,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
 
 router.put("/error-correction/config", async (req: Request, res: Response) => {
   if (process.env.NODE_ENV === "production") {
-    return res.status(403).json({ 
-      success: false, 
-      error: "Konfigurationsänderungen nicht in Production verfügbar" 
+    return res.status(403).json({
+      success: false,
+      error: "Konfigurationsänderungen nicht in Production verfügbar",
     });
   }
-  
+
   try {
     const config = req.body;
     // In einer realen Implementierung würde hier die Konfiguration aktualisiert
     console.log("Error correction config update:", config);
-    
+
     res.json({
       success: true,
       message: "Konfiguration wurde aktualisiert (simuliert)",
-      data: config
+      data: config,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -757,25 +826,25 @@ router.put("/error-correction/config", async (req: Request, res: Response) => {
 
 router.post("/debug/prompt", async (req: Request, res: Response) => {
   if (process.env.NODE_ENV === "production") {
-    return res.status(403).json({ 
-      success: false, 
-      error: "Debug endpoints nicht in Production verfügbar" 
+    return res.status(403).json({
+      success: false,
+      error: "Debug endpoints nicht in Production verfügbar",
     });
   }
-  
+
   try {
     const { nodeId, promptType = "meta", options = {} } = req.body;
-    
-    const nodes = await aiAnnotatorService.listCandidates({ 
+
+    const nodes = await aiAnnotatorService.listCandidates({
       limit: 1,
-      search: nodeId 
+      search: nodeId,
     });
-    
+
     const node = nodes.find((n) => n.id === nodeId);
     if (!node) {
-      return res.status(404).json({ 
-        success: false, 
-        error: `Knoten ${nodeId} nicht gefunden` 
+      return res.status(404).json({
+        success: false,
+        error: `Knoten ${nodeId} nicht gefunden`,
       });
     }
 
@@ -796,23 +865,27 @@ router.post("/debug/prompt", async (req: Request, res: Response) => {
       case "correction":
         const mockMeta = { description: "Test", tags: [] };
         const mockErrors = ["Description too short", "No tags provided"];
-        prompt = (aiAnnotatorService as any).buildCorrectionPrompt(node, mockMeta, mockErrors);
+        prompt = (aiAnnotatorService as any).buildCorrectionPrompt(
+          node,
+          mockMeta,
+          mockErrors,
+        );
         break;
       default:
-        return res.status(400).json({ 
-          success: false, 
-          error: "Unbekannter Prompt-Typ" 
+        return res.status(400).json({
+          success: false,
+          error: "Unbekannter Prompt-Typ",
         });
     }
-    
-    res.json({ 
-      success: true, 
-      data: { node, prompt, length: prompt.length } 
+
+    res.json({
+      success: true,
+      data: { node, prompt, length: prompt.length },
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : "Unknown error" 
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -821,7 +894,7 @@ router.post("/debug/ai-test", async (req: Request, res: Response) => {
   if (process.env.NODE_ENV === "production") {
     return res.status(403).json({
       success: false,
-      error: "Debug endpoints sind in Production deaktiviert"
+      error: "Debug endpoints sind in Production deaktiviert",
     });
   }
 
@@ -838,7 +911,10 @@ router.post("/debug/ai-test", async (req: Request, res: Response) => {
 }`;
 
     // KI-Aufruf
-    const response = await (aiAnnotatorService as any).callAI(testPrompt, "debug");
+    const response = await (aiAnnotatorService as any).callAI(
+      testPrompt,
+      "debug",
+    );
 
     // Sichere JSON-Auswertung
     let parsed: any = null;
@@ -853,15 +929,16 @@ router.post("/debug/ai-test", async (req: Request, res: Response) => {
       data: {
         prompt: testPrompt,
         response,
-        parsed
-      }
+        parsed,
+      },
     });
   } catch (error: any) {
     console.error("❌ Fehler bei /debug/ai-test:", error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
-      details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+      details:
+        process.env.NODE_ENV === "development" ? error?.stack : undefined,
     });
   }
 });
@@ -872,36 +949,37 @@ router.get("/batch-templates", async (_req: Request, res: Response) => {
   const templates = {
     quick_annotation: {
       name: "Schnelle Annotation",
-      description: "Schnelle Metadaten-Generierung für alle unannotierten Knoten",
+      description:
+        "Schnelle Metadaten-Generierung für alle unannotierten Knoten",
       operation: "generate_meta",
       filters: { missingOnly: true },
       options: {
         chunkSize: 20,
         parallelRequests: 3,
-        modelPreference: "fast"
-      }
+        modelPreference: "fast",
+      },
     },
     full_annotation: {
-      name: "Vollständige Annotation", 
+      name: "Vollständige Annotation",
       description: "Umfassende Annotation mit Metadaten, Regeln und Formularen",
       operation: "full_annotation",
       filters: { missingOnly: true },
       options: {
         chunkSize: 5,
         parallelRequests: 2,
-        modelPreference: "accurate"
-      }
+        modelPreference: "accurate",
+      },
     },
     pii_scan: {
       name: "PII Scan",
       description: "PII-Klassifizierung für alle Knoten",
-      operation: "classify_pii", 
+      operation: "classify_pii",
       filters: {},
       options: {
         chunkSize: 50,
         parallelRequests: 5,
-        modelPreference: "balanced"
-      }
+        modelPreference: "balanced",
+      },
     },
     quality_check: {
       name: "Qualitätsprüfung",
@@ -910,14 +988,14 @@ router.get("/batch-templates", async (_req: Request, res: Response) => {
       filters: {},
       options: {
         chunkSize: 25,
-        parallelRequests: 4
-      }
-    }
+        parallelRequests: 4,
+      },
+    },
   };
-  
+
   res.json({
     success: true,
-    data: templates
+    data: templates,
   });
 });
 
@@ -927,21 +1005,26 @@ router.get("/nodes/:id/meta", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+    const nodes = await aiAnnotatorService.listCandidates({
+      limit: 1,
+      search: id,
+    });
+    const node = nodes.find((n) => n.id === id);
 
     if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      return res
+        .status(404)
+        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
     }
 
     res.json({
       success: true,
-      data: node.meta_json || {}
+      data: node.meta_json || {},
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      error: error?.message || "Unknown error"
+      error: error?.message || "Unknown error",
     });
   }
 });
@@ -952,23 +1035,28 @@ router.get("/nodes/:id/rule", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+    const nodes = await aiAnnotatorService.listCandidates({
+      limit: 1,
+      search: id,
+    });
+    const node = nodes.find((n) => n.id === id);
 
     if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      return res
+        .status(404)
+        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
     }
 
     const rule = node.meta_json?.rule;
 
     res.json({
       success: true,
-      data: rule || null
+      data: rule || null,
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      error: error?.message || "Unknown error"
+      error: error?.message || "Unknown error",
     });
   }
 });
@@ -979,23 +1067,28 @@ router.get("/nodes/:id/form", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+    const nodes = await aiAnnotatorService.listCandidates({
+      limit: 1,
+      search: id,
+    });
+    const node = nodes.find((n) => n.id === id);
 
     if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      return res
+        .status(404)
+        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
     }
 
     const form = node.meta_json?.formSpec;
 
     res.json({
       success: true,
-      data: form || null
+      data: form || null,
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      error: error?.message || "Unknown error"
+      error: error?.message || "Unknown error",
     });
   }
 });
@@ -1006,21 +1099,26 @@ router.get("/nodes/:id/schema", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+    const nodes = await aiAnnotatorService.listCandidates({
+      limit: 1,
+      search: id,
+    });
+    const node = nodes.find((n) => n.id === id);
 
     if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      return res
+        .status(404)
+        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
     }
 
     res.json({
       success: true,
-      data: node.schema_json || null
+      data: node.schema_json || null,
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      error: error?.message || "Unknown error"
+      error: error?.message || "Unknown error",
     });
   }
 });
@@ -1031,28 +1129,35 @@ router.get("/nodes/:id/analysis", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+    const nodes = await aiAnnotatorService.listCandidates({
+      limit: 1,
+      search: id,
+    });
+    const node = nodes.find((n) => n.id === id);
 
     if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      return res
+        .status(404)
+        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
     }
 
     const analysis = {
       technical: (aiAnnotatorService as any).analyzeTechnicalComplexity(node),
-      integrationPoints: (aiAnnotatorService as any).extractIntegrationPoints(node),
+      integrationPoints: (aiAnnotatorService as any).extractIntegrationPoints(
+        node,
+      ),
       businessArea: (aiAnnotatorService as any).guessBusinessArea(node),
-      piiClass: (aiAnnotatorService as any).guessPiiClass(node)
+      piiClass: (aiAnnotatorService as any).guessPiiClass(node),
     };
 
     res.json({
       success: true,
-      data: analysis
+      data: analysis,
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      error: error?.message || "Unknown error"
+      error: error?.message || "Unknown error",
     });
   }
 });
@@ -1063,23 +1168,28 @@ router.get("/nodes/:id/quality", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({ limit: 1, search: id });
-    const node = nodes.find(n => n.id === id);
+    const nodes = await aiAnnotatorService.listCandidates({
+      limit: 1,
+      search: id,
+    });
+    const node = nodes.find((n) => n.id === id);
 
     if (!node) {
-      return res.status(404).json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      return res
+        .status(404)
+        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
     }
 
     const quality = node.meta_json?.quality;
 
     res.json({
       success: true,
-      data: quality || null
+      data: quality || null,
     });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      error: error?.message || "Unknown error"
+      error: error?.message || "Unknown error",
     });
   }
 });
@@ -1090,15 +1200,15 @@ router.get("/nodes/:id/quality", async (req: Request, res: Response) => {
 router.post("/system/optimize", async (_req: Request, res: Response) => {
   try {
     const result = await aiAnnotatorService.optimizeConfiguration();
-    
+
     res.json({
       success: true,
-      data: result
+      data: result,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -1107,15 +1217,15 @@ router.post("/system/optimize", async (_req: Request, res: Response) => {
 router.get("/ai/model-stats", async (_req: Request, res: Response) => {
   try {
     const stats = await aiAnnotatorService.getModelStatistics();
-    
+
     res.json({
       success: true,
-      data: stats
+      data: stats,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -1124,21 +1234,21 @@ router.get("/ai/model-stats", async (_req: Request, res: Response) => {
 router.post("/bulk-enhance", async (req: Request, res: Response) => {
   try {
     const { nodeIds, operations = ["meta", "rule", "form"] } = req.body;
-    
+
     if (!Array.isArray(nodeIds)) {
       return res.status(400).json({
         success: false,
-        error: "nodeIds muss ein Array sein"
+        error: "nodeIds muss ein Array sein",
       });
     }
 
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
     const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
-    
+
     if (nodes.length === 0) {
       return res.status(404).json({
         success: false,
-        error: "Keine Knoten gefunden"
+        error: "Keine Knoten gefunden",
       });
     }
 
@@ -1149,20 +1259,20 @@ router.post("/bulk-enhance", async (req: Request, res: Response) => {
       options: {
         chunkSize: 5,
         parallelRequests: 2,
-        modelPreference: "balanced"
-      }
+        modelPreference: "balanced",
+      },
     };
 
     const result = await aiAnnotatorService.executeBatchOperation(batchOp);
-    
+
     res.json({
       success: true,
-      data: result
+      data: result,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -1173,20 +1283,20 @@ router.get("/system/monitoring", async (_req: Request, res: Response) => {
     const health = await aiAnnotatorService.getHealthStatus();
     const modelStats = await aiAnnotatorService.getModelStatistics();
     const dbStats = await databaseTool.getNodeStatistics();
-    
+
     res.json({
       success: true,
       data: {
         health,
         models: modelStats,
         database: dbStats,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -1196,28 +1306,30 @@ router.post("/ai/model-selection-test", async (req: Request, res: Response) => {
   if (process.env.NODE_ENV === "production") {
     return res.status(403).json({
       success: false,
-      error: "Test endpoints sind in Production deaktiviert"
+      error: "Test endpoints sind in Production deaktiviert",
     });
   }
 
   try {
     const { operation = "meta", priority = "balanced" } = req.body;
-    
-    const model = await (aiAnnotatorService as any).modelSelector.selectBestModel(operation, priority);
-    
+
+    const model = await (
+      aiAnnotatorService as any
+    ).modelSelector.selectBestModel(operation, priority);
+
     res.json({
       success: true,
       data: {
         operation,
         priority,
         selectedModel: model,
-        availableModels: (aiAnnotatorService as any).availableModels
-      }
+        availableModels: (aiAnnotatorService as any).availableModels,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });

@@ -9,7 +9,7 @@ export default {
         healthy: "System funktionsfähig",
         degraded: "System eingeschränkt",
         unhealthy: "Systemfehler",
-      }
+      },
     },
 
     // Kategorienbereich
@@ -29,7 +29,7 @@ export default {
       placeholder: "Suche nach {{type}}…",
       loading: "Suche läuft…",
       noResults: "Keine Ergebnisse gefunden",
-      input: "Suchfeld"
+      input: "Suchfeld",
     },
 
     // Navigation
@@ -37,7 +37,7 @@ export default {
       overview: "Übersicht",
       catalog: "Funktionen",
       ai: "AI-Annotator",
-      settings: "Einstellungen"
+      settings: "Einstellungen",
     },
 
     // Chat-Bereich
@@ -46,7 +46,7 @@ export default {
       inputPlaceholder: "Nachricht eingeben…",
       send: "Senden",
       newSession: "Neue Sitzung",
-      loading: "Antwort wird verarbeitet…"
+      loading: "Antwort wird verarbeitet…",
     },
 
     // Modelle
@@ -54,14 +54,14 @@ export default {
       title: "Modelle",
       provider: "Anbieter",
       capabilities: "Fähigkeiten",
-      noModels: "Keine Modelle verfügbar"
+      noModels: "Keine Modelle verfügbar",
     },
 
     // Tools
     tools: {
       title: "Tools",
       run: "Ausführen",
-      noTools: "Keine Tools registriert"
+      noTools: "Keine Tools registriert",
     },
 
     // Systeminformationen
@@ -90,7 +90,7 @@ export default {
       close: "Schließen",
       reload: "Neu laden",
       details: "Details",
-      unknown: "Unbekannt"
-    }
-  }
+      unknown: "Unbekannt",
+    },
+  },
 };

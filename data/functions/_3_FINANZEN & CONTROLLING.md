@@ -1,1067 +1,1068 @@
 ## 💰 FINANZEN & CONTROLLING
+
 ├── 💳 Buchhaltung
-│   ├── 📒 Hauptbuch
-│   │   ├── 🏛️ Kontenrahmen-Systeme
-│   │   │   ├── 🇩🇪 SKR03 (Standardkontenrahmen)
-│   │   │   │   ├── 📊 Kontenklassen 0-9
-│   │   │   │   ├── 🔢 Kontonummern-Systematik
-│   │   │   │   ├── 📋 Standard-Buchungssätze
-│   │   │   │   ├── 🎯 Branchenanpassungen
-│   │   │   │   ├── 🔄 Automatische Zuordnungen
-│   │   │   │   ├── 📈 Kontenplan-Import
-│   │   │   │   ├── 💡 KI-Optimierte Vorschläge
-│   │   │   │   ├── 📊 Kontenstruktur-Analyse
-│   │   │   │   ├── 🔍 Duplikatserkennung
-│   │   │   │   ├── 📋 Revision-Sicherheit
-│   │   │   │   ├── 🌍 Multi-Mandantenfähig
-│   │   │   │   ├── 📅 Historische Daten
-│   │   │   │   ├── 🔄 Update-Management
-│   │   │   │   └── 📊 Performance-Monitoring
-│   │   │   ├── 🇩🇪 SKR04 (Gemeinschaftskontenrahmen)
-│   │   │   │   ├── 📊 Erweiterte Kontenstruktur
-│   │   │   │   ├── 🔢 Detaillierte Kontenklassen
-│   │   │   │   ├── 📋 Industrie-spezifische Konten
-│   │   │   │   ├── 🎯 Handels- und Produktionskonten
-│   │   │   │   ├── 🔄 Automatische Mapping
-│   │   │   │   ├── 📈 Cross-Referencing
-│   │   │   │   ├── 💡 Branchen-Best-Practices
-│   │   │   │   ├── 📊 Kontengruppierungen
-│   │   │   │   ├── 🔍 Konsolidierungsfunktionen
-│   │   │   │   ├── 📋 DATEV-Kompatibilität
-│   │   │   │   ├── 🌍 Internationale Anpassung
-│   │   │   │   ├── 📅 Steuerliche Updates
-│   │   │   │   ├── 🔄 Versionierung
-│   │   │   │   └── 📊 Compliance-Checks
-│   │   │   ├── 🇩🇪 SKR49 (Landwirtschaft)
-│   │   │   │   ├── 🌾 Branchenspezifische Konten
-│   │   │   │   ├── 🐄 Tierbestandsbewertung
-│   │   │   │   ├── 🌱 Pflanzenbau-Konten
-│   │   │   │   ├── 🏭 Landtechnik-Konten
-│   │   │   │   ├── 📊 Fördermittel-Konten
-│   │   │   │   ├── 🔄 Saisonale Anpassungen
-│   │   │   │   ├── 📈 Ertrags- und Aufwandsrechnung
-│   │   │   │   ├── 💡 Agrar-Spezifische Buchungen
-│   │   │   │   ├── 📋 Betriebszweigabrechnung
-│   │   │   │   ├── 🔍 Kontrollnachweise
-│   │   │   │   ├── 📅 Biologische Bewertung
-│   │   │   │   ├── 🌍 EU-Agrarförderung
-│   │   │   │   ├── 🔄 Witterungseinflüsse
-│   │   │   │   ├── 📊 Erntedokumentation
-│   │   │   │   └── 🎯 Betriebsvergleiche
-│   │   │   ├── 🌍 IFRS (International Financial Reporting Standards)
-│   │   │   │   ├── 📊 IAS/IFRS Konformität
-│   │   │   │   ├── 🔢 Standardisierte Berichterstattung
-│   │   │   │   ├── 📋 Fair Value Bewertung
-│   │   │   │   ├── 🎯 Bilanzierungsvorschriften
-│   │   │   │   ├── 🔄 Periodengerechte Abgrenzung
-│   │   │   │   ├── 📈 Konsolidierungssystematik
-│   │   │   │   ├── 💡 Internationale Best Practices
-│   │   │   │   ├── 📊 Segment Reporting
-│   │   │   │   ├── 🔍 Impairment Testing
-│   │   │   │   ├── 📋 Leasing Accounting
-│   │   │   │   ├── 🌍 Multi-Currency Accounting
-│   │   │   │   ├── 📅 Revenue Recognition
-│   │   │   │   ├── 🔄 Hedge Accounting
-│   │   │   │   ├── 📊 Financial Instruments
-│   │   │   │   └── 🎯 Disclosure Requirements
-│   │   │   └── 🇺🇸 US-GAAP (Generally Accepted Accounting Principles)
-│   │   │       ├── 📊 FASB-Standards
-│   │   │       ├── 🔢 US-spezifische Konten
-│   │   │       ├── 📋 SEC-Reporting
-│   │   │       ├── 🎯 GAAP-Hierarchie
-│   │   │       ├── 🔄 Accrual Accounting
-│   │   │       ├── 📈 Financial Statement Preparation
-│   │   │       ├── 💡 US-Tax Compliance
-│   │   │       ├── 📊 Segment Reporting
-│   │   │       ├── 🔍 Sarbanes-Oxley Compliance
-│   │   │       ├── 📋 Revenue Recognition (ASC 606)
-│   │   │       ├── 🌍 Internationale Tochtergesellschaften
-│   │   │       ├── 📅 Quarterly Reporting
-│   │   │       ├── 🔄 Consolidation Procedures
-│   │   │       ├── 📊 Audit Preparation
-│   │   │       └── 🎯 Compliance Monitoring
-│   │   ├── 🤖 Automatische Buchungsregeln
-│   │   │   ├── 🎯 Regel-Engine
-│   │   │   │   ├── 📋 Wenn-Dann-Regeln
-│   │   │   │   ├── 🔄 Bedingte Verzweigungen
-│   │   │   │   ├── 📊 Regel-Prioritäten
-│   │   │   │   ├── 💡 KI-gestützte Optimierung
-│   │   │   │   ├── 📈 Regel-Performance
-│   │   │   │   ├── 🔍 Konflikt-Erkennung
-│   │   │   │   ├── 📋 Regel-Templates
-│   │   │   │   ├── 🌍 Mandanten-spezifische Regeln
-│   │   │   │   ├── 📅 Zeitgesteuerte Regeln
-│   │   │   │   ├── 🔄 Event-basierte Regeln
-│   │   │   │   ├── 📊 Regel-Statistiken
-│   │   │   │   ├── 🎯 Regel-Testing
-│   │   │   │   ├── 📈 Rule-Mining
-│   │   │   │   ├── 💡 Predictive Rules
-│   │   │   │   └── 📋 Dokumentation
-│   │   │   ├── 🔄 Buchungsautomatisierung
-│   │   │   │   ├── 📧 Belegleser (OCR)
-│   │   │   │   ├── 🏦 Bankabstimmung Auto-Matching
-│   │   │   │   ├── 📊 Rechnungsbuchung Automatisch
-│   │   │   │   ├── 🔄 Lohnbuchung Automatisch
-│   │   │   │   ├── 📈 Abschreibungen Automatisch
-│   │   │   │   ├── 💡 Zinsberechnungen Automatisch
-│   │   │   │   ├── 📋 Vorsteuer-Zuordnung
-│   │   │   │   ├── 🌍 Währungsumrechnung
-│   │   │   │   ├── 📅 Periodische Abschlussbuchungen
-│   │   │   │   ├── 🔄 Rückstellungen Automatisch
-│   │   │   │   ├── 📊 Rechnungsabgrenzung
-│   │   │   │   ├── 🎯 Gewinnrücklagen
-│   │   │   │   ├── 📈 Jahresübergreifende Buchungen
-│   │   │   │   ├── 💡 Konsolidierungsbuchungen
-│   │   │   │   └── 📋 Storno-Buchungen
-│   │   │   └── 📊 Regel-Überwachung
-│   │   │       ├── 🔍 Regel-Compliance Monitoring
-│   │   │       ├── 📈 Performance Analytics
-│   │   │       ├️ ⚠️ Abweichungs-Alarme
-│   │   │       ├── 🔄 Regel-Optimierung
-│   │   │       ├── 📋 Audit-Trail
-│   │   │       ├── 🎯 Regel-Reviews
-│   │   │       ├── 📈 Erfolgsmessung
-│   │   │       ├── 💡 KI-Empfehlungen
-│   │   │       ├── 📊 Reporting
-│   │   │       ├── 🔍 Pattern Recognition
-│   │   │       ├── 📧 Benachrichtigungen
-│   │   │       ├── 🎯 Quality Gates
-│   │   │       ├── 📈 Continuous Improvement
-│   │   │       ├── 💼 Training Modules
-│   │   │       └── 📋 Documentation
-│   │   ├── 📋 Journale & Belegkreise
-│   │   │   ├── 🏛️ Journal-Verwaltung
-│   │   │   │   ├── 📊 Hauptbuch-Journal
-│   │   │   │   ├── 💰 Kassen-Journal
-│   │   │   │   ├── 🏦 Bank-Journal
-│   │   │   │   ├── 📈 Einkaufs-Journal
-│   │   │   │   ├── 📊 Verkaufs-Journal
-│   │   │   │   ├── 🔧 Sachkonto-Journal
-│   │   │   │   ├── 🌍 Devisen-Journal
-│   │   │   │   ├── 📅 Lohn-Journal
-│   │   │   │   ├── 🔄 Anlagen-Journal
-│   │   │   │   ├── 📋 Reisekosten-Journal
-│   │   │   │   ├── 🎯 Spesen-Journal
-│   │   │   │   ├── 📈 Steuer-Journal
-│   │   │   │   ├── 💡 Sonder-Journale
-│   │   │   │   ├── 📊 Konsolidierungs-Journal
-│   │   │   │   ├── 🔍 Korrektur-Journal
-│   │   │   │   └── 📋 Abschluss-Journal
-│   │   │   ├── 🔄 Belegkreise
-│   │   │   │   ├── 📧 Belegnummernkreise
-│   │   │   │   ├── 📊 Belegarten-Definition
-│   │   │   │   ├── 🎯 Belegprüfungen
-│   │   │   │   ├── 🔄 Belegworkflows
-│   │   │   │   ├── 📈 Belegstatistiken
-│   │   │   │   ├── 💡 Automatische Belegerstellung
-│   │   │   │   ├── 📋 Belegarchivierung
-│   │   │   │   ├── 🌍 Mandanten-spezifische Kreise
-│   │   │   │   ├── 📅 Zeitliche Zuordnung
-│   │   │   │   ├── 🔄 Belegketten
-│   │   │   │   ├── 📊 Belegexport
-│   │   │   │   ├── 🎯 Belegimport
-│   │   │   │   ├── 📈 Belegsicherheit
-│   │   │   │   ├── 💡 Belegoptimierung
-│   │   │   │   └── 📋 Belegreporting
-│   │   │   └── 📊 Journal-Reporting
-│   │   │       ├── 📈 Journalübersichten
-│   │   │       ├── 📊 Detail-Reports
-│   │   │       ├── 🔍 Suchfunktionen
-│   │   │       ├── 📋 Filter-Optionen
-│   │   │       ├── 🎯 Export-Funktionen
-│   │   │       ├── 📈 Analyse-Tools
-│   │   │       ├── 💡 Visualisierung
-│   │   │       ├── 📊 Audit-Reports
-│   │   │       ├── 🔄 Echtzeit-Updates
-│   │   │       ├── 🌍 Multi-Currency Views
-│   │   │       ├── 📅 Zeitraum-Analysen
-│   │   │       ├── 🔍 Pattern Analysis
-│   │   │       ├── 📧 Automated Distribution
-│   │   │       ├── 🎯 Custom Reports
-│   │   │       └── 📈 Performance Metrics
-│   │   ├── 📅 Monats-/Jahresabschluss
-│   │   │   ├── 🗓️ Abschluss-Arbeitspläne
-│   │   │   │   ├── 📋 Standard-Abschlussplan
-│   │   │   │   ├── 🎯 Rollierende Planung
-│   │   │   │   ├── 👥 Zuständigkeiten
-│   │   │   │   ├️ ⏱️ Zeitpläne
-│   │   │   │   ├── 🔄 Meilensteine
-│   │   │   │   ├── 📈 Fortschrittskontrolle
-│   │   │   │   ├── 💡 Automatisierte Erinnerungen
-│   │   │   │   ├── 📊 Template-basierte Pläne
-│   │   │   │   ├── 🌍 Internationale Pläne
-│   │   │   │   ├── 📅 Saisonale Anpassungen
-│   │   │   │   ├── 🔄 Prioritätsmanagement
-│   │   │   │   ├── 📋 Checklisten
-│   │   │   │   ├── 🎯 Quality Gates
-│   │   │   │   ├── 📈 Performance Tracking
-│   │   │   │   ├── 💡 KI-Optimierung
-│   │   │   │   └── 📊 Reporting
-│   │   │   ├── 🔧 Abschluss-Arbeiten
-│   │   │   │   ├── 📊 Saldenvorträge
-│   │   │   │   ├── 🔄 Periodenabgrenzungen
-│   │   │   │   ├── 📈 Rückstellungsbuchungen
-│   │   │   │   ├── 💡 Abschreibungsberechnungen
-│   │   │   │   ├── 📋 Inventurbuchungen
-│   │   │   │   ├── 🎯 Wagnisbuchungen
-│   │   │   │   ├── 📈 Zinsbuchungen
-│   │   │   │   ├── 🔄 Steuerbuchungen
-│   │   │   │   ├── 📊 Ergebnisverwendungsbuchungen
-│   │   │   │   ├── 💡 Konsolidierungsbuchungen
-│   │   │   │   ├── 📋 Prüfung der Vollständigkeit
-│   │   │   │   ├── 🎯 Plausibilitätsprüfungen
-│   │   │   │   ├── 📈 Saldenbestätigungen
-│   │   │   │   ├── 🔄 Intercompany-Abstimmung
-│   │   │   │   ├── 📊 Bankabstimmung
-│   │   │   │   └── 💡 Debitoren/Kreditoren-Abstimmung
-│   │   │   └── 📋 Abschluss-Dokumentation
-│   │   │       ├── 📄 Bilanz
-│   │   │       ├── 📈 Gewinn- und Verlustrechnung
-│   │   │       ├── 📊 Anhang
-│   │   │       ├── 🔄 Lagebericht
-│   │   │       ├── 📋 Prüfungsberichte
-│   │   │       ├── 🎯 Steuerliche Erklärungen
-│   │   │       ├── 📈 Handelsregister-Meldungen
-│   │   │       ├── 💡 Analysten-Reports
-│   │   │       ├── 📊 Investor Relations
-│   │   │       ├── 🔍 Revision-Dokumentation
-│   │   │       ├── 📧 Verteilungsmanagement
-│   │   │       ├── 🎯 Archivierung
-│   │   │       ├── 📈 Versionierung
-│   │   │       ├── 💡 Automatisierte Erstellung
-│   │   │       ├── 📋 Compliance-Checks
-│   │   │       └── 🔄 Continuous Improvement
-│   │   └── 🛡️ Revision-Sicherheit
-│   │       ├── 🔐 Unveränderbarkeit
-│   │       │   ├── 📊 GoBD-Konforme Speicherung
-│   │       │   ├── 🔒 Write-Once-Read-Many (WORM)
-│   │       │   ├── 📋 Digitale Signatur
-│   │       │   ├── 🎯 Hash-Wert Berechnung
-│   │       │   ├── 📈 Zeitstempel-Service
-│   │       │   ├── 💡 Verschlüsselung
-│   │       │   ├── 📊 Zugriffsprotokollierung
-│   │       │   ├── 🔍 Änderungshistorie
-│   │       │   ├── 📧 Benachrichtigungen
-│   │       │   ├── 🎯 Audit-Trail
-│   │       │   ├── 📈 Compliance-Monitoring
-│   │       │   ├── 💡 Sicherheitszertifikate
-│   │       │   ├── 📋 Prüfpfade
-│   │       │   ├── 🔄 Backup-Strategien
-│   │       │   ├── 🌍 Internationale Standards
-│   │       │   └── 📊 Zertifizierungen
-│   │       ├── 📊 Revisionssichere Archivierung
-│   │       │   ├── 🗂️ Langzeitarchivierung
-│   │       │   ├── 📅 Aufbewahrungsfristen
-│   │       │   ├── 🔄 Automatische Löschung
-│   │       │   ├── 📈 Datenmigration
-│   │       │   ├── 💡 Format-Konvertierung
-│   │       │   ├── 📋 Indexierung
-│   │       │   ├── 🎯 Suchfunktionen
-│   │       │   ├── 📈 Komprimierung
-│   │       │   ├── 🔄 Redundanz
-│   │       │   ├── 📊 Integrity-Checks
-│   │       │   ├── 💡 Disaster-Recovery
-│   │       │   ├── 📋 Access-Control
-│   │       │   ├── 🎯 Legal-Hold
-│   │       │   ├── 📈 Storage-Management
-│   │       │   ├── 🔄 Cost-Optimization
-│   │       │   └── 📊 Performance-Monitoring
-│   │       └── 🔍 Prüfungsunterstützung
-│   │           ├── 👥 Prüfer-Zugang
-│   │           ├── 📊 Prüfungsbereiche
-│   │           ├── 🎯 Stichproben-Generierung
-│   │           ├── 📈 Prüfungsprogramme
-│   │           ├── 💡 Automatisierte Tests
-│   │           ├── 📋 Working-Papers
-│   │           ├── 🔄 Prüfungsnachweise
-│   │           ├── 📊 Findings-Management
-│   │           ├── 🎯 Follow-up Tracking
-│   │           ├── 📈 Reporting-Templates
-│   │           ├── 💡 Analytics-Tools
-│   │           ├── 📋 Compliance-Checks
-│   │           ├── 🔍 Risk-Assessment
-│   │           ├── 📧 Communication-Logs
-│   │           ├── 🎯 Document-Requests
-│   │           ├── 📈 Audit-Calendar
-│   │           ├── 💡 Best-Practices
-│   │           └── 📊 Benchmarking
-│   ├── 👥 Debitoren
-│   │   ├── 👤 Kundenstammdaten
-│   │   │   ├── 📋 Stammdaten-Verwaltung
-│   │   │   │   ├── 🏢 Firmenstammdaten
-│   │   │   │   ├── 👥 Ansprechpartner
-│   │   │   │   ├── 📍 Lieferadressen
-│   │   │   │   ├-- 🧾 Rechnungsadressen
-│   │   │   │   ├── 🌍 Internationale Daten
-│   │   │   │   ├── 📞 Kommunikationsdaten
-│   │   │   │   ├── 🏦 Bankverbindungen
-│   │   │   │   ├-- 🎯 Segmentierung
-│   │   │   │   ├── 📊 Kundenkategorien
-│   │   │   │   ├── 🔄 Historie
-│   │   │   │   ├── 📈 Scoring
-│   │   │   │   ├── 💡 Daten-Enrichment
-│   │   │   │   ├── 📋 Duplikatsprüfung
-│   │   │   │   ├── 🔍 Plausibilitätsprüfung
-│   │   │   │   ├── 📧 Import/Export
-│   │   │   │   ├── 🎯 Massenbearbeitung
-│   │   │   │   └── 📊 Reporting
-│   │   │   ├-- 💳 Kreditmanagement
-│   │   │   │   ├── 📊 Kreditlimits
-│   │   │   │   ├── 🎯 Risikoklassen
-│   │   │   │   ├── 📈 Bonitätsprüfung
-│   │   │   │   ├── 🔄 Limit-Überwachung
-│   │   │   │   ├── 📋 Zahlungskonditionen
-│   │   │   │   ├── 💡 Automatische Sperren
-│   │   │   │   ├── 📊 Warnstufen
-│   │   │   │   ├── 🔍 Ausnahmemanagement
-│   │   │   │   ├── 📧 Benachrichtigungen
-│   │   │   │   ├── 🎯 Eskalationsverfahren
-│   │   │   │   ├── 📈 Performance-Monitoring
-│   │   │   │   ├── 💡 KI-basierte Prognosen
-│   │   │   │   ├── 📋 Vertragsmanagement
-│   │   │   │   ├── 🔄 Review-Zyklen
-│   │   │   │   └── 📊 Compliance-Checks
-│   │   │   └-- 🌐 Kunden-Portal
-│   │   │       ├── 🔐 Self-Service Login
-│   │   │       ├── 📊 Rechnungsübersicht
-│   │   │       ├-- 📈 Zahlungshistorie
-│   │   │       ├── 📋 Offene Posten
-│   │   │       ├── 🎯 Dokumenten-Download
-│   │   │       ├── 📧 Nachrichten-System
-│   │   │       ├── 🔄 Echtzeit-Updates
-│   │   │       ├── 📊 Reporting-Funktionen
-│   │   │       ├── 💡 Personalisierte Views
-│   │   │       ├── 📋 Bestellhistorie
-│   │   │       ├── 🎯 Support-Tickets
-│   │   │       ├── 📈 Usage Analytics
-│   │   │       ├── 💡 Feedback-System
-│   │   │       ├── 📊 Multi-Language Support
-│   │   │       ├── 🔄 Mobile Optimization
-│   │   │       ├── 🌍 Internationalisierung
-│   │   │       └-- 📋 Security Features
-│   │   ├-- 💰 Forderungsmanagement
-│   │   │   ├── 📊 Offene-Posten-Liste
-│   │   │   │   ├── 📈 Fälligkeitsanalyse
-│   │   │   │   ├-- 🔄 Alterungsstruktur
-│   │   │   │   ├── 📋 Kundenspezifische Views
-│   │   │   │   ├── 🎯 Risikobewertung
-│   │   │   │   ├── 📈 Trendanalyse
-│   │   │   │   ├── 💡 Automatische Klassifikation
-│   │   │   │   ├── 📊 Portfolio-Übersicht
-│   │   │   │   ├── 🔍 Detail-Analyse
-│   │   │   │   ├── 📧 Export-Funktionen
-│   │   │   │   ├── 🎯 Filter-Optionen
-│   │   │   │   ├── 📈 Real-Time Updates
-│   │   │   │   ├── 💡 Predictive Analytics
-│   │   │   │   ├── 📊 Custom Reports
-│   │   │   │   ├── 🔄 Workflow-Integration
-│   │   │   │   ├── 🌍 Multi-Currency
-│   │   │   │   └-- 📋 Compliance-Features
-│   │   │   ├-- ⚠️ Mahnwesen
-│   │   │   │   ├── 📋 Mahnstufen-Definition
-│   │   │   │   ├-- 🎯 Automatische Mahnläufe
-│   │   │   │   ├── 📈 Mahngebühren-Berechnung
-│   │   │   │   ├── 🔄 Konditionen-Anpassung
-│   │   │   │   ├── 📊 Ausnahmen-Management
-│   │   │   │   ├── 💡 KI-gestützte Eskalation
-│   │   │   │   ├── 📋 Mahntext-Generator
-│   │   │   │   ├── 🎯 Multi-Channel Versand
-│   │   │   │   ├── 📈 Erfolgsmessung
-│   │   │   │   ├── 🔄 Manuelle Intervention
-│   │   │   │   ├── 📊 Reporting
-│   │   │   │   ├── 💡 Optimierungsvorschläge
-│   │   │   │   ├── 📋 Legal Compliance
-│   │   │   │   ├── 🎯 Internationale Regelungen
-│   │   │   │   ├── 📈 Cost Tracking
-│   │   │   │   ├── 🔄 Process Improvement
-│   │   │   │   └-- 📊 Analytics
-│   │   │   └-- 📈 Forderungsanalyse
-│   │   │       ├── 📊 Days Sales Outstanding (DSO)
-│   │   │       ├-- 🎯 Payment Behavior Analysis
-│   │   │       ├── 📈 Trend Analysis
-│   │   │       ├── 🔄 Customer Segmentation
-│   │   │       ├── 📋 Risk Scoring
-│   │   │       ├── 💡 Predictive Modeling
-│   │   │       ├── 📊 Portfolio Analysis
-│   │   │       ├── 🔍 Root Cause Analysis
-│   │   │       ├── 📧 Alert System
-│   │   │       ├── 🎯 Benchmarking
-│   │   │       ├── 📈 Performance Metrics
-│   │   │       ├── 💡 Optimization Recommendations
-│   │   │       ├── 📋 Reporting Templates
-│   │   │       ├── 🔄 Continuous Monitoring
-│   │   │       ├── 🌍 International Comparison
-│   │   │       └-- 📊 Industry Benchmarks
-│   │   ├-- 🤖 Automatisches Mahnwesen
-│   │   │   ├── 🎯 Regelbasierte Mahnläufe
-│   │   │   │   ├── 📋 Stufen-Definition
-│   │   │   │   ├-- 🔄 Zeitliche Steuerung
-│   │   │   │   ├── 📈 Betragsabhängige Regeln
-│   │   │   │   ├── 💡 Kunden-spezifische Regeln
-│   │   │   │   ├── 📊 Ausnahmeregelungen
-│   │   │   │   ├── 🔍 Risikobasierte Eskalation
-│   │   │   │   ├── 📧 Multi-Channel-Kommunikation
-│   │   │   │   ├── 🎯 Automatische Gebühren
-│   │   │   │   ├── 📈 Performance-Optimierung
-│   │   │   │   ├── 💡 KI-gestützte Anpassung
-│   │   │   │   ├── 📋 Compliance-Checks
-│   │   │   │   ├── 🔄 Review-Mechanismen
-│   │   │   │   ├── 🌍 Internationale Anpassung
-│   │   │   │   ├── 📊 Reporting-Funktionen
-│   │   │   │   ├── 🎯 Testing-Umgebung
-│   │   │   │   ├── 📈 Analytics
-│   │   │   │   └-- 💡 Continuous Improvement
-│   │   │   ├-- 📧 Mahnkommunikation
-│   │   │   │   ├── 📋 E-Mail-Vorlagen
-│   │   │   │   ├-- 🎯 Brief-Vorlagen
-│   │   │   │   ├── 📈 SMS-Nachrichten
-│   │   │   │   ├── 🔄 Push-Benachrichtigungen
-│   │   │   │   ├── 📊 Personalisierte Inhalte
-│   │   │   │   ├── 💡 Dynamische Platzhalter
-│   │   │   │   ├── 📋 Multi-Language Support
-│   │   │   │   ├── 🎯 Branding-Konformität
-│   │   │   │   ├── 📈 Versandoptimierung
-│   │   │   │   ├── 🔄 Tracking-Funktionen
-│   │   │   │   ├── 📊 Response-Management
-│   │   │   │   ├── 💡 A/B Testing
-│   │   │   │   ├── 📋 Legal Compliance
-│   │   │   │   ├── 🎯 Cost Control
-│   │   │   │   ├── 📈 Performance Metrics
-│   │   │   │   ├── 🔄 Template Management
-│   │   │   │   └-- 📊 Analytics
-│   │   │   └-- 📊 Mahnungs-Reporting
-│   │   │       ├── 📈 Erfolgsquoten
-│   │   │       ├-- 🎯 Response-Analyse
-│   │   │       ├── 📊 Kosten-Nutzen-Analyse
-│   │   │       ├── 🔄 Prozessoptimierung
-│   │   │       ├── 📋 Compliance-Reports
-│   │   │       ├── 💡 KI-Empfehlungen
-│   │   │       ├── 📊 Benchmarking
-│   │   │       ├── 🔍 Detail-Analytics
-│   │   │       ├── 📧 Automated Distribution
-│   │   │       ├── 🎯 Custom Dashboards
-│   │   │       ├── 📈 Trend Analysis
-│   │   │       ├── 💡 Predictive Analytics
-│   │   │       ├── 📋 Export Functions
-│   │   │       ├── 🔄 Real-Time Updates
-│   │   │       ├── 🌍 International Reports
-│   │   │       └-- 📊 Performance Monitoring
-│   │   ├-- 💸 Zahlungseingangsbuchung
-│   │   │   ├── 🏦 Bankabstimmung
-│   │   │   │   ├── 📧 Elektronischer Kontoauszug
-│   │   │   │   ├-- 🔄 Automatisches Matching
-│   │   │   │   ├── 📊 Manuelle Zuordnung
-│   │   │   │   ├── 🎯 Regeln-basierte Zuordnung
-│   │   │   │   ├── 📈 Fehlbuchungs-Erkennung
-│   │   │   │   ├── 💡 KI-gestützte Vorschläge
-│   │   │   │   ├── 📋 Massenverarbeitung
-│   │   │   │   ├── 🔍 Differenzmanagement
-│   │   │   │   ├── 📧 Import-Schnittstellen
-│   │   │   │   ├── 🎯 Multi-Bank-Support
-│   │   │   │   ├── 📈 Real-Time Updates
-│   │   │   │   ├── 💡 Forecasting
-│   │   │   │   ├── 📊 Reporting
-│   │   │   │   ├── 🔄 Process Optimization
-│   │   │   │   ├── 🌍 International Banking
-│   │   │   │   └-- 📋 Compliance Features
-│   │   │   ├-- 💰 Zahlungsverarbeitung
-│   │   │   │   ├── 📊 SEPA Lastschrift
-│   │   │   │   ├-- 🎯 SEPA Überweisung
-│   │   │   │   ├── 📈 Kreditkartenzahlungen
-│   │   │   │   ├── 🔄 PayPal Integration
-│   │   │   │   ├── 📋 Andere Zahlungsmethoden
-│   │   │   │   ├── 💡 Automatische Verbuchung
-│   │   │   │   ├── 📊 Gebührenberechnung
-│   │   │   │   ├── 🔍 Ausnahmenbehandlung
-│   │   │   │   ├── 📧 Benachrichtigungen
-│   │   │   │   ├── 🎯 Retouren-Management
-│   │   │   │   ├── 📈 Erfolgsquoten
-│   │   │   │   ├── 💡 Optimierungsvorschläge
-│   │   │   │   ├── 📋 Reporting
-│   │   │   │   ├── 🔄 Process Improvement
-│   │   │   │   ├── 🌍 International Payments
-│   │   │   │   └-- 📊 Analytics
-│   │   │   └-- 📈 Zahlungsanalyse
-│   │   │       ├── 📊 Zahlungseingangs-Trends
-│   │   │       ├-- 🎯 Kunden-Zahlungsverhalten
-│   │   │       ├── 📈 Liquiditäts-Prognose
-│   │   │       ├── 🔄 Risiko-Früherkennung
-│   │   │       ├── 📋 Segment-Analyse
-│   │   │       ├── 💡 Predictive Analytics
-│   │   │       ├── 📊 Performance-Metriken
-│   │   │       ├── 🔍 Root Cause Analysis
-│   │   │       ├── 📧 Alert System
-│   │   │       ├── 🎯 Benchmarking
-│   │   │       ├── 📈 Optimization Tips
-│   │   │       ├── 💡 Custom Reports
-│   │   │       ├── 📋 Export Functions
-│   │   │       ├── 🔄 Real-Time Dashboards
-│   │   │       ├── 🌍 International Analysis
-│   │   │       └-- 📊 Industry Comparison
-│   │   └-- 🛡️ Kreditlimitüberwachung
-│   │       ├── 📊 Echtzeit-Überwachung
-│   │       │   ├── 🔄 Kontinuierliches Monitoring
-│   │       │   ├-- 📈 Automatische Warnungen
-│   │       │   ├── 🎯 Eskalationsstufen
-│   │       │   ├── 📋 Risikoklassifizierung
-│   │       │   ├── 💡 KI-gestützte Prognosen
-│   │       │   ├── 📊 Limit-Auslastung
-│   │       │   ├── 🔍 Trendanalyse
-│   │       │   ├── 📧 Benachrichtigungen
-│   │       │   ├── 🎯 Reporting
-│   │       │   ├── 📈 Performance-Metriken
-│   │       │   ├── 💡 Optimierungsvorschläge
-│   │       │   ├── 📋 Compliance-Checks
-│   │       │   ├── 🔄 Review-Zyklen
-│   │       │   ├── 🌍 Internationale Standards
-│   │       │   └-- 📊 Analytics
-│   │       ├-- ⚠️ Risikomanagement
-│   │       │   ├── 📈 Bonitätsprüfung
-│   │       │   ├-- 🎯 Scoring-Modelle
-│   │       │   ├── 📊 Risiko-Bewertung
-│   │       │   ├── 🔄 Frühwarnsysteme
-│   │       │   ├── 📋 Maßnahmenplanung
-│   │       │   ├── 💡 KI-basierte Risikoanalyse
-│   │       │   ├── 📊 Portfolio-Management
-│   │       │   ├── 🔍 Stress-Testing
-│   │       │   ├── 📧 Reporting
-│   │       │   ├── 🎯 Compliance
-│   │       │   ├── 📈 Optimization
-│   │       │   ├── 💡 Best Practices
-│   │       │   ├── 📋 Documentation
-│   │       │   ├── 🔄 Continuous Improvement
-│   │       │   ├── 🌍 International Regulations
-│   │       │   └-- 📊 Benchmarking
-│   │       └-- 📋 Limit-Review-Prozesse
-│   │           ├── 📅 Regelmäßige Reviews
-│   │           ├-- 🎯 Anlassbezogene Anpassungen
-│   │           ├── 📈 Performance-Bewertung
-│   │           ├── 🔄 Entscheidungsprotokolle
-│   │           ├── 📋 Genehmigungsworkflows
-│   │           ├── 💡 Automatisierte Prozesse
-│   │           ├── 📊 Reporting
-│   │           ├── 🔍 Audit-Trail
-│   │           ├── 📧 Benachrichtigungen
-│   │           ├── 🎯 Documentation
-│   │           ├── 📈 Analytics
-│   │           ├── 💡 Optimization Suggestions
-│   │           ├── 📋 Compliance Checks
-│   │           ├── 🔄 Process Improvement
-│   │           ├── 🌍 International Standards
-│   │           └-- 📊 Performance Monitoring
-│   ├-- 🤝 Kreditoren
-│   │   ├-- 👥 Lieferantenstammdaten
-│   │   │   ├── 📋 Stammdaten-Verwaltung
-│   │   │   │   ├── 🏢 Firmenstammdaten
-│   │   │   │   ├-- 👥 Ansprechpartner
-│   │   │   │   ├── 📍 Lieferadressen
-│   │   │   │   ├── 🧾 Rechnungsadressen
-│   │   │   │   ├── 🌍 Internationale Daten
-│   │   │   │   ├── 📞 Kommunikationsdaten
-│   │   │   │   ├── 🏦 Bankverbindungen
-│   │   │   │   ├-- 🎯 Lieferantenkategorien
-│   │   │   │   ├── 📊 Leistungsbewertung
-│   │   │   │   ├── 🔄 Historie
-│   │   │   │   ├── 📈 Risikoscoring
-│   │   │   │   ├── 💡 Daten-Enrichment
-│   │   │   │   ├── 📋 Duplikatsprüfung
-│   │   │   │   ├── 🔍 Plausibilitätsprüfung
-│   │   │   │   ├── 📧 Import/Export
-│   │   │   │   ├── 🎯 Massenbearbeitung
-│   │   │   │   └-- 📊 Reporting
-│   │   │   ├-- 💼 Lieferantenbewertung
-│   │   │   │   ├── 📊 Leistungskennzahlen
-│   │   │   │   ├-- 🎯 Qualitätsbewertung
-│   │   │   │   ├── 📈 Liefertreue
-│   │   │   │   ├── 🔄 Preisbewertung
-│   │   │   │   ├── 📋 Servicebewertung
-│   │   │   │   ├── 💡 Gesamt-Scoring
-│   │   │   │   ├── 📊 Benchmarking
-│   │   │   │   ├── 🔍 Trendanalyse
-│   │   │   │   ├── 📧 Feedback-System
-│   │   │   │   ├── 🎯 Review-Zyklen
-│   │   │   │   ├── 📈 Performance-Monitoring
-│   │   │   │   ├── 💡 KI-basierte Bewertung
-│   │   │   │   ├── 📋 Vertragsmanagement
-│   │   │   │   ├── 🔄 Continuous Improvement
-│   │   │   │   ├── 🌍 International Standards
-│   │   │   │   └-- 📊 Analytics
-│   │   │   └-- 🌐 Lieferanten-Portal
-│   │   │       ├── 🔐 Self-Service Login
-│   │   │       ├── 📊 Bestellübersicht
-│   │   │       ├-- 📈 Rechnungshistorie
-│   │   │       ├── 📋 Offene Posten
-│   │   │       ├── 🎯 Dokumenten-Upload
-│   │   │       ├── 📧 Nachrichten-System
-│   │   │       ├── 🔄 Echtzeit-Updates
-│   │   │       ├── 📊 Reporting-Funktionen
-│   │   │       ├── 💡 Personalisierte Views
-│   │   │       ├── 📋 Leistungsbewertung
-│   │   │       ├── 🎯 Support-Tickets
-│   │   │       ├── 📈 Usage Analytics
-│   │   │       ├── 💡 Feedback-System
-│   │   │       ├── 📊 Multi-Language Support
-│   │   │       ├── 🔄 Mobile Optimization
-│   │   │       ├── 🌍 Internationalisierung
-│   │   │       └-- 📋 Security Features
-│   │   ├-- 📄 Eingangsrechnungen (OCR)
-│   │   │   ├-- 🤖 OCR-Erkennung
-│   │   │   │   ├── 📧 Automatischer Import
-│   │   │   │   ├-- 🔄 Mehrsprachen-Erkennung
-│   │   │   │   ├── 📊 Feld-Erkennung
-│   │   │   │   ├── 🎯 Template-Learning
-│   │   │   │   ├── 📈 Genauigkeitsoptimierung
-│   │   │   │   ├── 💡 KI-gestützte Verbesserung
-│   │   │   │   ├── 📋 Qualitätskontrolle
-│   │   │   │   ├── 🔍 Manuelle Nachbearbeitung
-│   │   │   │   ├── 📧 Batch-Verarbeitung
-│   │   │   │   ├── 🎯 Multi-Format Support
-│   │   │   │   ├── 📈 Performance-Monitoring
-│   │   │   │   ├── 💡 Continuous Learning
-│   │   │   │   ├── 📋 Compliance-Checks
-│   │   │   │   ├── 🔄 Update-Management
-│   │   │   │   ├── 🌍 Internationale Rechnungen
-│   │   │   │   └-- 📊 Analytics
-│   │   │   ├-- 📋 Rechnungsprüfung
-│   │   │   │   ├── 📊 3-Wege-Bestellabgleich
-│   │   │   │   ├-- 🎯 Mengen- und Preisprüfung
-│   │   │   │   ├── 📈 Kontenprüfung
-│   │   │   │   ├── 🔄 Mehrwertsteuer-Prüfung
-│   │   │   │   ├── 📋 Skonto-Prüfung
-│   │   │   │   ├── 💡 Automatische Freigabe
-│   │   │   │   ├── 📊 Ausnahmen-Management
-│   │   │   │   ├── 🔍 Plausibilitätsprüfung
-│   │   │   │   ├── 📧 Benachrichtigungen
-│   │   │   │   ├── 🎯 Workflow-Integration
-│   │   │   │   ├── 📈 Performance-Optimierung
-│   │   │   │   ├── 💡 KI-gestützte Prüfung
-│   │   │   │   ├── 📋 Compliance-Checks
-│   │   │   │   ├── 🔄 Process Improvement
-│   │   │   │   ├── 🌍 Internationale Prüfung
-│   │   │   │   └-- 📊 Reporting
-│   │   │   └-- 📊 Rechnungsverwaltung
-│   │   │       ├── 📋 Digitale Archivierung
-│   │   │       ├-- 🎯 Versionierung
-│   │   │       ├── 📈 Suchfunktionen
-│   │   │       ├── 🔄 Workflow-Steuerung
-│   │   │       ├── 📊 Zugriffskontrolle
-│   │   │       ├── 💡 Automatische Indexierung
-│   │   │       ├── 📋 Backup-Strategien
-│   │   │       ├── 🔍 Audit-Trail
-│   │   │       ├── 📧 Export-Funktionen
-│   │   │       ├── 🎯 Compliance-Features
-│   │   │       ├── 📈 Performance-Monitoring
-│   │   │       ├── 💡 Optimization Tips
-│   │   │       ├── 📋 Security Features
-│   │   │       ├── 🔄 Process Automation
-│   │   │       ├── 🌍 International Support
-│   │   │       └-- 📊 Analytics
-│   │   ├-- 🔄 Workflow-Freigabe
-│   │   │   ├-- 🎯 Freigabe-Workflows
-│   │   │   │   ├── 📋 Mehrstufige Freigabe
-│   │   │   │   ├-- 🔄 Bedingte Verzweigungen
-│   │   │   │   ├── 📈 Betragsabhängige Stufen
-│   │   │   │   ├── 💡 Kategorie-basierte Workflows
-│   │   │   │   ├── 📊 Ausnahmen-Management
-│   │   │   │   ├── 🔍 Eskalationsregeln
-│   │   │   │   ├── 📧 Benachrichtigungen
-│   │   │   │   ├── 🎯 Vertretungsregelungen
-│   │   │   │   ├── 📈 Performance-Optimierung
-│   │   │   │   ├── 💡 KI-gestützte Optimierung
-│   │   │   │   ├── 📋 Compliance-Checks
-│   │   │   │   ├── 🔄 Review-Mechanismen
-│   │   │   │   ├── 🌍 Internationale Workflows
-│   │   │   │   ├── 📊 Reporting-Funktionen
-│   │   │   │   ├── 🎯 Testing-Umgebung
-│   │   │   │   ├── 📈 Analytics
-│   │   │   │   └-- 💡 Continuous Improvement
-│   │   │   ├-- 👥 Freigabe-Management
-│   │   │   │   ├── 🎯 Genehmiger-Zuordnung
-│   │   │   │   ├-- 📊 Vertretungsregelungen
-│   │   │   │   ├── 🔄 Delegationsmatrix
-│   │   │   │   ├── 📈 Freigabe-Limits
-│   │   │   │   ├── 💼 Entscheidungskompetenz
-│   │   │   │   ├── 📋 Approval-Historie
-│   │   │   │   ├── 🔍 Status-Tracking
-│   │   │   │   ├── 📧 Notification-System
-│   │   │   │   ├── ⏱️ SLA-Überwachung
-│   │   │   │   ├── 🎯 Prioritätsmanagement
-│   │   │   │   ├── 📊 Performance-Metriken
-│   │   │   │   ├── 🔄 Feedback-Mechanismen
-│   │   │   │   ├── 📈 Optimierungsvorschläge
-│   │   │   │   ├── 💡 KI-Empfehlungen
-│   │   │   │   └-- 📋 Reporting
-│   │   │   └-- 📊 Workflow-Analytics
-│   │   │       ├── 📈 Durchlaufzeiten
-│   │   │       ├-- 📊 Engpass-Analyse
-│   │   │       ├── 👥 Performance pro Genehmiger
-│   │   │       ├── ⏱️ Wartezeiten
-│   │   │       ├── 🔄 Prozessoptimierung
-│   │   │       ├── 📋 Quality-Metriken
-│   │   │       ├── 🎯 Compliance-Rate
-│   │   │       ├── 📈 Trend-Analyse
-│   │   │       ├── 💡 Verbesserungsvorschläge
-│   │   │       ├── 📊 Benchmarking
-│   │   │       ├── 🔍 Root-Cause Analysis
-│   │   │       ├── 📧 Alert-System
-│   │   │       ├── 🎯 Predictive Analytics
-│   │   │       ├── 📈 ROI-Berechnung
-│   │   │       └-- 🔄 Continuous Improvement
-│   │   ├-- 💸 Zahlungsausgang
-│   │   │   ├-- 🏦 Zahlungsverkehr
-│   │   │   │   ├── 📊 SEPA Überweisungen
-│   │   │   │   ├-- 🎯 SEPA Lastschriften
-│   │   │   │   ├── 📈 Auslandsüberweisungen
-│   │   │   │   ├── 🔄 Massenzahlungsverkehr
-│   │   │   │   ├── 📋 Zahlungstermin-Optimierung
-│   │   │   │   ├── 💡 Automatische Zahlungsauslösung
-│   │   │   │   ├── 📊 Gebührenoptimierung
-│   │   │   │   ├── 🔍 Ausnahmenbehandlung
-│   │   │   │   ├── 📧 Benachrichtigungen
-│   │   │   │   ├── 🎯 Multi-Bank-Support
-│   │   │   │   ├── 📈 Erfolgsquoten
-│   │   │   │   ├── 💡 KI-gestützte Optimierung
-│   │   │   │   ├── 📋 Compliance-Checks
-│   │   │   │   ├── 🔄 Process Improvement
-│   │   │   │   ├── 🌍 International Payments
-│   │   │   │   └-- 📊 Analytics
-│   │   │   ├-- 💰 Skonto-Management
-│   │   │   │   ├── 📊 Skonto-Erkennung
-│   │   │   │   ├-- 🎯 Automatische Nutzung
-│   │   │   │   ├── 📈 Skonto-Optimierung
-│   │   │   │   ├── 🔄 Terminplanung
-│   │   │   │   ├── 📋 Ausnahmen-Management
-│   │   │   │   ├── 💡 KI-gestützte Empfehlungen
-│   │   │   │   ├── 📊 Reporting
-│   │   │   │   ├── 🔍 Performance-Monitoring
-│   │   │   │   ├── 📧 Benachrichtigungen
-│   │   │   │   ├── 🎯 Cost-Benefit-Analysis
-│   │   │   │   ├── 📈 Trend Analysis
-│   │   │   │   ├── 💡 Optimization Tips
-│   │   │   │   ├── 📋 Compliance Features
-│   │   │   │   ├── 🔄 Process Automation
-│   │   │   │   ├── 🌍 International Standards
-│   │   │   │   └-- 📊 Analytics
-│   │   │   └-- 📈 Zahlungsanalyse
-│   │   │       ├── 📊 Cashflow-Optimierung
-│   │   │       ├-- 🎯 Lieferanten-Analyse
-│   │   │       ├── 📈 Zahlungsverhalten
-│   │   │       ├── 🔄 Kostenanalyse
-│   │   │       ├── 📋 Segmentierung
-│   │   │       ├── 💡 Predictive Analytics
-│   │   │       ├── 📊 Performance-Metriken
-│   │   │       ├── 🔍 Root Cause Analysis
-│   │   │       ├── 📧 Alert System
-│   │   │       ├── 🎯 Benchmarking
-│   │   │       ├── 📈 Optimization Recommendations
-│   │   │       ├── 💡 Custom Reports
-│   │   │       ├── 📋 Export Functions
-│   │   │       ├── 🔄 Real-Time Dashboards
-│   │   │       ├── 🌍 International Analysis
-│   │   │       └-- 📊 Industry Comparison
-│   │   └-- 💡 Skonto-Optimierung
-│   │       ├-- 🎯 Automatische Skonto-Erkennung
-│   │       │   ├── 📊 Rechnungsanalyse
-│   │       │   ├-- 🔄 Konditionsprüfung
-│   │       │   ├── 📈 Fristenüberwachung
-│   │       │   ├── 💡 KI-gestützte Empfehlungen
-│   │       │   ├── 📋 Ausnahmen-Erkennung
-│   │       │   ├── 🔍 Plausibilitätsprüfung
-│   │       │   ├── 📧 Benachrichtigungen
-│   │       │   ├── 🎯 Workflow-Integration
-│   │       │   ├── 📈 Performance-Optimierung
-│   │       │   ├── 💡 Continuous Learning
-│   │       │   ├── 📋 Compliance-Checks
-│   │       │   ├── 🔄 Process Improvement
-│   │       │   ├── 🌍 Internationale Skonti
-│   │       │   ├── 📊 Reporting
-│   │       │   ├── 🎯 Testing
-│   │       │   ├── 📈 Analytics
-│   │       │   └-- 💡 Optimization
-│   │       ├-- 📊 Skonto-Berechnung
-│   │       │   ├── 💰 Skonto-Beträge
-│   │       │   ├-- 🎯 Zeitliche Optimierung
-│   │       │   ├── 📈 Liquiditätsanalyse
-│   │       │   ├── 🔄 Kosten-Nutzen-Analyse
-│   │       │   ├── 📋 Prioritätsmanagement
-│   │       │   ├── 💡 KI-gestützte Berechnung
-│   │       │   ├── 📊 Reporting
-│   │       │   ├── 🔍 Performance-Monitoring
-│   │       │   ├── 📧 Benachrichtigungen
-│   │       │   ├── 🎯 Decision Support
-│   │       │   ├── 📈 Trend Analysis
-│   │       │   ├── 💡 Optimization Tips
-│   │       │   ├── 📋 Compliance Features
-│   │       │   ├── 🔄 Process Automation
-│   │       │   ├── 🌍 International Calculation
-│   │       │   └-- 📊 Analytics
-│   │       └-- 📈 Skonto-Reporting
-│   │           ├── 📊 Einsparungen
-│   │           ├-- 🎯 Erfolgsquoten
-│   │           ├── 📈 Trendanalyse
-│   │           ├── 🔄 Prozessoptimierung
-│   │           ├── 📋 Compliance-Reports
-│   │           ├── 💡 KI-Empfehlungen
-│   │           ├── 📊 Benchmarking
-│   │           ├── 🔍 Detail-Analytics
-│   │           ├── 📧 Automated Distribution
-│   │           ├── 🎯 Custom Dashboards
-│   │           ├── 📈 Performance Metrics
-│   │           ├── 💡 Predictive Analytics
-│   │           ├── 📋 Export Functions
-│   │           ├── 🔄 Real-Time Updates
-│   │           ├── 🌍 International Reports
-│   │           └-- 📊 Monitoring
-│   └-- 🏢 Anlagenbuchhaltung
-│       ├-- 👤 Anlagenstammdaten
-│       │   ├── 📋 Stammdaten-Verwaltung
-│       │   │   ├── 🏢 Anlagenkategorien
-│       │   │   ├-- 🔢 Anlagennummern
-│       │   │   ├── 📊 Bezeichnungen
-│       │   │   ├── 🎯 Standorte
-│       │   │   ├── 📈 Kostenstellen
-│       │   │   ├── 💡 Buchungskreise
-│       │   │   ├── 📋 Herstellerangaben
-│       │   │   ├── 🔍 Technische Daten
-│       │   │   ├── 📧 Inventarnummern
-│       │   │   ├── 🎯 Seriennummern
-│       │   │   ├── 📈 Anschaffungsdaten
-│       │   │   ├── 💡 Lieferantendaten
-│       │   │   ├── 📋 Garantieinformationen
-│       │   │   ├── 🔄 Versicherungsdaten
-│       │   │   ├── 🌍 Internationale Daten
-│       │   │   └-- 📊 Reporting
-│       │   ├-- 💼 Anlagenbewertung
-│       │   │   ├── 📊 Anschaffungskosten
-│       │   │   ├-- 🎯 Herstellungskosten
-│       │   │   ├── 📈 Zeitwert
-│       │   │   ├── 🔄 Fair Value
-│       │   │   ├── 📋 Restbuchwert
-│       │   │   ├── 💡 Wiederbeschaffungswert
-│       │   │   ├── 📊 Abschreibungsbasis
-│       │   │   ├── 🔍 Bewertungsmethoden
-│       │   │   ├── 📧 Bewertungsstichtage
-│       │   │   ├── 🎯 Sonderabschreibungen
-│       │   │   ├── 📈 Werthaltigkeitsprüfung
-│       │   │   ├── 💡 Impairment Testing
-│       │   │   ├── 📋 Compliance-Checks
-│       │   │   ├── 🔄 Review-Zyklen
-│       │   │   ├── 🌍 Internationale Bewertung
-│       │   │   └-- 📊 Analytics
-│       │   └-- 🌐 Anlagen-Portal
-│       │       ├── 🔐 Self-Service Login
-│       │       ├── 📊 Anlagenübersicht
-│       │       ├-- 📈 Abschreibungshistorie
-│       │       ├── 📋 Wartungsdaten
-│       │       ├── 🎯 Dokumenten-Management
-│       │       ├── 📧 Nachrichten-System
-│       │       ├── 🔄 Echtzeit-Updates
-│       │       ├── 📊 Reporting-Funktionen
-│       │       ├── 💡 Personalisierte Views
-│       │       ├── 📋 Service-Historie
-│       │       ├── 🎯 Support-Tickets
-│       │       ├── 📈 Usage Analytics
-│       │       ├── 💡 Feedback-System
-│       │       ├── 📊 Multi-Language Support
-│       │       ├── 🔄 Mobile Optimization
-│       │       ├── 🌍 Internationalisierung
-│       │       └-- 📋 Security Features
-│       ├-- 📉 Abschreibungsmethoden
-│       │   ├-- 🎯 Lineare Abschreibung
-│       │   │   ├── 📊 Berechnungsmethoden
-│       │   │   ├-- 🔄 Nutzungsdauer
-│       │   │   ├── 📈 Abschreibungsbeträge
-│       │   │   ├── 💡 Automatische Berechnung
-│       │   │   ├── 📋 Sonderabschreibungen
-│       │   │   ├── 🔍 Teilwertabschreibungen
-│       │   │   ├── 📧 Benachrichtigungen
-│       │   │   ├── 🎯 Reporting
-│       │   │   ├── 📈 Performance-Optimierung
-│       │   │   ├── 💡 KI-gestützte Anpassung
-│       │   │   ├── 📋 Compliance-Checks
-│       │   │   ├── 🔄 Review-Zyklen
-│       │   │   ├── 🌍 Internationale Standards
-│       │   │   └-- 📊 Analytics
-│       │   ├-- 📊 Degressive Abschreibung
-│       │   │   ├── 📈 Geometrisch-degressiv
-│       │   │   ├-- 🎯 Arithmetisch-degressiv
-│       │   │   ├── 🔄 Wechsel zur linearen Abschreibung
-│       │   │   ├── 📋 Berechnungsmethoden
-│       │   │   ├── 💡 Automatische Umstellung
-│       │   │   ├── 📊 Performance-Optimierung
-│       │   │   ├── 🔍 Compliance-Checks
-│       │   │   ├── 📧 Benachrichtigungen
-│       │   │   ├── 🎯 Reporting
-│       │   │   ├── 📈 Analytics
-│       │   │   ├── 💡 Optimization Tips
-│       │   │   ├── 📋 Legal Requirements
-│       │   │   ├── 🔄 Process Automation
-│       │   │   ├── 🌍 International Methods
-│       │   │   └-- 📊 Monitoring
-│       │   └-- 🔄 Leistungsabhängige Abschreibung
-│       │       ├── 📊 Nutzungseinheiten
-│       │       ├-- 🎯 Produktionsmengen
-│       │       ├── 📈 Betriebsstunden
-│       │       ├── 💡 KI-gestützte Prognosen
-│       │       ├── 📋 Automatische Anpassung
-│       │       ├── 🔍 Performance-Monitoring
-│       │       ├── 📧 Benachrichtigungen
-│       │       ├── 🎯 Reporting
-│       │       ├── 📈 Optimization
-│       │       ├── 💡 Predictive Analytics
-│       │       ├── 📋 Compliance Features
-│       │       ├── 🔄 Process Improvement
-│       │       ├── 🌍 International Standards
-│       │       └-- 📊 Analytics
-│       ├-- 💰 Investitionsplanung
-│       │   ├-- 📈 Investitionsbudget
-│       │   │   ├── 📊 Budgetplanung
-│       │   │   ├-- 🎯 Mehrjährige Planung
-│       │   │   ├── 📈 Soll-Ist-Vergleiche
-│       │   │   ├── 🔄 Forecast-Anpassungen
-│       │   │   ├── 📋 Prioritätenmanagement
-│       │   │   ├── 💡 KI-gestützte Prognosen
-│       │   │   ├── 📊 Reporting
-│       │   │   ├── 🔍 Performance-Monitoring
-│       │   │   ├── 📧 Benachrichtigungen
-│       │   │   ├── 🎯 Decision Support
-│       │   │   ├── 📈 Trend Analysis
-│       │   │   ├── 💡 Optimization Tips
-│       │   │   ├── 📋 Compliance Features
-│       │   │   ├── 🔄 Process Automation
-│       │   │   ├── 🌍 International Planning
-│       │   │   └-- 📊 Analytics
-│       │   ├-- 🎯 Wirtschaftlichkeitsberechnung
-│       │   │   ├── 📊 Kapitalwertmethode
-│       │   │   ├-- 🔄 Interne Zinsfußmethode
-│       │   │   ├── 📈 Amortisationsrechnung
-│       │   │   ├── 💡 Return on Investment
-│       │   │   ├── 📋 Kosten-Nutzen-Analyse
-│       │   │   ├── 🔍 Risikoanalyse
-│       │   │   ├── 📧 Benachrichtigungen
-│       │   │   ├── 🎯 Reporting
-│       │   │   ├── 📈 Performance-Optimierung
-│       │   │   ├── 💡 KI-gestützte Berechnung
-│       │   │   ├── 📋 Compliance-Checks
-│       │   │   ├── 🔄 Review-Zyklen
-│       │   │   ├── 🌍 Internationale Standards
-│       │   │   └-- 📊 Analytics
-│       │   └-- 📋 Investitionscontrolling
-│       │       ├── 📈 Fortschrittskontrolle
-│       │       ├-- 🎯 Budgetüberwachung
-│       │       ├── 📊 Abweichungsanalyse
-│       │       ├── 🔄 Maßnahmenmanagement
-│       │       ├── 📋 Reporting
-│       │       ├── 💡 KI-gestützte Steuerung
-│       │       ├── 📊 Performance-Metriken
-│       │       ├── 🔍 Risikomanagement
-│       │       ├── 📧 Benachrichtigungen
-│       │       ├── 🎯 Decision Support
-│       │       ├── 📈 Optimization
-│       │       ├── 💡 Predictive Analytics
-│       │       ├── 📋 Compliance Features
-│       │       ├── 🔄 Process Improvement
-│       │       ├── 🌍 International Control
-│       │       └-- 📊 Analytics
-│       ├-- 🔧 Instandhaltungskosten
-│       │   ├-- 💰 Kostenverfolgung
-│       │   │   ├── 📊 Wartungskosten
-│       │   │   ├-- 🎯 Reparaturkosten
-│       │   │   ├── 📈 Ersatzteilkosten
-│       │   │   ├── 🔄 Servicekosten
-│       │   │   ├── 📋 Stillstandskosten
-│       │   │   ├── 💡 KI-gestützte Analyse
-│       │   │   ├── 📊 Reporting
-│       │   │   ├── 🔍 Performance-Monitoring
-│       │   │   ├── 📧 Benachrichtigungen
-│       │   │   ├── 🎯 Cost-Benefit-Analysis
-│       │   │   ├── 📈 Trend Analysis
-│       │   │   ├── 💡 Optimization Tips
-│       │   │   ├── 📋 Compliance Features
-│       │   │   ├── 🔄 Process Automation
-│       │   │   ├── 🌍 International Tracking
-│       │   │   └-- 📊 Analytics
-│       │   ├-- 📈 Kostenoptimierung
-│       │   │   ├── 📊 Preventive Maintenance
-│       │   │   ├-- 🎯 Predictive Maintenance
-│       │   │   ├── 📈 Condition Monitoring
-│       │   │   ├── 🔄 Lifecycle Management
-│       │   │   ├── 📋 Cost Reduction Strategies
-│       │   │   ├── 💡 KI-gestützte Optimierung
-│       │   │   ├── 📊 Reporting
-│       │   │   ├── 🔍 Performance-Monitoring
-│       │   │   ├── 📧 Benachrichtigungen
-│       │   │   ├── 🎯 Decision Support
-│       │   │   ├── 📈 ROI Calculation
-│       │   │   ├── 💡 Best Practices
-│       │   │   ├── 📋 Compliance Features
-│       │   │   ├── 🔄 Process Improvement
-│       │   │   ├── 🌍 International Standards
-│       │   │   └-- 📊 Analytics
-│       │   └-- 📋 Instandhaltungs-Reporting
-│       │       ├── 📈 Kostenentwicklung
-│       │       ├-- 🎯 Performance-Kennzahlen
-│       │       ├── 📊 Verfügbarkeitsanalyse
-│       │       ├── 🔄 Prozessoptimierung
-│       │       ├── 📋 Compliance-Reports
-│       │       ├── 💡 KI-Empfehlungen
-│       │       ├── 📊 Benchmarking
-│       │       ├── 🔍 Detail-Analytics
-│       │       ├── 📧 Automated Distribution
-│       │       ├── 🎯 Custom Dashboards
-│       │       ├── 📈 Trend Analysis
-│       │       ├── 💡 Predictive Analytics
-│       │       ├── 📋 Export Functions
-│       │       ├── 🔄 Real-Time Updates
-│       │       ├── 🌍 International Reports
-│       │       └-- 📊 Monitoring
-│       └-- 📊 AfA-Berechnungen
-│           ├-- 🎯 Automatische AfA-Berechnung
-│           │   ├── 📊 Monatliche Berechnungen
-│           │   ├-- 🔄 Quartalsweise Berechnungen
-│           │   ├── 📈 Jährliche Berechnungen
-│           │   ├── 💡 Sonderabschreibungen
-│           │   ├── 📋 Teilwertabschreibungen
-│           │   ├── 🔍 Werthaltigkeitsprüfung
-│           │   ├── 📧 Benachrichtigungen
-│           │   ├── 🎯 Reporting
-│           │   ├── 📈 Performance-Optimierung
-│           │   ├── 💡 KI-gestützte Anpassung
-│           │   ├── 📋 Compliance-Checks
-│           │   ├── 🔄 Review-Zyklen
-│           │   ├── 🌍 Internationale Berechnung
-│           │   └-- 📊 Analytics
-│           ├-- 📈 AfA-Planung
-│           │   ├── 📊 Mehrjährige Planung
-│           │   ├-- 🎯 Budgetierung
-│           │   ├── 📈 Forecast-Anpassungen
-│           │   ├── 🔄 Soll-Ist-Vergleiche
-│           │   ├── 📋 Prioritätenmanagement
-│           │   ├── 💡 KI-gestützte Prognosen
-│           │   ├── 📊 Reporting
-│           │   ├── 🔍 Performance-Monitoring
-│           │   ├── 📧 Benachrichtigungen
-│           │   ├── 🎯 Decision Support
-│           │   ├── 📈 Trend Analysis
-│           │   ├── 💡 Optimization Tips
-│           │   ├── 📋 Compliance Features
-│           │   ├── 🔄 Process Automation
-│           │   ├── 🌍 International Planning
-│           │   └-- 📊 Analytics
-│           └-- 📋 AfA-Reporting
-│               ├── 📈 Abschreibungsverläufe
-│               ├-- 🎯 Buchwertentwicklung
-│               ├── 📊 Steuerliche Auswirkungen
-│               ├── 🔄 Prozessoptimierung
-│               ├── 📋 Compliance-Reports
-│               ├── 💡 KI-Empfehlungen
-│               ├── 📊 Benchmarking
-│               ├── 🔍 Detail-Analytics
-│               ├── 📧 Automated Distribution
-│               ├── 🎯 Custom Dashboards
-│               ├── 📈 Performance Metrics
-│               ├── 💡 Predictive Analytics
-│               ├── 📋 Export Functions
-│               ├── 🔄 Real-Time Updates
-│               ├── 🌍 International Reports
-│               └-- 📊 Monitoring
+│ ├── 📒 Hauptbuch
+│ │ ├── 🏛️ Kontenrahmen-Systeme
+│ │ │ ├── 🇩🇪 SKR03 (Standardkontenrahmen)
+│ │ │ │ ├── 📊 Kontenklassen 0-9
+│ │ │ │ ├── 🔢 Kontonummern-Systematik
+│ │ │ │ ├── 📋 Standard-Buchungssätze
+│ │ │ │ ├── 🎯 Branchenanpassungen
+│ │ │ │ ├── 🔄 Automatische Zuordnungen
+│ │ │ │ ├── 📈 Kontenplan-Import
+│ │ │ │ ├── 💡 KI-Optimierte Vorschläge
+│ │ │ │ ├── 📊 Kontenstruktur-Analyse
+│ │ │ │ ├── 🔍 Duplikatserkennung
+│ │ │ │ ├── 📋 Revision-Sicherheit
+│ │ │ │ ├── 🌍 Multi-Mandantenfähig
+│ │ │ │ ├── 📅 Historische Daten
+│ │ │ │ ├── 🔄 Update-Management
+│ │ │ │ └── 📊 Performance-Monitoring
+│ │ │ ├── 🇩🇪 SKR04 (Gemeinschaftskontenrahmen)
+│ │ │ │ ├── 📊 Erweiterte Kontenstruktur
+│ │ │ │ ├── 🔢 Detaillierte Kontenklassen
+│ │ │ │ ├── 📋 Industrie-spezifische Konten
+│ │ │ │ ├── 🎯 Handels- und Produktionskonten
+│ │ │ │ ├── 🔄 Automatische Mapping
+│ │ │ │ ├── 📈 Cross-Referencing
+│ │ │ │ ├── 💡 Branchen-Best-Practices
+│ │ │ │ ├── 📊 Kontengruppierungen
+│ │ │ │ ├── 🔍 Konsolidierungsfunktionen
+│ │ │ │ ├── 📋 DATEV-Kompatibilität
+│ │ │ │ ├── 🌍 Internationale Anpassung
+│ │ │ │ ├── 📅 Steuerliche Updates
+│ │ │ │ ├── 🔄 Versionierung
+│ │ │ │ └── 📊 Compliance-Checks
+│ │ │ ├── 🇩🇪 SKR49 (Landwirtschaft)
+│ │ │ │ ├── 🌾 Branchenspezifische Konten
+│ │ │ │ ├── 🐄 Tierbestandsbewertung
+│ │ │ │ ├── 🌱 Pflanzenbau-Konten
+│ │ │ │ ├── 🏭 Landtechnik-Konten
+│ │ │ │ ├── 📊 Fördermittel-Konten
+│ │ │ │ ├── 🔄 Saisonale Anpassungen
+│ │ │ │ ├── 📈 Ertrags- und Aufwandsrechnung
+│ │ │ │ ├── 💡 Agrar-Spezifische Buchungen
+│ │ │ │ ├── 📋 Betriebszweigabrechnung
+│ │ │ │ ├── 🔍 Kontrollnachweise
+│ │ │ │ ├── 📅 Biologische Bewertung
+│ │ │ │ ├── 🌍 EU-Agrarförderung
+│ │ │ │ ├── 🔄 Witterungseinflüsse
+│ │ │ │ ├── 📊 Erntedokumentation
+│ │ │ │ └── 🎯 Betriebsvergleiche
+│ │ │ ├── 🌍 IFRS (International Financial Reporting Standards)
+│ │ │ │ ├── 📊 IAS/IFRS Konformität
+│ │ │ │ ├── 🔢 Standardisierte Berichterstattung
+│ │ │ │ ├── 📋 Fair Value Bewertung
+│ │ │ │ ├── 🎯 Bilanzierungsvorschriften
+│ │ │ │ ├── 🔄 Periodengerechte Abgrenzung
+│ │ │ │ ├── 📈 Konsolidierungssystematik
+│ │ │ │ ├── 💡 Internationale Best Practices
+│ │ │ │ ├── 📊 Segment Reporting
+│ │ │ │ ├── 🔍 Impairment Testing
+│ │ │ │ ├── 📋 Leasing Accounting
+│ │ │ │ ├── 🌍 Multi-Currency Accounting
+│ │ │ │ ├── 📅 Revenue Recognition
+│ │ │ │ ├── 🔄 Hedge Accounting
+│ │ │ │ ├── 📊 Financial Instruments
+│ │ │ │ └── 🎯 Disclosure Requirements
+│ │ │ └── 🇺🇸 US-GAAP (Generally Accepted Accounting Principles)
+│ │ │ ├── 📊 FASB-Standards
+│ │ │ ├── 🔢 US-spezifische Konten
+│ │ │ ├── 📋 SEC-Reporting
+│ │ │ ├── 🎯 GAAP-Hierarchie
+│ │ │ ├── 🔄 Accrual Accounting
+│ │ │ ├── 📈 Financial Statement Preparation
+│ │ │ ├── 💡 US-Tax Compliance
+│ │ │ ├── 📊 Segment Reporting
+│ │ │ ├── 🔍 Sarbanes-Oxley Compliance
+│ │ │ ├── 📋 Revenue Recognition (ASC 606)
+│ │ │ ├── 🌍 Internationale Tochtergesellschaften
+│ │ │ ├── 📅 Quarterly Reporting
+│ │ │ ├── 🔄 Consolidation Procedures
+│ │ │ ├── 📊 Audit Preparation
+│ │ │ └── 🎯 Compliance Monitoring
+│ │ ├── 🤖 Automatische Buchungsregeln
+│ │ │ ├── 🎯 Regel-Engine
+│ │ │ │ ├── 📋 Wenn-Dann-Regeln
+│ │ │ │ ├── 🔄 Bedingte Verzweigungen
+│ │ │ │ ├── 📊 Regel-Prioritäten
+│ │ │ │ ├── 💡 KI-gestützte Optimierung
+│ │ │ │ ├── 📈 Regel-Performance
+│ │ │ │ ├── 🔍 Konflikt-Erkennung
+│ │ │ │ ├── 📋 Regel-Templates
+│ │ │ │ ├── 🌍 Mandanten-spezifische Regeln
+│ │ │ │ ├── 📅 Zeitgesteuerte Regeln
+│ │ │ │ ├── 🔄 Event-basierte Regeln
+│ │ │ │ ├── 📊 Regel-Statistiken
+│ │ │ │ ├── 🎯 Regel-Testing
+│ │ │ │ ├── 📈 Rule-Mining
+│ │ │ │ ├── 💡 Predictive Rules
+│ │ │ │ └── 📋 Dokumentation
+│ │ │ ├── 🔄 Buchungsautomatisierung
+│ │ │ │ ├── 📧 Belegleser (OCR)
+│ │ │ │ ├── 🏦 Bankabstimmung Auto-Matching
+│ │ │ │ ├── 📊 Rechnungsbuchung Automatisch
+│ │ │ │ ├── 🔄 Lohnbuchung Automatisch
+│ │ │ │ ├── 📈 Abschreibungen Automatisch
+│ │ │ │ ├── 💡 Zinsberechnungen Automatisch
+│ │ │ │ ├── 📋 Vorsteuer-Zuordnung
+│ │ │ │ ├── 🌍 Währungsumrechnung
+│ │ │ │ ├── 📅 Periodische Abschlussbuchungen
+│ │ │ │ ├── 🔄 Rückstellungen Automatisch
+│ │ │ │ ├── 📊 Rechnungsabgrenzung
+│ │ │ │ ├── 🎯 Gewinnrücklagen
+│ │ │ │ ├── 📈 Jahresübergreifende Buchungen
+│ │ │ │ ├── 💡 Konsolidierungsbuchungen
+│ │ │ │ └── 📋 Storno-Buchungen
+│ │ │ └── 📊 Regel-Überwachung
+│ │ │ ├── 🔍 Regel-Compliance Monitoring
+│ │ │ ├── 📈 Performance Analytics
+│ │ │ ├️ ⚠️ Abweichungs-Alarme
+│ │ │ ├── 🔄 Regel-Optimierung
+│ │ │ ├── 📋 Audit-Trail
+│ │ │ ├── 🎯 Regel-Reviews
+│ │ │ ├── 📈 Erfolgsmessung
+│ │ │ ├── 💡 KI-Empfehlungen
+│ │ │ ├── 📊 Reporting
+│ │ │ ├── 🔍 Pattern Recognition
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Quality Gates
+│ │ │ ├── 📈 Continuous Improvement
+│ │ │ ├── 💼 Training Modules
+│ │ │ └── 📋 Documentation
+│ │ ├── 📋 Journale & Belegkreise
+│ │ │ ├── 🏛️ Journal-Verwaltung
+│ │ │ │ ├── 📊 Hauptbuch-Journal
+│ │ │ │ ├── 💰 Kassen-Journal
+│ │ │ │ ├── 🏦 Bank-Journal
+│ │ │ │ ├── 📈 Einkaufs-Journal
+│ │ │ │ ├── 📊 Verkaufs-Journal
+│ │ │ │ ├── 🔧 Sachkonto-Journal
+│ │ │ │ ├── 🌍 Devisen-Journal
+│ │ │ │ ├── 📅 Lohn-Journal
+│ │ │ │ ├── 🔄 Anlagen-Journal
+│ │ │ │ ├── 📋 Reisekosten-Journal
+│ │ │ │ ├── 🎯 Spesen-Journal
+│ │ │ │ ├── 📈 Steuer-Journal
+│ │ │ │ ├── 💡 Sonder-Journale
+│ │ │ │ ├── 📊 Konsolidierungs-Journal
+│ │ │ │ ├── 🔍 Korrektur-Journal
+│ │ │ │ └── 📋 Abschluss-Journal
+│ │ │ ├── 🔄 Belegkreise
+│ │ │ │ ├── 📧 Belegnummernkreise
+│ │ │ │ ├── 📊 Belegarten-Definition
+│ │ │ │ ├── 🎯 Belegprüfungen
+│ │ │ │ ├── 🔄 Belegworkflows
+│ │ │ │ ├── 📈 Belegstatistiken
+│ │ │ │ ├── 💡 Automatische Belegerstellung
+│ │ │ │ ├── 📋 Belegarchivierung
+│ │ │ │ ├── 🌍 Mandanten-spezifische Kreise
+│ │ │ │ ├── 📅 Zeitliche Zuordnung
+│ │ │ │ ├── 🔄 Belegketten
+│ │ │ │ ├── 📊 Belegexport
+│ │ │ │ ├── 🎯 Belegimport
+│ │ │ │ ├── 📈 Belegsicherheit
+│ │ │ │ ├── 💡 Belegoptimierung
+│ │ │ │ └── 📋 Belegreporting
+│ │ │ └── 📊 Journal-Reporting
+│ │ │ ├── 📈 Journalübersichten
+│ │ │ ├── 📊 Detail-Reports
+│ │ │ ├── 🔍 Suchfunktionen
+│ │ │ ├── 📋 Filter-Optionen
+│ │ │ ├── 🎯 Export-Funktionen
+│ │ │ ├── 📈 Analyse-Tools
+│ │ │ ├── 💡 Visualisierung
+│ │ │ ├── 📊 Audit-Reports
+│ │ │ ├── 🔄 Echtzeit-Updates
+│ │ │ ├── 🌍 Multi-Currency Views
+│ │ │ ├── 📅 Zeitraum-Analysen
+│ │ │ ├── 🔍 Pattern Analysis
+│ │ │ ├── 📧 Automated Distribution
+│ │ │ ├── 🎯 Custom Reports
+│ │ │ └── 📈 Performance Metrics
+│ │ ├── 📅 Monats-/Jahresabschluss
+│ │ │ ├── 🗓️ Abschluss-Arbeitspläne
+│ │ │ │ ├── 📋 Standard-Abschlussplan
+│ │ │ │ ├── 🎯 Rollierende Planung
+│ │ │ │ ├── 👥 Zuständigkeiten
+│ │ │ │ ├️ ⏱️ Zeitpläne
+│ │ │ │ ├── 🔄 Meilensteine
+│ │ │ │ ├── 📈 Fortschrittskontrolle
+│ │ │ │ ├── 💡 Automatisierte Erinnerungen
+│ │ │ │ ├── 📊 Template-basierte Pläne
+│ │ │ │ ├── 🌍 Internationale Pläne
+│ │ │ │ ├── 📅 Saisonale Anpassungen
+│ │ │ │ ├── 🔄 Prioritätsmanagement
+│ │ │ │ ├── 📋 Checklisten
+│ │ │ │ ├── 🎯 Quality Gates
+│ │ │ │ ├── 📈 Performance Tracking
+│ │ │ │ ├── 💡 KI-Optimierung
+│ │ │ │ └── 📊 Reporting
+│ │ │ ├── 🔧 Abschluss-Arbeiten
+│ │ │ │ ├── 📊 Saldenvorträge
+│ │ │ │ ├── 🔄 Periodenabgrenzungen
+│ │ │ │ ├── 📈 Rückstellungsbuchungen
+│ │ │ │ ├── 💡 Abschreibungsberechnungen
+│ │ │ │ ├── 📋 Inventurbuchungen
+│ │ │ │ ├── 🎯 Wagnisbuchungen
+│ │ │ │ ├── 📈 Zinsbuchungen
+│ │ │ │ ├── 🔄 Steuerbuchungen
+│ │ │ │ ├── 📊 Ergebnisverwendungsbuchungen
+│ │ │ │ ├── 💡 Konsolidierungsbuchungen
+│ │ │ │ ├── 📋 Prüfung der Vollständigkeit
+│ │ │ │ ├── 🎯 Plausibilitätsprüfungen
+│ │ │ │ ├── 📈 Saldenbestätigungen
+│ │ │ │ ├── 🔄 Intercompany-Abstimmung
+│ │ │ │ ├── 📊 Bankabstimmung
+│ │ │ │ └── 💡 Debitoren/Kreditoren-Abstimmung
+│ │ │ └── 📋 Abschluss-Dokumentation
+│ │ │ ├── 📄 Bilanz
+│ │ │ ├── 📈 Gewinn- und Verlustrechnung
+│ │ │ ├── 📊 Anhang
+│ │ │ ├── 🔄 Lagebericht
+│ │ │ ├── 📋 Prüfungsberichte
+│ │ │ ├── 🎯 Steuerliche Erklärungen
+│ │ │ ├── 📈 Handelsregister-Meldungen
+│ │ │ ├── 💡 Analysten-Reports
+│ │ │ ├── 📊 Investor Relations
+│ │ │ ├── 🔍 Revision-Dokumentation
+│ │ │ ├── 📧 Verteilungsmanagement
+│ │ │ ├── 🎯 Archivierung
+│ │ │ ├── 📈 Versionierung
+│ │ │ ├── 💡 Automatisierte Erstellung
+│ │ │ ├── 📋 Compliance-Checks
+│ │ │ └── 🔄 Continuous Improvement
+│ │ └── 🛡️ Revision-Sicherheit
+│ │ ├── 🔐 Unveränderbarkeit
+│ │ │ ├── 📊 GoBD-Konforme Speicherung
+│ │ │ ├── 🔒 Write-Once-Read-Many (WORM)
+│ │ │ ├── 📋 Digitale Signatur
+│ │ │ ├── 🎯 Hash-Wert Berechnung
+│ │ │ ├── 📈 Zeitstempel-Service
+│ │ │ ├── 💡 Verschlüsselung
+│ │ │ ├── 📊 Zugriffsprotokollierung
+│ │ │ ├── 🔍 Änderungshistorie
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Audit-Trail
+│ │ │ ├── 📈 Compliance-Monitoring
+│ │ │ ├── 💡 Sicherheitszertifikate
+│ │ │ ├── 📋 Prüfpfade
+│ │ │ ├── 🔄 Backup-Strategien
+│ │ │ ├── 🌍 Internationale Standards
+│ │ │ └── 📊 Zertifizierungen
+│ │ ├── 📊 Revisionssichere Archivierung
+│ │ │ ├── 🗂️ Langzeitarchivierung
+│ │ │ ├── 📅 Aufbewahrungsfristen
+│ │ │ ├── 🔄 Automatische Löschung
+│ │ │ ├── 📈 Datenmigration
+│ │ │ ├── 💡 Format-Konvertierung
+│ │ │ ├── 📋 Indexierung
+│ │ │ ├── 🎯 Suchfunktionen
+│ │ │ ├── 📈 Komprimierung
+│ │ │ ├── 🔄 Redundanz
+│ │ │ ├── 📊 Integrity-Checks
+│ │ │ ├── 💡 Disaster-Recovery
+│ │ │ ├── 📋 Access-Control
+│ │ │ ├── 🎯 Legal-Hold
+│ │ │ ├── 📈 Storage-Management
+│ │ │ ├── 🔄 Cost-Optimization
+│ │ │ └── 📊 Performance-Monitoring
+│ │ └── 🔍 Prüfungsunterstützung
+│ │ ├── 👥 Prüfer-Zugang
+│ │ ├── 📊 Prüfungsbereiche
+│ │ ├── 🎯 Stichproben-Generierung
+│ │ ├── 📈 Prüfungsprogramme
+│ │ ├── 💡 Automatisierte Tests
+│ │ ├── 📋 Working-Papers
+│ │ ├── 🔄 Prüfungsnachweise
+│ │ ├── 📊 Findings-Management
+│ │ ├── 🎯 Follow-up Tracking
+│ │ ├── 📈 Reporting-Templates
+│ │ ├── 💡 Analytics-Tools
+│ │ ├── 📋 Compliance-Checks
+│ │ ├── 🔍 Risk-Assessment
+│ │ ├── 📧 Communication-Logs
+│ │ ├── 🎯 Document-Requests
+│ │ ├── 📈 Audit-Calendar
+│ │ ├── 💡 Best-Practices
+│ │ └── 📊 Benchmarking
+│ ├── 👥 Debitoren
+│ │ ├── 👤 Kundenstammdaten
+│ │ │ ├── 📋 Stammdaten-Verwaltung
+│ │ │ │ ├── 🏢 Firmenstammdaten
+│ │ │ │ ├── 👥 Ansprechpartner
+│ │ │ │ ├── 📍 Lieferadressen
+│ │ │ │ ├-- 🧾 Rechnungsadressen
+│ │ │ │ ├── 🌍 Internationale Daten
+│ │ │ │ ├── 📞 Kommunikationsdaten
+│ │ │ │ ├── 🏦 Bankverbindungen
+│ │ │ │ ├-- 🎯 Segmentierung
+│ │ │ │ ├── 📊 Kundenkategorien
+│ │ │ │ ├── 🔄 Historie
+│ │ │ │ ├── 📈 Scoring
+│ │ │ │ ├── 💡 Daten-Enrichment
+│ │ │ │ ├── 📋 Duplikatsprüfung
+│ │ │ │ ├── 🔍 Plausibilitätsprüfung
+│ │ │ │ ├── 📧 Import/Export
+│ │ │ │ ├── 🎯 Massenbearbeitung
+│ │ │ │ └── 📊 Reporting
+│ │ │ ├-- 💳 Kreditmanagement
+│ │ │ │ ├── 📊 Kreditlimits
+│ │ │ │ ├── 🎯 Risikoklassen
+│ │ │ │ ├── 📈 Bonitätsprüfung
+│ │ │ │ ├── 🔄 Limit-Überwachung
+│ │ │ │ ├── 📋 Zahlungskonditionen
+│ │ │ │ ├── 💡 Automatische Sperren
+│ │ │ │ ├── 📊 Warnstufen
+│ │ │ │ ├── 🔍 Ausnahmemanagement
+│ │ │ │ ├── 📧 Benachrichtigungen
+│ │ │ │ ├── 🎯 Eskalationsverfahren
+│ │ │ │ ├── 📈 Performance-Monitoring
+│ │ │ │ ├── 💡 KI-basierte Prognosen
+│ │ │ │ ├── 📋 Vertragsmanagement
+│ │ │ │ ├── 🔄 Review-Zyklen
+│ │ │ │ └── 📊 Compliance-Checks
+│ │ │ └-- 🌐 Kunden-Portal
+│ │ │ ├── 🔐 Self-Service Login
+│ │ │ ├── 📊 Rechnungsübersicht
+│ │ │ ├-- 📈 Zahlungshistorie
+│ │ │ ├── 📋 Offene Posten
+│ │ │ ├── 🎯 Dokumenten-Download
+│ │ │ ├── 📧 Nachrichten-System
+│ │ │ ├── 🔄 Echtzeit-Updates
+│ │ │ ├── 📊 Reporting-Funktionen
+│ │ │ ├── 💡 Personalisierte Views
+│ │ │ ├── 📋 Bestellhistorie
+│ │ │ ├── 🎯 Support-Tickets
+│ │ │ ├── 📈 Usage Analytics
+│ │ │ ├── 💡 Feedback-System
+│ │ │ ├── 📊 Multi-Language Support
+│ │ │ ├── 🔄 Mobile Optimization
+│ │ │ ├── 🌍 Internationalisierung
+│ │ │ └-- 📋 Security Features
+│ │ ├-- 💰 Forderungsmanagement
+│ │ │ ├── 📊 Offene-Posten-Liste
+│ │ │ │ ├── 📈 Fälligkeitsanalyse
+│ │ │ │ ├-- 🔄 Alterungsstruktur
+│ │ │ │ ├── 📋 Kundenspezifische Views
+│ │ │ │ ├── 🎯 Risikobewertung
+│ │ │ │ ├── 📈 Trendanalyse
+│ │ │ │ ├── 💡 Automatische Klassifikation
+│ │ │ │ ├── 📊 Portfolio-Übersicht
+│ │ │ │ ├── 🔍 Detail-Analyse
+│ │ │ │ ├── 📧 Export-Funktionen
+│ │ │ │ ├── 🎯 Filter-Optionen
+│ │ │ │ ├── 📈 Real-Time Updates
+│ │ │ │ ├── 💡 Predictive Analytics
+│ │ │ │ ├── 📊 Custom Reports
+│ │ │ │ ├── 🔄 Workflow-Integration
+│ │ │ │ ├── 🌍 Multi-Currency
+│ │ │ │ └-- 📋 Compliance-Features
+│ │ │ ├-- ⚠️ Mahnwesen
+│ │ │ │ ├── 📋 Mahnstufen-Definition
+│ │ │ │ ├-- 🎯 Automatische Mahnläufe
+│ │ │ │ ├── 📈 Mahngebühren-Berechnung
+│ │ │ │ ├── 🔄 Konditionen-Anpassung
+│ │ │ │ ├── 📊 Ausnahmen-Management
+│ │ │ │ ├── 💡 KI-gestützte Eskalation
+│ │ │ │ ├── 📋 Mahntext-Generator
+│ │ │ │ ├── 🎯 Multi-Channel Versand
+│ │ │ │ ├── 📈 Erfolgsmessung
+│ │ │ │ ├── 🔄 Manuelle Intervention
+│ │ │ │ ├── 📊 Reporting
+│ │ │ │ ├── 💡 Optimierungsvorschläge
+│ │ │ │ ├── 📋 Legal Compliance
+│ │ │ │ ├── 🎯 Internationale Regelungen
+│ │ │ │ ├── 📈 Cost Tracking
+│ │ │ │ ├── 🔄 Process Improvement
+│ │ │ │ └-- 📊 Analytics
+│ │ │ └-- 📈 Forderungsanalyse
+│ │ │ ├── 📊 Days Sales Outstanding (DSO)
+│ │ │ ├-- 🎯 Payment Behavior Analysis
+│ │ │ ├── 📈 Trend Analysis
+│ │ │ ├── 🔄 Customer Segmentation
+│ │ │ ├── 📋 Risk Scoring
+│ │ │ ├── 💡 Predictive Modeling
+│ │ │ ├── 📊 Portfolio Analysis
+│ │ │ ├── 🔍 Root Cause Analysis
+│ │ │ ├── 📧 Alert System
+│ │ │ ├── 🎯 Benchmarking
+│ │ │ ├── 📈 Performance Metrics
+│ │ │ ├── 💡 Optimization Recommendations
+│ │ │ ├── 📋 Reporting Templates
+│ │ │ ├── 🔄 Continuous Monitoring
+│ │ │ ├── 🌍 International Comparison
+│ │ │ └-- 📊 Industry Benchmarks
+│ │ ├-- 🤖 Automatisches Mahnwesen
+│ │ │ ├── 🎯 Regelbasierte Mahnläufe
+│ │ │ │ ├── 📋 Stufen-Definition
+│ │ │ │ ├-- 🔄 Zeitliche Steuerung
+│ │ │ │ ├── 📈 Betragsabhängige Regeln
+│ │ │ │ ├── 💡 Kunden-spezifische Regeln
+│ │ │ │ ├── 📊 Ausnahmeregelungen
+│ │ │ │ ├── 🔍 Risikobasierte Eskalation
+│ │ │ │ ├── 📧 Multi-Channel-Kommunikation
+│ │ │ │ ├── 🎯 Automatische Gebühren
+│ │ │ │ ├── 📈 Performance-Optimierung
+│ │ │ │ ├── 💡 KI-gestützte Anpassung
+│ │ │ │ ├── 📋 Compliance-Checks
+│ │ │ │ ├── 🔄 Review-Mechanismen
+│ │ │ │ ├── 🌍 Internationale Anpassung
+│ │ │ │ ├── 📊 Reporting-Funktionen
+│ │ │ │ ├── 🎯 Testing-Umgebung
+│ │ │ │ ├── 📈 Analytics
+│ │ │ │ └-- 💡 Continuous Improvement
+│ │ │ ├-- 📧 Mahnkommunikation
+│ │ │ │ ├── 📋 E-Mail-Vorlagen
+│ │ │ │ ├-- 🎯 Brief-Vorlagen
+│ │ │ │ ├── 📈 SMS-Nachrichten
+│ │ │ │ ├── 🔄 Push-Benachrichtigungen
+│ │ │ │ ├── 📊 Personalisierte Inhalte
+│ │ │ │ ├── 💡 Dynamische Platzhalter
+│ │ │ │ ├── 📋 Multi-Language Support
+│ │ │ │ ├── 🎯 Branding-Konformität
+│ │ │ │ ├── 📈 Versandoptimierung
+│ │ │ │ ├── 🔄 Tracking-Funktionen
+│ │ │ │ ├── 📊 Response-Management
+│ │ │ │ ├── 💡 A/B Testing
+│ │ │ │ ├── 📋 Legal Compliance
+│ │ │ │ ├── 🎯 Cost Control
+│ │ │ │ ├── 📈 Performance Metrics
+│ │ │ │ ├── 🔄 Template Management
+│ │ │ │ └-- 📊 Analytics
+│ │ │ └-- 📊 Mahnungs-Reporting
+│ │ │ ├── 📈 Erfolgsquoten
+│ │ │ ├-- 🎯 Response-Analyse
+│ │ │ ├── 📊 Kosten-Nutzen-Analyse
+│ │ │ ├── 🔄 Prozessoptimierung
+│ │ │ ├── 📋 Compliance-Reports
+│ │ │ ├── 💡 KI-Empfehlungen
+│ │ │ ├── 📊 Benchmarking
+│ │ │ ├── 🔍 Detail-Analytics
+│ │ │ ├── 📧 Automated Distribution
+│ │ │ ├── 🎯 Custom Dashboards
+│ │ │ ├── 📈 Trend Analysis
+│ │ │ ├── 💡 Predictive Analytics
+│ │ │ ├── 📋 Export Functions
+│ │ │ ├── 🔄 Real-Time Updates
+│ │ │ ├── 🌍 International Reports
+│ │ │ └-- 📊 Performance Monitoring
+│ │ ├-- 💸 Zahlungseingangsbuchung
+│ │ │ ├── 🏦 Bankabstimmung
+│ │ │ │ ├── 📧 Elektronischer Kontoauszug
+│ │ │ │ ├-- 🔄 Automatisches Matching
+│ │ │ │ ├── 📊 Manuelle Zuordnung
+│ │ │ │ ├── 🎯 Regeln-basierte Zuordnung
+│ │ │ │ ├── 📈 Fehlbuchungs-Erkennung
+│ │ │ │ ├── 💡 KI-gestützte Vorschläge
+│ │ │ │ ├── 📋 Massenverarbeitung
+│ │ │ │ ├── 🔍 Differenzmanagement
+│ │ │ │ ├── 📧 Import-Schnittstellen
+│ │ │ │ ├── 🎯 Multi-Bank-Support
+│ │ │ │ ├── 📈 Real-Time Updates
+│ │ │ │ ├── 💡 Forecasting
+│ │ │ │ ├── 📊 Reporting
+│ │ │ │ ├── 🔄 Process Optimization
+│ │ │ │ ├── 🌍 International Banking
+│ │ │ │ └-- 📋 Compliance Features
+│ │ │ ├-- 💰 Zahlungsverarbeitung
+│ │ │ │ ├── 📊 SEPA Lastschrift
+│ │ │ │ ├-- 🎯 SEPA Überweisung
+│ │ │ │ ├── 📈 Kreditkartenzahlungen
+│ │ │ │ ├── 🔄 PayPal Integration
+│ │ │ │ ├── 📋 Andere Zahlungsmethoden
+│ │ │ │ ├── 💡 Automatische Verbuchung
+│ │ │ │ ├── 📊 Gebührenberechnung
+│ │ │ │ ├── 🔍 Ausnahmenbehandlung
+│ │ │ │ ├── 📧 Benachrichtigungen
+│ │ │ │ ├── 🎯 Retouren-Management
+│ │ │ │ ├── 📈 Erfolgsquoten
+│ │ │ │ ├── 💡 Optimierungsvorschläge
+│ │ │ │ ├── 📋 Reporting
+│ │ │ │ ├── 🔄 Process Improvement
+│ │ │ │ ├── 🌍 International Payments
+│ │ │ │ └-- 📊 Analytics
+│ │ │ └-- 📈 Zahlungsanalyse
+│ │ │ ├── 📊 Zahlungseingangs-Trends
+│ │ │ ├-- 🎯 Kunden-Zahlungsverhalten
+│ │ │ ├── 📈 Liquiditäts-Prognose
+│ │ │ ├── 🔄 Risiko-Früherkennung
+│ │ │ ├── 📋 Segment-Analyse
+│ │ │ ├── 💡 Predictive Analytics
+│ │ │ ├── 📊 Performance-Metriken
+│ │ │ ├── 🔍 Root Cause Analysis
+│ │ │ ├── 📧 Alert System
+│ │ │ ├── 🎯 Benchmarking
+│ │ │ ├── 📈 Optimization Tips
+│ │ │ ├── 💡 Custom Reports
+│ │ │ ├── 📋 Export Functions
+│ │ │ ├── 🔄 Real-Time Dashboards
+│ │ │ ├── 🌍 International Analysis
+│ │ │ └-- 📊 Industry Comparison
+│ │ └-- 🛡️ Kreditlimitüberwachung
+│ │ ├── 📊 Echtzeit-Überwachung
+│ │ │ ├── 🔄 Kontinuierliches Monitoring
+│ │ │ ├-- 📈 Automatische Warnungen
+│ │ │ ├── 🎯 Eskalationsstufen
+│ │ │ ├── 📋 Risikoklassifizierung
+│ │ │ ├── 💡 KI-gestützte Prognosen
+│ │ │ ├── 📊 Limit-Auslastung
+│ │ │ ├── 🔍 Trendanalyse
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Reporting
+│ │ │ ├── 📈 Performance-Metriken
+│ │ │ ├── 💡 Optimierungsvorschläge
+│ │ │ ├── 📋 Compliance-Checks
+│ │ │ ├── 🔄 Review-Zyklen
+│ │ │ ├── 🌍 Internationale Standards
+│ │ │ └-- 📊 Analytics
+│ │ ├-- ⚠️ Risikomanagement
+│ │ │ ├── 📈 Bonitätsprüfung
+│ │ │ ├-- 🎯 Scoring-Modelle
+│ │ │ ├── 📊 Risiko-Bewertung
+│ │ │ ├── 🔄 Frühwarnsysteme
+│ │ │ ├── 📋 Maßnahmenplanung
+│ │ │ ├── 💡 KI-basierte Risikoanalyse
+│ │ │ ├── 📊 Portfolio-Management
+│ │ │ ├── 🔍 Stress-Testing
+│ │ │ ├── 📧 Reporting
+│ │ │ ├── 🎯 Compliance
+│ │ │ ├── 📈 Optimization
+│ │ │ ├── 💡 Best Practices
+│ │ │ ├── 📋 Documentation
+│ │ │ ├── 🔄 Continuous Improvement
+│ │ │ ├── 🌍 International Regulations
+│ │ │ └-- 📊 Benchmarking
+│ │ └-- 📋 Limit-Review-Prozesse
+│ │ ├── 📅 Regelmäßige Reviews
+│ │ ├-- 🎯 Anlassbezogene Anpassungen
+│ │ ├── 📈 Performance-Bewertung
+│ │ ├── 🔄 Entscheidungsprotokolle
+│ │ ├── 📋 Genehmigungsworkflows
+│ │ ├── 💡 Automatisierte Prozesse
+│ │ ├── 📊 Reporting
+│ │ ├── 🔍 Audit-Trail
+│ │ ├── 📧 Benachrichtigungen
+│ │ ├── 🎯 Documentation
+│ │ ├── 📈 Analytics
+│ │ ├── 💡 Optimization Suggestions
+│ │ ├── 📋 Compliance Checks
+│ │ ├── 🔄 Process Improvement
+│ │ ├── 🌍 International Standards
+│ │ └-- 📊 Performance Monitoring
+│ ├-- 🤝 Kreditoren
+│ │ ├-- 👥 Lieferantenstammdaten
+│ │ │ ├── 📋 Stammdaten-Verwaltung
+│ │ │ │ ├── 🏢 Firmenstammdaten
+│ │ │ │ ├-- 👥 Ansprechpartner
+│ │ │ │ ├── 📍 Lieferadressen
+│ │ │ │ ├── 🧾 Rechnungsadressen
+│ │ │ │ ├── 🌍 Internationale Daten
+│ │ │ │ ├── 📞 Kommunikationsdaten
+│ │ │ │ ├── 🏦 Bankverbindungen
+│ │ │ │ ├-- 🎯 Lieferantenkategorien
+│ │ │ │ ├── 📊 Leistungsbewertung
+│ │ │ │ ├── 🔄 Historie
+│ │ │ │ ├── 📈 Risikoscoring
+│ │ │ │ ├── 💡 Daten-Enrichment
+│ │ │ │ ├── 📋 Duplikatsprüfung
+│ │ │ │ ├── 🔍 Plausibilitätsprüfung
+│ │ │ │ ├── 📧 Import/Export
+│ │ │ │ ├── 🎯 Massenbearbeitung
+│ │ │ │ └-- 📊 Reporting
+│ │ │ ├-- 💼 Lieferantenbewertung
+│ │ │ │ ├── 📊 Leistungskennzahlen
+│ │ │ │ ├-- 🎯 Qualitätsbewertung
+│ │ │ │ ├── 📈 Liefertreue
+│ │ │ │ ├── 🔄 Preisbewertung
+│ │ │ │ ├── 📋 Servicebewertung
+│ │ │ │ ├── 💡 Gesamt-Scoring
+│ │ │ │ ├── 📊 Benchmarking
+│ │ │ │ ├── 🔍 Trendanalyse
+│ │ │ │ ├── 📧 Feedback-System
+│ │ │ │ ├── 🎯 Review-Zyklen
+│ │ │ │ ├── 📈 Performance-Monitoring
+│ │ │ │ ├── 💡 KI-basierte Bewertung
+│ │ │ │ ├── 📋 Vertragsmanagement
+│ │ │ │ ├── 🔄 Continuous Improvement
+│ │ │ │ ├── 🌍 International Standards
+│ │ │ │ └-- 📊 Analytics
+│ │ │ └-- 🌐 Lieferanten-Portal
+│ │ │ ├── 🔐 Self-Service Login
+│ │ │ ├── 📊 Bestellübersicht
+│ │ │ ├-- 📈 Rechnungshistorie
+│ │ │ ├── 📋 Offene Posten
+│ │ │ ├── 🎯 Dokumenten-Upload
+│ │ │ ├── 📧 Nachrichten-System
+│ │ │ ├── 🔄 Echtzeit-Updates
+│ │ │ ├── 📊 Reporting-Funktionen
+│ │ │ ├── 💡 Personalisierte Views
+│ │ │ ├── 📋 Leistungsbewertung
+│ │ │ ├── 🎯 Support-Tickets
+│ │ │ ├── 📈 Usage Analytics
+│ │ │ ├── 💡 Feedback-System
+│ │ │ ├── 📊 Multi-Language Support
+│ │ │ ├── 🔄 Mobile Optimization
+│ │ │ ├── 🌍 Internationalisierung
+│ │ │ └-- 📋 Security Features
+│ │ ├-- 📄 Eingangsrechnungen (OCR)
+│ │ │ ├-- 🤖 OCR-Erkennung
+│ │ │ │ ├── 📧 Automatischer Import
+│ │ │ │ ├-- 🔄 Mehrsprachen-Erkennung
+│ │ │ │ ├── 📊 Feld-Erkennung
+│ │ │ │ ├── 🎯 Template-Learning
+│ │ │ │ ├── 📈 Genauigkeitsoptimierung
+│ │ │ │ ├── 💡 KI-gestützte Verbesserung
+│ │ │ │ ├── 📋 Qualitätskontrolle
+│ │ │ │ ├── 🔍 Manuelle Nachbearbeitung
+│ │ │ │ ├── 📧 Batch-Verarbeitung
+│ │ │ │ ├── 🎯 Multi-Format Support
+│ │ │ │ ├── 📈 Performance-Monitoring
+│ │ │ │ ├── 💡 Continuous Learning
+│ │ │ │ ├── 📋 Compliance-Checks
+│ │ │ │ ├── 🔄 Update-Management
+│ │ │ │ ├── 🌍 Internationale Rechnungen
+│ │ │ │ └-- 📊 Analytics
+│ │ │ ├-- 📋 Rechnungsprüfung
+│ │ │ │ ├── 📊 3-Wege-Bestellabgleich
+│ │ │ │ ├-- 🎯 Mengen- und Preisprüfung
+│ │ │ │ ├── 📈 Kontenprüfung
+│ │ │ │ ├── 🔄 Mehrwertsteuer-Prüfung
+│ │ │ │ ├── 📋 Skonto-Prüfung
+│ │ │ │ ├── 💡 Automatische Freigabe
+│ │ │ │ ├── 📊 Ausnahmen-Management
+│ │ │ │ ├── 🔍 Plausibilitätsprüfung
+│ │ │ │ ├── 📧 Benachrichtigungen
+│ │ │ │ ├── 🎯 Workflow-Integration
+│ │ │ │ ├── 📈 Performance-Optimierung
+│ │ │ │ ├── 💡 KI-gestützte Prüfung
+│ │ │ │ ├── 📋 Compliance-Checks
+│ │ │ │ ├── 🔄 Process Improvement
+│ │ │ │ ├── 🌍 Internationale Prüfung
+│ │ │ │ └-- 📊 Reporting
+│ │ │ └-- 📊 Rechnungsverwaltung
+│ │ │ ├── 📋 Digitale Archivierung
+│ │ │ ├-- 🎯 Versionierung
+│ │ │ ├── 📈 Suchfunktionen
+│ │ │ ├── 🔄 Workflow-Steuerung
+│ │ │ ├── 📊 Zugriffskontrolle
+│ │ │ ├── 💡 Automatische Indexierung
+│ │ │ ├── 📋 Backup-Strategien
+│ │ │ ├── 🔍 Audit-Trail
+│ │ │ ├── 📧 Export-Funktionen
+│ │ │ ├── 🎯 Compliance-Features
+│ │ │ ├── 📈 Performance-Monitoring
+│ │ │ ├── 💡 Optimization Tips
+│ │ │ ├── 📋 Security Features
+│ │ │ ├── 🔄 Process Automation
+│ │ │ ├── 🌍 International Support
+│ │ │ └-- 📊 Analytics
+│ │ ├-- 🔄 Workflow-Freigabe
+│ │ │ ├-- 🎯 Freigabe-Workflows
+│ │ │ │ ├── 📋 Mehrstufige Freigabe
+│ │ │ │ ├-- 🔄 Bedingte Verzweigungen
+│ │ │ │ ├── 📈 Betragsabhängige Stufen
+│ │ │ │ ├── 💡 Kategorie-basierte Workflows
+│ │ │ │ ├── 📊 Ausnahmen-Management
+│ │ │ │ ├── 🔍 Eskalationsregeln
+│ │ │ │ ├── 📧 Benachrichtigungen
+│ │ │ │ ├── 🎯 Vertretungsregelungen
+│ │ │ │ ├── 📈 Performance-Optimierung
+│ │ │ │ ├── 💡 KI-gestützte Optimierung
+│ │ │ │ ├── 📋 Compliance-Checks
+│ │ │ │ ├── 🔄 Review-Mechanismen
+│ │ │ │ ├── 🌍 Internationale Workflows
+│ │ │ │ ├── 📊 Reporting-Funktionen
+│ │ │ │ ├── 🎯 Testing-Umgebung
+│ │ │ │ ├── 📈 Analytics
+│ │ │ │ └-- 💡 Continuous Improvement
+│ │ │ ├-- 👥 Freigabe-Management
+│ │ │ │ ├── 🎯 Genehmiger-Zuordnung
+│ │ │ │ ├-- 📊 Vertretungsregelungen
+│ │ │ │ ├── 🔄 Delegationsmatrix
+│ │ │ │ ├── 📈 Freigabe-Limits
+│ │ │ │ ├── 💼 Entscheidungskompetenz
+│ │ │ │ ├── 📋 Approval-Historie
+│ │ │ │ ├── 🔍 Status-Tracking
+│ │ │ │ ├── 📧 Notification-System
+│ │ │ │ ├── ⏱️ SLA-Überwachung
+│ │ │ │ ├── 🎯 Prioritätsmanagement
+│ │ │ │ ├── 📊 Performance-Metriken
+│ │ │ │ ├── 🔄 Feedback-Mechanismen
+│ │ │ │ ├── 📈 Optimierungsvorschläge
+│ │ │ │ ├── 💡 KI-Empfehlungen
+│ │ │ │ └-- 📋 Reporting
+│ │ │ └-- 📊 Workflow-Analytics
+│ │ │ ├── 📈 Durchlaufzeiten
+│ │ │ ├-- 📊 Engpass-Analyse
+│ │ │ ├── 👥 Performance pro Genehmiger
+│ │ │ ├── ⏱️ Wartezeiten
+│ │ │ ├── 🔄 Prozessoptimierung
+│ │ │ ├── 📋 Quality-Metriken
+│ │ │ ├── 🎯 Compliance-Rate
+│ │ │ ├── 📈 Trend-Analyse
+│ │ │ ├── 💡 Verbesserungsvorschläge
+│ │ │ ├── 📊 Benchmarking
+│ │ │ ├── 🔍 Root-Cause Analysis
+│ │ │ ├── 📧 Alert-System
+│ │ │ ├── 🎯 Predictive Analytics
+│ │ │ ├── 📈 ROI-Berechnung
+│ │ │ └-- 🔄 Continuous Improvement
+│ │ ├-- 💸 Zahlungsausgang
+│ │ │ ├-- 🏦 Zahlungsverkehr
+│ │ │ │ ├── 📊 SEPA Überweisungen
+│ │ │ │ ├-- 🎯 SEPA Lastschriften
+│ │ │ │ ├── 📈 Auslandsüberweisungen
+│ │ │ │ ├── 🔄 Massenzahlungsverkehr
+│ │ │ │ ├── 📋 Zahlungstermin-Optimierung
+│ │ │ │ ├── 💡 Automatische Zahlungsauslösung
+│ │ │ │ ├── 📊 Gebührenoptimierung
+│ │ │ │ ├── 🔍 Ausnahmenbehandlung
+│ │ │ │ ├── 📧 Benachrichtigungen
+│ │ │ │ ├── 🎯 Multi-Bank-Support
+│ │ │ │ ├── 📈 Erfolgsquoten
+│ │ │ │ ├── 💡 KI-gestützte Optimierung
+│ │ │ │ ├── 📋 Compliance-Checks
+│ │ │ │ ├── 🔄 Process Improvement
+│ │ │ │ ├── 🌍 International Payments
+│ │ │ │ └-- 📊 Analytics
+│ │ │ ├-- 💰 Skonto-Management
+│ │ │ │ ├── 📊 Skonto-Erkennung
+│ │ │ │ ├-- 🎯 Automatische Nutzung
+│ │ │ │ ├── 📈 Skonto-Optimierung
+│ │ │ │ ├── 🔄 Terminplanung
+│ │ │ │ ├── 📋 Ausnahmen-Management
+│ │ │ │ ├── 💡 KI-gestützte Empfehlungen
+│ │ │ │ ├── 📊 Reporting
+│ │ │ │ ├── 🔍 Performance-Monitoring
+│ │ │ │ ├── 📧 Benachrichtigungen
+│ │ │ │ ├── 🎯 Cost-Benefit-Analysis
+│ │ │ │ ├── 📈 Trend Analysis
+│ │ │ │ ├── 💡 Optimization Tips
+│ │ │ │ ├── 📋 Compliance Features
+│ │ │ │ ├── 🔄 Process Automation
+│ │ │ │ ├── 🌍 International Standards
+│ │ │ │ └-- 📊 Analytics
+│ │ │ └-- 📈 Zahlungsanalyse
+│ │ │ ├── 📊 Cashflow-Optimierung
+│ │ │ ├-- 🎯 Lieferanten-Analyse
+│ │ │ ├── 📈 Zahlungsverhalten
+│ │ │ ├── 🔄 Kostenanalyse
+│ │ │ ├── 📋 Segmentierung
+│ │ │ ├── 💡 Predictive Analytics
+│ │ │ ├── 📊 Performance-Metriken
+│ │ │ ├── 🔍 Root Cause Analysis
+│ │ │ ├── 📧 Alert System
+│ │ │ ├── 🎯 Benchmarking
+│ │ │ ├── 📈 Optimization Recommendations
+│ │ │ ├── 💡 Custom Reports
+│ │ │ ├── 📋 Export Functions
+│ │ │ ├── 🔄 Real-Time Dashboards
+│ │ │ ├── 🌍 International Analysis
+│ │ │ └-- 📊 Industry Comparison
+│ │ └-- 💡 Skonto-Optimierung
+│ │ ├-- 🎯 Automatische Skonto-Erkennung
+│ │ │ ├── 📊 Rechnungsanalyse
+│ │ │ ├-- 🔄 Konditionsprüfung
+│ │ │ ├── 📈 Fristenüberwachung
+│ │ │ ├── 💡 KI-gestützte Empfehlungen
+│ │ │ ├── 📋 Ausnahmen-Erkennung
+│ │ │ ├── 🔍 Plausibilitätsprüfung
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Workflow-Integration
+│ │ │ ├── 📈 Performance-Optimierung
+│ │ │ ├── 💡 Continuous Learning
+│ │ │ ├── 📋 Compliance-Checks
+│ │ │ ├── 🔄 Process Improvement
+│ │ │ ├── 🌍 Internationale Skonti
+│ │ │ ├── 📊 Reporting
+│ │ │ ├── 🎯 Testing
+│ │ │ ├── 📈 Analytics
+│ │ │ └-- 💡 Optimization
+│ │ ├-- 📊 Skonto-Berechnung
+│ │ │ ├── 💰 Skonto-Beträge
+│ │ │ ├-- 🎯 Zeitliche Optimierung
+│ │ │ ├── 📈 Liquiditätsanalyse
+│ │ │ ├── 🔄 Kosten-Nutzen-Analyse
+│ │ │ ├── 📋 Prioritätsmanagement
+│ │ │ ├── 💡 KI-gestützte Berechnung
+│ │ │ ├── 📊 Reporting
+│ │ │ ├── 🔍 Performance-Monitoring
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Decision Support
+│ │ │ ├── 📈 Trend Analysis
+│ │ │ ├── 💡 Optimization Tips
+│ │ │ ├── 📋 Compliance Features
+│ │ │ ├── 🔄 Process Automation
+│ │ │ ├── 🌍 International Calculation
+│ │ │ └-- 📊 Analytics
+│ │ └-- 📈 Skonto-Reporting
+│ │ ├── 📊 Einsparungen
+│ │ ├-- 🎯 Erfolgsquoten
+│ │ ├── 📈 Trendanalyse
+│ │ ├── 🔄 Prozessoptimierung
+│ │ ├── 📋 Compliance-Reports
+│ │ ├── 💡 KI-Empfehlungen
+│ │ ├── 📊 Benchmarking
+│ │ ├── 🔍 Detail-Analytics
+│ │ ├── 📧 Automated Distribution
+│ │ ├── 🎯 Custom Dashboards
+│ │ ├── 📈 Performance Metrics
+│ │ ├── 💡 Predictive Analytics
+│ │ ├── 📋 Export Functions
+│ │ ├── 🔄 Real-Time Updates
+│ │ ├── 🌍 International Reports
+│ │ └-- 📊 Monitoring
+│ └-- 🏢 Anlagenbuchhaltung
+│ ├-- 👤 Anlagenstammdaten
+│ │ ├── 📋 Stammdaten-Verwaltung
+│ │ │ ├── 🏢 Anlagenkategorien
+│ │ │ ├-- 🔢 Anlagennummern
+│ │ │ ├── 📊 Bezeichnungen
+│ │ │ ├── 🎯 Standorte
+│ │ │ ├── 📈 Kostenstellen
+│ │ │ ├── 💡 Buchungskreise
+│ │ │ ├── 📋 Herstellerangaben
+│ │ │ ├── 🔍 Technische Daten
+│ │ │ ├── 📧 Inventarnummern
+│ │ │ ├── 🎯 Seriennummern
+│ │ │ ├── 📈 Anschaffungsdaten
+│ │ │ ├── 💡 Lieferantendaten
+│ │ │ ├── 📋 Garantieinformationen
+│ │ │ ├── 🔄 Versicherungsdaten
+│ │ │ ├── 🌍 Internationale Daten
+│ │ │ └-- 📊 Reporting
+│ │ ├-- 💼 Anlagenbewertung
+│ │ │ ├── 📊 Anschaffungskosten
+│ │ │ ├-- 🎯 Herstellungskosten
+│ │ │ ├── 📈 Zeitwert
+│ │ │ ├── 🔄 Fair Value
+│ │ │ ├── 📋 Restbuchwert
+│ │ │ ├── 💡 Wiederbeschaffungswert
+│ │ │ ├── 📊 Abschreibungsbasis
+│ │ │ ├── 🔍 Bewertungsmethoden
+│ │ │ ├── 📧 Bewertungsstichtage
+│ │ │ ├── 🎯 Sonderabschreibungen
+│ │ │ ├── 📈 Werthaltigkeitsprüfung
+│ │ │ ├── 💡 Impairment Testing
+│ │ │ ├── 📋 Compliance-Checks
+│ │ │ ├── 🔄 Review-Zyklen
+│ │ │ ├── 🌍 Internationale Bewertung
+│ │ │ └-- 📊 Analytics
+│ │ └-- 🌐 Anlagen-Portal
+│ │ ├── 🔐 Self-Service Login
+│ │ ├── 📊 Anlagenübersicht
+│ │ ├-- 📈 Abschreibungshistorie
+│ │ ├── 📋 Wartungsdaten
+│ │ ├── 🎯 Dokumenten-Management
+│ │ ├── 📧 Nachrichten-System
+│ │ ├── 🔄 Echtzeit-Updates
+│ │ ├── 📊 Reporting-Funktionen
+│ │ ├── 💡 Personalisierte Views
+│ │ ├── 📋 Service-Historie
+│ │ ├── 🎯 Support-Tickets
+│ │ ├── 📈 Usage Analytics
+│ │ ├── 💡 Feedback-System
+│ │ ├── 📊 Multi-Language Support
+│ │ ├── 🔄 Mobile Optimization
+│ │ ├── 🌍 Internationalisierung
+│ │ └-- 📋 Security Features
+│ ├-- 📉 Abschreibungsmethoden
+│ │ ├-- 🎯 Lineare Abschreibung
+│ │ │ ├── 📊 Berechnungsmethoden
+│ │ │ ├-- 🔄 Nutzungsdauer
+│ │ │ ├── 📈 Abschreibungsbeträge
+│ │ │ ├── 💡 Automatische Berechnung
+│ │ │ ├── 📋 Sonderabschreibungen
+│ │ │ ├── 🔍 Teilwertabschreibungen
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Reporting
+│ │ │ ├── 📈 Performance-Optimierung
+│ │ │ ├── 💡 KI-gestützte Anpassung
+│ │ │ ├── 📋 Compliance-Checks
+│ │ │ ├── 🔄 Review-Zyklen
+│ │ │ ├── 🌍 Internationale Standards
+│ │ │ └-- 📊 Analytics
+│ │ ├-- 📊 Degressive Abschreibung
+│ │ │ ├── 📈 Geometrisch-degressiv
+│ │ │ ├-- 🎯 Arithmetisch-degressiv
+│ │ │ ├── 🔄 Wechsel zur linearen Abschreibung
+│ │ │ ├── 📋 Berechnungsmethoden
+│ │ │ ├── 💡 Automatische Umstellung
+│ │ │ ├── 📊 Performance-Optimierung
+│ │ │ ├── 🔍 Compliance-Checks
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Reporting
+│ │ │ ├── 📈 Analytics
+│ │ │ ├── 💡 Optimization Tips
+│ │ │ ├── 📋 Legal Requirements
+│ │ │ ├── 🔄 Process Automation
+│ │ │ ├── 🌍 International Methods
+│ │ │ └-- 📊 Monitoring
+│ │ └-- 🔄 Leistungsabhängige Abschreibung
+│ │ ├── 📊 Nutzungseinheiten
+│ │ ├-- 🎯 Produktionsmengen
+│ │ ├── 📈 Betriebsstunden
+│ │ ├── 💡 KI-gestützte Prognosen
+│ │ ├── 📋 Automatische Anpassung
+│ │ ├── 🔍 Performance-Monitoring
+│ │ ├── 📧 Benachrichtigungen
+│ │ ├── 🎯 Reporting
+│ │ ├── 📈 Optimization
+│ │ ├── 💡 Predictive Analytics
+│ │ ├── 📋 Compliance Features
+│ │ ├── 🔄 Process Improvement
+│ │ ├── 🌍 International Standards
+│ │ └-- 📊 Analytics
+│ ├-- 💰 Investitionsplanung
+│ │ ├-- 📈 Investitionsbudget
+│ │ │ ├── 📊 Budgetplanung
+│ │ │ ├-- 🎯 Mehrjährige Planung
+│ │ │ ├── 📈 Soll-Ist-Vergleiche
+│ │ │ ├── 🔄 Forecast-Anpassungen
+│ │ │ ├── 📋 Prioritätenmanagement
+│ │ │ ├── 💡 KI-gestützte Prognosen
+│ │ │ ├── 📊 Reporting
+│ │ │ ├── 🔍 Performance-Monitoring
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Decision Support
+│ │ │ ├── 📈 Trend Analysis
+│ │ │ ├── 💡 Optimization Tips
+│ │ │ ├── 📋 Compliance Features
+│ │ │ ├── 🔄 Process Automation
+│ │ │ ├── 🌍 International Planning
+│ │ │ └-- 📊 Analytics
+│ │ ├-- 🎯 Wirtschaftlichkeitsberechnung
+│ │ │ ├── 📊 Kapitalwertmethode
+│ │ │ ├-- 🔄 Interne Zinsfußmethode
+│ │ │ ├── 📈 Amortisationsrechnung
+│ │ │ ├── 💡 Return on Investment
+│ │ │ ├── 📋 Kosten-Nutzen-Analyse
+│ │ │ ├── 🔍 Risikoanalyse
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Reporting
+│ │ │ ├── 📈 Performance-Optimierung
+│ │ │ ├── 💡 KI-gestützte Berechnung
+│ │ │ ├── 📋 Compliance-Checks
+│ │ │ ├── 🔄 Review-Zyklen
+│ │ │ ├── 🌍 Internationale Standards
+│ │ │ └-- 📊 Analytics
+│ │ └-- 📋 Investitionscontrolling
+│ │ ├── 📈 Fortschrittskontrolle
+│ │ ├-- 🎯 Budgetüberwachung
+│ │ ├── 📊 Abweichungsanalyse
+│ │ ├── 🔄 Maßnahmenmanagement
+│ │ ├── 📋 Reporting
+│ │ ├── 💡 KI-gestützte Steuerung
+│ │ ├── 📊 Performance-Metriken
+│ │ ├── 🔍 Risikomanagement
+│ │ ├── 📧 Benachrichtigungen
+│ │ ├── 🎯 Decision Support
+│ │ ├── 📈 Optimization
+│ │ ├── 💡 Predictive Analytics
+│ │ ├── 📋 Compliance Features
+│ │ ├── 🔄 Process Improvement
+│ │ ├── 🌍 International Control
+│ │ └-- 📊 Analytics
+│ ├-- 🔧 Instandhaltungskosten
+│ │ ├-- 💰 Kostenverfolgung
+│ │ │ ├── 📊 Wartungskosten
+│ │ │ ├-- 🎯 Reparaturkosten
+│ │ │ ├── 📈 Ersatzteilkosten
+│ │ │ ├── 🔄 Servicekosten
+│ │ │ ├── 📋 Stillstandskosten
+│ │ │ ├── 💡 KI-gestützte Analyse
+│ │ │ ├── 📊 Reporting
+│ │ │ ├── 🔍 Performance-Monitoring
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Cost-Benefit-Analysis
+│ │ │ ├── 📈 Trend Analysis
+│ │ │ ├── 💡 Optimization Tips
+│ │ │ ├── 📋 Compliance Features
+│ │ │ ├── 🔄 Process Automation
+│ │ │ ├── 🌍 International Tracking
+│ │ │ └-- 📊 Analytics
+│ │ ├-- 📈 Kostenoptimierung
+│ │ │ ├── 📊 Preventive Maintenance
+│ │ │ ├-- 🎯 Predictive Maintenance
+│ │ │ ├── 📈 Condition Monitoring
+│ │ │ ├── 🔄 Lifecycle Management
+│ │ │ ├── 📋 Cost Reduction Strategies
+│ │ │ ├── 💡 KI-gestützte Optimierung
+│ │ │ ├── 📊 Reporting
+│ │ │ ├── 🔍 Performance-Monitoring
+│ │ │ ├── 📧 Benachrichtigungen
+│ │ │ ├── 🎯 Decision Support
+│ │ │ ├── 📈 ROI Calculation
+│ │ │ ├── 💡 Best Practices
+│ │ │ ├── 📋 Compliance Features
+│ │ │ ├── 🔄 Process Improvement
+│ │ │ ├── 🌍 International Standards
+│ │ │ └-- 📊 Analytics
+│ │ └-- 📋 Instandhaltungs-Reporting
+│ │ ├── 📈 Kostenentwicklung
+│ │ ├-- 🎯 Performance-Kennzahlen
+│ │ ├── 📊 Verfügbarkeitsanalyse
+│ │ ├── 🔄 Prozessoptimierung
+│ │ ├── 📋 Compliance-Reports
+│ │ ├── 💡 KI-Empfehlungen
+│ │ ├── 📊 Benchmarking
+│ │ ├── 🔍 Detail-Analytics
+│ │ ├── 📧 Automated Distribution
+│ │ ├── 🎯 Custom Dashboards
+│ │ ├── 📈 Trend Analysis
+│ │ ├── 💡 Predictive Analytics
+│ │ ├── 📋 Export Functions
+│ │ ├── 🔄 Real-Time Updates
+│ │ ├── 🌍 International Reports
+│ │ └-- 📊 Monitoring
+│ └-- 📊 AfA-Berechnungen
+│ ├-- 🎯 Automatische AfA-Berechnung
+│ │ ├── 📊 Monatliche Berechnungen
+│ │ ├-- 🔄 Quartalsweise Berechnungen
+│ │ ├── 📈 Jährliche Berechnungen
+│ │ ├── 💡 Sonderabschreibungen
+│ │ ├── 📋 Teilwertabschreibungen
+│ │ ├── 🔍 Werthaltigkeitsprüfung
+│ │ ├── 📧 Benachrichtigungen
+│ │ ├── 🎯 Reporting
+│ │ ├── 📈 Performance-Optimierung
+│ │ ├── 💡 KI-gestützte Anpassung
+│ │ ├── 📋 Compliance-Checks
+│ │ ├── 🔄 Review-Zyklen
+│ │ ├── 🌍 Internationale Berechnung
+│ │ └-- 📊 Analytics
+│ ├-- 📈 AfA-Planung
+│ │ ├── 📊 Mehrjährige Planung
+│ │ ├-- 🎯 Budgetierung
+│ │ ├── 📈 Forecast-Anpassungen
+│ │ ├── 🔄 Soll-Ist-Vergleiche
+│ │ ├── 📋 Prioritätenmanagement
+│ │ ├── 💡 KI-gestützte Prognosen
+│ │ ├── 📊 Reporting
+│ │ ├── 🔍 Performance-Monitoring
+│ │ ├── 📧 Benachrichtigungen
+│ │ ├── 🎯 Decision Support
+│ │ ├── 📈 Trend Analysis
+│ │ ├── 💡 Optimization Tips
+│ │ ├── 📋 Compliance Features
+│ │ ├── 🔄 Process Automation
+│ │ ├── 🌍 International Planning
+│ │ └-- 📊 Analytics
+│ └-- 📋 AfA-Reporting
+│ ├── 📈 Abschreibungsverläufe
+│ ├-- 🎯 Buchwertentwicklung
+│ ├── 📊 Steuerliche Auswirkungen
+│ ├── 🔄 Prozessoptimierung
+│ ├── 📋 Compliance-Reports
+│ ├── 💡 KI-Empfehlungen
+│ ├── 📊 Benchmarking
+│ ├── 🔍 Detail-Analytics
+│ ├── 📧 Automated Distribution
+│ ├── 🎯 Custom Dashboards
+│ ├── 📈 Performance Metrics
+│ ├── 💡 Predictive Analytics
+│ ├── 📋 Export Functions
+│ ├── 🔄 Real-Time Updates
+│ ├── 🌍 International Reports
+│ └-- 📊 Monitoring

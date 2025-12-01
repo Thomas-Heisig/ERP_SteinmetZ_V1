@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 // ERP_SteinmetZ_V1/apps/frontend/src/components/Dashboard/ui/DashboardHeader.tsx
 
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-import type { DashboardHeaderProps, HealthStatus, HealthLevel } from '../types';
-import { useDashboardLogic } from '../hooks/useDashboardLogic';
-import HealthStatusBadge from '../features/health/HealthStatusBadge';
-import { getNodeIcon } from '../utils/mapping';
-import cls from '../utils/cls';
+import type { DashboardHeaderProps, HealthStatus, HealthLevel } from "../types";
+import { useDashboardLogic } from "../hooks/useDashboardLogic";
+import HealthStatusBadge from "../features/health/HealthStatusBadge";
+import { getNodeIcon } from "../utils/mapping";
+import cls from "../utils/cls";
 
 // ============================================================================
 // Type Definitions
@@ -28,27 +28,27 @@ interface DashboardHeaderState {
  */
 function mapStatusToLevel(status: HealthStatus): HealthLevel {
   const statusMap: Record<HealthStatus, HealthLevel> = {
-    healthy: 'HEALTHY',
-    degraded: 'DEGRADED',
-    unhealthy: 'UNHEALTHY',
-    checking: 'UNKNOWN',
-    unknown: 'UNKNOWN'
+    healthy: "HEALTHY",
+    degraded: "DEGRADED",
+    unhealthy: "UNHEALTHY",
+    checking: "UNKNOWN",
+    unknown: "UNKNOWN",
   };
-  
-  return statusMap[status] || 'UNKNOWN';
+
+  return statusMap[status] || "UNKNOWN";
 }
 
 /**
  * Format last updated timestamp
  */
 function formatLastUpdated(timestamp?: string | Date): string {
-  if (!timestamp) return '';
-  
-  const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
-  return new Intl.DateTimeFormat('de-DE', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
+  if (!timestamp) return "";
+
+  const date = typeof timestamp === "string" ? new Date(timestamp) : timestamp;
+  return new Intl.DateTimeFormat("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   }).format(date);
 }
 
@@ -58,7 +58,7 @@ function formatLastUpdated(timestamp?: string | Date): string {
 
 /**
  * DashboardHeader - Main header component for the dashboard
- * 
+ *
  * Features:
  * - Responsive layout with scroll effects
  * - Health status monitoring
@@ -66,7 +66,7 @@ function formatLastUpdated(timestamp?: string | Date): string {
  * - Navigation controls
  * - Accessibility support
  * - Theme integration
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -92,66 +92,64 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   const { health, navigation } = useDashboardLogic();
-  
+
   const [state, setState] = React.useState<DashboardHeaderState>({
     isScrolled: false,
-    isSearchFocused: false
+    isSearchFocused: false,
   });
 
   // Scroll effect for header styling
   React.useEffect(() => {
     const handleScroll = () => {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        isScrolled: window.scrollY > 10
+        isScrolled: window.scrollY > 10,
       }));
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-// Health status derived once
-const healthLevel: HealthLevel = mapStatusToLevel(health.healthStatus);
+  // Health status derived once
+  const healthLevel: HealthLevel = mapStatusToLevel(health.healthStatus);
 
-const lastUpdated = "";
+  const lastUpdated = "";
 
-// Conditional classes for header styling
-const conditionalClasses = [
-  state.isScrolled ? "dashboard-header--scrolled" : null,
-  state.isSearchFocused ? "dashboard-header--search-focused" : null,
-  actions ? "dashboard-header--has-actions" : null
-].filter(Boolean) as string[];
+  // Conditional classes for header styling
+  const conditionalClasses = [
+    state.isScrolled ? "dashboard-header--scrolled" : null,
+    state.isSearchFocused ? "dashboard-header--search-focused" : null,
+    actions ? "dashboard-header--has-actions" : null,
+  ].filter(Boolean) as string[];
 
-// Optional additional classes
-const extraClasses = className ? [className] : [];
+  // Optional additional classes
+  const extraClasses = className ? [className] : [];
 
-// Build final className string using cls()
-const headerClasses = cls(
-  "dashboard-header",
-  ...conditionalClasses,
-  ...extraClasses,
-  undefined
-);
-
-
+  // Build final className string using cls()
+  const headerClasses = cls(
+    "dashboard-header",
+    ...conditionalClasses,
+    ...extraClasses,
+    undefined,
+  );
 
   const handleSearchClick = () => {
     onSearchToggle?.();
-    setState(prev => ({ ...prev, isSearchFocused: true }));
+    setState((prev) => ({ ...prev, isSearchFocused: true }));
   };
 
   const handleSearchBlur = () => {
-    setState(prev => ({ ...prev, isSearchFocused: false }));
+    setState((prev) => ({ ...prev, isSearchFocused: false }));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
-      case '/':
+      case "/":
         e.preventDefault();
         onSearchToggle?.();
         break;
-      case 'Escape':
+      case "Escape":
         if (state.isSearchFocused) {
           handleSearchBlur();
         }
@@ -163,7 +161,7 @@ const headerClasses = cls(
     <header
       className={headerClasses}
       role="banner"
-      aria-label={t('dashboard.header.ariaLabel')}
+      aria-label={t("dashboard.header.ariaLabel")}
       onKeyDown={handleKeyDown}
       {...rest}
     >
@@ -174,12 +172,12 @@ const headerClasses = cls(
           <button
             className="dashboard-header__menu-button"
             onClick={onMenuToggle}
-            aria-label={t('dashboard.header.menuToggle')}
+            aria-label={t("dashboard.header.menuToggle")}
             aria-expanded="false"
             aria-haspopup="true"
           >
             <span className="dashboard-header__menu-icon">
-              {getNodeIcon('CUSTOM', 'emoji')}
+              {getNodeIcon("CUSTOM", "emoji")}
             </span>
           </button>
         )}
@@ -187,23 +185,21 @@ const headerClasses = cls(
         {/* Title Section */}
         <div className="dashboard-header__title-section">
           <h1 className="dashboard-header__title">
-            {title ?? t('dashboard.title')}
+            {title ?? t("dashboard.title")}
           </h1>
-          
+
           {(subtitle || lastUpdated) && (
             <div className="dashboard-header__subtitle-section">
               {subtitle && (
-                <span className="dashboard-header__subtitle">
-                  {subtitle}
-                </span>
+                <span className="dashboard-header__subtitle">{subtitle}</span>
               )}
-              
+
               {lastUpdated && (
-                <span 
+                <span
                   className="dashboard-header__last-updated"
-                  title={t('dashboard.header.lastUpdated')}
+                  title={t("dashboard.header.lastUpdated")}
                 >
-                  {t('dashboard.header.updatedAt', { time: lastUpdated })}
+                  {t("dashboard.header.updatedAt", { time: lastUpdated })}
                 </span>
               )}
             </div>
@@ -213,15 +209,15 @@ const headerClasses = cls(
 
       {/* Center Section - Additional Info (Desktop) */}
       <div className="dashboard-header__center">
-        {navigation.currentView !== 'root' && (
-          <nav 
+        {navigation.currentView !== "root" && (
+          <nav
             className="dashboard-header__breadcrumb"
-            aria-label={t('dashboard.header.breadcrumb')}
+            aria-label={t("dashboard.header.breadcrumb")}
           >
             <span className="dashboard-header__breadcrumb-item">
-              {t('dashboard.title')}
+              {t("dashboard.title")}
             </span>
-            <span 
+            <span
               className="dashboard-header__breadcrumb-separator"
               aria-hidden="true"
             >
@@ -243,8 +239,8 @@ const headerClasses = cls(
               status={healthLevel}
               size="SMALL"
               showText={false}
-              aria-label={t('dashboard.header.healthStatus', { 
-                status: health.healthStatus 
+              aria-label={t("dashboard.header.healthStatus", {
+                status: health.healthStatus,
               })}
             />
             <span className="dashboard-header__health-text">
@@ -259,35 +255,31 @@ const headerClasses = cls(
             className="dashboard-header__search-button"
             onClick={handleSearchClick}
             onBlur={handleSearchBlur}
-            aria-label={t('dashboard.header.searchToggle')}
-            title={t('dashboard.header.searchShortcut', { shortcut: '/' })}
+            aria-label={t("dashboard.header.searchToggle")}
+            title={t("dashboard.header.searchShortcut", { shortcut: "/" })}
           >
             <span className="dashboard-header__search-icon">
-              {getNodeIcon('CUSTOM', 'emoji')}
+              {getNodeIcon("CUSTOM", "emoji")}
             </span>
             <span className="dashboard-header__search-text">
-              {t('dashboard.search.button')}
+              {t("dashboard.search.button")}
             </span>
             <kbd className="dashboard-header__search-shortcut">/</kbd>
           </button>
         )}
 
         {/* Additional Actions */}
-        {actions && (
-          <div className="dashboard-header__actions">
-            {actions}
-          </div>
-        )}
+        {actions && <div className="dashboard-header__actions">{actions}</div>}
 
         {/* User Menu (Placeholder) */}
         <div className="dashboard-header__user">
           <button
             className="dashboard-header__user-button"
-            aria-label={t('dashboard.header.userMenu')}
+            aria-label={t("dashboard.header.userMenu")}
             aria-haspopup="true"
           >
             <span className="dashboard-header__user-avatar">
-              {getNodeIcon('ROOT', 'emoji')}
+              {getNodeIcon("ROOT", "emoji")}
             </span>
           </button>
         </div>
@@ -300,6 +292,6 @@ const headerClasses = cls(
 // Display Name
 // ============================================================================
 
-DashboardHeader.displayName = 'DashboardHeader';
+DashboardHeader.displayName = "DashboardHeader";
 
 export default DashboardHeader;

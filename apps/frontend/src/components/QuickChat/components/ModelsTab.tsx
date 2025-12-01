@@ -1,6 +1,6 @@
 // ERP_SteinmetZ_V1/apps/frontend/src/components/QuickChat/components/ModelsTab.tsx
-import React, { useState } from 'react';
-import { AIModel, Provider } from '../types';
+import React, { useState } from "react";
+import { AIModel, Provider } from "../types";
 
 interface ModelsTabProps {
   models: AIModel[];
@@ -22,7 +22,9 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
   const [filterProvider, setFilterProvider] = useState<Provider | "">("");
   const [filterCapability, setFilterCapability] = useState<string>("");
   const [showOnlyActive, setShowOnlyActive] = useState(true);
-  const [sortBy, setSortBy] = useState<'name' | 'provider' | 'capabilities'>('name');
+  const [sortBy, setSortBy] = useState<"name" | "provider" | "capabilities">(
+    "name",
+  );
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
   // ✅ KORRIGIERT: Safe models array
@@ -30,131 +32,153 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
 
   // ✅ KORRIGIERT: Filter and sort models based on current filters
   const filteredModels = safeModels
-    .filter(model => {
-      if (!model || typeof model !== 'object') return false;
-      
-      const providerMatch = filterProvider ? model.provider === filterProvider : true;
-      const capabilityMatch = filterCapability ? 
-        Array.isArray(model.capabilities) && model.capabilities.includes(filterCapability) : true;
+    .filter((model) => {
+      if (!model || typeof model !== "object") return false;
+
+      const providerMatch = filterProvider
+        ? model.provider === filterProvider
+        : true;
+      const capabilityMatch = filterCapability
+        ? Array.isArray(model.capabilities) &&
+          model.capabilities.includes(filterCapability)
+        : true;
       const activeMatch = showOnlyActive ? model.active !== false : true;
-      
+
       return providerMatch && capabilityMatch && activeMatch;
     })
     .sort((a, b) => {
       if (!a || !b) return 0;
-      
+
       switch (sortBy) {
-        case 'provider':
-          return (a.provider || '').localeCompare(b.provider || '');
-        case 'capabilities':
+        case "provider":
+          return (a.provider || "").localeCompare(b.provider || "");
+        case "capabilities":
           // ✅ KORRIGIERT: Sort by capability count, then by name
-          const aCapCount = Array.isArray(a.capabilities) ? a.capabilities.length : 0;
-          const bCapCount = Array.isArray(b.capabilities) ? b.capabilities.length : 0;
+          const aCapCount = Array.isArray(a.capabilities)
+            ? a.capabilities.length
+            : 0;
+          const bCapCount = Array.isArray(b.capabilities)
+            ? b.capabilities.length
+            : 0;
           if (bCapCount !== aCapCount) return bCapCount - aCapCount;
-          return (a.name || '').localeCompare(b.name || '');
-        case 'name':
+          return (a.name || "").localeCompare(b.name || "");
+        case "name":
         default:
-          return (a.name || '').localeCompare(b.name || '');
+          return (a.name || "").localeCompare(b.name || "");
       }
     });
 
   // ✅ KORRIGIERT: Get unique capabilities from all models with safety
   const allCapabilities = Array.from(
-    new Set(safeModels.flatMap(model => 
-      Array.isArray(model.capabilities) ? model.capabilities : []
-    ))
+    new Set(
+      safeModels.flatMap((model) =>
+        Array.isArray(model.capabilities) ? model.capabilities : [],
+      ),
+    ),
   ).sort();
 
   // ✅ KORRIGIERT: Get unique providers with filtering
   const allProviders = Array.from(
-    new Set(safeModels
-      .map(model => model.provider)
-      .filter(provider => provider && typeof provider === 'string')
-    )
+    new Set(
+      safeModels
+        .map((model) => model.provider)
+        .filter((provider) => provider && typeof provider === "string"),
+    ),
   ).sort() as Provider[];
 
   // ✅ KORRIGIERT: Get provider stats
-  const providerStats = allProviders.map(provider => ({
+  const providerStats = allProviders.map((provider) => ({
     provider,
-    count: safeModels.filter(m => m.provider === provider).length,
-    active: safeModels.filter(m => m.provider === provider && m.active).length
+    count: safeModels.filter((m) => m.provider === provider).length,
+    active: safeModels.filter((m) => m.provider === provider && m.active)
+      .length,
   }));
 
   // ✅ KORRIGIERT: Get capability stats
-  const capabilityStats = allCapabilities.map(capability => ({
+  const capabilityStats = allCapabilities.map((capability) => ({
     capability,
-    count: safeModels.filter(m => 
-      Array.isArray(m.capabilities) && m.capabilities.includes(capability)
-    ).length
+    count: safeModels.filter(
+      (m) =>
+        Array.isArray(m.capabilities) && m.capabilities.includes(capability),
+    ).length,
   }));
 
   // ✅ KORRIGIERT: Get provider icon with fallbacks
   const getProviderIcon = (provider: Provider | string) => {
-    if (!provider) return '🤖';
-    
+    if (!provider) return "🤖";
+
     const providerIcons: Record<string, string> = {
-      'openai': '🤖',
-      'anthropic': '🧠',
-      'azure': '☁️',
-      'vertex': '🔍',
-      'ollama': '🦙',
-      'local': '💻',
-      'huggingface': '🤗',
-      'llamacpp': '🦙',
-      'custom': '⚙️',
-      'fallback': '🔄',
-      'eliza': '💬'
+      openai: "🤖",
+      anthropic: "🧠",
+      azure: "☁️",
+      vertex: "🔍",
+      ollama: "🦙",
+      local: "💻",
+      huggingface: "🤗",
+      llamacpp: "🦙",
+      custom: "⚙️",
+      fallback: "🔄",
+      eliza: "💬",
     };
-    
-    return providerIcons[provider.toLowerCase()] || '🤖';
+
+    return providerIcons[provider.toLowerCase()] || "🤖";
   };
 
   // ✅ KORRIGIERT: Get model status based on backend data
   const getModelStatus = (model: AIModel) => {
-    if (!model.active) return { status: 'inactive', text: 'Inaktiv', icon: '🔴' };
-    
+    if (!model.active)
+      return { status: "inactive", text: "Inaktiv", icon: "🔴" };
+
     // ✅ KORRIGIERT: Only mark as misconfigured if endpoint is clearly invalid
-    if (model.endpoint && typeof model.endpoint === 'string') {
+    if (model.endpoint && typeof model.endpoint === "string") {
       // Check for obviously invalid endpoints (empty, just spaces, etc.)
       const trimmedEndpoint = model.endpoint.trim();
-      if (trimmedEndpoint === '' || trimmedEndpoint === 'undefined' || trimmedEndpoint === 'null') {
-        return { status: 'misconfigured', text: 'Fehlkonfiguriert', icon: '⚠️' };
+      if (
+        trimmedEndpoint === "" ||
+        trimmedEndpoint === "undefined" ||
+        trimmedEndpoint === "null"
+      ) {
+        return {
+          status: "misconfigured",
+          text: "Fehlkonfiguriert",
+          icon: "⚠️",
+        };
       }
     }
-    
-    return { status: 'active', text: 'Aktiv', icon: '🟢' };
+
+    return { status: "active", text: "Aktiv", icon: "🟢" };
   };
 
   // ✅ KORRIGIERT: Format capabilities for display
   const formatCapabilities = (capabilities: string[] = []) => {
     const capabilityIcons: Record<string, string> = {
-      'chat': '💬',
-      'vision': '🖼️',
-      'audio': '🎵',
-      'embedding': '📊',
-      'translation': '🌐',
-      'streaming': '⚡',
-      'function-calling': '🛠️',
-      'reasoning': '🧠',
-      'multimodal': '🎭',
+      chat: "💬",
+      vision: "🖼️",
+      audio: "🎵",
+      embedding: "📊",
+      translation: "🌐",
+      streaming: "⚡",
+      "function-calling": "🛠️",
+      reasoning: "🧠",
+      multimodal: "🎭",
     };
 
-    return capabilities.map(cap => ({
+    return capabilities.map((cap) => ({
       name: cap,
-      icon: capabilityIcons[cap] || '🔹'
+      icon: capabilityIcons[cap] || "🔹",
     }));
   };
 
   // ✅ KORRIGIERT: Handle favorite toggle
   const handleFavoriteToggle = (modelId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    
+
     if (onModelFavorite) {
       const currentlyFavorited = favorites.has(modelId);
       onModelFavorite(modelId, !currentlyFavorited);
     } else {
       // Local fallback if no callback provided
-      setFavorites(prev => {
+      setFavorites((prev) => {
         const newFavorites = new Set(prev);
         if (newFavorites.has(modelId)) {
           newFavorites.delete(modelId);
@@ -167,7 +191,11 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
   };
 
   // ✅ KORRIGIERT: Handle model toggle
-  const handleModelToggle = (modelId: string, enabled: boolean, e: React.MouseEvent) => {
+  const handleModelToggle = (
+    modelId: string,
+    enabled: boolean,
+    e: React.MouseEvent,
+  ) => {
     e.stopPropagation();
     if (onModelToggle) {
       onModelToggle(modelId, enabled);
@@ -180,7 +208,7 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
   };
 
   // ✅ KORRIGIERT: Count active models
-  const activeModelsCount = safeModels.filter(m => m.active).length;
+  const activeModelsCount = safeModels.filter((m) => m.active).length;
 
   return (
     <section className="models-tab">
@@ -189,16 +217,16 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
           <h4>🧠 Verfügbare KI-Modelle</h4>
           <div className="header-stats">
             <span className="stat-badge total">{safeModels.length} Gesamt</span>
-            <span className="stat-badge active">
-              {activeModelsCount} Aktiv
+            <span className="stat-badge active">{activeModelsCount} Aktiv</span>
+            <span className="stat-badge providers">
+              {allProviders.length} Provider
             </span>
-            <span className="stat-badge providers">{allProviders.length} Provider</span>
           </div>
         </div>
-        
+
         <div className="model-actions">
-          <button 
-            className="reload-models-btn" 
+          <button
+            className="reload-models-btn"
             onClick={onModelsReload}
             title="Modellliste aktualisieren"
           >
@@ -215,7 +243,9 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
             <select
               className="model-provider-filter"
               value={filterProvider}
-              onChange={(e) => setFilterProvider(e.target.value as Provider | "")}
+              onChange={(e) =>
+                setFilterProvider(e.target.value as Provider | "")
+              }
             >
               <option value="">Alle Provider</option>
               {providerStats.map(({ provider, count, active }) => (
@@ -293,13 +323,15 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
       {/* ✅ KORRIGIERT: Models Grid with safe rendering */}
       <div className="models-list">
         {filteredModels.map((model) => {
-          if (!model || typeof model.name !== 'string') return null;
-          
+          if (!model || typeof model.name !== "string") return null;
+
           const status = getModelStatus(model);
           const isSelected = selectedModel === model.name;
           const isFavorited = isModelFavorited(model.name);
-          const capabilities = formatCapabilities(Array.isArray(model.capabilities) ? model.capabilities : []);
-          
+          const capabilities = formatCapabilities(
+            Array.isArray(model.capabilities) ? model.capabilities : [],
+          );
+
           return (
             <div
               key={`${model.provider}-${model.name}`} // ✅ KORRIGIERT: Unique key
@@ -319,22 +351,32 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
                   {/* ✅ KORRIGIERT: Favorite button now toggles favorites, not active status */}
                   {onModelFavorite && (
                     <button
-                      className={`favorite-btn ${isFavorited ? 'favorited' : ''}`}
+                      className={`favorite-btn ${isFavorited ? "favorited" : ""}`}
                       onClick={(e) => handleFavoriteToggle(model.name, e)}
-                      title={isFavorited ? 'Von Favoriten entfernen' : 'Zu Favoriten hinzufügen'}
+                      title={
+                        isFavorited
+                          ? "Von Favoriten entfernen"
+                          : "Zu Favoriten hinzufügen"
+                      }
                     >
-                      {isFavorited ? '⭐' : '☆'}
+                      {isFavorited ? "⭐" : "☆"}
                     </button>
                   )}
-                  
+
                   {/* ✅ KORRIGIERT: Toggle button for active status */}
                   {onModelToggle && (
                     <button
-                      className={`toggle-btn ${model.active ? 'enabled' : 'disabled'}`}
-                      onClick={(e) => handleModelToggle(model.name, !model.active, e)}
-                      title={model.active ? 'Modell deaktivieren' : 'Modell aktivieren'}
+                      className={`toggle-btn ${model.active ? "enabled" : "disabled"}`}
+                      onClick={(e) =>
+                        handleModelToggle(model.name, !model.active, e)
+                      }
+                      title={
+                        model.active
+                          ? "Modell deaktivieren"
+                          : "Modell aktivieren"
+                      }
                     >
-                      {model.active ? '🔵' : '⚪'}
+                      {model.active ? "🔵" : "⚪"}
                     </button>
                   )}
                 </div>
@@ -350,7 +392,11 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
                   <div className="capabilities-label">Fähigkeiten:</div>
                   <div className="capabilities-list">
                     {capabilities.slice(0, 6).map((cap, index) => (
-                      <span key={index} className="capability-tag" title={cap.name}>
+                      <span
+                        key={index}
+                        className="capability-tag"
+                        title={cap.name}
+                      >
                         {cap.icon} {cap.name}
                       </span>
                     ))}
@@ -368,39 +414,37 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
                   <span className={`model-status ${status.status}`}>
                     {status.icon} {status.text}
                   </span>
-                  
-                  {model.endpoint && typeof model.endpoint === 'string' && model.endpoint.trim() && (
-                    <span 
-                      className="model-endpoint" 
-                      title={`Endpoint: ${model.endpoint}`}
-                    >
-                      🌐 Endpoint
-                    </span>
-                  )}
+
+                  {model.endpoint &&
+                    typeof model.endpoint === "string" &&
+                    model.endpoint.trim() && (
+                      <span
+                        className="model-endpoint"
+                        title={`Endpoint: ${model.endpoint}`}
+                      >
+                        🌐 Endpoint
+                      </span>
+                    )}
                 </div>
 
                 {/* Provider-specific information */}
-                {model.provider === 'openai' && (
+                {model.provider === "openai" && (
                   <div className="meta-row">
-                    <span className="provider-info">
-                      OpenAI GPT-Modell
-                    </span>
+                    <span className="provider-info">OpenAI GPT-Modell</span>
                   </div>
                 )}
-                
-                {model.provider === 'anthropic' && (
+
+                {model.provider === "anthropic" && (
                   <div className="meta-row">
                     <span className="provider-info">
                       Anthropic Claude-Modell
                     </span>
                   </div>
                 )}
-                
-                {model.provider === 'local' && (
+
+                {model.provider === "local" && (
                   <div className="meta-row">
-                    <span className="provider-info">
-                      Lokale Installation
-                    </span>
+                    <span className="provider-info">Lokale Installation</span>
                   </div>
                 )}
               </div>
@@ -410,11 +454,9 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
                   ✅ Aktuell ausgewählt
                 </div>
               )}
-              
+
               {isFavorited && (
-                <div className="model-favorite-indicator">
-                  ⭐ Favorit
-                </div>
+                <div className="model-favorite-indicator">⭐ Favorit</div>
               )}
             </div>
           );
@@ -425,13 +467,12 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
             <div className="empty-icon">🔍</div>
             <h4>Keine Modelle gefunden</h4>
             <p>
-              {filterProvider || filterCapability 
+              {filterProvider || filterCapability
                 ? `Keine Modelle entsprechen den aktuellen Filtern.`
-                : "Es sind keine Modelle verfügbar oder konfiguriert."
-              }
+                : "Es sind keine Modelle verfügbar oder konfiguriert."}
             </p>
             {(filterProvider || filterCapability) && (
-              <button 
+              <button
                 className="clear-filters-btn"
                 onClick={() => {
                   setFilterProvider("");
@@ -442,10 +483,7 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
               </button>
             )}
             {safeModels.length === 0 && (
-              <button 
-                className="reload-models-btn"
-                onClick={onModelsReload}
-              >
+              <button className="reload-models-btn" onClick={onModelsReload}>
                 🔄 Modelle laden
               </button>
             )}
@@ -460,27 +498,31 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
           {providerStats.map(({ provider, count, active }) => (
             <div key={provider} className="provider-overview-card">
               <div className="provider-header">
-                <span className="provider-icon">{getProviderIcon(provider)}</span>
+                <span className="provider-icon">
+                  {getProviderIcon(provider)}
+                </span>
                 <span className="provider-name">{provider}</span>
               </div>
               <div className="provider-stats">
-                <span className="model-count">{active}/{count}</span>
+                <span className="model-count">
+                  {active}/{count}
+                </span>
                 <span className="availability">
-                  {active === count ? '🟢' : active > 0 ? '🟡' : '🔴'}
+                  {active === count ? "🟢" : active > 0 ? "🟡" : "🔴"}
                 </span>
               </div>
               <div className="provider-description">
-                {provider === 'openai' && 'OpenAI GPT-Modelle'}
-                {provider === 'anthropic' && 'Anthropic Claude-Modelle'}
-                {provider === 'azure' && 'Azure OpenAI Services'}
-                {provider === 'vertex' && 'Google Vertex AI'}
-                {provider === 'ollama' && 'Ollama Lokale Modelle'}
-                {provider === 'local' && 'Lokale KI-Modelle'}
-                {provider === 'huggingface' && 'Hugging Face Models'}
-                {provider === 'llamacpp' && 'Llama.cpp Modelle'}
-                {provider === 'custom' && 'Benutzerdefinierte Modelle'}
-                {provider === 'fallback' && 'Fallback Provider'}
-                {provider === 'eliza' && 'ELIZA Chatbot'}
+                {provider === "openai" && "OpenAI GPT-Modelle"}
+                {provider === "anthropic" && "Anthropic Claude-Modelle"}
+                {provider === "azure" && "Azure OpenAI Services"}
+                {provider === "vertex" && "Google Vertex AI"}
+                {provider === "ollama" && "Ollama Lokale Modelle"}
+                {provider === "local" && "Lokale KI-Modelle"}
+                {provider === "huggingface" && "Hugging Face Models"}
+                {provider === "llamacpp" && "Llama.cpp Modelle"}
+                {provider === "custom" && "Benutzerdefinierte Modelle"}
+                {provider === "fallback" && "Fallback Provider"}
+                {provider === "eliza" && "ELIZA Chatbot"}
               </div>
             </div>
           ))}
@@ -492,8 +534,9 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
         <h5>⚙️ Konfigurationshinweise</h5>
         <div className="help-content">
           <p>
-            <strong>Modelle konfigurieren:</strong> Stellen Sie sicher, dass die entsprechenden 
-            Umgebungsvariablen für jeden Provider gesetzt sind (API Keys, Endpoints, etc.).
+            <strong>Modelle konfigurieren:</strong> Stellen Sie sicher, dass die
+            entsprechenden Umgebungsvariablen für jeden Provider gesetzt sind
+            (API Keys, Endpoints, etc.).
           </p>
           <div className="help-tips">
             <div className="tip">

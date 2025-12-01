@@ -28,7 +28,7 @@ export default function NodeHeader({ node }: Props) {
 
   /** Tags: optional, da nicht in NodeDetail definiert */
   const tags = Array.isArray((node as any).tags)
-    ? (node as any).tags as string[]
+    ? ((node as any).tags as string[])
     : [];
 
   return (

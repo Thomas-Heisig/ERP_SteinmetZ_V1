@@ -2,24 +2,55 @@
 
 /* ==================== KERN-TYPEN ==================== */
 export type Role = "system" | "user" | "assistant";
-export type Provider = 
-  | "openai" 
-  | "anthropic" 
-  | "local" 
-  | "ollama" 
-  | "fallback" 
-  | "azure" 
-  | "vertex" 
-  | "huggingface" 
-  | "llamacpp" 
+export type Provider =
+  | "openai"
+  | "anthropic"
+  | "local"
+  | "ollama"
+  | "fallback"
+  | "azure"
+  | "vertex"
+  | "huggingface"
+  | "llamacpp"
   | "custom"
   | "eliza";
 
-export type Tab = "chat" | "models" | "settings" | "info" | "tools" | "workflows" | "sessions" | "context";
-export type Sentiment = "positive" | "negative" | "neutral" | "critical" | "questioning";
-export type Intent = "query" | "create" | "update" | "delete" | "calculate" | "diagnose" | "informational" | "analyze" | "suggest";
+export type Tab =
+  | "chat"
+  | "models"
+  | "settings"
+  | "info"
+  | "tools"
+  | "workflows"
+  | "sessions"
+  | "context";
+export type Sentiment =
+  | "positive"
+  | "negative"
+  | "neutral"
+  | "critical"
+  | "questioning";
+export type Intent =
+  | "query"
+  | "create"
+  | "update"
+  | "delete"
+  | "calculate"
+  | "diagnose"
+  | "informational"
+  | "analyze"
+  | "suggest";
 export type Confidence = "low" | "medium" | "high";
-export type ToolCategory = "calculations" | "database" | "erp_operations" | "file_operations" | "system_info" | "system_monitoring" | "audio" | "vision" | "translation";
+export type ToolCategory =
+  | "calculations"
+  | "database"
+  | "erp_operations"
+  | "file_operations"
+  | "system_info"
+  | "system_monitoring"
+  | "audio"
+  | "vision"
+  | "translation";
 
 /* ==================== CHAT & KONVERSATION ==================== */
 export interface ChatMessage {
@@ -169,7 +200,7 @@ export interface WorkflowDefinition {
   };
 }
 
-export type WorkflowStep = 
+export type WorkflowStep =
   | ToolCallStep
   | IfConditionStep
   | LoopStep
@@ -390,35 +421,35 @@ export interface Settings {
   autoSave: boolean;
   toolExecutionEnabled: boolean;
   workflowExecutionEnabled: boolean;
-  
+
   // Sprache & Region
   language: string;
   timezone: string;
   dateFormat: string;
   timeFormat: string;
-  
+
   // UI-Einstellungen
   theme: "light" | "dark" | "auto";
   fontSize: "small" | "medium" | "large";
   density: "compact" | "comfortable" | "spacious";
   sidebarPosition: "left" | "right";
-  
+
   // Privacy & Sicherheit
   dataRetentionDays: number;
   autoClearHistory: boolean;
   analyticsEnabled: boolean;
   errorReportingEnabled: boolean;
-  
+
   // Erweiterte Einstellungen
   apiTimeout: number;
   maxConcurrentRequests: number;
   cacheEnabled: boolean;
   cacheTTL: number;
   fallbackProviderEnabled: boolean;
-  
+
   // Notification-Einstellungen
   notifications: NotificationSettings;
-  
+
   // Backup & Export
   autoBackup: boolean;
   backupInterval: number;
@@ -486,7 +517,7 @@ export interface ImageAnalysisRequest {
   engine?: string;
 }
 
-export type VisionTask = 
+export type VisionTask =
   | "describe"
   | "analyze"
   | "extract_text"
@@ -681,7 +712,7 @@ export interface SystemStatus {
   model_count: number;
   tool_count: number;
   workflow_count: number;
-  system_status: 'healthy' | 'degraded' | 'unhealthy';
+  system_status: "healthy" | "degraded" | "unhealthy";
   active_provider: string;
   fallback_enabled: boolean;
 }
@@ -978,29 +1009,29 @@ export interface APIResponse<T = any> {
 }
 
 // Union-Typen für flexible Nutzung
-export type AnySettings = 
-  | Settings 
-  | AudioSettings 
-  | VisionSettings 
-  | TranslationSettings 
-  | KnowledgeBaseSettings 
-  | EmbeddingSettings 
-  | SecuritySettings 
-  | CacheSettings 
-  | FileUploadSettings 
-  | BackupSettings 
+export type AnySettings =
+  | Settings
+  | AudioSettings
+  | VisionSettings
+  | TranslationSettings
+  | KnowledgeBaseSettings
+  | EmbeddingSettings
+  | SecuritySettings
+  | CacheSettings
+  | FileUploadSettings
+  | BackupSettings
   | ExportSettings;
 
-export type AnyResult = 
-  | AIResponse 
-  | ToolExecutionResult 
-  | WorkflowExecution 
-  | TranscriptionResult 
-  | ImageAnalysisResult 
-  | TranslationResult 
-  | EmbeddingResult 
-  | SimilarityResult 
-  | KnowledgeResult 
+export type AnyResult =
+  | AIResponse
+  | ToolExecutionResult
+  | WorkflowExecution
+  | TranscriptionResult
+  | ImageAnalysisResult
+  | TranslationResult
+  | EmbeddingResult
+  | SimilarityResult
+  | KnowledgeResult
   | ExportResult;
 
 // Utility-Typen für komplexe Operationen

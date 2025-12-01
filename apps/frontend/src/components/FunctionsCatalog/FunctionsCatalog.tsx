@@ -27,7 +27,6 @@ export default function FunctionsCatalog({
   onExport,
   customActions,
 }: FunctionsCatalogProps) {
-
   const {
     rules,
 
@@ -73,7 +72,7 @@ export default function FunctionsCatalog({
       //
       // → kein sofortiger Aufruf hier!
     },
-    [selectNode]
+    [selectNode],
   );
 
   /* ============================================================
@@ -88,7 +87,7 @@ export default function FunctionsCatalog({
         onSearch(q, searchResults);
       }
     },
-    [search, onSearch, searchResults]
+    [search, onSearch, searchResults],
   );
 
   /* ============================================================
@@ -107,7 +106,6 @@ export default function FunctionsCatalog({
   ============================================================ */
   return (
     <CatalogLayout>
-
       {/* Top Bar */}
       <TopBar
         searchQuery={searchQuery}
@@ -124,25 +122,15 @@ export default function FunctionsCatalog({
       {/* Suchergebnisse */}
       {searchResults.length > 0 && (
         <Panel title={`Treffer (${searchResults.length})`}>
-          <SearchResults 
-            results={searchResults} 
-            onSelect={handleSelectNode} 
-          />
+          <SearchResults results={searchResults} onSelect={handleSelectNode} />
         </Panel>
       )}
 
       {/* Node Details */}
-      {node && (
-        <NodeDetails
-          node={node}
-          onNavigate={handleSelectNode}
-        />
-      )}
+      {node && <NodeDetails node={node} onNavigate={handleSelectNode} />}
 
       {/* Lint Ergebnisse */}
-      {findings.length > 0 && (
-        <LintPanel findings={findings} />
-      )}
+      {findings.length > 0 && <LintPanel findings={findings} />}
 
       {/* Leerer Startzustand */}
       {hasEmptyState && (
@@ -158,7 +146,6 @@ export default function FunctionsCatalog({
           )}
         </Panel>
       )}
-
     </CatalogLayout>
   );
 }

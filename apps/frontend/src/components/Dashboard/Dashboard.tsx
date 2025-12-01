@@ -15,7 +15,13 @@ import {
 import { ThemeProvider, useTheme } from "../../contexts/ThemeContext";
 
 // Typen
-import type { Category, SearchResult, NodeDetail, DashboardConfig, DashboardState } from "./types";
+import type {
+  Category,
+  SearchResult,
+  NodeDetail,
+  DashboardConfig,
+  DashboardState,
+} from "./types";
 
 // UI-Komponenten
 import DashboardHeader from "./ui/DashboardHeader";
@@ -109,7 +115,7 @@ const DashboardView: React.FC = () => {
         dispatch({ type: "SELECT_NODE", payload: firstNodeId });
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   /** Close search overlay */
@@ -123,7 +129,7 @@ const DashboardView: React.FC = () => {
       dispatch({ type: "SELECT_NODE", payload: result.id });
       dispatch({ type: "SET_SEARCH_ACTIVE", payload: false });
     },
-    [dispatch]
+    [dispatch],
   );
 
   /** Toggle search visibility */
@@ -156,32 +162,28 @@ const DashboardView: React.FC = () => {
   // Display Logic
   // ============================================================================
 
-  const showNode = 
+  const showNode =
     !catalog.nodeLoading &&
     catalog.nodeError == null &&
     catalog.node !== null &&
     !search.active;
 
-  const showCategories = 
+  const showCategories =
     !catalog.node &&
     !search.active &&
     !catalog.nodeLoading &&
     !catalog.rootsLoading;
 
-  const showNodeError = 
-    catalog.nodeError != null && 
-    !search.active;
+  const showNodeError = catalog.nodeError != null && !search.active;
 
-  const showNodeLoading = 
-    catalog.nodeLoading && 
-    !search.active;
+  const showNodeLoading = catalog.nodeLoading && !search.active;
 
   // ============================================================================
   // Render
   // ============================================================================
 
   return (
-    <div 
+    <div
       className={`dashboard-root theme-${theme}`}
       role="main"
       aria-label={t("dashboard.title")}
@@ -198,13 +200,12 @@ const DashboardView: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="dashboard-content" id="main-content">
-        
         {/* Node Details View */}
         {showNode && <NodeDetails />}
 
         {/* Categories Grid View */}
         {showCategories && (
-          <section 
+          <section
             className="dashboard-main-section"
             aria-labelledby="categories-title"
           >

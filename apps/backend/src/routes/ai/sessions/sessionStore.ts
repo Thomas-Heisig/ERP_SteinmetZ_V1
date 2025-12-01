@@ -3,7 +3,7 @@
  * ---------------------------------------------------------
  * Verwaltung von Chat-Sessions für das KI-System.
  * Unterstützt OpenAI, Vertex, Ollama usw.
- * 
+ *
  * Funktionen:
  *  - Erstellen, Laden, Löschen und Aktualisieren von Sessions
  *  - Persistente Speicherung (optional)
@@ -53,7 +53,10 @@ export const chatSessions = new Map<string, ChatSession>();
 /* ========================================================================== */
 
 /** Erstellt eine neue Session */
-export async function createSession(model: string, provider = "unknown"): Promise<ChatSession> {
+export async function createSession(
+  model: string,
+  provider = "unknown",
+): Promise<ChatSession> {
   const session: ChatSession = {
     id: `chat_${randomUUID()}`,
     model,
@@ -68,7 +71,11 @@ export async function createSession(model: string, provider = "unknown"): Promis
 
   if (PERSIST_SESSIONS) saveSessionToFile(session);
 
-  log("info", "Neue Chat-Session erstellt", { id: session.id, model, provider });
+  log("info", "Neue Chat-Session erstellt", {
+    id: session.id,
+    model,
+    provider,
+  });
   return session;
 }
 
@@ -78,13 +85,20 @@ export function getSession(id: string): ChatSession | null {
 }
 
 /** Aktualisiert eine Session */
-export function updateSession(id: string, message: ChatMessage | AIResponse): ChatSession | null {
+export function updateSession(
+  id: string,
+  message: ChatMessage | AIResponse,
+): ChatSession | null {
   const session = chatSessions.get(id);
   if (!session) return null;
 
-  const msg: ChatMessage = "role" in message
-    ? (message as ChatMessage)
-    : { role: "assistant", content: (message as AIResponse).text ?? "(keine Antwort)" };
+  const msg: ChatMessage =
+    "role" in message
+      ? (message as ChatMessage)
+      : {
+          role: "assistant",
+          content: (message as AIResponse).text ?? "(keine Antwort)",
+        };
 
   session.messages.push(msg);
   session.updatedAt = new Date().toISOString();
@@ -102,7 +116,9 @@ export function removeSession(id: string): boolean {
 
 /** Listet alle Sessions */
 export function listSessions(): ChatSession[] {
-  return Array.from(chatSessions.values()).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return Array.from(chatSessions.values()).sort((a, b) =>
+    b.updatedAt.localeCompare(a.updatedAt),
+  );
 }
 
 /* ========================================================================== */
@@ -115,7 +131,10 @@ export function saveSessionToFile(session: ChatSession): void {
     const filePath = path.join(SESSION_DIR, `${session.id}.json`);
     fs.writeFileSync(filePath, JSON.stringify(session, null, 2), "utf8");
   } catch (err: any) {
-    log("error", "Fehler beim Speichern der Session", { id: session.id, error: err.message });
+    log("error", "Fehler beim Speichern der Session", {
+      id: session.id,
+      error: err.message,
+    });
   }
 }
 
@@ -124,13 +143,18 @@ export function loadAllSessions(): number {
   if (!PERSIST_SESSIONS) return 0;
   if (!fs.existsSync(SESSION_DIR)) return 0;
 
-  const files = fs.readdirSync(SESSION_DIR).filter(f => f.endsWith(".json"));
+  const files = fs.readdirSync(SESSION_DIR).filter((f) => f.endsWith(".json"));
   for (const f of files) {
     try {
-      const data = JSON.parse(fs.readFileSync(path.join(SESSION_DIR, f), "utf8")) as ChatSession;
+      const data = JSON.parse(
+        fs.readFileSync(path.join(SESSION_DIR, f), "utf8"),
+      ) as ChatSession;
       chatSessions.set(data.id, data);
     } catch (err: any) {
-      log("warn", "Konnte Session-Datei nicht laden", { file: f, error: err.message });
+      log("warn", "Konnte Session-Datei nicht laden", {
+        file: f,
+        error: err.message,
+      });
     }
   }
 
@@ -149,10 +173,14 @@ export function deleteSessionFile(id: string): void {
 /* ========================================================================== */
 
 /** Filtert Sessions nach Modell oder Provider */
-export function findSessions(filter: Partial<{ model: string; provider: string }>): ChatSession[] {
-  return Array.from(chatSessions.values()).filter(s => {
-    return (!filter.model || s.model === filter.model) &&
-           (!filter.provider || s.provider === filter.provider);
+export function findSessions(
+  filter: Partial<{ model: string; provider: string }>,
+): ChatSession[] {
+  return Array.from(chatSessions.values()).filter((s) => {
+    return (
+      (!filter.model || s.model === filter.model) &&
+      (!filter.provider || s.provider === filter.provider)
+    );
   });
 }
 

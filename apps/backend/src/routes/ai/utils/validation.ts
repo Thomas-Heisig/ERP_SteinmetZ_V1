@@ -46,9 +46,14 @@ export function validateSchema<T extends Record<string, any>>(
   obj: any,
   schema: Record<
     keyof T,
-    "string" | "number" | "boolean" | "array" | "object" | `${"string" | "number" | "boolean" | "array" | "object"}?`
+    | "string"
+    | "number"
+    | "boolean"
+    | "array"
+    | "object"
+    | `${"string" | "number" | "boolean" | "array" | "object"}?`
   >,
-  options: { allowExtra?: boolean } = {}
+  options: { allowExtra?: boolean } = {},
 ): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 
@@ -61,7 +66,8 @@ export function validateSchema<T extends Record<string, any>>(
     const value = obj[key];
 
     // Optional-Handling: Wenn Typ mit "?" endet → optionales Feld
-    const isOptional = typeof expectedType === "string" && expectedType.endsWith("?");
+    const isOptional =
+      typeof expectedType === "string" && expectedType.endsWith("?");
     if (isOptional) {
       expectedType = expectedType.slice(0, -1) as typeof expectedType;
     }
@@ -80,19 +86,23 @@ export function validateSchema<T extends Record<string, any>>(
     // Typprüfung
     switch (expectedType) {
       case "string":
-        if (!isString(value)) errors.push(`Feld '${key}' muss vom Typ string sein.`);
+        if (!isString(value))
+          errors.push(`Feld '${key}' muss vom Typ string sein.`);
         break;
       case "number":
-        if (!isNumber(value)) errors.push(`Feld '${key}' muss vom Typ number sein.`);
+        if (!isNumber(value))
+          errors.push(`Feld '${key}' muss vom Typ number sein.`);
         break;
       case "boolean":
-        if (!isBoolean(value)) errors.push(`Feld '${key}' muss vom Typ boolean sein.`);
+        if (!isBoolean(value))
+          errors.push(`Feld '${key}' muss vom Typ boolean sein.`);
         break;
       case "array":
         if (!isArray(value)) errors.push(`Feld '${key}' muss ein Array sein.`);
         break;
       case "object":
-        if (!isObject(value)) errors.push(`Feld '${key}' muss ein Objekt sein.`);
+        if (!isObject(value))
+          errors.push(`Feld '${key}' muss ein Objekt sein.`);
         break;
       default:
         errors.push(`Unbekannter Typ für Feld '${key}'.`);
@@ -119,7 +129,10 @@ export function validateModelName(model: string): boolean {
   return /^[a-zA-Z0-9._-]+$/.test(model);
 }
 
-export function validateAIConfig(config: Record<string, any>): { valid: boolean; issues: string[] } {
+export function validateAIConfig(config: Record<string, any>): {
+  valid: boolean;
+  issues: string[];
+} {
   const issues: string[] = [];
 
   if (!config.provider || !isString(config.provider)) {
@@ -127,21 +140,29 @@ export function validateAIConfig(config: Record<string, any>): { valid: boolean;
   }
 
   if (!config.model || !validateModelName(config.model)) {
-    issues.push("Feld 'model' fehlt oder ist ungültig (nur a–z, 0–9, -, _, .).");
+    issues.push(
+      "Feld 'model' fehlt oder ist ungültig (nur a–z, 0–9, -, _, .).",
+    );
   }
 
   if ("temperature" in config && !isNumber(config.temperature)) {
     issues.push("Feld 'temperature' muss numerisch sein.");
   }
 
-  if ("max_tokens" in config && (!isNumber(config.max_tokens) || config.max_tokens <= 0)) {
+  if (
+    "max_tokens" in config &&
+    (!isNumber(config.max_tokens) || config.max_tokens <= 0)
+  ) {
     issues.push("Feld 'max_tokens' muss eine positive Zahl sein.");
   }
 
   return { valid: issues.length === 0, issues };
 }
 
-export function validateChatMessages(messages: any[]): { valid: boolean; errors: string[] } {
+export function validateChatMessages(messages: any[]): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
   if (!Array.isArray(messages)) {
@@ -180,9 +201,12 @@ export function containsInjectionRisk(input: string): boolean {
 /* 🧾 Utility-Validierungen                                                  */
 /* ========================================================================== */
 
-export function validateFileExtension(filename: string, allowed: string[]): boolean {
+export function validateFileExtension(
+  filename: string,
+  allowed: string[],
+): boolean {
   const ext = filename.split(".").pop()?.toLowerCase();
-  return !!ext && allowed.map(a => a.toLowerCase()).includes(ext);
+  return !!ext && allowed.map((a) => a.toLowerCase()).includes(ext);
 }
 
 export function isInRange(value: number, min: number, max: number): boolean {
@@ -191,7 +215,7 @@ export function isInRange(value: number, min: number, max: number): boolean {
 
 export function hasKey<T extends object>(
   obj: T,
-  key: PropertyKey
+  key: PropertyKey,
 ): key is keyof T {
   return Object.prototype.hasOwnProperty.call(obj, key);
 }
@@ -202,7 +226,10 @@ export function hasKey<T extends object>(
 
 export function logValidationErrors(context: string, errors: string[]) {
   if (errors.length === 0) return;
-  log("warn", `Validierungsfehler in ${context}`, { count: errors.length, details: errors });
+  log("warn", `Validierungsfehler in ${context}`, {
+    count: errors.length,
+    details: errors,
+  });
 }
 
 /* ========================================================================== */

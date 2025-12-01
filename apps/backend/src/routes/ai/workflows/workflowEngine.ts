@@ -24,11 +24,11 @@ export class WorkflowEngine {
   private context!: ConversationContext; // erst später gesetzt
 
   async initialize() {
-    const { ConversationContext } = await import("../context/conversationContext.js");
+    const { ConversationContext } = await import(
+      "../context/conversationContext.js"
+    );
     this.context = new ConversationContext();
   }
-
-
 
   /* ─────────────────────────────────────────────
    * 🧩 Workflow-Registrierung (TOLERANTER)
@@ -49,7 +49,7 @@ export class WorkflowEngine {
       created_at: "string?",
       tags: "array?",
       variables: "object?",
-      enabled: "boolean?"
+      enabled: "boolean?",
     } as const;
 
     const validation = validateSchema<WorkflowDefinition>(
@@ -61,14 +61,18 @@ export class WorkflowEngine {
       >,
       {
         allowExtra: true,
-      }
+      },
     );
 
     if (!validation.valid) {
       logValidationErrors(`Workflow '${name}'`, validation.errors);
-      log("warn", `Workflow '${name}' hat Validierungsfehler, wird aber trotzdem registriert`, {
-        errors: validation.errors,
-      });
+      log(
+        "warn",
+        `Workflow '${name}' hat Validierungsfehler, wird aber trotzdem registriert`,
+        {
+          errors: validation.errors,
+        },
+      );
     }
 
     // Zusätzliche Validierung für steps
@@ -97,15 +101,25 @@ export class WorkflowEngine {
   /* ─────────────────────────────────────────────
    * 🔧 Normalisierung für verschiedene Formate
    * ───────────────────────────────────────────── */
-  private normalizeWorkflowDefinition(def: WorkflowDefinition): WorkflowDefinition {
+  private normalizeWorkflowDefinition(
+    def: WorkflowDefinition,
+  ): WorkflowDefinition {
     const normalized: WorkflowDefinition = { ...def };
 
     // Steps normalisieren
-    normalized.steps = def.steps.map((step) => this.normalizeWorkflowStep(step));
+    normalized.steps = def.steps.map((step) =>
+      this.normalizeWorkflowStep(step),
+    );
 
     // on_error prüfen
-    if (normalized.on_error && !["continue", "stop", "skip"].includes(normalized.on_error)) {
-      log("warn", `Ungültiger on_error Wert: ${normalized.on_error}, verwende 'stop'`);
+    if (
+      normalized.on_error &&
+      !["continue", "stop", "skip"].includes(normalized.on_error)
+    ) {
+      log(
+        "warn",
+        `Ungültiger on_error Wert: ${normalized.on_error}, verwende 'stop'`,
+      );
       normalized.on_error = "stop";
     }
 
@@ -133,13 +147,13 @@ export class WorkflowEngine {
 
     // Verschachtelte steps rekursiv normalisieren
     if (normalized.steps && Array.isArray(normalized.steps)) {
-      normalized.steps = normalized.steps.map((nested) => this.normalizeWorkflowStep(nested));
+      normalized.steps = normalized.steps.map((nested) =>
+        this.normalizeWorkflowStep(nested),
+      );
     }
 
     return normalized;
   }
-
-
 
   /* ─────────────────────────────────────────────
    * 📚 Workflow-Abfragen
@@ -168,17 +182,19 @@ export class WorkflowEngine {
   async executeWorkflow(
     name: string,
     input: Record<string, any> = {},
-    debug = false
+    debug = false,
   ): Promise<any> {
     const wf = this.workflows.get(name);
     if (!wf) {
-      throw new Error(`Workflow '${name}' nicht gefunden. Verfügbar: ${this.listWorkflows().join(", ")}`);
+      throw new Error(
+        `Workflow '${name}' nicht gefunden. Verfügbar: ${this.listWorkflows().join(", ")}`,
+      );
     }
 
-    const contextVars: Record<string, any> = { 
-      input, 
+    const contextVars: Record<string, any> = {
+      input,
       last_result: null,
-      timestamp: new Date().toISOString().replace(/[:.]/g, "-")
+      timestamp: new Date().toISOString().replace(/[:.]/g, "-"),
     };
     const results: any[] = [];
 
@@ -187,24 +203,28 @@ export class WorkflowEngine {
     };
 
     dlog(`Starte Workflow (${wf.steps.length} Schritte)...`);
-    log("info", `Starte Workflow: ${name}`, { 
+    log("info", `Starte Workflow: ${name}`, {
       steps: wf.steps.length,
-      input_keys: Object.keys(input)
+      input_keys: Object.keys(input),
     });
 
     for (let i = 0; i < wf.steps.length; i++) {
       const step = wf.steps[i];
       const stepNumber = i + 1;
-      
+
       try {
         const stepDesc = `${step.type}${step.tool ? `:${step.tool}` : ""}`;
         dlog(`[${stepNumber}/${wf.steps.length}] → Schritt: ${stepDesc}`);
 
-        const result = await this.executeSingleStep(step, contextVars, name, debug);
+        const result = await this.executeSingleStep(
+          step,
+          contextVars,
+          name,
+          debug,
+        );
         if (result !== undefined) {
           results.push({ step: stepDesc, result });
         }
-
       } catch (err: any) {
         dlog(`❌ Fehler in Schritt ${stepNumber}: ${err.message}`);
 
@@ -216,9 +236,11 @@ export class WorkflowEngine {
         });
 
         const errorMode = wf.on_error ?? "stop";
-        
+
         if (errorMode === "stop") {
-          throw new Error(`Workflow '${name}' gestoppt bei Schritt ${stepNumber}: ${err.message}`);
+          throw new Error(
+            `Workflow '${name}' gestoppt bei Schritt ${stepNumber}: ${err.message}`,
+          );
         } else if (errorMode === "skip") {
           dlog(`⏭️  Überspringe restliche Schritte aufgrund von Fehler`);
           break;
@@ -229,17 +251,17 @@ export class WorkflowEngine {
       }
     }
 
-    log("info", `✅ Workflow '${name}' abgeschlossen`, { 
+    log("info", `✅ Workflow '${name}' abgeschlossen`, {
       results: results.length,
-      success: true 
+      success: true,
     });
-    
-    return { 
-      success: true, 
-      workflow: name, 
-      results, 
+
+    return {
+      success: true,
+      workflow: name,
+      results,
       context: contextVars,
-      executed_steps: results.length 
+      executed_steps: results.length,
     };
   }
 
@@ -247,10 +269,10 @@ export class WorkflowEngine {
    * ⚡ Einzelschritt-Ausführung
    * ───────────────────────────────────────────── */
   private async executeSingleStep(
-    step: WorkflowStep, 
-    contextVars: Record<string, any>, 
+    step: WorkflowStep,
+    contextVars: Record<string, any>,
     workflowName: string,
-    debug = false
+    debug = false,
   ): Promise<any> {
     const dlog = (msg: string, data?: any) => {
       if (debug) console.log(`[WF:${workflowName}] ${msg}`, data ?? "");
@@ -263,14 +285,19 @@ export class WorkflowEngine {
         }
 
         if (!toolRegistry.has(step.tool)) {
-          throw new Error(`Tool '${step.tool}' nicht registriert. Verfügbar: ${toolRegistry.list().join(", ")}`);
+          throw new Error(
+            `Tool '${step.tool}' nicht registriert. Verfügbar: ${toolRegistry.list().join(", ")}`,
+          );
         }
 
-        const resolvedParams = this.interpolateParams(step.params ?? {}, contextVars);
+        const resolvedParams = this.interpolateParams(
+          step.params ?? {},
+          contextVars,
+        );
         dlog(`Tool '${step.tool}' aufrufen mit Parametern:`, resolvedParams);
-        
+
         const result = await toolRegistry.call(step.tool, resolvedParams);
-        
+
         contextVars.last_result = result;
         if (step.variable) {
           contextVars[step.variable] = result;
@@ -285,11 +312,17 @@ export class WorkflowEngine {
         const cond = step.condition ?? "";
         const condResult = this.evaluateCondition(cond, contextVars);
         dlog(`Bedingung '${cond}' → ${condResult}`);
-        
+
         if (condResult && step.steps) {
           dlog(`Führe ${step.steps.length} verschachtelte Schritte aus...`);
-          const nestedResults = await this.executeSteps(step.steps, contextVars, debug);
-          dlog(`Verschachtelte Schritte abgeschlossen: ${nestedResults.length} Ergebnisse`);
+          const nestedResults = await this.executeSteps(
+            step.steps,
+            contextVars,
+            debug,
+          );
+          dlog(
+            `Verschachtelte Schritte abgeschlossen: ${nestedResults.length} Ergebnisse`,
+          );
           return nestedResults;
         }
         return null;
@@ -303,17 +336,21 @@ export class WorkflowEngine {
 
         dlog(`Starte Schleife über ${list.length} Elemente...`);
         const loopResults: any[] = [];
-        
+
         for (let j = 0; j < list.length; j++) {
           const item = list[j];
           contextVars.item = item;
           contextVars.index = j;
-          
+
           dlog(`[${j + 1}/${list.length}] Schleifen-Durchlauf`);
-          const nested = await this.executeSteps(step.steps ?? [], contextVars, debug);
+          const nested = await this.executeSteps(
+            step.steps ?? [],
+            contextVars,
+            debug,
+          );
           loopResults.push(...nested);
         }
-        
+
         delete contextVars.item;
         delete contextVars.index;
         dlog(`Schleife abgeschlossen: ${loopResults.length} Ergebnisse`);
@@ -327,8 +364,12 @@ export class WorkflowEngine {
 
         dlog(`Rufe Subworkflow '${step.tool}' auf...`);
         const subInput = this.interpolateParams(step.params ?? {}, contextVars);
-        const subResult = await this.executeWorkflow(step.tool, subInput, debug);
-        
+        const subResult = await this.executeWorkflow(
+          step.tool,
+          subInput,
+          debug,
+        );
+
         contextVars.last_result = subResult;
         dlog(`Subworkflow '${step.tool}' abgeschlossen`);
         return subResult;
@@ -337,12 +378,12 @@ export class WorkflowEngine {
       case "context_update": {
         const updates = step.params ?? {};
         const resolvedUpdates = this.interpolateParams(updates, contextVars);
-        
+
         Object.entries(resolvedUpdates).forEach(([k, v]) => {
           this.context.set(k, v);
           contextVars[k] = v; // Auch im lokalen Kontext verfügbar
         });
-        
+
         dlog(`Kontext aktualisiert: ${Object.keys(updates).join(", ")}`);
         return { updated: Object.keys(updates) };
       }
@@ -351,7 +392,7 @@ export class WorkflowEngine {
         const rawMessage = step.message ?? "Log-Schritt";
         const resolvedMessage = this.interpolate(rawMessage, contextVars);
         const sanitizedMessage = sanitizeString(resolvedMessage);
-        
+
         log("info", `[WF:${workflowName}] ${sanitizedMessage}`);
         dlog(`LOG: ${sanitizedMessage}`);
         return { logged: sanitizedMessage };
@@ -366,10 +407,19 @@ export class WorkflowEngine {
    * 🔁 Interne Hilfsfunktionen
    * ───────────────────────────────────────────── */
 
-  private async executeSteps(steps: WorkflowStep[], contextVars: Record<string, any>, debug = false) {
+  private async executeSteps(
+    steps: WorkflowStep[],
+    contextVars: Record<string, any>,
+    debug = false,
+  ) {
     const nestedResults: any[] = [];
     for (const step of steps) {
-      const res = await this.executeSingleStep(step, contextVars, "nested", debug);
+      const res = await this.executeSingleStep(
+        step,
+        contextVars,
+        "nested",
+        debug,
+      );
       if (res !== undefined && res !== null) {
         nestedResults.push(res);
       }
@@ -377,7 +427,10 @@ export class WorkflowEngine {
     return nestedResults;
   }
 
-  private interpolateParams(params: Record<string, any>, context: Record<string, any>): Record<string, any> {
+  private interpolateParams(
+    params: Record<string, any>,
+    context: Record<string, any>,
+  ): Record<string, any> {
     const resolved: Record<string, any> = {};
     for (const [key, value] of Object.entries(params)) {
       resolved[key] = this.interpolate(value, context);
@@ -398,37 +451,45 @@ export class WorkflowEngine {
         }
       });
     } else if (Array.isArray(value)) {
-      return value.map(item => this.interpolate(item, context));
+      return value.map((item) => this.interpolate(item, context));
     } else if (typeof value === "object" && value !== null) {
       return this.interpolateParams(value, context);
     }
     return value;
   }
 
-  private evaluateCondition(expr: string, context: Record<string, any>): boolean {
+  private evaluateCondition(
+    expr: string,
+    context: Record<string, any>,
+  ): boolean {
     try {
       const replaced = this.interpolate(expr, context);
-      
+
       // Einfache, sichere Auswertung für häufige Fälle
       if (replaced === "true" || replaced === "1") return true;
       if (replaced === "false" || replaced === "0") return false;
-      
+
       // Zahlenvergleiche
       const numberCompare = replaced.match(/^(\d+)\s*([<>]=?|==)\s*(\d+)$/);
       if (numberCompare) {
         const [, left, operator, right] = numberCompare;
         const leftNum = parseFloat(left);
         const rightNum = parseFloat(right);
-        
+
         switch (operator) {
-          case ">": return leftNum > rightNum;
-          case ">=": return leftNum >= rightNum;
-          case "<": return leftNum < rightNum;
-          case "<=": return leftNum <= rightNum;
-          case "==": return leftNum === rightNum;
+          case ">":
+            return leftNum > rightNum;
+          case ">=":
+            return leftNum >= rightNum;
+          case "<":
+            return leftNum < rightNum;
+          case "<=":
+            return leftNum <= rightNum;
+          case "==":
+            return leftNum === rightNum;
         }
       }
-      
+
       // Sicherheitswarnung: In Produktion sollte dies durch einen sicheren Parser ersetzt werden
       // Für Entwicklung verwenden wir Function als Fallback
       return Function('"use strict"; return (' + replaced + ")")();
@@ -451,7 +512,7 @@ export class WorkflowEngine {
   importWorkflows(data: any[]): void {
     let imported = 0;
     let skipped = 0;
-    
+
     for (const wf of data) {
       try {
         const name = wf.name || wf.def?.name;
@@ -466,7 +527,7 @@ export class WorkflowEngine {
         skipped++;
       }
     }
-    
+
     log("info", `Workflow-Import abgeschlossen`, { imported, skipped });
   }
 
@@ -477,16 +538,13 @@ export class WorkflowEngine {
   }
 }
 
-
 /* ========================================================================== */
 /* 🌍 Globale Instanz & Beispielworkflow                                     */
 /* ========================================================================== */
 export const workflowEngine = new WorkflowEngine();
 
 // Pfad zur externen JSON-Definition
-const workflowPath = path.resolve(
-  "src/routes/ai/workflows/data_export.json"
-);
+const workflowPath = path.resolve("src/routes/ai/workflows/data_export.json");
 
 // Versuche, den Workflow aus JSON zu laden
 try {

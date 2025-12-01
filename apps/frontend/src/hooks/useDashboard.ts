@@ -80,7 +80,9 @@ export interface UseDashboardReturn {
   reload: () => Promise<void>;
 }
 
-export function useDashboard(backendUrl: string = "/api/dashboard"): UseDashboardReturn {
+export function useDashboard(
+  backendUrl: string = "/api/dashboard",
+): UseDashboardReturn {
   const [health, setHealth] = useState<DashboardHealth | null>(null);
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
   const [context, setContext] = useState<string[]>([]);
@@ -92,9 +94,11 @@ export function useDashboard(backendUrl: string = "/api/dashboard"): UseDashboar
     context?: string;
   }>({});
 
-  const safeFetch = useCallback(async <T,>(url: string): Promise<T> => {
+  const safeFetch = useCallback(async <T>(url: string): Promise<T> => {
     try {
-      const res = await fetch(url, { headers: { "Content-Type": "application/json" } });
+      const res = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (!res.ok) {
         const text = await res.text().catch(() => "Unbekannter Fehler");
@@ -118,7 +122,7 @@ export function useDashboard(backendUrl: string = "/api/dashboard"): UseDashboar
       setHealth(data);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      setErrors(prev => ({ ...prev, health: msg }));
+      setErrors((prev) => ({ ...prev, health: msg }));
     }
   }, [backendUrl, safeFetch]);
 
@@ -128,17 +132,19 @@ export function useDashboard(backendUrl: string = "/api/dashboard"): UseDashboar
       setOverview(data);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      setErrors(prev => ({ ...prev, overview: msg }));
+      setErrors((prev) => ({ ...prev, overview: msg }));
     }
   }, [backendUrl, safeFetch]);
 
   const loadContext = useCallback(async () => {
     try {
-      const data = await safeFetch<DashboardContextLog>(`${backendUrl}/context`);
+      const data = await safeFetch<DashboardContextLog>(
+        `${backendUrl}/context`,
+      );
       setContext(Array.isArray(data.context) ? data.context : []);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      setErrors(prev => ({ ...prev, context: msg }));
+      setErrors((prev) => ({ ...prev, context: msg }));
     }
   }, [backendUrl, safeFetch]);
 
@@ -150,11 +156,7 @@ export function useDashboard(backendUrl: string = "/api/dashboard"): UseDashboar
     setLoading(true);
     setErrors({});
 
-    await Promise.allSettled([
-      loadHealth(),
-      loadOverview(),
-      loadContext()
-    ]);
+    await Promise.allSettled([loadHealth(), loadOverview(), loadContext()]);
 
     setLoading(false);
   }, [loadHealth, loadOverview, loadContext]);

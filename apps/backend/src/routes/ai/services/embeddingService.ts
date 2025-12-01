@@ -13,7 +13,9 @@ import type { AIResponse, AIModuleConfig, Provider } from "../types/types.js";
 /* ⚙️ Konfiguration                                                          */
 /* ========================================================================== */
 
-const envProvider = (process.env.EMBEDDING_PROVIDER ?? "openai").toLowerCase() as Provider;
+const envProvider = (
+  process.env.EMBEDDING_PROVIDER ?? "openai"
+).toLowerCase() as Provider;
 
 export const embeddingConfig: AIModuleConfig = {
   name: "embeddingService",
@@ -24,7 +26,6 @@ export const embeddingConfig: AIModuleConfig = {
   active: true,
 };
 
-
 /* ========================================================================== */
 /* 🧠 Hauptfunktion: Embeddings generieren                                   */
 /* ========================================================================== */
@@ -34,7 +35,7 @@ export const embeddingConfig: AIModuleConfig = {
  */
 export async function generateEmbeddings(
   input: string | string[],
-  options: Record<string, any> = {}
+  options: Record<string, any> = {},
 ): Promise<AIResponse> {
   const provider = (options.provider ?? embeddingConfig.provider).toLowerCase();
   const model = options.model ?? embeddingConfig.model;
@@ -68,7 +69,6 @@ export async function generateEmbeddings(
   }
 }
 
-
 /* ========================================================================== */
 /* 🤖 OpenAI Embeddings                                                      */
 /* ========================================================================== */
@@ -86,7 +86,7 @@ interface OpenAIEmbeddingResponse {
 
 async function openAIEmbedding(
   input: string | string[],
-  model: string
+  model: string,
 ): Promise<AIResponse> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -101,7 +101,7 @@ async function openAIEmbedding(
   const res = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
@@ -116,13 +116,11 @@ async function openAIEmbedding(
 
   const vectorList = Array.isArray(data.data) ? data.data : [];
   const vectors = vectorList.map((v) =>
-    Array.isArray(v.embedding) ? v.embedding : []
+    Array.isArray(v.embedding) ? v.embedding : [],
   );
 
   const dimensions =
-    Array.isArray(vectors[0]) && vectors[0].length > 0
-      ? vectors[0].length
-      : 0;
+    Array.isArray(vectors[0]) && vectors[0].length > 0 ? vectors[0].length : 0;
 
   return {
     text: `OpenAI Embeddings erzeugt (${vectors.length} Vektoren, ${dimensions} Dimensionen).`,
@@ -135,7 +133,6 @@ async function openAIEmbedding(
   };
 }
 
-
 /* ========================================================================== */
 /* 🧩 Ollama Embeddings (lokal)                                              */
 /* ========================================================================== */
@@ -147,7 +144,7 @@ interface OllamaEmbeddingResponse {
 
 async function ollamaEmbedding(
   input: string | string[],
-  model: string
+  model: string,
 ): Promise<AIResponse> {
   const baseUrl =
     process.env.OLLAMA_API_URL ?? "http://localhost:11434/api/embeddings";
@@ -197,7 +194,6 @@ async function ollamaEmbedding(
   };
 }
 
-
 /* ========================================================================== */
 /* 🤗 HuggingFace Embeddings                                                 */
 /* ========================================================================== */
@@ -213,7 +209,7 @@ interface HFEmbeddingResponse {
 
 async function huggingFaceEmbedding(
   input: string | string[],
-  model: string
+  model: string,
 ): Promise<AIResponse> {
   const token = process.env.HUGGINGFACEHUB_API_TOKEN;
   if (!token) throw new Error("HUGGINGFACEHUB_API_TOKEN fehlt.");
@@ -286,12 +282,13 @@ async function huggingFaceEmbedding(
   };
 }
 
-
 /* ========================================================================== */
 /* 🧱 Lokaler Dummy-Fallback                                                */
 /* ========================================================================== */
 
-async function localDummyEmbedding(input: string | string[]): Promise<AIResponse> {
+async function localDummyEmbedding(
+  input: string | string[],
+): Promise<AIResponse> {
   const text = Array.isArray(input) ? input.join(" ") : input;
   const seed = text.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
   const vector = Array.from({ length: 128 }, (_, i) => Math.sin(seed + i));

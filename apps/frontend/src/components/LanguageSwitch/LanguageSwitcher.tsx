@@ -14,13 +14,13 @@ export const LanguageSwitcher: React.FC = () => {
    * Flags sind optisch, nicht technisch relevant.
    */
   const LANGUAGES: Array<{ code: Locale; label: string; flag: string }> = [
-    { code: "de",  label: "Deutsch",        flag: "🇩🇪" },
-    { code: "en",  label: "English",        flag: "🇬🇧" },
-    { code: "ar",  label: "العربية",        flag: "🇸🇦" },
-    { code: "zh",  label: "中文",           flag: "🇨🇳" },
-    { code: "ru",  label: "Русский",        flag: "🇷🇺" },
-    { code: "nds", label: "Plattdüütsch",   flag: "🧱" },
-    { code: "fr",  label: "Français",       flag: "🇫🇷" },
+    { code: "de", label: "Deutsch", flag: "🇩🇪" },
+    { code: "en", label: "English", flag: "🇬🇧" },
+    { code: "ar", label: "العربية", flag: "🇸🇦" },
+    { code: "zh", label: "中文", flag: "🇨🇳" },
+    { code: "ru", label: "Русский", flag: "🇷🇺" },
+    { code: "nds", label: "Plattdüütsch", flag: "🧱" },
+    { code: "fr", label: "Français", flag: "🇫🇷" },
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

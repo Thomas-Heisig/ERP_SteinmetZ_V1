@@ -8,8 +8,8 @@ export default {
       status: {
         healthy: "System operational",
         degraded: "System degraded",
-        unhealthy: "System failure"
-      }
+        unhealthy: "System failure",
+      },
     },
 
     // Categories
@@ -17,7 +17,7 @@ export default {
       title: "Functional Areas",
       count: "{{count}} areas available",
       emptyTitle: "No categories found",
-      emptyDescription: "No matching categories could be displayed."
+      emptyDescription: "No matching categories could be displayed.",
     },
 
     // General status
@@ -29,7 +29,7 @@ export default {
 
     // Loading
     loading: {
-      message: "Loading data…"
+      message: "Loading data…",
     },
 
     // Search module
@@ -41,13 +41,13 @@ export default {
       placeholder: "Search for {{type}}…",
       input: "Search field",
       loading: "Searching…",
-      noResults: "No results found"
+      noResults: "No results found",
     },
 
     // Error screen
     errorScreen: {
       title: "Error while loading",
-      retryButton: "Try again"
+      retryButton: "Try again",
     },
 
     // Navigation
@@ -55,7 +55,7 @@ export default {
       overview: "Overview",
       catalog: "Functions",
       ai: "AI Annotator",
-      settings: "Settings"
+      settings: "Settings",
     },
 
     // Chat
@@ -64,7 +64,7 @@ export default {
       inputPlaceholder: "Enter message…",
       send: "Send",
       newSession: "New session",
-      loading: "Processing response…"
+      loading: "Processing response…",
     },
 
     // Models
@@ -72,14 +72,14 @@ export default {
       title: "Models",
       provider: "Provider",
       capabilities: "Capabilities",
-      noModels: "No models available"
+      noModels: "No models available",
     },
 
     // Tools
     tools: {
       title: "Tools",
       run: "Execute",
-      noTools: "No tools registered"
+      noTools: "No tools registered",
     },
 
     // System info
@@ -97,7 +97,7 @@ export default {
       ai: "AI status",
       statusHealthy: "Operational",
       statusUnhealthy: "Not operational",
-      statusDegraded: "Limited"
+      statusDegraded: "Limited",
     },
 
     // Language selection
@@ -110,7 +110,7 @@ export default {
       close: "Close",
       reload: "Reload",
       details: "Details",
-      unknown: "Unknown"
-    }
-  }
+      unknown: "Unknown",
+    },
+  },
 };

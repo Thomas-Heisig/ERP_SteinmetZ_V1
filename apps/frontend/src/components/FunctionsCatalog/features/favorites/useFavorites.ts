@@ -15,7 +15,7 @@ export function useFavorites() {
   const store = FavoritesStore.get();
 
   const [favorites, setFavorites] = useState<FavoriteEntry[]>(() =>
-    store.getAll()
+    store.getAll(),
   );
 
   // Echtzeit-Updates aktivieren
@@ -39,9 +39,7 @@ export function useFavorites() {
       addedAt: new Date().toISOString(),
 
       // Nur setzen, wenn vorhanden → verhindert Typfehler
-      tags: Array.isArray((node as any).tags)
-        ? (node as any).tags
-        : undefined,
+      tags: Array.isArray((node as any).tags) ? (node as any).tags : undefined,
 
       category:
         Array.isArray((node as any).categories) &&
@@ -60,8 +58,7 @@ export function useFavorites() {
     /** Rohmethoden */
     addFavorite: (entry: FavoriteEntry) => store.add(entry),
     removeFavorite: (id: string) => store.remove(id),
-    toggleFavorite: (id: string, node?: NodeDetail) =>
-      store.toggle(id, node),
+    toggleFavorite: (id: string, node?: NodeDetail) => store.toggle(id, node),
 
     clearFavorites: () => store.clear(),
 

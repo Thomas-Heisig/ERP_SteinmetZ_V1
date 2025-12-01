@@ -30,7 +30,7 @@ export function useHealth(backendUrl: string): SystemHealth {
     }
 
     let interval: number;
-    
+
     const checkHealth = async () => {
       const requestId = ++lastRequestId.current;
       const controller = new AbortController();
@@ -41,7 +41,7 @@ export function useHealth(backendUrl: string): SystemHealth {
       try {
         const res = await fetch(`${backendUrl}/api/health`, {
           signal: controller.signal,
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json" },
         });
 
         const duration = Date.now() - startedAt;
@@ -63,12 +63,12 @@ export function useHealth(backendUrl: string): SystemHealth {
 
         setHealth({
           status: "healthy",
-          timestamp: typeof data.timestamp === "string" ? data.timestamp : undefined,
+          timestamp:
+            typeof data.timestamp === "string" ? data.timestamp : undefined,
           version: typeof data.version === "string" ? data.version : undefined,
           responseTime: duration,
           lastChecked: new Date().toISOString(),
         });
-
       } catch (err) {
         clearTimeout(timeout);
 

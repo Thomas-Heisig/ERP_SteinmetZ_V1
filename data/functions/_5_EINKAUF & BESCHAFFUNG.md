@@ -1,4 +1,5 @@
 ## 🛒 EINKAUF & BESCHAFFUNG
+
 ├── 📋 Beschaffung
 │ ├── 📊 Bedarfsplanung
 │ │ ├── 🔢 Materialbedarfsplanung (MRP)

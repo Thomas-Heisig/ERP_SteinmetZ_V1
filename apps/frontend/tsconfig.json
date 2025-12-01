@@ -4,7 +4,7 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "moduleResolution": "bundler",            // Kleinschreibung! ← wichtig
+    "moduleResolution": "bundler", // Kleinschreibung! ← wichtig
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "isolatedModules": true,

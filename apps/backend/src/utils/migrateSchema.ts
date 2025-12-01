@@ -78,7 +78,9 @@ try {
   const columns = db.prepare("PRAGMA table_info(schema_migrations);").all();
   const names = columns.map((c: any) => c.name);
   if (!names.includes("status")) {
-    db.exec("ALTER TABLE schema_migrations ADD COLUMN status TEXT DEFAULT 'success';");
+    db.exec(
+      "ALTER TABLE schema_migrations ADD COLUMN status TEXT DEFAULT 'success';",
+    );
   }
   if (!names.includes("message")) {
     db.exec("ALTER TABLE schema_migrations ADD COLUMN message TEXT;");
@@ -105,7 +107,7 @@ for (const file of migrationFiles) {
 
   // Wenn die Datei eine eigene Transaktion hat → keine neue starten
   const hasOwnTransaction = statements.some((s) =>
-    /BEGIN\s+TRANSACTION/i.test(s)
+    /BEGIN\s+TRANSACTION/i.test(s),
   );
 
   if (!hasOwnTransaction) db.exec("BEGIN TRANSACTION;");
@@ -116,13 +118,13 @@ for (const file of migrationFiles) {
     for (const stmt of statements) {
       // Prüft dynamisch: wenn ALTER TABLE nodes ADD COLUMN annotation_status …
       const alterMatch = stmt.match(
-        /ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)/i
+        /ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)/i,
       );
       if (alterMatch) {
         const [, table, column] = alterMatch;
         if (columnExists(table, column)) {
           console.log(
-            `⚠️  Spalte '${column}' in Tabelle '${table}' existiert bereits – überspringe.`
+            `⚠️  Spalte '${column}' in Tabelle '${table}' existiert bereits – überspringe.`,
           );
           continue;
         }
@@ -135,19 +137,18 @@ for (const file of migrationFiles) {
     console.log(`✅ Erfolgreich angewendet: ${file}\n`);
 
     db.prepare(
-      "INSERT INTO schema_migrations (filename, status, message) VALUES (?, ?, ?)"
+      "INSERT INTO schema_migrations (filename, status, message) VALUES (?, ?, ?)",
     ).run(file, "success", message);
   } catch (err: unknown) {
     success = false;
-    message =
-      err instanceof Error ? err.message : JSON.stringify(err, null, 2);
+    message = err instanceof Error ? err.message : JSON.stringify(err, null, 2);
     console.error(`❌ Fehler bei Migration ${file}: ${message}`);
 
     if (!hasOwnTransaction) db.exec("ROLLBACK;");
 
     // Migration als "fehlerhaft" markieren, aber nicht alles abbrechen
     db.prepare(
-      "INSERT INTO schema_migrations (filename, status, message) VALUES (?, ?, ?)"
+      "INSERT INTO schema_migrations (filename, status, message) VALUES (?, ?, ?)",
     ).run(file, "failed", message);
 
     console.warn(`➡️  Fahre mit nächster Migration fort.\n`);

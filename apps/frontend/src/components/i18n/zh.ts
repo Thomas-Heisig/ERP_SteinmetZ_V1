@@ -7,8 +7,8 @@ export default {
       status: {
         healthy: "系统运行正常",
         degraded: "系统部分受限",
-        unhealthy: "系统不可用"
-      }
+        unhealthy: "系统不可用",
+      },
     },
 
     online: "系统在线",
@@ -21,11 +21,11 @@ export default {
       title: "功能区域",
       count: "可用区域数量：{{count}}",
       emptyTitle: "未找到功能区域",
-      emptyDescription: "没有符合条件的区域。"
+      emptyDescription: "没有符合条件的区域。",
     },
 
     loading: {
-      message: "正在加载数据…"
+      message: "正在加载数据…",
     },
 
     search: {
@@ -36,19 +36,19 @@ export default {
       placeholder: "搜索 {{type}}…",
       input: "搜索字段",
       loading: "正在搜索…",
-      noResults: "未找到结果"
+      noResults: "未找到结果",
     },
 
     errorScreen: {
       title: "加载时发生错误",
-      retryButton: "重试"
+      retryButton: "重试",
     },
 
     navigation: {
       overview: "概览",
       catalog: "功能",
       ai: "AI 注释器",
-      settings: "设置"
+      settings: "设置",
     },
 
     openChat: "打开聊天",
@@ -56,20 +56,20 @@ export default {
       inputPlaceholder: "输入消息…",
       send: "发送",
       newSession: "新会话",
-      loading: "正在处理回复…"
+      loading: "正在处理回复…",
     },
 
     models: {
       title: "模型",
       provider: "提供商",
       capabilities: "功能",
-      noModels: "无可用模型"
+      noModels: "无可用模型",
     },
 
     tools: {
       title: "工具",
       run: "执行",
-      noTools: "无已注册工具"
+      noTools: "无已注册工具",
     },
 
     system: {
@@ -86,7 +86,7 @@ export default {
       ai: "AI 状态",
       statusHealthy: "正常",
       statusUnhealthy: "不可用",
-      statusDegraded: "受限"
+      statusDegraded: "受限",
     },
 
     languageSwitcher: "选择语言",
@@ -97,7 +97,7 @@ export default {
       close: "关闭",
       reload: "重新加载",
       details: "详情",
-      unknown: "未知"
-    }
-  }
+      unknown: "未知",
+    },
+  },
 };

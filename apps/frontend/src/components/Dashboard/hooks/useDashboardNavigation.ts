@@ -29,7 +29,7 @@ export function useDashboardNavigation(): UseDashboardNavigation {
         },
       });
     },
-    [dispatch]
+    [dispatch],
   );
 
   /**
@@ -45,7 +45,10 @@ export function useDashboardNavigation(): UseDashboardNavigation {
   const goForward = useCallback(() => {
     // Dein Reducer kennt kein NAV_FORWARD,
     // daher setzen wir NAV_PUSH mit dem letzten Forward-State.
-    dispatch({ type: "NAV_PUSH", payload: state.navigation.history[state.navigation.currentIndex + 1] });
+    dispatch({
+      type: "NAV_PUSH",
+      payload: state.navigation.history[state.navigation.currentIndex + 1],
+    });
   }, [dispatch, state.navigation.history, state.navigation.currentIndex]);
 
   return {

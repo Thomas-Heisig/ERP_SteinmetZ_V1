@@ -42,8 +42,8 @@ const systemInfoTool: ToolFunction = async (params?: Record<string, any>) => {
         ([k]) =>
           !k.toLowerCase().includes("password") &&
           !k.toLowerCase().includes("token") &&
-          !k.toLowerCase().includes("secret")
-      )
+          !k.toLowerCase().includes("secret"),
+      ),
     ),
     timestamps: {
       now: new Date().toISOString(),
@@ -89,7 +89,9 @@ const systemInfoTool: ToolFunction = async (params?: Record<string, any>) => {
 
 systemInfoTool.description =
   "Liefert vollständige Systeminformationen oder spezifische Teilbereiche.";
-systemInfoTool.parameters = { section: "Optional: cpu, memory, network, process, os" };
+systemInfoTool.parameters = {
+  section: "Optional: cpu, memory, network, process, os",
+};
 systemInfoTool.category = "system_info";
 systemInfoTool.version = "1.2";
 toolRegistry.register("get_system_info", systemInfoTool);
@@ -146,7 +148,8 @@ const runtimeDiagnosticsTool: ToolFunction = async () => {
   };
 };
 
-runtimeDiagnosticsTool.description = "Zeigt Prozesslaufzeit- und Speichermetriken an.";
+runtimeDiagnosticsTool.description =
+  "Zeigt Prozesslaufzeit- und Speichermetriken an.";
 runtimeDiagnosticsTool.category = "system_monitoring";
 runtimeDiagnosticsTool.version = "1.0";
 toolRegistry.register("runtime_diagnostics", runtimeDiagnosticsTool);
@@ -175,7 +178,8 @@ const systemPermissionsTool: ToolFunction = async () => {
   };
 };
 
-systemPermissionsTool.description = "Prüft grundlegende Benutzer- und Schreibrechte.";
+systemPermissionsTool.description =
+  "Prüft grundlegende Benutzer- und Schreibrechte.";
 systemPermissionsTool.category = "system_security";
 systemPermissionsTool.version = "1.0";
 toolRegistry.register("check_system_permissions", systemPermissionsTool);
@@ -202,7 +206,8 @@ const systemHealthTool: ToolFunction = async () => {
   };
 };
 
-systemHealthTool.description = "Bewertet den allgemeinen Systemzustand (Health Check).";
+systemHealthTool.description =
+  "Bewertet den allgemeinen Systemzustand (Health Check).";
 systemHealthTool.category = "system_health";
 systemHealthTool.version = "1.0";
 toolRegistry.register("system_health_check", systemHealthTool);
@@ -227,7 +232,8 @@ const systemSummaryTool: ToolFunction = async () => {
   };
 };
 
-systemSummaryTool.description = "Gibt eine kompakte System-Zusammenfassung aus.";
+systemSummaryTool.description =
+  "Gibt eine kompakte System-Zusammenfassung aus.";
 systemSummaryTool.category = "system_info";
 systemSummaryTool.version = "1.1";
 toolRegistry.register("system_summary", systemSummaryTool);

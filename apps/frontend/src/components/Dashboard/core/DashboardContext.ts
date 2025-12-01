@@ -52,7 +52,7 @@ export interface StableSelectorOptions<T = any> {
 // Constants
 // ============================================================================
 
-const CONTEXT_VERSION = '1.0.0';
+const CONTEXT_VERSION = "1.0.0";
 const DEFAULT_EQUALITY_FN: EqualityFn = (a, b) => a === b;
 
 // ============================================================================
@@ -62,7 +62,9 @@ const DEFAULT_EQUALITY_FN: EqualityFn = (a, b) => a === b;
 /**
  * Main Dashboard Context
  */
-export const DashboardContext = createContext<DashboardContextValue | null>(null);
+export const DashboardContext = createContext<DashboardContextValue | null>(
+  null,
+);
 
 // ============================================================================
 // Utility Functions
@@ -73,8 +75,13 @@ export const DashboardContext = createContext<DashboardContextValue | null>(null
  */
 export function deepEqual<T>(a: T, b: T): boolean {
   if (a === b) return true;
-  
-  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+
+  if (
+    typeof a !== "object" ||
+    typeof b !== "object" ||
+    a === null ||
+    b === null
+  ) {
     return false;
   }
 
@@ -88,7 +95,7 @@ export function deepEqual<T>(a: T, b: T): boolean {
 
   if (keysA.length !== keysB.length) return false;
 
-  return keysA.every(key => {
+  return keysA.every((key) => {
     if (!(key in (b as any))) return false;
     return deepEqual((a as any)[key], (b as any)[key]);
   });
@@ -100,7 +107,12 @@ export function deepEqual<T>(a: T, b: T): boolean {
 export function shallowEqual<T>(a: T, b: T): boolean {
   if (a === b) return true;
 
-  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+  if (
+    typeof a !== "object" ||
+    typeof b !== "object" ||
+    a === null ||
+    b === null
+  ) {
     return false;
   }
 
@@ -109,7 +121,7 @@ export function shallowEqual<T>(a: T, b: T): boolean {
 
   if (keysA.length !== keysB.length) return false;
 
-  return keysA.every(key => (a as any)[key] === (b as any)[key]);
+  return keysA.every((key) => (a as any)[key] === (b as any)[key]);
 }
 
 /**
@@ -125,10 +137,10 @@ export function jsonEqual<T>(a: T, b: T): boolean {
 
 /**
  * Base hook for complete access to the Dashboard context
- * 
+ *
  * @throws {Error} When used outside of DashboardProvider
  * @returns Complete context value including state, dispatch, and metadata
- * 
+ *
  * @example
  * ```tsx
  * const { state, dispatch, version, isInitialized } = useDashboardContext();
@@ -136,24 +148,24 @@ export function jsonEqual<T>(a: T, b: T): boolean {
  */
 export function useDashboardContext(): DashboardContextValue {
   const ctx = useContext(DashboardContext);
-  
+
   if (!ctx) {
     throw new Error(
       "useDashboardContext must be used within a DashboardProvider. " +
-      "Make sure your component is wrapped in <DashboardProvider>."
+        "Make sure your component is wrapped in <DashboardProvider>.",
     );
   }
-  
+
   return ctx;
 }
 
 /**
  * Selector hook: returns only a specific part of the state with performance optimizations
- * 
+ *
  * @param selector Function that extracts specific data from the state
  * @param equalityFn Optional custom equality function (default: JSON comparison)
  * @returns Selected state slice
- * 
+ *
  * @example
  * ```tsx
  * const searchState = useDashboardSelector(state => state.search);
@@ -162,10 +174,10 @@ export function useDashboardContext(): DashboardContextValue {
  */
 export function useDashboardSelector<T>(
   selector: DashboardSelector<T>,
-  equalityFn: EqualityFn<T> = jsonEqual
+  equalityFn: EqualityFn<T> = jsonEqual,
 ): T {
   const { state } = useDashboardContext();
-  
+
   const selected = useMemo(() => selector(state), [selector, state]);
   const ref = useRef<T>(selected);
   const [, forceRender] = useState(0);
@@ -176,7 +188,7 @@ export function useDashboardSelector<T>(
 
     if (!equalityFn(prev, next)) {
       ref.current = next;
-      forceRender(x => x + 1);
+      forceRender((x) => x + 1);
     }
   }, [selected, equalityFn]);
 
@@ -185,11 +197,11 @@ export function useDashboardSelector<T>(
 
 /**
  * Stable selector hook with advanced memoization and comparison
- * 
+ *
  * @param selector Function that extracts specific data from the state
  * @param options Configuration options for comparison and memoization
  * @returns Stable selected state slice
- * 
+ *
  * @example
  * ```tsx
  * const navigation = useStableDashboardSelector(
@@ -200,17 +212,20 @@ export function useDashboardSelector<T>(
  */
 export function useStableDashboardSelector<T>(
   selector: DashboardSelector<T>,
-  options: StableSelectorOptions<T> = {}
+  options: StableSelectorOptions<T> = {},
 ): T {
   const { state } = useDashboardContext();
   const { equalityFn = shallowEqual, customMemoKey } = options;
 
-  const selected = useMemo(() => selector(state), [
-    selector, 
-    state,
-    // Include custom key in dependencies for manual control
-    ...(customMemoKey ? [customMemoKey] : [])
-  ]);
+  const selected = useMemo(
+    () => selector(state),
+    [
+      selector,
+      state,
+      // Include custom key in dependencies for manual control
+      ...(customMemoKey ? [customMemoKey] : []),
+    ],
+  );
 
   const ref = useRef<T>(selected);
 
@@ -223,9 +238,9 @@ export function useStableDashboardSelector<T>(
 
 /**
  * Dispatch-only hook
- * 
+ *
  * @returns Dispatch function for sending actions
- * 
+ *
  * @example
  * ```tsx
  * const dispatch = useDashboardDispatch();
@@ -239,11 +254,11 @@ export function useDashboardDispatch(): Dispatch<DashboardAction> {
 
 /**
  * Slice access hook: returns both selected state and dispatch
- * 
+ *
  * @param selector Function that extracts specific data from the state
  * @param equalityFn Optional custom equality function
  * @returns Tuple containing selected state slice and dispatch function
- * 
+ *
  * @example
  * ```tsx
  * const [search, dispatch] = useDashboardSlice(state => state.search);
@@ -251,12 +266,12 @@ export function useDashboardDispatch(): Dispatch<DashboardAction> {
  */
 export function useDashboardSlice<T>(
   selector: DashboardSelector<T>,
-  equalityFn: EqualityFn<T> = jsonEqual
+  equalityFn: EqualityFn<T> = jsonEqual,
 ): [T, Dispatch<DashboardAction>] {
   const { state, dispatch } = useDashboardContext();
-  
+
   const selected = useDashboardSelector(selector, equalityFn);
-  
+
   return [selected, dispatch];
 }
 
@@ -268,8 +283,8 @@ export function useDashboardSlice<T>(
  * Hook for accessing navigation state with optimized re-renders
  */
 export function useDashboardNavigation() {
-  return useStableDashboardSelector(state => state.navigation, {
-    equalityFn: shallowEqual
+  return useStableDashboardSelector((state) => state.navigation, {
+    equalityFn: shallowEqual,
   });
 }
 
@@ -277,8 +292,8 @@ export function useDashboardNavigation() {
  * Hook for accessing search state with optimized re-renders
  */
 export function useDashboardSearch() {
-  return useStableDashboardSelector(state => state.search, {
-    equalityFn: shallowEqual
+  return useStableDashboardSelector((state) => state.search, {
+    equalityFn: shallowEqual,
   });
 }
 
@@ -286,8 +301,8 @@ export function useDashboardSearch() {
  * Hook for accessing catalog state with optimized re-renders
  */
 export function useDashboardCatalog() {
-  return useStableDashboardSelector(state => state.catalog, {
-    equalityFn: shallowEqual
+  return useStableDashboardSelector((state) => state.catalog, {
+    equalityFn: shallowEqual,
   });
 }
 
@@ -295,8 +310,8 @@ export function useDashboardCatalog() {
  * Hook for accessing health state with optimized re-renders
  */
 export function useDashboardHealth() {
-  return useStableDashboardSelector(state => state.health, {
-    equalityFn: shallowEqual
+  return useStableDashboardSelector((state) => state.health, {
+    equalityFn: shallowEqual,
   });
 }
 
@@ -304,8 +319,8 @@ export function useDashboardHealth() {
  * Hook for accessing UI state with optimized re-renders
  */
 export function useDashboardUI() {
-  return useStableDashboardSelector(state => state.ui, {
-    equalityFn: shallowEqual
+  return useStableDashboardSelector((state) => state.ui, {
+    equalityFn: shallowEqual,
   });
 }
 
@@ -313,8 +328,8 @@ export function useDashboardUI() {
  * Hook for accessing builder state with optimized re-renders
  */
 export function useDashboardBuilder() {
-  return useStableDashboardSelector(state => state.builder, {
-    equalityFn: shallowEqual
+  return useStableDashboardSelector((state) => state.builder, {
+    equalityFn: shallowEqual,
   });
 }
 
@@ -327,33 +342,43 @@ export function useDashboardBuilder() {
  */
 export function useDashboardActions() {
   const dispatch = useDashboardDispatch();
-  
-  return useMemo(() => ({
-    // Navigation actions
-    navigateTo: (entry: any) => dispatch({ type: 'NAV_PUSH', payload: entry }),
-    goBack: () => dispatch({ type: 'NAV_POP' }),
-    selectNode: (nodeId: string) => dispatch({ type: 'SELECT_NODE', payload: nodeId }),
-    
-    // Search actions
-    setSearchQuery: (query: string) => dispatch({ type: 'SET_SEARCH_QUERY', payload: query }),
-    setSearchActive: (active: boolean) => dispatch({ type: 'SET_SEARCH_ACTIVE', payload: active }),
-    clearSearch: () => dispatch({ type: 'SEARCH_CLEAR' }),
-    
-    // UI actions
-    setTheme: (theme: 'light' | 'dark' | 'lcars') => dispatch({ type: 'SET_THEME', payload: theme }),
-    setLanguage: (language: string) => dispatch({ type: 'SET_LANGUAGE', payload: language }),
-    toggleChat: () => dispatch({ type: 'TOGGLE_CHAT' }),
-    
-    // Health actions
-    updateHealth: (status: any) => dispatch({ type: 'HEALTH_UPDATE', payload: status }),
-    
-    // Utility actions
-    setLoading: (key: string, value: boolean) => 
-      dispatch({ type: 'SET_LOADING', payload: { key, value } }),
-    setError: (key: string, value: unknown) => 
-      dispatch({ type: 'SET_ERROR', payload: { key, value } }),
-    clearErrors: () => dispatch({ type: 'CLEAR_ERRORS' }),
-  }), [dispatch]);
+
+  return useMemo(
+    () => ({
+      // Navigation actions
+      navigateTo: (entry: any) =>
+        dispatch({ type: "NAV_PUSH", payload: entry }),
+      goBack: () => dispatch({ type: "NAV_POP" }),
+      selectNode: (nodeId: string) =>
+        dispatch({ type: "SELECT_NODE", payload: nodeId }),
+
+      // Search actions
+      setSearchQuery: (query: string) =>
+        dispatch({ type: "SET_SEARCH_QUERY", payload: query }),
+      setSearchActive: (active: boolean) =>
+        dispatch({ type: "SET_SEARCH_ACTIVE", payload: active }),
+      clearSearch: () => dispatch({ type: "SEARCH_CLEAR" }),
+
+      // UI actions
+      setTheme: (theme: "light" | "dark" | "lcars") =>
+        dispatch({ type: "SET_THEME", payload: theme }),
+      setLanguage: (language: string) =>
+        dispatch({ type: "SET_LANGUAGE", payload: language }),
+      toggleChat: () => dispatch({ type: "TOGGLE_CHAT" }),
+
+      // Health actions
+      updateHealth: (status: any) =>
+        dispatch({ type: "HEALTH_UPDATE", payload: status }),
+
+      // Utility actions
+      setLoading: (key: string, value: boolean) =>
+        dispatch({ type: "SET_LOADING", payload: { key, value } }),
+      setError: (key: string, value: unknown) =>
+        dispatch({ type: "SET_ERROR", payload: { key, value } }),
+      clearErrors: () => dispatch({ type: "CLEAR_ERRORS" }),
+    }),
+    [dispatch],
+  );
 }
 
 // ============================================================================
@@ -363,12 +388,13 @@ export function useDashboardActions() {
 /**
  * Hook for debugging state changes (development only)
  */
-export function useDashboardDebug(options: { 
-  enabled?: boolean;
-  logChanges?: boolean;
-  selector?: DashboardSelector;
-} = {}) {
-
+export function useDashboardDebug(
+  options: {
+    enabled?: boolean;
+    logChanges?: boolean;
+    selector?: DashboardSelector;
+  } = {},
+) {
   const defaultEnabled =
     typeof import.meta !== "undefined" &&
     import.meta.env &&
@@ -402,20 +428,22 @@ export function useDashboardDebug(options: {
   };
 }
 
-
 /**
  * Hook for tracking specific state changes
  */
 export function useDashboardWatch<T>(
   selector: DashboardSelector<T>,
   callback: (newValue: T, oldValue: T | undefined) => void,
-  equalityFn: EqualityFn<T> = jsonEqual
+  equalityFn: EqualityFn<T> = jsonEqual,
 ) {
   const value = useDashboardSelector(selector, equalityFn);
   const prevValueRef = useRef<T>();
-  
+
   useEffect(() => {
-    if (prevValueRef.current !== undefined && !equalityFn(prevValueRef.current, value)) {
+    if (
+      prevValueRef.current !== undefined &&
+      !equalityFn(prevValueRef.current, value)
+    ) {
       callback(value, prevValueRef.current);
     }
     prevValueRef.current = value;
@@ -429,7 +457,7 @@ export function useDashboardWatch<T>(
 function findStateChanges(
   prevState: DashboardState,
   nextState: DashboardState,
-  selector?: DashboardSelector
+  selector?: DashboardSelector,
 ): string[] {
   const changes: string[] = [];
 
@@ -438,12 +466,14 @@ function findStateChanges(
     const next = selector(nextState);
 
     if (!jsonEqual(prev, next)) {
-      changes.push(`Selector changed: ${JSON.stringify(prev)} → ${JSON.stringify(next)}`);
+      changes.push(
+        `Selector changed: ${JSON.stringify(prev)} → ${JSON.stringify(next)}`,
+      );
     }
     return changes;
   }
 
-  (Object.keys(nextState) as Array<keyof DashboardState>).forEach(key => {
+  (Object.keys(nextState) as Array<keyof DashboardState>).forEach((key) => {
     if (!jsonEqual(prevState[key], nextState[key])) {
       changes.push(`State.${key} changed`);
     }
@@ -456,7 +486,7 @@ function findStateChanges(
  * Higher-order component für Komponenten, die den Dashboard-Context benötigen.
  */
 export function withDashboardContext<P extends object>(
-  Wrapped: React.ComponentType<P & { dashboard: DashboardContextValue }>
+  Wrapped: React.ComponentType<P & { dashboard: DashboardContextValue }>,
 ): React.FC<P> {
   const WithDashboard: React.FC<P> = (props: P) => {
     const dashboard = useDashboardContext();
@@ -476,8 +506,6 @@ export function withDashboardContext<P extends object>(
 
   return WithDashboard;
 }
-
-
 
 // ============================================================================
 // Default Export

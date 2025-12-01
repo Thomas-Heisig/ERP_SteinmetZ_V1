@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useSystemInfo } from "../../../hooks/useSystemInfo";
 
 export interface DashboardProviderProps {
-  backendUrl?: string;                 // aktuell nicht mehr für Health genutzt
+  backendUrl?: string; // aktuell nicht mehr für Health genutzt
   initialNodes?: NodeDetail[];
   config?: Partial<DashboardConfig>;
   children: React.ReactNode;
@@ -28,7 +28,7 @@ export interface DashboardProviderProps {
 }
 
 const DashboardProvider: React.FC<DashboardProviderProps> = ({
-  backendUrl,           // bleibt für spätere Nutzung erhalten
+  backendUrl, // bleibt für spätere Nutzung erhalten
   initialNodes,
   config,
   children,
@@ -38,15 +38,12 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
   // ---------------------------------------------------------------
   // useReducer – zentraler State
   // ---------------------------------------------------------------
-  const [state, dispatch] = useReducer(
-    dashboardReducer,
-    {
-      ...initialDashboardState,
-      ...(initialNodes && {
-        catalog: { ...initialDashboardState.catalog, roots: initialNodes },
-      }),
-    } as DashboardState
-  );
+  const [state, dispatch] = useReducer(dashboardReducer, {
+    ...initialDashboardState,
+    ...(initialNodes && {
+      catalog: { ...initialDashboardState.catalog, roots: initialNodes },
+    }),
+  } as DashboardState);
 
   // ---------------------------------------------------------------
   // State-Änderungen nach außen melden
@@ -169,7 +166,7 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
       version: "1.0.0",
       isInitialized: !state.loading.provider,
     }),
-    [state, dispatch]
+    [state, dispatch],
   );
 
   return (

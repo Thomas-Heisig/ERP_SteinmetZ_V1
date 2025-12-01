@@ -3,14 +3,7 @@
   "timestamp": "2025-11-02T18:35:39.475Z",
   "config": {
     "indentSize": 4,
-    "branchTokens": [
-      "├──",
-      "└──",
-      "├--",
-      "└--",
-      "├─",
-      "└─"
-    ]
+    "branchTokens": ["├──", "└──", "├--", "└--", "├─", "└─"]
   },
   "summary": {
     "processedFiles": 12,

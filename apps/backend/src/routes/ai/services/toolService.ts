@@ -30,11 +30,21 @@ export const toolServiceConfig: AIModuleConfig = {
 /* ========================================================================== */
 
 export function loadAvailableTools(): string[] {
-  const toolDir = path.resolve("ERP_SteinmetZ_V1", "apps", "backend", "src", "routes", "ai", "tools");
+  const toolDir = path.resolve(
+    "ERP_SteinmetZ_V1",
+    "apps",
+    "backend",
+    "src",
+    "routes",
+    "ai",
+    "tools",
+  );
   if (!fs.existsSync(toolDir)) return [];
 
-  const files = fs.readdirSync(toolDir).filter(f => f.endsWith(".ts") || f.endsWith(".js"));
-  const names = files.map(f => path.basename(f, path.extname(f)));
+  const files = fs
+    .readdirSync(toolDir)
+    .filter((f) => f.endsWith(".ts") || f.endsWith(".js"));
+  const names = files.map((f) => path.basename(f, path.extname(f)));
   log("info", `Tools gefunden: ${names.length}`, { names });
   return names;
 }
@@ -48,7 +58,10 @@ export function listRegisteredTools(): string[] {
 /* ⚙️ Tool-Aufruf                                                            */
 /* ========================================================================== */
 
-export async function runTool(toolName: string, params: Record<string, any> = {}): Promise<string> {
+export async function runTool(
+  toolName: string,
+  params: Record<string, any> = {},
+): Promise<string> {
   try {
     const start = Date.now();
     const result = await toolRegistry.call(toolName, params);
@@ -136,7 +149,10 @@ export function reloadTools(): string[] {
     if (typeof registry.reload === "function") {
       registry.reload();
     } else {
-      log("warn", "toolRegistry.reload() nicht vorhanden – statisches Neuladen verwendet.");
+      log(
+        "warn",
+        "toolRegistry.reload() nicht vorhanden – statisches Neuladen verwendet.",
+      );
     }
 
     log("info", "Tools neu geladen", { count: names.length });

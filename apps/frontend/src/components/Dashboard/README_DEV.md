@@ -19,10 +19,10 @@ Es richtet sich an Personen, die das System erweitern, Fehler analysieren oder d
 Das Dashboard ist ein Bestandteil der Frontend-Anwendung.
 Es dient der Anzeige von Informationen über:
 
-* Nodes der Funktionsdatenbank
-* Systemzustände (Health, Status, Ressourcen)
-* Kategorien und Navigationsstruktur
-* Suchtreffer und dynamisch erzeugte Widgets
+- Nodes der Funktionsdatenbank
+- Systemzustände (Health, Status, Ressourcen)
+- Kategorien und Navigationsstruktur
+- Suchtreffer und dynamisch erzeugte Widgets
 
 Das Modul kommuniziert ausschließlich über definierte Backend-Endpunkte.
 Es enthält keine Hardcodierung von Daten.
@@ -52,13 +52,13 @@ Diese Aufteilung verhindert gegenseitige Abhängigkeiten und ermöglicht gezielt
 Der Zustand des Dashboards wird zentral im **dashboardReducer** verwaltet.
 Zu den wichtigsten State-Bereichen gehören:
 
-* aktuelle Sprache
-* Theme
-* Health-Status
-* Knoten-Informationen
-* Navigationshistorie
-* Suchparameter
-* Builder- und Widget-Status
+- aktuelle Sprache
+- Theme
+- Health-Status
+- Knoten-Informationen
+- Navigationshistorie
+- Suchparameter
+- Builder- und Widget-Status
 
 State-Änderungen erfolgen ausschließlich über definierte Actions, um unkontrollierte Seiteneffekte zu vermeiden.
 
@@ -101,16 +101,16 @@ Falls der Backend-Check fehlschlägt, erzeugt das System automatisch einen konsi
 
 Die Navigation basiert auf zwei Dateien:
 
-* **NavigationStack.ts**
-* **NavigationManager.ts**
+- **NavigationStack.ts**
+- **NavigationManager.ts**
 
 Der Stack speichert den Verlauf als einfache Liste.
 Der Manager stellt Methoden bereit wie:
 
-* `push(node)`
-* `pop()`
-* `replace(node)`
-* `clear()`
+- `push(node)`
+- `pop()`
+- `replace(node)`
+- `clear()`
 
 Alle Navigationsaktionen werden über Actions in den Reducer eingespeist.
 UI-Komponenten greifen nur indirekt über Hooks darauf zu.
@@ -121,9 +121,9 @@ UI-Komponenten greifen nur indirekt über Hooks darauf zu.
 
 Das Suchsystem ist getrennt aufgebaut:
 
-* **SearchManager** führt Suchläufe aus
-* **SearchFilter** wendet Filter an
-* **SearchHelpers** enthalten Utility-Funktionen
+- **SearchManager** führt Suchläufe aus
+- **SearchFilter** wendet Filter an
+- **SearchHelpers** enthalten Utility-Funktionen
 
 Aus Performancegründen sind Matching-Operationen im Suchsystem konzentriert.
 Das verhindert redundante Berechnungen im UI.
@@ -135,11 +135,11 @@ Das verhindert redundante Berechnungen im UI.
 Widgets basieren auf der WidgetRegistry.
 Der Builder erzeugt aus Grundlage der Node-Metadaten:
 
-* Formulare
-* Tabellen
-* Karten
-* Diagramme
-* textuelle Informationen
+- Formulare
+- Tabellen
+- Karten
+- Diagramme
+- textuelle Informationen
 
 Die Zuordnung erfolgt deterministisch durch den **WidgetResolver**, der anhand von Node-Eigenschaften Entscheidungen trifft.
 
@@ -151,8 +151,8 @@ Die Zuordnung erfolgt deterministisch durch den **WidgetResolver**, der anhand v
 
 Fehler im Dashboard werden primär über:
 
-* Browser-Konsole (React-Fehler, Netzwerkfehler)
-* Logging innerhalb beteiligter Hooks und Features
+- Browser-Konsole (React-Fehler, Netzwerkfehler)
+- Logging innerhalb beteiligter Hooks und Features
 
 gemeldet.
 
@@ -162,13 +162,12 @@ Der Provider fängt interne Fehler ab und zeigt eine fallback UI an.
 
 Relevante Log-Quellen:
 
-* Express-Logs im Terminal
-* SystemInfo-Service (liefert strukturierten Status über Endpunkte)
-* SQLite-Tabellen:
-
-  * `ai_annotations_log`
-  * `audit_log`
-  * `batch_operations`
+- Express-Logs im Terminal
+- SystemInfo-Service (liefert strukturierten Status über Endpunkte)
+- SQLite-Tabellen:
+  - `ai_annotations_log`
+  - `audit_log`
+  - `batch_operations`
 
 Diese Informationen sind nützlich, wenn das Dashboard inkonsistente Daten anzeigt.
 
@@ -180,34 +179,34 @@ Diese Informationen sind nützlich, wenn das Dashboard inkonsistente Daten anzei
 
 Mögliche Ursachen:
 
-* Backend-Server nicht erreichbar
-* Timeout in HealthMonitor
-* fehlende Umgebungsvariablen (z. B. Ollama / OpenAI)
-* interner Fehler im Backend-Evaluationscode
+- Backend-Server nicht erreichbar
+- Timeout in HealthMonitor
+- fehlende Umgebungsvariablen (z. B. Ollama / OpenAI)
+- interner Fehler im Backend-Evaluationscode
 
 ## 10.2 Navigation reagiert falsch
 
 Mögliche Ursachen:
 
-* falsche Reihenfolge von push/pop
-* unvollständige Node-Daten
-* invalides Mapping in WidgetResolver
+- falsche Reihenfolge von push/pop
+- unvollständige Node-Daten
+- invalides Mapping in WidgetResolver
 
 ## 10.3 Widgets rendern nicht
 
 Mögliche Ursachen:
 
-* Widget-Typ nicht in Registry eingetragen
-* Node-Metadaten unvollständig oder fehlerhaft
-* Builder bekommt strukturell unerwartete Daten
+- Widget-Typ nicht in Registry eingetragen
+- Node-Metadaten unvollständig oder fehlerhaft
+- Builder bekommt strukturell unerwartete Daten
 
 ## 10.4 Suche liefert unvollständige Ergebnisse
 
 Mögliche Ursachen:
 
-* Filter aktiv, aber nicht sichtbar
-* Ranking-Regeln im SearchManager greifen anders als erwartet
-* fehlende Normalisierung von Textfeldern
+- Filter aktiv, aber nicht sichtbar
+- Ranking-Regeln im SearchManager greifen anders als erwartet
+- fehlende Normalisierung von Textfeldern
 
 ---
 
@@ -229,12 +228,12 @@ Dieser Ablauf stellt sicher, dass Erweiterungen nachvollziehbar bleiben.
 
 Folgende Punkte sind gut erweiterbar:
 
-* zusätzliche Widget-Typen
-* komplexere Formularstrukturen
-* Visualisierung von Beziehungen im NodeGraph
-* Integration weiterer System- und Health-Daten
-* modulare Erweiterung der Suche
-* rollenbasierte Steuerung (RBAC)
+- zusätzliche Widget-Typen
+- komplexere Formularstrukturen
+- Visualisierung von Beziehungen im NodeGraph
+- Integration weiterer System- und Health-Daten
+- modulare Erweiterung der Suche
+- rollenbasierte Steuerung (RBAC)
 
 Die aktuelle Architektur sieht solche Erweiterungen ausdrücklich vor.
 

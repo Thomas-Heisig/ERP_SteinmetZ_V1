@@ -1,4 +1,4 @@
-import { QuickAction, Settings } from './types';
+import { QuickAction, Settings } from "./types";
 
 /* ==================== QUICK ACTIONS ==================== */
 export const QUICK_ACTIONS: QuickAction[] = [
@@ -6,7 +6,8 @@ export const QUICK_ACTIONS: QuickAction[] = [
   {
     id: "summarize",
     name: "Zusammenfassen",
-    prompt: "Bitte fasse den folgenden Text prägnant zusammen und hebe die Kernaussagen hervor:",
+    prompt:
+      "Bitte fasse den folgenden Text prägnant zusammen und hebe die Kernaussagen hervor:",
     category: "text",
     icon: "📝",
     description: "Komplexen Text zu Kernpunkten reduzieren",
@@ -19,14 +20,15 @@ export const QUICK_ACTIONS: QuickAction[] = [
         type: "string",
         description: "Länge der Zusammenfassung",
         required: false,
-        default: "mittel"
-      }
-    ]
+        default: "mittel",
+      },
+    ],
   },
   {
     id: "rewrite",
     name: "Umschreiben",
-    prompt: "Bitte formuliere den folgenden Text professionell um, behalte die Bedeutung bei aber verbessere Ausdruck und Struktur:",
+    prompt:
+      "Bitte formuliere den folgenden Text professionell um, behalte die Bedeutung bei aber verbessere Ausdruck und Struktur:",
     category: "text",
     icon: "✍️",
     description: "Text stilistisch verbessern",
@@ -39,62 +41,67 @@ export const QUICK_ACTIONS: QuickAction[] = [
         type: "string",
         description: "Schreibstil",
         required: false,
-        default: "professionell"
-      }
-    ]
+        default: "professionell",
+      },
+    ],
   },
   {
     id: "expand",
     name: "Erweitern",
-    prompt: "Bitte erweitere den folgenden Text um zusätzliche Details, Beispiele und Erklärungen:",
+    prompt:
+      "Bitte erweitere den folgenden Text um zusätzliche Details, Beispiele und Erklärungen:",
     category: "text",
     icon: "🔍",
     description: "Mehr Tiefe in den Text bringen",
     tags: ["text", "expansion", "details"],
     popularity: 75,
-    usageCount: 0
+    usageCount: 0,
   },
 
   // Analyse-Aufgaben
   {
     id: "analyze",
     name: "Analysieren",
-    prompt: "Analysiere den folgenden Text kritisch und identifiziere Hauptargumente, Schwächen, Stärken und mögliche Verbesserungen:",
+    prompt:
+      "Analysiere den folgenden Text kritisch und identifiziere Hauptargumente, Schwächen, Stärken und mögliche Verbesserungen:",
     category: "analysis",
     icon: "🔎",
     description: "Tiefgehende Textanalyse",
     tags: ["analysis", "critical", "evaluation"],
     popularity: 80,
-    usageCount: 0
+    usageCount: 0,
   },
   {
     id: "sentiment",
     name: "Stimmung analysieren",
-    prompt: "Analysiere die emotionale Stimmung und den Unterton im folgenden Text:",
+    prompt:
+      "Analysiere die emotionale Stimmung und den Unterton im folgenden Text:",
     category: "analysis",
     icon: "😊",
     description: "Emotionale Bewertung",
     tags: ["analysis", "emotion", "sentiment"],
     popularity: 70,
-    usageCount: 0
+    usageCount: 0,
   },
   {
     id: "structure",
     name: "Strukturieren",
-    prompt: "Strukturiere den folgenden Text in eine klare Gliederung mit Haupt- und Unterpunkten:",
+    prompt:
+      "Strukturiere den folgenden Text in eine klare Gliederung mit Haupt- und Unterpunkten:",
     category: "analysis",
     icon: "📊",
     description: "Logische Gliederung erzeugen",
     tags: ["structure", "organization", "outline"],
     popularity: 65,
-    usageCount: 0
+    usageCount: 0,
   },
 
   // Kreative Aufgaben
   {
     id: "brainstorm",
     name: "Brainstorming",
-    prompt: "Generiere kreative Ideen und innovative Lösungsansätze für das folgende Thema:",
+    prompt:
+      "Generiere kreative Ideen und innovative Lösungsansätze für das folgende Thema:",
     category: "creative",
     icon: "💡",
     description: "Ideenfindung",
@@ -109,116 +116,125 @@ export const QUICK_ACTIONS: QuickAction[] = [
         required: false,
         default: 5,
         min: 1,
-        max: 20
-      }
-    ]
+        max: 20,
+      },
+    ],
   },
   {
     id: "story",
     name: "Geschichte schreiben",
-    prompt: "Verwandle die folgenden Informationen in eine fesselnde Geschichte oder Erzählung:",
+    prompt:
+      "Verwandle die folgenden Informationen in eine fesselnde Geschichte oder Erzählung:",
     category: "creative",
     icon: "📖",
     description: "Narratives Schreiben",
     tags: ["creative", "story", "narrative"],
     popularity: 60,
-    usageCount: 0
+    usageCount: 0,
   },
 
   // Business-Aufgaben
   {
     id: "swot",
     name: "SWOT-Analyse",
-    prompt: "Führe eine SWOT-Analyse (Stärken, Schwächen, Chancen, Risiken) für das folgende Vorhaben durch:",
+    prompt:
+      "Führe eine SWOT-Analyse (Stärken, Schwächen, Chancen, Risiken) für das folgende Vorhaben durch:",
     category: "business",
     icon: "📈",
     description: "Strategische Analyse",
     tags: ["business", "analysis", "strategy"],
     popularity: 85,
     usageCount: 0,
-    suggestedModels: ["gpt-4", "gpt-4o"]
+    suggestedModels: ["gpt-4", "gpt-4o"],
   },
   {
     id: "proposal",
     name: "Vorschlag erstellen",
-    prompt: "Erstelle einen professionellen Geschäfts- bzw. Projektvorschlag basierend auf:",
+    prompt:
+      "Erstelle einen professionellen Geschäfts- bzw. Projektvorschlag basierend auf:",
     category: "business",
     icon: "💼",
     description: "Formeller Vorschlag",
     tags: ["business", "proposal", "professional"],
     popularity: 75,
-    usageCount: 0
+    usageCount: 0,
   },
 
   // ERP-spezifisch
   {
     id: "erp-process",
     name: "ERP-Prozess beschreiben",
-    prompt: "Beschreibe den optimalen ERP-Prozess für die nachfolgende Geschäftsanforderung:",
+    prompt:
+      "Beschreibe den optimalen ERP-Prozess für die nachfolgende Geschäftsanforderung:",
     category: "business",
     icon: "🏢",
     description: "ERP-Prozessoptimierung",
     tags: ["erp", "business", "process"],
     popularity: 70,
     usageCount: 0,
-    suggestedModels: ["gpt-4", "gpt-4o"]
+    suggestedModels: ["gpt-4", "gpt-4o"],
   },
   {
     id: "data-analysis",
     name: "Daten analysieren",
-    prompt: "Analysiere die nachfolgenden Daten und identifiziere Muster, Trends und Erkenntnisse:",
+    prompt:
+      "Analysiere die nachfolgenden Daten und identifiziere Muster, Trends und Erkenntnisse:",
     category: "analysis",
     icon: "📊",
     description: "Daten-Insights",
     tags: ["data", "analysis", "insights"],
     popularity: 80,
-    usageCount: 0
+    usageCount: 0,
   },
   {
     id: "inventory-check",
     name: "Lagerbestand prüfen",
-    prompt: "Überprüfe den Lagerbestand für folgende Produkte und schlage Bestellungen vor:",
+    prompt:
+      "Überprüfe den Lagerbestand für folgende Produkte und schlage Bestellungen vor:",
     category: "business",
     icon: "📦",
     description: "Lagerverwaltung",
     tags: ["erp", "inventory", "business"],
     popularity: 65,
-    usageCount: 0
+    usageCount: 0,
   },
   {
     id: "order-analysis",
     name: "Bestellungen analysieren",
-    prompt: "Analysiere die folgenden Bestelldaten und identifiziere Trends, Muster und Optimierungspotential:",
+    prompt:
+      "Analysiere die folgenden Bestelldaten und identifiziere Trends, Muster und Optimierungspotential:",
     category: "business",
     icon: "📋",
     description: "Bestellanalyse",
     tags: ["erp", "orders", "analysis"],
     popularity: 70,
-    usageCount: 0
+    usageCount: 0,
   },
 
   // Technische Aufgaben
   {
     id: "explain",
     name: "Technisch erklären",
-    prompt: "Erkläre das folgende Konzept in einfachen, verständlichen Worten für ein Nicht-Techniker-Publikum:",
+    prompt:
+      "Erkläre das folgende Konzept in einfachen, verständlichen Worten für ein Nicht-Techniker-Publikum:",
     category: "technical",
     icon: "⚙️",
     description: "Komplexes verständlich machen",
     tags: ["technical", "explanation", "simplify"],
     popularity: 85,
-    usageCount: 0
+    usageCount: 0,
   },
   {
     id: "compare",
     name: "Vergleichen",
-    prompt: "Vergleiche die folgenden Technologien und liste Vor- und Nachteile auf:",
+    prompt:
+      "Vergleiche die folgenden Technologien und liste Vor- und Nachteile auf:",
     category: "technical",
     icon: "⚖️",
     description: "Technologie-Vergleich",
     tags: ["technical", "comparison", "evaluation"],
     popularity: 70,
-    usageCount: 0
+    usageCount: 0,
   },
   {
     id: "tutorial",
@@ -229,59 +245,59 @@ export const QUICK_ACTIONS: QuickAction[] = [
     description: "Detaillierte Anleitung",
     tags: ["technical", "tutorial", "guide"],
     popularity: 75,
-    usageCount: 0
-  }
+    usageCount: 0,
+  },
 ];
 
 /* ==================== KATEGORIEN ==================== */
 export const CATEGORIES = [
-  { 
-    id: "all", 
-    name: "Alle Aktionen", 
+  {
+    id: "all",
+    name: "Alle Aktionen",
     icon: "⭐",
     description: "Alle verfügbaren Quick Actions",
     color: "#3B82F6",
-    actions: QUICK_ACTIONS
+    actions: QUICK_ACTIONS,
   },
-  { 
-    id: "text", 
-    name: "Text", 
+  {
+    id: "text",
+    name: "Text",
     icon: "📝",
     description: "Textbearbeitung und -verbesserung",
     color: "#10B981",
-    actions: QUICK_ACTIONS.filter(action => action.category === "text")
+    actions: QUICK_ACTIONS.filter((action) => action.category === "text"),
   },
-  { 
-    id: "analysis", 
-    name: "Analyse", 
+  {
+    id: "analysis",
+    name: "Analyse",
     icon: "🔍",
     description: "Analytische Aufgaben und Bewertungen",
     color: "#8B5CF6",
-    actions: QUICK_ACTIONS.filter(action => action.category === "analysis")
+    actions: QUICK_ACTIONS.filter((action) => action.category === "analysis"),
   },
-  { 
-    id: "creative", 
-    name: "Kreativ", 
+  {
+    id: "creative",
+    name: "Kreativ",
     icon: "💡",
     description: "Kreative Ideen und Lösungen",
     color: "#F59E0B",
-    actions: QUICK_ACTIONS.filter(action => action.category === "creative")
+    actions: QUICK_ACTIONS.filter((action) => action.category === "creative"),
   },
-  { 
-    id: "business", 
-    name: "Business", 
+  {
+    id: "business",
+    name: "Business",
     icon: "💼",
     description: "Geschäftliche Anwendungen",
     color: "#EF4444",
-    actions: QUICK_ACTIONS.filter(action => action.category === "business")
+    actions: QUICK_ACTIONS.filter((action) => action.category === "business"),
   },
-  { 
-    id: "technical", 
-    name: "Technisch", 
+  {
+    id: "technical",
+    name: "Technisch",
     icon: "⚙️",
     description: "Technische Erklärungen und Anleitungen",
     color: "#6B7280",
-    actions: QUICK_ACTIONS.filter(action => action.category === "technical")
+    actions: QUICK_ACTIONS.filter((action) => action.category === "technical"),
   },
 ];
 
@@ -346,7 +362,8 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 /* ==================== BACKEND URL ==================== */
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+export const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
 /* ==================== MODELL-VOREINSTELLUNGEN ==================== */
 export const MODEL_PRESETS = {
@@ -374,7 +391,7 @@ export const MODEL_PRESETS = {
     temperature: 0.7,
     maxTokens: 4000,
     topP: 1,
-  }
+  },
 };
 
 /* ==================== SPRACHEN ==================== */
@@ -402,7 +419,8 @@ export const SUPPORTED_FILE_FORMATS = {
 
 /* ==================== ERROR MESSAGES ==================== */
 export const ERROR_MESSAGES = {
-  NETWORK_ERROR: "Verbindungsfehler. Bitte überprüfen Sie Ihre Internetverbindung.",
+  NETWORK_ERROR:
+    "Verbindungsfehler. Bitte überprüfen Sie Ihre Internetverbindung.",
   API_ERROR: "API-Fehler. Bitte versuchen Sie es später erneut.",
   TIMEOUT_ERROR: "Zeitüberschreitung. Die Anfrage hat zu lange gedauert.",
   AUDIO_ERROR: "Audio-Fehler. Mikrofonzugriff nicht verfügbar.",

@@ -6,7 +6,11 @@
  * Voll kompatibel mit ERP_SteinmetZ KI-System.
  */
 
-import type { ChatMessage, AIResponse, AIModuleConfig } from "../types/types.js";
+import type {
+  ChatMessage,
+  AIResponse,
+  AIModuleConfig,
+} from "../types/types.js";
 import { log } from "../utils/logger.js";
 import fetch from "node-fetch";
 
@@ -43,7 +47,7 @@ export let vertexConfig: AIModuleConfig = {
 export async function callVertexAI(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {}
+  options: Record<string, any> = {},
 ): Promise<AIResponse> {
   const apiKey = process.env[vertexConfig.api_key_env ?? ""] ?? "";
   if (!apiKey) {
@@ -188,7 +192,6 @@ export async function callVertexAI(
   }
 }
 
-
 /* ========================================================================== */
 /* 🧠 Tool-Unterstützung                                                     */
 /* ========================================================================== */
@@ -214,13 +217,17 @@ function safeJsonParse(s: string): any {
 }
 
 /** Führt erkannte Tool-Calls aus */
-async function handleToolCalls(calls: { name: string; parameters: any }[]): Promise<string[]> {
+async function handleToolCalls(
+  calls: { name: string; parameters: any }[],
+): Promise<string[]> {
   const results: string[] = [];
   for (const call of calls) {
     try {
       const { toolRegistry } = await import("../tools/registry.js");
       const res = await toolRegistry.call(call.name, call.parameters);
-      results.push(`✅ Tool "${call.name}" erfolgreich ausgeführt.\nAntwort: ${JSON.stringify(res)}`);
+      results.push(
+        `✅ Tool "${call.name}" erfolgreich ausgeführt.\nAntwort: ${JSON.stringify(res)}`,
+      );
     } catch (err: any) {
       results.push(`❌ Tool "${call.name}" Fehler: ${err.message}`);
     }
@@ -233,7 +240,9 @@ async function handleToolCalls(calls: { name: string; parameters: any }[]): Prom
 /* ========================================================================== */
 
 /** Aktualisiert Vertex-Konfiguration dynamisch */
-export function updateVertexConfig(update: Partial<AIModuleConfig>): AIModuleConfig {
+export function updateVertexConfig(
+  update: Partial<AIModuleConfig>,
+): AIModuleConfig {
   vertexConfig = { ...vertexConfig, ...update };
   log("info", "Vertex-Konfiguration aktualisiert", update);
   return vertexConfig;

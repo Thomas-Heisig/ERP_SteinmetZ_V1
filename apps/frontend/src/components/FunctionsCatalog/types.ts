@@ -9,32 +9,28 @@
  * Erweiterte Node-Kind-Typen für verschiedene Inhalte
  */
 export type NodeKind =
-  | "category"       // Hauptkategorie
-  | "section"        // Abschnitt
-  | "record"         // Datensatz
-  | "collection"     // Sammlung
-  | "action"         // Aktion/Funktion
-  | "note"           // Notiz
-  | "group"          // Gruppe
-  | "workflow"       // Workflow
-  | "report"         // Bericht
-  | "dataset"        // Dataset
-  | "item"           // Einzelelement
-  | "function"       // Funktion (Kompatibilität)
-  | "document"       // Dokument
-  | "api"            // API Endpoint
-  | "dashboard"      // Dashboard
-  | "settings"       // Einstellungen
-  | "tool";          // Werkzeug
+  | "category" // Hauptkategorie
+  | "section" // Abschnitt
+  | "record" // Datensatz
+  | "collection" // Sammlung
+  | "action" // Aktion/Funktion
+  | "note" // Notiz
+  | "group" // Gruppe
+  | "workflow" // Workflow
+  | "report" // Bericht
+  | "dataset" // Dataset
+  | "item" // Einzelelement
+  | "function" // Funktion (Kompatibilität)
+  | "document" // Dokument
+  | "api" // API Endpoint
+  | "dashboard" // Dashboard
+  | "settings" // Einstellungen
+  | "tool"; // Werkzeug
 
 /**
  * Prioritätslevel für Nodes
  */
-export type PriorityLevel = 
-  | "low"
-  | "medium" 
-  | "high"
-  | "critical";
+export type PriorityLevel = "low" | "medium" | "high" | "critical";
 
 /**
  * Status-Typen für Nodes
@@ -60,12 +56,7 @@ export type PIILevel =
 /**
  * RBAC-Berechtigungsebenen
  */
-export type AccessLevel =
-  | "public"
-  | "user"
-  | "editor"
-  | "admin"
-  | "system";
+export type AccessLevel = "public" | "user" | "editor" | "admin" | "system";
 
 /* ============================================================
    Menü & Kontext - Erweitert
@@ -83,7 +74,13 @@ export interface MenuNode {
 
 export interface MenuNodeMetadata {
   badge?: string;
-  badgeColor?: "default" | "primary" | "secondary" | "error" | "warning" | "success";
+  badgeColor?:
+    | "default"
+    | "primary"
+    | "secondary"
+    | "error"
+    | "warning"
+    | "success";
   isNew?: boolean;
   updatedAt?: string;
   accessLevel?: AccessLevel;
@@ -131,7 +128,7 @@ export interface NodeUI {
   isReport: boolean;
   isDataset: boolean;
   isAction: boolean;
-  
+
   // Erweiterte UI-Flags
   isExpandable: boolean;
   isSelectable: boolean;
@@ -141,19 +138,19 @@ export interface NodeUI {
   isCopyable: boolean;
   isExportable: boolean;
   isImportable: boolean;
-  
+
   // Visual Flags
   hasPreview: boolean;
   hasThumbnail: boolean;
   hasCustomIcon: boolean;
   hasBadge: boolean;
-  
+
   // Interaktions-Flags
   supportsSearch: boolean;
   supportsFilter: boolean;
   supportsSort: boolean;
   supportsPagination: boolean;
-  
+
   // Feature-Flags
   supportsComments: boolean;
   supportsVersioning: boolean;
@@ -206,7 +203,11 @@ export interface TechnicalMetadata {
   };
 }
 
-export interface NodeMetadata extends BaseMetadata, SecurityMetadata, BusinessMetadata, TechnicalMetadata {
+export interface NodeMetadata
+  extends BaseMetadata,
+    SecurityMetadata,
+    BusinessMetadata,
+    TechnicalMetadata {
   // Zusätzliche dynamische Felder
   [key: string]: unknown;
 }
@@ -224,7 +225,13 @@ export interface RBACRule {
 
 export interface RBACCondition {
   field: string;
-  operator: "equals" | "contains" | "greater_than" | "less_than" | "in" | "not_in";
+  operator:
+    | "equals"
+    | "contains"
+    | "greater_than"
+    | "less_than"
+    | "in"
+    | "not_in";
   value: unknown;
 }
 
@@ -367,20 +374,20 @@ export interface NodeDetail {
   priority: PriorityLevel;
   tags: string[];
   categories: string[];
-  
+
   // Zeitstempel
   createdAt: string;
   updatedAt: string;
   lastAccessed?: string;
-  
+
   // Statistiken
   viewCount: number;
   favoriteCount: number;
-  
+
   // Relations
   parentId?: string;
   relatedNodes?: string[];
-  
+
   // Versioning
   version: string;
   changelog?: string[];
@@ -398,7 +405,7 @@ export interface SearchResult {
   path: string[];
   score: number;
   tags?: string[];
-  
+
   // Erweiterte Such-Felder
   description?: string;
   icon?: string;
@@ -454,9 +461,14 @@ export interface LintFinding {
   file?: string;
   nodePath?: string;
   nodeId?: string;
-  
+
   // Erweiterte Lint-Informationen
-  category?: "security" | "performance" | "maintainability" | "accessibility" | "best-practice";
+  category?:
+    | "security"
+    | "performance"
+    | "maintainability"
+    | "accessibility"
+    | "best-practice";
   rule?: string;
   line?: number;
   column?: number;
@@ -495,7 +507,7 @@ export interface FunctionsRulesSnapshot {
   // Basis (Kompatibel)
   version: number;
   locale: string;
-  
+
   // Erweiterte Regel-Informationen
   rules: RuleDefinition[];
   categories: RuleCategory[];
@@ -530,13 +542,27 @@ export interface RuleCategory {
 
 export interface RuleCondition {
   field: string;
-  operator: "equals" | "contains" | "matches" | "greater_than" | "less_than" | "in" | "not_in" | "exists" | "not_exists";
+  operator:
+    | "equals"
+    | "contains"
+    | "matches"
+    | "greater_than"
+    | "less_than"
+    | "in"
+    | "not_in"
+    | "exists"
+    | "not_exists";
   value: unknown;
   type: "string" | "number" | "boolean" | "array" | "object";
 }
 
 export interface RuleAction {
-  type: "validation" | "transformation" | "notification" | "logging" | "blocking";
+  type:
+    | "validation"
+    | "transformation"
+    | "notification"
+    | "logging"
+    | "blocking";
   target: string;
   parameters: Record<string, unknown>;
   severity?: Severity;
@@ -560,7 +586,7 @@ export interface BuildResult {
   warnings: string[];
   rules: any;
   loadedAt: string;
-  
+
   // Erweiterte Build-Informationen
   metadata: {
     buildId: string;
@@ -592,7 +618,7 @@ export interface FavoriteEntry {
   title: string;
   kind: NodeKind;
   addedAt: string;
-  
+
   // Erweiterte Favoriten-Informationen
   icon?: string;
   description?: string;
@@ -613,22 +639,20 @@ export interface HistoryEntry {
   title: string;
   icon?: string;
   viewedAt: number;
-  
-  kind?: NodeKind;     // ← OPTIONAL machen
+
+  kind?: NodeKind; // ← OPTIONAL machen
   duration?: number;
   action?: "view" | "edit" | "create" | "delete";
   queryParams?: Record<string, string>;
   scrollPosition?: number;
 }
 
-
-
 export interface ContextMenuAction {
   // Basis (Kompatibel)
   label: string;
   icon?: string;
   onClick: () => void;
-  
+
   // Erweiterte Context-Menu-Informationen
   id: string;
   type: "action" | "navigation" | "export" | "import" | "settings";
@@ -654,7 +678,7 @@ export interface ExportPayload {
   source?: unknown;
   breadcrumbs?: Breadcrumb[];
   exportDate: string;
-  
+
   // Erweiterte Export-Informationen
   format: "json" | "yaml" | "xml" | "csv" | "pdf";
   version: string;
@@ -682,7 +706,7 @@ export interface FunctionsCatalogProps {
   roles?: string[];
   features?: string[];
   baseUrl?: string;
-  
+
   // Erweiterte Props
   theme?: "light" | "dark" | "auto" | "lcars";
   locale?: string;
@@ -756,8 +780,10 @@ export type SearchResultItem = SearchResult;
 export type MenuItem = MenuNode;
 
 // Partielle Typen für Updates
-export type PartialNodeDetail = Partial<NodeDetail> & Pick<NodeDetail, 'id' | 'title' | 'kind'>;
-export type PartialSearchResult = Partial<SearchResult> & Pick<SearchResult, 'id' | 'title' | 'kind'>;
+export type PartialNodeDetail = Partial<NodeDetail> &
+  Pick<NodeDetail, "id" | "title" | "kind">;
+export type PartialSearchResult = Partial<SearchResult> &
+  Pick<SearchResult, "id" | "title" | "kind">;
 
 // Filter-Typen
 export type NodeFilter = {
@@ -774,10 +800,10 @@ export type NodeFilter = {
 // Sort-Typen
 export type SortOption = {
   field: keyof NodeDetail;
-  direction: 'asc' | 'desc';
+  direction: "asc" | "desc";
 };
 
 export {};
 
 // Zusätzliche Exporte für einfachen Zugriff
-export type * from './types';
+export type * from "./types";

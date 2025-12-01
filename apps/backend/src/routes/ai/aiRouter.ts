@@ -12,12 +12,21 @@ import fs from "node:fs";
 
 // Services
 import { getModelOverview } from "./services/modelService.js";
-import { loadSettings, saveSettings, updateSetting } from "./services/settingsService.js";
+import {
+  loadSettings,
+  saveSettings,
+  updateSetting,
+} from "./services/settingsService.js";
 import { transcribeAudio } from "./services/audioService.js";
 import { translateText } from "./services/translationService.js";
 
 // Core
-import { createSession, getSession, removeSession, chatSessions } from "./sessions/sessionStore.js";
+import {
+  createSession,
+  getSession,
+  removeSession,
+  chatSessions,
+} from "./sessions/sessionStore.js";
 import { workflowEngine } from "./workflows/workflowEngine.js";
 import { toolRegistry } from "./tools/registry.js";
 
@@ -32,8 +41,6 @@ import { sanitizeMessages } from "./utils/aiUtils.js";
 import generateAIResponse from "./providers/fallbackProvider.js";
 
 import type { ChatMessage } from "./types/types.js";
-
-
 
 const router = Router();
 
@@ -79,7 +86,8 @@ router.post("/chat/:sessionId/message", async (req, res) => {
   if (!session) return errorResponse(res, 404, "Session nicht gefunden");
 
   const message = String(req.body?.message ?? "").trim();
-  if (!message) return errorResponse(res, 400, "Nachricht darf nicht leer sein");
+  if (!message)
+    return errorResponse(res, 400, "Nachricht darf nicht leer sein");
 
   const inbound: ChatMessage = {
     role: "user",
@@ -218,10 +226,19 @@ router.get("/workflows", (_req, res) => {
 router.post("/workflow/:name/run", async (req, res) => {
   const { name } = req.params;
   try {
-    const result = await workflowEngine.executeWorkflow(name, req.body ?? {}, true);
+    const result = await workflowEngine.executeWorkflow(
+      name,
+      req.body ?? {},
+      true,
+    );
     res.json({ success: true, result });
   } catch (err: any) {
-    errorResponse(res, 500, `Fehler beim Ausführen von Workflow '${name}'`, err);
+    errorResponse(
+      res,
+      500,
+      `Fehler beim Ausführen von Workflow '${name}'`,
+      err,
+    );
   }
 });
 

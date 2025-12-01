@@ -9,7 +9,7 @@ import type {
   SearchFilters,
   DashboardHealthState,
   DashboardConfig,
-  SystemInfoState
+  SystemInfoState,
 } from "../../Dashboard/types";
 
 /**
@@ -17,10 +17,9 @@ import type {
  */
 export function dashboardReducer(
   state: DashboardState,
-  action: DashboardAction
+  action: DashboardAction,
 ): DashboardState {
   switch (action.type) {
-
     // ============================================================
     // ROOTS
     // ============================================================
@@ -58,63 +57,63 @@ export function dashboardReducer(
       };
 
     // ============================================================
-// NODE
-// ============================================================
+    // NODE
+    // ============================================================
 
-case "SELECT_NODE": {
-  const cachedNode = state.cache.nodes[action.payload];
-  const rootNode = state.catalog.roots.find(r => r.id === action.payload);
+    case "SELECT_NODE": {
+      const cachedNode = state.cache.nodes[action.payload];
+      const rootNode = state.catalog.roots.find((r) => r.id === action.payload);
 
-  return {
-    ...state,
-    catalog: {
-      ...state.catalog,
-      selectedNodeId: action.payload,
-      node: cachedNode || rootNode || null
+      return {
+        ...state,
+        catalog: {
+          ...state.catalog,
+          selectedNodeId: action.payload,
+          node: cachedNode || rootNode || null,
+        },
+      };
     }
-  };
-}
 
-case "LOAD_NODE_START":
-  return {
-    ...state,
-    catalog: {
-      ...state.catalog,
-      nodeLoading: true,
-      nodeError: null,
-    },
-  };
+    case "LOAD_NODE_START":
+      return {
+        ...state,
+        catalog: {
+          ...state.catalog,
+          nodeLoading: true,
+          nodeError: null,
+        },
+      };
 
-case "LOAD_NODE_SUCCESS": {
-  const normalized = normalizeNode(action.payload);
+    case "LOAD_NODE_SUCCESS": {
+      const normalized = normalizeNode(action.payload);
 
-  return {
-    ...state,
-    catalog: {
-      ...state.catalog,
-      node: normalized,
-      nodeLoading: false,
-      nodeError: null,
-    },
-    cache: {
-      ...state.cache,
-      nodes: {
-        ...state.cache.nodes,
-        [normalized.id]: normalized
-      }
+      return {
+        ...state,
+        catalog: {
+          ...state.catalog,
+          node: normalized,
+          nodeLoading: false,
+          nodeError: null,
+        },
+        cache: {
+          ...state.cache,
+          nodes: {
+            ...state.cache.nodes,
+            [normalized.id]: normalized,
+          },
+        },
+      };
     }
-  };
-}
 
-case "LOAD_NODE_ERROR":
-  return {
-    ...state,
-    catalog: {
-      ...state.catalog,
-      nodeLoading: false,
-      nodeError: action.payload,
-    },
-  };
+    case "LOAD_NODE_ERROR":
+      return {
+        ...state,
+        catalog: {
+          ...state.catalog,
+          nodeLoading: false,
+          nodeError: action.payload,
+        },
+      };
 
     // ============================================================
     // SEARCH
@@ -125,7 +124,7 @@ case "LOAD_NODE_ERROR":
         search: {
           ...state.search,
           query: action.payload,
-          ...(action.payload === "" ? { active: false, isOpen: false } : {})
+          ...(action.payload === "" ? { active: false, isOpen: false } : {}),
         },
       };
 
@@ -155,7 +154,7 @@ case "LOAD_NODE_ERROR":
         search: {
           ...state.search,
           isLoading: true,
-        }
+        },
       };
 
     case "SEARCH_SUCCESS":
@@ -167,7 +166,7 @@ case "LOAD_NODE_ERROR":
           results: normalizeSearchResults(action.payload.results),
           isLoading: false,
           lastSearch: new Date(),
-        }
+        },
       };
 
     case "SEARCH_CLEAR":
@@ -180,7 +179,7 @@ case "LOAD_NODE_ERROR":
           isOpen: false,
           active: false,
           isLoading: false,
-        }
+        },
       };
 
     // ============================================================
@@ -238,57 +237,56 @@ case "LOAD_NODE_ERROR":
         health: {
           ...state.health,
           ...action.payload,
-          lastChecked: new Date().toISOString()
-        }
+          lastChecked: new Date().toISOString(),
+        },
       };
 
     // ============================================================
-// UI
-// ============================================================
+    // UI
+    // ============================================================
 
-case "SET_THEME":
-  return {
-    ...state,
-    settings: {
-      ...state.settings,
-      theme: action.payload   // "light" | "dark" | "lcars"
-    }
-    // ui.theme existiert, aber muss ein UITheme-Objekt sein → nicht automatisch setzen
-  };
+    case "SET_THEME":
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          theme: action.payload, // "light" | "dark" | "lcars"
+        },
+        // ui.theme existiert, aber muss ein UITheme-Objekt sein → nicht automatisch setzen
+      };
 
-case "SET_LANGUAGE":
-  return {
-    ...state,
-    settings: {
-      ...state.settings,
-      language: action.payload
-    },
-    ui: {
-      ...state.ui,
-      language: action.payload
-    }
-  };
+    case "SET_LANGUAGE":
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          language: action.payload,
+        },
+        ui: {
+          ...state.ui,
+          language: action.payload,
+        },
+      };
 
-case "TOGGLE_CHAT":
-  return {
-    ...state,
-    ui: {
-      ...state.ui,
-      chatOpen: !state.ui.chatOpen,
-      quickChatOpen: !state.ui.quickChatOpen
-    }
-  };
+    case "TOGGLE_CHAT":
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          chatOpen: !state.ui.chatOpen,
+          quickChatOpen: !state.ui.quickChatOpen,
+        },
+      };
 
-case "SET_LAYOUT_MODE":
-  return {
-    ...state,
-    ui: {
-      ...state.ui,
-      layout: action.payload,
-      layoutMode: action.payload
-    }
-  };
-
+    case "SET_LAYOUT_MODE":
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          layout: action.payload,
+          layoutMode: action.payload,
+        },
+      };
 
     // ============================================================
     // LOADING
@@ -299,7 +297,7 @@ case "SET_LAYOUT_MODE":
         loading: {
           ...state.loading,
           [action.payload.key]: action.payload.value,
-        }
+        },
       };
 
     // ============================================================
@@ -314,9 +312,9 @@ case "SET_LAYOUT_MODE":
           lastError: {
             key: action.payload.key,
             value: action.payload.value,
-            timestamp: new Date()
-          }
-        }
+            timestamp: new Date(),
+          },
+        },
       };
 
     case "CLEAR_ERRORS":
@@ -328,7 +326,7 @@ case "SET_LAYOUT_MODE":
           search: null,
           health: null,
           provider: null,
-        }
+        },
       };
 
     // ============================================================
@@ -342,49 +340,48 @@ case "SET_LAYOUT_MODE":
           ...state.cache,
           nodes: {
             ...state.cache.nodes,
-            [cached.id]: cached
+            [cached.id]: cached,
           },
-          lastUpdated: new Date()
-        }
+          lastUpdated: new Date(),
+        },
       };
 
     // ============================================================
-// CONFIG
-// ============================================================
-case "SET_CONFIG": {
-  // Falls keine Vollkonfiguration existiert, sichere Defaults setzen
-  const defaultConfig: DashboardConfig = {
-    version: state.config?.version ?? "0.0.0",
-    permissions: state.config?.permissions ?? [],
-    features: state.config?.features ?? {
-      search: false,
-      healthMonitoring: false,
-      customWidgets: false,
-      advancedLayout: false,
-      realTimeUpdates: false,
-    },
-    dataSources: state.config?.dataSources ?? [],
-    security: state.config?.security ?? {
-      encryption: { algorithm: "", key: "", enabled: false },
-      sessionTimeout: 0,
-      allowedOrigins: [],
-      cors: {
-        allowedOrigins: [],
-        allowedMethods: [],
-        allowedHeaders: [],
-      }
-    }
-  };
+    // CONFIG
+    // ============================================================
+    case "SET_CONFIG": {
+      // Falls keine Vollkonfiguration existiert, sichere Defaults setzen
+      const defaultConfig: DashboardConfig = {
+        version: state.config?.version ?? "0.0.0",
+        permissions: state.config?.permissions ?? [],
+        features: state.config?.features ?? {
+          search: false,
+          healthMonitoring: false,
+          customWidgets: false,
+          advancedLayout: false,
+          realTimeUpdates: false,
+        },
+        dataSources: state.config?.dataSources ?? [],
+        security: state.config?.security ?? {
+          encryption: { algorithm: "", key: "", enabled: false },
+          sessionTimeout: 0,
+          allowedOrigins: [],
+          cors: {
+            allowedOrigins: [],
+            allowedMethods: [],
+            allowedHeaders: [],
+          },
+        },
+      };
 
-  return {
-    ...state,
-    config: {
-      ...defaultConfig,
-      ...action.payload
+      return {
+        ...state,
+        config: {
+          ...defaultConfig,
+          ...action.payload,
+        },
+      };
     }
-  };
-}
-
 
     // ============================================================
     // SYSTEM INFO
@@ -394,8 +391,8 @@ case "SET_CONFIG": {
         ...state,
         system: {
           ...state.system,
-          ...action.payload
-        }
+          ...action.payload,
+        },
       };
 
     // ============================================================
@@ -406,9 +403,9 @@ case "SET_CONFIG": {
         ...state,
         builder: {
           ...state.builder,
-          activeLayout: action.payload.type,    // optional, falls benötigt
-          layout: action.payload                // vollständiges DashboardLayout
-        }
+          activeLayout: action.payload.type, // optional, falls benötigt
+          layout: action.payload, // vollständiges DashboardLayout
+        },
       };
 
     // ============================================================
@@ -418,7 +415,6 @@ case "SET_CONFIG": {
       return state;
   }
 }
-
 
 //
 // ─── HELPER ─────────────────────────────────────────────────────────────
@@ -432,10 +428,10 @@ function normalizeNode(node: any): NodeDetail {
     metadata: {
       ...node.metadata,
       createdAt: node.metadata?.createdAt || new Date(),
-      updatedAt: node.metadata?.updatedAt || new Date()
+      updatedAt: node.metadata?.updatedAt || new Date(),
     },
     createdAt: node.createdAt || new Date(),
-    updatedAt: node.updatedAt || new Date()
+    updatedAt: node.updatedAt || new Date(),
   };
 }
 
@@ -448,20 +444,20 @@ function normalizeSearchFilters(filters: any): SearchFilters {
     categories: filters?.categories ?? [],
     nodeTypes: filters?.nodeTypes ?? [],
     tags: filters?.tags ?? [],
-    dateRange: filters?.dateRange ?? undefined
+    dateRange: filters?.dateRange ?? undefined,
   };
 }
 
 function normalizeSearchResults(results: any[]): SearchResult[] {
   return Array.isArray(results)
-    ? results.map(r => ({
+    ? results.map((r) => ({
         ...r,
         id: String(r.id),
         relevance: r.relevance ?? 1,
         metadata: {
           ...r.metadata,
-          lastModified: r.metadata?.lastModified || new Date()
-        }
+          lastModified: r.metadata?.lastModified || new Date(),
+        },
       }))
     : [];
 }

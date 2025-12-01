@@ -10,7 +10,11 @@
  * kann Tools verwenden, Systemstatus liefern und sich dynamisch anpassen.
  */
 
-import type { ChatMessage, AIResponse, AIModuleConfig } from "../types/types.js";
+import type {
+  ChatMessage,
+  AIResponse,
+  AIModuleConfig,
+} from "../types/types.js";
 import { log } from "../utils/logger.js";
 import { toolRegistry } from "../tools/registry.js";
 import os from "node:os";
@@ -40,7 +44,9 @@ export let ollamaConfig: AIModuleConfig = {
 /**
  * Ruft alle lokal verfügbaren Ollama-Modelle ab.
  */
-export async function listOllamaModels(): Promise<{ name: string; modified: string }[]> {
+export async function listOllamaModels(): Promise<
+  { name: string; modified: string }[]
+> {
   try {
     const res = await fetch("http://localhost:11434/api/tags");
 
@@ -67,11 +73,12 @@ export async function listOllamaModels(): Promise<{ name: string; modified: stri
       modified: String(m.modified_at ?? ""),
     }));
   } catch (err: any) {
-    log("error", "Fehler beim Laden der Ollama-Modelle", { error: err.message });
+    log("error", "Fehler beim Laden der Ollama-Modelle", {
+      error: err.message,
+    });
     return [];
   }
 }
-
 
 /* ========================================================================== */
 /* 💬 Ollama-Chat                                                            */
@@ -84,11 +91,13 @@ export async function listOllamaModels(): Promise<{ name: string; modified: stri
 export async function callOllama(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {}
+  options: Record<string, any> = {},
 ): Promise<AIResponse> {
-  const apiUrl = process.env.OLLAMA_API_URL ?? "http://localhost:11434/api/chat";
+  const apiUrl =
+    process.env.OLLAMA_API_URL ?? "http://localhost:11434/api/chat";
   const usedModel = model || ollamaConfig.model;
-  const sysPrompt = options.systemPrompt ?? "Du bist eine lokale Ollama-KI-Instanz.";
+  const sysPrompt =
+    options.systemPrompt ?? "Du bist eine lokale Ollama-KI-Instanz.";
 
   const msgs = [
     { role: "system", content: sysPrompt },
@@ -131,7 +140,8 @@ export async function callOllama(
 
     // Prüfe auf Toolaufrufe im Text
     const toolCalls = detectToolCalls(replyText);
-    const toolResults = toolCalls.length > 0 ? await handleToolCalls(toolCalls) : [];
+    const toolResults =
+      toolCalls.length > 0 ? await handleToolCalls(toolCalls) : [];
 
     log("info", "Ollama-Antwort empfangen", {
       model: usedModel,
@@ -185,12 +195,16 @@ function detectToolCalls(text: string): { name: string; parameters: any }[] {
 /**
  * Führt erkannte Tool-Calls aus und liefert Textantworten zurück.
  */
-async function handleToolCalls(toolCalls: { name: string; parameters: any }[]): Promise<string[]> {
+async function handleToolCalls(
+  toolCalls: { name: string; parameters: any }[],
+): Promise<string[]> {
   const results: string[] = [];
   for (const call of toolCalls) {
     try {
       const res = await toolRegistry.call(call.name, call.parameters);
-      results.push(`✅ Tool "${call.name}" erfolgreich ausgeführt.\nAntwort: ${JSON.stringify(res)}`);
+      results.push(
+        `✅ Tool "${call.name}" erfolgreich ausgeführt.\nAntwort: ${JSON.stringify(res)}`,
+      );
     } catch (err: any) {
       results.push(`❌ Tool "${call.name}" Fehler: ${err.message}`);
     }
@@ -216,7 +230,9 @@ function safeParseJSON(str: string): any {
 /**
  * Aktualisiert die Ollama-Konfiguration dynamisch.
  */
-export function updateOllamaConfig(update: Partial<AIModuleConfig>): AIModuleConfig {
+export function updateOllamaConfig(
+  update: Partial<AIModuleConfig>,
+): AIModuleConfig {
   ollamaConfig = { ...ollamaConfig, ...update };
   log("info", "Ollama-Konfiguration aktualisiert", update);
   return ollamaConfig;

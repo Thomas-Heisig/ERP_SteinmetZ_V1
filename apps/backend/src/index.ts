@@ -78,7 +78,7 @@ app.use(
   cors({
     origin: ORIGIN,
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json({ limit: "10mb" }));
@@ -90,9 +90,7 @@ app.use((req, res, next) => {
     const token = req.headers["x-admin-token"];
     if (token !== process.env.ADMIN_TOKEN) {
       console.warn(`[auth] Zugriff verweigert auf ${req.path}`);
-      return res
-        .status(403)
-        .json({ error: "Forbidden: Admin token required" });
+      return res.status(403).json({ error: "Forbidden: Admin token required" });
     }
   }
   next();
@@ -136,8 +134,7 @@ if (Array.isArray(stack)) {
   console.log("[debug] Router-Stack-Länge:", stack.length);
   const routeNames = stack
     .map(
-      (layer: any) =>
-        layer?.route?.path || layer?.name || layer?.handle?.name
+      (layer: any) => layer?.route?.path || layer?.name || layer?.handle?.name,
     )
     .filter(Boolean);
   console.log("[debug] Bekannte Router-Einträge:", routeNames.slice(0, 20));
@@ -180,13 +177,13 @@ async function bootstrapFunctionsCatalog() {
     if (process.env.FUNCTIONS_AUTOLOAD !== "0") {
       const result = await service.refreshFunctionsIndex();
       console.log(
-        `[functions] initial geladen @ ${result.loadedAt} (${result.nodes.length} Wurzeln)`
+        `[functions] initial geladen @ ${result.loadedAt} (${result.nodes.length} Wurzeln)`,
       );
 
       if (process.env.FUNCTIONS_AUTOPERSIST === "1") {
         const summary = await db.upsertFunctionsCatalog(result);
         console.log(
-          `[functions] initial in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`
+          `[functions] initial in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`,
         );
       }
     } else {
@@ -199,16 +196,13 @@ async function bootstrapFunctionsCatalog() {
   } catch (err) {
     console.error(
       "[bootstrap] Fehler beim Initialisieren des Function-Katalogs:",
-      err
+      err,
     );
   }
 }
 
 /* ---------------------- Watcher ---------------------- */
-function startFunctionsWatcher(
-  service: FunctionsCatalogService,
-  dir: string
-) {
+function startFunctionsWatcher(service: FunctionsCatalogService, dir: string) {
   console.log(`[functions] Watcher aktiv: ${dir}`);
   let timer: NodeJS.Timeout | null = null;
 
@@ -219,7 +213,7 @@ function startFunctionsWatcher(
       if (process.env.FUNCTIONS_AUTOPERSIST === "1") {
         const summary = await db.upsertFunctionsCatalog(result);
         console.log(
-          `[functions] in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`
+          `[functions] in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`,
         );
       }
     } catch (e) {
@@ -249,10 +243,18 @@ export async function start() {
       console.log("--------------------------------------------------------");
       console.log(`[backend] Listening on:           http://localhost:${PORT}`);
       console.log(`[backend] Dashboard erreichbar:  http://localhost:${PORT}/`);
-      console.log(`[backend] System API:             http://localhost:${PORT}/api/system`);
-      console.log(`[backend] Health API:             http://localhost:${PORT}/api/health`);
-      console.log(`[backend] Functions API:          http://localhost:${PORT}/api/functions`);
-      console.log(`[backend] AI Annotator API:       http://localhost:${PORT}/api/ai-annotator`);
+      console.log(
+        `[backend] System API:             http://localhost:${PORT}/api/system`,
+      );
+      console.log(
+        `[backend] Health API:             http://localhost:${PORT}/api/health`,
+      );
+      console.log(
+        `[backend] Functions API:          http://localhost:${PORT}/api/functions`,
+      );
+      console.log(
+        `[backend] AI Annotator API:       http://localhost:${PORT}/api/ai-annotator`,
+      );
       console.log("--------------------------------------------------------");
     });
 
@@ -267,9 +269,7 @@ export async function start() {
 const isMain = (() => {
   try {
     const current = path.resolve(fileURLToPath(import.meta.url));
-    const entry = process.argv[1]
-      ? path.resolve(process.argv[1])
-      : "";
+    const entry = process.argv[1] ? path.resolve(process.argv[1]) : "";
     return current === entry;
   } catch {
     return false;

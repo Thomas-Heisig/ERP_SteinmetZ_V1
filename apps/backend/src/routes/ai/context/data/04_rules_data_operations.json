@@ -20,10 +20,7 @@
     },
     {
       "pattern": "\\b(erstelle|erstellen|anlegen|neu)\\s+(.*)",
-      "replies": [
-        "Ich erstelle $2 für Sie.",
-        "Das neue $2 wird angelegt."
-      ],
+      "replies": ["Ich erstelle $2 für Sie.", "Das neue $2 wird angelegt."],
       "action": "create_data",
       "params": ["$2"]
     },
@@ -56,10 +53,7 @@
     },
     {
       "pattern": "\\b(exportier|exportiere|exportieren)\\s+(.*)",
-      "replies": [
-        "Ich exportiere $2.",
-        "$2 wird als Datei bereitgestellt."
-      ],
+      "replies": ["Ich exportiere $2.", "$2 wird als Datei bereitgestellt."],
       "action": "export_data",
       "params": ["$2"]
     },

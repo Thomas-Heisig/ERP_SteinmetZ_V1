@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useQuickChat } from './hooks';
-import { ChatTab } from './components/ChatTab';
-import { ModelsTab } from './components/ModelsTab';
-import { SettingsTab } from './components/SettingsTab';
-import { InfoTab } from './components/InfoTab';
-import { Tab, QuickAction, Settings, AIModel, ChatSession } from './types';
-import { QUICK_ACTIONS, DEFAULT_SETTINGS, BACKEND_URL } from './constants';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useTheme } from "../../contexts/ThemeContext";
+import { useQuickChat } from "./hooks";
+import { ChatTab } from "./components/ChatTab";
+import { ModelsTab } from "./components/ModelsTab";
+import { SettingsTab } from "./components/SettingsTab";
+import { InfoTab } from "./components/InfoTab";
+import { Tab, QuickAction, Settings, AIModel, ChatSession } from "./types";
+import { QUICK_ACTIONS, DEFAULT_SETTINGS, BACKEND_URL } from "./constants";
 // import './styles/QuickChat.css';
 
 interface QuickChatProps {
@@ -16,7 +16,7 @@ interface QuickChatProps {
 
 const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   const { theme } = useTheme();
-  
+
   // QuickChat Hook für State Management
   const {
     // State
@@ -28,45 +28,45 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
     conversationContext,
     loading,
     error,
-    
+
     // Session Actions
     loadSessions,
     createSession,
     deleteSession,
     listSessions,
-    
+
     // Chat Actions
     sendMessage,
-    
+
     // Model Actions
     loadModels,
     getModels,
     getProviders,
-    
+
     // Tool Actions
     loadTools,
     listTools,
     executeTool,
-    
+
     // Settings Actions
     loadSettings,
     saveSettings,
-    
+
     // Context Actions
     getConversationContext,
-    
+
     // Audio Actions
     transcribeAudio,
-    
+
     // Translation Actions
     translateText,
-    
+
     // System Actions
     getSystemStatus,
-    
+
     // Utility Actions
     clearError,
-    
+
     // Setters
     setCurrentSession,
     setSettings,
@@ -74,34 +74,38 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   } = useQuickChat();
 
   // UI States
-  const [input, setInput] = useState('');
-  const [activeTab, setActiveTab] = useState<Tab>('chat');
-  const [selectedModel, setSelectedModel] = useState<string>('gpt-4o-mini');
-  const [selectedProvider, setSelectedProvider] = useState<string>('openai');
+  const [input, setInput] = useState("");
+  const [activeTab, setActiveTab] = useState<Tab>("chat");
+  const [selectedModel, setSelectedModel] = useState<string>("gpt-4o-mini");
+  const [selectedProvider, setSelectedProvider] = useState<string>("openai");
   const [fallbackEnabled, setFallbackEnabled] = useState(true);
-  const [languages, setLanguages] = useState<Array<{ code: string; name: string }>>([]);
-  
+  const [languages, setLanguages] = useState<
+    Array<{ code: string; name: string }>
+  >([]);
+
   // Audio & File States
   const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null,
+  );
   const [audioLoading, setAudioLoading] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
-  
+
   // UI States
   const [showQuickActions, setShowQuickActions] = useState(false);
-  
+
   // ✅ KORRIGIERT: Local sessions state mit korrekter Initialisierung
   const [localSessions, setLocalSessions] = useState<ChatSession[]>([]);
-  
+
   // ✅ KORRIGIERT: System Info mit Loading State
   const [systemInfo, setSystemInfo] = useState<any>(null);
   const [systemInfoLoading, setSystemInfoLoading] = useState(false);
   const [systemInfoError, setSystemInfoError] = useState<string | null>(null);
-  
+
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
   // ✅ KORRIGIERT: Sync local sessions mit hook sessions (sicher)
   useEffect(() => {
     if (Array.isArray(sessions)) {
@@ -111,7 +115,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
 
   // Scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentSession?.messages, loading]);
 
   // Initial load when component opens
@@ -131,13 +135,13 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
         // ✅ ENTFERNT: loadLanguages() - Endpoint existiert nicht
         getConversationContext(), // ✅ KORRIGIERT: Direkter Aufruf statt Wrapper
       ]);
-      
+
       // Load system info using QuickChat hook
       if (!systemInfo) {
         loadSystemInfoWithRetry();
       }
     } catch (err) {
-      console.error('Failed to load initial data:', err);
+      console.error("Failed to load initial data:", err);
     }
   };
 
@@ -145,37 +149,37 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   const loadSystemInfoWithRetry = async (retries = 3) => {
     setSystemInfoLoading(true);
     setSystemInfoError(null);
-    
+
     try {
       const response = await fetch(`${BACKEND_URL}/api/ai/status`);
-      
+
       if (!response.ok) {
         throw new Error(`Status error: ${response.status}`);
       }
-      
+
       const status = await response.json();
-      
+
       setSystemInfo({
         status,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (err: any) {
       if (retries > 0) {
         setTimeout(() => loadSystemInfoWithRetry(retries - 1), 1000);
       } else {
-        setSystemInfoError(err.message || 'Failed to load system info');
+        setSystemInfoError(err.message || "Failed to load system info");
         // OFFLINE Status setzen
         setSystemInfo({
           status: {
-            system_status: 'unhealthy',
-            active_provider: 'none',
+            system_status: "unhealthy",
+            active_provider: "none",
             model_count: 0,
             tool_count: 0,
             workflow_count: 0,
             fallback_enabled: false,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           },
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
     } finally {
@@ -188,15 +192,15 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   // ✅ KORRIGIERT: Session Selection mit defensiver Prüfung
   const handleSessionSelect = async (sessionId: string) => {
     try {
-      const session = localSessions.find(s => s.id === sessionId);
+      const session = localSessions.find((s) => s.id === sessionId);
       if (!session) {
-        console.warn('Session not found:', sessionId);
+        console.warn("Session not found:", sessionId);
         return; // ✅ Verhindert undefined currentSession
       }
       setCurrentSession(session);
-      setActiveTab('chat');
+      setActiveTab("chat");
     } catch (err) {
-      console.error('Failed to load session:', err);
+      console.error("Failed to load session:", err);
     }
   };
 
@@ -204,7 +208,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
     try {
       await createSession(selectedModel, selectedProvider);
     } catch (err) {
-      console.error('Failed to create session:', err);
+      console.error("Failed to create session:", err);
     }
   };
 
@@ -216,49 +220,49 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
         setCurrentSession(null);
       }
     } catch (err) {
-      console.error('Failed to delete session:', err);
+      console.error("Failed to delete session:", err);
     }
   };
 
   const handleModelChange = async (sessionId: string, modelId: string) => {
     try {
       // Update local state only - model change happens when creating new messages
-      const updatedSessions = localSessions.map(session => 
-        session.id === sessionId 
-          ? { ...session, model: modelId }
-          : session
+      const updatedSessions = localSessions.map((session) =>
+        session.id === sessionId ? { ...session, model: modelId } : session,
       );
-      
+
       setLocalSessions(updatedSessions);
-      
+
       // Update current session if it's the active one
       if (currentSession?.id === sessionId) {
-        setCurrentSession(updatedSessions.find(s => s.id === sessionId) || null);
+        setCurrentSession(
+          updatedSessions.find((s) => s.id === sessionId) || null,
+        );
       }
     } catch (err) {
-      console.error('Failed to change model:', err);
+      console.error("Failed to change model:", err);
     }
   };
 
   // ✅ KORRIGIERT: Send Message mit defensiver Prüfung
   const handleSendMessage = async () => {
     if (!input.trim() || loading) return;
-    
+
     try {
       if (currentSession) {
         await sendMessage(input, currentSession.id);
       } else {
         await sendMessage(input, undefined, selectedModel, selectedProvider);
       }
-      setInput('');
+      setInput("");
     } catch (err) {
-      console.error('Failed to send message:', err);
+      console.error("Failed to send message:", err);
       // ✅ Der Hook sollte jetzt message.content sicher handhaben
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<Element>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -270,20 +274,20 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       const chunks: Blob[] = [];
-      
+
       recorder.ondataavailable = (e) => chunks.push(e.data);
       recorder.onstop = async () => {
-        const audioBlob = new Blob(chunks, { type: 'audio/wav' });
+        const audioBlob = new Blob(chunks, { type: "audio/wav" });
         await uploadAudio(audioBlob);
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       };
-      
+
       recorder.start();
       setMediaRecorder(recorder);
       setIsRecording(true);
     } catch (err) {
-      console.error('Microphone access failed:', err);
-      setError('Mikrofon-Zugriff fehlgeschlagen');
+      console.error("Microphone access failed:", err);
+      setError("Mikrofon-Zugriff fehlgeschlagen");
     }
   };
 
@@ -297,18 +301,18 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   const uploadAudio = async (audioBlob: Blob) => {
     setAudioLoading(true);
     setError(null);
-    
+
     try {
-      const file = new File([audioBlob], "recording.wav", { 
-        type: "audio/wav", 
-        lastModified: Date.now() 
+      const file = new File([audioBlob], "recording.wav", {
+        type: "audio/wav",
+        lastModified: Date.now(),
       });
-      
+
       const result = await transcribeAudio(file);
-      setInput(prev => prev ? `${prev} ${result.text}` : result.text);
+      setInput((prev) => (prev ? `${prev} ${result.text}` : result.text));
     } catch (err) {
-      console.error('Audio upload failed:', err);
-      setError('Audio-Verarbeitung fehlgeschlagen');
+      console.error("Audio upload failed:", err);
+      setError("Audio-Verarbeitung fehlgeschlagen");
     } finally {
       setAudioLoading(false);
     }
@@ -318,46 +322,46 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     setUploadLoading(true);
     setError(null);
-    
+
     try {
       let result;
       const formData = new FormData();
-      formData.append('file', file);
-      
-      if (file.type.startsWith('image/')) {
+      formData.append("file", file);
+
+      if (file.type.startsWith("image/")) {
         const response = await fetch(`${BACKEND_URL}/api/ai/analyze-image`, {
-          method: 'POST',
+          method: "POST",
           body: formData,
         });
-        
-        if (!response.ok) throw new Error('Image analysis failed');
+
+        if (!response.ok) throw new Error("Image analysis failed");
         result = await response.json();
-      } else if (file.type.startsWith('audio/')) {
+      } else if (file.type.startsWith("audio/")) {
         const response = await fetch(`${BACKEND_URL}/api/ai/upload`, {
-          method: 'POST',
+          method: "POST",
           body: formData,
         });
-        
-        if (!response.ok) throw new Error('File upload failed');
+
+        if (!response.ok) throw new Error("File upload failed");
         result = await response.json();
       }
-      
-      const prompt = `Ich habe eine Datei hochgeladen: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(1)} KB). Bitte analysiere den Inhalt: ${result.text || 'Datei erfolgreich verarbeitet'}`;
-      setInput(prev => prev ? `${prev}\n\n${prompt}` : prompt);
+
+      const prompt = `Ich habe eine Datei hochgeladen: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(1)} KB). Bitte analysiere den Inhalt: ${result.text || "Datei erfolgreich verarbeitet"}`;
+      setInput((prev) => (prev ? `${prev}\n\n${prompt}` : prompt));
     } catch (err) {
-      console.error('File upload failed:', err);
-      setError('Datei-Upload fehlgeschlagen');
+      console.error("File upload failed:", err);
+      setError("Datei-Upload fehlgeschlagen");
     } finally {
       setUploadLoading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   const handleFileUploadDirect = async (file: File) => {
-    const event = new Event('change', { bubbles: true }) as any;
+    const event = new Event("change", { bubbles: true }) as any;
     event.target = { files: [file] };
     await handleFileUpload(event);
   };
@@ -375,17 +379,17 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   // Translation using QuickChat hook
   const handleTranslate = async () => {
     if (!input.trim()) return;
-    
+
     try {
       const result = await translateText(
-        input, 
-        settings?.language || 'de', 
-        'openai'
+        input,
+        settings?.language || "de",
+        "openai",
       );
       setInput(result.text);
     } catch (err) {
-      console.error('Translation failed:', err);
-      setError('Übersetzung fehlgeschlagen');
+      console.error("Translation failed:", err);
+      setError("Übersetzung fehlgeschlagen");
     }
   };
 
@@ -407,8 +411,8 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
       try {
         await saveSettings(settings);
       } catch (err) {
-        console.error('Failed to save settings:', err);
-        setError('Einstellungen konnten nicht gespeichert werden');
+        console.error("Failed to save settings:", err);
+        setError("Einstellungen konnten nicht gespeichert werden");
       }
     }
   };
@@ -448,13 +452,13 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   // Handle escape key to close
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
   // Early return if not open
@@ -468,25 +472,23 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
           <div className="quick-chat-header-left">
             <h3>🤖 ERP Assistant</h3>
             {currentSession && (
-              <span className="model-info">
-                {currentSession.model}
-              </span>
+              <span className="model-info">{currentSession.model}</span>
             )}
             {conversationContext && (
               <span className="context-info">
-                {conversationContext.current_topic && `Thema: ${conversationContext.current_topic}`}
+                {conversationContext.current_topic &&
+                  `Thema: ${conversationContext.current_topic}`}
               </span>
             )}
           </div>
           <div className="quick-chat-header-right">
             {/* ✅ KORRIGIERT: Korrekter Online/Offline Status mit Loading */}
             <div className="connection-status">
-              {systemInfoLoading 
-                ? '⏳ Lädt...' 
-                : systemInfo?.status?.system_status === 'healthy' 
-                  ? '🟢 Online' 
-                  : '🔴 Offline'
-              }
+              {systemInfoLoading
+                ? "⏳ Lädt..."
+                : systemInfo?.status?.system_status === "healthy"
+                  ? "🟢 Online"
+                  : "🔴 Offline"}
             </div>
             <button
               className="close-btn"
@@ -500,16 +502,16 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
 
         {/* Tab Navigation */}
         <nav className="quick-chat-tabs">
-          {(['chat', 'models', 'settings', 'info'] as Tab[]).map((tab) => (
+          {(["chat", "models", "settings", "info"] as Tab[]).map((tab) => (
             <button
               key={tab}
-              className={`tab-button ${activeTab === tab ? 'active' : ''}`}
+              className={`tab-button ${activeTab === tab ? "active" : ""}`}
               onClick={() => setActiveTab(tab)}
             >
-              {tab === 'chat' && '💬 Chat'}
-              {tab === 'models' && '🧠 Modelle'}
-              {tab === 'settings' && '⚙️ Einstellungen'}
-              {tab === 'info' && '📊 System'}
+              {tab === "chat" && "💬 Chat"}
+              {tab === "models" && "🧠 Modelle"}
+              {tab === "settings" && "⚙️ Einstellungen"}
+              {tab === "info" && "📊 System"}
             </button>
           ))}
         </nav>
@@ -530,7 +532,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
 
         {/* Main Content */}
         <section className="quick-chat-content">
-          {activeTab === 'chat' && (
+          {activeTab === "chat" && (
             <ChatTab
               sessions={localSessions}
               currentSession={currentSession}
@@ -562,7 +564,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
             />
           )}
 
-          {activeTab === 'models' && (
+          {activeTab === "models" && (
             <ModelsTab
               models={models}
               selectedModel={selectedModel}
@@ -571,7 +573,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
             />
           )}
 
-          {activeTab === 'settings' && settings && (
+          {activeTab === "settings" && settings && (
             <SettingsTab
               settings={settings}
               models={models}
@@ -581,7 +583,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
             />
           )}
 
-          {activeTab === 'info' && (
+          {activeTab === "info" && (
             <InfoTab
               systemInfo={systemInfo}
               loading={systemInfoLoading}
