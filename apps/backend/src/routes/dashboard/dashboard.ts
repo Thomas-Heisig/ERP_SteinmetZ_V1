@@ -48,7 +48,7 @@ router.get("/overview", async (_req, res) => {
       modules: {
         fallback_ai: true,
         annotator_ai: existsSync(
-          path.join(process.cwd(), "src/routes/ai/annotator_ai.ts")
+          path.join(process.cwd(), "src/routes/ai/annotator_ai.ts"),
         ),
         rag_ai: existsSync(path.join(process.cwd(), "src/routes/ai/rag_ai.ts")),
       },
@@ -56,7 +56,7 @@ router.get("/overview", async (_req, res) => {
 
     // Versionsinformationen
     const packageJson = JSON.parse(
-      readFileSync(path.join(process.cwd(), "package.json"), "utf8")
+      readFileSync(path.join(process.cwd(), "package.json"), "utf8"),
     );
     const versionInfo = {
       name: packageJson.name,

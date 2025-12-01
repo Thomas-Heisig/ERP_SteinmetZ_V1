@@ -36,7 +36,10 @@ export function scoreResult(result: SearchResult, query: string): number {
   return score;
 }
 
-export function applyScoring(results: SearchResult[], query: string): SearchResult[] {
+export function applyScoring(
+  results: SearchResult[],
+  query: string,
+): SearchResult[] {
   return results.map((r) => ({ ...r, relevance: scoreResult(r, query) }));
 }
 
@@ -55,7 +58,10 @@ export function highlight(text: string, query: string): string {
    3) Sortierungen
    ============================================================ */
 
-export function sortResults(results: SearchResult[], criteria: SortCriteria): SearchResult[] {
+export function sortResults(
+  results: SearchResult[],
+  criteria: SortCriteria,
+): SearchResult[] {
   const out = [...results];
 
   switch (criteria.field) {
@@ -68,8 +74,8 @@ export function sortResults(results: SearchResult[], criteria: SortCriteria): Se
         compare(
           a.metadata.lastModified.getTime(),
           b.metadata.lastModified.getTime(),
-          criteria.direction
-        )
+          criteria.direction,
+        ),
       );
       break;
 

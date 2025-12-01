@@ -292,7 +292,6 @@ const JsonNodeSchema = z
 
 type JsonNode = z.infer<typeof JsonNodeSchema>;
 
-
 /*==========================================================================*/
 /*  Hilfs‑Funktionen für Metadaten‑Extraktion                              */
 /*==========================================================================*/
@@ -400,13 +399,13 @@ async function streamJsonLines(filePath: string): Promise<JsonNode[]> {
       } else {
         logger.warn(
           { file: path.basename(filePath), error: result.error },
-          "Invalid JSON line in functions file"
+          "Invalid JSON line in functions file",
         );
       }
     } catch (e) {
       logger.warn(
         { file: path.basename(filePath), error: e },
-        "Unable to parse line as JSON"
+        "Unable to parse line as JSON",
       );
     }
   }
@@ -420,7 +419,7 @@ async function streamJsonLines(filePath: string): Promise<JsonNode[]> {
 
 async function parseJSONFile(
   filePath: string,
-  rules: GlobalRules
+  rules: GlobalRules,
 ): Promise<{
   file: string;
   nodes: CatalogNode[];
@@ -435,7 +434,7 @@ async function parseJSONFile(
   try {
     const jsonNodes = await streamJsonLines(filePath);
     const catalogNodes = jsonNodes.map((jn) =>
-      jsonToCatalogNode(jn, relFile, fileCategory)
+      jsonToCatalogNode(jn, relFile, fileCategory),
     );
 
     return { file: relFile, nodes: catalogNodes, findings, warnings };
@@ -460,7 +459,7 @@ async function parseJSONFile(
 function jsonToCatalogNode(
   jsonNode: JsonNode,
   sourceFile: string,
-  fileCategory: string
+  fileCategory: string,
 ): CatalogNode {
   const area = extractArea(jsonNode);
   const priority = determinePriority(jsonNode);
@@ -656,9 +655,7 @@ function lintTree(allFiles: ParsedFile[], rules: GlobalRules): LintFinding[] {
   // – Duplikate melden –
   for (const [id, locations] of idMap.entries()) {
     if (locations.length > 1) {
-      const details = locations
-        .map((l) => `${l.file} @ ${l.path}`)
-        .join("; ");
+      const details = locations.map((l) => `${l.file} @ ${l.path}`).join("; ");
       findings.push({
         code: "DUPLICATE_ID",
         message: `ID "${id}" mehrfach verwendet (${details})`,
@@ -751,59 +748,56 @@ async function buildIndex(opts?: BuildOptions): Promise<BuildResult> {
     }
   }
 
-let flatNodes = parsedFiles.flatMap((p) => p.nodes);
+  let flatNodes = parsedFiles.flatMap((p) => p.nodes);
 
-// Auto-ID-Normalisierung
-flatNodes = normalizeDuplicateIds(flatNodes);
-
+  // Auto-ID-Normalisierung
+  flatNodes = normalizeDuplicateIds(flatNodes);
 
   /**
- * Auto-Normalizer für doppelte IDs.
- *
- * - belässt die erste ID unverändert
- * - hängt "-1", "-2", "-3", ... an alle weiteren Duplikate an
- * - protokolliert die Änderungen sauber
- */
-function normalizeDuplicateIds(nodes: CatalogNode[]): CatalogNode[] {
-  const seen = new Map<string, number>();
+   * Auto-Normalizer für doppelte IDs.
+   *
+   * - belässt die erste ID unverändert
+   * - hängt "-1", "-2", "-3", ... an alle weiteren Duplikate an
+   * - protokolliert die Änderungen sauber
+   */
+  function normalizeDuplicateIds(nodes: CatalogNode[]): CatalogNode[] {
+    const seen = new Map<string, number>();
 
-  return nodes.map(n => {
-    const originalId = n.id;
+    return nodes.map((n) => {
+      const originalId = n.id;
 
-    if (!seen.has(originalId)) {
-      seen.set(originalId, 1);
-      return n;
-    }
+      if (!seen.has(originalId)) {
+        seen.set(originalId, 1);
+        return n;
+      }
 
-    const count = seen.get(originalId)!;
-    const newId = `${originalId}-${count}`;
+      const count = seen.get(originalId)!;
+      const newId = `${originalId}-${count}`;
 
-    seen.set(originalId, count + 1);
+      seen.set(originalId, count + 1);
 
-    return {
-      ...n,
-      id: newId,
-      warnings: [
-        ...(n.warnings ?? []),
-        `Auto-normalized duplicate ID "${originalId}" → "${newId}"`,
-      ],
-    };
-  });
-}
+      return {
+        ...n,
+        id: newId,
+        warnings: [
+          ...(n.warnings ?? []),
+          `Auto-normalized duplicate ID "${originalId}" → "${newId}"`,
+        ],
+      };
+    });
+  }
 
-const normalizationWarnings = flatNodes
-  .filter(n => n.warnings?.some(w => w.includes("auto-normalized")))
-  .length;
+  const normalizationWarnings = flatNodes.filter((n) =>
+    n.warnings?.some((w) => w.includes("auto-normalized")),
+  ).length;
 
-if (normalizationWarnings > 0) {
-  parseFindings.push({
-    code: "AUTO_ID_NORMALIZED",
-    message: `IDs automatisch normalisiert (${normalizationWarnings} betroffene Knoten)`,
-    severity: "info",
-  });
-}
-
-
+  if (normalizationWarnings > 0) {
+    parseFindings.push({
+      code: "AUTO_ID_NORMALIZED",
+      message: `IDs automatisch normalisiert (${normalizationWarnings} betroffene Knoten)`,
+      severity: "info",
+    });
+  }
 
   const forest = buildTreeFromFlatNodes(flatNodes);
 
@@ -829,7 +823,7 @@ if (normalizationWarnings > 0) {
   };
 
   logger.info(
-    `[functions] Baumstruktur geladen: ${stats.categories} Kategorien, ${stats.totalNodes} Knoten, Tiefe ${stats.maxDepth}`
+    `[functions] Baumstruktur geladen: ${stats.categories} Kategorien, ${stats.totalNodes} Knoten, Tiefe ${stats.maxDepth}`,
   );
 
   const lintFindings = lintTree(parsedFiles, rules);
@@ -837,7 +831,11 @@ if (normalizationWarnings > 0) {
   return {
     rules,
     nodes: forest,
-    findings: [...parseFindings, ...lintFindings, ...parsedFiles.flatMap((p) => p.findings)],
+    findings: [
+      ...parseFindings,
+      ...lintFindings,
+      ...parsedFiles.flatMap((p) => p.findings),
+    ],
     warnings: parsedFiles.flatMap((p) => p.warnings),
     loadedAt: new Date().toISOString(),
     stats,
@@ -896,7 +894,7 @@ function toMenuNode(node: CatalogNode): MenuNode {
 function filterMenu(
   nodes: CatalogNode[],
   rules: GlobalRules,
-  ctx: MenuContext
+  ctx: MenuContext,
 ): MenuNode[] {
   const out: MenuNode[] = [];
 
@@ -933,8 +931,11 @@ function filterMenu(
 function findNodeWithBreadcrumbs(
   nodes: CatalogNode[],
   id: string,
-  trail: Array<{ id: string; title: string }> = []
-): { node: CatalogNode; breadcrumbs: Array<{ id: string; title: string }> } | null {
+  trail: Array<{ id: string; title: string }> = [],
+): {
+  node: CatalogNode;
+  breadcrumbs: Array<{ id: string; title: string }>;
+} | null {
   for (const n of nodes) {
     const nextTrail = [...trail, { id: n.id, title: n.title }];
     if (n.id === id) return { node: n, breadcrumbs: nextTrail };
@@ -959,34 +960,37 @@ export class FunctionsCatalogService {
     this.strict = opts?.strict ?? false;
   }
 
-/** Neuaufbau + Cache‑Update (exklusiv über Lock) */
-async refreshFunctionsIndex(): Promise<BuildResult> {
-  await refreshLock.acquireAsync();
-  try {
-    const result = await buildIndex({
-      baseDir: this.baseDir,
-      locale: this.locale,
-      strict: this.strict,
-    });
-
-    // Wenn beim Build einzelne Nodes Warnungen enthalten (z.B. auto-normalisierte IDs),
-    // dann ein zusätzliches Lint-Finding für die Übersicht ins Ergebnis aufnehmen.
-    if (flattenTree(result.nodes).some((n: CatalogNode) => (n.warnings?.length ?? 0) > 0)) {
-      result.findings.push({
-        code: "AUTO_ID_NORMALIZED",
-        severity: "info",
-        message: "Duplicate IDs auto-normalized. Siehe node.warnings für Details.",
+  /** Neuaufbau + Cache‑Update (exklusiv über Lock) */
+  async refreshFunctionsIndex(): Promise<BuildResult> {
+    await refreshLock.acquireAsync();
+    try {
+      const result = await buildIndex({
+        baseDir: this.baseDir,
+        locale: this.locale,
+        strict: this.strict,
       });
+
+      // Wenn beim Build einzelne Nodes Warnungen enthalten (z.B. auto-normalisierte IDs),
+      // dann ein zusätzliches Lint-Finding für die Übersicht ins Ergebnis aufnehmen.
+      if (
+        flattenTree(result.nodes).some(
+          (n: CatalogNode) => (n.warnings?.length ?? 0) > 0,
+        )
+      ) {
+        result.findings.push({
+          code: "AUTO_ID_NORMALIZED",
+          severity: "info",
+          message:
+            "Duplicate IDs auto-normalized. Siehe node.warnings für Details.",
+        });
+      }
+
+      cacheEntry = { result, timestamp: Date.now() };
+      return result;
+    } finally {
+      refreshLock.release();
     }
-
-    cacheEntry = { result, timestamp: Date.now() };
-    return result;
-  } finally {
-    refreshLock.release();
   }
-}
-
-  
 
   /** Liefert gecachten Index oder aktualisiert ihn bei Verfall */
   async getFunctionsIndex(): Promise<BuildResult> {
@@ -998,7 +1002,7 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
 
   /** Menü‑Struktur, gefiltert nach Rollen/Features/Bereich */
   async getMenuForContext(
-    ctx: MenuContext
+    ctx: MenuContext,
   ): Promise<{ menu: MenuNode[]; loadedAt: string; stats: any }> {
     const idx = await this.getFunctionsIndex();
     const menu = filterMenu(idx.nodes, idx.rules, ctx ?? {});
@@ -1006,25 +1010,27 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
   }
 
   /** Lint‑Ergebnisse */
-  async lintFunctions(): Promise<{ findings: LintFinding[]; loadedAt: string }> {
+  async lintFunctions(): Promise<{
+    findings: LintFinding[];
+    loadedAt: string;
+  }> {
     const idx = await this.getFunctionsIndex();
     return { findings: idx.findings, loadedAt: idx.loadedAt };
   }
 
   /** Knoten nach ID (inkl. Breadcrumbs & UI‑Helper) */
-  async getNodeById(
-    id: string
-  ): Promise<
-    (CatalogNode & {
-      breadcrumbs: Array<{ id: string; title: string }>;
-      ui: {
-        isForm: boolean;
-        isWorkflow: boolean;
-        isReport: boolean;
-        isDataset: boolean;
-        isAction: boolean;
-      };
-    }) | null
+  async getNodeById(id: string): Promise<
+    | (CatalogNode & {
+        breadcrumbs: Array<{ id: string; title: string }>;
+        ui: {
+          isForm: boolean;
+          isWorkflow: boolean;
+          isReport: boolean;
+          isDataset: boolean;
+          isAction: boolean;
+        };
+      })
+    | null
   > {
     const idx = await this.getFunctionsIndex();
     const hit = findNodeWithBreadcrumbs(idx.nodes, id);
@@ -1045,7 +1051,7 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
   /** Kind‑Knoten (optional gefiltert) */
   async getChildrenForNode(
     id: string,
-    ctx?: MenuContext
+    ctx?: MenuContext,
   ): Promise<{ parent: MenuNode; children: MenuNode[] } | null> {
     const idx = await this.getFunctionsIndex();
     const hit = findNodeWithBreadcrumbs(idx.nodes, id);
@@ -1074,7 +1080,7 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
   /** Volltext‑Suche (mit optionaler Pagination) */
   async search(
     params: SearchParams,
-    pagination?: { limit?: number; offset?: number }
+    pagination?: { limit?: number; offset?: number },
   ): Promise<
     Array<{
       id: string;
@@ -1091,7 +1097,9 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
 
     const q = (params.q ?? "").toLowerCase();
     const kinds = params.kinds ? new Set(params.kinds) : undefined;
-    const tagFilter = params.tags ? new Set(params.tags.map((t) => t.toLowerCase())) : undefined;
+    const tagFilter = params.tags
+      ? new Set(params.tags.map((t) => t.toLowerCase()))
+      : undefined;
     const areaFilter = params.area?.toLowerCase();
 
     const results: Array<{
@@ -1115,8 +1123,8 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
         return;
       }
 
-      const hay = `${node.id} ${node.title} ${(node.meta?.tags ?? []).join(" ")}`
-        .toLowerCase();
+      const hay =
+        `${node.id} ${node.title} ${(node.meta?.tags ?? []).join(" ")}`.toLowerCase();
 
       let score = 0;
       if (q) {
@@ -1152,7 +1160,8 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
     idx.nodes.forEach(visit);
 
     results.sort(
-      (a, b) => b.score - a.score || a.title.localeCompare(b.title, idx.rules.locale)
+      (a, b) =>
+        b.score - a.score || a.title.localeCompare(b.title, idx.rules.locale),
     );
 
     const limit = pagination?.limit ?? results.length;
@@ -1167,9 +1176,11 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
 
   /** Liste aller Quell‑Dateien, die im Index vertreten sind */
   getSourceFiles(): string[] {
-    return cacheEntry?.result.nodes
-      .map((n) => n.source.file)
-      .filter((v, i, a) => a.indexOf(v) === i) ?? [];
+    return (
+      cacheEntry?.result.nodes
+        .map((n) => n.source.file)
+        .filter((v, i, a) => a.indexOf(v) === i) ?? []
+    );
   }
 
   /** Gesamte Knoten‑Anzahl */
@@ -1190,7 +1201,7 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
 
     // parse nur die neuen Dateien
     const parsedSettled = await Promise.allSettled(
-      filePaths.map((p) => parseJSONFile(p, rules))
+      filePaths.map((p) => parseJSONFile(p, rules)),
     );
 
     const newFlat: CatalogNode[] = [];
@@ -1225,8 +1236,9 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
 
     const stats = {
       totalNodes: mergedFlat.length,
-      categories: new Set(mergedFlat.filter((n) => n.kind === "category").map((n) => n.title))
-        .size,
+      categories: new Set(
+        mergedFlat.filter((n) => n.kind === "category").map((n) => n.title),
+      ).size,
       maxDepth: Math.max(...mergedFlat.map((n) => n.depth)),
       filesProcessed: current.stats.filesProcessed + filePaths.length,
     };
@@ -1249,7 +1261,9 @@ async refreshFunctionsIndex(): Promise<BuildResult> {
     try {
       const idx = await this.getFunctionsIndex();
       const totalNodes = idx.nodes?.length ?? 0;
-      const categories = (idx.nodes ?? []).filter((n) => n.children.length > 0).length;
+      const categories = (idx.nodes ?? []).filter(
+        (n) => n.children.length > 0,
+      ).length;
 
       return {
         loadedAt: idx.loadedAt ?? new Date().toISOString(),
@@ -1291,14 +1305,14 @@ function flattenTree(nodes: CatalogNode[]): CatalogNode[] {
 /*==========================================================================*/
 
 export async function refreshFunctionsIndex(
-  opts?: BuildOptions
+  opts?: BuildOptions,
 ): Promise<BuildResult> {
   const service = new FunctionsCatalogService(opts);
   return await service.refreshFunctionsIndex();
 }
 
 export async function getFunctionsIndex(
-  opts?: BuildOptions
+  opts?: BuildOptions,
 ): Promise<BuildResult> {
   const service = new FunctionsCatalogService(opts);
   return await service.getFunctionsIndex();
@@ -1306,14 +1320,14 @@ export async function getFunctionsIndex(
 
 export async function getMenuForContext(
   ctx: MenuContext,
-  opts?: BuildOptions
+  opts?: BuildOptions,
 ): Promise<{ menu: MenuNode[]; loadedAt: string; stats: any }> {
   const service = new FunctionsCatalogService(opts);
   return await service.getMenuForContext(ctx);
 }
 
 export async function lintFunctions(
-  opts?: BuildOptions
+  opts?: BuildOptions,
 ): Promise<{ findings: LintFinding[]; loadedAt: string }> {
   const service = new FunctionsCatalogService(opts);
   return await service.lintFunctions();
@@ -1321,7 +1335,7 @@ export async function lintFunctions(
 
 export async function getNodeById(
   id: string,
-  opts?: BuildOptions
+  opts?: BuildOptions,
 ): Promise<ReturnType<FunctionsCatalogService["getNodeById"]>> {
   const service = new FunctionsCatalogService(opts);
   return await service.getNodeById(id);
@@ -1330,7 +1344,7 @@ export async function getNodeById(
 export async function getChildrenForNode(
   id: string,
   ctx?: MenuContext,
-  opts?: BuildOptions
+  opts?: BuildOptions,
 ): Promise<ReturnType<FunctionsCatalogService["getChildrenForNode"]>> {
   const service = new FunctionsCatalogService(opts);
   return await service.getChildrenForNode(id, ctx);
@@ -1338,7 +1352,7 @@ export async function getChildrenForNode(
 
 export async function searchFunctions(
   params: SearchParams,
-  opts?: BuildOptions
+  opts?: BuildOptions,
 ): Promise<ReturnType<FunctionsCatalogService["search"]>> {
   const service = new FunctionsCatalogService(opts);
   return await service.search(params);
@@ -1351,7 +1365,7 @@ export async function getNodeCount(opts?: BuildOptions): Promise<number> {
 
 export async function setFunctionsDirectory(
   newDir: string,
-  opts?: BuildOptions
+  opts?: BuildOptions,
 ): Promise<void> {
   const service = new FunctionsCatalogService(opts);
   await service.setBaseDirectory(newDir);
@@ -1359,7 +1373,7 @@ export async function setFunctionsDirectory(
 
 export async function addFunctionFiles(
   filePaths: string[],
-  opts?: BuildOptions
+  opts?: BuildOptions,
 ): Promise<BuildResult> {
   const service = new FunctionsCatalogService(opts);
   return await service.addJSONFiles(filePaths);

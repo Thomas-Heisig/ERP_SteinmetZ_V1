@@ -15,8 +15,8 @@ import type { HealthStatusDetailed } from "../../types";
 
 export interface HealthMonitorOptions {
   url: string;
-  interval?: number;     // Standard: 5 Sekunden
-  timeout?: number;      // Standard: 4 Sekunden
+  interval?: number; // Standard: 5 Sekunden
+  timeout?: number; // Standard: 4 Sekunden
   onUpdate?: (status: HealthStatusDetailed) => void;
   fetcher?: (url: string, timeout: number) => Promise<any>;
 }
@@ -66,9 +66,7 @@ export class HealthMonitor {
 
       const mapped = this.mapper.map(raw as RawHealthResponse);
       this.onUpdate?.(mapped);
-
     } catch (err) {
-
       // Konsistenter Fallback für Fehlerfälle
       const rawFallback: RawHealthResponse = {
         status: "unhealthy",
@@ -107,7 +105,6 @@ export class HealthMonitor {
       }
 
       return await res.json();
-
     } catch (err) {
       clearTimeout(id);
       throw err;

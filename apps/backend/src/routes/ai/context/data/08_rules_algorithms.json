@@ -2,10 +2,7 @@
   "eliza_rules": [
     {
       "pattern": "\\b(sort|sortier|sortiere|sortieren)\\s+(.*)",
-      "replies": [
-        "Ich sortiere $2.",
-        "Sortierung von $2 wird durchgeführt."
-      ],
+      "replies": ["Ich sortiere $2.", "Sortierung von $2 wird durchgeführt."],
       "action": "sort_data",
       "params": ["$2"]
     },
@@ -20,37 +17,25 @@
     },
     {
       "pattern": "\\b(optimize|optimier|optimieren)\\s+(.*)",
-      "replies": [
-        "Ich optimiere $2.",
-        "Optimierungsprozess für $2 startet..."
-      ],
+      "replies": ["Ich optimiere $2.", "Optimierungsprozess für $2 startet..."],
       "action": "optimize_system",
       "params": ["$2"]
     },
     {
       "pattern": "\\b(analyze|analysier|analysiere|analysieren)\\s+(.*)",
-      "replies": [
-        "Ich analysiere $2.",
-        "Analyse von $2 wird durchgeführt."
-      ],
+      "replies": ["Ich analysiere $2.", "Analyse von $2 wird durchgeführt."],
       "action": "analyze_data",
       "params": ["$2"]
     },
     {
       "pattern": "\\b(berechne|berechnen|compute|calculate)\\s+(.*)",
-      "replies": [
-        "Ich berechne $2.",
-        "Berechnung von $2 wird ausgeführt."
-      ],
+      "replies": ["Ich berechne $2.", "Berechnung von $2 wird ausgeführt."],
       "action": "calculate_algorithm",
       "params": ["$2"]
     },
     {
       "pattern": "\\b(filter|filtrier|filtere|filtern)\\s+(.*)",
-      "replies": [
-        "Ich filtere $2.",
-        "Filterprozess für $2 wird durchgeführt."
-      ],
+      "replies": ["Ich filtere $2.", "Filterprozess für $2 wird durchgeführt."],
       "action": "filter_algorithm",
       "params": ["$2"]
     },
@@ -83,10 +68,7 @@
     },
     {
       "pattern": "\\b(simuliere|simulier|simulation)\\s+(.*)",
-      "replies": [
-        "Ich simuliere $2.",
-        "Simulation von $2 läuft."
-      ],
+      "replies": ["Ich simuliere $2.", "Simulation von $2 läuft."],
       "action": "simulate_algorithm",
       "params": ["$2"]
     },

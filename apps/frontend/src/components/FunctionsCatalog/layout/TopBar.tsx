@@ -79,11 +79,7 @@ export default function TopBar({
         {searchLoading && <span>Suche… </span>}
         {nodeLoading && <span>Details… </span>}
 
-        {errorText && (
-          <span className="fc-topbar-error">
-            ⚠ {errorText}
-          </span>
-        )}
+        {errorText && <span className="fc-topbar-error">⚠ {errorText}</span>}
       </div>
 
       {/* Inline-Fallback-Styles */}

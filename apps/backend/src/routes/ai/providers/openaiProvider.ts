@@ -7,7 +7,11 @@
  */
 
 import OpenAI from "openai";
-import type { ChatMessage, AIResponse, AIModuleConfig } from "../types/types.js";
+import type {
+  ChatMessage,
+  AIResponse,
+  AIModuleConfig,
+} from "../types/types.js";
 import { log } from "../utils/logger.js";
 import { toolRegistry } from "../tools/registry.js";
 
@@ -34,7 +38,8 @@ export let openaiConfig: AIModuleConfig = {
 
 function getClient(): OpenAI {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("❌ OPENAI_API_KEY fehlt in den Umgebungsvariablen.");
+  if (!apiKey)
+    throw new Error("❌ OPENAI_API_KEY fehlt in den Umgebungsvariablen.");
   return new OpenAI({ apiKey });
 }
 
@@ -49,12 +54,13 @@ function getClient(): OpenAI {
 export async function callOpenAI(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {}
+  options: Record<string, any> = {},
 ): Promise<AIResponse> {
   const client = getClient();
   const usedModel = model || openaiConfig.model;
 
-  const sysPrompt = options.systemPrompt ?? "Du bist ein sachlicher, formaler Assistent.";
+  const sysPrompt =
+    options.systemPrompt ?? "Du bist ein sachlicher, formaler Assistent.";
   const formattedMessages = [
     { role: "system", content: sysPrompt },
     ...messages.map((m) => ({ role: m.role, content: m.content })),
@@ -74,12 +80,14 @@ export async function callOpenAI(
     const completion: any = await client.chat.completions.create(request);
     const duration = Date.now() - start;
 
-    const reply = completion?.choices?.[0]?.message?.content?.trim?.() ?? "(keine Antwort)";
+    const reply =
+      completion?.choices?.[0]?.message?.content?.trim?.() ?? "(keine Antwort)";
     const usage = completion?.usage ?? {};
 
     // Tool-Aufrufe erkennen und ausführen
     const toolCalls = detectToolCalls(reply);
-    const toolResults = toolCalls.length > 0 ? await handleToolCalls(toolCalls) : [];
+    const toolResults =
+      toolCalls.length > 0 ? await handleToolCalls(toolCalls) : [];
 
     log("info", "OpenAI-Antwort empfangen", {
       model: usedModel,
@@ -142,12 +150,16 @@ function safeJsonParse(s: string): any {
 /**
  * Führt erkannte Tool-Calls über die zentrale Registry aus.
  */
-async function handleToolCalls(calls: { name: string; parameters: any }[]): Promise<string[]> {
+async function handleToolCalls(
+  calls: { name: string; parameters: any }[],
+): Promise<string[]> {
   const results: string[] = [];
   for (const call of calls) {
     try {
       const res = await toolRegistry.call(call.name, call.parameters);
-      results.push(`✅ Tool "${call.name}" erfolgreich ausgeführt.\nErgebnis: ${JSON.stringify(res)}`);
+      results.push(
+        `✅ Tool "${call.name}" erfolgreich ausgeführt.\nErgebnis: ${JSON.stringify(res)}`,
+      );
     } catch (err: any) {
       results.push(`❌ Tool "${call.name}" Fehler: ${err.message}`);
     }
@@ -160,7 +172,9 @@ async function handleToolCalls(calls: { name: string; parameters: any }[]): Prom
 /* ========================================================================== */
 
 /** Aktualisiert Konfiguration dynamisch */
-export function updateOpenAIConfig(update: Partial<AIModuleConfig>): AIModuleConfig {
+export function updateOpenAIConfig(
+  update: Partial<AIModuleConfig>,
+): AIModuleConfig {
   openaiConfig = { ...openaiConfig, ...update };
   log("info", "OpenAI-Konfiguration aktualisiert", update);
   return openaiConfig;

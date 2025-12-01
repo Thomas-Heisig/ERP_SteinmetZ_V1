@@ -3,7 +3,7 @@
 
 /**
  * HealthMapper – wandelt Backend-Health-Responses in ein internes, typisiertes Modell.
- * 
+ *
  * Features:
  * - Robuste Daten-Normalisierung und Validierung
  * - Unterstützung für verschiedene Backend-Formate
@@ -13,12 +13,12 @@
  * - Caching-Mechanismen
  */
 
-import type { 
-  HealthStatus, 
-  HealthLevel, 
-  ComponentHealth, 
+import type {
+  HealthStatus,
+  HealthLevel,
+  ComponentHealth,
   HealthMetrics,
-  HealthStatusDetailed 
+  HealthStatusDetailed,
 } from "../../types";
 
 /**
@@ -30,18 +30,20 @@ export interface RawHealthResponse {
   status?: string;
   health?: string;
   state?: string;
-  
+
   // Komponenten
-  components?: Array<{
-    name: string;
-    status: string;
-    health?: string;
-    message?: string;
-    lastUpdate?: string | Date;
-    dependencies?: string[];
-    details?: Record<string, any>;
-  }> | Record<string, any>;
-  
+  components?:
+    | Array<{
+        name: string;
+        status: string;
+        health?: string;
+        message?: string;
+        lastUpdate?: string | Date;
+        dependencies?: string[];
+        details?: Record<string, any>;
+      }>
+    | Record<string, any>;
+
   // Metriken
   metrics?: {
     responseTime?: number;
@@ -52,12 +54,12 @@ export interface RawHealthResponse {
     diskUsage?: number;
     [key: string]: any;
   };
-  
+
   // Version & Timestamps
   version?: string;
   timestamp?: string | Date;
   lastChecked?: string | Date;
-  
+
   // Erweiterte Informationen
   details?: Record<string, any>;
   environment?: string;
@@ -80,7 +82,7 @@ export interface HealthMapperConfig {
 
 export class HealthMapper {
   private config: HealthMapperConfig;
-  
+
   constructor(config: HealthMapperConfig = {}) {
     this.config = {
       strictValidation: false,
@@ -96,7 +98,7 @@ export class HealthMapper {
         errorRate: 0.1, // 10%
         memoryUsage: 0.8, // 80%
       },
-      supportedEnvironments: ['production', 'staging', 'development'],
+      supportedEnvironments: ["production", "staging", "development"],
       ...config,
     };
   }
@@ -105,53 +107,55 @@ export class HealthMapper {
    * Hauptfunktion: konvertiert einen RawHealthResponse → HealthStatus
    * Mit erweiterter Fehlerbehandlung und Validierung
    */
-map(raw: RawHealthResponse): HealthStatusDetailed {
-  try {
-    const normalized = this.normalizeRawResponse(raw);
-    const overallStatus = this.calculateOverallStatus(normalized);
-    const components = this.mapComponents(normalized.components);
-    const metrics = this.calculateMetrics(normalized, components);
+  map(raw: RawHealthResponse): HealthStatusDetailed {
+    try {
+      const normalized = this.normalizeRawResponse(raw);
+      const overallStatus = this.calculateOverallStatus(normalized);
+      const components = this.mapComponents(normalized.components);
+      const metrics = this.calculateMetrics(normalized, components);
 
-    return {
-      overall: overallStatus,
-      components,
-      lastChecked: this.parseTimestamp(normalized.timestamp),
-      metrics,
-      version: normalized.version,
-      environment: normalized.environment,
-      instance: normalized.instance,
-      details: normalized.details,
-    };
-  } catch (error) {
-    console.error("Health mapping failed:", error);
-    return this.createFallbackStatus(error as Error);
+      return {
+        overall: overallStatus,
+        components,
+        lastChecked: this.parseTimestamp(normalized.timestamp),
+        metrics,
+        version: normalized.version,
+        environment: normalized.environment,
+        instance: normalized.instance,
+        details: normalized.details,
+      };
+    } catch (error) {
+      console.error("Health mapping failed:", error);
+      return this.createFallbackStatus(error as Error);
+    }
   }
-}
 
-private createFallbackStatus(error: Error): HealthStatusDetailed {
-  return {
-    overall: 'UNKNOWN',
-    components: [{
-      name: 'health-mapper',
-      status: 'UNHEALTHY',
-      message: `Mapping failed: ${error.message}`,
-      lastUpdate: new Date(),
-      dependencies: [],
-    }],
-    lastChecked: new Date(),
-    metrics: this.config.defaultMetrics as HealthMetrics,
-    details: { error: error.message },
-  };
-}
-
-
+  private createFallbackStatus(error: Error): HealthStatusDetailed {
+    return {
+      overall: "UNKNOWN",
+      components: [
+        {
+          name: "health-mapper",
+          status: "UNHEALTHY",
+          message: `Mapping failed: ${error.message}`,
+          lastUpdate: new Date(),
+          dependencies: [],
+        },
+      ],
+      lastChecked: new Date(),
+      metrics: this.config.defaultMetrics as HealthMetrics,
+      details: { error: error.message },
+    };
+  }
 
   /**
    * Normalisiert den Roh-Response für konsistente Verarbeitung
    */
-  private normalizeRawResponse(raw: RawHealthResponse): NormalizedHealthResponse {
+  private normalizeRawResponse(
+    raw: RawHealthResponse,
+  ): NormalizedHealthResponse {
     return {
-      status: raw.status || raw.health || raw.state || 'unknown',
+      status: raw.status || raw.health || raw.state || "unknown",
       components: this.normalizeComponents(raw.components),
       metrics: raw.metrics || {},
       version: raw.version,
@@ -165,21 +169,23 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
   /**
    * Normalisiert Komponenten in ein einheitliches Format
    */
-  private normalizeComponents(components: any): Array<RawHealthResponse['components']> {
+  private normalizeComponents(
+    components: any,
+  ): Array<RawHealthResponse["components"]> {
     if (!components) return [];
-    
+
     // Wenn Komponenten als Objekt kommen (z.B. { database: { status: 'up' } })
-    if (!Array.isArray(components) && typeof components === 'object') {
+    if (!Array.isArray(components) && typeof components === "object") {
       return Object.entries(components).map(([name, data]: [string, any]) => ({
         name,
-        status: data.status || data.health || 'unknown',
+        status: data.status || data.health || "unknown",
         message: data.message || data.details,
         lastUpdate: data.lastUpdate,
         dependencies: data.dependencies,
         details: data,
       }));
     }
-    
+
     // Wenn bereits Array
     return Array.isArray(components) ? components : [];
   }
@@ -187,27 +193,34 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
   /**
    * Berechnet den Gesamtstatus basierend auf Komponenten und Metriken
    */
-  private calculateOverallStatus(normalized: NormalizedHealthResponse): HealthLevel {
-    const componentStatuses = this.mapComponents(normalized.components).map(c => c.status);
-    
+  private calculateOverallStatus(
+    normalized: NormalizedHealthResponse,
+  ): HealthLevel {
+    const componentStatuses = this.mapComponents(normalized.components).map(
+      (c) => c.status,
+    );
+
     // Wenn eine Komponente UNHEALTHY ist, ist der Gesamtstatus UNHEALTHY
-    if (componentStatuses.some(status => status === 'UNHEALTHY')) {
-      return 'UNHEALTHY';
+    if (componentStatuses.some((status) => status === "UNHEALTHY")) {
+      return "UNHEALTHY";
     }
-    
+
     // Wenn eine Komponente DEGRADED ist, ist der Gesamtstatus DEGRADED
-    if (componentStatuses.some(status => status === 'DEGRADED')) {
-      return 'DEGRADED';
+    if (componentStatuses.some((status) => status === "DEGRADED")) {
+      return "DEGRADED";
     }
-    
+
     // Ansonsten basierend auf dem Hauptstatus
     const mappedStatus = this.mapLevel(normalized.status);
-    
+
     // Metriken-basierte Degradation
-    if (mappedStatus === 'HEALTHY' && this.hasDegradedMetrics(normalized.metrics)) {
-      return 'DEGRADED';
+    if (
+      mappedStatus === "HEALTHY" &&
+      this.hasDegradedMetrics(normalized.metrics)
+    ) {
+      return "DEGRADED";
     }
-    
+
     return mappedStatus;
   }
 
@@ -216,9 +229,10 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
    */
   private hasDegradedMetrics(metrics: any): boolean {
     const thresholds = this.config.componentThresholds!;
-    
+
     return (
-      (metrics.responseTime && metrics.responseTime > thresholds.responseTime!) ||
+      (metrics.responseTime &&
+        metrics.responseTime > thresholds.responseTime!) ||
       (metrics.errorRate && metrics.errorRate > thresholds.errorRate!) ||
       (metrics.memoryUsage && metrics.memoryUsage > thresholds.memoryUsage!)
     );
@@ -229,34 +243,34 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
    * Erweiterte Mapping-Logik für verschiedene Backend-Implementierungen.
    */
   private mapLevel(value?: string): HealthLevel {
-    const v = (value || 'unknown').toLowerCase().trim();
+    const v = (value || "unknown").toLowerCase().trim();
 
     const statusMap: Record<string, HealthLevel> = {
       // Healthy states
-      'healthy': 'HEALTHY',
-      'ok': 'HEALTHY',
-      'up': 'HEALTHY',
-      'running': 'HEALTHY',
-      'success': 'HEALTHY',
-      'green': 'HEALTHY',
-      
+      healthy: "HEALTHY",
+      ok: "HEALTHY",
+      up: "HEALTHY",
+      running: "HEALTHY",
+      success: "HEALTHY",
+      green: "HEALTHY",
+
       // Degraded states
-      'degraded': 'DEGRADED',
-      'warning': 'DEGRADED',
-      'yellow': 'DEGRADED',
-      'slow': 'DEGRADED',
-      'unstable': 'DEGRADED',
-      
+      degraded: "DEGRADED",
+      warning: "DEGRADED",
+      yellow: "DEGRADED",
+      slow: "DEGRADED",
+      unstable: "DEGRADED",
+
       // Unhealthy states
-      'unhealthy': 'UNHEALTHY',
-      'down': 'UNHEALTHY',
-      'error': 'UNHEALTHY',
-      'failed': 'UNHEALTHY',
-      'red': 'UNHEALTHY',
-      'critical': 'UNHEALTHY',
+      unhealthy: "UNHEALTHY",
+      down: "UNHEALTHY",
+      error: "UNHEALTHY",
+      failed: "UNHEALTHY",
+      red: "UNHEALTHY",
+      critical: "UNHEALTHY",
     };
 
-    return statusMap[v] || 'UNKNOWN';
+    return statusMap[v] || "UNKNOWN";
   }
 
   /**
@@ -268,13 +282,15 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
     }
 
     return rawComponents
-      .filter(component => component && component.name)
+      .filter((component) => component && component.name)
       .map((component) => ({
         name: String(component.name),
         status: this.mapLevel(component.status),
         message: component.message || this.generateComponentMessage(component),
         lastUpdate: this.parseTimestamp(component.lastUpdate),
-        dependencies: Array.isArray(component.dependencies) ? component.dependencies : [],
+        dependencies: Array.isArray(component.dependencies)
+          ? component.dependencies
+          : [],
         details: component.details || component,
       }));
   }
@@ -284,24 +300,27 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
    */
   private generateComponentMessage(component: any): string {
     if (component.message) return component.message;
-    
+
     const status = this.mapLevel(component.status);
     switch (status) {
-      case 'HEALTHY':
-        return 'Component is operating normally';
-      case 'DEGRADED':
-        return 'Component performance is degraded';
-      case 'UNHEALTHY':
-        return 'Component is experiencing issues';
+      case "HEALTHY":
+        return "Component is operating normally";
+      case "DEGRADED":
+        return "Component performance is degraded";
+      case "UNHEALTHY":
+        return "Component is experiencing issues";
       default:
-        return 'Component status is unknown';
+        return "Component status is unknown";
     }
   }
 
   /**
    * Berechnet konsolidierte Metriken aus Rohdaten und Komponenten
    */
-  private calculateMetrics(normalized: NormalizedHealthResponse, components: ComponentHealth[]): HealthMetrics {
+  private calculateMetrics(
+    normalized: NormalizedHealthResponse,
+    components: ComponentHealth[],
+  ): HealthMetrics {
     const baseMetrics = {
       ...this.config.defaultMetrics,
       ...normalized.metrics,
@@ -309,9 +328,10 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
 
     // Berechne aggregierte Metriken aus Komponenten
     const componentMetrics = this.aggregateComponentMetrics(components);
-    
+
     return {
-      responseTime: componentMetrics.avgResponseTime || baseMetrics.responseTime!,
+      responseTime:
+        componentMetrics.avgResponseTime || baseMetrics.responseTime!,
       errorRate: componentMetrics.maxErrorRate || baseMetrics.errorRate!,
       uptime: baseMetrics.uptime!,
       memoryUsage: componentMetrics.maxMemoryUsage || baseMetrics.memoryUsage!,
@@ -324,7 +344,9 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
   /**
    * Aggregiert Metriken aus Komponenten-Details
    */
-  private aggregateComponentMetrics(components: ComponentHealth[]): Partial<HealthMetrics> {
+  private aggregateComponentMetrics(
+    components: ComponentHealth[],
+  ): Partial<HealthMetrics> {
     const metrics = {
       avgResponseTime: 0,
       maxErrorRate: 0,
@@ -334,22 +356,25 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
       totalComponents: components.length,
     };
 
-    components.forEach(component => {
+    components.forEach((component) => {
       const details = component.details as any;
-      
+
       if (details?.responseTime) {
         metrics.avgResponseTime += details.responseTime;
       }
       if (details?.errorRate && details.errorRate > metrics.maxErrorRate) {
         metrics.maxErrorRate = details.errorRate;
       }
-      if (details?.memoryUsage && details.memoryUsage > metrics.maxMemoryUsage) {
+      if (
+        details?.memoryUsage &&
+        details.memoryUsage > metrics.maxMemoryUsage
+      ) {
         metrics.maxMemoryUsage = details.memoryUsage;
       }
       if (details?.cpuUsage && details.cpuUsage > metrics.maxCpuUsage) {
         metrics.maxCpuUsage = details.cpuUsage;
       }
-      if (component.status === 'HEALTHY') {
+      if (component.status === "HEALTHY") {
         metrics.healthyComponents++;
       }
     });
@@ -367,7 +392,7 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
   private parseTimestamp(timestamp: any): Date {
     try {
       if (timestamp instanceof Date) return timestamp;
-      if (typeof timestamp === 'string' || typeof timestamp === 'number') {
+      if (typeof timestamp === "string" || typeof timestamp === "number") {
         return new Date(timestamp);
       }
       return new Date();
@@ -376,21 +401,22 @@ private createFallbackStatus(error: Error): HealthStatusDetailed {
     }
   }
 
-
-
   /**
    * Validiert einen Health-Response vor dem Mapping
    */
-  validateResponse(raw: RawHealthResponse): { isValid: boolean; errors: string[] } {
+  validateResponse(raw: RawHealthResponse): {
+    isValid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     if (!raw) {
-      errors.push('Response is null or undefined');
+      errors.push("Response is null or undefined");
     }
 
     if (this.config.strictValidation) {
       if (!raw.status && !raw.health && !raw.state) {
-        errors.push('No status field found in response');
+        errors.push("No status field found in response");
       }
     }
 

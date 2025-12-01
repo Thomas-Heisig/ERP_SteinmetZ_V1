@@ -1,5 +1,5 @@
 // apps/backend/src/utils/globalApp.ts
-import type { Application } from 'express';
+import type { Application } from "express";
 
 /**
  * Setzt oder holt die globale Express-App-Instanz.
@@ -15,7 +15,7 @@ export class GlobalApp {
 
   static get(): Application {
     const app = GlobalApp._app ?? (globalThis as any).expressApp;
-    if (!app) throw new Error('GlobalApp: Express-Instanz nicht gesetzt');
+    if (!app) throw new Error("GlobalApp: Express-Instanz nicht gesetzt");
     return app;
   }
 }

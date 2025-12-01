@@ -2,7 +2,7 @@
  * errors.ts
  * ---------------------------------------------------------
  * Einheitliches Fehler-Handling für das ERP / KI-Backend.
- * 
+ *
  * Enthält:
  *  - Standardisierte Fehlerklassen mit Statuscodes
  *  - KI-spezifische Fehler (Provider, Parsing, Timeout)
@@ -22,7 +22,12 @@ export class BaseError extends Error {
   details?: Record<string, any>;
   timestamp: string;
 
-  constructor(message: string, code = "ERR_GENERIC", status = 500, details?: Record<string, any>) {
+  constructor(
+    message: string,
+    code = "ERR_GENERIC",
+    status = 500,
+    details?: Record<string, any>,
+  ) {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
@@ -49,8 +54,17 @@ export class BaseError extends Error {
 /* ========================================================================== */
 
 export class AIProviderError extends BaseError {
-  constructor(provider: string, message: string, details?: Record<string, any>) {
-    super(`KI-Provider-Fehler (${provider}): ${message}`, "ERR_AI_PROVIDER", 502, details);
+  constructor(
+    provider: string,
+    message: string,
+    details?: Record<string, any>,
+  ) {
+    super(
+      `KI-Provider-Fehler (${provider}): ${message}`,
+      "ERR_AI_PROVIDER",
+      502,
+      details,
+    );
   }
 }
 
@@ -66,14 +80,19 @@ export class AITimeoutError extends BaseError {
       `Zeitüberschreitung nach ${durationMs} ms${provider ? ` (Provider: ${provider})` : ""}`,
       "ERR_AI_TIMEOUT",
       504,
-      { durationMs, provider }
+      { durationMs, provider },
     );
   }
 }
 
 export class AITokenLimitError extends BaseError {
   constructor(limit: number, used: number) {
-    super(`Tokenlimit überschritten (${used}/${limit})`, "ERR_AI_TOKEN_LIMIT", 413, { limit, used });
+    super(
+      `Tokenlimit überschritten (${used}/${limit})`,
+      "ERR_AI_TOKEN_LIMIT",
+      413,
+      { limit, used },
+    );
   }
 }
 
@@ -82,8 +101,15 @@ export class AITokenLimitError extends BaseError {
 /* ========================================================================== */
 
 export class FileSystemError extends BaseError {
-  constructor(filePath: string, message: string, details?: Record<string, any>) {
-    super(`Dateifehler: ${message}`, "ERR_FILE_SYSTEM", 500, { filePath, ...details });
+  constructor(
+    filePath: string,
+    message: string,
+    details?: Record<string, any>,
+  ) {
+    super(`Dateifehler: ${message}`, "ERR_FILE_SYSTEM", 500, {
+      filePath,
+      ...details,
+    });
   }
 }
 
@@ -94,8 +120,17 @@ export class ConfigError extends BaseError {
 }
 
 export class ToolExecutionError extends BaseError {
-  constructor(toolName: string, message: string, details?: Record<string, any>) {
-    super(`Tool-Fehler (${toolName}): ${message}`, "ERR_TOOL_EXECUTION", 500, details);
+  constructor(
+    toolName: string,
+    message: string,
+    details?: Record<string, any>,
+  ) {
+    super(
+      `Tool-Fehler (${toolName}): ${message}`,
+      "ERR_TOOL_EXECUTION",
+      500,
+      details,
+    );
   }
 }
 
@@ -104,14 +139,27 @@ export class ToolExecutionError extends BaseError {
 /* ========================================================================== */
 
 export class APIError extends BaseError {
-  constructor(status: number, message: string, endpoint?: string, details?: Record<string, any>) {
-    super(`API-Fehler: ${message}`, "ERR_API", status, { endpoint, ...details });
+  constructor(
+    status: number,
+    message: string,
+    endpoint?: string,
+    details?: Record<string, any>,
+  ) {
+    super(`API-Fehler: ${message}`, "ERR_API", status, {
+      endpoint,
+      ...details,
+    });
   }
 }
 
 export class ValidationError extends BaseError {
   constructor(message: string, field?: string, details?: Record<string, any>) {
-    super(`Validierungsfehler${field ? ` in Feld "${field}"` : ""}: ${message}`, "ERR_VALIDATION", 400, details);
+    super(
+      `Validierungsfehler${field ? ` in Feld "${field}"` : ""}: ${message}`,
+      "ERR_VALIDATION",
+      400,
+      details,
+    );
   }
 }
 
@@ -135,7 +183,10 @@ export function toBaseError(err: unknown, context: string): BaseError {
   const message = err instanceof Error ? err.message : String(err);
   const wrapped = new BaseError(message, "ERR_UNKNOWN", 500, { context });
 
-  log("error", `❌ Fehler (${context})`, { message, stack: (err as Error)?.stack });
+  log("error", `❌ Fehler (${context})`, {
+    message,
+    stack: (err as Error)?.stack,
+  });
   return wrapped;
 }
 
@@ -178,7 +229,7 @@ export function errorResponse(
   res: Response,
   code: number,
   message: string,
-  err?: unknown
+  err?: unknown,
 ): Response {
   const baseError = toBaseError(err ?? new Error(message), "api");
   log("error", `[HTTP ${code}] ${message}`, {
@@ -214,7 +265,7 @@ export default {
   ToolExecutionError,
   APIError,
   ValidationError,
-  errorResponse,   // ✅ jetzt vorhanden
+  errorResponse, // ✅ jetzt vorhanden
   isBaseError,
   toBaseError,
   formatErrorResponse,

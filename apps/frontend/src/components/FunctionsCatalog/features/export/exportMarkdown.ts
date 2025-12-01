@@ -83,9 +83,7 @@ function buildMarkdown(node: NodeDetail): string {
     const start = node.source.lineStart;
     const end = node.source.lineEnd;
 
-    lines.push(
-      end ? `Zeilen: ${start}–${end}` : `Zeilen: ${start}`
-    );
+    lines.push(end ? `Zeilen: ${start}–${end}` : `Zeilen: ${start}`);
 
     lines.push("");
   }
@@ -194,7 +192,10 @@ export function exportNodeAsMarkdown(node: NodeDetail): void {
 /**
  * Exportiert beliebige Daten als Markdown.
  */
-export function exportAnyMarkdown(value: unknown, filename = "export.md"): void {
+export function exportAnyMarkdown(
+  value: unknown,
+  filename = "export.md",
+): void {
   const content = mdValue(value);
   triggerDownload(filename, content);
 }

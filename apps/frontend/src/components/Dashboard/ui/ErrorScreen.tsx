@@ -10,28 +10,29 @@ export interface ErrorScreenProps {
   title?: string;
   message?: string;
   onRetry?: () => void;
-  variant?: 'funny' | 'professional' | 'minimal';
+  variant?: "funny" | "professional" | "minimal";
   showDetails?: boolean;
 }
 
 /**
  * ErrorScreen – Lustige Fehleranzeige die den Frust nimmt.
- * 
+ *
  * "Fehler sind wie Katzen - sie machen was sie wollen!"
  */
-const ErrorScreen: React.FC<ErrorScreenProps> = ({ 
-  error, 
-  title, 
-  message, 
-  onRetry, 
-  variant = 'funny',
-  showDetails = true
+const ErrorScreen: React.FC<ErrorScreenProps> = ({
+  error,
+  title,
+  message,
+  onRetry,
+  variant = "funny",
+  showDetails = true,
 }) => {
   const { t } = useTranslation();
 
   // Lustige Fehler-Emojis und Icons
-  const errorEmojis = ['😵', '🤦', '💥', '🐛', '🦄', '👾', '🎪', '🎭'];
-  const randomEmoji = errorEmojis[Math.floor(Math.random() * errorEmojis.length)];
+  const errorEmojis = ["😵", "🤦", "💥", "🐛", "🦄", "👾", "🎪", "🎭"];
+  const randomEmoji =
+    errorEmojis[Math.floor(Math.random() * errorEmojis.length)];
 
   // Lustige Error-Messages
   const funnyTitles = [
@@ -42,7 +43,7 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
     "404 - Sinn für Humor nicht gefunden!",
     "Das war wohl nix!",
     "Da hat sich ein Bug eingeschlichen! 🐛",
-    "Absturz! Aber mit Stil! 💥"
+    "Absturz! Aber mit Stil! 💥",
   ];
 
   const funnyMessages = [
@@ -53,27 +54,33 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
     "Das war ein Test, ob du aufpasst! Bestanden! 😄",
     "Fehler? Wir nennen das 'kreative Abweichung'!",
     "Unser Algorithmus meditiert gerade. Kommt gleich zurück!",
-    "Das war Absicht! Wir testen deine Geduld! ✨"
+    "Das war Absicht! Wir testen deine Geduld! ✨",
   ];
 
-  const randomTitle = funnyTitles[Math.floor(Math.random() * funnyTitles.length)];
-  const randomMessage = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+  const randomTitle =
+    funnyTitles[Math.floor(Math.random() * funnyTitles.length)];
+  const randomMessage =
+    funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
 
-  const displayTitle = title || (variant === 'funny' ? randomTitle : t('errorScreen.defaultTitle'));
-  const displayMessage = message || (variant === 'funny' ? randomMessage : t('errorScreen.defaultMessage'));
+  const displayTitle =
+    title ||
+    (variant === "funny" ? randomTitle : t("errorScreen.defaultTitle"));
+  const displayMessage =
+    message ||
+    (variant === "funny" ? randomMessage : t("errorScreen.defaultMessage"));
 
   // Error-Details aufbereiten
   const errorDetails = React.useMemo(() => {
     if (!error) return null;
-    
-    if (typeof error === 'string') {
+
+    if (typeof error === "string") {
       return error;
     }
-    
+
     if (error instanceof Error) {
       return `${error.name}: ${error.message}`;
     }
-    
+
     try {
       return JSON.stringify(error, null, 2);
     } catch {
@@ -90,10 +97,11 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
     "Reset-Knopf drücken!",
     "Weiter geht's!",
     "Noch ein Versuch!",
-    "Das schaffen wir! 💪"
+    "Das schaffen wir! 💪",
   ];
 
-  const randomRetryText = retryButtonTexts[Math.floor(Math.random() * retryButtonTexts.length)];
+  const randomRetryText =
+    retryButtonTexts[Math.floor(Math.random() * retryButtonTexts.length)];
 
   const handleRetry = () => {
     // Kleine Verzögerung für bessere UX
@@ -103,38 +111,38 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
   };
 
   const screenClasses = cls(
-    'error-screen',
+    "error-screen",
     `error-screen--${variant}`,
     {
-      'error-screen--retry-available': !!onRetry,
-      'error-screen--show-details': showDetails
+      "error-screen--retry-available": !!onRetry,
+      "error-screen--show-details": showDetails,
     },
-    undefined
+    undefined,
   );
 
   return (
     <div className={screenClasses}>
       <div className="error-screen__container">
         {/* Haupt-Emoji/Icon */}
-        <div className="error-screen__emoji" role="img" aria-label="Error Emoji">
+        <div
+          className="error-screen__emoji"
+          role="img"
+          aria-label="Error Emoji"
+        >
           {randomEmoji}
         </div>
 
         {/* Titel und Nachricht */}
         <div className="error-screen__content">
-          <h2 className="error-screen__title">
-            {displayTitle}
-          </h2>
-          
-          <p className="error-screen__message">
-            {displayMessage}
-          </p>
+          <h2 className="error-screen__title">{displayTitle}</h2>
+
+          <p className="error-screen__message">{displayMessage}</p>
 
           {/* Lustiger Fortschrittsbalken (fake) */}
-          {variant === 'funny' && (
+          {variant === "funny" && (
             <div className="error-screen__progress">
               <div className="error-screen__progress-bar">
-                <div 
+                <div
                   className="error-screen__progress-fill"
                   style={{ width: `${Math.random() * 30 + 10}%` }}
                 />
@@ -149,7 +157,9 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
           {showDetails && errorDetails && (
             <details className="error-screen__details">
               <summary className="error-screen__details-summary">
-                {variant === 'funny' ? '🤓 Technische Details (für Nerds)' : 'Technische Details'}
+                {variant === "funny"
+                  ? "🤓 Technische Details (für Nerds)"
+                  : "Technische Details"}
               </summary>
               <pre className="error-screen__details-content">
                 {errorDetails}
@@ -164,36 +174,47 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
                 className="error-screen__retry-button"
                 onClick={handleRetry}
               >
-                <span className="error-screen__retry-emoji" role="img" aria-label="Retry">
+                <span
+                  className="error-screen__retry-emoji"
+                  role="img"
+                  aria-label="Retry"
+                >
                   🔄
                 </span>
-                {variant === 'funny' ? randomRetryText : t('errorScreen.retry')}
+                {variant === "funny" ? randomRetryText : t("errorScreen.retry")}
               </button>
             )}
-            
+
             <button
               className="error-screen__action-button"
               onClick={() => window.location.reload()}
             >
-              <span role="img" aria-label="Refresh">🔄</span>
+              <span role="img" aria-label="Refresh">
+                🔄
+              </span>
               Seite neu laden
             </button>
-            
+
             <button
               className="error-screen__action-button"
               onClick={() => window.history.back()}
             >
-              <span role="img" aria-label="Go back">⬅️</span>
+              <span role="img" aria-label="Go back">
+                ⬅️
+              </span>
               Zurück gehen
             </button>
           </div>
 
           {/* Lustiger Footer */}
-          {variant === 'funny' && (
+          {variant === "funny" && (
             <footer className="error-screen__footer">
               <p className="error-screen__footer-text">
-                "Fehler sind wie Katzen - sie machen was sie wollen!" 
-                <span role="img" aria-label="cat"> 😼</span>
+                "Fehler sind wie Katzen - sie machen was sie wollen!"
+                <span role="img" aria-label="cat">
+                  {" "}
+                  😼
+                </span>
               </p>
             </footer>
           )}

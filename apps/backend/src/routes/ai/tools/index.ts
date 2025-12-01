@@ -4,10 +4,10 @@
  * Kompatibel mit TypeScript und Build (ESM .js/.ts).
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
-import { toolRegistry } from './registry.js';
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { toolRegistry } from "./registry.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,10 +21,10 @@ const __dirname = path.dirname(__filename);
  */
 function isToolModule(filename: string): boolean {
   return (
-    (filename.endsWith('.ts') || filename.endsWith('.js')) &&
-    !filename.includes('registry') &&
-    !filename.includes('index') &&
-    !filename.startsWith('.')
+    (filename.endsWith(".ts") || filename.endsWith(".js")) &&
+    !filename.includes("registry") &&
+    !filename.includes("index") &&
+    !filename.startsWith(".")
   );
 }
 
@@ -56,11 +56,13 @@ async function importToolModule(filePath: string) {
     const mod = await import(fileUrl);
     const fileName = path.basename(filePath);
 
-    if (typeof mod.registerTools === 'function') {
+    if (typeof mod.registerTools === "function") {
       await mod.registerTools(toolRegistry);
       console.log(`🧰  Toolmodul geladen: ${fileName}`);
     } else {
-      console.warn(`⚠️  Modul '${fileName}' enthält keine exportierte Funktion registerTools().`);
+      console.warn(
+        `⚠️  Modul '${fileName}' enthält keine exportierte Funktion registerTools().`,
+      );
     }
   } catch (err) {
     console.error(`❌ Fehler beim Laden von ${filePath}:`, err);
@@ -73,7 +75,7 @@ async function importToolModule(filePath: string) {
 
 /**
  * Lädt alle Tools im aktuellen Verzeichnis (und Unterordnern, falls aktiviert).
- * 
+ *
  * @param filter - optional: nur bestimmte Module laden (z. B. ['file', 'erp'])
  * @param recursive - ob Unterverzeichnisse mitgeladen werden sollen
  */
@@ -81,12 +83,14 @@ export async function loadAllTools(filter?: string[], recursive = true) {
   const dir = __dirname;
   const toolFiles = await scanToolFiles(dir, recursive);
 
-  const candidates = toolFiles.filter(f => {
+  const candidates = toolFiles.filter((f) => {
     if (!filter) return true;
-    return filter.some(p => f.toLowerCase().includes(p.toLowerCase()));
+    return filter.some((p) => f.toLowerCase().includes(p.toLowerCase()));
   });
 
-  console.log(`🔎 Lade ${candidates.length} Toolmodule${filter ? ` (Filter: ${filter.join(', ')})` : ''}...`);
+  console.log(
+    `🔎 Lade ${candidates.length} Toolmodule${filter ? ` (Filter: ${filter.join(", ")})` : ""}...`,
+  );
 
   for (const file of candidates) {
     await importToolModule(file);
@@ -105,10 +109,13 @@ export async function loadAllTools(filter?: string[], recursive = true) {
  *   AI_AUTOLOAD_TOOLS=0
  * Im Entwicklungsmodus unterstützt Hot-Reload durch setInterval().
  */
-if (process.env.AI_AUTOLOAD_TOOLS !== '0') {
+if (process.env.AI_AUTOLOAD_TOOLS !== "0") {
   await loadAllTools();
 
-  if (process.env.NODE_ENV === 'development' && process.env.AI_HOT_RELOAD === '1') {
+  if (
+    process.env.NODE_ENV === "development" &&
+    process.env.AI_HOT_RELOAD === "1"
+  ) {
     const reloadInterval = Number(process.env.AI_HOT_RELOAD_INTERVAL ?? 10000);
     console.log(`♻️  Hot-Reload aktiv (alle ${reloadInterval / 1000}s).`);
     setInterval(async () => {

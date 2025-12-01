@@ -6,11 +6,7 @@
  * Enthält keine Geschäftslogik, ausschließlich modellhafte Strukturen.
  */
 
-import type {
-  DashboardNode,
-  FormField,
-  ValidationRule,
-} from "../../types";
+import type { DashboardNode, FormField, ValidationRule } from "../../types";
 
 /* ============================================================
    Layout-Typen
@@ -92,5 +88,8 @@ export interface LayoutEngineInterface {
   fromNodes(nodes: DashboardNode[]): GeneratedLayout;
   autoLayout(nodes: DashboardNode[]): GeneratedLayout;
   byCategory(nodes: DashboardNode[]): Record<string, GeneratedLayout>;
-  mergeLayouts(base: GeneratedLayout, overrides: Partial<GeneratedLayout>): GeneratedLayout;
+  mergeLayouts(
+    base: GeneratedLayout,
+    overrides: Partial<GeneratedLayout>,
+  ): GeneratedLayout;
 }

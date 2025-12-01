@@ -2,7 +2,7 @@
  * modelService.ts
  * ---------------------------------------------------------
  * Zentrale Verwaltung aller registrierten KI-Modelle im ERP_SteinmetZ_V1-System.
- * 
+ *
  * Aufgaben:
  *  - Modelle & Provider erfassen, aktivieren, deaktivieren
  *  - Status- & Leistungsberichte
@@ -18,7 +18,10 @@ import type { AIModuleConfig } from "../types/types.js";
 import { openaiConfig } from "../providers/openaiProvider.js";
 import { vertexConfig } from "../providers/vertexAIProvider.js";
 import { ollamaConfig, listOllamaModels } from "../providers/ollamaProvider.js";
-import { localProviderConfig, scanLocalModels } from "../providers/localProvider.js";
+import {
+  localProviderConfig,
+  scanLocalModels,
+} from "../providers/localProvider.js";
 import { hfConfig } from "../providers/huggingfaceProvider.js";
 import { azureConfig } from "../providers/azureOpenAIProvider.js";
 import { customConfig } from "../providers/customProvider.js";

@@ -24,7 +24,7 @@ export function useDashboardSearch(): UseDashboardSearch {
     (query: string) => {
       dispatch({ type: "SET_SEARCH_QUERY", payload: query });
     },
-    [dispatch]
+    [dispatch],
   );
 
   /** Filter setzen */
@@ -32,7 +32,7 @@ export function useDashboardSearch(): UseDashboardSearch {
     (filters: SearchFilters) => {
       dispatch({ type: "SET_SEARCH_FILTERS", payload: filters });
     },
-    [dispatch]
+    [dispatch],
   );
 
   /**
@@ -63,7 +63,7 @@ export function useDashboardSearch(): UseDashboardSearch {
         });
       }
     },
-    [dispatch, manager, safeFilters]
+    [dispatch, manager, safeFilters],
   );
 
   /** Suche vollständig löschen */

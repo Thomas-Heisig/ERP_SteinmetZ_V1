@@ -10,7 +10,8 @@ import * as os from "os";
 /* -------------------------------------------------------------------------- */
 
 const DEFAULT_AI_PROVIDER = process.env.AI_PROVIDER || "ollama";
-const DEFAULT_AI_MODEL = process.env.AI_DEFAULT_MODEL || process.env.OPENAI_MODEL || "qwen3:4b";
+const DEFAULT_AI_MODEL =
+  process.env.AI_DEFAULT_MODEL || process.env.OPENAI_MODEL || "qwen3:4b";
 
 /* -------------------------------------------------------------------------- */
 /*                           TYPE‑DEFINITIONS                                 */
@@ -392,7 +393,7 @@ class SmartModelSelector {
    */
   async selectBestModel(
     operation: string,
-    priority: "speed" | "accuracy" | "balanced" = "balanced"
+    priority: "speed" | "accuracy" | "balanced" = "balanced",
   ): Promise<ModelConfig> {
     // 1️⃣ verfügbare & gesunde Modelle filtern
     const availableModels = this.models.filter((model) => {
@@ -420,13 +421,17 @@ class SmartModelSelector {
 
       // Prioritäts‑Gewichtung
       if (priority === "speed") {
-        score += model.speed === "fast" ? 30 : model.speed === "medium" ? 15 : 0;
+        score +=
+          model.speed === "fast" ? 30 : model.speed === "medium" ? 15 : 0;
       } else if (priority === "accuracy") {
-        score += model.accuracy === "high" ? 40 : model.accuracy === "medium" ? 20 : 0;
+        score +=
+          model.accuracy === "high" ? 40 : model.accuracy === "medium" ? 20 : 0;
       } else {
         // balanced
-        score += model.accuracy === "high" ? 20 : model.accuracy === "medium" ? 10 : 0;
-        score += model.speed === "fast" ? 20 : model.speed === "medium" ? 10 : 0;
+        score +=
+          model.accuracy === "high" ? 20 : model.accuracy === "medium" ? 10 : 0;
+        score +=
+          model.speed === "fast" ? 20 : model.speed === "medium" ? 10 : 0;
       }
 
       return { model, score };
@@ -439,7 +444,7 @@ class SmartModelSelector {
   updatePerformanceMetrics(
     modelName: string,
     success: boolean,
-    responseTime: number
+    responseTime: number,
   ) {
     const cur = this.performanceMetrics.get(modelName) || {
       success: 0,
@@ -560,7 +565,7 @@ export class DatabaseTool {
 
   async getTotalNodeCount(): Promise<number> {
     const res = (await db.get(
-      "SELECT COUNT(*) as count FROM functions_nodes"
+      "SELECT COUNT(*) as count FROM functions_nodes",
     )) as { count?: number } | undefined;
     return res?.count ?? 0;
   }
@@ -573,7 +578,7 @@ export class DatabaseTool {
         ORDER BY created_at DESC 
         LIMIT ?
       `,
-        [limit]
+        [limit],
       )) as Array<{
         id: string;
         operation: string;
@@ -616,7 +621,7 @@ export class DatabaseTool {
         operation.status || "pending",
         operation.progress || 0,
         operation.created_at || new Date().toISOString(),
-      ]
+      ],
     );
 
     return id;
@@ -625,7 +630,7 @@ export class DatabaseTool {
   async updateBatchProgress(
     id: string,
     progress: number,
-    status?: string
+    status?: string,
   ): Promise<void> {
     const updates: string[] = ["progress = ?"];
     const params: any[] = [progress];
@@ -648,7 +653,7 @@ export class DatabaseTool {
       SET ${updates.join(", ")} 
       WHERE id = ?
     `,
-      params
+      params,
     );
   }
 
@@ -660,7 +665,7 @@ export class DatabaseTool {
       DELETE FROM batch_operations 
       WHERE created_at < ?
     `,
-      [cutoff.toISOString()]
+      [cutoff.toISOString()],
     );
   }
 }
@@ -719,7 +724,7 @@ export class AiAnnotatorService extends EventEmitter {
 
     this.on("model_health_changed", (modelName: string, healthy: boolean) => {
       console.log(
-        `Model ${modelName} health changed: ${healthy ? "healthy" : "unhealthy"}`
+        `Model ${modelName} health changed: ${healthy ? "healthy" : "unhealthy"}`,
       );
     });
   }
@@ -757,8 +762,8 @@ export class AiAnnotatorService extends EventEmitter {
       dbHealthy && allProvidersHealthy
         ? "healthy"
         : dbHealthy
-        ? "degraded"
-        : "unhealthy";
+          ? "degraded"
+          : "unhealthy";
 
     this.healthStatus = {
       overall,
@@ -784,7 +789,8 @@ export class AiAnnotatorService extends EventEmitter {
 
     if (env === "openai" && process.env.OPENAI_API_KEY) return "openai";
     if (env === "ollama") return "ollama";
-    if (env === "anthropic" && process.env.ANTHROPIC_API_KEY) return "anthropic";
+    if (env === "anthropic" && process.env.ANTHROPIC_API_KEY)
+      return "anthropic";
     if (env === "local" && process.env.LOCAL_MODEL_PATH) return "local";
     if (env === "hybrid") return "hybrid";
 
@@ -806,7 +812,8 @@ export class AiAnnotatorService extends EventEmitter {
       }
     };
 
-    const openaiHealthCheck = async (): Promise<boolean> => !!process.env.OPENAI_API_KEY;
+    const openaiHealthCheck = async (): Promise<boolean> =>
+      !!process.env.OPENAI_API_KEY;
     const anthropicHealthCheck = async (): Promise<boolean> =>
       !!process.env.ANTHROPIC_API_KEY;
 
@@ -962,10 +969,13 @@ export class AiAnnotatorService extends EventEmitter {
       enabled: process.env.ERROR_CORRECTION !== "false",
       maxRetries: parseInt(process.env.MAX_RETRIES || "3"),
       retryDelay: parseInt(process.env.RETRY_DELAY_MS || "1000"),
-      fallbackModels: (process.env.FALLBACK_MODELS ||
-        "qwen3:4b,fallback").split(","),
-      validationRules: (process.env.VALIDATION_RULES ||
-        "json,required_fields,business_area,confidence").split(","),
+      fallbackModels: (
+        process.env.FALLBACK_MODELS || "qwen3:4b,fallback"
+      ).split(","),
+      validationRules: (
+        process.env.VALIDATION_RULES ||
+        "json,required_fields,business_area,confidence"
+      ).split(","),
       autoCorrect: process.env.AUTO_CORRECT === "true",
       qualityThreshold: parseFloat(process.env.QUALITY_THRESHOLD || "0.6"),
     };
@@ -992,13 +1002,18 @@ export class AiAnnotatorService extends EventEmitter {
       .map((m) => m.name);
 
     const recommendations: string[] = [];
-    if (!availableModels.includes("qwen3:8b") && !availableModels.includes("qwen3:4b")) {
+    if (
+      !availableModels.includes("qwen3:8b") &&
+      !availableModels.includes("qwen3:4b")
+    ) {
       recommendations.push(
-        "Installieren Sie qwen3:4b (oder qwen3:8b) für bessere Performance"
+        "Installieren Sie qwen3:4b (oder qwen3:8b) für bessere Performance",
       );
     }
     if (this.healthStatus.overall === "degraded") {
-      recommendations.push("Einige AI‑Provider sind nicht erreichbar – prüfen Sie die Konfiguration");
+      recommendations.push(
+        "Einige AI‑Provider sind nicht erreichbar – prüfen Sie die Konfiguration",
+      );
     }
 
     return {
@@ -1009,7 +1024,10 @@ export class AiAnnotatorService extends EventEmitter {
     };
   }
 
-  async optimizeConfiguration(): Promise<{ changes: string[]; optimized: boolean }> {
+  async optimizeConfiguration(): Promise<{
+    changes: string[];
+    optimized: boolean;
+  }> {
     const changes: string[] = [];
     let optimized = false;
 
@@ -1030,7 +1048,7 @@ export class AiAnnotatorService extends EventEmitter {
     const best = await this.modelSelector.selectBestModel("meta");
     if (best && best.name !== this.currentModel) {
       changes.push(
-        `Wechsele Modell von ${this.currentModel} zu ${best.name} für bessere Leistung`
+        `Wechsele Modell von ${this.currentModel} zu ${best.name} für bessere Leistung`,
       );
       this.currentModel = best.name;
       optimized = true;
@@ -1124,7 +1142,7 @@ export class AiAnnotatorService extends EventEmitter {
         new Date().toISOString(),
         "completed",
         id,
-      ]
+      ],
     );
   }
 
@@ -1156,17 +1174,23 @@ export class AiAnnotatorService extends EventEmitter {
 
   async generateMeta(
     node: NodeForAnnotation,
-    retryCount = 0
+    retryCount = 0,
   ): Promise<GeneratedMeta> {
     // Echtzeit‑Fallback, wenn Provider "none" ist
-    if (this.provider === "none" || retryCount >= this.errorCorrection.maxRetries) {
+    if (
+      this.provider === "none" ||
+      retryCount >= this.errorCorrection.maxRetries
+    ) {
       return this.generateEnhancedFallbackMeta(node);
     }
 
     const start = Date.now();
 
     try {
-      const model = await this.modelSelector.selectBestModel("meta", "balanced");
+      const model = await this.modelSelector.selectBestModel(
+        "meta",
+        "balanced",
+      );
       const prompt = model.capabilities.includes("complex")
         ? this.buildEnhancedMetaPrompt(node)
         : this.buildSimpleMetaPrompt(node);
@@ -1176,9 +1200,14 @@ export class AiAnnotatorService extends EventEmitter {
 
       if (!validation.valid && this.errorCorrection.autoCorrect) {
         console.warn(
-          `Meta‑Validierung fehlgeschlagen für ${node.id}, versuche Korrektur`
+          `Meta‑Validierung fehlgeschlagen für ${node.id}, versuche Korrektur`,
         );
-        return await this.correctMetaGeneration(node, meta, validation.errors, retryCount);
+        return await this.correctMetaGeneration(
+          node,
+          meta,
+          validation.errors,
+          retryCount,
+        );
       }
 
       // Qualitäts‑Score basierend auf Confidence & optionaler Bewertung
@@ -1187,7 +1216,7 @@ export class AiAnnotatorService extends EventEmitter {
       this.modelSelector.updatePerformanceMetrics(
         model.name,
         true,
-        Date.now() - start
+        Date.now() - start,
       );
 
       return {
@@ -1203,15 +1232,18 @@ export class AiAnnotatorService extends EventEmitter {
     } catch (error) {
       console.warn(
         `AI‑Aufruf für ${node.id} fehlgeschlagen (Versuch ${retryCount + 1}):`,
-        error
+        error,
       );
       this.modelSelector.updatePerformanceMetrics(
         this.currentModel,
         false,
-        Date.now() - start
+        Date.now() - start,
       );
 
-      if (this.errorCorrection.enabled && retryCount < this.errorCorrection.maxRetries) {
+      if (
+        this.errorCorrection.enabled &&
+        retryCount < this.errorCorrection.maxRetries
+      ) {
         await this.delay(this.errorCorrection.retryDelay * (retryCount + 1));
         return this.generateMeta(node, retryCount + 1);
       }
@@ -1220,8 +1252,14 @@ export class AiAnnotatorService extends EventEmitter {
     }
   }
 
-  async generateRule(node: NodeForAnnotation, retryCount = 0): Promise<DashboardRule> {
-    if (this.provider === "none" || retryCount >= this.errorCorrection.maxRetries) {
+  async generateRule(
+    node: NodeForAnnotation,
+    retryCount = 0,
+  ): Promise<DashboardRule> {
+    if (
+      this.provider === "none" ||
+      retryCount >= this.errorCorrection.maxRetries
+    ) {
       return this.generateFallbackRule(node);
     }
 
@@ -1231,11 +1269,21 @@ export class AiAnnotatorService extends EventEmitter {
       const prompt = this.buildRulePrompt(node);
       const raw = await this.callAI(prompt, "rule");
       const rule = this.parseRuleJson(raw);
-      this.modelSelector.updatePerformanceMetrics(this.currentModel, true, Date.now() - start);
+      this.modelSelector.updatePerformanceMetrics(
+        this.currentModel,
+        true,
+        Date.now() - start,
+      );
       return rule;
     } catch (error) {
-      console.warn(`Rule‑Generation fehlgeschlagen für ${node.id} (Versuch ${retryCount + 1}):`, error);
-      if (this.errorCorrection.enabled && retryCount < this.errorCorrection.maxRetries) {
+      console.warn(
+        `Rule‑Generation fehlgeschlagen für ${node.id} (Versuch ${retryCount + 1}):`,
+        error,
+      );
+      if (
+        this.errorCorrection.enabled &&
+        retryCount < this.errorCorrection.maxRetries
+      ) {
         await this.delay(this.errorCorrection.retryDelay * (retryCount + 1));
         return this.generateRule(node, retryCount + 1);
       }
@@ -1243,8 +1291,14 @@ export class AiAnnotatorService extends EventEmitter {
     }
   }
 
-  async generateFormSpec(node: NodeForAnnotation, retryCount = 0): Promise<FormSpec> {
-    if (this.provider === "none" || retryCount >= this.errorCorrection.maxRetries) {
+  async generateFormSpec(
+    node: NodeForAnnotation,
+    retryCount = 0,
+  ): Promise<FormSpec> {
+    if (
+      this.provider === "none" ||
+      retryCount >= this.errorCorrection.maxRetries
+    ) {
       return this.generateFallbackForm(node);
     }
 
@@ -1254,11 +1308,21 @@ export class AiAnnotatorService extends EventEmitter {
       const prompt = this.buildFormPrompt(node);
       const raw = await this.callAI(prompt, "form");
       const form = this.parseFormJson(raw);
-      this.modelSelector.updatePerformanceMetrics(this.currentModel, true, Date.now() - start);
+      this.modelSelector.updatePerformanceMetrics(
+        this.currentModel,
+        true,
+        Date.now() - start,
+      );
       return form;
     } catch (error) {
-      console.warn(`Form‑Spec‑Generation fehlgeschlagen für ${node.id} (Versuch ${retryCount + 1}):`, error);
-      if (this.errorCorrection.enabled && retryCount < this.errorCorrection.maxRetries) {
+      console.warn(
+        `Form‑Spec‑Generation fehlgeschlagen für ${node.id} (Versuch ${retryCount + 1}):`,
+        error,
+      );
+      if (
+        this.errorCorrection.enabled &&
+        retryCount < this.errorCorrection.maxRetries
+      ) {
         await this.delay(this.errorCorrection.retryDelay * (retryCount + 1));
         return this.generateFormSpec(node, retryCount + 1);
       }
@@ -1328,7 +1392,10 @@ export class AiAnnotatorService extends EventEmitter {
           throw new Error(`Unsupported provider: ${model.provider}`);
       }
     } catch (error) {
-      console.warn(`AI‑Call mit Modell ${model.name} fehlgeschlagen – Versuche Fallback`, error);
+      console.warn(
+        `AI‑Call mit Modell ${model.name} fehlgeschlagen – Versuche Fallback`,
+        error,
+      );
       return await this.fallbackAI(prompt, operation, error as Error);
     }
   }
@@ -1337,57 +1404,84 @@ export class AiAnnotatorService extends EventEmitter {
    * Call AI using a provided ModelConfig instance. This is used in places where
    * the SmartModelSelector returns a chosen model (e.g., for corrections).
    */
-private async callAIWithModel(
-  prompt: string,
-  model: ModelConfig,
-  operation: string = "meta"
-): Promise<string> {
-  const start = Date.now();
-  
-  // Sofortiger Fallback für "none" Provider
-  if (model.provider === "none") {
-    console.log(`[callAIWithModel] Provider "none" - verwende Fallback für ${operation}`);
-    return this.generateLocalFallback(operation);
-  }
-  
-  try {
-    switch (model.provider) {
-      case "openai": {
-        const res = await this.callOpenAI(prompt, model.name);
-        this.modelSelector.updatePerformanceMetrics(model.name, true, Date.now() - start);
-        return res;
-      }
-      case "ollama": {
-        const res = await this.callOllama(prompt, model.name);
-        this.modelSelector.updatePerformanceMetrics(model.name, true, Date.now() - start);
-        return res;
-      }
-      case "anthropic": {
-        const res = await this.callAnthropic(prompt, model.name);
-        this.modelSelector.updatePerformanceMetrics(model.name, true, Date.now() - start);
-        return res;
-      }
-      case "local": {
-        const res = await this.callLocal(prompt);
-        this.modelSelector.updatePerformanceMetrics(model.name, true, Date.now() - start);
-        return res;
-      }
-      default:
-        throw new Error(`Unsupported provider: ${model.provider}`);
+  private async callAIWithModel(
+    prompt: string,
+    model: ModelConfig,
+    operation: string = "meta",
+  ): Promise<string> {
+    const start = Date.now();
+
+    // Sofortiger Fallback für "none" Provider
+    if (model.provider === "none") {
+      console.log(
+        `[callAIWithModel] Provider "none" - verwende Fallback für ${operation}`,
+      );
+      return this.generateLocalFallback(operation);
     }
-  } catch (error) {
-    console.warn(`[callAIWithModel] Aufruf mit Modell ${model.name} fehlgeschlagen:`, error);
-    this.modelSelector.updatePerformanceMetrics(model.name, false, Date.now() - start);
-    return this.generateLocalFallback(operation);
+
+    try {
+      switch (model.provider) {
+        case "openai": {
+          const res = await this.callOpenAI(prompt, model.name);
+          this.modelSelector.updatePerformanceMetrics(
+            model.name,
+            true,
+            Date.now() - start,
+          );
+          return res;
+        }
+        case "ollama": {
+          const res = await this.callOllama(prompt, model.name);
+          this.modelSelector.updatePerformanceMetrics(
+            model.name,
+            true,
+            Date.now() - start,
+          );
+          return res;
+        }
+        case "anthropic": {
+          const res = await this.callAnthropic(prompt, model.name);
+          this.modelSelector.updatePerformanceMetrics(
+            model.name,
+            true,
+            Date.now() - start,
+          );
+          return res;
+        }
+        case "local": {
+          const res = await this.callLocal(prompt);
+          this.modelSelector.updatePerformanceMetrics(
+            model.name,
+            true,
+            Date.now() - start,
+          );
+          return res;
+        }
+        default:
+          throw new Error(`Unsupported provider: ${model.provider}`);
+      }
+    } catch (error) {
+      console.warn(
+        `[callAIWithModel] Aufruf mit Modell ${model.name} fehlgeschlagen:`,
+        error,
+      );
+      this.modelSelector.updatePerformanceMetrics(
+        model.name,
+        false,
+        Date.now() - start,
+      );
+      return this.generateLocalFallback(operation);
+    }
   }
-}
 
   /** Aufruf bei OpenAI (Chat‑Completion) */
   private async callOpenAI(prompt: string, model: string): Promise<string> {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) throw new Error("OPENAI_API_KEY nicht gesetzt");
 
-    const url = process.env.OPENAI_API_URL || "https://api.openai.com/v1/chat/completions";
+    const url =
+      process.env.OPENAI_API_URL ||
+      "https://api.openai.com/v1/chat/completions";
     const body = {
       model,
       messages: [{ role: "user", content: prompt }],
@@ -1411,7 +1505,9 @@ private async callAIWithModel(
 
     const data = await resp.json();
     // Immer den Content‑Teil zurückgeben (auch bei Legacy‑Antworten)
-    return data?.choices?.[0]?.message?.content ?? data?.choices?.[0]?.text ?? "{}";
+    return (
+      data?.choices?.[0]?.message?.content ?? data?.choices?.[0]?.text ?? "{}"
+    );
   }
 
   /** Aufruf bei Ollama */
@@ -1421,10 +1517,13 @@ private async callAIWithModel(
     // Sicherstellen, dass das Modell vorhanden ist (wenn nicht, pull)
     try {
       const tagsResp = await fetch(`${baseUrl}/api/tags`);
-      if (!tagsResp.ok) throw new Error(`Ollama /api/tags HTTP ${tagsResp.status}`);
+      if (!tagsResp.ok)
+        throw new Error(`Ollama /api/tags HTTP ${tagsResp.status}`);
 
       const tags = await tagsResp.json();
-      const available = Array.isArray(tags.models) ? tags.models.map((m: any) => m.name) : [];
+      const available = Array.isArray(tags.models)
+        ? tags.models.map((m: any) => m.name)
+        : [];
 
       if (!available.includes(model)) {
         console.warn(`[ollama] Modell "${model}" fehlt – Pull wird gestartet`);
@@ -1492,7 +1591,8 @@ private async callAIWithModel(
         model,
         max_tokens: 4000,
         temperature: 0.1,
-        system: "Du bist ein präziser Assistent, immer gültiges JSON zurückgebend.",
+        system:
+          "Du bist ein präziser Assistent, immer gültiges JSON zurückgebend.",
         messages: [{ role: "user", content: prompt }],
       }),
     });
@@ -1516,16 +1616,29 @@ private async callAIWithModel(
         tags: ["lokal", "generiert"],
         businessArea: "Allgemein",
         piiClass: "none",
-        quality: { confidence: 0.5, generatedBy: "fallback", modelUsed: "local" },
+        quality: {
+          confidence: 0.5,
+          generatedBy: "fallback",
+          modelUsed: "local",
+        },
       });
     }
     return "{}";
   }
 
   /** Fallback‑Strategie, falls das ausgewählte Modell nicht funktioniert */
-  private async fallbackAI(prompt: string, operation: string, originalError: any): Promise<string> {
-    console.warn(`Fallback für ${operation} wegen:`, originalError?.message ?? originalError);
-    const fallbackIdx = this.errorCorrection.fallbackModels.indexOf(this.currentModel);
+  private async fallbackAI(
+    prompt: string,
+    operation: string,
+    originalError: any,
+  ): Promise<string> {
+    console.warn(
+      `Fallback für ${operation} wegen:`,
+      originalError?.message ?? originalError,
+    );
+    const fallbackIdx = this.errorCorrection.fallbackModels.indexOf(
+      this.currentModel,
+    );
     if (fallbackIdx < this.errorCorrection.fallbackModels.length - 1) {
       const next = this.errorCorrection.fallbackModels[fallbackIdx + 1];
       console.log(`Wechsle zu Fallback‑Modell: ${next}`);
@@ -1642,7 +1755,7 @@ ${JSON.stringify(
     tags: node.meta_json?.tags ?? [],
   },
   null,
-  2
+  2,
 )}
     `;
   }
@@ -1717,7 +1830,7 @@ ${JSON.stringify(
     path: n.path,
   })),
   null,
-  2
+  2,
 )}
     `;
   }
@@ -1725,7 +1838,7 @@ ${JSON.stringify(
   private buildCorrectionPrompt(
     node: NodeForAnnotation,
     invalidMeta: GeneratedMeta,
-    errors: string[]
+    errors: string[],
   ): string {
     return `
 # METADATEN‑KORREKTUR
@@ -1740,7 +1853,7 @@ ${JSON.stringify(invalidMeta, null, 2)}
 ${JSON.stringify(
   { title: node.title, kind: node.kind, path: node.path },
   null,
-  2
+  2,
 )}
 
 Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
@@ -1836,7 +1949,10 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
     }
   }
 
-  private parsePiiClassification(raw: string, nodes: NodeForAnnotation[]): PiiResult[] {
+  private parsePiiClassification(
+    raw: string,
+    nodes: NodeForAnnotation[],
+  ): PiiResult[] {
     try {
       const arr = JSON.parse(raw);
       if (!Array.isArray(arr)) throw new Error("Expected array");
@@ -1865,7 +1981,10 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
   /*                              VALIDIERUNG                                 */
   /* ---------------------------------------------------------------------- */
 
-  private validateMeta(meta: GeneratedMeta): { valid: boolean; errors: string[] } {
+  private validateMeta(meta: GeneratedMeta): {
+    valid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     if (!meta.description || meta.description.trim().length < 10) {
@@ -1927,18 +2046,15 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
       for (let i = 0; i < nodes.length; i += chunkSize) {
         const chunk = nodes.slice(i, i + chunkSize);
 
-        const tasks = chunk.map(
-          (node, idx) =>
-            async () => {
-              await this.delay(idx * 200); // leichte Staggered‑Starts
-              return this.processBatchNode(node, operation, batchId);
-            }
-        );
+        const tasks = chunk.map((node, idx) => async () => {
+          await this.delay(idx * 200); // leichte Staggered‑Starts
+          return this.processBatchNode(node, operation, batchId);
+        });
 
         const promises = this.limitConcurrency(tasks, parallel);
-        const settled = await Promise.allSettled(promises) as PromiseSettledResult<
-          BatchResult["results"][0]
-        >[];
+        const settled = (await Promise.allSettled(
+          promises,
+        )) as PromiseSettledResult<BatchResult["results"][0]>[];
 
         settled.forEach((settledResult, idx) => {
           const node = chunk[idx];
@@ -1948,10 +2064,13 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
             if (nodeResult.success) result.successful++;
             else {
               result.failed++;
-              if (nodeResult.error) result.errors.push(`${node.id}: ${nodeResult.error}`);
+              if (nodeResult.error)
+                result.errors.push(`${node.id}: ${nodeResult.error}`);
             }
           } else {
-            const errMsg = (settledResult.reason as any)?.message ?? String(settledResult.reason);
+            const errMsg =
+              (settledResult.reason as any)?.message ??
+              String(settledResult.reason);
             result.results.push({
               id: node.id,
               success: false,
@@ -1986,10 +2105,11 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
   private async processBatchNode(
     node: NodeForAnnotation,
     operation: BatchOperation,
-    batchId: string
+    batchId: string,
   ): Promise<BatchResult["results"][0]> {
     const start = Date.now();
-    const maxRetries = operation.options?.maxRetries ?? this.errorCorrection.maxRetries;
+    const maxRetries =
+      operation.options?.maxRetries ?? this.errorCorrection.maxRetries;
     let attempt = 0;
 
     while (attempt <= maxRetries) {
@@ -2030,7 +2150,10 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
             ]);
             result = { meta, rule, form };
             // Meta wird mit Regel gespeichert (wie im Original‑Code)
-            await this.saveMeta(node.id, { ...meta, rule } as unknown as GeneratedMeta);
+            await this.saveMeta(node.id, {
+              ...meta,
+              rule,
+            } as unknown as GeneratedMeta);
             await this.saveFormSpec(node.id, form);
             break;
 
@@ -2039,7 +2162,9 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
             break;
 
           default:
-            throw new Error(`Unsupported batch operation: ${operation.operation}`);
+            throw new Error(
+              `Unsupported batch operation: ${operation.operation}`,
+            );
         }
 
         return {
@@ -2081,7 +2206,10 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
   }
 
   /** Steuert gleichzeitige Ausführung einer begrenzten Anzahl von Tasks */
-  private limitConcurrency<T>(tasks: Array<() => Promise<T>>, limit: number): Promise<T>[] {
+  private limitConcurrency<T>(
+    tasks: Array<() => Promise<T>>,
+    limit: number,
+  ): Promise<T>[] {
     const results: Promise<T>[] = new Array(tasks.length);
     let idx = 0;
 
@@ -2109,7 +2237,7 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
   /** Berechnet zusammenfassende Kennzahlen für ein Batch‑Ergebnis */
   private calculateBatchSummary(
     result: BatchResult,
-    totalDuration: number
+    totalDuration: number,
   ): Required<NonNullable<BatchResult["summary"]>> {
     const confidences: number[] = [];
     const businessAreas: Record<string, number> = {};
@@ -2122,8 +2250,8 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
           typeof r.result?.quality?.confidence === "number"
             ? r.result.quality.confidence
             : typeof r.result?.meta?.quality?.confidence === "number"
-            ? r.result.meta.quality.confidence
-            : undefined;
+              ? r.result.meta.quality.confidence
+              : undefined;
         if (typeof conf === "number") confidences.push(conf);
 
         const area = r.result?.businessArea || r.result?.meta?.businessArea;
@@ -2163,12 +2291,15 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
    */
   private selectModelForOperation(operation: string): ModelConfig {
     const capable = this.availableModels.filter(
-      (m) => m.capabilities.includes(operation) || m.capabilities.includes("complex")
+      (m) =>
+        m.capabilities.includes(operation) ||
+        m.capabilities.includes("complex"),
     );
 
     if (capable.length === 0) {
       const fallback = this.availableModels.find((m) => m.name === "fallback");
-      if (!fallback) throw new Error("[aiAnnotator] Kein geeignetes Modell verfügbar");
+      if (!fallback)
+        throw new Error("[aiAnnotator] Kein geeignetes Modell verfügbar");
       return fallback;
     }
 
@@ -2179,7 +2310,9 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
       byName("qwen3:4b") ||
       capable.find((m) => m.provider === "ollama")! ||
       capable.find(
-        (m) => (m.provider === "openai" || m.provider === "anthropic") && m.available
+        (m) =>
+          (m.provider === "openai" || m.provider === "anthropic") &&
+          m.available,
       )! ||
       capable.find((m) => m.name === "fallback")!
     );
@@ -2193,11 +2326,18 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
     node: NodeForAnnotation,
     invalidMeta: GeneratedMeta,
     errors: string[],
-    retryCount: number
+    retryCount: number,
   ): Promise<GeneratedMeta> {
-    const correctionPrompt = this.buildCorrectionPrompt(node, invalidMeta, errors);
+    const correctionPrompt = this.buildCorrectionPrompt(
+      node,
+      invalidMeta,
+      errors,
+    );
     try {
-      const model = await this.modelSelector.selectBestModel("meta", "accuracy");
+      const model = await this.modelSelector.selectBestModel(
+        "meta",
+        "accuracy",
+      );
       const raw = await this.callAIWithModel(correctionPrompt, model);
       const corrected = this.parseMetaJson(raw, node);
       const validation = this.validateMeta(corrected);
@@ -2205,7 +2345,7 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
       this.modelSelector.updatePerformanceMetrics(
         model.name,
         validation.valid,
-        Date.now() - Date.now()
+        Date.now() - Date.now(),
       );
 
       if (validation.valid) {
@@ -2213,7 +2353,10 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
           ...corrected,
           quality: {
             confidence: corrected.quality?.confidence ?? 0.8,
-            evidence: [...(corrected.quality?.evidence || []), `Korrektur: ${errors.join(", ")}`],
+            evidence: [
+              ...(corrected.quality?.evidence || []),
+              `Korrektur: ${errors.join(", ")}`,
+            ],
             generatedBy: "hybrid",
             modelUsed: model.name,
             validationScore: 1,
@@ -2224,7 +2367,12 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
       // Wiederholungen falls noch ungültig
       if (retryCount < this.errorCorrection.maxRetries) {
         await this.delay(this.errorCorrection.retryDelay * (retryCount + 1));
-        return this.correctMetaGeneration(node, corrected, validation.errors, retryCount + 1);
+        return this.correctMetaGeneration(
+          node,
+          corrected,
+          validation.errors,
+          retryCount + 1,
+        );
       }
 
       // Letzter Ausweg
@@ -2245,7 +2393,11 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
     const ba = this.guessBusinessArea(node);
     return {
       description: `Automatisch generierte Beschreibung für "${node.title}". Dies ist ein Fallback‑Eintrag.`,
-      tags: [node.kind, ...node.title.split(" ").slice(0, 5), ...node.path.slice(-2)],
+      tags: [
+        node.kind,
+        ...node.title.split(" ").slice(0, 5),
+        ...node.path.slice(-2),
+      ],
       businessArea: ba,
       piiClass: pii,
       requires: this.extractDependencies(node),
@@ -2258,7 +2410,10 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
       },
       technical: {
         ...technical,
-        estimatedDevelopmentHours: this.estimateDevelopmentHours(node, technical.complexity),
+        estimatedDevelopmentHours: this.estimateDevelopmentHours(
+          node,
+          technical.complexity,
+        ),
       },
       compliance: {
         gdprRelevant: pii !== "none",
@@ -2287,7 +2442,11 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
       };
     }
 
-    if (title.includes("kpi") || title.includes("umsatz") || title.includes("kennzahl")) {
+    if (
+      title.includes("kpi") ||
+      title.includes("umsatz") ||
+      title.includes("kennzahl")
+    ) {
       return {
         type: "metric",
         widget: "number",
@@ -2343,7 +2502,9 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
   /*                        HILFSMETHODEN (Analyse, Schätzung, …)           */
   /* ---------------------------------------------------------------------- */
 
-  private analyzeTechnicalComplexity(node: NodeForAnnotation): NonNullable<GeneratedMeta["technical"]> {
+  private analyzeTechnicalComplexity(
+    node: NodeForAnnotation,
+  ): NonNullable<GeneratedMeta["technical"]> {
     const title = node.title.toLowerCase();
     let complexity: "low" | "medium" | "high" = "low";
     let dataVolume: "small" | "medium" | "large" = "small";
@@ -2378,10 +2539,14 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
     const path = node.path.join(" ").toLowerCase();
 
     if (title.includes("kunde") || path.includes("kunde")) pts.push("CRM");
-    if (title.includes("lieferant") || path.includes("lieferant")) pts.push("Lieferantenmanagement");
-    if (title.includes("lager") || path.includes("lager")) pts.push("Warenwirtschaft");
-    if (title.includes("personal") || path.includes("personal")) pts.push("HR-System");
-    if (title.includes("finanz") || path.includes("finanz")) pts.push("Finanzbuchhaltung");
+    if (title.includes("lieferant") || path.includes("lieferant"))
+      pts.push("Lieferantenmanagement");
+    if (title.includes("lager") || path.includes("lager"))
+      pts.push("Warenwirtschaft");
+    if (title.includes("personal") || path.includes("personal"))
+      pts.push("HR-System");
+    if (title.includes("finanz") || path.includes("finanz"))
+      pts.push("Finanzbuchhaltung");
 
     return pts.slice(0, 3);
   }
@@ -2389,7 +2554,8 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
   private extractDependencies(node: NodeForAnnotation): string[] {
     const deps: string[] = [];
     if (node.path.length > 1) deps.push(node.path[node.path.length - 2]);
-    if (Array.isArray(node.meta_json?.requires)) deps.push(...node.meta_json.requires);
+    if (Array.isArray(node.meta_json?.requires))
+      deps.push(...node.meta_json.requires);
     return [...new Set(deps)].slice(0, 5);
   }
 
@@ -2425,15 +2591,27 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
     return "Allgemein";
   }
 
-  private guessPiiClass(node: NodeForAnnotation): "none" | "low" | "medium" | "high" {
+  private guessPiiClass(
+    node: NodeForAnnotation,
+  ): "none" | "low" | "medium" | "high" {
     const t = node.title.toLowerCase();
-    if (t.includes("personal") || t.includes("gehalt") || t.includes("lohn")) return "high";
-    if (t.includes("kunde") || t.includes("adresse") || t.includes("email")) return "medium";
-    if (t.includes("benutzer") || t.includes("rolle") || t.includes("abteilung")) return "low";
+    if (t.includes("personal") || t.includes("gehalt") || t.includes("lohn"))
+      return "high";
+    if (t.includes("kunde") || t.includes("adresse") || t.includes("email"))
+      return "medium";
+    if (
+      t.includes("benutzer") ||
+      t.includes("rolle") ||
+      t.includes("abteilung")
+    )
+      return "low";
     return "none";
   }
 
-  private estimateDevelopmentHours(node: NodeForAnnotation, complexity: "low" | "medium" | "high"): number {
+  private estimateDevelopmentHours(
+    node: NodeForAnnotation,
+    complexity: "low" | "medium" | "high",
+  ): number {
     const base = 8;
     const factor = complexity === "high" ? 4 : complexity === "medium" ? 2 : 1;
     return base * factor;
@@ -2476,21 +2654,23 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
     return { valid: errors.length === 0, errors, warnings, suggestions };
   }
 
-  private async aiValidateNode(node: NodeForAnnotation): Promise<{ suggestions: string[] }> {
+  private async aiValidateNode(
+    node: NodeForAnnotation,
+  ): Promise<{ suggestions: string[] }> {
     const prompt = `
 # VALIDIERUNG ERP‑FUNKTIONSKNOTEN
 
 ## KNOTEN
 ${JSON.stringify(
-      {
-        title: node.title,
-        kind: node.kind,
-        path: node.path,
-        meta: node.meta_json,
-      },
-      null,
-      2
-    )}
+  {
+    title: node.title,
+    kind: node.kind,
+    path: node.path,
+    meta: node.meta_json,
+  },
+  null,
+  2,
+)}
 
 ## AUFGABE
 Analysiere und gib Verbesserungsvorschläge zurück.
@@ -2508,7 +2688,11 @@ Erwartete Ausgabe (JSON):
         const match = raw.match(/\{[\s\S]*\}/);
         if (match) parsed = JSON.parse(match[0]);
       }
-      return { suggestions: Array.isArray(parsed?.suggestions) ? parsed.suggestions : [] };
+      return {
+        suggestions: Array.isArray(parsed?.suggestions)
+          ? parsed.suggestions
+          : [],
+      };
     } catch (e) {
       console.warn("AI‑Validierung fehlgeschlagen:", e);
       return { suggestions: [] };

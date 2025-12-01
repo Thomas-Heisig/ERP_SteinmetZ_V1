@@ -20,13 +20,7 @@
       "params": {
         "table": "orders",
         "filter": "status='open'",
-        "columns": [
-          "id",
-          "customer_id",
-          "order_date",
-          "total_amount",
-          "status"
-        ]
+        "columns": ["id", "customer_id", "order_date", "total_amount", "status"]
       },
       "variable": "raw_orders"
     },

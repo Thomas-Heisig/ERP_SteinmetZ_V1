@@ -8,8 +8,8 @@ export default {
       status: {
         healthy: "Système opérationnel",
         degraded: "Système dégradé",
-        unhealthy: "Système en échec"
-      }
+        unhealthy: "Système en échec",
+      },
     },
 
     // Catégories
@@ -17,7 +17,7 @@ export default {
       title: "Domaines fonctionnels",
       count: "{{count}} domaines disponibles",
       emptyTitle: "Aucune catégorie trouvée",
-      emptyDescription: "Aucune catégorie correspondante n’a pu être affichée."
+      emptyDescription: "Aucune catégorie correspondante n’a pu être affichée.",
     },
 
     // Statuts généraux
@@ -29,7 +29,7 @@ export default {
 
     // Chargement
     loading: {
-      message: "Chargement des données…"
+      message: "Chargement des données…",
     },
 
     // Recherche
@@ -41,13 +41,13 @@ export default {
       placeholder: "Rechercher {{type}}…",
       input: "Champ de recherche",
       loading: "Recherche en cours…",
-      noResults: "Aucun résultat trouvé"
+      noResults: "Aucun résultat trouvé",
     },
 
     // Écran d’erreur
     errorScreen: {
       title: "Erreur lors du chargement",
-      retryButton: "Réessayer"
+      retryButton: "Réessayer",
     },
 
     // Navigation
@@ -55,7 +55,7 @@ export default {
       overview: "Vue d’ensemble",
       catalog: "Fonctions",
       ai: "Annotateur IA",
-      settings: "Paramètres"
+      settings: "Paramètres",
     },
 
     // Chat
@@ -64,7 +64,7 @@ export default {
       inputPlaceholder: "Saisir un message…",
       send: "Envoyer",
       newSession: "Nouvelle session",
-      loading: "Traitement de la réponse…"
+      loading: "Traitement de la réponse…",
     },
 
     // Modèles
@@ -72,14 +72,14 @@ export default {
       title: "Modèles",
       provider: "Fournisseur",
       capabilities: "Fonctionnalités",
-      noModels: "Aucun modèle disponible"
+      noModels: "Aucun modèle disponible",
     },
 
     // Outils
     tools: {
       title: "Outils",
       run: "Exécuter",
-      noTools: "Aucun outil enregistré"
+      noTools: "Aucun outil enregistré",
     },
 
     // Informations système
@@ -97,7 +97,7 @@ export default {
       ai: "Statut IA",
       statusHealthy: "Opérationnel",
       statusUnhealthy: "Non opérationnel",
-      statusDegraded: "Limité"
+      statusDegraded: "Limité",
     },
 
     // Sélecteur de langue
@@ -110,7 +110,7 @@ export default {
       close: "Fermer",
       reload: "Recharger",
       details: "Détails",
-      unknown: "Inconnu"
-    }
-  }
+      unknown: "Inconnu",
+    },
+  },
 };

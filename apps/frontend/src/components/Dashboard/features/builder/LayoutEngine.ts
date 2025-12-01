@@ -104,7 +104,10 @@ export class LayoutEngine {
   /**
    * Kombiniert mehrere Layout-Varianten, falls gewünscht.
    */
-  mergeLayouts(base: GeneratedLayout, overrides: Partial<GeneratedLayout>): GeneratedLayout {
+  mergeLayouts(
+    base: GeneratedLayout,
+    overrides: Partial<GeneratedLayout>,
+  ): GeneratedLayout {
     return {
       type: overrides.type ?? base.type,
       items: overrides.items ?? base.items,

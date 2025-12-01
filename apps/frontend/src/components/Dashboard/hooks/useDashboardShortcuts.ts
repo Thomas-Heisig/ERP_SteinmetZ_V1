@@ -18,13 +18,15 @@ export function useDashboardShortcuts(): UseDashboardShortcuts {
   const { state } = useDashboardContext();
 
   // lokale Registry
-  const shortcutsRef = useRef<Map<string, { handler: () => void; description: string }>>(new Map());
+  const shortcutsRef = useRef<
+    Map<string, { handler: () => void; description: string }>
+  >(new Map());
 
   const registerShortcut = useCallback(
     (key: string, handler: () => void, description: string) => {
       shortcutsRef.current.set(key.toLowerCase(), { handler, description });
     },
-    []
+    [],
   );
 
   const unregisterShortcut = useCallback((key: string) => {
@@ -37,7 +39,7 @@ export function useDashboardShortcuts(): UseDashboardShortcuts {
       Array.from(shortcutsRef.current.entries()).map(([key, v]) => ({
         key,
         description: v.description,
-      }))
+      })),
     );
   }, []);
 

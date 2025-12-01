@@ -25,35 +25,33 @@ const RTL_LANGS: string[] = ["ar"];
  * Kommt sonst in React.StrictMode gelegentlich vor.
  */
 if (!i18n.isInitialized) {
-  i18n
-    .use(initReactI18next)
-    .init({
-      debug: false, // kann bei Bedarf aktiviert werden
+  i18n.use(initReactI18next).init({
+    debug: false, // kann bei Bedarf aktiviert werden
 
-      resources: {
-        de: { translation: de },
-        en: { translation: en },
-        ar: { translation: ar },
-        zh: { translation: zh },
-        ru: { translation: ru },
-        nds: { translation: nds },
-        fr: { translation: fr },
-      },
+    resources: {
+      de: { translation: de },
+      en: { translation: en },
+      ar: { translation: ar },
+      zh: { translation: zh },
+      ru: { translation: ru },
+      nds: { translation: nds },
+      fr: { translation: fr },
+    },
 
-      /**
-       * Standardsprache + Fallback
-       */
-      lng: "de",
-      fallbackLng: "en",
+    /**
+     * Standardsprache + Fallback
+     */
+    lng: "de",
+    fallbackLng: "en",
 
-      interpolation: {
-        escapeValue: false, // React schützt bereits vor XSS
-      },
+    interpolation: {
+      escapeValue: false, // React schützt bereits vor XSS
+    },
 
-      react: {
-        useSuspense: false, // verhindert visuelle "Lade-Glitches"
-      }
-    });
+    react: {
+      useSuspense: false, // verhindert visuelle "Lade-Glitches"
+    },
+  });
 }
 
 /**

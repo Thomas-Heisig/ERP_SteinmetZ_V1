@@ -2,25 +2,37 @@
   "eliza_rules": [
     {
       "pattern": "\\b(export|exportiere|herunterladen)\\s+(.*)",
-      "replies": ["Ich exportiere $2 für Sie.", "Der Export von $2 wird vorbereitet."],
+      "replies": [
+        "Ich exportiere $2 für Sie.",
+        "Der Export von $2 wird vorbereitet."
+      ],
       "action": "export_data",
       "params": ["$2"]
     },
     {
       "pattern": "\\b(import|importiere|lade\\s+hoch)\\s+(.*)",
-      "replies": ["Ich importiere $2 in das System.", "Der Import von $2 wird durchgeführt."],
+      "replies": [
+        "Ich importiere $2 in das System.",
+        "Der Import von $2 wird durchgeführt."
+      ],
       "action": "import_data",
       "params": ["$2"]
     },
     {
       "pattern": "\\b(backup|sicherung)\\s+(.*)",
-      "replies": ["Ich erstelle ein Backup von $2.", "Die Sicherung von $2 wird durchgeführt."],
+      "replies": [
+        "Ich erstelle ein Backup von $2.",
+        "Die Sicherung von $2 wird durchgeführt."
+      ],
       "action": "backup_data",
       "params": ["$2"]
     },
     {
       "pattern": "\\b(restore|wiederherstell)\\s+(.*)",
-      "replies": ["Ich stelle $2 wieder her.", "Die Wiederherstellung von $2 wird durchgeführt."],
+      "replies": [
+        "Ich stelle $2 wieder her.",
+        "Die Wiederherstellung von $2 wird durchgeführt."
+      ],
       "action": "restore_data",
       "params": ["$2"]
     }

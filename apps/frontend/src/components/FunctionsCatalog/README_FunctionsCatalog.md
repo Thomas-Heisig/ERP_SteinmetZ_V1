@@ -29,15 +29,15 @@ Das Modul ist modular aufgebaut und kann in unterschiedlichen UI-Umgebungen verw
 
 Der FunctionsCatalog liefert:
 
-* eine Suchfunktion mit Resultatliste, Highlighting und Scoring
-* eine Detailansicht für alle Knoten (`NodeDetail`)
-* Breadcrumb-Navigation
-* Metadaten-, Schema- und Warnungsblöcke
-* Exportmöglichkeiten (JSON, Markdown, YAML)
-* Favoritenverwaltung (LocalStorage)
-* Verlaufshistorie (LocalStorage)
-* Fehler- und Ladezustandsmeldungen
-* Lint-Ergebnisse für diagnostische Zwecke
+- eine Suchfunktion mit Resultatliste, Highlighting und Scoring
+- eine Detailansicht für alle Knoten (`NodeDetail`)
+- Breadcrumb-Navigation
+- Metadaten-, Schema- und Warnungsblöcke
+- Exportmöglichkeiten (JSON, Markdown, YAML)
+- Favoritenverwaltung (LocalStorage)
+- Verlaufshistorie (LocalStorage)
+- Fehler- und Ladezustandsmeldungen
+- Lint-Ergebnisse für diagnostische Zwecke
 
 Alle Daten stammen aus dem Hook `useFunctionsCatalog`, der Daten vom Backend lädt und aufbereitet.
 
@@ -45,12 +45,12 @@ Alle Daten stammen aus dem Hook `useFunctionsCatalog`, der Daten vom Backend lä
 
 ## **2. Hauptfunktionen**
 
-* **Suchen:** Volltextsuche über Knoten. Ergebnisse werden dynamisch angezeigt.
-* **Navigation:** Auswahl eines Knotens, Darstellung von Details und Metadaten.
-* **Linting:** Ausgabe von statischen Prüfungen.
-* **Export:** Einzelne Knoten lassen sich als JSON, Markdown oder YAML exportieren.
-* **Favoriten:** Nutzer können Knoten markieren.
-* **Historie:** Kürzlich angesehene Knoten werden gespeichert.
+- **Suchen:** Volltextsuche über Knoten. Ergebnisse werden dynamisch angezeigt.
+- **Navigation:** Auswahl eines Knotens, Darstellung von Details und Metadaten.
+- **Linting:** Ausgabe von statischen Prüfungen.
+- **Export:** Einzelne Knoten lassen sich als JSON, Markdown oder YAML exportieren.
+- **Favoriten:** Nutzer können Knoten markieren.
+- **Historie:** Kürzlich angesehene Knoten werden gespeichert.
 
 ---
 
@@ -58,18 +58,17 @@ Alle Daten stammen aus dem Hook `useFunctionsCatalog`, der Daten vom Backend lä
 
 Die Komponente akzeptiert Konfigurationsparameter, u. a.:
 
-* `roles`, `features`: Zugriffskontext für Backend-Abfragen
-* `baseUrl`: Serverpfad für Index- und Node-Abfragen
-* `theme`: „auto“, „light“, „dark“ oder „lcars“
-* `locale`: Sprachkonfiguration
-* `permissions`: optionale Rechteobjekte
-* `config`: weitere verhaltenssteuernde Parameter
-* Callback-Funktionen wie
-
-  * `onNodeSelect(node)`
-  * `onSearch(query, results)`
-  * `onError(error)`
-  * `onExport(payload)`
+- `roles`, `features`: Zugriffskontext für Backend-Abfragen
+- `baseUrl`: Serverpfad für Index- und Node-Abfragen
+- `theme`: „auto“, „light“, „dark“ oder „lcars“
+- `locale`: Sprachkonfiguration
+- `permissions`: optionale Rechteobjekte
+- `config`: weitere verhaltenssteuernde Parameter
+- Callback-Funktionen wie
+  - `onNodeSelect(node)`
+  - `onSearch(query, results)`
+  - `onError(error)`
+  - `onExport(payload)`
 
 ---
 
@@ -102,37 +101,37 @@ Persistenz (Favoriten, Verlauf) erfolgt lokal im Browser.
 
 **Wesentliche UI-Komponenten:**
 
-* **`TopBar`** – Suche, Reload, Lint
-* **`SearchBar`, `SearchResults`, `SearchItem`**
-* **`NodeDetails`** – vollständige Detaildarstellung
-* **`NodeHeader`** – Titel, Icon, Badges
-* **`NodeInfoGrid`** – technische Informationen
-* **`NodeMetaBlocks`** – Meta/Schemata/Warnungen
-* **`Breadcrumbs`**
-* **`Panel`** – generische Containerkomponente
-* **`LintPanel`**
+- **`TopBar`** – Suche, Reload, Lint
+- **`SearchBar`, `SearchResults`, `SearchItem`**
+- **`NodeDetails`** – vollständige Detaildarstellung
+- **`NodeHeader`** – Titel, Icon, Badges
+- **`NodeInfoGrid`** – technische Informationen
+- **`NodeMetaBlocks`** – Meta/Schemata/Warnungen
+- **`Breadcrumbs`**
+- **`Panel`** – generische Containerkomponente
+- **`LintPanel`**
 
 **Code-Viewer:**
 
-* `MonacoCode` – readonly Monaco-Editor mit Lazy-Loading
-* `useMonacoThemeSync` – Theme-Anpassung
+- `MonacoCode` – readonly Monaco-Editor mit Lazy-Loading
+- `useMonacoThemeSync` – Theme-Anpassung
 
 **Export:**
 
-* `exportNodeAsJSON(...)`
-* `exportNodeAsMarkdown(...)`
-* `exportNodeAsYAML(...)`
-* `ExportMenu` – Kontextmenü für Exportoptionen
+- `exportNodeAsJSON(...)`
+- `exportNodeAsMarkdown(...)`
+- `exportNodeAsYAML(...)`
+- `ExportMenu` – Kontextmenü für Exportoptionen
 
 **Favoriten:**
 
-* `FavoritesStore` (Singleton)
-* `useFavorites` – React Hook
+- `FavoritesStore` (Singleton)
+- `useFavorites` – React Hook
 
 **Verlauf:**
 
-* `HistoryStore`
-* `useHistory`
+- `HistoryStore`
+- `useHistory`
 
 ---
 
@@ -140,9 +139,9 @@ Persistenz (Favoriten, Verlauf) erfolgt lokal im Browser.
 
 Drei getrennte Stylesheets:
 
-* `fc-base.css` – Grundlayout, Variablen
-* `fc-dark.css` – dunkles Theme
-* `fc-lcars.css` – alternativer Stil
+- `fc-base.css` – Grundlayout, Variablen
+- `fc-dark.css` – dunkles Theme
+- `fc-lcars.css` – alternativer Stil
 
 Das Theme wird über `data-theme="light" | "dark" | "lcars"` am `<html>`-Element gesteuert.
 
@@ -166,11 +165,11 @@ Alle Funktionen lösen Downloads im Browser aus.
 
 Favoriten werden lokal gespeichert, enthalten u. a.:
 
-* `id`
-* `title`
-* `kind`
-* `addedAt`
-* optional `tags`, `category`
+- `id`
+- `title`
+- `kind`
+- `addedAt`
+- optional `tags`, `category`
 
 `useFavorites()` liefert Lese-/Schreiboperationen mit automatischer Reaktivität.
 
@@ -180,10 +179,10 @@ Favoriten werden lokal gespeichert, enthalten u. a.:
 
 Der Verlauf speichert:
 
-* zuletzt angesehene Knoten,
-* Zeitstempel (`viewedAt`),
-* Typ (`kind`),
-* Aktionstyp (`view`).
+- zuletzt angesehene Knoten,
+- Zeitstempel (`viewedAt`),
+- Typ (`kind`),
+- Aktionstyp (`view`).
 
 Die Einträge sind auf 50 begrenzt.
 `useHistory()` stellt den Zugriff bereit.
@@ -201,7 +200,7 @@ import { FunctionsCatalog } from "@/components/FunctionsCatalog";
   baseUrl="/api/catalog"
   roles={["admin"]}
   features={["search", "details"]}
-/>
+/>;
 ```
 
 ### Theme setzen
@@ -226,8 +225,6 @@ Die Komponente überschreibt keine globalen Styles und ist über CSS-Variablen a
 
 Wenn du möchtest, erstelle ich zusätzlich:
 
-* eine **README für das Backend-Schema** (`NodeDetail`, `SearchResult`, etc.),
-* eine **Dokumentation der Hooks** (`useFunctionsCatalog`, `useFavorites`, `useHistory`),
-* oder eine **Markdown-Dokumentation pro Featuregruppe**.
-
-
+- eine **README für das Backend-Schema** (`NodeDetail`, `SearchResult`, etc.),
+- eine **Dokumentation der Hooks** (`useFunctionsCatalog`, `useFavorites`, `useHistory`),
+- oder eine **Markdown-Dokumentation pro Featuregruppe**.

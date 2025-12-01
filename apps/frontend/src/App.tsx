@@ -16,34 +16,53 @@ export default function App() {
   return (
     <LanguageProvider>
       <div className="app-container">
-        
         {/* ---------- Header ---------- */}
         <header className="app-header">
-          
           {/* Branding */}
           <div className="app-brand" aria-label="ERP SteinmetZ Dashboard">
-            <span className="brand-icon" aria-hidden="true">🧱</span>
+            <span className="brand-icon" aria-hidden="true">
+              🧱
+            </span>
             <strong className="brand-name">ERP SteinmetZ</strong>
             <span className="brand-subtitle">Dashboard</span>
           </div>
 
           {/* Navigation */}
           <nav className="main-nav" aria-label="Hauptnavigation">
-            <NavLink to="/" end className={({ isActive }) => 
-              `nav-link ${isActive ? "active" : ""}`}>
-              <span className="nav-icon" aria-hidden="true">🏠</span>
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <span className="nav-icon" aria-hidden="true">
+                🏠
+              </span>
               Übersicht
             </NavLink>
 
-            <NavLink to="/catalog" className={({ isActive }) =>
-              `nav-link ${isActive ? "active" : ""}`}>
-              <span className="nav-icon" aria-hidden="true">🧭</span>
+            <NavLink
+              to="/catalog"
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <span className="nav-icon" aria-hidden="true">
+                🧭
+              </span>
               Funktionen
             </NavLink>
 
-            <NavLink to="/ai" className={({ isActive }) =>
-              `nav-link ${isActive ? "active" : ""}`}>
-              <span className="nav-icon" aria-hidden="true">🤖</span>
+            <NavLink
+              to="/ai"
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <span className="nav-icon" aria-hidden="true">
+                🤖
+              </span>
               AI-Annotator
             </NavLink>
           </nav>
@@ -73,10 +92,7 @@ export default function App() {
         <footer className="app-footer">
           <small>© {new Date().getFullYear()} ERP SteinmetZ</small>
 
-          <QuickChat
-            isOpen={isChatOpen}
-            onClose={() => setIsChatOpen(false)}
-          />
+          <QuickChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
         </footer>
       </div>
     </LanguageProvider>
@@ -92,10 +108,14 @@ function ThemeToggle() {
 
   const getThemeIcon = (t: Theme): string => {
     switch (t) {
-      case "light": return "☀️";
-      case "dark": return "🌙";
-      case "lcars": return "🚀";
-      default: return "⚙️";
+      case "light":
+        return "☀️";
+      case "dark":
+        return "🌙";
+      case "lcars":
+        return "🚀";
+      default:
+        return "⚙️";
     }
   };
 

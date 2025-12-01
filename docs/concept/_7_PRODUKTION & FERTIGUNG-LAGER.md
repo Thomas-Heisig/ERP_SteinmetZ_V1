@@ -585,7 +585,7 @@
 │ │ └── 📈 Routing-Algorithmen
 │ │ ├── 🎯 Algorithmus-Auswahl
 │ │ │ ├── 📊 Dijkstra-Algorithmus
-│ │ │ ├── 🔄 A*-Algorithmus
+│ │ │ ├── 🔄 A\*-Algorithmus
 │ │ │ ├── 📈 Genetische Algorithmen
 │ │ │ ├── 🎯 Machine Learning
 │ │ │ └️📋 Hybrid-Algorithmen
@@ -1709,14 +1709,13 @@
 ├── 🎯 Szenario-Analysen
 └── 🤖 KI-gestützte Planung
 
-
 Funktionsbeschreibung: Lager & Logistik (WMS/TMS)
 
 (Praxisleitfaden; keine Rechts-/Normberatung. Bei Normbezügen—z. B. IAS 2, DIN EN 16258—bitte jeweils aktuellen Stand prüfen.)
 
 Ziel: Bestandssicherheit, kurze Wegezeiten, fehlerarme Kommissionierung und kosteneffizienter Versand – messbar über klar definierte KPIs und Audit-Trails.
 
-1) Datenmodell & Zuständigkeiten (SoD)
+1. Datenmodell & Zuständigkeiten (SoD)
 
 Kernobjekte: Artikel (mit MDM-Pflichten), Lagerplätze/Zonen, Chargen/Serien, MHD, Bewegungen, Inventurvorgänge, Packmittel, Versandaufträge, Carrier/Services, Sendungen/Tracking-Ereignisse.
 
@@ -1726,30 +1725,30 @@ SoD: Stammdaten ≠ Lagerleitstand ≠ Kommissionierung/Verpackung ≠ Inventurf
 
 Nachvollziehbarkeit: Nummernkreise, lückenlose Bewegungsprotokolle, Änderungsjournal, Dokumentenablage (Lieferscheine, Etiketten, Frachtbriefe).
 
-2) Bestandsführung & Disposition (reproduzierbare Regeln)
+2. Bestandsführung & Disposition (reproduzierbare Regeln)
 
-Reorder-Point (ROP) bei deterministischer Lieferzeit 
+Reorder-Point (ROP) bei deterministischer Lieferzeit
 𝐿
 L:
 
-ROP
-=
+# ROP
+
 𝜇
 𝑑
 ⋅
 𝐿
-+
-SS
-ROP=μ
-d
-	​
+
+- SS
+  ROP=μ
+  d
+  ​
 
 ⋅L+SS
 
 Sicherheitsbestand (SS) mit Nachfragen- und Lieferzeit-Varianz:
 
-SS
-=
+# SS
+
 𝑧
 ⋅
 𝐿
@@ -1757,32 +1756,31 @@ SS
 𝜎
 𝑑
 2
-+
-𝜇
-𝑑
-2
-⋅
-𝜎
-𝐿
-2
-SS=z⋅
-L⋅σ
-d
-2
-	​
 
-+μ
-d
-2
-	​
+- 𝜇
+  𝑑
+  2
+  ⋅
+  𝜎
+  𝐿
+  2
+  SS=z⋅
+  L⋅σ
+  d
+  2
+  ​
+
+  +μ
+  d
+  2
+  ​
 
 ⋅σ
 L
 2
-	​
+​
 
-	​
-
+    ​
 
 (z aus Ziel-Servicegrad, z. B. 95 % ≈ 1,64)
 
@@ -1802,16 +1800,15 @@ Q
 =
 H
 2⋅D⋅S
-	​
+​
 
-	​
+    ​
 
-
-mit Jahresbedarf 
+mit Jahresbedarf
 𝐷
-D, Bestellkosten 
+D, Bestellkosten
 𝑆
-S, jährlichen Haltekosten 
+S, jährlichen Haltekosten
 𝐻
 H.
 
@@ -1823,21 +1820,21 @@ FIFO, Durchschnitt: unter IAS 2 zulässig.
 LIFO: unter IFRS (IAS 2) nicht zulässig; nach HGB/EStG in DE zulässig. HIFO nur intern/steuerungsseitig, i. d. R. nicht bilanzwirksam.
 → Regelwerk pro Mandant rechtskonform festlegen und systemseitig sperren.
 
-Chargen/Serien/MHD: Pflichtfelder je Artikel; FEFO (First-Expire-First-Out) als Standard-Strategie bei MHD-Pflichten. Eskalationslogik: Warnschwellen 
+Chargen/Serien/MHD: Pflichtfelder je Artikel; FEFO (First-Expire-First-Out) als Standard-Strategie bei MHD-Pflichten. Eskalationslogik: Warnschwellen
 𝑡
 −
 𝑥
 t
 −x
-	​
+​
 
- Tage vor MHD, automatisierte Umplatzierung/Abverkaufsflags.
+Tage vor MHD, automatisierte Umplatzierung/Abverkaufsflags.
 
-3) Lagerlayout, Slotting & Wegezeiten
+3. Lagerlayout, Slotting & Wegezeiten
 
 Kennzahlen für Slotting:
 
-COI (Cube-per-Order Index): 
+COI (Cube-per-Order Index):
 COI
 =
 Volumen
@@ -1845,9 +1842,9 @@ Auftragszeilenfreq.
 COI=
 Auftragszeilenfreq.
 Volumen
-	​
+​
 
- → niedriger COI nahe Kommissionierpunkt.
+→ niedriger COI nahe Kommissionierpunkt.
 
 Pick-Dichte: Picks pro m Ganglänge.
 
@@ -1876,31 +1873,29 @@ G
 a
 ¨
 nge
-+
-𝛽
-⋅
-𝐿
-Gang
-+
-𝛾
-⋅
-𝑁
-Picks
-T≈α⋅N
-G
-a
-¨
-nge
-	​
 
-+β⋅L
-Gang
-	​
+- 𝛽
+  ⋅
+  𝐿
+  Gang
+- 𝛾
+  ⋅
+  𝑁
+  Picks
+  T≈α⋅N
+  G
+  a
+  ¨
+  nge
+  ​
 
-+γ⋅N
-Picks
-	​
+  +β⋅L
+  Gang
+  ​
 
+  +γ⋅N
+  Picks
+  ​
 
 (
 𝛼
@@ -1910,7 +1905,7 @@ Picks
 𝛾
 α,β,γ empirisch aus Zeitstudien/Terminaldaten).
 
-4) Kommissionierung (Verfahren & Qualität)
+4. Kommissionierung (Verfahren & Qualität)
 
 Pick-by-Order (auftragsspezifisch) vs. Pick-by-Article (Sammelkommissionierung mit späterer Sortierung).
 
@@ -1926,13 +1921,13 @@ Leistungskennzahlen:
 
 Pickrate (Zeilen/Stunde), First-Time-Right (fehlerfreie Aufträge/alle), Wegezeit/Zeile, Retouren wegen Falschkommissionierung.
 
-5) Inventur (störungsarm, prüfbar)
+5. Inventur (störungsarm, prüfbar)
 
 Stichtagsinventur mit vorbereiteten Zählbezirken, Doppelzählung risikobehafteter Zonen.
 
 Permanente/Cycle-Count-Inventur: Frequenz nach ABC-Risikomatrix (z. B. A-täglich/Wöchentlich, B-wöchentlich/monatlich, C-monatlich/quartalsweise).
 
-Genauigkeits-KPIs: Bestandsgenauigkeit 
+Genauigkeits-KPIs: Bestandsgenauigkeit
 (
 system
 =
@@ -1942,41 +1937,40 @@ physisch
 
 Ursachenanalyse bei Differenzen: Prozess (WE/WA), technische Fehler (Scanning), Diebstahl/Schwund; 8D-Abarbeitung.
 
-6) Versand & Frachtkosten (TMS-Logik)
+6. Versand & Frachtkosten (TMS-Logik)
 
 Carrier-Auswahl (multi-kriteriell): Preis, SLAs (OTIF), Laufzeit, Gewicht/Volumen, Gefahrgut/Temperatur, CO₂-Intensität.
 Frachtkostenmodell:
 
-Kosten
-=
+# Kosten
+
 Grundpreis
-+
-𝑓
-(
-Gewicht
-,
-Volumen
-,
-Zone
-)
-+
-Zuschl
-a
-¨
-ge
-−
-Rabatte
-Kosten=Grundpreis+f(Gewicht,Volumen,Zone)+Zuschl
-a
-¨
-ge−Rabatte
+
+- 𝑓
+  (
+  Gewicht
+  ,
+  Volumen
+  ,
+  Zone
+  )
+- Zuschl
+  a
+  ¨
+  ge
+  −
+  Rabatte
+  Kosten=Grundpreis+f(Gewicht,Volumen,Zone)+Zuschl
+  a
+  ¨
+  ge−Rabatte
 
 Währungs-/Zoll-/Nebenkosten integriert; automatische Plausibilitätsprüfungen (Gewicht, Volumen, Dim-Factor).
 Packmittel-Optimierung: volumetrische Auslastung, Stacking-Regeln, Gewichtsverteilung; auto. Etikett/Dokument (z. B. CN23, Pro-Forma) aus Auftrags-/Zolldaten.
 
 CO₂-Bilanz (Transport): Methoden wie DIN EN 16258/GHG-Protocol; Datengrundlage: Kraftstoff, Strecke, Fahrzeugtyp, Auslastung. Reporting pro Sendung/Kunde.
 
-7) Tracking & Ereignissteuerung
+7. Tracking & Ereignissteuerung
 
 Quellen: Carrier-APIs, GPS/Telematik, RFID/Barcode-Scans, IoT-Sensorik (Stoß/Temp/Feuchte).
 
@@ -1984,13 +1978,13 @@ Standardisierte Statuscodes (z. B. „Label erstellt“, „übergeben“, „im
 
 Alarmierung: regelbasiert + ML-„Predictive Delay“; Eskalationsketten (Kunde/Innendienst/Leitung).
 
-8) Lieferprognosen (ETA/OTIF-Risikomodell)
+8. Lieferprognosen (ETA/OTIF-Risikomodell)
 
 Features: Historik pro Lane/Carrier, Wetter/Verkehr, Hub-Events, Saison; Ziele: ETA-Fehler (MAE/RMSE), Forecast Bias nahe 0.
 
 Retraining-Regime: rollierend (z. B. wöchentlich), Champion/Challenger; Monitoring via Drift-Metriken.
 
-9) Kundenbenachrichtigung (Omni-Channel, DSGVO-konform)
+9. Kundenbenachrichtigung (Omni-Channel, DSGVO-konform)
 
 Inhalte: ETA, Status, Ausnahmen/Optionen (z. B. Zustelltag ändern).
 
@@ -1998,7 +1992,7 @@ Steuerung: Quiet-Hours, Frequenz-Kappen, A/B-Tests der Templates.
 
 Messung: Öffnungs-/Klickrate, Beschwerderate, NPS/CSAT pro Meilenstein.
 
-10) KPIs (präzise Definitionen)
+10. KPIs (präzise Definitionen)
 
 Service/Termine
 
@@ -2010,23 +2004,23 @@ Auftragsdurchlaufzeit WE→WA/Versand.
 
 Lager/Bestand
 
-Bestandsgenauigkeit (Menge/€), Lagerumschlag 
-=
-Verbrauch oder COGS
-Ø Bestand
-=
-Ø Bestand
-Verbrauch oder COGS
-	​
+# Bestandsgenauigkeit (Menge/€), Lagerumschlag
 
-, Ø Lagerdauer 
+Verbrauch oder COGS
+Ø Bestand
 =
+Ø Bestand
+Verbrauch oder COGS
+​
+
+# , Ø Lagerdauer
+
 365
 Umschlag
 =
 Umschlag
 365
-	​
+​
 
 .
 
@@ -2040,7 +2034,7 @@ Versand/Kosten
 
 Kosten/Sendung, Kosten/kg, Carrier-Performance (Transitabweichung, Schadensquote), CO₂/Sendung.
 
-11) Operative, messbare Regeln
+11. Operative, messbare Regeln
 
 FEFO verbindlich für MHD-Artikel; Sperre bei Nichteinhaltung.
 
@@ -2056,7 +2050,7 @@ Frachtprüfung: > 2 % Abweichung berechnetes vs. abgerechnetes Porto → Auto-Di
 
 ETA-Alarm: progn. Verspätung > x Stunden → proaktive Kundeninfo.
 
-12) Dashboards (Minimal-Set)
+12. Dashboards (Minimal-Set)
 
 Lagerleitstand: Live-Bestände, Alarme (Unter-/Überbestand, MHD), Kommissionier-Backlog, Wegezeit-Heatmap.
 
@@ -2066,7 +2060,7 @@ Versand/TMS: OTIF/Carrier-Scorecards, Kosten/Sendung, CO₂-Intensität, Cut-off
 
 Kundenkomm.: Sendevolumen, Öffnungs/Klick, Beschwerde-Heatmap, SLA-Einhaltung.
 
-13) Einführung (12-Wochen-MVP, pragmatisch)
+13. Einführung (12-Wochen-MVP, pragmatisch)
 
 W1–3 – Basis & Datenqualität:
 Artikel/Platz-Stammdaten-Hardening (ABC/XYZ, MHD/FEFO-Flags, Gefahrgut/Kühl), Pflicht-Scans aktivieren, Bewegungsjournal prüfen.

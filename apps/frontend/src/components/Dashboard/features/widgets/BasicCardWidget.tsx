@@ -25,9 +25,7 @@ const BasicCardWidget: React.FC<WidgetProps> = ({ node, config }) => {
       }}
     >
       <h3 style={{ margin: 0 }}>{title}</h3>
-      {content && (
-        <div style={{ fontSize: "0.9rem" }}>{String(content)}</div>
-      )}
+      {content && <div style={{ fontSize: "0.9rem" }}>{String(content)}</div>}
     </div>
   );
 };

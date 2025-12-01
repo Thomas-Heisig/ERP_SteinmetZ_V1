@@ -1,0 +1,71 @@
+/* ==================== HIGH CONTRAST THEME ==================== */
+/* apps/frontend/src/styles/themes/high-contrast.css */
+
+[data-theme="high-contrast"] {
+  /* Maximum contrast colors */
+  --primary-50: #ffffff;
+  --primary-100: #ffffff;
+  --primary-200: #ffffff;
+  --primary-300: #0000ff;
+  --primary-400: #0000ff;
+  --primary-500: #0000ff;
+  --primary-600: #0000cc;
+  --primary-700: #000099;
+  --primary-800: #000066;
+  --primary-900: #000033;
+  
+  /* Pure black and white */
+  --gray-50: #ffffff;
+  --gray-100: #ffffff;
+  --gray-200: #cccccc;
+  --gray-300: #999999;
+  --gray-400: #666666;
+  --gray-500: #333333;
+  --gray-600: #222222;
+  --gray-700: #111111;
+  --gray-800: #000000;
+  --gray-900: #000000;
+  --gray-950: #000000;
+  
+  /* High contrast semantic */
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-overlay: rgba(0, 0, 0, 0.9);
+  
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-tertiary: #333333;
+  --text-inverted: #ffffff;
+  
+  --border: #000000;
+  --border-light: #333333;
+  --border-dark: #000000;
+  
+  /* High contrast status colors */
+  --success-500: #008000;
+  --warning-500: #ff8c00;
+  --error-500: #ff0000;
+  --info-500: #0000ff;
+  
+  /* Larger focus rings */
+  --focus-ring-width: 4px;
+  --focus-ring-offset: 4px;
+}
+
+[data-theme="high-contrast"] * {
+  /* Ensure all text is bold enough to read */
+  text-shadow: none !important;
+}
+
+[data-theme="high-contrast"] button,
+[data-theme="high-contrast"] a,
+[data-theme="high-contrast"] input,
+[data-theme="high-contrast"] select,
+[data-theme="high-contrast"] textarea {
+  border-width: 2px !important;
+}
+
+[data-theme="high-contrast"] *:focus {
+  outline: 4px solid #0000ff !important;
+  outline-offset: 4px !important;
+}

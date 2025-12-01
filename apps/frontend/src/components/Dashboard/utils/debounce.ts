@@ -33,36 +33,38 @@ export interface DebouncedFunction<T extends (...args: any[]) => any> {
 
 /**
  * Advanced debounce function with leading/trailing options and cancellation
- * 
+ *
  * @param fn - The function to debounce
  * @param options - Debounce configuration options
  * @returns Debounced function with control methods
- * 
+ *
  * @example
  * ```typescript
  * // Basic debounce
  * const debouncedSearch = debounce(searchApi, 300);
- * 
+ *
  * // With leading edge (immediate execution on first call)
- * const debouncedSave = debounce(saveData, { 
- *   delay: 1000, 
- *   leading: true 
+ * const debouncedSave = debounce(saveData, {
+ *   delay: 1000,
+ *   leading: true
  * });
- * 
+ *
  * // Cancel pending execution
  * debouncedSearch.cancel();
  * ```
  */
 export function debounce<T extends (...args: any[]) => any>(
   fn: T,
-  options: number | DebounceOptions = {}
+  options: number | DebounceOptions = {},
 ): DebouncedFunction<T> {
-  const config: Omit<Required<DebounceOptions>, 'maxWait'> & { maxWait: number | undefined } = {
+  const config: Omit<Required<DebounceOptions>, "maxWait"> & {
+    maxWait: number | undefined;
+  } = {
     delay: 300,
     leading: false,
     trailing: true,
     maxWait: undefined,
-    ...(typeof options === 'number' ? { delay: options } : options)
+    ...(typeof options === "number" ? { delay: options } : options),
   };
 
   let timer: ReturnType<typeof setTimeout> | null = null;
@@ -85,7 +87,7 @@ export function debounce<T extends (...args: any[]) => any>(
 
   const execute = (): void => {
     if (lastArgs === null) return;
-    
+
     // Execute the function with the last arguments
     fn(...lastArgs);
     lastExecTime = Date.now();
@@ -116,8 +118,11 @@ export function debounce<T extends (...args: any[]) => any>(
     if (config.maxWait !== undefined) {
       const timeSinceLastExec = lastExecTime ? now - lastExecTime : Infinity;
       const timeSinceLastCall = lastCallTime ? now - lastCallTime : Infinity;
-      
-      if (timeSinceLastExec >= config.maxWait || timeSinceLastCall >= config.maxWait) {
+
+      if (
+        timeSinceLastExec >= config.maxWait ||
+        timeSinceLastCall >= config.maxWait
+      ) {
         execute();
       } else {
         maxTimer = setTimeout(execute, config.maxWait - timeSinceLastExec);
@@ -153,11 +158,11 @@ export function debounce<T extends (...args: any[]) => any>(
 
 /**
  * Throttle function - limits function execution to once per specified period
- * 
+ *
  * @param fn - The function to throttle
  * @param delay - Minimum time between executions in milliseconds
  * @returns Throttled function
- * 
+ *
  * @example
  * ```typescript
  * const throttledScroll = throttle(handleScroll, 100);
@@ -166,13 +171,13 @@ export function debounce<T extends (...args: any[]) => any>(
  */
 export function throttle<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number = 300
+  delay: number = 300,
 ): DebouncedFunction<T> {
   return debounce(fn, {
     delay,
     leading: true,
     trailing: true,
-    maxWait: delay
+    maxWait: delay,
   });
 }
 
@@ -185,7 +190,7 @@ export function throttle<T extends (...args: any[]) => any>(
  */
 export function debounceLeading<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number = 300
+  delay: number = 300,
 ): DebouncedFunction<T> {
   return debounce(fn, { delay, leading: true, trailing: false });
 }
@@ -195,7 +200,7 @@ export function debounceLeading<T extends (...args: any[]) => any>(
  */
 export function debounceTrailing<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number = 300
+  delay: number = 300,
 ): DebouncedFunction<T> {
   return debounce(fn, { delay, leading: false, trailing: true });
 }
@@ -205,7 +210,7 @@ export function debounceTrailing<T extends (...args: any[]) => any>(
  */
 export function debounceBoth<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number = 300
+  delay: number = 300,
 ): DebouncedFunction<T> {
   return debounce(fn, { delay, leading: true, trailing: true });
 }
@@ -220,7 +225,7 @@ export function debounceBoth<T extends (...args: any[]) => any>(
  */
 export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
   fn: T,
-  options: number | DebounceOptions = {}
+  options: number | DebounceOptions = {},
 ): {
   (...args: Parameters<T>): Promise<ReturnType<T>>;
   cancel: () => void;
@@ -234,7 +239,7 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
   const debounced = debounce((...args: Parameters<T>) => {
     if (pendingPromise) {
       fn(...args)
-        .then(result => {
+        .then((result) => {
           if (resolvePending) {
             resolvePending(result);
             resolvePending = null;
@@ -242,7 +247,7 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
             pendingPromise = null;
           }
         })
-        .catch(error => {
+        .catch((error) => {
           if (rejectPending) {
             rejectPending(error);
             resolvePending = null;
@@ -256,14 +261,14 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
   const asyncDebounced = (...args: Parameters<T>): Promise<ReturnType<T>> => {
     // Cancel previous execution but keep the promise
     debounced.cancel();
-    
+
     if (!pendingPromise) {
       pendingPromise = new Promise((resolve, reject) => {
         resolvePending = resolve;
         rejectPending = reject;
       });
     }
-    
+
     debounced(...args);
     return pendingPromise;
   };
@@ -271,7 +276,7 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
   asyncDebounced.cancel = (): void => {
     debounced.cancel();
     if (rejectPending) {
-      rejectPending(new Error('Debounced function cancelled'));
+      rejectPending(new Error("Debounced function cancelled"));
       resolvePending = null;
       rejectPending = null;
       pendingPromise = null;
@@ -298,7 +303,7 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
  */
 export function memoizedDebounce<T extends (...args: any[]) => any>(
   fn: T,
-  options: number | DebounceOptions = {}
+  options: number | DebounceOptions = {},
 ): {
   (...args: Parameters<T>): ReturnType<T> | undefined;
   cancel: () => void;
@@ -316,10 +321,13 @@ export function memoizedDebounce<T extends (...args: any[]) => any>(
 
   const memoized = (...args: Parameters<T>): ReturnType<T> | undefined => {
     // Return cached result if arguments are the same
-    if (cachedArgs !== null && JSON.stringify(args) === JSON.stringify(cachedArgs)) {
+    if (
+      cachedArgs !== null &&
+      JSON.stringify(args) === JSON.stringify(cachedArgs)
+    ) {
       return cachedResult;
     }
-    
+
     debounced(...args);
     return undefined;
   };

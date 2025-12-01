@@ -30,6 +30,10 @@ import healthRouter from "./routes/systemInfoRouter/health.js";
 import functionsCatalogRouter from "./routes/functionsCatalog/functionsCatalog.js";
 import aiAnnotatorRouter from "./routes/aiAnnotatorRouter/aiAnnotatorRouter.js";
 import systemInfoRouter from "./routes/systemInfoRouter/systemInfoRouter.js";
+import innovationRouter from "./routes/innovation/innovationRouter.js";
+import calendarRouter from "./routes/calendar/calendarRouter.js";
+import quickchatRouter from "./routes/quickchat/quickchatRouter.js";
+import diagnosticsRouter from "./routes/diagnostics/diagnosticsRouter.js";
 
 import { toolRegistry } from "./tools/registry.js";
 import { listRoutesTool } from "./tools/listRoutesTool.js";
@@ -78,7 +82,7 @@ app.use(
   cors({
     origin: ORIGIN,
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json({ limit: "10mb" }));
@@ -90,9 +94,7 @@ app.use((req, res, next) => {
     const token = req.headers["x-admin-token"];
     if (token !== process.env.ADMIN_TOKEN) {
       console.warn(`[auth] Zugriff verweigert auf ${req.path}`);
-      return res
-        .status(403)
-        .json({ error: "Forbidden: Admin token required" });
+      return res.status(403).json({ error: "Forbidden: Admin token required" });
     }
   }
   next();
@@ -122,6 +124,10 @@ app.use("/api/ai", aiRouter);
 app.use("/api/functions", functionsCatalogRouter);
 app.use("/api/ai-annotator", aiAnnotatorRouter);
 app.use("/api/system", systemInfoRouter);
+app.use("/api/innovation", innovationRouter);
+app.use("/api/calendar", calendarRouter);
+app.use("/api/quickchat", quickchatRouter);
+app.use("/diagnostics", diagnosticsRouter);
 console.log("[router] API-Routen aktiv");
 
 /* --------------------------------------------------------
@@ -136,8 +142,7 @@ if (Array.isArray(stack)) {
   console.log("[debug] Router-Stack-Länge:", stack.length);
   const routeNames = stack
     .map(
-      (layer: any) =>
-        layer?.route?.path || layer?.name || layer?.handle?.name
+      (layer: any) => layer?.route?.path || layer?.name || layer?.handle?.name,
     )
     .filter(Boolean);
   console.log("[debug] Bekannte Router-Einträge:", routeNames.slice(0, 20));
@@ -180,13 +185,13 @@ async function bootstrapFunctionsCatalog() {
     if (process.env.FUNCTIONS_AUTOLOAD !== "0") {
       const result = await service.refreshFunctionsIndex();
       console.log(
-        `[functions] initial geladen @ ${result.loadedAt} (${result.nodes.length} Wurzeln)`
+        `[functions] initial geladen @ ${result.loadedAt} (${result.nodes.length} Wurzeln)`,
       );
 
       if (process.env.FUNCTIONS_AUTOPERSIST === "1") {
         const summary = await db.upsertFunctionsCatalog(result);
         console.log(
-          `[functions] initial in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`
+          `[functions] initial in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`,
         );
       }
     } else {
@@ -199,16 +204,13 @@ async function bootstrapFunctionsCatalog() {
   } catch (err) {
     console.error(
       "[bootstrap] Fehler beim Initialisieren des Function-Katalogs:",
-      err
+      err,
     );
   }
 }
 
 /* ---------------------- Watcher ---------------------- */
-function startFunctionsWatcher(
-  service: FunctionsCatalogService,
-  dir: string
-) {
+function startFunctionsWatcher(service: FunctionsCatalogService, dir: string) {
   console.log(`[functions] Watcher aktiv: ${dir}`);
   let timer: NodeJS.Timeout | null = null;
 
@@ -219,7 +221,7 @@ function startFunctionsWatcher(
       if (process.env.FUNCTIONS_AUTOPERSIST === "1") {
         const summary = await db.upsertFunctionsCatalog(result);
         console.log(
-          `[functions] in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`
+          `[functions] in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`,
         );
       }
     } catch (e) {
@@ -249,10 +251,18 @@ export async function start() {
       console.log("--------------------------------------------------------");
       console.log(`[backend] Listening on:           http://localhost:${PORT}`);
       console.log(`[backend] Dashboard erreichbar:  http://localhost:${PORT}/`);
-      console.log(`[backend] System API:             http://localhost:${PORT}/api/system`);
-      console.log(`[backend] Health API:             http://localhost:${PORT}/api/health`);
-      console.log(`[backend] Functions API:          http://localhost:${PORT}/api/functions`);
-      console.log(`[backend] AI Annotator API:       http://localhost:${PORT}/api/ai-annotator`);
+      console.log(
+        `[backend] System API:             http://localhost:${PORT}/api/system`,
+      );
+      console.log(
+        `[backend] Health API:             http://localhost:${PORT}/api/health`,
+      );
+      console.log(
+        `[backend] Functions API:          http://localhost:${PORT}/api/functions`,
+      );
+      console.log(
+        `[backend] AI Annotator API:       http://localhost:${PORT}/api/ai-annotator`,
+      );
       console.log("--------------------------------------------------------");
     });
 
@@ -267,9 +277,7 @@ export async function start() {
 const isMain = (() => {
   try {
     const current = path.resolve(fileURLToPath(import.meta.url));
-    const entry = process.argv[1]
-      ? path.resolve(process.argv[1])
-      : "";
+    const entry = process.argv[1] ? path.resolve(process.argv[1]) : "";
     return current === entry;
   } catch {
     return false;

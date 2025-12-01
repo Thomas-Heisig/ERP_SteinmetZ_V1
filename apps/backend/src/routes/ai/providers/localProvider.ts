@@ -5,7 +5,7 @@
  * Erkennt automatisch Modelle in:
  *   - F:\KI\models
  *   - ERP_SteinmetZ_V1\models
- * 
+ *
  * Unterstützt GGUF-, HF-, Whisper-, LLaMA-, Gemma-, Falcon-, Qwen-, Mistral-Modelle usw.
  * Kann über Systemprompt oder API-Aufruf dynamisch konfiguriert werden.
  */
@@ -13,7 +13,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
-import type { ChatMessage, AIResponse, AIModuleConfig } from "../types/types.js";
+import type {
+  ChatMessage,
+  AIResponse,
+  AIModuleConfig,
+} from "../types/types.js";
 import { log } from "../utils/logger.js";
 
 /* ========================================================================== */
@@ -54,18 +58,24 @@ export function scanLocalModels(): LocalModelInfo[] {
       const modelDir = path.join(basePath, dir.name);
       const files = fs.readdirSync(modelDir);
 
-      const modelType =
-        files.some(f => f.endsWith(".gguf")) ? "GGUF"
-        : files.some(f => f.includes("pytorch_model")) ? "HuggingFace"
-        : files.some(f => f.includes("whisper")) ? "Whisper"
-        : files.some(f => f.includes("falcon")) ? "Falcon"
-        : files.some(f => f.includes("mistral")) ? "Mistral"
-        : files.some(f => f.includes("gemma")) ? "Gemma"
-        : files.some(f => f.includes("qwen")) ? "Qwen"
-        : "Unknown";
+      const modelType = files.some((f) => f.endsWith(".gguf"))
+        ? "GGUF"
+        : files.some((f) => f.includes("pytorch_model"))
+          ? "HuggingFace"
+          : files.some((f) => f.includes("whisper"))
+            ? "Whisper"
+            : files.some((f) => f.includes("falcon"))
+              ? "Falcon"
+              : files.some((f) => f.includes("mistral"))
+                ? "Mistral"
+                : files.some((f) => f.includes("gemma"))
+                  ? "Gemma"
+                  : files.some((f) => f.includes("qwen"))
+                    ? "Qwen"
+                    : "Unknown";
 
       const stats = files
-        .map(f => {
+        .map((f) => {
           try {
             const fp = path.join(modelDir, f);
             const s = fs.statSync(fp);
@@ -97,15 +107,15 @@ export function scanLocalModels(): LocalModelInfo[] {
 export async function callLocalModel(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {}
+  options: Record<string, any> = {},
 ): Promise<AIResponse> {
   const localModels = scanLocalModels();
-  const selected = localModels.find(m =>
-    model.toLowerCase().includes(m.name.toLowerCase())
+  const selected = localModels.find((m) =>
+    model.toLowerCase().includes(m.name.toLowerCase()),
   );
 
   if (!selected) {
-    const available = localModels.map(m => m.name).join(", ") || "keine";
+    const available = localModels.map((m) => m.name).join(", ") || "keine";
     return {
       text: `❌ Lokales Modell "${model}" nicht gefunden.\nVerfügbare Modelle: ${available}`,
       action: "error_local_model_not_found",
@@ -152,7 +162,8 @@ export let localProviderConfig: AIModuleConfig = {
   temperature: 0.4,
   max_tokens: 512,
   active: true,
-  description: "Scannt, erkennt und verwaltet lokale Modelle (GGUF, HF, Whisper etc.).",
+  description:
+    "Scannt, erkennt und verwaltet lokale Modelle (GGUF, HF, Whisper etc.).",
   // ✅ gültige Capability-Werte laut types.ts
   capabilities: ["tools", "workflow", "chat", "reasoning", "json"],
 };
@@ -160,7 +171,9 @@ export let localProviderConfig: AIModuleConfig = {
 /**
  * Ändert dynamisch Konfiguration des Local Providers (z. B. über Systemprompt)
  */
-export function updateLocalConfig(updates: Partial<AIModuleConfig>): AIModuleConfig {
+export function updateLocalConfig(
+  updates: Partial<AIModuleConfig>,
+): AIModuleConfig {
   localProviderConfig = { ...localProviderConfig, ...updates };
   log("info", "Lokale Provider-Konfiguration aktualisiert", updates);
   return localProviderConfig;

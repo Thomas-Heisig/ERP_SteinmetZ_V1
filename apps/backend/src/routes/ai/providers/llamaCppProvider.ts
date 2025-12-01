@@ -7,7 +7,11 @@
  */
 
 import fetch from "node-fetch";
-import type { ChatMessage, AIResponse, AIModuleConfig } from "../types/types.js";
+import type {
+  ChatMessage,
+  AIResponse,
+  AIModuleConfig,
+} from "../types/types.js";
 import { log } from "../utils/logger.js";
 
 /* ========================================================================== */
@@ -52,7 +56,10 @@ function buildPayload(prompt: string) {
 /* 💬 Hauptfunktion: Aufruf der llama.cpp API */
 /* ========================================================================== */
 
-export async function callLlamaCpp(model: string, messages: ChatMessage[]): Promise<AIResponse> {
+export async function callLlamaCpp(
+  model: string,
+  messages: ChatMessage[],
+): Promise<AIResponse> {
   const apiUrl = llamaConfig.endpoint ?? "http://localhost:8080/completion";
   const usedModel = model || llamaConfig.model;
   const prompt = buildPrompt(messages);
@@ -106,7 +113,10 @@ export async function callLlamaCpp(model: string, messages: ChatMessage[]): Prom
     };
   } catch (err: any) {
     const message = err?.message ?? "Unbekannter Fehler";
-    log("error", "llama.cpp Fehler", { error: message, endpoint: llamaConfig.endpoint });
+    log("error", "llama.cpp Fehler", {
+      error: message,
+      endpoint: llamaConfig.endpoint,
+    });
 
     return {
       text: `❌ llama.cpp Fehler: ${message}`,
@@ -147,9 +157,9 @@ export async function testLlamaCpp(): Promise<boolean> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 3000);
 
-    const res = await fetch(endpoint, { 
+    const res = await fetch(endpoint, {
       method: "HEAD",
-      signal: controller.signal
+      signal: controller.signal,
     });
 
     clearTimeout(timer);
@@ -158,7 +168,6 @@ export async function testLlamaCpp(): Promise<boolean> {
     return false;
   }
 }
-
 
 /* ========================================================================== */
 /* 🧾 Default-Export */

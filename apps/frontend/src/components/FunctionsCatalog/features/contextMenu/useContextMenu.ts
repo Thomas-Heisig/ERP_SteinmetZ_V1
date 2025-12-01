@@ -57,7 +57,7 @@ export default function useContextMenu(): UseContextMenuApi {
         items,
       });
     },
-    []
+    [],
   );
 
   const openAtPosition = useCallback(
@@ -69,7 +69,7 @@ export default function useContextMenu(): UseContextMenuApi {
         items,
       });
     },
-    []
+    [],
   );
 
   const close = useCallback(() => {

@@ -1,48 +1,48 @@
 /* ==================== LCARS THEME - STAR TREK STYLE ==================== */
 [data-theme="lcars"] {
   /* Authentische LCARS Farbpalette */
-  --lcars-orange: #FF9E00;
-  --lcars-mustard: #CC9900;
-  --lcars-lavender: #AA99FF;
-  --lcars-blue: #6699CC;
-  --lcars-pink: #FF99CC;
-  --lcars-purple: #9966CC;
+  --lcars-orange: #ff9e00;
+  --lcars-mustard: #cc9900;
+  --lcars-lavender: #aa99ff;
+  --lcars-blue: #6699cc;
+  --lcars-pink: #ff99cc;
+  --lcars-purple: #9966cc;
   --lcars-dark-blue: #336699;
   --lcars-dark-gray: #222222;
   --lcars-black: #000000;
-  --lcars-white: #FFFFFF;
-  --lcars-beige: #F8F8F0;
-  
+  --lcars-white: #ffffff;
+  --lcars-beige: #f8f8f0;
+
   /* LCARS Design Tokens - KEINE abgerundeten Ecken */
   --lcars-radius: 0;
   --lcars-radius-lg: 0;
   --lcars-radius-full: 0;
-  
+
   /* LCARS Layout Variablen */
   --lcars-bar-height: 40px;
   --lcars-padding: 20px;
   --lcars-margin: 15px;
-  
+
   /* LCARS spezifische Variablen */
   --surface: var(--lcars-black);
   --surface-elevated: var(--lcars-dark-gray);
   --border: var(--lcars-orange);
   --text-primary: var(--lcars-beige);
   --text-secondary: var(--lcars-lavender);
-  
+
   /* Override der Standardvariablen */
   --primary-50: var(--lcars-lavender);
   --primary-500: var(--lcars-orange);
   --primary-600: var(--lcars-mustard);
   --primary-700: var(--lcars-mustard);
-  
+
   --gray-50: var(--lcars-dark-gray);
   --gray-900: var(--lcars-beige);
-  
-  --success-500: #00CC66;
+
+  --success-500: #00cc66;
   --warning-500: var(--lcars-orange);
-  --error-500: #FF3366;
-  
+  --error-500: #ff3366;
+
   /* LCARS Schatten */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.5);
   --shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -52,7 +52,7 @@
 /* ==================== LCARS GLOBALE STYLES ==================== */
 [data-theme="lcars"] * {
   border-radius: 0 !important;
-  font-family: 'LCD', 'Courier New', monospace;
+  font-family: "LCD", "Courier New", monospace;
   letter-spacing: 1px;
   box-sizing: border-box;
 }
@@ -76,7 +76,7 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   margin: 0 0 var(--lcars-margin) 0;
-  font-family: 'LCD', 'Courier New', monospace;
+  font-family: "LCD", "Courier New", monospace;
 }
 
 [data-theme="lcars"] .dashboard-title {
@@ -91,43 +91,61 @@
 
 /* ==================== LCARS ANIMATIONEN ==================== */
 @keyframes lcars-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @keyframes lcars-scan {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes lcars-glow {
-  0%, 100% { 
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       inset 0 0 10px var(--lcars-orange),
       0 0 10px var(--lcars-orange);
   }
-  50% { 
-    box-shadow: 
+  50% {
+    box-shadow:
       inset 0 0 20px var(--lcars-orange),
       0 0 20px var(--lcars-orange);
   }
 }
 
 @keyframes lcars-beep {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(0.95); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
 }
 
 @keyframes lcars-data-flow {
-  0% { background-position: -200px 0; }
-  100% { background-position: 200px 0; }
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
 }
 
 /* ==================== LCARS LAYOUT SYSTEM ==================== */
 [data-theme="lcars"] .dashboard-root {
   min-height: 100vh;
-  background: 
-    linear-gradient(45deg, var(--lcars-black) 0%, #111111 100%);
+  background: linear-gradient(45deg, var(--lcars-black) 0%, #111111 100%);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -135,7 +153,7 @@
 
 /* LCARS Rahmen um den gesamten Bildschirm */
 [data-theme="lcars"] .dashboard-root::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
@@ -161,11 +179,13 @@
   align-items: center;
   padding: 0 var(--lcars-padding);
   height: var(--lcars-bar-height);
-  background: linear-gradient(90deg, 
-    var(--lcars-dark-blue) 0%, 
+  background: linear-gradient(
+    90deg,
+    var(--lcars-dark-blue) 0%,
     var(--lcars-dark-blue) 30%,
     var(--lcars-purple) 70%,
-    var(--lcars-purple) 100%);
+    var(--lcars-purple) 100%
+  );
   border-bottom: 4px solid var(--lcars-orange);
   position: relative;
   overflow: hidden;
@@ -173,16 +193,18 @@
 
 /* LCARS Header Scan-Line */
 [data-theme="lcars"] .dashboard-header::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    var(--lcars-orange), 
-    transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--lcars-orange),
+    transparent
+  );
   animation: lcars-scan 3s linear infinite;
 }
 
@@ -226,16 +248,18 @@
 }
 
 [data-theme="lcars"] .status-display::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 158, 0, 0.3), 
-    transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 158, 0, 0.3),
+    transparent
+  );
   animation: lcars-data-flow 2s linear infinite;
 }
 
@@ -275,16 +299,18 @@
 }
 
 [data-theme="lcars"] .time-display::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(170, 153, 255, 0.3), 
-    transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(170, 153, 255, 0.3),
+    transparent
+  );
   animation: lcars-data-flow 3s linear infinite;
 }
 
@@ -311,12 +337,14 @@
   justify-content: space-between;
   padding: 0 var(--lcars-padding);
   height: var(--lcars-bar-height);
-  background: linear-gradient(90deg, 
+  background: linear-gradient(
+    90deg,
     var(--lcars-dark-gray) 0%,
     var(--lcars-dark-gray) 20%,
     #333333 50%,
     var(--lcars-dark-gray) 80%,
-    var(--lcars-dark-gray) 100%);
+    var(--lcars-dark-gray) 100%
+  );
   border-bottom: 4px solid var(--lcars-orange);
   position: relative;
 }
@@ -345,16 +373,18 @@
 }
 
 [data-theme="lcars"] .topbar-category-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 158, 0, 0.4), 
-    transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 158, 0, 0.4),
+    transparent
+  );
   transition: left 0.5s ease;
 }
 
@@ -391,7 +421,7 @@
   border: 2px solid var(--lcars-lavender);
   background: var(--lcars-dark-gray);
   color: var(--lcars-beige);
-  font-family: 'LCD', 'Courier New', monospace;
+  font-family: "LCD", "Courier New", monospace;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -419,13 +449,13 @@
 
 /* LCARS Raster-Hintergrund */
 [data-theme="lcars"] .content-area::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(255, 158, 0, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 158, 0, 0.05) 1px, transparent 1px);
   background-size: 20px 20px;
@@ -441,11 +471,13 @@
 
 [data-theme="lcars"] .categories-header {
   padding: var(--lcars-padding);
-  background: linear-gradient(90deg, 
+  background: linear-gradient(
+    90deg,
     var(--lcars-dark-blue) 0%,
     var(--lcars-dark-blue) 30%,
     var(--lcars-purple) 70%,
-    var(--lcars-purple) 100%);
+    var(--lcars-purple) 100%
+  );
   border: 2px solid var(--lcars-orange);
   border-left: 15px solid var(--lcars-orange);
   margin-bottom: var(--lcars-margin);
@@ -454,16 +486,18 @@
 }
 
 [data-theme="lcars"] .categories-header::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 158, 0, 0.2), 
-    transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 158, 0, 0.2),
+    transparent
+  );
   animation: lcars-scan 4s linear infinite;
 }
 
@@ -488,9 +522,7 @@
 }
 
 [data-theme="lcars"] .category-widget {
-  background: linear-gradient(135deg, 
-    var(--lcars-dark-gray) 0%, 
-    #2a2a2a 100%);
+  background: linear-gradient(135deg, var(--lcars-dark-gray) 0%, #2a2a2a 100%);
   border: 2px solid var(--lcars-orange);
   border-left: 12px solid var(--lcars-orange);
   padding: var(--lcars-padding);
@@ -501,16 +533,18 @@
 }
 
 [data-theme="lcars"] .category-widget::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 158, 0, 0.1), 
-    transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 158, 0, 0.1),
+    transparent
+  );
   transition: left 0.5s ease;
 }
 
@@ -603,9 +637,11 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--lcars-padding);
-  background: linear-gradient(90deg, 
+  background: linear-gradient(
+    90deg,
     var(--lcars-dark-blue) 0%,
-    var(--lcars-purple) 100%);
+    var(--lcars-purple) 100%
+  );
   border: 2px solid var(--lcars-orange);
   margin-bottom: var(--lcars-margin);
 }
@@ -638,9 +674,7 @@
 }
 
 [data-theme="lcars"] .result-card {
-  background: linear-gradient(135deg, 
-    var(--lcars-dark-gray) 0%, 
-    #2a2a2a 100%);
+  background: linear-gradient(135deg, var(--lcars-dark-gray) 0%, #2a2a2a 100%);
   border: 2px solid var(--lcars-lavender);
   border-left: 10px solid var(--lcars-lavender);
   padding: 15px;
@@ -723,9 +757,11 @@
 }
 
 [data-theme="lcars"] .quick-chat-header {
-  background: linear-gradient(90deg, 
+  background: linear-gradient(
+    90deg,
     var(--lcars-dark-blue) 0%,
-    var(--lcars-purple) 100%);
+    var(--lcars-purple) 100%
+  );
   border-bottom: 4px solid var(--lcars-orange);
   padding: 15px;
 }
@@ -773,9 +809,11 @@
 
 /* ==================== LCARS APP HEADER ==================== */
 [data-theme="lcars"] .app-header {
-  background: linear-gradient(90deg, 
+  background: linear-gradient(
+    90deg,
     var(--lcars-dark-blue) 0%,
-    var(--lcars-purple) 100%);
+    var(--lcars-purple) 100%
+  );
   border-bottom: 4px solid var(--lcars-orange);
   padding: 0 var(--lcars-padding);
   height: var(--lcars-bar-height);
@@ -784,16 +822,18 @@
 }
 
 [data-theme="lcars"] .app-header::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    var(--lcars-orange), 
-    transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--lcars-orange),
+    transparent
+  );
   animation: lcars-scan 2.5s linear infinite;
 }
 
@@ -850,15 +890,15 @@
     --lcars-padding: 10px;
     --lcars-margin: 10px;
   }
-  
+
   [data-theme="lcars"] .dashboard-title {
     font-size: 2rem;
   }
-  
+
   [data-theme="lcars"] .categories-grid {
     grid-template-columns: 1fr;
   }
-  
+
   [data-theme="lcars"] .topbar-categories {
     flex-wrap: wrap;
   }
@@ -880,7 +920,7 @@
 }
 
 .lcars-data-stream::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;

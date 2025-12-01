@@ -34,7 +34,6 @@ export default function NodeMetaBlocks({ node }: Props) {
 
   return (
     <div className="fc-meta-blocks">
-
       {hasMeta && (
         <section>
           <div className="fc-section-title">Meta</div>
@@ -66,7 +65,6 @@ export default function NodeMetaBlocks({ node }: Props) {
           </ul>
         </section>
       )}
-
     </div>
   );
 }

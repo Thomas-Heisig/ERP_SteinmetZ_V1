@@ -6,11 +6,7 @@
  * Der Builder enthält keine UI, sondern liefert rein logische Formmodelle.
  */
 
-import type {
-  FormField,
-  DashboardNode,
-  ValidationRule,
-} from "../../types";
+import type { FormField, DashboardNode, ValidationRule } from "../../types";
 
 export interface BuiltFormField {
   id: string;
@@ -88,11 +84,18 @@ export class FormBuilder {
   validateField(field: BuiltFormField, value: any): boolean {
     const rule = field.validation;
 
-    if (field.required && (value === null || value === undefined || value === "")) {
+    if (
+      field.required &&
+      (value === null || value === undefined || value === "")
+    ) {
       return false;
     }
 
-    if (rule.pattern && typeof value === "string" && !rule.pattern.test(value)) {
+    if (
+      rule.pattern &&
+      typeof value === "string" &&
+      !rule.pattern.test(value)
+    ) {
       return false;
     }
 

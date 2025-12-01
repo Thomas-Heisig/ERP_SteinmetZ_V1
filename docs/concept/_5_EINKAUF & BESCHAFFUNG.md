@@ -887,7 +887,7 @@ Funktionsbeschreibung: Modul „Einkauf & Beschaffung“
 
 Ziel: Bedarfssicherung zu definiertem Servicegrad bei minimaler Kapitalbindung, nachvollziehbaren Prozessen (Audit-Trail) und klaren Kennzahlen.
 
-1) Datenmodell & Berechtigungen (Grundlage)
+1. Datenmodell & Berechtigungen (Grundlage)
 
 Objekte: Material/Artikel, Dispositionsparameter, Stückliste (BOM), Lieferant, Preis/Kondition, Rahmenvertrag, Bestellung/Position, Bestätigung, Wareneingang/Charge/Seriennr., QS-Prüflos/Ergebnis, Abweichung/8D, Rechnung, Freigabe, Zahlung.
 
@@ -897,7 +897,7 @@ SoD-Kontrollen: Trennung Stammdatenpflege / Bestellung / Wareneingang / Rechnung
 
 Nachvollziehbarkeit: Versionierung, Pflichtfelder, Änderungsjournal, Belegnummernkreise.
 
-2) Bedarfsplanung (MRP & Prognose)
+2. Bedarfsplanung (MRP & Prognose)
 
 MRP-Logik (vereinfacht):
 
@@ -944,7 +944,7 @@ Umschlag = Verbrauch (oder COGS) / Ø Bestand; Bestandsreichweite (DOH) = 365 / 
 
 Kapitalbindungskosten = Ø Bestand · (Kalk. Zinssatz + Lagerkostenrate).
 
-3) Bestellwesen & Freigaben
+3. Bestellwesen & Freigaben
 
 BANF → Bestellung: manuell, MRP-, verbrauchs- oder regelbasiert; Bündelung/Preisstaffeln.
 
@@ -954,7 +954,7 @@ Freigaben: rollen-/betragsbasiert, seriell/parallel, SLAs, Mobile, Eskalationspf
 
 Kennzahlen: Durchlaufzeit BANF→PO, Quote „Erstangebot vs. Vertragspreis“, Freigabe-SLA-Einhaltung.
 
-4) Lieferantenmanagement & Bewertung
+4. Lieferantenmanagement & Bewertung
 
 Onboarding: Stammdaten-Pflichtfelder, USt-IdNr./IBAN-Validierung, Sanktions-/Watchlist-Check (dokumentiert), Dokumente/Zertifikate.
 
@@ -968,7 +968,7 @@ Service: Antwortzeiten, Lösungszeiten; Risiko: Finanzen, Abhängigkeiten, Geo-R
 
 Risikomanagement: FMEA-basiert, RPN = Schwere · Auftreten · Entdeckung; Notfall-/Zweitquellen-Pläne.
 
-5) Wareneingang, Rückverfolgbarkeit, QS
+5. Wareneingang, Rückverfolgbarkeit, QS
 
 Wareneingang: EDI/ASN (DESADV), Bar-/QR/RFID-Scan, mobile App (offlinefähig), Teillieferungen & Toleranzen, Sperr-/QS-Lager.
 
@@ -982,7 +982,7 @@ Abweichungen & 8D: Ticket, Sofortmaßnahme, Ursachen (5-Why, Ishikawa), Wirksamk
 
 KPIs: Wareneingangs-Durchlaufzeit, Annahmequote, PPM, QS-Treffer vs. Prüfaufwände.
 
-6) Rechnungsprüfung & Kreditoren (P2P-Abschluss)
+6. Rechnungsprüfung & Kreditoren (P2P-Abschluss)
 
 3-Wege-Match: Bestellung ↔ Wareneingang ↔ Rechnung (Preis/Menge/Steuer/Kondition, Toleranzen).
 
@@ -996,7 +996,7 @@ KPIs: First-Time-Match-Quote, Durchlaufzeit ER→Freigabe, Skonto-Nutzungsquote,
 
 Kontrollen: Vier-Augen-Prinzip bei Bankverbindungsänderungen, Blacklist/IBAN-Prüfung, Pflichtbelege (GoBD-Archiv), SoD bis Zahlung.
 
-7) Vertrags- & Preismgmt (Compliance)
+7. Vertrags- & Preismgmt (Compliance)
 
 Archiv: revisionssichere Ablage, Versionierung, Volltext, Metadaten, Fristenkalender (Kündigung/Option/Auto-Renew).
 
@@ -1004,7 +1004,7 @@ Preisklauseln: Index-/Gleitpreise, Rabatte/Bonifikationen, Staffeln; Preismonito
 
 SLA-Tracking: definierte KPIs (Verfügbarkeit, Reaktions-/Lösungszeiten), Abweichungs-/Pönale-Regeln, Reports.
 
-8) Portale & Integration
+8. Portale & Integration
 
 Supplier-Portal: PO/ASN/ASNs-Termine, Dokumente, QS-Befunde, Tickets, Scorecard-Sicht; DSGVO-konform (Minimalprinzip, TOMs).
 
@@ -1012,7 +1012,7 @@ Schnittstellen (Beispiele): EDI (ORDERS/DESADV/INVOIC), CAMT/SEPA, GS1-Barcodes/
 
 Blockchain-Tracking (optional): nur bei hohem Fälschungs-/Herkunftsrisiko; Kosten-/Nutzen-Nachweis erforderlich.
 
-9) Reporting & Analytics (ausgewählte Definitionen)
+9. Reporting & Analytics (ausgewählte Definitionen)
 
 Preisentwicklung je Warengruppe: Index t / Index t-1 − 1.
 
@@ -1024,7 +1024,7 @@ Durchlaufzeiten: BANF→PO, PO→Bestätigung, PO→WE, WE→Rechnung, Rechnung�
 
 Compliance-Quoten: 3-Wege-Match, Rahmenvertragsnutzung, Freigabe-SLA, SoD-Verletzungen (=0 als Ziel).
 
-10) Operative Regeln (präzise, prüfbar)
+10. Operative Regeln (präzise, prüfbar)
 
 Datenqualität: Pflichtfelder + Dublettenprüfung in Lieferanten-/Artikelstamm; Änderungen protokolliert.
 
@@ -1042,7 +1042,7 @@ Skonto-Regel: System zieht automatisch, wenn APR > Finanzierungssatz und Liquidi
 
 Bankdaten-Änderung: getrennte Genehmigung + Out-of-Band-Verifikation; kein Versand sensibler Daten per Klartext-Mail.
 
-11) Minimal-Dashboards
+11. Minimal-Dashboards
 
 Dispo: Servicegrad vs. Bestand (Heatmap), ROP-Verletzungen, Forecast-Bias.
 
@@ -1054,7 +1054,7 @@ Lieferanten: Scorecard (Qualität/Kosten/Lieferung/Service/Risiko), Konzentratio
 
 Verträge: Fristen in n Tagen, Ausnutzung Rahmenmengen, Pönale-Risiken.
 
-12) Einführung (90-Tage-MVP, pragmatisch)
+12. Einführung (90-Tage-MVP, pragmatisch)
 
 Woche 1–3: Stammdaten-Inventur (Artikel/Lieferanten/BOM), Dubletten-/Plausireport, Mindest-Dispoparameter je Klasse.
 

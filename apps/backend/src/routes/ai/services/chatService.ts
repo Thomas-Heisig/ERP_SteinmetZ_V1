@@ -36,7 +36,7 @@ const FALLBACK_ENABLED = process.env.AI_FALLBACK_ENABLED === "1";
 export async function handleChatRequest(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {}
+  options: Record<string, any> = {},
 ): Promise<AIResponse> {
   const provider = options.provider?.toLowerCase() ?? ACTIVE_PROVIDER;
 
@@ -101,7 +101,8 @@ export async function handleChatRequest(
     if (FALLBACK_ENABLED) {
       const fb = await callFallback(model, messages);
       // callFallback gibt einen String zurück
-      const fbText = typeof fb === "string" ? fb : (fb as any)?.text ?? "Fallback aktiv.";
+      const fbText =
+        typeof fb === "string" ? fb : ((fb as any)?.text ?? "Fallback aktiv.");
       return {
         text: fbText,
         meta: { provider: "fallback", model },
@@ -122,13 +123,15 @@ export async function handleChatRequest(
 /* ========================================================================== */
 
 async function executeToolCalls(
-  toolCalls: { name: string; parameters?: Record<string, any> }[]
+  toolCalls: { name: string; parameters?: Record<string, any> }[],
 ): Promise<string[]> {
   const results: string[] = [];
   for (const call of toolCalls) {
     try {
       const res = await toolRegistry.call(call.name, call.parameters ?? {});
-      results.push(`✅ Tool "${call.name}" erfolgreich (${Object.keys(res).length} Felder).`);
+      results.push(
+        `✅ Tool "${call.name}" erfolgreich (${Object.keys(res).length} Felder).`,
+      );
     } catch (err: any) {
       results.push(`❌ Tool "${call.name}" Fehler: ${err.message}`);
     }
@@ -142,7 +145,7 @@ async function executeToolCalls(
 
 export async function handleWorkflow(
   name: string,
-  input: Record<string, any> = {}
+  input: Record<string, any> = {},
 ): Promise<AIResponse> {
   try {
     const runFn =
@@ -151,7 +154,9 @@ export async function handleWorkflow(
       (workflowEngine as any).start;
 
     if (typeof runFn !== "function") {
-      throw new Error("Workflow-Engine unterstützt keine runWorkflow/execute-Methode.");
+      throw new Error(
+        "Workflow-Engine unterstützt keine runWorkflow/execute-Methode.",
+      );
     }
 
     const result = await runFn.call(workflowEngine, name, input);
@@ -190,7 +195,7 @@ export async function getProviderStatus(): Promise<
     providers.map(async (p) => ({
       provider: p,
       available: await isProviderAvailable(p),
-    }))
+    })),
   );
 
   return results;

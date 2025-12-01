@@ -18,7 +18,6 @@ export default function CatalogLayout({
 
   return (
     <div className="fc-root-layout">
-
       {/* Sidebar (optional) */}
       {hasSidebar && (
         <aside className="fc-sidebar" aria-label="Catalog Sidebar">
@@ -27,16 +26,10 @@ export default function CatalogLayout({
       )}
 
       {/* Hauptbereich */}
-      <main className="fc-content-area">
-        {children}
-      </main>
+      <main className="fc-content-area">{children}</main>
 
       {/* Optionaler Footer */}
-      {footer && (
-        <footer className="fc-footer">
-          {footer}
-        </footer>
-      )}
+      {footer && <footer className="fc-footer">{footer}</footer>}
 
       {/* Inline-Layout als Fallback */}
       <style>

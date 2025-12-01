@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/services/functionsSchema.ts
-import db from './dbService.js';
+import db from "./dbService.js";
 
 export async function ensureFunctionsSchema() {
   await db.exec(`

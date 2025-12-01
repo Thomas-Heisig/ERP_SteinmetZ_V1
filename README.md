@@ -3,29 +3,35 @@ Ein modernes, KI-gestütztes ERP-System mit monolithischer Architektur und React
 
 🚀 Schnellstart
 bash
+
 # Installation
+
 npm install
 
 # Entwicklung starten (Frontend + Backend)
+
 npm run dev
 
 # Nur Frontend
+
 npm run frontend
 
-# Nur Backend  
+# Nur Backend
+
 npm run backend
 
 # Build
+
 npm run build
 📁 Projektstruktur
 text
 ├── apps/
-│   ├── frontend/          # React Frontend (Vite + TypeScript)
-│   └── backend/           # Express Backend (TypeScript)
-├── data/                  # Datenbanken und Funktionen
-├── docs/                  # Dokumentation und Konzepte
-├── models/               # AI-Modelle (GGUF)
-└── scripts/              # Hilfsskripte
+│ ├── frontend/ # React Frontend (Vite + TypeScript)
+│ └── backend/ # Express Backend (TypeScript)
+├── data/ # Datenbanken und Funktionen
+├── docs/ # Dokumentation und Konzepte
+├── models/ # AI-Modelle (GGUF)
+└── scripts/ # Hilfsskripte
 🛠️ Technologien
 Frontend: React 19, Vite, TypeScript, React Router
 
@@ -39,8 +45,8 @@ Datenbank: SQLite mit Migrationssystem
 Backend (.env)
 env
 PORT=3000
-OPENAI_API_KEY=sk-...          # Optional
-AI_MODEL=gpt-4.1-mini          # Optional  
+OPENAI_API_KEY=sk-... # Optional
+AI_MODEL=gpt-4.1-mini # Optional  
 CORS_ORIGIN=http://localhost:5173
 Frontend (.env)
 env
@@ -67,13 +73,17 @@ GET /api/functions - Funktionskatalog
 
 🎯 Entwicklung
 bash
+
 # TypeScript Prüfung
+
 npm run typecheck
 
 # Linting
+
 npm run lint
 
 # Production Build
+
 npm run build
 📝 Dokumentation
 Detaillierte Konzepte und Spezifikationen finden Sie im docs/ Verzeichnis.

@@ -3,7 +3,7 @@
  * ---------------------------------------------------------
  * Asynchroner In-Memory-Cache mit optionaler Dateipersistenz.
  * Für KI-Abfragen, Modelle, Tool-Resultate usw.
- * 
+ *
  * Unterstützt:
  *  - TTL-basierte Ablaufsteuerung
  *  - automatisches Cleanup
@@ -29,9 +29,9 @@ interface CacheEntry<T = any> {
 }
 
 interface CacheOptions {
-  ttl?: number;           // Ablaufzeit in Millisekunden
-  persistent?: boolean;   // Speichern auf Festplatte
-  namespace?: string;     // Logische Gruppierung (z. B. "openai" / "embedding")
+  ttl?: number; // Ablaufzeit in Millisekunden
+  persistent?: boolean; // Speichern auf Festplatte
+  namespace?: string; // Logische Gruppierung (z. B. "openai" / "embedding")
 }
 
 /* ========================================================================== */
@@ -43,7 +43,8 @@ export class AICache {
   private readonly baseDir = path.resolve("data", "ai_cache");
 
   constructor() {
-    if (!fs.existsSync(this.baseDir)) fs.mkdirSync(this.baseDir, { recursive: true });
+    if (!fs.existsSync(this.baseDir))
+      fs.mkdirSync(this.baseDir, { recursive: true });
     this.startCleanup();
   }
 
@@ -56,7 +57,11 @@ export class AICache {
    * Kombiniert Model, Prompt und Zusatzoptionen.
    */
   generateKey(model: string, input: any, opts: CacheOptions = {}): string {
-    const data = JSON.stringify({ model, input, ns: opts.namespace ?? "default" });
+    const data = JSON.stringify({
+      model,
+      input,
+      ns: opts.namespace ?? "default",
+    });
     return createHashId(data);
   }
 
@@ -96,7 +101,10 @@ export class AICache {
       try {
         fs.writeFileSync(filePath, JSON.stringify(entry, null, 2), "utf8");
       } catch (err: any) {
-        log("warn", "Cache konnte nicht gespeichert werden", { filePath, error: err.message });
+        log("warn", "Cache konnte nicht gespeichert werden", {
+          filePath,
+          error: err.message,
+        });
       }
     }
   }
@@ -115,13 +123,17 @@ export class AICache {
       const filePath = this.getFilePath(key);
       if (fs.existsSync(filePath)) {
         try {
-          const data = JSON.parse(fs.readFileSync(filePath, "utf8")) as CacheEntry;
+          const data = JSON.parse(
+            fs.readFileSync(filePath, "utf8"),
+          ) as CacheEntry;
           if (!data.expiresAt || Date.now() < data.expiresAt) {
             this.cache.set(key, data);
             return data.value as T;
           }
         } catch (err: any) {
-          log("error", "Fehler beim Lesen aus Cache-Datei", { error: err.message });
+          log("error", "Fehler beim Lesen aus Cache-Datei", {
+            error: err.message,
+          });
         }
       }
     }
@@ -171,7 +183,10 @@ export class AICache {
       }
     }
     if (removed > 0) {
-      log("info", `🧹 Cache bereinigt: ${removed} abgelaufene Einträge entfernt.`);
+      log(
+        "info",
+        `🧹 Cache bereinigt: ${removed} abgelaufene Einträge entfernt.`,
+      );
     }
   }
 
@@ -216,7 +231,7 @@ export const aiCache = new AICache();
 export async function cached<T>(
   key: string,
   fn: () => Promise<T>,
-  opts: CacheOptions = {}
+  opts: CacheOptions = {},
 ): Promise<T> {
   const hit = aiCache.get<T>(key, opts.persistent);
   if (hit !== null) {

@@ -14,9 +14,7 @@ import type { HistoryEntry, NodeDetail } from "../../types";
 export function useHistory() {
   const store = HistoryStore.get();
 
-  const [entries, setEntries] = useState<HistoryEntry[]>(() =>
-    store.getAll()
-  );
+  const [entries, setEntries] = useState<HistoryEntry[]>(() => store.getAll());
 
   /** Listener registrieren */
   useEffect(() => {

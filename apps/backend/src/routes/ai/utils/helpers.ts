@@ -22,7 +22,7 @@ import { log } from "../utils/logger.js";
  */
 export async function measureExecutionTime<T>(
   label: string,
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
 ): Promise<{ result: T; durationMs: number }> {
   const start = performance.now();
   const result = await fn();
@@ -47,7 +47,10 @@ export function formatDuration(ms: number): string {
 /**
  * Sicheres JSON-Parsing mit Fallback.
  */
-export function safeJsonParse<T = any>(input: string, fallback: T = {} as T): T {
+export function safeJsonParse<T = any>(
+  input: string,
+  fallback: T = {} as T,
+): T {
   try {
     return JSON.parse(input);
   } catch {
@@ -90,7 +93,7 @@ export function isPlainObject(val: any): val is Record<string, any> {
  */
 export function deepMergeLoose<T extends Record<string, any>>(
   target: T,
-  source: Partial<T>
+  source: Partial<T>,
 ): T {
   for (const key of Object.keys(source) as (keyof T)[]) {
     const s = source[key] as any;

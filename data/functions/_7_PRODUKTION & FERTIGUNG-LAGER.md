@@ -1,4 +1,5 @@
 ## 📦 PRODUKTION & FERTIGUNG
+
 ├── 🏪 Lagerverwaltung
 │ ├── 📊 Bestandsführung
 │ │ ├── 🔄 Echtzeit-Bestände
@@ -585,7 +586,7 @@
 │ │ └── 📈 Routing-Algorithmen
 │ │ ├── 🎯 Algorithmus-Auswahl
 │ │ │ ├── 📊 Dijkstra-Algorithmus
-│ │ │ ├── 🔄 A*-Algorithmus
+│ │ │ ├── 🔄 A\*-Algorithmus
 │ │ │ ├── 📈 Genetische Algorithmen
 │ │ │ ├── 🎯 Machine Learning
 │ │ │ └️📋 Hybrid-Algorithmen
@@ -1708,4 +1709,3 @@
 ├── 📈 Investitionsplanung
 ├── 🎯 Szenario-Analysen
 └── 🤖 KI-gestützte Planung
-

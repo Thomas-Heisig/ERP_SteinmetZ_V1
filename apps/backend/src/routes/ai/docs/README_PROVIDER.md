@@ -3,19 +3,22 @@ Basierend auf der analysierten `conversationContext.ts` Datei, hier sind die erk
 ## 🧠 **ConversationContext Klasse - Hauptfunktionen**
 
 ### **Kontextverwaltung**
+
 - `set(key, value)` - Setzt Kontextwerte
-- `get(key)` - Holt Kontextwerte  
+- `get(key)` - Holt Kontextwerte
 - `has(key)` - Prüft Kontextexistenz
 - `delete(key)` - Löscht Kontext
 - `clear()` - Setzt gesamten Kontext zurück
 - `resetContext(keepHistory)` - Reset mit History-Option
 
 ### **Analyse-Funktionen**
+
 - `update(messages, responseTime)` - Aktualisiert Kontext basierend auf Nachrichten
 - `matchRules(input)` - Regelbasiertes Matching für Eingaben
 - `executeAction(action, params)` - Führt Aktionen/Tools/Workflows aus
 
 ### **Datenabfrage**
+
 - `getContext()` - Gibt gesamten Kontextzustand zurück
 - `getPreferences()` - Gibt Benutzerpräferenzen zurück
 - `getDiagnostics()` - Systemdiagnose-Informationen
@@ -26,6 +29,7 @@ Basierend auf der analysierten `conversationContext.ts` Datei, hier sind die erk
 Die KI erkennt folgende Themenbereiche:
 
 **ERP-Bereiche:**
+
 - `orders` (Bestellungen/Aufträge)
 - `inventory` (Lager/Bestand)
 - `customers` (Kunden)
@@ -33,6 +37,7 @@ Die KI erkennt folgende Themenbereiche:
 - `finance` (Finanzen/Umsatz)
 
 **Technische Bereiche:**
+
 - `database` (Datenbank/SQL)
 - `file_operations` (Dateioperationen)
 - `ai` (KI/Modelle/Workflows)
@@ -40,6 +45,7 @@ Die KI erkennt folgende Themenbereiche:
 - `code` (Programmierung)
 
 **Kommunikation:**
+
 - `greetings` (Begrüßungen)
 - `thanks` (Dank)
 - `goodbye` (Verabschiedungen)
@@ -48,10 +54,12 @@ Die KI erkennt folgende Themenbereiche:
 ## ⚙️ **Integrierte Aktionen**
 
 ### **Tool-Integration**
+
 - Zugriff auf `toolRegistry` für Tool-Execution
 - Automatisches Tracking von Tool-Nutzung
 
-### **Workflow-Integration**  
+### **Workflow-Integration**
+
 - Integration mit `workflowEngine`
 - Workflow-Execution und Monitoring
 
@@ -80,21 +88,25 @@ Basierend auf der analysierten `anthropicProvider.ts` Datei, hier sind die erkan
 ## 🧠 **Anthropic Provider - Hauptfunktionen**
 
 ### **Kernfunktionen**
+
 - `callAnthropic(model, messages, options, context)` - Hauptfunktion für KI-Aufrufe
 - `initializeAnthropicClient()` - Client-Initialisierung
 - `getAnthropicClient()` - Client-Abruf
 
 ### **Message Processing**
+
 - `mapMessages(messages)` - Mappt Chat-Nachrichten für Anthropic API
 - `prepareToolsForAnthropic()` - Bereitet Tools für API-Aufruf vor
 
 ### **Tool Execution System**
+
 - `detectAndRunTools(output, config)` - Erkennt und führt Tools aus
 - `parseToolParams(paramString, pattern)` - Parameter-Parsing
 - `executeToolCall(toolName, params)` - Führt Tool-Aufrufe aus
 - `validateToolParameters(tool, params)` - Parameter-Validierung
 
 ### **Utility Functions**
+
 - `isAnthropicModel(modelId)` - Prüft auf Anthropic-Modelle
 - `getSupportedAnthropicModels()` - Liste unterstützter Modelle
 - `validateAnthropicConfig()` - Konfigurationsvalidierung
@@ -104,6 +116,7 @@ Basierend auf der analysierten `anthropicProvider.ts` Datei, hier sind die erkan
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export const anthropicProvider = {
   name: 'anthropic',
@@ -120,11 +133,13 @@ export const anthropicProvider = {
 Der Provider erkennt mehrere Tool-Aufruf-Formate:
 
 ### **Erkannte Syntaxformen**
+
 1. **Direct Tool Call**: `#TOOL: tool_name(params)`
-2. **Code Block Format**: ```tool tool_name params```
+2. **Code Block Format**: `tool tool_name params`
 3. **JSON Format**: `{"tool": "tool_name", "params": {...}}`
 
 ### **Parameter-Parsing**
+
 - JSON-Parsing für komplexe Parameter
 - Key=Value Parsing für einfache Syntax
 - Automatische Typkonvertierung (Boolean, Number, String)
@@ -132,6 +147,7 @@ Der Provider erkennt mehrere Tool-Aufruf-Formate:
 ## 📊 **Response-Verarbeitung**
 
 ### **Response-Struktur**
+
 ```typescript
 ModelResponse {
   model: string,
@@ -151,6 +167,7 @@ ModelResponse {
 ```
 
 ### **Tool Results Integration**
+
 - Automatisches Anhängen von Tool-Ergebnissen an Antwort
 - Erfolgs-/Fehler-Zusammenfassung
 - Laufzeit-Metriken
@@ -158,9 +175,11 @@ ModelResponse {
 ## 🔐 **Konfiguration & Validierung**
 
 ### **Umgebungsvariablen**
+
 - `ANTHROPIC_API_KEY` - Erforderlicher API-Schlüssel
 
 ### **Provider-Konfiguration**
+
 ```typescript
 AnthropicProviderConfig {
   maxTokens?: number,           // Maximale Tokens
@@ -177,14 +196,17 @@ AnthropicProviderConfig {
 ## 📋 **Unterstützte Modelle**
 
 ### **Claude 3.5 Serie**
+
 - `claude-3-5-sonnet-20241022`
 
 ### **Claude 3 Serie**
+
 - `claude-3-opus-20240229`
-- `claude-3-sonnet-20240229` 
+- `claude-3-sonnet-20240229`
 - `claude-3-haiku-20240307`
 
 ### **Claude 2 Serie**
+
 - `claude-2.1`
 - `claude-2.0`
 - `claude-instant-1.2`
@@ -192,11 +214,13 @@ AnthropicProviderConfig {
 ## 🚨 **Fehlerbehandlung**
 
 ### **Fallback-System**
+
 - Automatische Fallback-Antworten bei API-Fehlern
 - Detaillierte Fehlerprotokollierung
 - Timeout-Management (30s Standard)
 
 ### **Health Check**
+
 - Konfigurationsvalidierung
 - Test-API-Aufruf
 - Detaillierte Statusinformationen
@@ -204,11 +228,13 @@ AnthropicProviderConfig {
 ## 🔄 **Integrationen**
 
 ### **Tool Registry**
+
 - Integration mit `toolRegistry.getToolDefinitions()`
 - Automatische Tool-Validierung
 - Parameter-Schema-Überprüfung
 
 ### **Conversation Context**
+
 - Kontextaktualisierung nach Antworten
 - Response-Time Tracking
 - Themenanalyse-Integration
@@ -220,20 +246,24 @@ Basierend auf der analysierten `azureOpenAIProvider.ts` Datei, hier sind die erk
 ## 🧠 **Azure OpenAI Provider - Hauptfunktionen**
 
 ### **Kernfunktionen**
+
 - `callAzureOpenAI(model, messages, options, context)` - Hauptfunktion für Azure OpenAI Aufrufe
 - `initializeAzureClient()` - Client-Initialisierung
 - `getAzureClient()` - Client-Abruf
 - `getAzureClientConfig()` - Konfigurationsabruf
 
 ### **Message Processing**
+
 - `prepareOpenAIMessages(messages, config)` - Bereitet Nachrichten für API vor
 - `prepareToolsForOpenAI()` - Bereitet Tools für OpenAI Format vor
 
 ### **Tool Execution System**
+
 - `executeToolCalls(toolCalls)` - Führt Tool-Aufrufe aus (OpenAI Format)
 - `formatToolResults(results)` - Formatierung von Tool-Ergebnissen
 
 ### **Utility Functions**
+
 - `isAzureOpenAIModel(modelId)` - Prüft auf Azure OpenAI-Modelle
 - `getSupportedAzureModels()` - Liste unterstützter Modelle
 - `validateAzureConfig()` - Konfigurationsvalidierung
@@ -242,6 +272,7 @@ Basierend auf der analysierten `azureOpenAIProvider.ts` Datei, hier sind die erk
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export const azureOpenAIProvider = {
   name: 'azure',
@@ -258,6 +289,7 @@ export const azureOpenAIProvider = {
 ## ⚙️ **Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `AZURE_OPENAI_API_KEY` - API-Schlüssel (erforderlich)
 - `AZURE_OPENAI_ENDPOINT` - Endpoint URL (erforderlich)
 - `AZURE_OPENAI_DEPLOYMENT` - Deployment-Name (erforderlich)
@@ -266,6 +298,7 @@ export const azureOpenAIProvider = {
 - `AZURE_OPENAI_MAX_TOKENS` - Maximale Tokens
 
 ### **Provider-Konfiguration**
+
 ```typescript
 AzureOpenAIProviderConfig {
   maxTokens?: number,           // Maximale Tokens (Standard: 1500)
@@ -282,11 +315,13 @@ AzureOpenAIProviderConfig {
 ## 🛠️ **Tool Integration**
 
 ### **OpenAI Tool Calling Format**
+
 - Native Integration mit OpenAI Function Calling
 - Automatische Tool-Definition aus Registry
 - Parameter-Schema-Validierung
 
 ### **Tool Execution Flow**
+
 1. API erkennt Tool-Aufrufe in Response
 2. `executeToolCalls()` verarbeitet Tool-Calls
 3. Parameter werden als JSON geparst
@@ -296,6 +331,7 @@ AzureOpenAIProviderConfig {
 ## 📊 **Response-Verarbeitung**
 
 ### **Response-Struktur**
+
 ```typescript
 ModelResponse {
   model: string,
@@ -318,29 +354,34 @@ ModelResponse {
 ## 📋 **Unterstützte Modelle**
 
 ### **GPT-4 Serie**
+
 - `gpt-4`
 - `gpt-4-32k`
 - `gpt-4-turbo`
 - `gpt-4o`
 
 ### **GPT-3.5 Serie**
+
 - `gpt-35-turbo`
 - `gpt-35-turbo-16k`
 - `gpt-35-turbo-instruct`
 
 ### **Azure Deployment-Namen**
+
 - Unterstützung für benutzerdefinierte Deployment-Namen
 - Automatische Erkennung von Azure-Modellen
 
 ## 🔐 **Sicherheit & Validierung**
 
 ### **Konfigurationsvalidierung**
+
 - API-Key Validierung
 - Endpoint-URL Validierung
 - Deployment-Name Prüfung
 - URL-Format Validierung
 
 ### **Health Check System**
+
 - Konfigurationsprüfung
 - Test-API-Aufruf
 - Detaillierte Fehlerberichte
@@ -348,11 +389,13 @@ ModelResponse {
 ## 🚨 **Fehlerbehandlung**
 
 ### **Fallback-System**
+
 - Automatische Fallback-Antworten bei API-Fehlern
 - Timeout-Management (30s Standard)
 - Detaillierte Fehlerprotokollierung
 
 ### **Client Management**
+
 - Client-Caching für Performance
 - Reset-Funktion für Re-Initialisierung
 - Parallele Initialisierungsverhinderung
@@ -360,11 +403,13 @@ ModelResponse {
 ## 🔄 **Integrationen**
 
 ### **Tool Registry**
+
 - Integration mit `toolRegistry.getToolDefinitions()`
 - Automatische Tool-Validierung
 - Parameter-Schema-Überprüfung
 
 ### **Conversation Context**
+
 - Kontextaktualisierung nach Antworten
 - Response-Time Tracking
 - Themenanalyse-Integration
@@ -372,11 +417,13 @@ ModelResponse {
 ## 🌐 **API-Kompatibilität**
 
 ### **Azure OpenAI Service**
+
 - Kompatibel mit Azure OpenAI Deployment
 - Unterstützt verschiedene API-Versionen
 - Deployment-basierte Authentifizierung
 
 ### **OpenAI SDK**
+
 - Verwendet offizielle OpenAI SDK
 - Unterstützt Function Calling
 - Kompatibel mit Chat-Completions API
@@ -388,24 +435,29 @@ Basierend auf der analysierten `customProvider.ts` Datei, hier sind die erkannte
 ## 🧠 **Custom Provider - Hauptfunktionen**
 
 ### **Kernfunktionen**
+
 - `callCustomAPI(model, messages, options, context)` - Hauptfunktion für Custom API Aufrufe
 - `buildHeaders()` - Erstellt Request-Header
 - `buildRequestPayload()` - Baut Request-Payload auf
 
 ### **Message Processing**
+
 - `prepareMessages(messages, format)` - Bereitet Nachrichten für API vor
 - `prepareToolsForCustomAPI()` - Bereitet Tools für Custom API vor
 
 ### **Response Processing**
+
 - `processCustomResponse(data, model, duration, config)` - Verarbeitet API-Response
 - `extractField(data, paths)` - Extrahiert Felder aus Response
 - `extractToolCalls(data)` - Erkennt Tool-Aufrufe in Response
 
 ### **Tool Execution**
+
 - `executeToolCalls(toolCalls)` - Führt Tool-Aufrufe aus
 - `formatToolResults(results)` - Formatierung von Tool-Ergebnissen
 
 ### **Utility Functions**
+
 - `isCustomModel(modelId)` - Prüft auf Custom-Modelle
 - `testCustomAPI()` - Testet API-Verbindung
 - `validateCustomConfig()` - Konfigurationsvalidierung
@@ -414,6 +466,7 @@ Basierend auf der analysierten `customProvider.ts` Datei, hier sind die erkannte
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export const customProvider = {
   name: 'custom',
@@ -430,6 +483,7 @@ export const customProvider = {
 ## ⚙️ **Flexibles Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `CUSTOM_AI_URL` - API Endpoint URL (erforderlich)
 - `CUSTOM_AI_KEY` - API-Schlüssel (optional)
 - `CUSTOM_AI_MODEL` - Modellname (Standard: "generic")
@@ -441,6 +495,7 @@ export const customProvider = {
 - `CUSTOM_AI_PARAMS` - Benutzerdefinierte Parameter (JSON)
 
 ### **Provider-Konfiguration**
+
 ```typescript
 CustomProviderConfig {
   timeoutMs?: number,           // Timeout in ms (Standard: 60000)
@@ -450,7 +505,7 @@ CustomProviderConfig {
   requestFormat?: string,       // 'openai' | 'anthropic' | 'generic' | 'custom'
   responseMapping?: {           // Response-Feld-Mapping
     text?: string[],           // Mögliche Text-Felder
-    error?: string[],          // Mögliche Error-Felder  
+    error?: string[],          // Mögliche Error-Felder
     tokens?: string[]          // Mögliche Token-Felder
   }
 }
@@ -459,12 +514,14 @@ CustomProviderConfig {
 ## 🌐 **Unterstützte API-Formate**
 
 ### **Request-Formate**
+
 1. **OpenAI Format** - Kompatibel mit OpenAI API
-2. **Anthropic Format** - Kompatibel mit Claude API  
+2. **Anthropic Format** - Kompatibel mit Claude API
 3. **Generic Format** - Einfaches Chat-Format
 4. **Custom Format** - Vollständig anpassbar
 
 ### **Authentifizierungstypen**
+
 - `bearer` - Bearer Token Authentication
 - `api_key` - API Key Header
 - `token` - Custom Token Header
@@ -473,13 +530,15 @@ CustomProviderConfig {
 ## 🛠️ **Tool Integration**
 
 ### **Flexible Tool-Call Erkennung**
+
 - Unterstützt verschiedene Tool-Call Formate:
   - `tool_calls` Array
-  - `tools` Array  
+  - `tools` Array
   - `function_calls` Array
 - Automatische Parameter-Extraktion
 
 ### **Tool Execution**
+
 - Integration mit `toolRegistry`
 - Parameter-Validierung
 - Fehlerbehandlung
@@ -487,22 +546,24 @@ CustomProviderConfig {
 ## 📊 **Response-Verarbeitung**
 
 ### **Intelligentes Field-Mapping**
+
 ```typescript
 responseMapping: {
   text: ['text', 'response', 'message', 'content', 'answer'],
-  error: ['error', 'error_message', 'err'], 
+  error: ['error', 'error_message', 'err'],
   tokens: ['tokens', 'usage.total_tokens', 'usage.tokens']
 }
 ```
 
 ### **Response-Struktur**
+
 ```typescript
 ModelResponse {
   model: string,
   provider: 'custom',
   text: string,
   tokens_in: number,
-  tokens_out: number, 
+  tokens_out: number,
   duration_ms: number,
   tool_calls: any[],
   success: boolean,
@@ -517,11 +578,13 @@ ModelResponse {
 ## 🔄 **Retry & Error Handling**
 
 ### **Robustes Retry-System**
-- Exponential Backoff (2^attempt * 1000ms)
+
+- Exponential Backoff (2^attempt \* 1000ms)
 - Konfigurierbare Retry-Versuche
 - Detaillierte Fehlerprotokollierung
 
 ### **Fallback-System**
+
 - Automatische Fallback-Antworten bei Fehlern
 - Timeout-Management (60s Standard)
 - Connection Testing
@@ -529,11 +592,13 @@ ModelResponse {
 ## 🔍 **Health Check & Monitoring**
 
 ### **Verbindungstest**
+
 - Endpoint-Erreichbarkeit
 - HTTP Status Code Prüfung
 - Detaillierte Diagnose-Informationen
 
 ### **Konfigurationsvalidierung**
+
 - URL-Format Validierung
 - API-Key Prüfung
 - Required Field Validation
@@ -541,20 +606,23 @@ ModelResponse {
 ## 🎯 **Modell-Erkennung**
 
 ### **Erkannte Custom-Modelle**
+
 - `custom*` - Alle Custom-Modelle
 - `generic*` - Generic APIs
-- `external*` - Externe Dienste  
+- `external*` - Externe Dienste
 - `api*` - API-basierte Dienste
 - `rest*` - REST APIs
 
 ## 🔧 **Dynamische Konfiguration**
 
 ### **Runtime Updates**
+
 - `updateConfig()` - Aktualisiert Konfiguration zur Laufzeit
 - Flexible Header-Konfiguration
 - Anpassbare Request-Parameter
 
 ### **Benutzerdefinierte Erweiterungen**
+
 - JSON-basierte Header-Konfiguration
 - Custom Parameter Injection
 - Flexible Response-Mapping
@@ -566,14 +634,17 @@ Basierend auf der analysierten `elizaProvider.ts` Datei, hier sind die erkannten
 ## 🧠 **Eliza Provider - Hauptfunktionen**
 
 ### **Kernfunktionen**
+
 - `ElizaProvider.respond(messages)` - Hauptfunktion für regelbasierte Antworten
 - `ElizaEngine.apply(message, context)` - Regelbasierte Nachrichtenverarbeitung
 
 ### **Konfigurationsmanagement**
+
 - `loadElizaConfig()` - Lädt und validiert Eliza-Konfiguration
 - `validateConfigPart()` - Validierung von Konfigurationsdateien
 
 ### **Session Management**
+
 - `resetSession()` - Setzt Session zurück
 - `getSessionInfo()` - Gibt Session-Informationen zurück
 - `updateConfig()` - Aktualisiert Konfiguration zur Laufzeit
@@ -581,11 +652,13 @@ Basierend auf der analysierten `elizaProvider.ts` Datei, hier sind die erkannten
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
-export const elizaProvider = new ElizaProvider()
+export const elizaProvider = new ElizaProvider();
 ```
 
 ### **ElizaProvider Methoden**
+
 - `respond(messages)` - Hauptantwort-Generator
 - `getSessionInfo()` - Session-Informationen
 - `getConfig()` - Aktuelle Konfiguration
@@ -596,6 +669,7 @@ export const elizaProvider = new ElizaProvider()
 ## 🛠️ **ElizaEngine - Regelverarbeitung**
 
 ### **Kernmethoden**
+
 - `apply(message, context)` - Wendet Regeln auf Nachricht an
 - `reflect(input)` - Wendet Reflexionsregeln an
 - `checkRuleContext()` - Prüft Kontextanforderungen
@@ -604,12 +678,14 @@ export const elizaProvider = new ElizaProvider()
 - `handleWikipediaSearch()` - Spezialbehandlung für Wikipedia
 
 ### **Statistik-Methoden**
+
 - `getStats()` - Regel- und Match-Statistiken
 - `addRule()` - Fügt Regel zur Laufzeit hinzu
 
 ## 📋 **Befehls-System (Command Handler)**
 
 ### **Verfügbare Systembefehle**
+
 - `?help` / `/help` / `hilfe` - Zeigt Hilfe an
 - `?tools` - Zeigt verfügbare Tools
 - `?workflows` - Zeigt aktive Workflows
@@ -620,6 +696,7 @@ export const elizaProvider = new ElizaProvider()
 - `?status` - Zeigt Systemstatus
 
 ### **Befehls-Handler Methoden**
+
 - `showHelp()` - Hilfe-Informationen
 - `showTools()` - Tool-Übersicht
 - `showWorkflows()` - Workflow-Liste
@@ -632,11 +709,13 @@ export const elizaProvider = new ElizaProvider()
 ## ⚙️ **Konfigurationssystem**
 
 ### **Konfigurationsquellen**
+
 1. **Multi-File Directory** (`/data` Verzeichnis)
 2. **Fallback File** (`context.json`)
 3. **Default Configuration** (Integriert)
 
 ### **Konfigurationsstruktur**
+
 ```typescript
 ElizaConfig {
   pools: Record<string, string[][]>;    // Antwort-Pools
@@ -649,11 +728,13 @@ ElizaConfig {
 ## 🛠️ **Tool Integration**
 
 ### **Tool Execution**
+
 - `executeToolCalls(tool_calls)` - Führt Tool-Aufrufe aus
 - `formatToolResults(results)` - Formatierung von Tool-Ergebnissen
 - Integration mit `toolRegistry.call()`
 
 ### **Tool-Call Erkennung**
+
 - Automatische Tool-Ausführung basierend auf Regeln
 - Parameter-Extraktion aus Regex-Matches
 - Fehlerbehandlung für Tool-Fehler
@@ -661,12 +742,14 @@ ElizaConfig {
 ## 📊 **Response-System**
 
 ### **Antwort-Generierung**
+
 - Regelbasierte Antworten
 - Kontextabhängige Antworten
 - Tool-Ergebnis-Integration
 - Fallback-Antworten
 
 ### **Response-Typen**
+
 - **Regelbasierte Antworten** - Gefundene Pattern-Matches
 - **Tool-Responses** - Mit Tool-Ergebnissen
 - **Befehls-Responses** - Systembefehle
@@ -676,12 +759,14 @@ ElizaConfig {
 ## 🔄 **Session Management**
 
 ### **Session-Informationen**
+
 - Session-ID mit Zeitstempel
 - Nachrichten-Historie
 - Kontext-Zustand
 - Laufzeit-Statistiken
 
 ### **Session-Methoden**
+
 - Automatische Session-Erstellung
 - Session-Reset mit neuer ID
 - Historie-Begrenzung (25 Nachrichten Standard)
@@ -689,12 +774,14 @@ ElizaConfig {
 ## 📈 **Statistik & Monitoring**
 
 ### **Regel-Statistiken**
+
 - Anzahl Regeln (gesamt/aktiv)
 - Treffer nach Priorität
 - Letzter Treffer-Zeitpunkt
 - Regeln mit Tools/Actions
 
 ### **System-Statistiken**
+
 - Nachrichtenanzahl
 - Aktives Thema
 - Stimmungsanalyse
@@ -704,11 +791,13 @@ ElizaConfig {
 ## 🔧 **Erweiterte Funktionalität**
 
 ### **Dynamische Regeln**
+
 - `addCustomRule()` - Fügt Regeln zur Laufzeit hinzu
 - Regel-Validierung und Kompilierung
 - Prioritäts-basierte Sortierung
 
 ### **Kontext-Integration**
+
 - Integration mit `ConversationContext`
 - Themenanalyse
 - Stimmungserkennung
@@ -717,11 +806,13 @@ ElizaConfig {
 ## 🎯 **Spezialbehandlungen**
 
 ### **Wikipedia Integration**
+
 - Automatische Erkennung von Wikipedia-Suchanfragen
 - Integration mit `wikipedia_search` Tool
 - Fehlerbehandlung für Wikipedia-Fehler
 
 ### **Reflexionssystem**
+
 - Automatische Text-Transformation
 - Pronomen-Reflexion (ich → du, etc.)
 - Kontextuelle Anpassungen
@@ -733,36 +824,42 @@ Basierend auf der analysierten `fallbackProvider.ts` Datei, hier sind die erkann
 ## 🧠 **Fallback Provider - Hauptfunktionen**
 
 ### **Kernfunktion**
+
 - `callFallback(model, messages)` - Generiert Fallback-Antworten
 
 ### **Utility-Funktionen**
+
 - `isFallbackModel(modelId)` - Prüft auf Fallback-Modelle
 
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export const fallbackProvider = {
-  call: callFallback,        // Hauptaufruffunktion
-  isModel: isFallbackModel   // Modellprüfung
-}
+  call: callFallback, // Hauptaufruffunktion
+  isModel: isFallbackModel, // Modellprüfung
+};
 ```
 
 ## 📋 **Antwort-System**
 
 ### **Fallback-Antworten**
+
 Vordefinierte Antwort-Pool:
+
 ```typescript
 const FALLBACK_RESPONSES = [
   "Ich habe Ihre Eingabe registriert, benötige jedoch mehr Informationen.",
-  "Die Anfrage konnte nicht eindeutig interpretiert werden.", 
+  "Die Anfrage konnte nicht eindeutig interpretiert werden.",
   "Bitte formulieren Sie die Frage etwas präziser.",
   "Im aktuellen Modus stehen nur einfache Antworten bereit.",
-  "Gerne – bitte geben Sie weitere Details an."
-]
+  "Gerne – bitte geben Sie weitere Details an.",
+];
 ```
 
 ### **Response-Generierung**
+
 - Zufällige Auswahl aus Antwort-Pool
 - Einfache Text-Antwort ohne komplexe Verarbeitung
 
@@ -782,23 +879,27 @@ AIResponse {
 ## 🎯 **Modell-Erkennung**
 
 ### **Erkannte Fallback-Modelle**
+
 - `fallback` - Explizites Fallback-Modell
 - `local` - Lokales Modell
 - `offline*` - Offline-Modelle (enthält "offline")
 
 ### **Fallback-Verhalten**
+
 - Bei leerem `modelId` wird `true` zurückgegeben
 - Case-insensitive Prüfung
 
 ## 🔄 **Integrations-Punkte**
 
 ### **Minimales Interface**
+
 - Keine Tool-Integration
-- Keine Kontext-Verarbeitung  
+- Keine Kontext-Verarbeitung
 - Keine Session-Verwaltung
 - Keine komplexe Logik
 
 ### **Einsatzszenario**
+
 - Letzte Fallback-Ebene bei Fehlern
 - Offline-Betrieb
 - Minimale Abhängigkeiten
@@ -811,9 +912,11 @@ Basierend auf der analysierten `huggingfaceProvider.ts` Datei, hier sind die erk
 ## 🧠 **HuggingFace Provider - Hauptfunktionen**
 
 ### **Kernfunktion**
+
 - `callHuggingFace(model, messages)` - Hauptfunktion für HuggingFace API Aufrufe
 
 ### **Utility-Funktionen**
+
 - `buildHeaders()` - Erstellt Request-Header mit API-Key
 - `formatInput(messages)` - Formatiert Chat-Nachrichten für API
 - `isHuggingFaceModel(modelId)` - Prüft auf HuggingFace-Modelle
@@ -822,18 +925,20 @@ Basierend auf der analysierten `huggingfaceProvider.ts` Datei, hier sind die erk
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  config: hfConfig,              // Provider-Konfiguration
-  call: callHuggingFace,         // Hauptaufruffunktion
-  isModel: isHuggingFaceModel,   // Modellprüfung
-  test: testHuggingFace          // Verbindungstest
-}
+  config: hfConfig, // Provider-Konfiguration
+  call: callHuggingFace, // Hauptaufruffunktion
+  isModel: isHuggingFaceModel, // Modellprüfung
+  test: testHuggingFace, // Verbindungstest
+};
 ```
 
 ## ⚙️ **Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `HF_MODEL` - Modellname (Standard: "mistralai/Mistral-7B-Instruct-v0.1")
 - `HF_ENDPOINT` - API Endpoint (Standard: HuggingFace Inference API)
 - `HUGGINGFACEHUB_API_TOKEN` - API Token (erforderlich)
@@ -841,6 +946,7 @@ export default {
 - `HF_MAX_TOKENS` - Maximale Tokens
 
 ### **Provider-Konfiguration**
+
 ```typescript
 hfConfig: AIModuleConfig {
   name: "huggingfaceProvider",
@@ -858,6 +964,7 @@ hfConfig: AIModuleConfig {
 ## 🌐 **API-Integration**
 
 ### **Request-Format**
+
 ```typescript
 {
   inputs: string,                  // Formatierte Eingabe
@@ -870,7 +977,9 @@ hfConfig: AIModuleConfig {
 ```
 
 ### **Response-Verarbeitung**
+
 Unterstützt verschiedene Response-Formate:
+
 - **Array-Format** - Standard Text-Generation
 - **generated_text** - Direkte Text-Antwort
 - **translation_text** - Übersetzungs-Response
@@ -897,6 +1006,7 @@ AIResponse {
 ## 🛠️ **Unterstützte Capabilities**
 
 ### **Modell-Typen**
+
 - `chat` - Chat-Modelle
 - `text` - Text-Generation
 - `embedding` - Embedding-Modelle
@@ -904,17 +1014,20 @@ AIResponse {
 - `summarization` - Zusammenfassungs-Modelle
 
 ### **Modell-Erkennung**
+
 - **Slash-Notation** - Modelle mit `/` (z.B. "org/model")
 - **HuggingFace Keywords** - Enthält "huggingface"
 
 ## 🔐 **Sicherheit & Error Handling**
 
 ### **Authentifizierung**
+
 - Bearer Token Authentication
 - API-Key Validierung
 - Header-basierte Authentifizierung
 
 ### **Fehlerbehandlung**
+
 - HTTP Status Code Überprüfung
 - Timeout Management (60s)
 - Detaillierte Fehlerprotokollierung
@@ -923,11 +1036,13 @@ AIResponse {
 ## 🧪 **Health Check**
 
 ### **Verbindungstest**
+
 - `testHuggingFace()` - Endpoint-Erreichbarkeit
 - HEAD Request mit Timeout (5s)
 - Boolean Rückgabe (true/false)
 
 ### **Endpoint-Validierung**
+
 - Base URL Sicherung gegen undefined
 - Pfad-Korrektur für Model-Endpoints
 - URL-Format Validierung
@@ -935,17 +1050,21 @@ AIResponse {
 ## 🔄 **Input-Formatierung**
 
 ### **Nachrichten-Format**
+
 ```
 role: content
 role: content
 ```
+
 Beispiel:
+
 ```
 user: Hallo, wie geht es dir?
 assistant: Mir geht es gut, danke!
 ```
 
 ### **Eingabe-Verarbeitung**
+
 - Kombiniert alle Nachrichten zu einem String
 - Behält Rollen-Informationen bei
 - Einfache Text-Konkatenierung
@@ -957,9 +1076,11 @@ Basierend auf der analysierten `llamaCppProvider.ts` Datei, hier sind die erkann
 ## 🧠 **Llama.cpp Provider - Hauptfunktionen**
 
 ### **Kernfunktion**
+
 - `callLlamaCpp(model, messages)` - Hauptfunktion für llama.cpp API Aufrufe
 
 ### **Utility-Funktionen**
+
 - `buildPrompt(messages)` - Baut Prompt aus Chat-Nachrichten
 - `buildPayload(prompt)` - Erstellt Request-Payload
 - `isLlamaCppModel(modelId)` - Prüft auf llama.cpp-Modelle
@@ -968,24 +1089,27 @@ Basierend auf der analysierten `llamaCppProvider.ts` Datei, hier sind die erkann
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  config: llamaConfig,           // Provider-Konfiguration
-  call: callLlamaCpp,            // Hauptaufruffunktion
-  isModel: isLlamaCppModel,      // Modellprüfung
-  test: testLlamaCpp             // Verbindungstest
-}
+  config: llamaConfig, // Provider-Konfiguration
+  call: callLlamaCpp, // Hauptaufruffunktion
+  isModel: isLlamaCppModel, // Modellprüfung
+  test: testLlamaCpp, // Verbindungstest
+};
 ```
 
 ## ⚙️ **Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `LLAMA_CPP_MODEL` - Modellname (Standard: "local-gguf")
 - `LLAMA_CPP_URL` - API Endpoint (Standard: "http://localhost:8080/completion")
 - `LLAMA_CPP_TEMPERATURE` - Temperatureinstellung
 - `LLAMA_CPP_MAX_TOKENS` - Maximale Tokens
 
 ### **Provider-Konfiguration**
+
 ```typescript
 llamaConfig: AIModuleConfig {
   name: "llamaCppProvider",
@@ -1002,6 +1126,7 @@ llamaConfig: AIModuleConfig {
 ## 🌐 **API-Integration**
 
 ### **Request-Format**
+
 ```typescript
 {
   prompt: string,                  // Formatierter Prompt
@@ -1012,6 +1137,7 @@ llamaConfig: AIModuleConfig {
 ```
 
 ### **Prompt-Formatierung**
+
 ```
 USER: Nachricht 1
 ASSISTANT: Antwort 1
@@ -1020,7 +1146,9 @@ ASSISTANT:
 ```
 
 ### **Response-Verarbeitung**
+
 Unterstützt verschiedene Response-Formate:
+
 - `content` - Standard llama.cpp Response
 - `response` - Alternative Response-Felder
 - `choices[0].text` - OpenAI-kompatibles Format
@@ -1045,6 +1173,7 @@ AIResponse {
 ## 🛠️ **Unterstützte Capabilities**
 
 ### **Modell-Typen**
+
 - `chat` - Chat-Modelle
 - `text` - Text-Generation
 - `reasoning` - Reasoning-Fähigkeiten
@@ -1052,18 +1181,21 @@ AIResponse {
 - `json` - JSON-Formatierung
 
 ### **Modell-Erkennung**
+
 - **GGUF-Modelle** - Enthält "gguf"
-- **Llama-Modelle** - Enthält "llama" 
+- **Llama-Modelle** - Enthält "llama"
 - **Lokale Modelle** - Enthält "local"
 
 ## 🔐 **Sicherheit & Error Handling**
 
 ### **Authentifizierung**
+
 - Keine Authentifizierung erforderlich (lokal)
 - Einfache HTTP Requests
 - Localhost-basierte Kommunikation
 
 ### **Fehlerbehandlung**
+
 - HTTP Status Code Überprüfung
 - Längeres Timeout (120s für lokale Modelle)
 - Detaillierte Fehlerprotokollierung
@@ -1072,21 +1204,25 @@ AIResponse {
 ## 🧪 **Health Check**
 
 ### **Verbindungstest**
+
 - `testLlamaCpp()` - Endpoint-Erreichbarkeit
 - HEAD Request mit kurzem Timeout (3s)
 - Boolean Rückgabe (true/false)
 
 ### **Endpoint-Validierung**
+
 - Default URL Fallback
 - URL-Format Sicherung
 
 ## 🔄 **Kompatibilität**
 
 ### **API-Endpoints Unterstützt**
+
 - `/completion` - Standard llama.cpp Endpoint
 - `/chat/completions` - OpenAI-kompatible Endpoints
 
 ### **Response-Formate**
+
 - Native llama.cpp Response
 - OpenAI-kompatible Response-Struktur
 - Einfache Text-Responses
@@ -1098,6 +1234,7 @@ Basierend auf der analysierten `localProvider.ts` Datei, hier sind die erkannten
 ## 🧠 **Local Provider - Hauptfunktionen**
 
 ### **Kernfunktionen**
+
 - `callLocalModel(model, messages, options)` - Hauptfunktion für lokale Modellaufrufe
 - `scanLocalModels()` - Scannt und erkennt lokale Modelle
 - `updateLocalConfig(updates)` - Aktualisiert Konfiguration dynamisch
@@ -1106,18 +1243,20 @@ Basierend auf der analysierten `localProvider.ts` Datei, hier sind die erkannten
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  callLocalModel,              // Hauptaufruffunktion
-  scanLocalModels,             // Modell-Erkennung
-  updateLocalConfig,           // Konfigurationsupdate
-  getLocalProviderStatus       // Systemstatus
-}
+  callLocalModel, // Hauptaufruffunktion
+  scanLocalModels, // Modell-Erkennung
+  updateLocalConfig, // Konfigurationsupdate
+  getLocalProviderStatus, // Systemstatus
+};
 ```
 
 ## 📁 **Modell-Erkennungssystem**
 
 ### **Unterstützte Modell-Typen**
+
 - **GGUF** - `.gguf` Dateien
 - **HuggingFace** - `pytorch_model` Dateien
 - **Whisper** - Whisper-Modelle
@@ -1128,10 +1267,12 @@ export default {
 - **Unknown** - Andere Modelltypen
 
 ### **Scan-Pfade**
+
 1. `F:/KI/models` - Externe KI-Modelle
 2. `ERP_SteinmetZ_V1/models` - Projekt-interne Modelle
 
 ### **Modell-Informationen**
+
 ```typescript
 LocalModelInfo {
   name: string,              // Modellname
@@ -1146,6 +1287,7 @@ LocalModelInfo {
 ## ⚙️ **Konfigurationssystem**
 
 ### **Provider-Konfiguration**
+
 ```typescript
 localProviderConfig: AIModuleConfig {
   name: "localProvider",
@@ -1160,6 +1302,7 @@ localProviderConfig: AIModuleConfig {
 ```
 
 ### **Dynamische Konfiguration**
+
 - Runtime Updates via `updateLocalConfig()`
 - Systemprompt-basierte Konfiguration
 - Flexible Parameter-Anpassung
@@ -1167,6 +1310,7 @@ localProviderConfig: AIModuleConfig {
 ## 📊 **Response-System**
 
 ### **Response-Struktur**
+
 ```typescript
 AIResponse {
   text: string,                    // Antworttext
@@ -1183,6 +1327,7 @@ AIResponse {
 ```
 
 ### **Fehlerbehandlung**
+
 - Modell-Nicht-Gefunden Fehler
 - Verfügbare Modelle Auflistung
 - Detaillierte Fehlerinformationen
@@ -1190,6 +1335,7 @@ AIResponse {
 ## 🖥️ **System-Status & Monitoring**
 
 ### **Status-Informationen**
+
 ```typescript
 {
   provider: "localProvider",
@@ -1211,6 +1357,7 @@ AIResponse {
 ## 🛠️ **Unterstützte Capabilities**
 
 ### **Funktionen**
+
 - `tools` - Tool-Unterstützung
 - `workflow` - Workflow-Integration
 - `chat` - Chat-Funktionalität
@@ -1220,11 +1367,13 @@ AIResponse {
 ## 🔄 **Simulations-Modus**
 
 ### **Aktuelle Implementierung**
+
 - **Mock/Simulation** - Keine echte Inferenz
 - **Response-Generierung** - Vordefinierte Antworten
 - **Erweiterbar** - Kann für echte Inferenz angepasst werden
 
 ### **Antwort-Format**
+
 ```
 Systemprompt
 
@@ -1235,11 +1384,13 @@ Ich bin aktuell eine lokale Simulation, kann aber für echte Inferenz erweitert 
 ## 🎯 **Einsatzszenarien**
 
 ### **Modell-Management**
+
 - Automatische Modell-Erkennung
 - Modell-Informationen Abfrage
 - Pfad-basierte Organisation
 
 ### **System-Integration**
+
 - Offline-Betrieb
 - Lokale Modell-Nutzung
 - Systemressourcen-Überwachung
@@ -1251,12 +1402,14 @@ Basierend auf der analysierten `ollamaProvider.ts` Datei, hier sind die erkannte
 ## 🧠 **Ollama Provider - Hauptfunktionen**
 
 ### **Kernfunktionen**
+
 - `callOllama(model, messages, options)` - Hauptfunktion für Ollama API Aufrufe
 - `listOllamaModels()` - Listet verfügbare Ollama-Modelle
 - `updateOllamaConfig(update)` - Aktualisiert Konfiguration dynamisch
 - `getOllamaStatus()` - Gibt Systemstatus zurück
 
 ### **Tool Integration**
+
 - `detectToolCalls(text)` - Erkennt Tool-Aufrufe im Text
 - `handleToolCalls(toolCalls)` - Führt Tool-Aufrufe aus
 - `safeParseJSON(str)` - Sicheres JSON-Parsing für Parameter
@@ -1264,24 +1417,27 @@ Basierend auf der analysierten `ollamaProvider.ts` Datei, hier sind die erkannte
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  callOllama,                 // Hauptaufruffunktion
-  listOllamaModels,           // Modell-Liste
-  updateOllamaConfig,         // Konfigurationsupdate
-  getOllamaStatus             // Systemstatus
-}
+  callOllama, // Hauptaufruffunktion
+  listOllamaModels, // Modell-Liste
+  updateOllamaConfig, // Konfigurationsupdate
+  getOllamaStatus, // Systemstatus
+};
 ```
 
 ## ⚙️ **Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `OLLAMA_MODEL` - Standardmodell (Default: "mistral:latest")
 - `OLLAMA_TEMPERATURE` - Temperatureinstellung
 - `OLLAMA_MAX_TOKENS` - Maximale Tokens
 - `OLLAMA_API_URL` - API Endpoint (Default: "http://localhost:11434")
 
 ### **Provider-Konfiguration**
+
 ```typescript
 ollamaConfig: AIModuleConfig {
   name: "ollamaProvider",
@@ -1298,6 +1454,7 @@ ollamaConfig: AIModuleConfig {
 ## 🌐 **API-Integration**
 
 ### **Request-Format**
+
 ```typescript
 {
   model: string,                    // Modellname
@@ -1314,6 +1471,7 @@ ollamaConfig: AIModuleConfig {
 ```
 
 ### **Message-Struktur**
+
 - Automatische System-Prompt Integration
 - Beibehaltung der Chat-Historie
 - Flexible Rollen-Zuweisung
@@ -1321,15 +1479,18 @@ ollamaConfig: AIModuleConfig {
 ## 🛠️ **Tool Integration System**
 
 ### **Tool-Call Erkennung**
+
 **Syntax**: `[TOOL: tool_name {"param": "value"}]`
 
 ### **Tool-Execution Flow**
+
 1. **Erkennung** - Regex-basierte Tool-Erkennung im Antworttext
 2. **Parameter-Parsing** - Sicheres JSON-Parsing
 3. **Ausführung** - Über `toolRegistry.call()`
 4. **Ergebnis-Formatierung** - Erfolgs-/Fehler-Meldungen
 
 ### **Response-Integration**
+
 - Tool-Ergebnisse werden an Antworttext angehängt
 - Separate Erfolgs-/Fehler-Nachrichten
 - Vollständige Transparenz über Tool-Ausführung
@@ -1358,6 +1519,7 @@ AIResponse {
 ## 🔍 **Modell-Management**
 
 ### **Modell-Liste**
+
 ```typescript
 {
   name: string,                    // Modellname
@@ -1366,12 +1528,14 @@ AIResponse {
 ```
 
 ### **API-Endpoints**
+
 - `/api/tags` - Modell-Liste abrufen
 - `/api/chat` - Chat-Completions
 
 ## 📈 **Status & Monitoring**
 
 ### **System-Status**
+
 ```typescript
 {
   provider: "ollama",
@@ -1394,12 +1558,14 @@ AIResponse {
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Error Responses**
+
 - HTTP Status Code Validierung
 - Timeout Management (60s)
 - Detaillierte Fehlerprotokollierung
 - Confidence 0 bei Fehlern
 
 ### **Tool-Fehlerbehandlung**
+
 - Separate Fehlerbehandlung pro Tool
 - Fehlermeldungen in Response integriert
 - Kein Abbruch bei Tool-Fehlern
@@ -1407,6 +1573,7 @@ AIResponse {
 ## 🎯 **Unterstützte Capabilities**
 
 ### **Funktionen**
+
 - `chat` - Chat-Funktionalität
 - `embedding` - Embedding-Erstellung
 - `vision` - Bildverarbeitung
@@ -1421,11 +1588,13 @@ Basierend auf der analysierten `openaiProvider.ts` Datei, hier sind die erkannte
 ## 🧠 **OpenAI Provider - Hauptfunktionen**
 
 ### **Kernfunktionen**
+
 - `callOpenAI(model, messages, options)` - Hauptfunktion für OpenAI API Aufrufe
 - `updateOpenAIConfig(update)` - Aktualisiert Konfiguration dynamisch
 - `getOpenAIStatus()` - Gibt Provider-Status zurück
 
 ### **Tool Integration**
+
 - `detectToolCalls(text)` - Erkennt Tool-Aufrufe im Text
 - `handleToolCalls(calls)` - Führt Tool-Aufrufe aus
 - `safeJsonParse(s)` - Sicheres JSON-Parsing für Parameter
@@ -1433,23 +1602,26 @@ Basierend auf der analysierten `openaiProvider.ts` Datei, hier sind die erkannte
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  callOpenAI,                 // Hauptaufruffunktion
-  updateOpenAIConfig,         // Konfigurationsupdate
-  getOpenAIStatus             // Statusabfrage
-}
+  callOpenAI, // Hauptaufruffunktion
+  updateOpenAIConfig, // Konfigurationsupdate
+  getOpenAIStatus, // Statusabfrage
+};
 ```
 
 ## ⚙️ **Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `OPENAI_API_KEY` - API-Schlüssel (erforderlich)
 - `OPENAI_MODEL` - Standardmodell (Default: "gpt-4o-mini")
 - `OPENAI_TEMPERATURE` - Temperatureinstellung
 - `OPENAI_MAX_TOKENS` - Maximale Tokens
 
 ### **Provider-Konfiguration**
+
 ```typescript
 openaiConfig: AIModuleConfig {
   name: "openaiProvider",
@@ -1467,6 +1639,7 @@ openaiConfig: AIModuleConfig {
 ## 🌐 **API-Integration**
 
 ### **Request-Format**
+
 ```typescript
 {
   model: string,                    // Modellname
@@ -1482,6 +1655,7 @@ openaiConfig: AIModuleConfig {
 ```
 
 ### **Message-Struktur**
+
 - Automatische System-Prompt Integration
 - Beibehaltung der Chat-Historie
 - Formatierung für OpenAI API
@@ -1489,15 +1663,18 @@ openaiConfig: AIModuleConfig {
 ## 🛠️ **Tool Integration System**
 
 ### **Tool-Call Erkennung**
+
 **Syntax**: `[TOOL: tool_name {"param": "value"}]`
 
 ### **Tool-Execution Flow**
+
 1. **Erkennung** - Regex-basierte Tool-Erkennung im Antworttext
 2. **Parameter-Parsing** - Sicheres JSON-Parsing
 3. **Ausführung** - Über `toolRegistry.call()`
 4. **Ergebnis-Formatierung** - Erfolgs-/Fehler-Meldungen
 
 ### **Response-Integration**
+
 - Tool-Ergebnisse werden an Antworttext angehängt
 - Separate Erfolgs-/Fehler-Nachrichten
 - Vollständige Transparenz über Tool-Ausführung
@@ -1526,6 +1703,7 @@ AIResponse {
 ## 🔐 **Client-Management**
 
 ### **API-Client Initialisierung**
+
 - `getClient()` - Erstellt OpenAI Client mit API-Key
 - API-Key Validierung
 - Fehler bei fehlendem API-Key
@@ -1533,6 +1711,7 @@ AIResponse {
 ## 📈 **Status & Monitoring**
 
 ### **Status-Informationen**
+
 ```typescript
 {
   provider: "openai",
@@ -1546,12 +1725,14 @@ AIResponse {
 ## 🛡️ **Fehlerbehandlung**
 
 ### **Error Responses**
+
 - API-Client Fehlerbehandlung
 - Detaillierte Fehlerprotokollierung
 - Confidence 0 bei Fehlern
 - Strukturierte Error-Responses
 
 ### **Tool-Fehlerbehandlung**
+
 - Separate Fehlerbehandlung pro Tool
 - Fehlermeldungen in Response integriert
 - Kein Abbruch bei Tool-Fehlern
@@ -1559,6 +1740,7 @@ AIResponse {
 ## 🎯 **Unterstützte Capabilities**
 
 ### **Funktionen**
+
 - `chat` - Chat-Funktionalität
 - `tools` - Tool-Integration
 - `reasoning` - Reasoning-Fähigkeiten
@@ -1568,6 +1750,7 @@ AIResponse {
 ## 🔄 **Dynamische Konfiguration**
 
 ### **Runtime Updates**
+
 - `updateOpenAIConfig()` - Aktualisiert Konfiguration zur Laufzeit
 - Flexible Parameter-Anpassung
 - Sofortige Wirksamkeit
@@ -1575,6 +1758,7 @@ AIResponse {
 ## 📋 **Unterstützte Modelle**
 
 ### **OpenAI Modelle**
+
 - `gpt-4o-mini` - Standardmodell
 - `gpt-4o` - GPT-4 Omni
 - `gpt-4-turbo` - GPT-4 Turbo
@@ -1588,11 +1772,13 @@ Basierend auf der analysierten `vertexAIProvider.ts` Datei, hier sind die erkann
 ## 🧠 **Vertex AI Provider - Hauptfunktionen**
 
 ### **Kernfunktionen**
+
 - `callVertexAI(model, messages, options)` - Hauptfunktion für Vertex AI API Aufrufe
 - `updateVertexConfig(update)` - Aktualisiert Konfiguration dynamisch
 - `getVertexStatus()` - Gibt Provider-Status zurück
 
 ### **Tool Integration**
+
 - `detectToolCalls(text)` - Erkennt Tool-Aufrufe im Text
 - `handleToolCalls(calls)` - Führt Tool-Aufrufe aus
 - `safeJsonParse(s)` - Sicheres JSON-Parsing für Parameter
@@ -1600,17 +1786,19 @@ Basierend auf der analysierten `vertexAIProvider.ts` Datei, hier sind die erkann
 ## 🔧 **Provider Interface**
 
 ### **Exportierte Hauptkomponente**
+
 ```typescript
 export default {
-  callVertexAI,               // Hauptaufruffunktion
-  updateVertexConfig,         // Konfigurationsupdate
-  getVertexStatus             // Statusabfrage
-}
+  callVertexAI, // Hauptaufruffunktion
+  updateVertexConfig, // Konfigurationsupdate
+  getVertexStatus, // Statusabfrage
+};
 ```
 
 ## ⚙️ **Konfigurationssystem**
 
 ### **Umgebungsvariablen**
+
 - `VERTEX_API_KEY` - API-Schlüssel (erforderlich)
 - `VERTEX_MODEL` - Standardmodell (Default: "gemini-1.5-pro")
 - `VERTEX_API_URL` - API Endpoint (Default: Google Generative Language API)
@@ -1618,6 +1806,7 @@ export default {
 - `VERTEX_MAX_TOKENS` - Maximale Tokens
 
 ### **Provider-Konfiguration**
+
 ```typescript
 vertexConfig: AIModuleConfig {
   name: "vertexAIProvider",
@@ -1636,6 +1825,7 @@ vertexConfig: AIModuleConfig {
 ## 🌐 **API-Integration**
 
 ### **Request-Format**
+
 ```typescript
 {
   contents: Array<{                // Nachrichten-Array
@@ -1650,11 +1840,13 @@ vertexConfig: AIModuleConfig {
 ```
 
 ### **Message-Struktur**
+
 - **System-Prompt** - Wird automatisch vorangestellt
 - **Parts-basierte Struktur** - Vertex AI spezifisches Format
 - **Rollen-Trennung** - User/System/Assistant
 
 ### **API-Endpoint**
+
 ```
 https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}
 ```
@@ -1662,15 +1854,18 @@ https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?
 ## 🛠️ **Tool Integration System**
 
 ### **Tool-Call Erkennung**
+
 **Syntax**: `[TOOL: tool_name {"param": "value"}]`
 
 ### **Tool-Execution Flow**
+
 1. **Erkennung** - Regex-basierte Tool-Erkennung im Antworttext
 2. **Parameter-Parsing** - Sicheres JSON-Parsing
 3. **Ausführung** - Über `toolRegistry.call()` (dynamischer Import)
 4. **Ergebnis-Formatierung** - Erfolgs-/Fehler-Meldungen
 
 ### **Response-Integration**
+
 - Tool-Ergebnisse werden an Antworttext angehängt
 - Separate Erfolgs-/Fehler-Nachrichten
 - Vollständige Transparenz über Tool-Ausführung
@@ -1700,6 +1895,7 @@ AIResponse {
 ## 🔍 **Response-Verarbeitung**
 
 ### **Sichere Response-Parsing**
+
 - **Type-Safe Checking** - Robuste Objekt-Validierung
 - **Multiple Response-Formate** - Unterstützt verschiedene Vertex AI Ausgabeformate:
   - `candidates[0].content.parts[0].text` - Standard-Textantwort
@@ -1707,6 +1903,7 @@ AIResponse {
 - **Token-Count Extraction** - Aus `usageMetadata.totalTokenCount`
 
 ### **Fehlerbehandlung**
+
 - API-Key Validierung
 - HTTP Status Code Überprüfung
 - Detaillierte Fehlerprotokollierung
@@ -1715,6 +1912,7 @@ AIResponse {
 ## 📈 **Status & Monitoring**
 
 ### **Status-Informationen**
+
 ```typescript
 {
   provider: "vertexAI",
@@ -1728,6 +1926,7 @@ AIResponse {
 ## 🎯 **Unterstützte Capabilities**
 
 ### **Funktionen**
+
 - `chat` - Chat-Funktionalität
 - `vision` - Bildverarbeitung (Gemini Vision)
 - `tools` - Tool-Integration
@@ -1737,6 +1936,7 @@ AIResponse {
 ## 🔄 **Dynamische Konfiguration**
 
 ### **Runtime Updates**
+
 - `updateVertexConfig()` - Aktualisiert Konfiguration zur Laufzeit
 - Flexible Parameter-Anpassung
 - Sofortige Wirksamkeit
@@ -1744,10 +1944,10 @@ AIResponse {
 ## 📋 **Unterstützte Modelle**
 
 ### **Gemini Modelle**
+
 - `gemini-1.5-pro` - Standardmodell
 - `gemini-1.5-flash` - Schnelles Modell
 - `gemini-pro` - Gemini Pro
 - `gemini-ultra` - Gemini Ultra (falls verfügbar)
 
 Der Vertex AI Provider bietet eine robuste Integration der Google Vertex AI API mit Fokus auf Gemini-Modelle, erweiterter Tool-Unterstützung und umfassender Fehlerbehandlung für das ERP-KI-System.
-

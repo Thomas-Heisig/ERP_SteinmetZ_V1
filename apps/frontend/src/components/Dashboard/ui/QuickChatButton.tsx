@@ -43,15 +43,15 @@ const QuickChatButton: React.FC<QuickChatButtonProps> = ({
     isPressed: false,
     isFocused: false,
     showNotification,
-    notificationCount
+    notificationCount,
   });
 
   // Sync props → local state
   useEffect(() => {
-    setLocalState(prev => ({
+    setLocalState((prev) => ({
       ...prev,
       showNotification,
-      notificationCount
+      notificationCount,
     }));
   }, [showNotification, notificationCount]);
 
@@ -80,22 +80,22 @@ const QuickChatButton: React.FC<QuickChatButtonProps> = ({
   // ---------------------------------------------------------------------------
 
   const handleMouseEnter = () =>
-    setLocalState(prev => ({ ...prev, isHovered: true }));
+    setLocalState((prev) => ({ ...prev, isHovered: true }));
 
   const handleMouseLeave = () =>
-    setLocalState(prev => ({ ...prev, isHovered: false, isPressed: false }));
+    setLocalState((prev) => ({ ...prev, isHovered: false, isPressed: false }));
 
   const handleMouseDown = () =>
-    setLocalState(prev => ({ ...prev, isPressed: true }));
+    setLocalState((prev) => ({ ...prev, isPressed: true }));
 
   const handleMouseUp = () =>
-    setLocalState(prev => ({ ...prev, isPressed: false }));
+    setLocalState((prev) => ({ ...prev, isPressed: false }));
 
   const handleFocus = () =>
-    setLocalState(prev => ({ ...prev, isFocused: true }));
+    setLocalState((prev) => ({ ...prev, isFocused: true }));
 
   const handleBlur = () =>
-    setLocalState(prev => ({ ...prev, isFocused: false }));
+    setLocalState((prev) => ({ ...prev, isFocused: false }));
 
   // ---------------------------------------------------------------------------
   // Position Styles
@@ -106,31 +106,36 @@ const QuickChatButton: React.FC<QuickChatButtonProps> = ({
       ? {
           position: "fixed",
           zIndex: 1000,
-          ...(position === "BOTTOM_RIGHT" && { bottom: "1.5rem", right: "1.5rem" }),
-          ...(position === "BOTTOM_LEFT" && { bottom: "1.5rem", left: "1.5rem" }),
+          ...(position === "BOTTOM_RIGHT" && {
+            bottom: "1.5rem",
+            right: "1.5rem",
+          }),
+          ...(position === "BOTTOM_LEFT" && {
+            bottom: "1.5rem",
+            left: "1.5rem",
+          }),
           ...(position === "TOP_RIGHT" && { top: "1.5rem", right: "1.5rem" }),
-          ...(position === "TOP_LEFT" && { top: "1.5rem", left: "1.5rem" })
+          ...(position === "TOP_LEFT" && { top: "1.5rem", left: "1.5rem" }),
         }
       : {};
 
-// ---------------------------------------------------------------------------
-// Classnames für cls() – nur Strings, keine Objekte
-// ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Classnames für cls() – nur Strings, keine Objekte
+  // ---------------------------------------------------------------------------
 
-const buttonClasses = cls(
-  "quick-chat-button",
-  `quick-chat-button--${variant.toLowerCase()}`,
-  `quick-chat-button--${position.toLowerCase().replace("_", "-")}`,
-  isOpen ? "quick-chat-button--open" : "",
-  localState.isHovered ? "quick-chat-button--hovered" : "",
-  localState.isPressed ? "quick-chat-button--pressed" : "",
-  localState.isFocused ? "quick-chat-button--focused" : "",
-  localState.showNotification ? "quick-chat-button--has-notification" : "",
-  variant === "FLOATING" ? "quick-chat-button--floating" : "",
-  className || undefined,
-  undefined
-);
-
+  const buttonClasses = cls(
+    "quick-chat-button",
+    `quick-chat-button--${variant.toLowerCase()}`,
+    `quick-chat-button--${position.toLowerCase().replace("_", "-")}`,
+    isOpen ? "quick-chat-button--open" : "",
+    localState.isHovered ? "quick-chat-button--hovered" : "",
+    localState.isPressed ? "quick-chat-button--pressed" : "",
+    localState.isFocused ? "quick-chat-button--focused" : "",
+    localState.showNotification ? "quick-chat-button--has-notification" : "",
+    variant === "FLOATING" ? "quick-chat-button--floating" : "",
+    className || undefined,
+    undefined,
+  );
 
   // ---------------------------------------------------------------------------
   // Render Button Content
@@ -213,7 +218,7 @@ const buttonClasses = cls(
       {localState.showNotification && (
         <span id="quick-chat-notification" className="sr-only">
           {t("quickChat.unreadMessages", {
-            count: localState.notificationCount
+            count: localState.notificationCount,
           })}
         </span>
       )}

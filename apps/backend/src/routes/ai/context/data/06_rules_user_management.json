@@ -29,19 +29,13 @@
     },
     {
       "pattern": "\\b(login|anmeld)\\s+(.*)",
-      "replies": [
-        "Ich melde $2 an.",
-        "Anmeldung für $2 wird durchgeführt."
-      ],
+      "replies": ["Ich melde $2 an.", "Anmeldung für $2 wird durchgeführt."],
       "action": "login_user",
       "params": ["$2"]
     },
     {
       "pattern": "\\b(logout|abmeld)\\s+(.*)",
-      "replies": [
-        "Ich melde $2 ab.",
-        "Abmeldung für $2 wird durchgeführt."
-      ],
+      "replies": ["Ich melde $2 ab.", "Abmeldung für $2 wird durchgeführt."],
       "action": "logout_user",
       "params": ["$2"]
     },
@@ -56,10 +50,7 @@
     },
     {
       "pattern": "\\b(lösche|entferne|entfernen|delete)\\s+(benutzer|user)\\s+(.*)",
-      "replies": [
-        "Ich lösche den Benutzer $3.",
-        "Benutzer $3 wird entfernt."
-      ],
+      "replies": ["Ich lösche den Benutzer $3.", "Benutzer $3 wird entfernt."],
       "action": "delete_user",
       "params": ["$3"]
     },
@@ -92,10 +83,7 @@
     },
     {
       "pattern": "\\b(gruppe|group)\\s+(lösche|entferne|entfernen)\\s+(.*)",
-      "replies": [
-        "Ich lösche die Gruppe $3.",
-        "Gruppe $3 wird entfernt."
-      ],
+      "replies": ["Ich lösche die Gruppe $3.", "Gruppe $3 wird entfernt."],
       "action": "delete_group",
       "params": ["$3"]
     },

@@ -2,7 +2,7 @@
  * knowledgeService.ts
  * ---------------------------------------------------------
  * Semantischer Wissens- & Kontextservice für ERP_SteinmetZ_V1.
- * 
+ *
  * Verknüpft:
  *  - EmbeddingService (Vektoren)
  *  - lokale Wissensdaten (Dateien, JSON, SQLite)
@@ -50,7 +50,11 @@ export async function loadKnowledgeBase(): Promise<KnowledgeEntry[]> {
   for (const base of KNOWLEDGE_BASE_PATHS) {
     if (!fs.existsSync(base)) continue;
 
-    const files = fs.readdirSync(base).filter(f => f.endsWith(".txt") || f.endsWith(".md") || f.endsWith(".json"));
+    const files = fs
+      .readdirSync(base)
+      .filter(
+        (f) => f.endsWith(".txt") || f.endsWith(".md") || f.endsWith(".json"),
+      );
     for (const file of files) {
       const fullPath = path.join(base, file);
       const raw = fs.readFileSync(fullPath, "utf8");
@@ -78,7 +82,7 @@ export async function loadKnowledgeBase(): Promise<KnowledgeEntry[]> {
   // Embeddings generieren
   if (entries.length > 0) {
     const vectors = await Promise.all(
-      entries.map(e => generateEmbeddings(e.content))
+      entries.map((e) => generateEmbeddings(e.content)),
     );
 
     for (let i = 0; i < entries.length; i++) {
@@ -97,7 +101,10 @@ export async function loadKnowledgeBase(): Promise<KnowledgeEntry[]> {
 /**
  * Führt eine semantische Suche durch und liefert relevante Wissenseinträge zurück.
  */
-export async function queryKnowledgeBase(query: string, limit = 5): Promise<AIResponse> {
+export async function queryKnowledgeBase(
+  query: string,
+  limit = 5,
+): Promise<AIResponse> {
   const kb = await loadKnowledgeBase();
   if (kb.length === 0) {
     return {
@@ -111,7 +118,7 @@ export async function queryKnowledgeBase(query: string, limit = 5): Promise<AIRe
   const qVec = qVecResp.data?.[0] ?? [];
 
   const scored = kb
-    .map(e => ({
+    .map((e) => ({
       ...e,
       score: e.vector && e.vector.length ? cosineSimilarity(qVec, e.vector) : 0,
     }))
@@ -122,8 +129,8 @@ export async function queryKnowledgeBase(query: string, limit = 5): Promise<AIRe
     `📖 Relevante Wissenseinträge zu "${query}":\n\n` +
     scored
       .map(
-        e =>
-          `• **${e.title}** (${(e.score * 100).toFixed(1)}%)\n  Quelle: ${path.basename(e.source ?? "")}`
+        (e) =>
+          `• **${e.title}** (${(e.score * 100).toFixed(1)}%)\n  Quelle: ${path.basename(e.source ?? "")}`,
       )
       .join("\n");
 
@@ -141,15 +148,16 @@ export async function queryKnowledgeBase(query: string, limit = 5): Promise<AIRe
 /**
  * Erstellt einen konsolidierten Kontext (z. B. für Chat oder Analyse).
  */
-export async function buildContextFromKnowledge(query: string): Promise<string> {
+export async function buildContextFromKnowledge(
+  query: string,
+): Promise<string> {
   const result = await queryKnowledgeBase(query, 3);
   const top = result.data ?? [];
 
   const context =
     top
       .map(
-        (e: KnowledgeEntry) =>
-          `# ${e.title}\n${e.content.slice(0, 1000)}\n---`
+        (e: KnowledgeEntry) => `# ${e.title}\n${e.content.slice(0, 1000)}\n---`,
       )
       .join("\n\n") || "Kein Wissen gefunden.";
 

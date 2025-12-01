@@ -11,7 +11,7 @@ const FALLBACK_RESPONSES: string[] = [
   "Die Anfrage konnte nicht eindeutig interpretiert werden.",
   "Bitte formulieren Sie die Frage etwas präziser.",
   "Im aktuellen Modus stehen nur einfache Antworten bereit.",
-  "Gerne – bitte geben Sie weitere Details an."
+  "Gerne – bitte geben Sie weitere Details an.",
 ];
 
 /**
@@ -19,9 +19,8 @@ const FALLBACK_RESPONSES: string[] = [
  */
 export async function callFallback(
   model: string,
-  messages: ChatMessage[]
+  messages: ChatMessage[],
 ): Promise<AIResponse> {
-
   const response =
     FALLBACK_RESPONSES[Math.floor(Math.random() * FALLBACK_RESPONSES.length)];
 
@@ -32,11 +31,10 @@ export async function callFallback(
     meta: {
       provider: "fallback",
       model: model || "fallback",
-      source: "local"
-    }
+      source: "local",
+    },
   };
 }
-
 
 /**
  * Modell-Erkennung
@@ -47,13 +45,12 @@ export function isFallbackModel(modelId: string): boolean {
   return m === "fallback" || m === "local" || m.includes("offline");
 }
 
-
 /**
  * Provider-Objekt
  */
 export const fallbackProvider = {
   call: callFallback,
-  isModel: isFallbackModel
+  isModel: isFallbackModel,
 };
 
 export default callFallback;

@@ -33,7 +33,9 @@ function mapLevelToStatus(level: HealthLevel): HealthStatus {
 /**
  * Wandelt HealthStatusDetailed in das interne DashboardHealthState-Modell.
  */
-function toDashboardHealthState(detailed: HealthStatusDetailed): DashboardHealthState {
+function toDashboardHealthState(
+  detailed: HealthStatusDetailed,
+): DashboardHealthState {
   return {
     status: mapLevelToStatus(detailed.overall),
     overall: detailed.overall,

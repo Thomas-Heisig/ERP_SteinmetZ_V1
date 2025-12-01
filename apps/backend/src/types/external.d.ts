@@ -9,14 +9,14 @@
 // --------------------------------------------------------
 // Module ohne Typdefinitionen
 // --------------------------------------------------------
-declare module 'node-llama-cpp';
+declare module "node-llama-cpp";
 
 // --------------------------------------------------------
 // Globale Variablen (z. B. app, db, logger)
 // --------------------------------------------------------
 declare global {
   // eslint-disable-next-line no-var
-  var app: import('express').Express | undefined;
+  var app: import("express").Express | undefined;
   // eslint-disable-next-line no-var
   var db: any | undefined;
   // eslint-disable-next-line no-var
@@ -28,16 +28,16 @@ declare global {
 // --------------------------------------------------------
 declare namespace NodeJS {
   interface ProcessEnv {
-    NODE_ENV?: 'development' | 'production' | 'test';
+    NODE_ENV?: "development" | "production" | "test";
     PORT?: string;
     CORS_ORIGIN?: string;
-    DB_DRIVER?: 'sqlite' | 'postgres';
+    DB_DRIVER?: "sqlite" | "postgres";
     DATABASE_URL?: string;
 
     FUNCTIONS_DIR?: string;
-    FUNCTIONS_AUTOLOAD?: '0' | '1';
-    FUNCTIONS_AUTOPERSIST?: '0' | '1';
-    FUNCTIONS_WATCH?: '0' | '1';
+    FUNCTIONS_AUTOLOAD?: "0" | "1";
+    FUNCTIONS_AUTOPERSIST?: "0" | "1";
+    FUNCTIONS_WATCH?: "0" | "1";
 
     AI_PROVIDER?: string;
     OPENAI_MODEL?: string;
@@ -47,8 +47,8 @@ declare namespace NodeJS {
 
     JWT_SECRET?: string;
     FALLBACK_WIKI?: string;
-    LOG_LEVEL?: 'info' | 'warn' | 'error' | 'debug';
-    ENABLE_SHELL?: '0' | '1';
+    LOG_LEVEL?: "info" | "warn" | "error" | "debug";
+    ENABLE_SHELL?: "0" | "1";
   }
 }
 

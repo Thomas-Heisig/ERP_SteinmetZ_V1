@@ -46,7 +46,7 @@ export default class HistoryStore {
 
       if (Array.isArray(parsed)) {
         this.entries = parsed.filter(
-          (e) => typeof e?.id === "string" && e?.viewedAt
+          (e) => typeof e?.id === "string" && e?.viewedAt,
         );
       } else {
         this.entries = [];
@@ -102,7 +102,7 @@ export default class HistoryStore {
       id: entry.id,
       title: entry.title,
       icon: entry.icon,
-      kind: entry.kind,        // ← Pflichtfeld, darum korrekt
+      kind: entry.kind, // ← Pflichtfeld, darum korrekt
       viewedAt: Date.now(),
       action: "view",
     };
@@ -126,5 +126,5 @@ export default class HistoryStore {
   /** Verlauf abrufen */
   getAll(): HistoryEntry[] {
     return [...this.entries];
-    }
+  }
 }

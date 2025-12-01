@@ -74,7 +74,7 @@ export function useDashboardLogic() {
       openSearchOverlay,
       closeSearchOverlay,
     }),
-    [state, navigation, search, health, layout]
+    [state, navigation, search, health, layout],
   );
 }
 

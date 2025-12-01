@@ -9,7 +9,7 @@ Frontend (Next 14) startet unter http://localhost:3000.
 
 Backend (Fastify v4) startet; Health: GET /api/health → JSON.
 
-Rewrite im Frontend: /bff/* → 127.0.0.1:4000/* (keine CORS/IPv6-Probleme).
+Rewrite im Frontend: /bff/_ → 127.0.0.1:4000/_ (keine CORS/IPv6-Probleme).
 
 Navigation/Startseite mit Status/Quicklinks/„Nächste Schritte“.
 
@@ -58,21 +58,19 @@ module: "NodeNext", moduleResolution: "NodeNext", Importe mit .js-Endung:
 
 import { registerHR } from "./bff/hr/index.js";
 
-
 Alternativ (Bundler):
 module: "ES2022", moduleResolution: "bundler", allowImportingTsExtensions: true, Importe mit .ts:
 
 import { registerHR } from "./bff/hr/index.ts";
-
 
 Akzeptanz: npm run -w backend typecheck ohne Fehler.
 
 DB anlegen & migrieren
 
 # falls DB fehlt
+
 psql -h localhost -U erp_user -d postgres -c "CREATE DATABASE erp_steinmetz;"
 npm run db:migrate
-
 
 Akzeptanz: Alle Migrationen angewendet.
 
@@ -127,18 +125,23 @@ Logs: Health/Ready mit Service-Name+Version im Backend.
 README: kurze Dev-Anleitung + Ports + Rewrite.
 
 Commands (Ready-to-run)
+
 # 1) Dependencies & Start
+
 npm install
 npm run dev
 
 # 2) DB (falls noch nicht)
+
 psql -h localhost -U erp_user -d postgres -c "CREATE DATABASE erp_steinmetz;"
 npm run db:migrate
 
 # 3) Backend nur (Debug)
+
 npm run -w backend dev
 
 # 4) Frontend nur
+
 npm run -w frontend dev
 
 Namens-/Branch-Vorschlag
@@ -157,61 +160,60 @@ feat(hr-ui): minimal employee form (tri-state)
 
 test(hr): happy-path & unknown→todo
 
-
 ✅ Bereits erledigt / funktionsfähig
 
- Grundstruktur App mit App.tsx, Header, Footer, Routing (react-router-dom)
+Grundstruktur App mit App.tsx, Header, Footer, Routing (react-router-dom)
 
- Theme-System (light, dark, lcars) mit globalen Variablen und Umschalter
+Theme-System (light, dark, lcars) mit globalen Variablen und Umschalter
 
- Dashboard-Basislayout (Header, Kategorienübersicht, Suchfeld, QuickChat-Button)
+Dashboard-Basislayout (Header, Kategorienübersicht, Suchfeld, QuickChat-Button)
 
- useFunctionsCatalog-Integration mit Menü-, Node-, Rules- und Root-Ladevorgängen
+useFunctionsCatalog-Integration mit Menü-, Node-, Rules- und Root-Ladevorgängen
 
- Datenanzeige der Nodes (Meta-, Schema-, Arbeitsanweisungs- und Kind-Informationen)
+Datenanzeige der Nodes (Meta-, Schema-, Arbeitsanweisungs- und Kind-Informationen)
 
- Breadcrumb-Navigation mit Rückverfolgung über alle Ebenen
+Breadcrumb-Navigation mit Rückverfolgung über alle Ebenen
 
- Suchfunktion mit Kategorie- und Funktions-Filter
+Suchfunktion mit Kategorie- und Funktions-Filter
 
- Health-Status-Anzeige (online / gestört / fehlerhaft / checking)
+Health-Status-Anzeige (online / gestört / fehlerhaft / checking)
 
- Grund-Styling für Header, Navigation und Theme-Toggle
+Grund-Styling für Header, Navigation und Theme-Toggle
 
- Entfernung der Sidebar, Neuordnung der Navigation im Kopfbereich
+Entfernung der Sidebar, Neuordnung der Navigation im Kopfbereich
 
 ⚙️ In Arbeit / teilweise umgesetzt
 
- Widgets-Darstellung für Untergruppen / Funktionen
+Widgets-Darstellung für Untergruppen / Funktionen
 → Aktuell einfache Karten, sollen optisch wie „intelligente Module“ wirken.
 
- Kategoriewechsel im Dashboard (Top-Bar)
+Kategoriewechsel im Dashboard (Top-Bar)
 → Navigation funktioniert, Design-Feinschliff offen.
 
- Suche & Filter-Layout
+Suche & Filter-Layout
 → Funktional, benötigt optisch einheitliche Integration in den Header-Block.
 
- Globale CSS-Harmonisierung
+Globale CSS-Harmonisierung
 → Styles aus base.css, dark.css, light.css, lcars.css müssen vereinheitlicht werden.
 
- Responsive Layout-Anpassung (mobile / Tablet-Ansicht)
+Responsive Layout-Anpassung (mobile / Tablet-Ansicht)
 → Noch keine Breakpoints oder Kompaktansicht.
 
 🧠 Geplant / nächste Schritte
 
- Intelligente Widget-Logik
+Intelligente Widget-Logik
 
 Erkennung der Node-Art („category“, „group“, „function“)
 
 Automatische Anzeige von Kerninfos → Symbol, Beschreibung, Kinderzahl
 
- Visuelle Widget-Komponenten (Grid-Layout mit Schatten / Hover-Effekten)
+Visuelle Widget-Komponenten (Grid-Layout mit Schatten / Hover-Effekten)
 
- Einbindung der Meta-Informationen in UI-Elemente
+Einbindung der Meta-Informationen in UI-Elemente
 
 Anzeige von Status, Priorität, Area, Verknüpfungen, Verweisen
 
- Dynamische Statistiken
+Dynamische Statistiken
 
 Automatische Darstellung, wenn meta.tags oder schema auf „report“ / „stats“ hindeuten
 
@@ -219,47 +221,47 @@ Verwendung einfacher Diagramm-Komponenten (recharts)
 
 🧩 AI-Annotator-Integration
 
- Service-Verknüpfung zum AI-Annotator
+Service-Verknüpfung zum AI-Annotator
 
 Übergabe der Node-Metadaten an Backend-Service
 
- Formular-Generierung aus Metadaten / Schema
+Formular-Generierung aus Metadaten / Schema
 
 Dynamische Formulare abhängig von node.schema
 
- Metadaten-Erzeugung / -Aktualisierung durch Annotator
+Metadaten-Erzeugung / -Aktualisierung durch Annotator
 
 Schreiben zurück in Meta-Files (nur nach Freigabe)
 
- Erweiterung um Vorschläge & automatische Klassifizierung
+Erweiterung um Vorschläge & automatische Klassifizierung
 
 AI schlägt Tags, Area, Priority, Relations vor
 
 🧱 Abschließende Schritte / Projektabschluss
 
- Gesamtes CSS final konsolidieren
+Gesamtes CSS final konsolidieren
 
 Einheitliche Variablenstruktur, konsistente Buttons, Widgets, Tabellen
 
- Code-Cleanup
+Code-Cleanup
 
 Typdefinitionen vereinheitlichen (NodeDetail, SearchResult, MenuNode)
 
 Entfernen alter Komponenten (Sidebar, Legacy-Hooks)
 
- Internationalisierung (optional)
+Internationalisierung (optional)
 
 Sprachumschaltung DE/EN über rules.locale
 
- Dokumentation
+Dokumentation
 
 Kurze Entwickler-Dokumentation (Hooks, Komponenten, Themes, Build)
 
- Abschließende Review / Stabilitätstest
+Abschließende Review / Stabilitätstest
 
 Test aller Navigations- und Anzeigewege
 
- Release-Build / Deployment-Konfiguration
+Release-Build / Deployment-Konfiguration
 
 🏁 Zielzustand
 
@@ -275,58 +277,58 @@ und modular erweiterbar bleibt für weitere ERP-Bereiche.
 
 ✅ Bereits erledigt / funktionsfähig
 
- Grundstruktur App mit App.tsx, Header, Footer, Routing (react-router-dom)
+Grundstruktur App mit App.tsx, Header, Footer, Routing (react-router-dom)
 
- Theme-System (light, dark, lcars) mit globalen Variablen und Umschalter
+Theme-System (light, dark, lcars) mit globalen Variablen und Umschalter
 
- Dashboard-Basislayout (Header, Kategorienübersicht, Suchfeld, QuickChat-Button)
+Dashboard-Basislayout (Header, Kategorienübersicht, Suchfeld, QuickChat-Button)
 
- useFunctionsCatalog-Integration mit Menü-, Node-, Rules- und Root-Ladevorgängen
+useFunctionsCatalog-Integration mit Menü-, Node-, Rules- und Root-Ladevorgängen
 
- Datenanzeige der Nodes (Meta-, Schema-, Arbeitsanweisungs- und Kind-Informationen)
+Datenanzeige der Nodes (Meta-, Schema-, Arbeitsanweisungs- und Kind-Informationen)
 
- Breadcrumb-Navigation mit Rückverfolgung über alle Ebenen
+Breadcrumb-Navigation mit Rückverfolgung über alle Ebenen
 
- Suchfunktion mit Kategorie- und Funktions-Filter
+Suchfunktion mit Kategorie- und Funktions-Filter
 
- Health-Status-Anzeige (online / gestört / fehlerhaft / checking)
+Health-Status-Anzeige (online / gestört / fehlerhaft / checking)
 
- Grund-Styling für Header, Navigation und Theme-Toggle
+Grund-Styling für Header, Navigation und Theme-Toggle
 
- Entfernung der Sidebar, Neuordnung der Navigation im Kopfbereich
+Entfernung der Sidebar, Neuordnung der Navigation im Kopfbereich
 
 ⚙️ In Arbeit / teilweise umgesetzt
 
- Widgets-Darstellung für Untergruppen / Funktionen
+Widgets-Darstellung für Untergruppen / Funktionen
 → Aktuell einfache Karten, sollen optisch wie „intelligente Module“ wirken.
 
- Kategoriewechsel im Dashboard (Top-Bar)
+Kategoriewechsel im Dashboard (Top-Bar)
 → Navigation funktioniert, Design-Feinschliff offen.
 
- Suche & Filter-Layout
+Suche & Filter-Layout
 → Funktional, benötigt optisch einheitliche Integration in den Header-Block.
 
- Globale CSS-Harmonisierung
+Globale CSS-Harmonisierung
 → Styles aus base.css, dark.css, light.css, lcars.css müssen vereinheitlicht werden.
 
- Responsive Layout-Anpassung (mobile / Tablet-Ansicht)
+Responsive Layout-Anpassung (mobile / Tablet-Ansicht)
 → Noch keine Breakpoints oder Kompaktansicht.
 
 🧠 Geplant / nächste Schritte
 
- Intelligente Widget-Logik
+Intelligente Widget-Logik
 
 Erkennung der Node-Art („category“, „group“, „function“)
 
 Automatische Anzeige von Kerninfos → Symbol, Beschreibung, Kinderzahl
 
- Visuelle Widget-Komponenten (Grid-Layout mit Schatten / Hover-Effekten)
+Visuelle Widget-Komponenten (Grid-Layout mit Schatten / Hover-Effekten)
 
- Einbindung der Meta-Informationen in UI-Elemente
+Einbindung der Meta-Informationen in UI-Elemente
 
 Anzeige von Status, Priorität, Area, Verknüpfungen, Verweisen
 
- Dynamische Statistiken
+Dynamische Statistiken
 
 Automatische Darstellung, wenn meta.tags oder schema auf „report“ / „stats“ hindeuten
 
@@ -334,47 +336,47 @@ Verwendung einfacher Diagramm-Komponenten (recharts)
 
 🧩 AI-Annotator-Integration
 
- Service-Verknüpfung zum AI-Annotator
+Service-Verknüpfung zum AI-Annotator
 
 Übergabe der Node-Metadaten an Backend-Service
 
- Formular-Generierung aus Metadaten / Schema
+Formular-Generierung aus Metadaten / Schema
 
 Dynamische Formulare abhängig von node.schema
 
- Metadaten-Erzeugung / -Aktualisierung durch Annotator
+Metadaten-Erzeugung / -Aktualisierung durch Annotator
 
 Schreiben zurück in Meta-Files (nur nach Freigabe)
 
- Erweiterung um Vorschläge & automatische Klassifizierung
+Erweiterung um Vorschläge & automatische Klassifizierung
 
 AI schlägt Tags, Area, Priority, Relations vor
 
 🧱 Abschließende Schritte / Projektabschluss
 
- Gesamtes CSS final konsolidieren
+Gesamtes CSS final konsolidieren
 
 Einheitliche Variablenstruktur, konsistente Buttons, Widgets, Tabellen
 
- Code-Cleanup
+Code-Cleanup
 
 Typdefinitionen vereinheitlichen (NodeDetail, SearchResult, MenuNode)
 
 Entfernen alter Komponenten (Sidebar, Legacy-Hooks)
 
- Internationalisierung (optional)
+Internationalisierung (optional)
 
 Sprachumschaltung DE/EN über rules.locale
 
- Dokumentation
+Dokumentation
 
 Kurze Entwickler-Dokumentation (Hooks, Komponenten, Themes, Build)
 
- Abschließende Review / Stabilitätstest
+Abschließende Review / Stabilitätstest
 
 Test aller Navigations- und Anzeigewege
 
- Release-Build / Deployment-Konfiguration
+Release-Build / Deployment-Konfiguration
 
 🏁 Zielzustand
 

@@ -8,11 +8,7 @@
  * WidgetResolver einer konkreten Darstellung zugeordnet werden.
  */
 
-import type {
-  DashboardNode,
-  WidgetRegistry,
-  WidgetProps,
-} from "../../types";
+import type { DashboardNode, WidgetRegistry, WidgetProps } from "../../types";
 
 import { LayoutEngine } from "./LayoutEngine";
 
@@ -49,14 +45,16 @@ export class NodeBuilder {
   build(nodes: DashboardNode[]): BuiltNodeTree {
     const layout = this.layoutEngine.fromNodes(nodes);
 
-    const widgets = layout.items.map((item) => {
-      const sourceNode = nodes.find((n) => n.id === item.id);
-      if (!sourceNode) {
-        return null;
-      }
+    const widgets = layout.items
+      .map((item) => {
+        const sourceNode = nodes.find((n) => n.id === item.id);
+        if (!sourceNode) {
+          return null;
+        }
 
-      return this.buildSingleNode(sourceNode, item);
-    }).filter(Boolean) as BuiltNodeUI[];
+        return this.buildSingleNode(sourceNode, item);
+      })
+      .filter(Boolean) as BuiltNodeUI[];
 
     return {
       widgets,

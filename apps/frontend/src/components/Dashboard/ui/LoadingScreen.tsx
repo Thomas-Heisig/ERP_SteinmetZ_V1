@@ -7,8 +7,8 @@ import cls from "../utils/cls";
 
 export interface LoadingScreenProps {
   message?: string;
-  variant?: 'spinner' | 'dots' | 'pulse' | 'skeleton' | 'funny';
-  size?: 'small' | 'medium' | 'large';
+  variant?: "spinner" | "dots" | "pulse" | "skeleton" | "funny";
+  size?: "small" | "medium" | "large";
   fullScreen?: boolean;
   overlay?: boolean;
   progress?: number; // 0-100 for progress indication
@@ -18,7 +18,7 @@ export interface LoadingScreenProps {
 
 /**
  * LoadingScreen - Enhanced loading screen with multiple variants and features
- * 
+ *
  * Features:
  * - Multiple loading animations (spinner, dots, pulse, skeleton, funny)
  * - Progress indication
@@ -26,11 +26,11 @@ export interface LoadingScreenProps {
  * - Helpful tips during loading
  * - Responsive design
  * - Accessibility support
- * 
+ *
  * @component
  * @example
  * ```tsx
- * <LoadingScreen 
+ * <LoadingScreen
  *   message="Loading dashboard..."
  *   variant="dots"
  *   size="large"
@@ -40,25 +40,25 @@ export interface LoadingScreenProps {
  * />
  * ```
  */
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ 
+const LoadingScreen: React.FC<LoadingScreenProps> = ({
   message,
-  variant = 'spinner',
-  size = 'medium',
+  variant = "spinner",
+  size = "medium",
   fullScreen = true,
   overlay = false,
   progress,
   estimatedTime,
-  showTips = false
+  showTips = false,
 }) => {
   const { t } = useTranslation();
 
   // Loading tips for better UX
   const loadingTips = [
-    t('loadingScreen.tips.tip1'),
-    t('loadingScreen.tips.tip2'),
-    t('loadingScreen.tips.tip3'),
-    t('loadingScreen.tips.tip4'),
-    t('loadingScreen.tips.tip5'),
+    t("loadingScreen.tips.tip1"),
+    t("loadingScreen.tips.tip2"),
+    t("loadingScreen.tips.tip3"),
+    t("loadingScreen.tips.tip4"),
+    t("loadingScreen.tips.tip5"),
   ];
 
   const [currentTip, setCurrentTip] = React.useState(0);
@@ -68,7 +68,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
     if (!showTips) return;
 
     const interval = setInterval(() => {
-      setCurrentTip(prev => (prev + 1) % loadingTips.length);
+      setCurrentTip((prev) => (prev + 1) % loadingTips.length);
     }, 5000);
 
     return () => clearInterval(interval);
@@ -83,31 +83,31 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
     "Magie laden... 🎩",
     "Digitalen Zauberstab schwingen... ✨",
     "Pixels anordnen... 🎨",
-    "Loading... mit Stil! 💃"
+    "Loading... mit Stil! 💃",
   ];
 
-  const displayMessage = message || 
-    (variant === 'funny' 
+  const displayMessage =
+    message ||
+    (variant === "funny"
       ? funnyMessages[Math.floor(Math.random() * funnyMessages.length)]
-      : t('loadingScreen.defaultMessage')
-    );
+      : t("loadingScreen.defaultMessage"));
 
   const screenClasses = cls(
-    'loading-screen',
+    "loading-screen",
     `loading-screen--${variant}`,
     `loading-screen--${size}`,
     {
-      'loading-screen--fullscreen': fullScreen,
-      'loading-screen--overlay': overlay,
-      'loading-screen--has-progress': progress !== undefined,
-      'loading-screen--show-tips': showTips
+      "loading-screen--fullscreen": fullScreen,
+      "loading-screen--overlay": overlay,
+      "loading-screen--has-progress": progress !== undefined,
+      "loading-screen--show-tips": showTips,
     },
-    undefined
+    undefined,
   );
 
   const renderLoader = () => {
     switch (variant) {
-      case 'dots':
+      case "dots":
         return (
           <div className="loading-screen__dots">
             <div className="loading-screen__dot"></div>
@@ -115,15 +115,15 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
             <div className="loading-screen__dot"></div>
           </div>
         );
-      
-      case 'pulse':
+
+      case "pulse":
         return (
           <div className="loading-screen__pulse">
             <div className="loading-screen__pulse-circle"></div>
           </div>
         );
-      
-      case 'skeleton':
+
+      case "skeleton":
         return (
           <div className="loading-screen__skeleton">
             <div className="loading-screen__skeleton-line loading-screen__skeleton-line--large"></div>
@@ -132,17 +132,21 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
             <div className="loading-screen__skeleton-line"></div>
           </div>
         );
-      
-      case 'funny':
+
+      case "funny":
         return (
           <div className="loading-screen__funny">
-            <div className="loading-screen__funny-emoji" role="img" aria-label="Loading">
-              {['🐹', '⚡', '🎪', '🚀', '🌈'][Math.floor(Math.random() * 5)]}
+            <div
+              className="loading-screen__funny-emoji"
+              role="img"
+              aria-label="Loading"
+            >
+              {["🐹", "⚡", "🎪", "🚀", "🌈"][Math.floor(Math.random() * 5)]}
             </div>
             <div className="loading-screen__funny-animation"></div>
           </div>
         );
-      
+
       default: // spinner
         return (
           <div className="loading-screen__spinner">
@@ -154,37 +158,33 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
 
   const formatTime = (seconds: number): string => {
     if (seconds < 60) {
-      return t('loadingScreen.time.seconds', { count: seconds });
+      return t("loadingScreen.time.seconds", { count: seconds });
     } else {
       const minutes = Math.ceil(seconds / 60);
-      return t('loadingScreen.time.minutes', { count: minutes });
+      return t("loadingScreen.time.minutes", { count: minutes });
     }
   };
 
   return (
-    <div 
+    <div
       className={screenClasses}
       role="status"
       aria-live="polite"
-      aria-label={t('loadingScreen.ariaLabel')}
+      aria-label={t("loadingScreen.ariaLabel")}
     >
       <div className="loading-screen__container">
         {/* Main Loader */}
-        <div className="loading-screen__loader">
-          {renderLoader()}
-        </div>
+        <div className="loading-screen__loader">{renderLoader()}</div>
 
         {/* Message */}
         <div className="loading-screen__content">
-          <p className="loading-screen__message">
-            {displayMessage}
-          </p>
+          <p className="loading-screen__message">{displayMessage}</p>
 
           {/* Progress Bar */}
           {progress !== undefined && (
             <div className="loading-screen__progress">
               <div className="loading-screen__progress-bar">
-                <div 
+                <div
                   className="loading-screen__progress-fill"
                   style={{ width: `${progress}%` }}
                   role="progressbar"
@@ -194,7 +194,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
                 />
               </div>
               <div className="loading-screen__progress-text">
-                {t('loadingScreen.progress', { progress })}
+                {t("loadingScreen.progress", { progress })}
               </div>
             </div>
           )}
@@ -202,8 +202,8 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
           {/* Estimated Time */}
           {estimatedTime && (
             <div className="loading-screen__estimated-time">
-              {t('loadingScreen.estimatedTime', { 
-                time: formatTime(estimatedTime) 
+              {t("loadingScreen.estimatedTime", {
+                time: formatTime(estimatedTime),
               })}
             </div>
           )}
@@ -219,10 +219,10 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
           )}
 
           {/* Funny Easter Egg */}
-          {variant === 'funny' && (
+          {variant === "funny" && (
             <div className="loading-screen__easter-egg">
               <small className="loading-screen__easter-egg-text">
-                {t('loadingScreen.funny.fact')}
+                {t("loadingScreen.funny.fact")}
               </small>
             </div>
           )}

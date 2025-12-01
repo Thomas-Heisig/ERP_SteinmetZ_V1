@@ -1,4 +1,4 @@
-🤝 VERTRIEB 
+🤝 VERTRIEB
 ├── 👥 CRM (Kundenbeziehungsmanagement)
 │ ├── 👤 Kundenstamm
 │ │ ├── 🎯 360° Kundenansicht
@@ -1416,26 +1416,26 @@ Integrationen: E-Mail/Kalender (O365/Google), CTI (SIP/WebRTC), Werbeplattformen
 Betrieb/Leistung: asynchrone Verarbeitungen (Importe, Enrichment, Scoring), Caching für große Listen/Timelines, Warteschlangen für CTI/Tracking-Events, Wiederanlaufstrategien.
 
 📏 Kern-KPIs (Auswahl & Definition)
-Bereich	KPI	Definition/Kurzformel
-Pipeline	Pipeline-Velocity	(Opp-Anzahl × Win-Rate × Ø AW) ÷ Ø Zyklus-Tage
-Vertrieb	Win-Rate	Won ÷ (Won + Lost)
-Vertrieb	Response-Zeit	Median/90-P zwischen Erstkontakt und Antwort
-Marketing	CPA	Kosten ÷ Conversions
-Marketing	ROAS	Umsatz ÷ Ad-Spend
-E-Mail	CTR	Unique Klicks ÷ zugestellte Mails
-CRM-Daten	Duplikatsrate	Duplikat-Treffer ÷ neue Datensätze
-Service-Einfluss	Churn-Signal	Anteil Kunden mit negativen Tickets <X Tagen
+Bereich KPI Definition/Kurzformel
+Pipeline Pipeline-Velocity (Opp-Anzahl × Win-Rate × Ø AW) ÷ Ø Zyklus-Tage
+Vertrieb Win-Rate Won ÷ (Won + Lost)
+Vertrieb Response-Zeit Median/90-P zwischen Erstkontakt und Antwort
+Marketing CPA Kosten ÷ Conversions
+Marketing ROAS Umsatz ÷ Ad-Spend
+E-Mail CTR Unique Klicks ÷ zugestellte Mails
+CRM-Daten Duplikatsrate Duplikat-Treffer ÷ neue Datensätze
+Service-Einfluss Churn-Signal Anteil Kunden mit negativen Tickets <X Tagen
 
 Alle KPIs mit Zeitraum, Segment, Quelle und Datenstand (Timestamp) versehen.
 
 🛡️ Risiken & Kontrollen (Kurzmatrix)
-Risiko	Kontrolle	Nachweis
-Unzulässige Ansprache	Einwilligungs-Mgmt, DOI-Nachweis, Abmelde-Pflicht	DOI-Protokoll, Versandlog
-Datenmüll/Dubletten	Fuzzy-Match, Merge-Workflow, Pflichtfelder	Merge-Protokoll, Qualitäts-Score
-Fehl-Attribution	Modell-Versionierung, Sensitivität, Grenzen dokumentieren	Attributions-Report
-Overspend	Budget-Limits, Alerts, Freigabestufen	Budget-Historie, Alarm-Log
-Sales-„Leerlauf“	Follow-up-SLA, Eskalation	SLA-Bericht
-Bias im Scoring	Feature-Audit, regelmäßige Reviews	Modell-Karte, Drift-Report
+Risiko Kontrolle Nachweis
+Unzulässige Ansprache Einwilligungs-Mgmt, DOI-Nachweis, Abmelde-Pflicht DOI-Protokoll, Versandlog
+Datenmüll/Dubletten Fuzzy-Match, Merge-Workflow, Pflichtfelder Merge-Protokoll, Qualitäts-Score
+Fehl-Attribution Modell-Versionierung, Sensitivität, Grenzen dokumentieren Attributions-Report
+Overspend Budget-Limits, Alerts, Freigabestufen Budget-Historie, Alarm-Log
+Sales-„Leerlauf“ Follow-up-SLA, Eskalation SLA-Bericht
+Bias im Scoring Feature-Audit, regelmäßige Reviews Modell-Karte, Drift-Report
 🚀 Einführung & Mindestkonfiguration (praxisnah)
 
 Dateninventur & Import: Kunden/Ansprechpartner/Produkte/Preise; Duplikat-Regeln aktivieren, Prüfprotokoll führen.

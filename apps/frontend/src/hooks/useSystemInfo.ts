@@ -35,9 +35,7 @@ export interface FetchState<T> {
    Haupt-Hook
 ------------------------------------------------------- */
 
-export const useSystemInfo = (
-  backendUrl: string = "http://localhost:3000"
-) => {
+export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
   /* Overview */
   const [overview, setOverview] = useState<FetchState<SystemOverview>>({
     data: null,
@@ -127,7 +125,7 @@ export const useSystemInfo = (
       if (!res.ok) {
         const errText = await res.text();
         throw new Error(
-          `HTTP ${res.status}: ${res.statusText}, ${errText || "No details"}`
+          `HTTP ${res.status}: ${res.statusText}, ${errText || "No details"}`,
         );
       }
 
@@ -139,7 +137,7 @@ export const useSystemInfo = (
 
       return json.data;
     },
-    [backendUrl]
+    [backendUrl],
   );
 
   /* -------------------------------------------------------
@@ -168,7 +166,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadRoutes = useCallback(async () => {
-    setRoutes(prev => ({ ...prev, loading: true, error: null }));
+    setRoutes((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const result = await fetchFromBackend<SystemRouteInfo>("/routes");
       setRoutes({ data: result, loading: false, error: null });
@@ -178,7 +176,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadDatabase = useCallback(async () => {
-    setDatabase(prev => ({ ...prev, loading: true, error: null }));
+    setDatabase((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/database");
       setDatabase({ data, loading: false, error: null });
@@ -188,7 +186,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadSystem = useCallback(async () => {
-    setSystemInfo(prev => ({ ...prev, loading: true, error: null }));
+    setSystemInfo((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/system");
       setSystemInfo({ data, loading: false, error: null });
@@ -198,7 +196,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadStatus = useCallback(async () => {
-    setStatus(prev => ({ ...prev, loading: true, error: null }));
+    setStatus((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/status");
       setStatus({ data, loading: false, error: null });
@@ -208,7 +206,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadHealth = useCallback(async () => {
-    setHealth(prev => ({ ...prev, loading: true, error: null }));
+    setHealth((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend<HealthStatus>("/health");
       setHealth({ data, loading: false, error: null });
@@ -218,7 +216,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadEnvironment = useCallback(async () => {
-    setEnvironment(prev => ({ ...prev, loading: true, error: null }));
+    setEnvironment((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/environment");
       setEnvironment({ data, loading: false, error: null });
@@ -228,7 +226,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadDependencies = useCallback(async () => {
-    setDependencies(prev => ({ ...prev, loading: true, error: null }));
+    setDependencies((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/dependencies");
       setDependencies({ data, loading: false, error: null });
@@ -238,7 +236,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadDiagnostics = useCallback(async () => {
-    setDiagnostics(prev => ({ ...prev, loading: true, error: null }));
+    setDiagnostics((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/diagnostics");
       setDiagnostics({ data, loading: false, error: null });
@@ -248,7 +246,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadFeatures = useCallback(async () => {
-    setFeatures(prev => ({ ...prev, loading: true, error: null }));
+    setFeatures((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/features");
       setFeatures({ data, loading: false, error: null });
@@ -258,7 +256,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadResources = useCallback(async () => {
-    setResources(prev => ({ ...prev, loading: true, error: null }));
+    setResources((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/resources");
       setResources({ data, loading: false, error: null });
@@ -268,7 +266,7 @@ export const useSystemInfo = (
   }, [fetchFromBackend]);
 
   const loadFunctions = useCallback(async () => {
-    setFunctionsSummary(prev => ({ ...prev, loading: true, error: null }));
+    setFunctionsSummary((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/functions");
       setFunctionsSummary({ data, loading: false, error: null });
@@ -281,45 +279,48 @@ export const useSystemInfo = (
      Stabilisiertes Return (wichtig!)
   ------------------------------------------------------- */
 
-  return useMemo(() => ({
-    overview,
-    loadOverview,
+  return useMemo(
+    () => ({
+      overview,
+      loadOverview,
 
-    routes,
-    database,
-    systemInfo,
-    status,
-    health,
-    environment,
-    dependencies,
-    diagnostics,
-    features,
-    resources,
-    functionsSummary,
+      routes,
+      database,
+      systemInfo,
+      status,
+      health,
+      environment,
+      dependencies,
+      diagnostics,
+      features,
+      resources,
+      functionsSummary,
 
-    loadRoutes,
-    loadDatabase,
-    loadSystem,
-    loadStatus,
-    loadHealth,
-    loadEnvironment,
-    loadDependencies,
-    loadDiagnostics,
-    loadFeatures,
-    loadResources,
-    loadFunctions,
-  }), [
-    overview,
-    routes,
-    database,
-    systemInfo,
-    status,
-    health,
-    environment,
-    dependencies,
-    diagnostics,
-    features,
-    resources,
-    functionsSummary,
-  ]);
+      loadRoutes,
+      loadDatabase,
+      loadSystem,
+      loadStatus,
+      loadHealth,
+      loadEnvironment,
+      loadDependencies,
+      loadDiagnostics,
+      loadFeatures,
+      loadResources,
+      loadFunctions,
+    }),
+    [
+      overview,
+      routes,
+      database,
+      systemInfo,
+      status,
+      health,
+      environment,
+      dependencies,
+      diagnostics,
+      features,
+      resources,
+      functionsSummary,
+    ],
+  );
 };

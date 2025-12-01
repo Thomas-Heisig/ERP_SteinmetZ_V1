@@ -7,7 +7,11 @@
  */
 
 import fetch from "node-fetch";
-import type { ChatMessage, AIResponse, AIModuleConfig } from "../types/types.js";
+import type {
+  ChatMessage,
+  AIResponse,
+  AIModuleConfig,
+} from "../types/types.js";
 import { log } from "../utils/logger.js";
 
 /* ========================================================================== */
@@ -18,7 +22,8 @@ export const hfConfig: AIModuleConfig = {
   name: "huggingfaceProvider",
   provider: "huggingface",
   model: process.env.HF_MODEL ?? "mistralai/Mistral-7B-Instruct-v0.1",
-  endpoint: process.env.HF_ENDPOINT ?? "https://api-inference.huggingface.co/models/",
+  endpoint:
+    process.env.HF_ENDPOINT ?? "https://api-inference.huggingface.co/models/",
   api_key_env: "HUGGINGFACEHUB_API_TOKEN",
   temperature: Number(process.env.HF_TEMPERATURE) || 0.4,
   max_tokens: Number(process.env.HF_MAX_TOKENS) || 1200,
@@ -43,18 +48,22 @@ function buildHeaders(): Record<string, string> {
 
 /** Baut aus ChatMessages einen Eingabetext */
 function formatInput(messages: ChatMessage[]): string {
-  return messages.map(m => `${m.role}: ${m.content}`).join("\n");
+  return messages.map((m) => `${m.role}: ${m.content}`).join("\n");
 }
 
 /* ========================================================================== */
 /* 💬 Hauptfunktion: Aufruf der HF API */
 /* ========================================================================== */
 
-export async function callHuggingFace(model: string, messages: ChatMessage[]): Promise<AIResponse> {
+export async function callHuggingFace(
+  model: string,
+  messages: ChatMessage[],
+): Promise<AIResponse> {
   const usedModel = model || hfConfig.model;
 
   // ✅ Endpoint-Absicherung gegen undefined
-  const baseEndpoint = hfConfig.endpoint ?? "https://api-inference.huggingface.co/models/";
+  const baseEndpoint =
+    hfConfig.endpoint ?? "https://api-inference.huggingface.co/models/";
   const endpoint = baseEndpoint.endsWith("/")
     ? `${baseEndpoint}${usedModel}`
     : `${baseEndpoint}/${usedModel}`;
@@ -103,7 +112,10 @@ export async function callHuggingFace(model: string, messages: ChatMessage[]): P
       output = data.generated_text;
     } else if (data?.outputs) {
       // z. B. Embedding- oder generische Modelle
-      output = typeof data.outputs === "string" ? data.outputs : JSON.stringify(data.outputs);
+      output =
+        typeof data.outputs === "string"
+          ? data.outputs
+          : JSON.stringify(data.outputs);
     }
 
     log("info", "HuggingFace Antwort empfangen", {
@@ -166,9 +178,9 @@ export async function testHuggingFace(): Promise<boolean> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
 
-    const res = await fetch(endpoint, { 
+    const res = await fetch(endpoint, {
       method: "HEAD",
-      signal: controller.signal
+      signal: controller.signal,
     });
 
     clearTimeout(timer);
@@ -177,7 +189,6 @@ export async function testHuggingFace(): Promise<boolean> {
     return false;
   }
 }
-
 
 /* ========================================================================== */
 /* 🧾 Default-Export */

@@ -170,7 +170,9 @@
 ## 🎯 Detaillierte Funktionsübersicht
 
 ### 🏠 DASHBOARD
+
 **Executive Overview**
+
 - Echtzeit-KPI-Dashboard
 - Umsatz- und Gewinnentwicklung
 - Auftragseingang & Pipeline
@@ -179,6 +181,7 @@
 - Kritische Warnungen
 
 **Personalisiertes Dashboard**
+
 - Anpassbare Widgets
 - Drag & Drop Layout
 - Rolle-basierte Ansichten
@@ -188,6 +191,7 @@
 ### 💼 GESCHÄFTSVERWALTUNG
 
 **Unternehmensstammdaten**
+
 - Firmenstammdaten
 - Bankverbindungen
 - Steuerdaten
@@ -195,6 +199,7 @@
 - Standortverwaltung
 
 **Prozess-Management**
+
 - Visueller Workflow-Designer
 - Prozess-Modellierung (BPMN 2.0)
 - Automatisierte Workflows
@@ -204,6 +209,7 @@
 ### 💰 FINANZEN & CONTROLLING
 
 **Hauptbuchhaltung**
+
 - Automatische Buchungen
 - Kontenrahmen (SKR03/04, IFRS)
 - Monatsabschluss
@@ -211,6 +217,7 @@
 - Revision-Sicherheit
 
 **Debitorenmanagement**
+
 - Forderungsmanagement
 - Automatisches Mahnwesen
 - Zahlungseingang
@@ -218,6 +225,7 @@
 - Offene-Posten-Liste
 
 **Kostenrechnung**
+
 - Kostenstellenrechnung
 - Kostenträgerrechnung
 - Deckungsbeitragsrechnung
@@ -227,6 +235,7 @@
 ### 🤝 VERTRIEB & MARKETING
 
 **CRM - Kundenmanagement**
+
 - 360° Kundenansicht
 - Kontaktverwaltung
 - Interaktionshistorie
@@ -234,6 +243,7 @@
 - Service-Historie
 
 **Marketing-Automation**
+
 - Kampagnen-Management
 - Lead-Scoring
 - E-Mail-Marketing
@@ -241,6 +251,7 @@
 - ROI-Berechnung
 
 **Vertriebsprozess**
+
 - Angebotserstellung mit Vorlagen
 - Auftragsbestätigung
 - Lieferverfolgung
@@ -250,6 +261,7 @@
 ### 🛒 EINKAUF & BESCHAFFUNG
 
 **Beschaffungsprozess**
+
 - Bedarfsermittlung
 - Bestellanforderung
 - Bestellung
@@ -257,6 +269,7 @@
 - Rahmenvertragsmanagement
 
 **Lieferantenmanagement**
+
 - Lieferantenstammdaten
 - Leistungsbewertung
 - Risikobewertung
@@ -266,6 +279,7 @@
 ### 🏭 PRODUKTION & FERTIGUNG
 
 **Produktionsplanung**
+
 - Stücklistenverwaltung
 - Arbeitsplanerstellung
 - Kapazitätsplanung
@@ -273,6 +287,7 @@
 - Terminierung
 
 **Fertigungssteuerung**
+
 - Fertigungsaufträge
 - Maschineneinsatzplanung
 - Personalzuordnung
@@ -282,6 +297,7 @@
 ### 📦 LAGER & LOGISTIK
 
 **Lagerverwaltung**
+
 - Artikelstammdaten
 - Bestandsführung in Echtzeit
 - Lagerplatzverwaltung
@@ -289,6 +305,7 @@
 - Inventur
 
 **Logistik & Versand**
+
 - Versanddisposition
 - Packmittelverwaltung
 - Frachtkostenberechnung
@@ -298,6 +315,7 @@
 ### 👥 PERSONAL & HR
 
 **Personalverwaltung**
+
 - Mitarbeiterstammdaten
 - Vertragsverwaltung
 - Gehaltsabrechnung
@@ -305,6 +323,7 @@
 - Zeugnisgenerator
 
 **Zeiterfassung**
+
 - Arbeitszeiterfassung
 - Projektzeiterfassung
 - Urlaubsverwaltung
@@ -314,6 +333,7 @@
 ### 📊 REPORTING & ANALYTICS
 
 **Standard-Reports**
+
 - Bilanz & GuV
 - Umsatzstatistiken
 - Produktionskennzahlen
@@ -321,6 +341,7 @@
 - Lagerkennzahlen
 
 **Business Intelligence**
+
 - Ad-hoc Reporting
 - Pivot-Analysen
 - Data Mining
@@ -330,6 +351,7 @@
 ### 🌐 KOMMUNIKATION & SOCIAL
 
 **Unified Communications**
+
 - Zentrale E-Mail-Verwaltung
 - Chat & Messaging
 - Video-Konferenzen
@@ -337,6 +359,7 @@
 - Kalender-Synchronisation
 
 **Social Media Management**
+
 - Multi-Plattform-Management
 - Content-Planning
 - Engagement-Tracking
@@ -346,6 +369,7 @@
 ### ⚙️ SYSTEM & ADMINISTRATION
 
 **Benutzerverwaltung**
+
 - Rollenbasiertes Rechtemanagement
 - Zugriffskontrolle
 - Audit-Trail
@@ -353,6 +377,7 @@
 - Passwort-Management
 
 **Systemkonfiguration**
+
 - Mandantenkonfiguration
 - Datenbank-Einstellungen
 - Backup-Strategien
@@ -362,29 +387,33 @@
 ## 🔄 Prozess-Integrationen
 
 ### Lead-to-Cash Prozess
+
 ```
-Marketing-Kampagne → Lead-Generierung → Lead-Qualifikation → 
-Angebotserstellung → Auftragserteilung → Produktion → 
+Marketing-Kampagne → Lead-Generierung → Lead-Qualifikation →
+Angebotserstellung → Auftragserteilung → Produktion →
 Lieferung → Rechnungsstellung → Zahlungseingang
 ```
 
 ### Procure-to-Pay Prozess
+
 ```
-Bedarfsmeldung → Bestellanforderung → Bestellung → 
-Wareneingang → Rechnungsprüfung → Zahlungsfreigabe → 
+Bedarfsmeldung → Bestellanforderung → Bestellung →
+Wareneingang → Rechnungsprüfung → Zahlungsfreigabe →
 Zahlungsausführung
 ```
 
 ### Plan-to-Produce Prozess
+
 ```
-Verkaufsprognose → Produktionsplanung → Materialdisposition → 
-Fertigungsauftrag → Produktion → Qualitätskontrolle → 
+Verkaufsprognose → Produktionsplanung → Materialdisposition →
+Fertigungsauftrag → Produktion → Qualitätskontrolle →
 Einlagerung
 ```
 
 ## 🎯 Kernfunktionen im Überblick
 
 ### 🤖 KI-Funktionen
+
 - **KI-Assistent**: Natürlichsprachliche Bedienung
 - **Predictive Analytics**: Vorhersage von Umsatz, Bedarf, Ausfällen
 - **Automatische Klassifikation**: Belege, E-Mails, Dokumente
@@ -392,6 +421,7 @@ Einlagerung
 - **Chatbot-Support**: 24/7 Kundenunterstützung
 
 ### 📱 Mobile Funktionen
+
 - **Offline-Fähigkeit**: Arbeiten ohne Internetverbindung
 - **Mobile Erfassung**: BDE, MDE, Inventur
 - **Push-Benachrichtigungen**: Kritische Ereignisse
@@ -399,6 +429,7 @@ Einlagerung
 - **Standorterkennung**: Automatische Zuordnung
 
 ### 🔐 Sicherheitsfunktionen
+
 - **Zwei-Faktor-Authentifizierung**
 - **Verschlüsselung**: Daten in Ruhe und Bewegung
 - **Audit-Trail**: Vollständige Protokollierung
@@ -406,6 +437,7 @@ Einlagerung
 - **Compliance**: GoBD, DSGVO, ISO-Standards
 
 ### 🔌 Integrationen
+
 - **DATEV**: Automatischer Datenaustausch
 - **ELSTER**: Elektronische Steuererklärung
 - **Banken**: EBICS, FinTS, SWIFT
@@ -415,18 +447,21 @@ Einlagerung
 ## 🚀 Besondere Highlights
 
 ### Für Handwerksbetriebe
+
 - **Friedhofsverwaltung**: Speziell für Steinmetze
 - **Verschnittoptimierung**: Materialoptimierung
 - **Auftragskalkulation**: Präzise Kalkulation
 - **CAD-Integration**: Direkter Import von Plänen
 
 ### Für den Mittelstand
+
 - **Mehrere Rechtseinheiten**: Konzernfähigkeit
 - **Mehrwährungsfähigkeit**: Internationale Geschäfte
 - **Mehrere Sprachen**: Vollständige Internationalisierung
 - **Skalierbarkeit**: Wachstum ohne Systemwechsel
 
 ### Für Großunternehmen
+
 - **Multi-Mandantenfähigkeit**: Getrennte Datenhaltung
 - **High Availability**: Ausfallsicherheit
 - **Performance**: Optimiert für große Datenmengen
@@ -437,6 +472,7 @@ Einlagerung
 ## 💡 Praktische Anwendungsbeispiele
 
 ### Tägliche Arbeit im Vertrieb
+
 1. **Morgens**: Dashboard mit neuen Leads checken
 2. **Kundenanfrage**: Automatisches Angebot aus CAD-Daten erstellen
 3. **Follow-up**: Erinnerungen für offene Angebote
@@ -444,6 +480,7 @@ Einlagerung
 5. **Lieferverfolgung**: Kunden über Status informieren
 
 ### Monatsabschluss in der Buchhaltung
+
 1. **Automatische Buchungen**: Routinebuchungen laufen automatisch
 2. **Belegerfassung**: OCR-Erkennung von Eingangsrechnungen
 3. **Kontenabgleich**: Automatischer Bankabgleich
@@ -451,6 +488,7 @@ Einlagerung
 5. **Reporting**: Standard-Berichte mit einem Klick
 
 ### Produktionsplanung
+
 1. **Auftragseingang**: Automatische Übergabe an Produktion
 2. **Materialprüfung**: Verfügbarkeit prüfen
 3. **Kapazitätsplanung**: Maschinen und Personal zuordnen
@@ -459,6 +497,6 @@ Einlagerung
 
 ---
 
-*Diese Übersicht zeigt das vollständige Funktionsspektrum des Steinmetz ERP Systems in einer praxisnahen, anwendungsorientierten Darstellung, wie sie auch im finalen Programm zu finden sein wird.*
+_Diese Übersicht zeigt das vollständige Funktionsspektrum des Steinmetz ERP Systems in einer praxisnahen, anwendungsorientierten Darstellung, wie sie auch im finalen Programm zu finden sein wird._
 
 **Steinmetz ERP - Das universelle Betriebssystem für Ihr Unternehmen**

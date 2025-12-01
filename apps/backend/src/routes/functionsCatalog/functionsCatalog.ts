@@ -29,7 +29,7 @@ function sendError(
   res: Response,
   source: string,
   err: unknown,
-  status = 500
+  status = 500,
 ): void {
   const message = err instanceof Error ? err.message : String(err);
   logger.error({ source, err: message }, "Router‑Error");
@@ -56,11 +56,25 @@ const searchSchema = z.object({
   kinds: z
     .string()
     .optional()
-    .transform((s) => (s ? s.split(",").map((i) => i.trim()).filter(Boolean) : [])),
+    .transform((s) =>
+      s
+        ? s
+            .split(",")
+            .map((i) => i.trim())
+            .filter(Boolean)
+        : [],
+    ),
   tags: z
     .string()
     .optional()
-    .transform((s) => (s ? s.split(",").map((i) => i.trim().toLowerCase()).filter(Boolean) : [])),
+    .transform((s) =>
+      s
+        ? s
+            .split(",")
+            .map((i) => i.trim().toLowerCase())
+            .filter(Boolean)
+        : [],
+    ),
   area: z.string().optional(),
   limit: z
     .string()
@@ -87,9 +101,7 @@ const service = new FunctionsCatalogService();
 /* ------------------------------------------------------------------- */
 /* Hilfs‑Wrapper für async‑Routen (statt try / catch in jedem Handler)*/
 /* ------------------------------------------------------------------- */
-function asyncHandler(
-  fn: (req: Request, res: Response) => Promise<unknown>
-) {
+function asyncHandler(fn: (req: Request, res: Response) => Promise<unknown>) {
   return (req: Request, res: Response, next: (err?: unknown) => void) => {
     fn(req, res).catch(next);
   };
@@ -103,7 +115,7 @@ router.get(
   asyncHandler(async (_req, res) => {
     const rules = service.getRuleSnapshot();
     res.json({ success: true, rules });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */
@@ -119,7 +131,7 @@ router.post(
       findings: result.findings,
       warnings: result.warnings ?? [],
     });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */
@@ -142,7 +154,7 @@ router.get(
 
     // Bei strict-Mode einen frischen Build forcen
     const result = strict
-      ? await service.refreshFunctionsIndex()      // ⬅ geändert
+      ? await service.refreshFunctionsIndex() // ⬅ geändert
       : await service.getFunctionsIndex();
 
     let nodes = result.nodes ?? [];
@@ -191,9 +203,8 @@ router.get(
       findings: result.findings ?? [],
       warnings: result.warnings ?? [],
     });
-  })
+  }),
 );
-
 
 /* ------------------------------------------------------------------- */
 /* 4️⃣  Menü‑Erstellung (RBAC + Feature + Area‑Filter)                  */
@@ -212,7 +223,7 @@ router.post(
     const ctx: MenuContext = parsed.data;
     const { menu, loadedAt } = await service.getMenuForContext(ctx);
     res.json({ success: true, menu, loadedAt });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */
@@ -223,9 +234,8 @@ router.get(
   asyncHandler(async (_req, res) => {
     const files = service.getSourceFiles();
     res.json({ success: true, files });
-  })
+  }),
 );
-
 
 /* ------------------------------------------------------------------- */
 /* 6️⃣  Lint‑Findings                                                   */
@@ -235,7 +245,7 @@ router.get(
   asyncHandler(async (_req, res) => {
     const { findings, loadedAt } = await service.lintFunctions();
     res.json({ success: true, findings, loadedAt });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */
@@ -246,12 +256,10 @@ router.get(
   asyncHandler(async (req, res) => {
     const node = await service.getNodeById(req.params.id);
     if (!node) {
-      return res
-        .status(404)
-        .json({ success: false, error: "NOT_FOUND" });
+      return res.status(404).json({ success: false, error: "NOT_FOUND" });
     }
     res.json({ success: true, node });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */
@@ -264,7 +272,10 @@ router.get(
 
     const parseRoles = (v: unknown) =>
       typeof v === "string"
-        ? v.split(",").map((s) => s.trim()).filter(Boolean)
+        ? v
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
         : undefined;
 
     const ctx: MenuContext = {
@@ -274,12 +285,10 @@ router.get(
 
     const out = await service.getChildrenForNode(id, ctx);
     if (!out) {
-      return res
-        .status(404)
-        .json({ success: false, error: "NOT_FOUND" });
+      return res.status(404).json({ success: false, error: "NOT_FOUND" });
     }
     res.json({ success: true, ...out });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */
@@ -295,15 +304,8 @@ router.get(
         .json({ success: false, error: parsed.error.message });
     }
 
-    const {
-      q,
-      kinds,
-      tags,
-      area,
-      limit,
-      offset,
-    } = parsed.data as SearchParams &
-      { limit?: number; offset?: number };
+    const { q, kinds, tags, area, limit, offset } =
+      parsed.data as SearchParams & { limit?: number; offset?: number };
 
     const pagination = {
       limit,
@@ -319,7 +321,7 @@ router.get(
 
     const results = await service.search(params, pagination);
     res.json({ success: true, results });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */
@@ -344,7 +346,7 @@ router.post(
       findings: result.findings,
       warnings: result.warnings,
     });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */
@@ -356,7 +358,7 @@ router.post(
     const result = await service.getFunctionsIndex();
     const summary = await db.upsertFunctionsCatalog(result);
     res.json({ success: true, ...summary });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */
@@ -380,7 +382,7 @@ router.get(
         findings: summary.findings,
       },
     });
-  })
+  }),
 );
 
 /* ------------------------------------------------------------------- */

@@ -9,7 +9,10 @@ import NodeInfoGrid from "./NodeInfoGrid";
 import NodeMetaBlocks from "./NodeMetaBlocks";
 
 // ✔ Richtige Typquelle: Hook!
-import type { NodeDetail, Breadcrumb } from "../../../hooks/useFunctionsCatalog";
+import type {
+  NodeDetail,
+  Breadcrumb,
+} from "../../../hooks/useFunctionsCatalog";
 
 interface Props {
   node: NodeDetail;
@@ -30,7 +33,6 @@ const NodeDetails: React.FC<Props> = ({ node, onNavigate }) => {
 
   return (
     <div className="fc-panel" role="region" aria-label="Node Details">
-      
       {/* Kopf (Titel, Icon, Kind, Flags) */}
       <NodeHeader node={node} />
 

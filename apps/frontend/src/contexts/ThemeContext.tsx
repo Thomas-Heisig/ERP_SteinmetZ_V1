@@ -38,7 +38,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       return saved;
     }
 
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
     return prefersDark ? "dark" : "light";
   });
 

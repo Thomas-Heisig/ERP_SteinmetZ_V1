@@ -77,12 +77,10 @@ export default function ContextMenu({
               onClose();
             }}
           >
-            {item.icon && (
-              <span className="fc-context-icon">{item.icon}</span>
-            )}
+            {item.icon && <span className="fc-context-icon">{item.icon}</span>}
             <span className="fc-context-label">{item.label}</span>
           </button>
-        )
+        ),
       )}
     </div>
   );

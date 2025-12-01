@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: MIT
 // src/components/FunctionsCatalog/features/export/exportYAML.ts
 
-import type {
-  NodeDetail,
-  ExportPayload
-} from "../../types";
+import type { NodeDetail, ExportPayload } from "../../types";
 
 /* -------------------------------------------------------------------------- */
 /*                          YAML SERIALIZER (Safe)                             */
@@ -28,7 +25,7 @@ function toYAML(value: unknown, indent = 0): string {
       if (
         value.includes(":") ||
         value.includes("\n") ||
-        value.includes("\"") ||
+        value.includes('"') ||
         value.startsWith(" ") ||
         value.endsWith(" ")
       ) {

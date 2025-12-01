@@ -17,12 +17,12 @@ Ziel ist eine klare Darstellung der Architektur und der internen Abhängigkeiten
 
 Das Dashboard stellt eine zentrale Oberfläche bereit, um:
 
-* Systeminformationen einsehbar zu machen
-* Knoten (Nodes) aus der Funktionsdatenbank anzuzeigen
-* Kategorien zu visualisieren
-* Suche, Navigation und Layout zu steuern
-* Gesundheitsdaten des Backends darzustellen
-* Widgets dynamisch aus Node-Daten zu erzeugen
+- Systeminformationen einsehbar zu machen
+- Knoten (Nodes) aus der Funktionsdatenbank anzuzeigen
+- Kategorien zu visualisieren
+- Suche, Navigation und Layout zu steuern
+- Gesundheitsdaten des Backends darzustellen
+- Widgets dynamisch aus Node-Daten zu erzeugen
 
 Das Modul ist in logische Schichten unterteilt und folgt einem strukturierenden Ansatz, damit Geschäftslogik, Präsentationslogik und technische Infrastruktur getrennt bleiben.
 
@@ -48,18 +48,18 @@ Diese Aufteilung dient der Wartbarkeit und verhindert, dass UI-Komponenten Veran
 
 **Bestandteile:**
 
-* `DashboardProvider.tsx`
-* `dashboardReducer.ts`
-* `DashboardContext.ts`
-* `DashboardState.ts`
-* `dashboardActions.ts`
+- `DashboardProvider.tsx`
+- `dashboardReducer.ts`
+- `DashboardContext.ts`
+- `DashboardState.ts`
+- `dashboardActions.ts`
 
 **Zweck:**
 
-* zentraler Zustand des Dashboards
-* deterministische State-Änderungen (Reducer)
-* Schnittstelle zu Theme und i18n
-* Bereitstellung eines Contexts für alle Dashboard-Komponenten
+- zentraler Zustand des Dashboards
+- deterministische State-Änderungen (Reducer)
+- Schnittstelle zu Theme und i18n
+- Bereitstellung eines Contexts für alle Dashboard-Komponenten
 
 Der Provider übernimmt nur Initialisierungsaufgaben und enthält selbst keine Geschäftslogik.
 
@@ -73,11 +73,11 @@ Dieser Bereich enthält isolierte Funktionalität, unabhängig von UI oder State
 
 Werkzeuge für die dynamische Darstellung von Nodes:
 
-* `NodeBuilder.ts`
-* `WidgetResolver.ts`
-* `LayoutEngine.ts`
-* `FormBuilder.ts`
-* `types.ts`
+- `NodeBuilder.ts`
+- `WidgetResolver.ts`
+- `LayoutEngine.ts`
+- `FormBuilder.ts`
+- `types.ts`
 
 Der Builder erzeugt aus Node-Metadaten eine passende Widget-Struktur.
 Die Logik bleibt vollständig vom UI getrennt.
@@ -86,9 +86,9 @@ Die Logik bleibt vollständig vom UI getrennt.
 
 Überwacht Backend-Gesundheit:
 
-* `HealthMonitor.ts`
-* `HealthMapper.ts`
-* `HealthStatusBadge.tsx`
+- `HealthMonitor.ts`
+- `HealthMapper.ts`
+- `HealthStatusBadge.tsx`
 
 Das Monitoring ruft Backend-Endpunkte ab und normalisiert die Daten für den globalen State.
 
@@ -96,9 +96,9 @@ Das Monitoring ruft Backend-Endpunkte ab und normalisiert die Daten für den glo
 
 Suchsystem:
 
-* `SearchManager.ts`
-* `SearchHelpers.ts`
-* `SearchFilter.ts`
+- `SearchManager.ts`
+- `SearchHelpers.ts`
+- `SearchFilter.ts`
 
 Die Suche arbeitet unabhängig vom UI und ermöglicht Filter, Gewichtung und Trefferbewertung.
 
@@ -106,8 +106,8 @@ Die Suche arbeitet unabhängig vom UI und ermöglicht Filter, Gewichtung und Tre
 
 Verwaltet Navigation innerhalb des Dashboards:
 
-* `NavigationStack.ts`
-* `NavigationManager.ts`
+- `NavigationStack.ts`
+- `NavigationManager.ts`
 
 Behandelt Stapel, History und Wechsel zwischen Nodes oder Kategorien.
 
@@ -115,10 +115,10 @@ Behandelt Stapel, History und Wechsel zwischen Nodes oder Kategorien.
 
 Standardisierte UI-Bausteine:
 
-* `BasicCardWidget.tsx`
-* `TableWidget.tsx`
-* `ChartWidget.tsx`
-* `WidgetRegistry.ts`
+- `BasicCardWidget.tsx`
+- `TableWidget.tsx`
+- `ChartWidget.tsx`
+- `WidgetRegistry.ts`
 
 WidgetRegistry ermöglicht dynamische Zuordnung durch den Builder.
 
@@ -128,12 +128,12 @@ WidgetRegistry ermöglicht dynamische Zuordnung durch den Builder.
 
 Geschäftslogik für UI-Komponenten:
 
-* `useDashboardNavigation.ts`
-* `useDashboardSearch.ts`
-* `useDashboardHealth.ts`
-* `useDashboardLayout.ts`
-* `useDashboardLogic.ts`
-* `useDashboardShortcuts.ts`
+- `useDashboardNavigation.ts`
+- `useDashboardSearch.ts`
+- `useDashboardHealth.ts`
+- `useDashboardLayout.ts`
+- `useDashboardLogic.ts`
+- `useDashboardShortcuts.ts`
 
 Diese Hooks interagieren mit dem globalen State und kapseln Handlungsabläufe, ohne UI zu rendern.
 
@@ -143,14 +143,14 @@ Diese Hooks interagieren mit dem globalen State und kapseln Handlungsabläufe, o
 
 Reine Präsentationskomponenten:
 
-* `DashboardHeader.tsx`
-* `DashboardTopBar.tsx`
-* `CategoryGrid.tsx`
-* `NodeDetails.tsx`
-* `SearchOverlay.tsx`
-* `LoadingScreen.tsx`
-* `ErrorScreen.tsx`
-* `QuickChatButton.tsx`
+- `DashboardHeader.tsx`
+- `DashboardTopBar.tsx`
+- `CategoryGrid.tsx`
+- `NodeDetails.tsx`
+- `SearchOverlay.tsx`
+- `LoadingScreen.tsx`
+- `ErrorScreen.tsx`
+- `QuickChatButton.tsx`
 
 UI-Komponenten greifen nicht direkt auf Backend oder Logik zu, sondern nutzen ausschließlich Hooks und Context.
 
@@ -160,10 +160,10 @@ UI-Komponenten greifen nicht direkt auf Backend oder Logik zu, sondern nutzen au
 
 Hilfsfunktionen:
 
-* `cls.ts` – Zusammenführen von CSS-Klassen
-* `debounce.ts` – einfache Debounce-Logik
-* `mapping.ts` – Zuordnung von Icons, Farben und Metadaten
-* `safeFetch.ts` – Fetch mit Fehlerbehandlung und Timeout
+- `cls.ts` – Zusammenführen von CSS-Klassen
+- `debounce.ts` – einfache Debounce-Logik
+- `mapping.ts` – Zuordnung von Icons, Farben und Metadaten
+- `safeFetch.ts` – Fetch mit Fehlerbehandlung und Timeout
 
 Diese Funktionen sind unabhängig von React.
 
@@ -174,11 +174,11 @@ Diese Funktionen sind unabhängig von React.
 Das Dashboard nutzt Nodes aus der Backend-Datenbank (`functions_nodes`).
 Jeder Node enthält mindestens:
 
-* `id`
-* `title`
-* `kind`
-* `path_json`
-* Metadaten (z. B. Schema, Flags, Kategorie)
+- `id`
+- `title`
+- `kind`
+- `path_json`
+- Metadaten (z. B. Schema, Flags, Kategorie)
 
 Builder, Widgets und Navigation greifen darauf zurück.
 
@@ -188,9 +188,9 @@ Builder, Widgets und Navigation greifen darauf zurück.
 
 Das Modul verwendet verschiedene Schnittstellen:
 
-* `/api/system-info` (Systeminformationen)
-* `/api/health` und `/api/health/readiness` (Health-Monitoring)
-* Funktionen-Datenbank (`functions_nodes`, `functions_edges`)
+- `/api/system-info` (Systeminformationen)
+- `/api/health` und `/api/health/readiness` (Health-Monitoring)
+- Funktionen-Datenbank (`functions_nodes`, `functions_edges`)
 
 Die Verarbeitung erfolgt ausschließlich über Hooks oder Features, nicht über UI-Komponenten.
 
@@ -200,12 +200,12 @@ Die Verarbeitung erfolgt ausschließlich über Hooks oder Features, nicht über 
 
 Die Struktur ermöglicht:
 
-* dynamische Widgets
-* konfigurierbare Layouts
-* zusätzliche Suchoperatoren
-* erweitertem Health-Monitoring
-* Navigation mit Custom-Views
-* Integration weiterer Dashboards oder Module
+- dynamische Widgets
+- konfigurierbare Layouts
+- zusätzliche Suchoperatoren
+- erweitertem Health-Monitoring
+- Navigation mit Custom-Views
+- Integration weiterer Dashboards oder Module
 
 Die Architektur ist auf nachvollziehbare Erweiterungen ausgelegt, ohne tiefgreifende Änderungen am Kern vorzunehmen.
 
@@ -213,12 +213,12 @@ Die Architektur ist auf nachvollziehbare Erweiterungen ausgelegt, ohne tiefgreif
 
 # 7. Entwicklungsrichtlinien
 
-* UI-Komponenten bleiben ohne Geschäftslogik
-* Reducer enthalten keinerlei Seiteneffekte
-* asynchrone Vorgänge liegen in Hooks oder Features
-* Backend-Abfragen sind gekapselt
-* Typen werden zentral verwaltet
-* Provider leitet externe State-Änderungen (Theme, Sprache, Health) direkt weiter
+- UI-Komponenten bleiben ohne Geschäftslogik
+- Reducer enthalten keinerlei Seiteneffekte
+- asynchrone Vorgänge liegen in Hooks oder Features
+- Backend-Abfragen sind gekapselt
+- Typen werden zentral verwaltet
+- Provider leitet externe State-Änderungen (Theme, Sprache, Health) direkt weiter
 
 ---
 
@@ -226,11 +226,11 @@ Die Architektur ist auf nachvollziehbare Erweiterungen ausgelegt, ohne tiefgreif
 
 Das Modul nutzt:
 
-* React (Hooks, Context)
-* i18next (Sprachunterstützung)
-* eigenes Health-Monitoring
-* einheitliche Fetch-Utilities
-* ThemeContext des Systems
+- React (Hooks, Context)
+- i18next (Sprachunterstützung)
+- eigenes Health-Monitoring
+- einheitliche Fetch-Utilities
+- ThemeContext des Systems
 
 Diese Abhängigkeiten werden klar im Provider geführt, um sie später austauschbar zu halten.
 

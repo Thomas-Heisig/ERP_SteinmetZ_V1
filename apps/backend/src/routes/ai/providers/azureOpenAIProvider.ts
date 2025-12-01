@@ -6,19 +6,19 @@
  */
 
 import OpenAI from "openai";
-import type { 
-  ChatMessage, 
-  AIResponse, 
+import type {
+  ChatMessage,
+  AIResponse,
   AIModuleConfig,
   AIOptions,
   ModelResponse,
   Provider,
-  ToolResult
+  ToolResult,
 } from "../types/types.js";
 import { log } from "../utils/logger.js";
-import { toolRegistry } from '../tools/registry.js';
-import { workflowEngine } from '../workflows/workflowEngine.js';
-import { ConversationContext } from '../context/conversationContext.js';
+import { toolRegistry } from "../tools/registry.js";
+import { workflowEngine } from "../workflows/workflowEngine.js";
+import { ConversationContext } from "../context/conversationContext.js";
 
 /* ========================================================================== */
 /* 🏗️ Typdefinitionen und Konfiguration                                    */
@@ -60,7 +60,7 @@ export const azureConfig: AIModuleConfig = {
   timeout_ms: 30000,
   category: "general",
   streaming: false,
-  cacheable: true
+  cacheable: true,
 };
 
 // Client-Caching für bessere Performance
@@ -79,26 +79,28 @@ async function initializeAzureClient(): Promise<OpenAI> {
     clientInitialization = (async () => {
       try {
         const config = getAzureClientConfig();
-        
+
         azureClient = new OpenAI({
           apiKey: config.apiKey,
           baseURL: `${config.endpoint}/openai/deployments/${config.deployment}`,
           defaultHeaders: { "api-key": config.apiKey },
           defaultQuery: { "api-version": config.apiVersion },
           timeout: 30000,
-          maxRetries: 2
+          maxRetries: 2,
         });
 
-        log('info', 'Azure OpenAI Client erfolgreich initialisiert', {
+        log("info", "Azure OpenAI Client erfolgreich initialisiert", {
           endpoint: config.endpoint,
           deployment: config.deployment,
-          apiVersion: config.apiVersion
+          apiVersion: config.apiVersion,
         });
 
         return azureClient;
       } catch (error: any) {
         clientInitialization = null;
-        throw new Error(`Fehler bei Azure OpenAI Client Initialisierung: ${error.message}`);
+        throw new Error(
+          `Fehler bei Azure OpenAI Client Initialisierung: ${error.message}`,
+        );
       }
     })();
   }
@@ -117,8 +119,10 @@ function getAzureClientConfig(): AzureClientConfig {
     if (!apiKey) missing.push("AZURE_OPENAI_API_KEY");
     if (!endpoint) missing.push("AZURE_OPENAI_ENDPOINT");
     if (!deployment) missing.push("AZURE_OPENAI_DEPLOYMENT");
-    
-    throw new Error(`Azure OpenAI Konfiguration unvollständig. Fehlend: ${missing.join(", ")}`);
+
+    throw new Error(
+      `Azure OpenAI Konfiguration unvollständig. Fehlend: ${missing.join(", ")}`,
+    );
   }
 
   return { apiKey, endpoint, deployment, apiVersion };
@@ -128,8 +132,8 @@ async function getAzureClient(): Promise<OpenAI> {
   try {
     return await initializeAzureClient();
   } catch (error: any) {
-    log('error', 'Fehler beim Holen des Azure OpenAI Clients', {
-      error: error.message
+    log("error", "Fehler beim Holen des Azure OpenAI Clients", {
+      error: error.message,
     });
     throw error;
   }
@@ -140,10 +144,10 @@ async function getAzureClient(): Promise<OpenAI> {
 /* ========================================================================== */
 
 export async function callAzureOpenAI(
-  model: string, 
-  messages: ChatMessage[], 
+  model: string,
+  messages: ChatMessage[],
   options: AIOptions = {},
-  context: ConversationContext = new ConversationContext()
+  context: ConversationContext = new ConversationContext(),
 ): Promise<ModelResponse> {
   const startTime = Date.now();
   const config: AzureOpenAIProviderConfig = {
@@ -155,7 +159,7 @@ export async function callAzureOpenAI(
     fallbackOnError: true,
     apiVersion: process.env.AZURE_OPENAI_API_VERSION || "2024-02-01",
     deploymentName: process.env.AZURE_OPENAI_DEPLOYMENT,
-    ...options.context?.azureConfig
+    ...options.context?.azureConfig,
   };
 
   try {
@@ -163,7 +167,10 @@ export async function callAzureOpenAI(
     const usedModel = model || azureConfig.model;
 
     // Bereite Messages für OpenAI vor
-    const { systemPrompt, chatMessages, tools } = prepareOpenAIMessages(messages, config);
+    const { systemPrompt, chatMessages, tools } = prepareOpenAIMessages(
+      messages,
+      config,
+    );
 
     // Request Body vorbereiten
     const requestBody: any = {
@@ -173,24 +180,27 @@ export async function callAzureOpenAI(
       messages: chatMessages,
       ...(systemPrompt && { system: systemPrompt }),
       ...(tools && tools.length > 0 && { tools }),
-      ...(config.enableToolCalls && { tool_choice: "auto" })
+      ...(config.enableToolCalls && { tool_choice: "auto" }),
     };
 
-    log('debug', 'Azure OpenAI API Request vorbereitet', {
+    log("debug", "Azure OpenAI API Request vorbereitet", {
       model: usedModel,
       messageCount: chatMessages.length,
       hasSystemPrompt: !!systemPrompt,
       toolsCount: tools?.length || 0,
-      temperature: config.temperature
+      temperature: config.temperature,
     });
 
     // API Call mit Timeout
-    const result = await Promise.race([
+    const result = (await Promise.race([
       client.chat.completions.create(requestBody),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Azure OpenAI API Timeout')), config.timeoutMs!)
-      )
-    ]) as any;
+      new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Azure OpenAI API Timeout")),
+          config.timeoutMs!,
+        ),
+      ),
+    ])) as any;
 
     const duration = Date.now() - startTime;
 
@@ -205,7 +215,7 @@ export async function callAzureOpenAI(
       output_tokens: result?.usage?.completion_tokens,
       total_tokens: result?.usage?.total_tokens,
       duration_ms: duration,
-      has_tool_calls: toolCalls.length > 0
+      has_tool_calls: toolCalls.length > 0,
     });
 
     // Tool-Calls ausführen falls vorhanden
@@ -220,7 +230,7 @@ export async function callAzureOpenAI(
     // ModelResponse erstellen
     const modelResponse: ModelResponse = {
       model: usedModel,
-      provider: 'azure' as Provider,
+      provider: "azure" as Provider,
       text: reply || "(keine Antwort von Azure OpenAI erhalten)",
       tokens_in: result?.usage?.prompt_tokens,
       tokens_out: result?.usage?.completion_tokens,
@@ -231,8 +241,8 @@ export async function callAzureOpenAI(
         finish_reason: result?.choices?.[0]?.finish_reason,
         tool_results: toolResults,
         deployment: config.deploymentName,
-        api_version: config.apiVersion
-      }
+        api_version: config.apiVersion,
+      },
     };
 
     // Tool-Results anhängen falls vorhanden
@@ -241,15 +251,14 @@ export async function callAzureOpenAI(
     }
 
     return modelResponse;
-
   } catch (error: any) {
     const duration = Date.now() - startTime;
-    
+
     log("error", "Azure OpenAI Fehler", {
       model: model || azureConfig.model,
       error: error.message,
       duration_ms: duration,
-      stack: config.fallbackOnError ? error.stack : undefined
+      stack: config.fallbackOnError ? error.stack : undefined,
     });
 
     // Fallback Response bei aktiviertem Fallback
@@ -265,7 +274,10 @@ export async function callAzureOpenAI(
 /* 🛠️ Message Preparation & Tool Execution                                */
 /* ========================================================================== */
 
-function prepareOpenAIMessages(messages: ChatMessage[], config: AzureOpenAIProviderConfig): {
+function prepareOpenAIMessages(
+  messages: ChatMessage[],
+  config: AzureOpenAIProviderConfig,
+): {
   systemPrompt?: string;
   chatMessages: any[];
   tools?: any[];
@@ -276,23 +288,22 @@ function prepareOpenAIMessages(messages: ChatMessage[], config: AzureOpenAIProvi
 
   // System-Prompt extrahieren
   const systemMessages = messages
-    .filter(m => m.role === 'system')
-    .map(m => String(m.content || ''))
-    .filter(content => content.trim().length > 0);
+    .filter((m) => m.role === "system")
+    .map((m) => String(m.content || ""))
+    .filter((content) => content.trim().length > 0);
 
-  const systemPrompt = systemMessages.length > 0 
-    ? systemMessages.join('\n\n') 
-    : undefined;
+  const systemPrompt =
+    systemMessages.length > 0 ? systemMessages.join("\n\n") : undefined;
 
   // Chat-Nachrichten mappen
   const chatMessages = messages
-    .filter(m => m.role !== 'system')
-    .map(m => ({
+    .filter((m) => m.role !== "system")
+    .map((m) => ({
       role: m.role,
-      content: String(m.content || ''),
-      ...(m.metadata && { metadata: m.metadata })
+      content: String(m.content || ""),
+      ...(m.metadata && { metadata: m.metadata }),
     }))
-    .filter(m => m.content.trim().length > 0);
+    .filter((m) => m.content.trim().length > 0);
 
   // Tools vorbereiten falls aktiviert
   let tools: any[] | undefined;
@@ -305,40 +316,44 @@ function prepareOpenAIMessages(messages: ChatMessage[], config: AzureOpenAIProvi
 
 function prepareToolsForOpenAI(): any[] {
   const tools = toolRegistry.getToolDefinitions();
-  return tools.map(tool => ({
-    type: "function" as const,
-    function: {
-      name: tool.name,
-      description: tool.description || `Tool: ${tool.name}`,
-      parameters: {
-        type: "object",
-        properties: tool.parameters || {},
-        required: tool.parameters ? Object.keys(tool.parameters).filter(key => 
-          tool.parameters?.[key]?.required
-        ) : []
-      }
-    }
-  })).filter(tool => tool.function.name && tool.function.description);
+  return tools
+    .map((tool) => ({
+      type: "function" as const,
+      function: {
+        name: tool.name,
+        description: tool.description || `Tool: ${tool.name}`,
+        parameters: {
+          type: "object",
+          properties: tool.parameters || {},
+          required: tool.parameters
+            ? Object.keys(tool.parameters).filter(
+                (key) => tool.parameters?.[key]?.required,
+              )
+            : [],
+        },
+      },
+    }))
+    .filter((tool) => tool.function.name && tool.function.description);
 }
 
 async function executeToolCalls(toolCalls: any[]): Promise<ToolResult[]> {
   const results: ToolResult[] = [];
-  
+
   for (const toolCall of toolCalls) {
     const startTime = Date.now();
-    
+
     try {
       const toolName = toolCall.function?.name;
       let parameters = {};
-      
+
       try {
-        parameters = JSON.parse(toolCall.function?.arguments || '{}');
+        parameters = JSON.parse(toolCall.function?.arguments || "{}");
       } catch (parseError) {
         parameters = {};
       }
 
       if (!toolName) {
-        throw new Error('Tool name missing in tool call');
+        throw new Error("Tool name missing in tool call");
       }
 
       const tool = toolRegistry.get(toolName);
@@ -347,36 +362,38 @@ async function executeToolCalls(toolCalls: any[]): Promise<ToolResult[]> {
       }
 
       const result = await tool(parameters);
-      
+
       results.push({
         success: true,
         data: result,
         runtime_ms: Date.now() - startTime,
         source_tool: toolName,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error: any) {
       results.push({
         success: false,
         error: error.message,
         runtime_ms: Date.now() - startTime,
-        source_tool: toolCall.function?.name || 'unknown',
-        timestamp: new Date().toISOString()
+        source_tool: toolCall.function?.name || "unknown",
+        timestamp: new Date().toISOString(),
       });
     }
   }
-  
+
   return results;
 }
 
 function formatToolResults(results: ToolResult[]): string {
-  if (results.length === 0) return '';
+  if (results.length === 0) return "";
 
-  const summary = results.map(r => 
-    r.success 
-      ? `✅ [${r.source_tool}] Ausführung erfolgreich (${r.runtime_ms}ms)`
-      : `❌ [${r.source_tool}] Fehler: ${r.error}`
-  ).join('\n');
+  const summary = results
+    .map((r) =>
+      r.success
+        ? `✅ [${r.source_tool}] Ausführung erfolgreich (${r.runtime_ms}ms)`
+        : `❌ [${r.source_tool}] Fehler: ${r.error}`,
+    )
+    .join("\n");
 
   return `\n\n---\n**Tool-Ausführungen:**\n${summary}`;
 }
@@ -385,21 +402,25 @@ function formatToolResults(results: ToolResult[]): string {
 /* 🛡️ Fallback & Error Handling                                           */
 /* ========================================================================== */
 
-function createFallbackResponse(model: string, error: any, duration: number): ModelResponse {
+function createFallbackResponse(
+  model: string,
+  error: any,
+  duration: number,
+): ModelResponse {
   const fallbackText = `Entschuldigung, es gab einen Verbindungsfehler zu Azure OpenAI (${error.message}). 
 Bitte versuchen Sie es später erneut oder verwenden Sie einen anderen Provider.`;
 
   return {
     model,
-    provider: 'azure' as Provider,
+    provider: "azure" as Provider,
     text: fallbackText,
     duration_ms: duration,
     success: false,
     errors: [error.message],
     meta: {
-      source: 'fallback',
-      error_type: error.name || 'API_ERROR'
-    }
+      source: "fallback",
+      error_type: error.name || "API_ERROR",
+    },
   };
 }
 
@@ -408,45 +429,45 @@ Bitte versuchen Sie es später erneut oder verwenden Sie einen anderen Provider.
 /* ========================================================================== */
 
 export function isAzureOpenAIModel(modelId: string): boolean {
-  if (!modelId || typeof modelId !== 'string') return false;
-  
+  if (!modelId || typeof modelId !== "string") return false;
+
   const lowerModelId = modelId.toLowerCase();
-  
+
   return (
     lowerModelId.includes("azure") ||
     lowerModelId.startsWith("gpt-") ||
     lowerModelId.includes("openai-azure") ||
     lowerModelId.includes("deployment") ||
     // Azure spezifische Muster
-    /^[a-z0-9-]+$/.test(lowerModelId) && lowerModelId.length > 10 // Azure Deployment Namen
+    (/^[a-z0-9-]+$/.test(lowerModelId) && lowerModelId.length > 10) // Azure Deployment Namen
   );
 }
 
 export function getSupportedAzureModels(): string[] {
   return [
     "gpt-4",
-    "gpt-4-32k", 
+    "gpt-4-32k",
     "gpt-4-turbo",
     "gpt-4o",
     "gpt-35-turbo",
     "gpt-35-turbo-16k",
-    "gpt-35-turbo-instruct"
+    "gpt-35-turbo-instruct",
   ];
 }
 
 export function validateAzureConfig(): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
-  
+
   if (!process.env.AZURE_OPENAI_API_KEY) {
-    errors.push('AZURE_OPENAI_API_KEY Umgebungsvariable fehlt');
+    errors.push("AZURE_OPENAI_API_KEY Umgebungsvariable fehlt");
   }
 
   if (!process.env.AZURE_OPENAI_ENDPOINT) {
-    errors.push('AZURE_OPENAI_ENDPOINT Umgebungsvariable fehlt');
+    errors.push("AZURE_OPENAI_ENDPOINT Umgebungsvariable fehlt");
   }
 
   if (!process.env.AZURE_OPENAI_DEPLOYMENT) {
-    errors.push('AZURE_OPENAI_DEPLOYMENT Umgebungsvariable fehlt');
+    errors.push("AZURE_OPENAI_DEPLOYMENT Umgebungsvariable fehlt");
   }
 
   // Endpoint Validierung
@@ -454,13 +475,13 @@ export function validateAzureConfig(): { valid: boolean; errors: string[] } {
     try {
       new URL(process.env.AZURE_OPENAI_ENDPOINT);
     } catch {
-      errors.push('AZURE_OPENAI_ENDPOINT ist keine gültige URL');
+      errors.push("AZURE_OPENAI_ENDPOINT ist keine gültige URL");
     }
   }
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -469,13 +490,13 @@ export function validateAzureConfig(): { valid: boolean; errors: string[] } {
 /* ========================================================================== */
 
 export const azureOpenAIProvider = {
-  name: 'azure' as Provider,
+  name: "azure" as Provider,
   call: callAzureOpenAI,
   isSupportedModel: isAzureOpenAIModel,
   getSupportedModels: getSupportedAzureModels,
   validateConfig: validateAzureConfig,
   config: azureConfig,
-  
+
   // Erweiterte Methoden
   async healthCheck(): Promise<{ healthy: boolean; details?: any }> {
     try {
@@ -485,16 +506,14 @@ export const azureOpenAIProvider = {
       }
 
       // Test-Call mit minimalem Prompt
-      const testMessages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' }
-      ];
+      const testMessages: ChatMessage[] = [{ role: "user", content: "Hello" }];
 
       await callAzureOpenAI(azureConfig.model, testMessages);
       return { healthy: true };
     } catch (error: any) {
-      return { 
-        healthy: false, 
-        details: { error: error.message } 
+      return {
+        healthy: false,
+        details: { error: error.message },
       };
     }
   },
@@ -503,8 +522,8 @@ export const azureOpenAIProvider = {
   resetClient(): void {
     azureClient = null;
     clientInitialization = null;
-    log('info', 'Azure OpenAI Client zurückgesetzt');
-  }
+    log("info", "Azure OpenAI Client zurückgesetzt");
+  },
 };
 
 export default azureOpenAIProvider;

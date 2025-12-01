@@ -8,8 +8,8 @@ export default {
       status: {
         healthy: "النظام يعمل بشكل طبيعي",
         degraded: "النظام يعمل بشكل محدود",
-        unhealthy: "خلل في النظام"
-      }
+        unhealthy: "خلل في النظام",
+      },
     },
 
     // الفئات
@@ -17,7 +17,7 @@ export default {
       title: "مجالات الوظائف",
       count: "{{count}} مجالات متاحة",
       emptyTitle: "لا توجد فئات",
-      emptyDescription: "لم يتم العثور على أي فئات مطابقة."
+      emptyDescription: "لم يتم العثور على أي فئات مطابقة.",
     },
 
     // الحالة العامة
@@ -29,7 +29,7 @@ export default {
 
     // تحميل البيانات
     loading: {
-      message: "جارٍ تحميل البيانات…"
+      message: "جارٍ تحميل البيانات…",
     },
 
     // البحث
@@ -41,13 +41,13 @@ export default {
       placeholder: "ابحث عن {{type}}…",
       input: "حقل البحث",
       loading: "جارٍ البحث…",
-      noResults: "لا توجد نتائج"
+      noResults: "لا توجد نتائج",
     },
 
     // شاشة الخطأ
     errorScreen: {
       title: "حدث خطأ أثناء التحميل",
-      retryButton: "إعادة المحاولة"
+      retryButton: "إعادة المحاولة",
     },
 
     // التنقل
@@ -55,7 +55,7 @@ export default {
       overview: "نظرة عامة",
       catalog: "الوظائف",
       ai: "معالج الذكاء الاصطناعي",
-      settings: "الإعدادات"
+      settings: "الإعدادات",
     },
 
     // الدردشة
@@ -64,7 +64,7 @@ export default {
       inputPlaceholder: "اكتب رسالة…",
       send: "إرسال",
       newSession: "جلسة جديدة",
-      loading: "جارٍ معالجة الرد…"
+      loading: "جارٍ معالجة الرد…",
     },
 
     // النماذج
@@ -72,14 +72,14 @@ export default {
       title: "النماذج",
       provider: "المزود",
       capabilities: "القدرات",
-      noModels: "لا توجد نماذج متاحة"
+      noModels: "لا توجد نماذج متاحة",
     },
 
     // الأدوات
     tools: {
       title: "الأدوات",
       run: "تشغيل",
-      noTools: "لا توجد أدوات مسجلة"
+      noTools: "لا توجد أدوات مسجلة",
     },
 
     // النظام
@@ -97,7 +97,7 @@ export default {
       ai: "حالة الذكاء الاصطناعي",
       statusHealthy: "يعمل",
       statusUnhealthy: "لا يعمل",
-      statusDegraded: "محدود"
+      statusDegraded: "محدود",
     },
 
     // تغيير اللغة
@@ -110,7 +110,7 @@ export default {
       close: "إغلاق",
       reload: "إعادة تحميل",
       details: "تفاصيل",
-      unknown: "غير معروف"
-    }
-  }
+      unknown: "غير معروف",
+    },
+  },
 };

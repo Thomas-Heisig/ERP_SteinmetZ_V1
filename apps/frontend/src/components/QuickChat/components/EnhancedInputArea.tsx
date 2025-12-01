@@ -1,13 +1,13 @@
 // ERP_SteinmetZ_V1/apps/frontend/src/components/QuickChat/components/EnhancedInputArea.tsx
-import React, { useState, useRef, useEffect } from 'react';
-import { 
-  QuickAction, 
-  ChatSession, 
-  AIModel, 
+import React, { useState, useRef, useEffect } from "react";
+import {
+  QuickAction,
+  ChatSession,
+  AIModel,
   Provider,
-  ConversationState
-} from '../types';
-import { QUICK_ACTIONS, CATEGORIES } from '../constants';
+  ConversationState,
+} from "../types";
+import { QUICK_ACTIONS, CATEGORIES } from "../constants";
 
 interface EnhancedInputAreaProps {
   input: string;
@@ -21,10 +21,9 @@ interface EnhancedInputAreaProps {
   audioLoading: boolean;
   uploadLoading: boolean;
   fileInputRef: React.RefObject<HTMLInputElement>;
-  
+
   // ✅ KORRIGIERT: Signatur geändert für direkte File-Übergabe
   handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-
 
   showQuickActions: boolean;
 
@@ -41,7 +40,7 @@ interface EnhancedInputAreaProps {
   conversationContext?: ConversationState | null;
   onModelChange?: (sessionId: string, modelName: string) => void;
   onInsertTemplate?: (template: string) => void;
-  
+
   // ✅ HINZUGEFÜGT: Fehlende Props aus ChatTab
   handleFileUploadWrapper?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onQuickActionToggle?: (show: boolean) => void;
@@ -72,7 +71,7 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
   conversationContext,
   onModelChange,
   onInsertTemplate,
-  
+
   // ✅ HINZUGEFÜGT: Fehlende Props mit Fallbacks
   handleFileUploadWrapper,
   onQuickActionToggle,
@@ -82,13 +81,17 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
   const [showModelInfo, setShowModelInfo] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   // ✅ KORRIGIERT: Safe quick actions mit Default
-  const safeQuickActions = Array.isArray(quickActions) ? quickActions : QUICK_ACTIONS;
+  const safeQuickActions = Array.isArray(quickActions)
+    ? quickActions
+    : QUICK_ACTIONS;
 
   // ✅ KORRIGIERT: Fallback für setShowQuickActions mit funktionaler Unterstützung
-  const safeSetShowQuickActions = (value: boolean | ((prev: boolean) => boolean)) => {
-    if (typeof value === 'function') {
+  const safeSetShowQuickActions = (
+    value: boolean | ((prev: boolean) => boolean),
+  ) => {
+    if (typeof value === "function") {
       setShowQuickActions(value);
     } else {
       setShowQuickActions(value);
@@ -102,9 +105,9 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
   const safeHandleFileUpload = (file: File) => {
     // Erstelle ein synthetisches Event für die Wrapper-Funktion
     const syntheticEvent = {
-      target: { files: FileList.prototype.constructor.call([file]) }
+      target: { files: FileList.prototype.constructor.call([file]) },
     } as unknown as React.ChangeEvent<HTMLInputElement>;
-    
+
     if (handleFileUpload) {
       handleFileUpload(syntheticEvent);
     } else if (handleFileUploadWrapper) {
@@ -115,7 +118,7 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
     }
   }, [input]);
@@ -123,17 +126,20 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         safeSetShowQuickActions(false);
       }
     };
 
     if (showQuickActions) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showQuickActions, safeSetShowQuickActions]);
 
@@ -145,13 +151,14 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
         const text = selection?.toString() ?? "";
         setIsTextSelected(text.length > 0);
       } catch (error) {
-        console.warn('Could not check text selection:', error);
+        console.warn("Could not check text selection:", error);
         setIsTextSelected(false);
       }
     };
 
-    document.addEventListener('selectionchange', checkSelection);
-    return () => document.removeEventListener('selectionchange', checkSelection);
+    document.addEventListener("selectionchange", checkSelection);
+    return () =>
+      document.removeEventListener("selectionchange", checkSelection);
   }, []);
 
   // ✅ KORRIGIERT: Keyboard shortcuts mit sicherem Event-Handling
@@ -169,7 +176,7 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
       // ✅ NEU: Ctrl+L für Clear Input
       if ((e.ctrlKey || e.metaKey) && e.key === "l") {
         e.preventDefault();
-        setInput('');
+        setInput("");
       }
     };
 
@@ -186,47 +193,49 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
   // ✅ KORRIGIERT: Get current model info - korrigierte Backend-Struktur
   const getCurrentModel = () => {
     if (!currentSession?.model) return null;
-    
+
     const safeModels = Array.isArray(models) ? models : [];
-    return safeModels.find(model => model.name === currentSession.model);
+    return safeModels.find((model) => model.name === currentSession.model);
   };
 
   // ✅ KORRIGIERT: Get provider icon mit Fallback-Map
   const getProviderIcon = (provider?: string) => {
-    if (!provider) return '🤖';
-    
+    if (!provider) return "🤖";
+
     const providerIcons: Record<string, string> = {
-      'openai': '🤖',
-      'anthropic': '🧠', 
-      'azure': '☁️',
-      'vertex': '🔍',
-      'ollama': '🦙',
-      'local': '💻',
-      'huggingface': '🤗',
-      'llamacpp': '🦙',
-      'custom': '⚙️',
-      'fallback': '🔄',
-      'eliza': '💬'
+      openai: "🤖",
+      anthropic: "🧠",
+      azure: "☁️",
+      vertex: "🔍",
+      ollama: "🦙",
+      local: "💻",
+      huggingface: "🤗",
+      llamacpp: "🦙",
+      custom: "⚙️",
+      fallback: "🔄",
+      eliza: "💬",
     };
-    
-    return providerIcons[provider.toLowerCase()] || '🤖';
+
+    return providerIcons[provider.toLowerCase()] || "🤖";
   };
 
   // ✅ KORRIGIERT: Summarize Selected mit sicherem Text-Zugriff
   const handleSummarizeSelected = () => {
     if (!input.trim()) return;
-    
+
     try {
-      const selection = window.getSelection()?.toString() || '';
+      const selection = window.getSelection()?.toString() || "";
       if (selection && selection.length > 0) {
-        setInput(`Bitte fasse diesen ausgewählten Abschnitt zusammen:\n\n"${selection}"\n\n${input}`);
+        setInput(
+          `Bitte fasse diesen ausgewählten Abschnitt zusammen:\n\n"${selection}"\n\n${input}`,
+        );
       } else if (onSummarize) {
         onSummarize();
       } else {
         setInput(`Bitte fasse den folgenden Text zusammen:\n\n${input}`);
       }
     } catch (error) {
-      console.warn('Could not summarize selection:', error);
+      console.warn("Could not summarize selection:", error);
       setInput(`Bitte fasse den folgenden Text zusammen:\n\n${input}`);
     }
   };
@@ -236,22 +245,28 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
     if (onTranslate) {
       onTranslate();
     } else {
-      setInput(`Übersetze den folgenden Text ins Deutsche und erkläre kulturelle Besonderheiten:\n\n${input}`);
+      setInput(
+        `Übersetze den folgenden Text ins Deutsche und erkläre kulturelle Besonderheiten:\n\n${input}`,
+      );
     }
   };
 
   const handleImproveText = () => {
     if (!input.trim()) return;
-    setInput(`Bitte verbessere diesen Text hinsichtlich Grammatik, Stil und Klarheit:\n\n${input}`);
+    setInput(
+      `Bitte verbessere diesen Text hinsichtlich Grammatik, Stil und Klarheit:\n\n${input}`,
+    );
   };
 
   const handleExpandText = () => {
     if (!input.trim()) return;
-    setInput(`Bitte erweitere diesen Text um zusätzliche Details, Beispiele und Erklärungen:\n\n${input}`);
+    setInput(
+      `Bitte erweitere diesen Text um zusätzliche Details, Beispiele und Erklärungen:\n\n${input}`,
+    );
   };
 
   const handleClearInput = () => {
-    setInput('');
+    setInput("");
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
@@ -265,7 +280,7 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
     }
     // ✅ Reset input für erneute Auswahl der gleichen Datei
     if (e.target) {
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
@@ -283,18 +298,22 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
 
     let prompt: string;
 
-    if (topic.includes('bestellung') || topic.includes('order')) {
-      prompt = 'Analysiere die aktuelle Bestellsituation und schlage Optimierungen vor:';
-    } else if (topic.includes('lager') || topic.includes('inventory')) {
-      prompt = 'Bewerte den aktuellen Lagerbestand und identifiziere Engpässe oder Überbestände:';
-    } else if (topic.includes('kunde') || topic.includes('customer')) {
-      prompt = 'Analysiere die Kundeninteraktion und schlage nächste Schritte vor:';
-    } else if (topic.includes('rechnung') || topic.includes('invoice')) {
-      prompt = 'Prüfe die Rechnungsdaten und identifiziere Unstimmigkeiten:';
-    } else if (topic.includes('produkt') || topic.includes('product')) {
-      prompt = 'Analysiere die Produktdaten und schlage Verbesserungen vor:';
+    if (topic.includes("bestellung") || topic.includes("order")) {
+      prompt =
+        "Analysiere die aktuelle Bestellsituation und schlage Optimierungen vor:";
+    } else if (topic.includes("lager") || topic.includes("inventory")) {
+      prompt =
+        "Bewerte den aktuellen Lagerbestand und identifiziere Engpässe oder Überbestände:";
+    } else if (topic.includes("kunde") || topic.includes("customer")) {
+      prompt =
+        "Analysiere die Kundeninteraktion und schlage nächste Schritte vor:";
+    } else if (topic.includes("rechnung") || topic.includes("invoice")) {
+      prompt = "Prüfe die Rechnungsdaten und identifiziere Unstimmigkeiten:";
+    } else if (topic.includes("produkt") || topic.includes("product")) {
+      prompt = "Analysiere die Produktdaten und schlage Verbesserungen vor:";
     } else {
-      const currentTopic = conversationContext?.current_topic ?? 'unbekanntes Thema';
+      const currentTopic =
+        conversationContext?.current_topic ?? "unbekanntes Thema";
       prompt = `Basierend auf unserem aktuellen Thema "${currentTopic}", was sind die nächsten sinnvollen Schritte?`;
     }
 
@@ -309,8 +328,11 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
   };
 
   // ✅ KORRIGIERT: Get character count and word count mit sicheren Werten
-  const characterCount = typeof input === 'string' ? input.length : 0;
-  const wordCount = typeof input === 'string' && input.trim() ? input.trim().split(/\s+/).length : 0;
+  const characterCount = typeof input === "string" ? input.length : 0;
+  const wordCount =
+    typeof input === "string" && input.trim()
+      ? input.trim().split(/\s+/).length
+      : 0;
 
   // Check if input is too long (warn at 2000 characters)
   const isInputLong = characterCount > 2000;
@@ -322,17 +344,17 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
   // ✅ KORRIGIERT: Safe capability rendering
   const renderCapability = (capability: string) => {
     const capabilityMap: Record<string, string> = {
-      'chat': '💬 Chat',
-      'vision': '🖼️ Vision', 
-      'audio': '🎵 Audio',
-      'embedding': '📊 Embedding',
-      'translation': '🌐 Translation',
-      'streaming': '⚡ Streaming',
-      'function-calling': '🛠️ Tools',
-      'reasoning': '🧠 Reasoning',
-      'multimodal': '🎭 Multimodal'
+      chat: "💬 Chat",
+      vision: "🖼️ Vision",
+      audio: "🎵 Audio",
+      embedding: "📊 Embedding",
+      translation: "🌐 Translation",
+      streaming: "⚡ Streaming",
+      "function-calling": "🛠️ Tools",
+      reasoning: "🧠 Reasoning",
+      multimodal: "🎭 Multimodal",
     };
-    
+
     return capabilityMap[capability] || capability;
   };
 
@@ -482,7 +504,10 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
                 <span className="category-icon">{category.icon}</span>
                 <span className="category-name">{category.name}</span>
                 <span className="category-count">
-                  {safeQuickActions.filter(a => a.category === category.id).length}
+                  {
+                    safeQuickActions.filter((a) => a.category === category.id)
+                      .length
+                  }
                 </span>
               </button>
             ))}
@@ -510,16 +535,16 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
                     )}
                     {action.tags && action.tags.length > 0 && (
                       <div className="action-tags">
-                        {action.tags.slice(0, 2).map(tag => (
-                          <span key={tag} className="action-tag">#{tag}</span>
+                        {action.tags.slice(0, 2).map((tag) => (
+                          <span key={tag} className="action-tag">
+                            #{tag}
+                          </span>
                         ))}
                       </div>
                     )}
                   </div>
                   {action.usageCount && action.usageCount > 0 && (
-                    <div className="action-usage">
-                      {action.usageCount}×
-                    </div>
+                    <div className="action-usage">{action.usageCount}×</div>
                   )}
                 </button>
               ))
@@ -537,26 +562,42 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
             <div className="templates-section">
               <h5>📋 ERP-Schnellvorlagen</h5>
               <div className="template-buttons">
-                <button 
-                  onClick={() => handleInsertTemplate("Analysiere die aktuellen Bestellungen und identifiziere Engpässe:")}
+                <button
+                  onClick={() =>
+                    handleInsertTemplate(
+                      "Analysiere die aktuellen Bestellungen und identifiziere Engpässe:",
+                    )
+                  }
                   className="template-btn"
                 >
                   📦 Bestellanalyse
                 </button>
-                <button 
-                  onClick={() => handleInsertTemplate("Erstelle einen Bericht über die Lagerbestände und schlage Optimierungen vor:")}
+                <button
+                  onClick={() =>
+                    handleInsertTemplate(
+                      "Erstelle einen Bericht über die Lagerbestände und schlage Optimierungen vor:",
+                    )
+                  }
                   className="template-btn"
                 >
                   📊 Lagerreport
                 </button>
-                <button 
-                  onClick={() => handleInsertTemplate("Analysiere die Kundeninteraktionen der letzten Woche:")}
+                <button
+                  onClick={() =>
+                    handleInsertTemplate(
+                      "Analysiere die Kundeninteraktionen der letzten Woche:",
+                    )
+                  }
                   className="template-btn"
                 >
                   👥 Kundenanalyse
                 </button>
-                <button 
-                  onClick={() => handleInsertTemplate("Prüfe die aktuellen Rechnungen auf Unstimmigkeiten:")}
+                <button
+                  onClick={() =>
+                    handleInsertTemplate(
+                      "Prüfe die aktuellen Rechnungen auf Unstimmigkeiten:",
+                    )
+                  }
                   className="template-btn"
                 >
                   🧾 Rechnungsprüfung
@@ -574,22 +615,28 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyPress}
-          placeholder={disabled ? "Bitte wählen Sie zuerst einen Chat aus..." : "Nachricht schreiben … (Shift+Enter für neue Zeile, Enter zum Senden)"}
+          placeholder={
+            disabled
+              ? "Bitte wählen Sie zuerst einen Chat aus..."
+              : "Nachricht schreiben … (Shift+Enter für neue Zeile, Enter zum Senden)"
+          }
           disabled={loading || disabled}
-          className={`message-input ${isInputVeryLong ? 'warning' : ''}`}
+          className={`message-input ${isInputVeryLong ? "warning" : ""}`}
           rows={1}
-          style={{ 
-            minHeight: '60px', 
-            maxHeight: '200px',
-            resize: 'vertical'
+          style={{
+            minHeight: "60px",
+            maxHeight: "200px",
+            resize: "vertical",
           }}
         />
-        
+
         <div className="input-controls">
           <div className="input-stats">
-            <span className={`character-count ${isInputLong ? 'warning' : ''} ${isInputVeryLong ? 'error' : ''}`}>
+            <span
+              className={`character-count ${isInputLong ? "warning" : ""} ${isInputVeryLong ? "error" : ""}`}
+            >
               {characterCount} Zeichen
-              {isInputVeryLong && ' ⚠️'}
+              {isInputVeryLong && " ⚠️"}
             </span>
             <span className="word-count">{wordCount} Wörter</span>
             {currentModel && (
@@ -598,15 +645,17 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
               </span>
             )}
           </div>
-          
+
           <button
             onClick={sendMessage}
             disabled={loading || !input.trim() || disabled || isInputVeryLong}
-            className={`send-button ${loading ? 'loading' : ''}`}
+            className={`send-button ${loading ? "loading" : ""}`}
             title={
-              disabled ? "Wählen Sie einen Chat aus" : 
-              isInputVeryLong ? "Eingabe zu lang (max 4000 Zeichen)" :
-              "Nachricht senden (Enter)"
+              disabled
+                ? "Wählen Sie einen Chat aus"
+                : isInputVeryLong
+                  ? "Eingabe zu lang (max 4000 Zeichen)"
+                  : "Nachricht senden (Enter)"
             }
           >
             {loading ? (
@@ -643,22 +692,23 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
           </span>
         )}
         {isInputLong && (
-          <span className={`status ${isInputVeryLong ? 'error' : 'warning'}`}>
-            {isInputVeryLong ? '❌' : '⚠️'} 
-            {isInputVeryLong ? ' Eingabe zu lang' : ' Lange Eingabe'} 
-            ({characterCount} Zeichen)
+          <span className={`status ${isInputVeryLong ? "error" : "warning"}`}>
+            {isInputVeryLong ? "❌" : "⚠️"}
+            {isInputVeryLong ? " Eingabe zu lang" : " Lange Eingabe"}(
+            {characterCount} Zeichen)
           </span>
         )}
         {conversationContext?.intent && (
           <span className="status context-info">
             🎯 {conversationContext.intent}
-            {conversationContext.confidence && ` (${conversationContext.confidence})`}
+            {conversationContext.confidence &&
+              ` (${conversationContext.confidence})`}
           </span>
         )}
         {currentModel && (
           <span className="status model-info">
             {getProviderIcon(currentModel.provider)} {currentModel.name}
-            {currentModel.active ? ' 🟢' : ' 🔴'}
+            {currentModel.active ? " 🟢" : " 🔴"}
           </span>
         )}
       </div>
@@ -678,7 +728,7 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
               ℹ️
             </button>
           </div>
-          
+
           <select
             id="model-select"
             value={currentSession.model ?? ""}
@@ -688,41 +738,58 @@ export const EnhancedInputArea: React.FC<EnhancedInputAreaProps> = ({
           >
             {models.map((model) => (
               <option key={model.name} value={model.name}>
-                {getProviderIcon(model.provider)} {model.name} 
+                {getProviderIcon(model.provider)} {model.name}
                 {model.provider && ` (${model.provider})`}
-                {!model.active && ' [Inaktiv]'}
+                {!model.active && " [Inaktiv]"}
               </option>
             ))}
           </select>
-          
+
           {showModelInfo && currentModel && (
             <div className="model-info-panel">
               <div className="model-info-content">
                 <h5>{currentModel.name}</h5>
                 <div className="model-details">
-                  <div><strong>Provider:</strong> {getProviderIcon(currentModel.provider)} {currentModel.provider}</div>
-                  <div><strong>Status:</strong> 
-                    <span className={currentModel.active ? 'status-active' : 'status-inactive'}>
-                      {currentModel.active ? '🟢 Aktiv' : '🔴 Inaktiv'}
+                  <div>
+                    <strong>Provider:</strong>{" "}
+                    {getProviderIcon(currentModel.provider)}{" "}
+                    {currentModel.provider}
+                  </div>
+                  <div>
+                    <strong>Status:</strong>
+                    <span
+                      className={
+                        currentModel.active
+                          ? "status-active"
+                          : "status-inactive"
+                      }
+                    >
+                      {currentModel.active ? "🟢 Aktiv" : "🔴 Inaktiv"}
                     </span>
                   </div>
                   {currentModel.description && (
-                    <div><strong>Beschreibung:</strong> {currentModel.description}</div>
-                  )}
-                  {currentModel.capabilities && Array.isArray(currentModel.capabilities) && currentModel.capabilities.length > 0 && (
                     <div>
-                      <strong>Fähigkeiten:</strong>
-                      <div className="capabilities-list">
-                        {currentModel.capabilities.map(capability => (
-                          <span key={capability} className="capability-tag">
-                            {renderCapability(capability)}
-                          </span>
-                        ))}
-                      </div>
+                      <strong>Beschreibung:</strong> {currentModel.description}
                     </div>
                   )}
+                  {currentModel.capabilities &&
+                    Array.isArray(currentModel.capabilities) &&
+                    currentModel.capabilities.length > 0 && (
+                      <div>
+                        <strong>Fähigkeiten:</strong>
+                        <div className="capabilities-list">
+                          {currentModel.capabilities.map((capability) => (
+                            <span key={capability} className="capability-tag">
+                              {renderCapability(capability)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   {currentModel.endpoint && (
-                    <div><strong>Endpoint:</strong> {currentModel.endpoint}</div>
+                    <div>
+                      <strong>Endpoint:</strong> {currentModel.endpoint}
+                    </div>
                   )}
                 </div>
               </div>

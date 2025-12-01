@@ -37,7 +37,7 @@ function mapToMonacoTheme(theme: InternalTheme): MonacoBuiltinTheme {
  */
 export function useMonacoThemeSync(
   monaco: typeof import("monaco-editor") | null,
-  internalTheme: InternalTheme
+  internalTheme: InternalTheme,
 ) {
   useEffect(() => {
     if (!monaco || !monaco.editor) return;
@@ -46,7 +46,10 @@ export function useMonacoThemeSync(
       const theme = mapToMonacoTheme(internalTheme);
       monaco.editor.setTheme(theme);
     } catch (err) {
-      console.error("[useMonacoThemeSync] Fehler beim Setzen des Monaco-Themes:", err);
+      console.error(
+        "[useMonacoThemeSync] Fehler beim Setzen des Monaco-Themes:",
+        err,
+      );
     }
   }, [monaco, internalTheme]);
 }

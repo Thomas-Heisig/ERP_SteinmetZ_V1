@@ -8,8 +8,8 @@ export default {
       status: {
         healthy: "System löppt normaal",
         degraded: "System hett Inskränkungen",
-        unhealthy: "System funktscheert nich"
-      }
+        unhealthy: "System funktscheert nich",
+      },
     },
 
     // Kategorien
@@ -17,7 +17,7 @@ export default {
       title: "Funkschoonsrebeden",
       count: "{{count}} Rebeden verfögbar",
       emptyTitle: "Keen Kategorien funnen",
-      emptyDescription: "För düsse Utsöök gifft dat keen Kategorien."
+      emptyDescription: "För düsse Utsöök gifft dat keen Kategorien.",
     },
 
     online: "System löppt",
@@ -27,7 +27,7 @@ export default {
     unknown: "Nich bekannt",
 
     loading: {
-      message: "Daten warrt laadt…"
+      message: "Daten warrt laadt…",
     },
 
     search: {
@@ -38,19 +38,19 @@ export default {
       placeholder: "Söök na {{type}}…",
       input: "Söökfeld",
       loading: "Söök löppt…",
-      noResults: "Keen Resultaten funnen"
+      noResults: "Keen Resultaten funnen",
     },
 
     errorScreen: {
       title: "Fehler bi't Laden",
-      retryButton: "Nieg versöken"
+      retryButton: "Nieg versöken",
     },
 
     navigation: {
       overview: "Översicht",
       catalog: "Funkschoonen",
       ai: "AI-Annotator",
-      settings: "Instellens"
+      settings: "Instellens",
     },
 
     openChat: "Chat opmaken",
@@ -58,20 +58,20 @@ export default {
       inputPlaceholder: "Naricht ingeven…",
       send: "Sennen",
       newSession: "Nieg Sessie",
-      loading: "Antwoord warrt verarbeidt…"
+      loading: "Antwoord warrt verarbeidt…",
     },
 
     models: {
       title: "Modellen",
       provider: "Anbieter",
       capabilities: "Möglichkeiten",
-      noModels: "Keen Modellen verfögbar"
+      noModels: "Keen Modellen verfögbar",
     },
 
     tools: {
       title: "Warktüüch",
       run: "Utföhren",
-      noTools: "Keen Warktüüch ingraadt"
+      noTools: "Keen Warktüüch ingraadt",
     },
 
     system: {
@@ -88,7 +88,7 @@ export default {
       ai: "AI-Status",
       statusHealthy: "Funkschonen",
       statusUnhealthy: "Nich funkschonen",
-      statusDegraded: "Inskränkt"
+      statusDegraded: "Inskränkt",
     },
 
     languageSwitcher: "Spraak utsöken",
@@ -99,7 +99,7 @@ export default {
       close: "Tomaaken",
       reload: "Nieg laden",
       details: "Details",
-      unknown: "Nich bekannt"
-    }
-  }
+      unknown: "Nich bekannt",
+    },
+  },
 };

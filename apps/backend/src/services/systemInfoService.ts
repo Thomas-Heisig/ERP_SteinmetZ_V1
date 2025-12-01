@@ -9,20 +9,21 @@
 
 import type { Express, Application } from "express";
 
-
 import os from "os";
 import process from "process";
 import db from "./dbService.js";
 
 const isPostgres = (process.env.DB_DRIVER || "").toLowerCase() === "postgres";
 
-
-
 /* ========================================================================== */
 /*  Typdefinitionen                                                           */
 /* ========================================================================== */
 
-export type RouteInfo = { path: string; methods: string[]; middleware?: string };
+export type RouteInfo = {
+  path: string;
+  methods: string[];
+  middleware?: string;
+};
 
 export type DatabaseInfo = {
   tables: TableInfo[];
@@ -50,7 +51,12 @@ export type SystemInfo = {
   nodejs: { version: string; platform: string; arch: string; uptime: number };
   process: {
     pid: number;
-    memory: { rss: string; heapTotal: string; heapUsed: string; external: string };
+    memory: {
+      rss: string;
+      heapTotal: string;
+      heapUsed: string;
+      external: string;
+    };
     uptime: number;
   };
   system: {
@@ -88,75 +94,77 @@ export type ServiceStatus = {
 /* ========================================================================== */
 
 class SystemInfoService {
-/* ----------------------------------------------------------- */
-/* Express-Routen rekursiv ermitteln                            */
-/* ----------------------------------------------------------- */
-getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
-  const routes: RouteInfo[] = [];
-  const seen = new Set<string>();
+  /* ----------------------------------------------------------- */
+  /* Express-Routen rekursiv ermitteln                            */
+  /* ----------------------------------------------------------- */
+  getRegisteredRoutes(app: import("express").Application): RouteInfo[] {
+    const routes: RouteInfo[] = [];
+    const seen = new Set<string>();
 
-  const pushRoute = (path: string, methods: string[]) => {
-    const normPath = path.replace(/\/+/g, '/');
-    const normMethods = methods.map(m => m.toUpperCase()).sort();
-    const key = `${normMethods.join(',')} ${normPath}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      routes.push({ path: normPath, methods: normMethods });
-    }
-  };
-
-  // Basis-Pfad aus Layer-Regex extrahieren
-  const extractBasePathFromLayer = (layer: any): string => {
-    if (!layer?.regexp || typeof layer.regexp.source !== 'string') return '';
-    const raw = layer.regexp.source;
-    let path = raw
-      .replace(/\\\//g, '/')     // \/ -> /
-      .replace(/(\(\?:\(\?\=\\\/\|\$\)\)\?)?\$$/, '') // Endmuster raus
-      .replace(/^\\\^/, '')      // ^ entfernen
-      .replace(/\$$/, '');       // $ entfernen
-    if (!path.startsWith('/')) path = '/' + path;
-    return path.replace(/\(\?:\(\?\=\/\|\$\)\)\?/g, '').replace(/\/\?$/, '');
-  };
-
-  const walkStack = (stack: any[], base = '') => {
-    for (const layer of stack) {
-      // direkte Route
-      if (layer?.route?.path) {
-        const methods = Object.keys(layer.route.methods || {}).map(m => m.toUpperCase());
-        const full = (base + layer.route.path).replace(/\/+/g, '/');
-        pushRoute(full, methods.length ? methods : ['GET']);
-        continue;
+    const pushRoute = (path: string, methods: string[]) => {
+      const normPath = path.replace(/\/+/g, "/");
+      const normMethods = methods.map((m) => m.toUpperCase()).sort();
+      const key = `${normMethods.join(",")} ${normPath}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        routes.push({ path: normPath, methods: normMethods });
       }
+    };
 
-      // Sub-Router
-      const isRouter = layer?.name === 'router' || !!layer?.handle?.stack;
-      if (isRouter) {
-        const basePart = extractBasePathFromLayer(layer);
-        const nextBase = (base + basePart).replace(/\/+/g, '/');
-        const subStack = layer?.handle?.stack || layer?.stack || [];
-        walkStack(subStack, nextBase);
-        continue;
+    // Basis-Pfad aus Layer-Regex extrahieren
+    const extractBasePathFromLayer = (layer: any): string => {
+      if (!layer?.regexp || typeof layer.regexp.source !== "string") return "";
+      const raw = layer.regexp.source;
+      let path = raw
+        .replace(/\\\//g, "/") // \/ -> /
+        .replace(/(\(\?:\(\?\=\\\/\|\$\)\)\?)?\$$/, "") // Endmuster raus
+        .replace(/^\\\^/, "") // ^ entfernen
+        .replace(/\$$/, ""); // $ entfernen
+      if (!path.startsWith("/")) path = "/" + path;
+      return path.replace(/\(\?:\(\?\=\/\|\$\)\)\?/g, "").replace(/\/\?$/, "");
+    };
+
+    const walkStack = (stack: any[], base = "") => {
+      for (const layer of stack) {
+        // direkte Route
+        if (layer?.route?.path) {
+          const methods = Object.keys(layer.route.methods || {}).map((m) =>
+            m.toUpperCase(),
+          );
+          const full = (base + layer.route.path).replace(/\/+/g, "/");
+          pushRoute(full, methods.length ? methods : ["GET"]);
+          continue;
+        }
+
+        // Sub-Router
+        const isRouter = layer?.name === "router" || !!layer?.handle?.stack;
+        if (isRouter) {
+          const basePart = extractBasePathFromLayer(layer);
+          const nextBase = (base + basePart).replace(/\/+/g, "/");
+          const subStack = layer?.handle?.stack || layer?.stack || [];
+          walkStack(subStack, nextBase);
+          continue;
+        }
+
+        // Einzel-Layer mit Methode
+        if (layer?.method && layer?.handle) {
+          const full = base.replace(/\/+/g, "/");
+          pushRoute(full || "/", [String(layer.method).toUpperCase()]);
+        }
       }
+    };
 
-      // Einzel-Layer mit Methode
-      if (layer?.method && layer?.handle) {
-        const full = base.replace(/\/+/g, '/');
-        pushRoute(full || '/', [String(layer.method).toUpperCase()]);
-      }
-    }
-  };
+    const stack = (app as any)?._router?.stack;
+    if (Array.isArray(stack)) walkStack(stack, "");
 
-  const stack = (app as any)?._router?.stack;
-  if (Array.isArray(stack)) walkStack(stack, '');
-
-  // sortieren
-  routes.sort(
-    (a, b) =>
-      a.path.localeCompare(b.path) ||
-      a.methods.join(',').localeCompare(b.methods.join(','))
-  );
-  return routes;
-}
+    // sortieren
+    routes.sort(
+      (a, b) =>
+        a.path.localeCompare(b.path) ||
+        a.methods.join(",").localeCompare(b.methods.join(",")),
+    );
+    return routes;
+  }
 
   /* ----------------------------------------------------------- */
   /* Datenbankinformationen                                       */
@@ -202,15 +210,15 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
              WHERE c.table_name=$1 AND c.table_schema='public'
              ORDER BY c.ordinal_position
             `,
-            [table_name]
+            [table_name],
           );
 
           const indexes = await db.all<{ name: string; indexdef: string }>(
             `SELECT indexname AS name, indexdef FROM pg_indexes WHERE schemaname='public' AND tablename=$1`,
-            [table_name]
+            [table_name],
           );
 
-          const indexInfos = indexes.map(ix => ({
+          const indexInfos = indexes.map((ix) => ({
             name: ix.name,
             columns: this.extractPostgresIndexColumns(ix.indexdef),
             unique: ix.indexdef.includes("UNIQUE"),
@@ -218,7 +226,7 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
 
           tableInfos.push({
             name: table_name,
-            columns: columns.map(c => ({
+            columns: columns.map((c) => ({
               name: c.name,
               type: c.type,
               nullable: c.is_nullable === "YES",
@@ -230,7 +238,7 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
         }
       } else {
         const tables = await db.all<{ name: string }>(
-          `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`
+          `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`,
         );
         for (const { name } of tables) {
           const columns = await db.all<any>(`PRAGMA table_info("${name}")`);
@@ -239,12 +247,16 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
 
           for (const idx of indexes) {
             const cols = await db.all<any>(`PRAGMA index_info("${idx.name}")`);
-            indexInfos.push({ name: idx.name, columns: cols.map(c => c.name), unique: idx.unique === 1 });
+            indexInfos.push({
+              name: idx.name,
+              columns: cols.map((c) => c.name),
+              unique: idx.unique === 1,
+            });
           }
 
           tableInfos.push({
             name,
-            columns: columns.map(c => ({
+            columns: columns.map((c) => ({
               name: c.name,
               type: c.type,
               nullable: c.notnull === 0,
@@ -264,7 +276,9 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
   private extractPostgresIndexColumns(indexDef: string): string[] {
     try {
       const match = indexDef.match(/\(([^)]+)\)/);
-      return match ? match[1].split(",").map(c => c.trim().replace(/"/g, "")) : [];
+      return match
+        ? match[1].split(",").map((c) => c.trim().replace(/"/g, ""))
+        : [];
     } catch {
       return [];
     }
@@ -273,13 +287,19 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
   private async getRowCounts(): Promise<Record<string, number>> {
     const counts: Record<string, number> = {};
     const tables = isPostgres
-      ? await db.all<{ table_name: string }>(`SELECT table_name FROM information_schema.tables WHERE table_schema='public'`)
-      : await db.all<{ name: string }>(`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`);
+      ? await db.all<{ table_name: string }>(
+          `SELECT table_name FROM information_schema.tables WHERE table_schema='public'`,
+        )
+      : await db.all<{ name: string }>(
+          `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`,
+        );
 
     for (const t of tables) {
       const name = isPostgres ? (t as any).table_name : (t as any).name;
       try {
-        const r = await db.get<{ count: number }>(`SELECT COUNT(*) AS count FROM "${name}"`);
+        const r = await db.get<{ count: number }>(
+          `SELECT COUNT(*) AS count FROM "${name}"`,
+        );
         counts[name] = r?.count ?? 0;
       } catch {
         counts[name] = 0;
@@ -296,14 +316,17 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
           SELECT relname, pg_size_pretty(pg_total_relation_size(relid)) AS size
             FROM pg_catalog.pg_statio_user_tables
         `);
-        rows.forEach(r => (sizes[r.relname] = r.size));
+        rows.forEach((r) => (sizes[r.relname] = r.size));
       } else {
         const tables = await db.all<{ name: string }>(
-          `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`
+          `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`,
         );
         for (const { name } of tables) {
-          const rc = await db.get<{ count: number }>(`SELECT COUNT(*) AS count FROM "${name}"`);
-          sizes[name] = `${Math.max(1, Math.round((rc?.count ?? 0) / 100 + 1))} KB (estimated)`;
+          const rc = await db.get<{ count: number }>(
+            `SELECT COUNT(*) AS count FROM "${name}"`,
+          );
+          sizes[name] =
+            `${Math.max(1, Math.round((rc?.count ?? 0) / 100 + 1))} KB (estimated)`;
         }
       }
     } catch (err) {
@@ -316,7 +339,10 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
   /* Systeminformationen                                          */
   /* ----------------------------------------------------------- */
   getSystemInfo(): SystemInfo {
-    const formatMem = (b: number) => (b < 1024 ** 2 ? `${(b / 1024).toFixed(1)} KB` : `${(b / 1024 ** 2).toFixed(2)} MB`);
+    const formatMem = (b: number) =>
+      b < 1024 ** 2
+        ? `${(b / 1024).toFixed(1)} KB`
+        : `${(b / 1024 ** 2).toFixed(2)} MB`;
     const cpuCount = Array.isArray(os.cpus()) ? os.cpus().length : 0;
 
     return {
@@ -375,13 +401,19 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
       await db.get("SELECT 1 AS test");
       status.database.connected = true;
       const tables = isPostgres
-        ? await db.all<{ table_name: string }>(`SELECT table_name FROM information_schema.tables WHERE table_schema='public'`)
-        : await db.all<{ name: string }>(`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`);
+        ? await db.all<{ table_name: string }>(
+            `SELECT table_name FROM information_schema.tables WHERE table_schema='public'`,
+          )
+        : await db.all<{ name: string }>(
+            `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'`,
+          );
 
       status.database.tables = tables.length;
       for (const t of tables) {
         const n = isPostgres ? (t as any).table_name : (t as any).name;
-        const r = await db.get<{ count: number }>(`SELECT COUNT(*) AS count FROM "${n}"`);
+        const r = await db.get<{ count: number }>(
+          `SELECT COUNT(*) AS count FROM "${n}"`,
+        );
         status.database.totalRows += r?.count ?? 0;
       }
     } catch (err) {
@@ -389,7 +421,9 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
     }
 
     try {
-      const c = await db.get<{ count: number }>(`SELECT COUNT(*) AS count FROM functions_nodes`);
+      const c = await db.get<{ count: number }>(
+        `SELECT COUNT(*) AS count FROM functions_nodes`,
+      );
       status.functions.nodes = c?.count ?? 0;
       status.functions.loaded = status.functions.nodes > 0;
       status.functions.lastLoad = new Date().toISOString();
@@ -397,8 +431,15 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
 
     const aiProv = process.env.AI_PROVIDER || "none";
     const aiModel = process.env.OPENAI_MODEL || "none";
-    const hasKey = !!process.env.OPENAI_API_KEY || !!process.env.ANTHROPIC_API_KEY || !!process.env.GEMINI_API_KEY;
-    status.ai = { provider: aiProv, model: aiModel, available: aiProv !== "none" && hasKey };
+    const hasKey =
+      !!process.env.OPENAI_API_KEY ||
+      !!process.env.ANTHROPIC_API_KEY ||
+      !!process.env.GEMINI_API_KEY;
+    status.ai = {
+      provider: aiProv,
+      model: aiModel,
+      available: aiProv !== "none" && hasKey,
+    };
 
     return status;
   }
@@ -407,50 +448,52 @@ getRegisteredRoutes(app: import('express').Application): RouteInfo[] {
   /* Komplettübersicht                                            */
   /* ----------------------------------------------------------- */
 
-async getCompleteSystemOverview(app?: any) {
-  // robuste App-Ermittlung
-  const expressApp: import('express').Application | undefined =
-    app ?? (globalThis as any).expressApp;
+  async getCompleteSystemOverview(app?: any) {
+    // robuste App-Ermittlung
+    const expressApp: import("express").Application | undefined =
+      app ?? (globalThis as any).expressApp;
 
-  if (!expressApp) {
-    throw new Error('Express-App nicht registriert (global)');
+    if (!expressApp) {
+      throw new Error("Express-App nicht registriert (global)");
+    }
+
+    // Routen versuchen; bei Nichterfolg nicht crashen
+    let routeList: RouteInfo[] = [];
+    try {
+      routeList = this.getRegisteredRoutes(expressApp);
+    } catch (e) {
+      console.warn("[systemInfo] getRegisteredRoutes() fehlgeschlagen:", e);
+      routeList = [];
+    }
+
+    const [dbInfo, systemInfo, serviceStatus] = await Promise.all([
+      this.getDatabaseInfo(),
+      Promise.resolve(this.getSystemInfo()),
+      this.getServiceStatus(),
+    ]);
+
+    return {
+      timestamp: new Date().toISOString(),
+      serviceStatus,
+      systemInfo,
+      routes: {
+        count: routeList.length,
+        endpoints: routeList, // <— wichtig: { path, methods } pro Eintrag
+      },
+      database: dbInfo,
+    };
   }
-
-  // Routen versuchen; bei Nichterfolg nicht crashen
-  let routeList: RouteInfo[] = [];
-  try {
-    routeList = this.getRegisteredRoutes(expressApp);
-  } catch (e) {
-    console.warn('[systemInfo] getRegisteredRoutes() fehlgeschlagen:', e);
-    routeList = [];
-  }
-
-  const [dbInfo, systemInfo, serviceStatus] = await Promise.all([
-    this.getDatabaseInfo(),
-    Promise.resolve(this.getSystemInfo()),
-    this.getServiceStatus(),
-  ]);
-
-  return {
-    timestamp: new Date().toISOString(),
-    serviceStatus,
-    systemInfo,
-    routes: {
-      count: routeList.length,
-      endpoints: routeList, // <— wichtig: { path, methods } pro Eintrag
-    },
-    database: dbInfo,
-  };
-}
 
   /* ----------------------------------------------------------- */
   /* Weitere Hilfsfunktionen                                     */
   /* ----------------------------------------------------------- */
   async getFunctionsSummary() {
     try {
-      const rows = await db.all<{ name: string; kind: string; description?: string }>(
-        `SELECT name, kind, description FROM functions_nodes ORDER BY name`
-      );
+      const rows = await db.all<{
+        name: string;
+        kind: string;
+        description?: string;
+      }>(`SELECT name, kind, description FROM functions_nodes ORDER BY name`);
       return { success: true, count: rows.length, nodes: rows };
     } catch (err) {
       return { success: false, count: 0, nodes: [], error: String(err) };
@@ -458,9 +501,15 @@ async getCompleteSystemOverview(app?: any) {
   }
 
   getSanitizedEnvironment(): Record<string, string> {
-    const hide = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "DATABASE_URL", "JWT_SECRET"];
+    const hide = [
+      "OPENAI_API_KEY",
+      "ANTHROPIC_API_KEY",
+      "DATABASE_URL",
+      "JWT_SECRET",
+    ];
     const env: Record<string, string> = {};
-    for (const [k, v] of Object.entries(process.env)) env[k] = hide.includes(k) ? "***" : v || "";
+    for (const [k, v] of Object.entries(process.env))
+      env[k] = hide.includes(k) ? "***" : v || "";
     return env;
   }
 
@@ -468,7 +517,12 @@ async getCompleteSystemOverview(app?: any) {
     try {
       const pkgPath = require.resolve("../../../package.json");
       const pkg = require(pkgPath);
-      return { name: pkg.name, version: pkg.version, dependencies: pkg.dependencies, devDependencies: pkg.devDependencies };
+      return {
+        name: pkg.name,
+        version: pkg.version,
+        dependencies: pkg.dependencies,
+        devDependencies: pkg.devDependencies,
+      };
     } catch (err) {
       return { error: String(err) };
     }
@@ -477,12 +531,25 @@ async getCompleteSystemOverview(app?: any) {
   async runSystemDiagnostics(): Promise<Record<string, any>> {
     const res: any = { timestamp: new Date().toISOString(), status: "ok" };
     try {
-      res.databaseConnected = await db.get("SELECT 1 AS ok").then(() => true).catch(() => false);
+      res.databaseConnected = await db
+        .get("SELECT 1 AS ok")
+        .then(() => true)
+        .catch(() => false);
       res.aiProvider = process.env.AI_PROVIDER || "none";
-      res.hasAIKey = !!process.env.OPENAI_API_KEY || !!process.env.ANTHROPIC_API_KEY || !!process.env.GEMINI_API_KEY;
+      res.hasAIKey =
+        !!process.env.OPENAI_API_KEY ||
+        !!process.env.ANTHROPIC_API_KEY ||
+        !!process.env.GEMINI_API_KEY;
       const mem = process.memoryUsage();
-      res.memory = { rssMB: (mem.rss / 1024 / 1024).toFixed(2), heapUsedMB: (mem.heapUsed / 1024 / 1024).toFixed(2) };
-      res.system = { hostname: os.hostname(), platform: os.platform(), load: os.loadavg().map(n => n.toFixed(2)) };
+      res.memory = {
+        rssMB: (mem.rss / 1024 / 1024).toFixed(2),
+        heapUsedMB: (mem.heapUsed / 1024 / 1024).toFixed(2),
+      };
+      res.system = {
+        hostname: os.hostname(),
+        platform: os.platform(),
+        load: os.loadavg().map((n) => n.toFixed(2)),
+      };
     } catch (err) {
       res.status = "error";
       res.error = String(err);
@@ -519,11 +586,26 @@ async getCompleteSystemOverview(app?: any) {
 
   async runCommand(command: string) {
     const ENABLE_SHELL = process.env.ENABLE_SHELL === "1";
-    if (!ENABLE_SHELL) return { success: false, command, error: "Shell deaktiviert" };
-    if (!command.trim()) return { success: false, command, error: "Kein Befehl angegeben" };
+    if (!ENABLE_SHELL)
+      return { success: false, command, error: "Shell deaktiviert" };
+    if (!command.trim())
+      return { success: false, command, error: "Kein Befehl angegeben" };
 
-    const allowed = ["ls", "pwd", "df", "du", "free", "top", "uptime", "cat", "whoami", "ps", "echo"];
-    if (!allowed.some(c => command.startsWith(c))) return { success: false, command, error: "Befehl nicht erlaubt" };
+    const allowed = [
+      "ls",
+      "pwd",
+      "df",
+      "du",
+      "free",
+      "top",
+      "uptime",
+      "cat",
+      "whoami",
+      "ps",
+      "echo",
+    ];
+    if (!allowed.some((c) => command.startsWith(c)))
+      return { success: false, command, error: "Befehl nicht erlaubt" };
 
     const { exec } = await import("child_process");
     const util = await import("util");
@@ -533,7 +615,11 @@ async getCompleteSystemOverview(app?: any) {
       const { stdout, stderr } = await execAsync(command, { timeout: 7000 });
       return { success: true, command, output: stdout.trim() || stderr.trim() };
     } catch (err: any) {
-      return { success: false, command, error: err.stderr || err.message || String(err) };
+      return {
+        success: false,
+        command,
+        error: err.stderr || err.message || String(err),
+      };
     }
   }
 }

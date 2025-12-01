@@ -26,7 +26,7 @@ function prepare(data: unknown): string {
 
         return value;
       },
-      2
+      2,
     );
   } catch (err) {
     console.error("[exportJSON] Fehler bei JSON.stringify:", err);
@@ -69,8 +69,10 @@ export function exportNodeAsJSON(node: NodeDetail): void {
   }
 
   const safeName =
-    node.title?.toLowerCase().replace(/[^a-z0-9_-]+/gi, "_").slice(0, 80) ??
-    "node";
+    node.title
+      ?.toLowerCase()
+      .replace(/[^a-z0-9_-]+/gi, "_")
+      .slice(0, 80) ?? "node";
 
   const filename = `${safeName}.json`;
   const content = prepare(node);

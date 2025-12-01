@@ -54,19 +54,14 @@ export { default as useContextMenu } from "./features/contextMenu/useContextMenu
 /* ============================================================
    Feature: Export
 ============================================================ */
-export { 
-  exportNodeAsJSON, 
-  exportAnyJSON 
-} from "./features/export/exportJSON";
+export { exportNodeAsJSON, exportAnyJSON } from "./features/export/exportJSON";
 
-export { 
-  exportNodeAsMarkdown, 
-  exportAnyMarkdown 
+export {
+  exportNodeAsMarkdown,
+  exportAnyMarkdown,
 } from "./features/export/exportMarkdown";
 
-export { 
-  exportNodeAsYAML 
-} from "./features/export/exportYAML";
+export { exportNodeAsYAML } from "./features/export/exportYAML";
 
 /* ============================================================
    Feature: Favoriten

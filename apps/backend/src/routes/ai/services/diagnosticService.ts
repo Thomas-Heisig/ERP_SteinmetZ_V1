@@ -111,7 +111,6 @@ async function checkWorkflows() {
   }
 }
 
-
 /* ========================================================================== */
 /* 🗣️ Audio-Systemprüfung                                                   */
 /* ========================================================================== */
@@ -136,19 +135,20 @@ async function checkAudio() {
     }
 
     const json = await res.json();
-    const data = json as OpenAIModelsResponse;   // ✔ sicheres Casting
+    const data = json as OpenAIModelsResponse; // ✔ sicheres Casting
 
     const modelList = Array.isArray(data.data) ? data.data : [];
 
     const modelNames = modelList.map((m) => m.id);
 
     const whisper = modelNames.includes("whisper-1");
-    const tts = modelNames.some((n) => typeof n === "string" && n.includes("tts"));
+    const tts = modelNames.some(
+      (n) => typeof n === "string" && n.includes("tts"),
+    );
 
     const detailText =
-      [whisper ? "Whisper" : "", tts ? "TTS" : ""]
-        .filter(Boolean)
-        .join(", ") || "Keine Audio-Modelle gefunden";
+      [whisper ? "Whisper" : "", tts ? "TTS" : ""].filter(Boolean).join(", ") ||
+      "Keine Audio-Modelle gefunden";
 
     return {
       available: whisper || tts,
@@ -160,7 +160,6 @@ async function checkAudio() {
     return { available: false, details: err.message };
   }
 }
-
 
 /* ========================================================================== */
 /* 💻 Systeminformationen                                                  */

@@ -1,72 +1,99 @@
 /* Import futuristische Schriftarten */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Antonio:wght@400;500;600;700&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Antonio:wght@400;500;600;700&display=swap");
 
 /* ==================== LCARS THEME - ULTIMATIVE STAR TREK EXPERIENCE ==================== */
 [data-theme="lcars"] {
   /* Erweiterte LCARS Farbpalette */
-  --lcars-tangerine: #FF9E00;
-  --lcars-mustard: #FFCC66;
-  --lcars-lavender: #CC99FF;
-  --lcars-periwinkle: #6699FF;
-  --lcars-lilac: #9966CC;
-  --lcars-coral: #FF6A6A;
-  --lcars-aqua: #66CCCC;
-  --lcars-neon-blue: #00FFFF;
-  --lcars-neon-pink: #FF00FF;
+  --lcars-tangerine: #ff9e00;
+  --lcars-mustard: #ffcc66;
+  --lcars-lavender: #cc99ff;
+  --lcars-periwinkle: #6699ff;
+  --lcars-lilac: #9966cc;
+  --lcars-coral: #ff6a6a;
+  --lcars-aqua: #66cccc;
+  --lcars-neon-blue: #00ffff;
+  --lcars-neon-pink: #ff00ff;
   --lcars-hologram: rgba(102, 204, 255, 0.1);
   --lcars-black: #000000;
-  --lcars-space: #0A0A2A;
-  
+  --lcars-space: #0a0a2a;
+
   /* Glow Intensitäten */
   --glow-soft: 0.4;
   --glow-medium: 0.6;
   --glow-strong: 0.8;
-  
+
   /* Sound Variablen */
-  --sound-beep: url('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA');
-  --sound-click: url('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA');
-  --sound-alert: url('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA');
+  --sound-beep: url("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA");
+  --sound-click: url("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA");
+  --sound-alert: url("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA");
 }
 
-
 [data-theme="lcars"] * {
-  font-family: 'Orbitron', 'Antonio', 'Arial Narrow', sans-serif !important;
+  font-family: "Orbitron", "Antonio", "Arial Narrow", sans-serif !important;
   font-weight: 400;
   letter-spacing: 0.8px;
 }
 
 /* Quantum Space Background mit Sternen und Nebel */
 [data-theme="lcars"] .dashboard-root {
-  background: 
+  background:
     radial-gradient(ellipse at center, var(--lcars-space) 0%, #000000 100%),
-    radial-gradient(circle at 20% 30%, rgba(102, 153, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(255, 158, 0, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(204, 153, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(102, 153, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(255, 158, 0, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 20%,
+      rgba(204, 153, 255, 0.1) 0%,
+      transparent 50%
+    ),
     url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" opacity="0.4"><circle cx="20" cy="30" r="1" fill="white"/><circle cx="60" cy="70" r="0.7" fill="white"/><circle cx="80" cy="20" r="0.5" fill="white"/><circle cx="40" cy="80" r="0.8" fill="white"/><circle cx="120" cy="40" r="1.2" fill="white"/><circle cx="160" cy="90" r="0.6" fill="white"/><circle cx="180" cy="60" r="0.9" fill="white"/></svg>');
   color: var(--text-primary);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  animation: space-drift 120s linear infinite, nebula-pulse 30s ease-in-out infinite;
+  animation:
+    space-drift 120s linear infinite,
+    nebula-pulse 30s ease-in-out infinite;
 }
 
 @keyframes space-drift {
-  0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
-  100% { background-position: 1000px 500px, 200px 100px, 400px 300px, 600px 200px, 800px 400px; }
+  0% {
+    background-position:
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0;
+  }
+  100% {
+    background-position:
+      1000px 500px,
+      200px 100px,
+      400px 300px,
+      600px 200px,
+      800px 400px;
+  }
 }
 
 @keyframes nebula-pulse {
-  0%, 100% { 
+  0%,
+  100% {
     filter: hue-rotate(0deg) brightness(1);
   }
-  25% { 
+  25% {
     filter: hue-rotate(90deg) brightness(1.1);
   }
-  50% { 
+  50% {
     filter: hue-rotate(180deg) brightness(1.05);
   }
-  75% { 
+  75% {
     filter: hue-rotate(270deg) brightness(1.1);
   }
 }
@@ -74,27 +101,30 @@
 /* Holographische Ober- und Unterleiste mit Warp-Effekt */
 [data-theme="lcars"] .dashboard-root::before,
 [data-theme="lcars"] .dashboard-root::after {
-  content: '';
+  content: "";
   position: fixed;
   left: 0;
   right: 0;
   height: 80px;
-  background: 
-    linear-gradient(90deg, 
-      transparent 0%,
-      var(--lcars-tangerine) 10%,
-      var(--lcars-periwinkle) 25%,
-      var(--lcars-lavender) 40%,
-      var(--lcars-aqua) 55%,
-      var(--lcars-coral) 70%,
-      var(--lcars-mustard) 85%,
-      transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--lcars-tangerine) 10%,
+    var(--lcars-periwinkle) 25%,
+    var(--lcars-lavender) 40%,
+    var(--lcars-aqua) 55%,
+    var(--lcars-coral) 70%,
+    var(--lcars-mustard) 85%,
+    transparent 100%
+  );
   z-index: 1000;
   opacity: 0.9;
-  box-shadow: 
+  box-shadow:
     0 0 60px rgba(255, 158, 0, var(--glow-strong)),
     0 0 120px rgba(102, 153, 255, var(--glow-medium));
-  animation: hologram-pulse 8s ease-in-out infinite, warp-streak 15s linear infinite;
+  animation:
+    hologram-pulse 8s ease-in-out infinite,
+    warp-streak 15s linear infinite;
 }
 
 [data-theme="lcars"] .dashboard-root::before {
@@ -110,42 +140,47 @@
 }
 
 @keyframes hologram-pulse {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 0.7;
     filter: hue-rotate(0deg);
   }
-  25% { 
+  25% {
     opacity: 0.9;
     filter: hue-rotate(90deg);
   }
-  50% { 
+  50% {
     opacity: 0.8;
     filter: hue-rotate(180deg);
   }
-  75% { 
+  75% {
     opacity: 0.9;
     filter: hue-rotate(270deg);
   }
 }
 
 @keyframes warp-streak {
-  0% { 
+  0% {
     background-position: -200% 0;
   }
-  100% { 
+  100% {
     background-position: 200% 0;
   }
 }
 
 /* Command Bridge Header mit Transwarp-Effekt */
 [data-theme="lcars"] .dashboard-header {
-  background: 
+  background:
     radial-gradient(ellipse at top, rgba(255, 158, 0, 0.1) 0%, transparent 70%),
-    linear-gradient(135deg, rgba(66, 66, 66, 0.9) 0%, rgba(33, 33, 33, 0.95) 100%);
+    linear-gradient(
+      135deg,
+      rgba(66, 66, 66, 0.9) 0%,
+      rgba(33, 33, 33, 0.95) 100%
+    );
   backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 158, 0, 0.3);
   border-radius: 25px;
-  box-shadow: 
+  box-shadow:
     0 15px 40px rgba(255, 158, 0, 0.3),
     0 0 80px rgba(102, 153, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
@@ -154,22 +189,30 @@
   margin: 1rem 2rem 2rem;
   position: relative;
   overflow: hidden;
-  animation: header-float 6s ease-in-out infinite, transwarp-glow 4s ease-in-out infinite;
+  animation:
+    header-float 6s ease-in-out infinite,
+    transwarp-glow 4s ease-in-out infinite;
 }
 
 @keyframes header-float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 @keyframes transwarp-glow {
-  0%, 100% { 
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       0 15px 40px rgba(255, 158, 0, 0.3),
       0 0 80px rgba(102, 153, 255, 0.2);
   }
-  50% { 
-    box-shadow: 
+  50% {
+    box-shadow:
       0 15px 60px rgba(255, 158, 0, 0.5),
       0 0 120px rgba(102, 153, 255, 0.4),
       0 0 200px rgba(204, 153, 255, 0.3);
@@ -177,20 +220,22 @@
 }
 
 [data-theme="lcars"] .dashboard-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 200%;
   height: 100%;
-  background: linear-gradient(90deg, 
+  background: linear-gradient(
+    90deg,
     transparent 0%,
     rgba(255, 158, 0, 0.05) 15%,
     rgba(102, 153, 255, 0.1) 30%,
     rgba(204, 153, 255, 0.05) 45%,
     rgba(102, 204, 204, 0.1) 60%,
     rgba(255, 106, 106, 0.05) 75%,
-    transparent 100%);
+    transparent 100%
+  );
   animation: lcars-scan 8s linear infinite;
   pointer-events: none;
 }
@@ -201,22 +246,25 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 2px;
-  text-shadow: 
+  text-shadow:
     0 0 20px var(--lcars-mustard),
     0 0 40px rgba(255, 204, 102, 0.5);
   position: relative;
   display: inline-block;
-  animation: title-glow 4s ease-in-out infinite, title-warp 8s linear infinite;
+  animation:
+    title-glow 4s ease-in-out infinite,
+    title-warp 8s linear infinite;
 }
 
 @keyframes title-glow {
-  0%, 100% { 
-    text-shadow: 
+  0%,
+  100% {
+    text-shadow:
       0 0 20px var(--lcars-mustard),
       0 0 40px rgba(255, 204, 102, 0.5);
   }
-  50% { 
-    text-shadow: 
+  50% {
+    text-shadow:
       0 0 30px var(--lcars-mustard),
       0 0 60px rgba(255, 204, 102, 0.8),
       0 0 80px rgba(255, 204, 102, 0.4);
@@ -224,71 +272,80 @@
 }
 
 @keyframes title-warp {
-  0% { 
+  0% {
     transform: translateX(0) scale(1);
     filter: hue-rotate(0deg);
   }
-  25% { 
+  25% {
     transform: translateX(-2px) scale(1.02);
     filter: hue-rotate(90deg);
   }
-  50% { 
+  50% {
     transform: translateX(0) scale(1);
     filter: hue-rotate(180deg);
   }
-  75% { 
+  75% {
     transform: translateX(2px) scale(1.02);
     filter: hue-rotate(270deg);
   }
-  100% { 
+  100% {
     transform: translateX(0) scale(1);
     filter: hue-rotate(360deg);
   }
 }
 
 [data-theme="lcars"] .dashboard-title::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -10px;
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, 
-    var(--lcars-tangerine), 
+  background: linear-gradient(
+    90deg,
+    var(--lcars-tangerine),
     var(--lcars-periwinkle),
     var(--lcars-lavender),
-    var(--lcars-aqua));
+    var(--lcars-aqua)
+  );
   border-radius: 1px;
-  box-shadow: 
+  box-shadow:
     0 0 10px var(--lcars-tangerine),
     0 0 20px var(--lcars-periwinkle);
-  animation: rainbow-glow 3s ease-in-out infinite, rainbow-flow 6s linear infinite;
+  animation:
+    rainbow-glow 3s ease-in-out infinite,
+    rainbow-flow 6s linear infinite;
 }
 
 @keyframes rainbow-glow {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 1;
-    box-shadow: 
+    box-shadow:
       0 0 10px var(--lcars-tangerine),
       0 0 20px var(--lcars-periwinkle);
   }
-  33% { 
+  33% {
     opacity: 0.8;
-    box-shadow: 
+    box-shadow:
       0 0 15px var(--lcars-periwinkle),
       0 0 25px var(--lcars-lavender);
   }
-  66% { 
+  66% {
     opacity: 0.8;
-    box-shadow: 
+    box-shadow:
       0 0 15px var(--lcars-lavender),
       0 0 25px var(--lcars-aqua);
   }
 }
 
 @keyframes rainbow-flow {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
 }
 
 /* Advanced Warp Core Status Display */
@@ -298,24 +355,27 @@
   border: 1px solid rgba(255, 158, 0, 0.4);
   border-radius: 20px;
   padding: 1rem 1.5rem;
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(255, 158, 0, 0.3),
     inset 0 0 20px rgba(255, 158, 0, 0.1),
     0 0 30px rgba(102, 153, 255, 0.2);
   position: relative;
   overflow: hidden;
-  animation: status-pulse 4s ease-in-out infinite, status-scan 8s linear infinite;
+  animation:
+    status-pulse 4s ease-in-out infinite,
+    status-scan 8s linear infinite;
 }
 
 @keyframes status-pulse {
-  0%, 100% { 
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       0 8px 32px rgba(255, 158, 0, 0.3),
       inset 0 0 20px rgba(255, 158, 0, 0.1),
       0 0 30px rgba(102, 153, 255, 0.2);
   }
-  50% { 
-    box-shadow: 
+  50% {
+    box-shadow:
       0 8px 40px rgba(255, 158, 0, 0.5),
       inset 0 0 25px rgba(255, 158, 0, 0.15),
       0 0 40px rgba(102, 153, 255, 0.3);
@@ -323,10 +383,10 @@
 }
 
 @keyframes status-scan {
-  0% { 
+  0% {
     background-position: -100% 0;
   }
-  100% { 
+  100% {
     background-position: 200% 0;
   }
 }
@@ -336,36 +396,39 @@
   height: 12px;
   background: var(--lcars-coral);
   border-radius: 50%;
-  box-shadow: 
+  box-shadow:
     0 0 15px var(--lcars-coral),
     0 0 30px rgba(255, 106, 106, 0.5);
-  animation: warp-core 2s ease-in-out infinite, plasma-dance 3s linear infinite;
+  animation:
+    warp-core 2s ease-in-out infinite,
+    plasma-dance 3s linear infinite;
   position: relative;
 }
 
 @keyframes warp-core {
-  0%, 100% { 
+  0%,
+  100% {
     transform: scale(1);
-    box-shadow: 
+    box-shadow:
       0 0 15px var(--lcars-coral),
       0 0 30px rgba(255, 106, 106, 0.5);
   }
   25% {
     transform: scale(1.2);
-    box-shadow: 
+    box-shadow:
       0 0 20px var(--lcars-coral),
       0 0 40px rgba(255, 106, 106, 0.7),
       0 0 60px rgba(255, 204, 102, 0.3);
   }
-  50% { 
+  50% {
     transform: scale(1.1);
-    box-shadow: 
+    box-shadow:
       0 0 25px var(--lcars-coral),
       0 0 50px rgba(255, 106, 106, 0.8);
   }
   75% {
     transform: scale(1.3);
-    box-shadow: 
+    box-shadow:
       0 0 30px var(--lcars-coral),
       0 0 60px rgba(255, 106, 106, 0.9),
       0 0 80px rgba(255, 204, 102, 0.5);
@@ -373,23 +436,23 @@
 }
 
 @keyframes plasma-dance {
-  0% { 
+  0% {
     filter: hue-rotate(0deg) brightness(1);
     transform: rotate(0deg);
   }
-  25% { 
+  25% {
     filter: hue-rotate(90deg) brightness(1.2);
     transform: rotate(90deg);
   }
-  50% { 
+  50% {
     filter: hue-rotate(180deg) brightness(1.1);
     transform: rotate(180deg);
   }
-  75% { 
+  75% {
     filter: hue-rotate(270deg) brightness(1.2);
     transform: rotate(270deg);
   }
-  100% { 
+  100% {
     filter: hue-rotate(360deg) brightness(1);
     transform: rotate(360deg);
   }
@@ -403,7 +466,7 @@
   border-radius: 25px;
   padding: 1rem 1.5rem;
   margin: 1rem 2rem;
-  box-shadow: 
+  box-shadow:
     0 10px 40px rgba(102, 153, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 0 50px rgba(102, 153, 255, 0.1);
@@ -413,15 +476,16 @@
 }
 
 @keyframes subspace-comm {
-  0%, 100% { 
+  0%,
+  100% {
     border-color: rgba(102, 153, 255, 0.3);
-    box-shadow: 
+    box-shadow:
       0 10px 40px rgba(102, 153, 255, 0.2),
       0 0 50px rgba(102, 153, 255, 0.1);
   }
-  50% { 
+  50% {
     border-color: rgba(255, 158, 0, 0.5);
-    box-shadow: 
+    box-shadow:
       0 10px 50px rgba(255, 158, 0, 0.3),
       0 0 70px rgba(255, 158, 0, 0.2),
       0 0 100px rgba(255, 204, 102, 0.1);
@@ -429,20 +493,19 @@
 }
 
 [data-theme="lcars"] .dashboard-topbar::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 2px,
-      rgba(102, 153, 255, 0.03) 2px,
-      rgba(102, 153, 255, 0.03) 4px
-    );
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    rgba(102, 153, 255, 0.03) 2px,
+    rgba(102, 153, 255, 0.03) 4px
+  );
   animation: grid-scan 20s linear infinite;
   pointer-events: none;
 }
@@ -458,7 +521,7 @@
   text-transform: uppercase;
   font-size: 0.85rem;
   margin: 0.15rem;
-  box-shadow: 
+  box-shadow:
     0 4px 15px rgba(102, 153, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
@@ -467,29 +530,30 @@
 }
 
 @keyframes btn-idle {
-  0%, 100% { 
+  0%,
+  100% {
     transform: translateY(0);
-    box-shadow: 
-      0 4px 15px rgba(102, 153, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(102, 153, 255, 0.2);
   }
-  50% { 
+  50% {
     transform: translateY(-1px);
-    box-shadow: 
-      0 6px 20px rgba(102, 153, 255, 0.3);
+    box-shadow: 0 6px 20px rgba(102, 153, 255, 0.3);
   }
 }
 
 [data-theme="lcars"] .topbar-category-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.2), 
-    transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: left 0.6s ease;
 }
 
@@ -500,7 +564,7 @@
 [data-theme="lcars"] .topbar-category-btn:hover {
   background: rgba(102, 153, 255, 0.5);
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 
+  box-shadow:
     0 8px 25px rgba(102, 153, 255, 0.4),
     0 0 20px var(--lcars-periwinkle),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -509,13 +573,13 @@
 }
 
 @keyframes btn-hover {
-  0% { 
+  0% {
     transform: translateY(0) scale(1);
   }
-  50% { 
+  50% {
     transform: translateY(-5px) scale(1.1);
   }
-  100% { 
+  100% {
     transform: translateY(-3px) scale(1.05);
   }
 }
@@ -523,21 +587,24 @@
 [data-theme="lcars"] .topbar-category-btn.active {
   background: rgba(255, 158, 0, 0.6);
   border-color: var(--lcars-mustard);
-  box-shadow: 
+  box-shadow:
     0 8px 30px rgba(255, 158, 0, 0.5),
     0 0 25px var(--lcars-mustard),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  animation: active-pulse 2s ease-in-out infinite, active-warp 4s linear infinite;
+  animation:
+    active-pulse 2s ease-in-out infinite,
+    active-warp 4s linear infinite;
 }
 
 @keyframes active-pulse {
-  0%, 100% { 
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       0 8px 30px rgba(255, 158, 0, 0.5),
       0 0 25px var(--lcars-mustard);
   }
-  50% { 
-    box-shadow: 
+  50% {
+    box-shadow:
       0 8px 40px rgba(255, 158, 0, 0.7),
       0 0 35px var(--lcars-mustard),
       0 0 50px rgba(255, 204, 102, 0.4);
@@ -545,19 +612,19 @@
 }
 
 @keyframes active-warp {
-  0% { 
+  0% {
     filter: hue-rotate(0deg);
     transform: scale(1);
   }
-  33% { 
+  33% {
     filter: hue-rotate(120deg);
     transform: scale(1.02);
   }
-  66% { 
+  66% {
     filter: hue-rotate(240deg);
     transform: scale(1.01);
   }
-  100% { 
+  100% {
     filter: hue-rotate(360deg);
     transform: scale(1);
   }
@@ -572,8 +639,12 @@
 }
 
 [data-theme="lcars"] .category-widget {
-  background: 
-    radial-gradient(ellipse at center, rgba(66, 66, 66, 0.9) 0%, rgba(33, 33, 33, 0.95) 100%),
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(66, 66, 66, 0.9) 0%,
+      rgba(33, 33, 33, 0.95) 100%
+    ),
     var(--lcars-hologram);
   backdrop-filter: blur(25px);
   border: 1px solid rgba(204, 153, 255, 0.3);
@@ -583,57 +654,62 @@
   position: relative;
   overflow: hidden;
   transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 
+  box-shadow:
     0 15px 40px rgba(204, 153, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 0 60px rgba(204, 153, 255, 0.1);
-  animation: widget-float 8s ease-in-out infinite, quantum-entangle 12s linear infinite;
+  animation:
+    widget-float 8s ease-in-out infinite,
+    quantum-entangle 12s linear infinite;
 }
 
 @keyframes widget-float {
-  0%, 100% { 
+  0%,
+  100% {
     transform: translateY(0px) rotateX(0deg);
-    box-shadow: 
+    box-shadow:
       0 15px 40px rgba(204, 153, 255, 0.2),
       0 0 60px rgba(204, 153, 255, 0.1);
   }
-  50% { 
+  50% {
     transform: translateY(-10px) rotateX(2deg);
-    box-shadow: 
+    box-shadow:
       0 25px 60px rgba(204, 153, 255, 0.3),
       0 0 80px rgba(204, 153, 255, 0.2);
   }
 }
 
 @keyframes quantum-entangle {
-  0% { 
+  0% {
     filter: hue-rotate(0deg) brightness(1);
   }
-  25% { 
+  25% {
     filter: hue-rotate(90deg) brightness(1.05);
   }
-  50% { 
+  50% {
     filter: hue-rotate(180deg) brightness(1);
   }
-  75% { 
+  75% {
     filter: hue-rotate(270deg) brightness(1.05);
   }
-  100% { 
+  100% {
     filter: hue-rotate(360deg) brightness(1);
   }
 }
 
 [data-theme="lcars"] .category-widget::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.1), 
-    transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
   transition: left 0.7s ease;
 }
 
@@ -644,7 +720,7 @@
 [data-theme="lcars"] .category-widget:hover {
   border-color: var(--lcars-mustard);
   transform: translateY(-15px) scale(1.03) rotateX(5deg);
-  box-shadow: 
+  box-shadow:
     0 25px 60px rgba(255, 204, 102, 0.4),
     0 0 40px var(--lcars-mustard),
     0 0 100px rgba(255, 204, 102, 0.3),
@@ -653,13 +729,13 @@
 }
 
 @keyframes widget-excited {
-  0% { 
+  0% {
     transform: translateY(0) scale(1) rotateX(0deg);
   }
-  50% { 
+  50% {
     transform: translateY(-20px) scale(1.05) rotateX(8deg);
   }
-  100% { 
+  100% {
     transform: translateY(-15px) scale(1.03) rotateX(5deg);
   }
 }
@@ -668,61 +744,51 @@
   font-size: 3.5rem;
   text-align: center;
   margin-bottom: 1.5rem;
-  filter: 
-    drop-shadow(0 0 10px currentColor)
-    drop-shadow(0 0 20px currentColor);
-  animation: icon-orbital 6s linear infinite, icon-pulse 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px currentColor) drop-shadow(0 0 20px currentColor);
+  animation:
+    icon-orbital 6s linear infinite,
+    icon-pulse 2s ease-in-out infinite;
 }
 
 @keyframes icon-orbital {
-  0% { 
+  0% {
     transform: rotate(0deg) scale(1);
-    filter: 
-      drop-shadow(0 0 10px currentColor)
+    filter: drop-shadow(0 0 10px currentColor)
       drop-shadow(0 0 20px currentColor);
   }
-  25% { 
+  25% {
     transform: rotate(90deg) scale(1.1);
-    filter: 
-      drop-shadow(0 0 15px currentColor)
-      drop-shadow(0 0 30px currentColor)
-      hue-rotate(90deg);
+    filter: drop-shadow(0 0 15px currentColor)
+      drop-shadow(0 0 30px currentColor) hue-rotate(90deg);
   }
-  50% { 
+  50% {
     transform: rotate(180deg) scale(1.05);
-    filter: 
-      drop-shadow(0 0 20px currentColor)
-      drop-shadow(0 0 40px currentColor)
-      hue-rotate(180deg);
+    filter: drop-shadow(0 0 20px currentColor)
+      drop-shadow(0 0 40px currentColor) hue-rotate(180deg);
   }
-  75% { 
+  75% {
     transform: rotate(270deg) scale(1.1);
-    filter: 
-      drop-shadow(0 0 15px currentColor)
-      drop-shadow(0 0 30px currentColor)
-      hue-rotate(270deg);
+    filter: drop-shadow(0 0 15px currentColor)
+      drop-shadow(0 0 30px currentColor) hue-rotate(270deg);
   }
-  100% { 
+  100% {
     transform: rotate(360deg) scale(1);
-    filter: 
-      drop-shadow(0 0 10px currentColor)
+    filter: drop-shadow(0 0 10px currentColor)
       drop-shadow(0 0 20px currentColor);
   }
 }
 
 @keyframes icon-pulse {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 1;
-    filter: 
-      drop-shadow(0 0 10px currentColor)
+    filter: drop-shadow(0 0 10px currentColor)
       drop-shadow(0 0 20px currentColor);
   }
-  50% { 
+  50% {
     opacity: 0.8;
-    filter: 
-      drop-shadow(0 0 15px currentColor)
-      drop-shadow(0 0 30px currentColor)
-      brightness(1.2);
+    filter: drop-shadow(0 0 15px currentColor)
+      drop-shadow(0 0 30px currentColor) brightness(1.2);
   }
 }
 
@@ -746,48 +812,55 @@
 }
 
 [data-theme="lcars"] .quick-chat-container {
-  background: 
-    radial-gradient(ellipse at center, rgba(33, 33, 66, 0.95) 0%, rgba(10, 10, 42, 0.98) 100%),
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(33, 33, 66, 0.95) 0%,
+      rgba(10, 10, 42, 0.98) 100%
+    ),
     var(--lcars-hologram);
   backdrop-filter: blur(40px);
   border: 1px solid rgba(255, 158, 0, 0.5);
   border-radius: 30px;
-  box-shadow: 
+  box-shadow:
     0 25px 80px rgba(255, 158, 0, 0.4),
     0 0 100px rgba(102, 153, 255, 0.3),
     0 0 200px rgba(204, 153, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     inset 0 -1px 0 rgba(0, 0, 0, 0.5);
-  animation: chat-appear 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), chat-hologram 10s ease-in-out infinite;
+  animation:
+    chat-appear 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    chat-hologram 10s ease-in-out infinite;
 }
 
 @keyframes chat-appear {
   0% {
     opacity: 0;
     transform: scale(0.8) translateY(50px);
-    box-shadow: 
+    box-shadow:
       0 0 0 rgba(255, 158, 0, 0),
       0 0 0 rgba(102, 153, 255, 0);
   }
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
-    box-shadow: 
+    box-shadow:
       0 25px 80px rgba(255, 158, 0, 0.4),
       0 0 100px rgba(102, 153, 255, 0.3);
   }
 }
 
 @keyframes chat-hologram {
-  0%, 100% { 
+  0%,
+  100% {
     border-color: rgba(255, 158, 0, 0.5);
-    box-shadow: 
+    box-shadow:
       0 25px 80px rgba(255, 158, 0, 0.4),
       0 0 100px rgba(102, 153, 255, 0.3);
   }
-  50% { 
+  50% {
     border-color: rgba(102, 153, 255, 0.6);
-    box-shadow: 
+    box-shadow:
       0 25px 90px rgba(102, 153, 255, 0.5),
       0 0 120px rgba(204, 153, 255, 0.4),
       0 0 150px rgba(102, 204, 204, 0.3);
@@ -795,22 +868,25 @@
 }
 
 [data-theme="lcars"] .quick-chat-header {
-  background: 
-    linear-gradient(135deg, rgba(255, 158, 0, 0.2) 0%, rgba(102, 153, 255, 0.3) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 158, 0, 0.2) 0%,
+    rgba(102, 153, 255, 0.3) 100%
+  );
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 158, 0, 0.3);
   border-radius: 30px 30px 0 0;
-  box-shadow: 
+  box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 2px 20px rgba(255, 158, 0, 0.3);
   animation: header-scan 5s linear infinite;
 }
 
 @keyframes header-scan {
-  0% { 
+  0% {
     background-position: 0% 50%;
   }
-  100% { 
+  100% {
     background-position: 200% 50%;
   }
 }
@@ -833,22 +909,27 @@
 }
 
 @keyframes tab-idle {
-  0%, 100% { 
+  0%,
+  100% {
     opacity: 0.9;
   }
-  50% { 
+  50% {
     opacity: 1;
   }
 }
 
 [data-theme="lcars"] .tab-button::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   width: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--lcars-tangerine), var(--lcars-periwinkle));
+  background: linear-gradient(
+    90deg,
+    var(--lcars-tangerine),
+    var(--lcars-periwinkle)
+  );
   transition: width 0.3s ease;
 }
 
@@ -864,14 +945,16 @@
 }
 
 @keyframes tab-active {
-  0%, 100% { 
+  0%,
+  100% {
     background: rgba(255, 158, 0, 0.2);
     text-shadow: 0 0 10px var(--lcars-mustard);
   }
-  50% { 
+  50% {
     background: rgba(255, 158, 0, 0.3);
-    text-shadow: 0 0 15px var(--lcars-mustard),
-                 0 0 25px rgba(255, 204, 102, 0.5);
+    text-shadow:
+      0 0 15px var(--lcars-mustard),
+      0 0 25px rgba(255, 204, 102, 0.5);
   }
 }
 
@@ -882,12 +965,14 @@
 }
 
 @keyframes tab-glow {
-  0%, 100% { 
+  0%,
+  100% {
     box-shadow: 0 0 15px var(--lcars-tangerine);
   }
-  50% { 
-    box-shadow: 0 0 25px var(--lcars-tangerine),
-                0 0 40px rgba(255, 158, 0, 0.6);
+  50% {
+    box-shadow:
+      0 0 25px var(--lcars-tangerine),
+      0 0 40px rgba(255, 158, 0, 0.6);
   }
 }
 
@@ -898,26 +983,33 @@
   border: 1px solid rgba(102, 153, 255, 0.4);
   border-radius: 20px;
   color: white;
-  box-shadow: 
+  box-shadow:
     0 8px 25px rgba(102, 153, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 0 30px rgba(102, 153, 255, 0.1);
   position: relative;
   overflow: hidden;
-  animation: message-float 6s ease-in-out infinite, message-transmit 8s linear infinite;
+  animation:
+    message-float 6s ease-in-out infinite,
+    message-transmit 8s linear infinite;
 }
 
 @keyframes message-float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-3px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 @keyframes message-transmit {
-  0% { 
+  0% {
     background-position: 0% 50%;
     filter: hue-rotate(0deg);
   }
-  100% { 
+  100% {
     background-position: 200% 50%;
     filter: hue-rotate(360deg);
   }
@@ -927,7 +1019,7 @@
   background: rgba(255, 158, 0, 0.3);
   border: 1px solid rgba(255, 158, 0, 0.5);
   color: var(--lcars-mustard);
-  box-shadow: 
+  box-shadow:
     0 8px 25px rgba(255, 158, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 0 30px rgba(255, 158, 0, 0.2);
@@ -935,13 +1027,14 @@
 }
 
 @keyframes user-message-pulse {
-  0%, 100% { 
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       0 8px 25px rgba(255, 158, 0, 0.3),
       0 0 30px rgba(255, 158, 0, 0.2);
   }
-  50% { 
-    box-shadow: 
+  50% {
+    box-shadow:
       0 8px 35px rgba(255, 158, 0, 0.5),
       0 0 45px rgba(255, 158, 0, 0.4),
       0 0 60px rgba(255, 204, 102, 0.3);
@@ -955,7 +1048,7 @@
   border: 1px solid rgba(102, 153, 255, 0.4);
   border-radius: 15px;
   color: var(--text-primary);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 10px rgba(0, 0, 0, 0.3),
     0 0 20px rgba(102, 153, 255, 0.2);
   transition: all 0.3s ease;
@@ -963,17 +1056,17 @@
 }
 
 @keyframes input-scan {
-  0% { 
+  0% {
     background-position: 0% 50%;
   }
-  100% { 
+  100% {
     background-position: 200% 50%;
   }
 }
 
 [data-theme="lcars"] .message-input:focus {
   border-color: var(--lcars-tangerine);
-  box-shadow: 
+  box-shadow:
     inset 0 2px 15px rgba(0, 0, 0, 0.4),
     0 0 30px rgba(255, 158, 0, 0.4),
     0 0 50px rgba(255, 158, 0, 0.2);
@@ -981,13 +1074,14 @@
 }
 
 @keyframes input-focus {
-  0%, 100% { 
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       inset 0 2px 15px rgba(0, 0, 0, 0.4),
       0 0 30px rgba(255, 158, 0, 0.4);
   }
-  50% { 
-    box-shadow: 
+  50% {
+    box-shadow:
       inset 0 2px 20px rgba(0, 0, 0, 0.5),
       0 0 40px rgba(255, 158, 0, 0.6),
       0 0 70px rgba(255, 204, 102, 0.3);
@@ -1001,92 +1095,98 @@
   color: var(--text-primary);
   font-size: 1.8rem;
   border-radius: 50%;
-  box-shadow: 
+  box-shadow:
     0 8px 30px var(--lcars-coral),
     0 0 50px rgba(255, 106, 106, 0.7),
     0 0 100px rgba(255, 106, 106, 0.4);
-  animation: quantum-fluctuate 3s ease-in-out infinite, warp-drive 6s linear infinite;
+  animation:
+    quantum-fluctuate 3s ease-in-out infinite,
+    warp-drive 6s linear infinite;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 @keyframes quantum-fluctuate {
-  0%, 100% { 
+  0%,
+  100% {
     transform: scale(1) rotate(0deg);
-    box-shadow: 
+    box-shadow:
       0 8px 30px var(--lcars-coral),
       0 0 50px rgba(255, 106, 106, 0.7);
   }
-  25% { 
+  25% {
     transform: scale(1.1) rotate(5deg);
-    box-shadow: 
+    box-shadow:
       0 10px 40px var(--lcars-coral),
       0 0 70px rgba(255, 106, 106, 0.9);
   }
-  50% { 
+  50% {
     transform: scale(1.05) rotate(-5deg);
-    box-shadow: 
+    box-shadow:
       0 12px 50px var(--lcars-coral),
       0 0 90px rgba(255, 106, 106, 1);
   }
-  75% { 
+  75% {
     transform: scale(1.15) rotate(3deg);
-    box-shadow: 
+    box-shadow:
       0 14px 60px var(--lcars-coral),
       0 0 110px rgba(255, 106, 106, 0.8);
   }
 }
 
 @keyframes warp-drive {
-  0% { 
+  0% {
     filter: hue-rotate(0deg);
     background: var(--lcars-coral);
   }
-  25% { 
+  25% {
     filter: hue-rotate(90deg);
     background: var(--lcars-periwinkle);
   }
-  50% { 
+  50% {
     filter: hue-rotate(180deg);
     background: var(--lcars-lavender);
   }
-  75% { 
+  75% {
     filter: hue-rotate(270deg);
     background: var(--lcars-aqua);
   }
-  100% { 
+  100% {
     filter: hue-rotate(360deg);
     background: var(--lcars-coral);
   }
 }
 
 [data-theme="lcars"] .fab:hover {
-  animation: quantum-excited 0.5s ease-in-out infinite, warp-9 0.3s ease-out;
+  animation:
+    quantum-excited 0.5s ease-in-out infinite,
+    warp-9 0.3s ease-out;
   transform: scale(1.2);
 }
 
 @keyframes quantum-excited {
-  0%, 100% { 
+  0%,
+  100% {
     background: var(--lcars-coral);
-    box-shadow: 
+    box-shadow:
       0 0 40px var(--lcars-coral),
       0 0 80px rgba(255, 106, 106, 0.8);
   }
-  50% { 
+  50% {
     background: var(--lcars-tangerine);
-    box-shadow: 
+    box-shadow:
       0 0 60px var(--lcars-tangerine),
       0 0 120px rgba(255, 158, 0, 0.9);
   }
 }
 
 @keyframes warp-9 {
-  0% { 
+  0% {
     transform: scale(1);
   }
-  50% { 
+  50% {
     transform: scale(1.3);
   }
-  100% { 
+  100% {
     transform: scale(1.2);
   }
 }
@@ -1099,13 +1199,17 @@
 }
 
 [data-theme="lcars"] button:active::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
   width: 0;
   height: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.4) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: quantum-ripple 0.6s ease-out;
@@ -1135,7 +1239,7 @@
 }
 
 [data-theme="lcars"] .sound-feedback::before {
-  content: '♪';
+  content: "♪";
   position: absolute;
   opacity: 0;
   font-size: 0.8rem;
@@ -1163,10 +1267,11 @@
 }
 
 @keyframes red-alert-pulse {
-  0%, 100% { 
+  0%,
+  100% {
     filter: hue-rotate(0deg) brightness(1);
   }
-  50% { 
+  50% {
     filter: hue-rotate(0deg) brightness(1.3);
     background-color: rgba(255, 0, 0, 0.1);
   }
@@ -1201,45 +1306,50 @@
     font-size: 1.8rem;
     animation: mobile-title-glow 3s ease-in-out infinite;
   }
-  
+
   @keyframes mobile-title-glow {
-    0%, 100% { 
-      text-shadow: 
+    0%,
+    100% {
+      text-shadow:
         0 0 15px var(--lcars-mustard),
         0 0 30px rgba(255, 204, 102, 0.5);
     }
-    50% { 
-      text-shadow: 
+    50% {
+      text-shadow:
         0 0 25px var(--lcars-mustard),
         0 0 50px rgba(255, 204, 102, 0.8);
     }
   }
-  
+
   [data-theme="lcars"] .categories-grid {
     grid-template-columns: 1fr;
     padding: 0 1rem;
     gap: 1.5rem;
   }
-  
+
   [data-theme="lcars"] .dashboard-header,
   [data-theme="lcars"] .dashboard-topbar {
     margin: 1rem;
     padding: 1rem;
   }
-  
+
   [data-theme="lcars"] .dashboard-root::before,
   [data-theme="lcars"] .dashboard-root::after {
     height: 50px;
   }
-  
+
   [data-theme="lcars"] .widget-icon {
     font-size: 2.5rem;
     animation: mobile-icon-orbital 4s linear infinite;
   }
-  
+
   @keyframes mobile-icon-orbital {
-    0% { transform: rotate(0deg) scale(1); }
-    100% { transform: rotate(360deg) scale(1); }
+    0% {
+      transform: rotate(0deg) scale(1);
+    }
+    100% {
+      transform: rotate(360deg) scale(1);
+    }
   }
 }
 
@@ -1249,7 +1359,7 @@
     --glow-medium: 0.4;
     --glow-strong: 0.6;
   }
-  
+
   [data-theme="lcars"] .dashboard-title {
     font-size: 1.5rem;
     letter-spacing: 1px;
@@ -1268,7 +1378,7 @@
 /* Dunkelmodus-Kompatibilität */
 @media (prefers-color-scheme: dark) {
   [data-theme="lcars"] {
-    --lcars-black: #0A0A0A;
+    --lcars-black: #0a0a0a;
     --lcars-space: #050520;
   }
 }

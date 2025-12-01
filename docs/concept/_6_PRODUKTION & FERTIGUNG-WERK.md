@@ -1163,7 +1163,7 @@ Funktionsbeschreibung: Modul „Produktion & Fertigung“
 
 Ziel: Termintreue und Qualität bei minimaler Durchlaufzeit (DLZ) und Bestand, nachvollziehbar über definierte Kennzahlen und Audit-Trails.
 
-1) Datenmodell, Objekte & SoD
+1. Datenmodell, Objekte & SoD
 
 Kernobjekte: Material/Artikel, EBOM/MBOM, Arbeitspläne/Arbeitsgänge, Ressourcen (Maschinen/Personen/Werkzeuge), Kalender/Schichten, Fertigungsauftrag (FA), Rückmeldungen (Zeit/Menge/Qualität), Prüflose, Abweichung/8D, Instandhaltungsauftrag, Ersatzteil, Energiemesspunkt.
 
@@ -1173,7 +1173,7 @@ Segregation of Duties: Stammdatenpflege ≠ Planung ≠ Leitstand/Feinplanung �
 
 Nachvollziehbarkeit: Versionierung (MBOM/Arbeitsplan), Änderungsjournal, Nummernkreise, Belegketten.
 
-2) Planungslogik (MRP II → Kapazität → Feinplanung)
+2. Planungslogik (MRP II → Kapazität → Feinplanung)
 
 MRP/Bedarf: Primärbedarf → Sekundärbedarf (mehrstufige MBOM) → Tertiärbedarf (Hilfs-/Betriebsstoffe).
 Netto­bedarf: max(0, Brutto − Bestand − offene Bestellungen + Reservierungen); Losgrößen z. B. EOQ/Andler EOQ = √(2·D·S/H).
@@ -1202,7 +1202,7 @@ Sequenzabhängige Rüstmatrix: Reihenfolgeoptimierung reduziert Summe der Rüstz
 
 Schicht-/Personaleinsatz: Qualifikationsmatrix, Kapazitätskorridor (z. B. ±15 %), Arbeitszeitgesetz-Checks, Vertretungsregeln.
 
-3) Materialbereitstellung & Logistik
+3. Materialbereitstellung & Logistik
 
 Just-in-Time/Kanban (Supermarkt): Karten- oder E-Kanban; Meldebestand (ROP) = μd·L + SS.
 
@@ -1215,7 +1215,7 @@ Nachfrage + Lieferzeitvarianz: SS = z · √(L·σd² + μd²·σL²)
 
 Chargen/Serien & FIFO/FEFO für Rückverfolgbarkeit und Haltbarkeiten.
 
-4) Fertigungssteuerung & Rückmeldungen
+4. Fertigungssteuerung & Rückmeldungen
 
 Arbeitsplan/Arbeitsgang: Vorgaben (Rüst/Bearb./Transport/Prüfen), Alternativ-/Parallelgänge, Sprungbedingungen.
 
@@ -1231,7 +1231,7 @@ Tardiness/Verspätung: Ti = max(0, Fertig − Fälligkeit), Lmax, mittl. Tardine
 
 First-Pass-Yield (FPY), Ausschuss-/Nacharbeitsquote.
 
-5) Maschinendaten, OEE & Energie
+5. Maschinendaten, OEE & Energie
 
 Erfassung: IoT (Zustände, Leistung, Temperatur, Vibration, Energie). Validierung, Zeitreihen, Edge-Vorverarbeitung.
 
@@ -1249,7 +1249,7 @@ Verlustkatalog: An-/Umrüstungen, Kleinstopps, Geschwindigkeitsverlust, Ausschus
 
 Energie-KPIs: kWh/FA oder kWh/Einheit, Lastspitzen, spezifische Energie pro Arbeitsgang.
 
-6) Qualitätsmanagement (SPC, Prüfpläne, Sampling)
+6. Qualitätsmanagement (SPC, Prüfpläne, Sampling)
 
 SPC/Regelkarten: X̄-R/X̄-s/Individuals; Eingriffsgrenzen, Trend-/Run-Tests; automatisierte Alarme.
 
@@ -1259,7 +1259,7 @@ Stichproben (AQL/ISO 2859): Losgrößen- und risikobasierte Pläne; Annahme-/Abl
 
 8D/Abweichung: Sofortmaßnahmen, 5-Why/Ishikawa, Wirksamkeitsnachweis, Kosten der Nichtqualität (CoPQ).
 
-7) Instandhaltung & Predictive Maintenance
+7. Instandhaltung & Predictive Maintenance
 
 Kennzahlen:
 
@@ -1273,7 +1273,7 @@ Ersatzteildisposition: bei Poisson-Bedarf μ = λ·L, σ = √(λ·L), Basisbest
 
 RCM-Ansatz: Funktionsanalyse → Ausfallmodi → wirksame Maßnahmen → Intervalloptimierung.
 
-8) Nachkalkulation & Kostensteuerung
+8. Nachkalkulation & Kostensteuerung
 
 Istkosten je FA: Material (Roh/Hilfs/Betriebsstoffe), Zeiten (Tarif/Verrechnungssatz), Maschinen (Satz/kWh), Gemeinkosten.
 
@@ -1291,7 +1291,7 @@ Overhead-Varianzen (Spending/Volume/Mix).
 
 Deckungsbeitrag pro Variante/Los für Reihenfolge-/Make-or-Buy-Entscheidungen.
 
-9) Governance, Compliance, Sicherheit
+9. Governance, Compliance, Sicherheit
 
 SoD, Vier-Augen, Pflichtfelder, Plausibilitäten (Kalender, Qualifikation, Prüfmittelgültigkeit).
 
@@ -1299,7 +1299,7 @@ Sperrlogiken: Kein Auftrag ohne freigegebene MBOM/Arbeitsplan; QS-Sperre bei ung
 
 Audit-Trail: Planänderung → Re-Terminierung dokumentiert; Prüf-/Kalibrier-Nachweise im DMS.
 
-10) Reporting & KPIs (präzise Definitionen)
+10. Reporting & KPIs (präzise Definitionen)
 
 Durchsatz (TH), DLZ (CT), WIP gem. Little; Termintreue, Tardiness, Lmax.
 
@@ -1313,7 +1313,7 @@ Kosten: €/Einheit, Abweichungen (s. o.), Energie/Einheit.
 
 Nachhaltigkeit: Ausschuss-/Verschnittquote, Recycling-Anteil, Energie-Intensität.
 
-11) Operative, messbare Regeln
+11. Operative, messbare Regeln
 
 Planungs-Zeitfenster: Frozen-Zone (z. B. 3–5 Tage) keine Terminverschiebung; Slushy-Zone nur mit Genehmigung.
 
@@ -1329,7 +1329,7 @@ Wartung: PdM-Alarm ⇒ Planung ≤ n Stunden; Plan/Unplan-Verhältnis Ziel ≥ 7
 
 Datenqualität: Kein FA-Start ohne gültige Prüfmittel/kalibrierte Werkzeuge; Qualifikations-Check am Terminal.
 
-12) Minimal-Dashboards
+12. Minimal-Dashboards
 
 Leitstand: Auslastung/Belegung (heute+7), Engpass-Puffer, verspätete FAs, Rüstcluster-Vorschläge.
 
@@ -1341,7 +1341,7 @@ Instandhaltung: fällige Wartungen, PdM-Risikoliste, Backlog-Alter, Ersatzteilri
 
 Kosten/Controlling: €/Einheit, Abweichungs-Waterfall, Verschnittquote, Energie-Kostenanteil.
 
-13) Einführung (90-Tage-MVP, pragmatisch)
+13. Einführung (90-Tage-MVP, pragmatisch)
 
 W1–3 – Basis stabilisieren:
 Stammdaten-Inventur (MBOM/Arbeitspläne/Rüstmatrix/Kalender/Qualifikationen), Dubletten/Plausis, Terminal-Rückmeldung pilotieren.

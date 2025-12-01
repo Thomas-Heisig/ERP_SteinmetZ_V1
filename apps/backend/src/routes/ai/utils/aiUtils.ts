@@ -33,12 +33,18 @@ export function sanitizeMessages(messages: ChatMessage[]): ChatMessage[] {
  * Kürzt überlange Nachrichten, entfernt sensible Datenmuster
  * (z. B. API-Schlüssel, Token, Passwörter).
  */
-export function normalizeMessageContent(content: string, maxLength = 4000): string {
+export function normalizeMessageContent(
+  content: string,
+  maxLength = 4000,
+): string {
   if (!content) return "";
   let clean = content;
 
   // Entferne API-Keys und Tokens
-  clean = clean.replace(/[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}/g, "[REDACTED_TOKEN]");
+  clean = clean.replace(
+    /[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}/g,
+    "[REDACTED_TOKEN]",
+  );
   clean = clean.replace(/(sk-|api-|key-|token-|secret-)\w+/gi, "[REDACTED]");
 
   // Trimmen und kürzen
@@ -65,10 +71,17 @@ export function sanitizeAndNormalize(messages: ChatMessage[]): ChatMessage[] {
 /**
  * Führt ein Promise mit Timeout aus, wirft bei Ablauf einen Fehler.
  */
-export async function withTimeout<T>(promise: Promise<T>, ms = 10000, label = "Operation"): Promise<T> {
+export async function withTimeout<T>(
+  promise: Promise<T>,
+  ms = 10000,
+  label = "Operation",
+): Promise<T> {
   let timer: NodeJS.Timeout;
   const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`${label} Timeout nach ${ms} ms`)), ms);
+    timer = setTimeout(
+      () => reject(new Error(`${label} Timeout nach ${ms} ms`)),
+      ms,
+    );
   });
 
   try {
@@ -94,7 +107,10 @@ export function estimateTokens(text: string): number {
 /**
  * Kürzt Nachrichten so, dass eine maximale Tokenanzahl nicht überschritten wird.
  */
-export function truncateMessages(messages: ChatMessage[], maxTokens = 8000): ChatMessage[] {
+export function truncateMessages(
+  messages: ChatMessage[],
+  maxTokens = 8000,
+): ChatMessage[] {
   let total = 0;
   const result: ChatMessage[] = [];
 
@@ -117,13 +133,20 @@ export function truncateMessages(messages: ChatMessage[], maxTokens = 8000): Cha
  * Prüft Inhalte auf potenziell unsichere oder sensible Informationen.
  * Keine Zensur, nur Markierung.
  */
-export function analyzeTextSecurity(text: string): { safe: boolean; issues: string[] } {
+export function analyzeTextSecurity(text: string): {
+  safe: boolean;
+  issues: string[];
+} {
   const issues: string[] = [];
 
-  if (/password|token|api[_-]?key/i.test(text)) issues.push("Sensibler Schlüssel oder Passwort erkannt");
-  if (/<script|<\/script>/i.test(text)) issues.push("HTML/Script-Code gefunden");
-  if (/DROP\s+TABLE|DELETE\s+FROM/i.test(text)) issues.push("SQL-Schlüsselwörter erkannt");
-  if (/SELECT\s+\*|INSERT\s+INTO/i.test(text)) issues.push("SQL-Anweisung im Text");
+  if (/password|token|api[_-]?key/i.test(text))
+    issues.push("Sensibler Schlüssel oder Passwort erkannt");
+  if (/<script|<\/script>/i.test(text))
+    issues.push("HTML/Script-Code gefunden");
+  if (/DROP\s+TABLE|DELETE\s+FROM/i.test(text))
+    issues.push("SQL-Schlüsselwörter erkannt");
+  if (/SELECT\s+\*|INSERT\s+INTO/i.test(text))
+    issues.push("SQL-Anweisung im Text");
 
   return { safe: issues.length === 0, issues };
 }
@@ -131,7 +154,10 @@ export function analyzeTextSecurity(text: string): { safe: boolean; issues: stri
 /**
  * Führt eine Sicherheitsprüfung über alle ChatMessages durch.
  */
-export function validateConversation(messages: ChatMessage[]): { safe: boolean; issues: string[] } {
+export function validateConversation(messages: ChatMessage[]): {
+  safe: boolean;
+  issues: string[];
+} {
   const allIssues: string[] = [];
   for (const msg of messages) {
     const { issues } = analyzeTextSecurity(msg.content);
@@ -195,7 +221,7 @@ export function debugAIResponse(label: string, response: AIResponse): void {
  */
 export async function measureAsync<T>(
   label: string,
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
 ): Promise<{ result: T; time_ms: number }> {
   const start = performance.now();
   const result = await fn();

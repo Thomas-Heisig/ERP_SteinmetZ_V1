@@ -20,17 +20,17 @@ Liefert technische Laufzeitinformationen des Backend-Systems.
 
 Antwortstruktur
 {
-  "status": "healthy",
-  "uptime": 12345.123,
-  "hostname": "server01",
-  "platform": "linux",
-  "node_version": "v18.17.0",
-  "memory": {
-    "free": "1024 MB",
-    "total": "32000 MB"
-  },
-  "loadavg": [0.12, 0.08, 0.04],
-  "timestamp": "2025-01-01T12:00:00.000Z"
+"status": "healthy",
+"uptime": 12345.123,
+"hostname": "server01",
+"platform": "linux",
+"node_version": "v18.17.0",
+"memory": {
+"free": "1024 MB",
+"total": "32000 MB"
+},
+"loadavg": [0.12, 0.08, 0.04],
+"timestamp": "2025-01-01T12:00:00.000Z"
 }
 
 Inhalt
@@ -62,36 +62,36 @@ Version des Backend-Pakets
 
 Antwortstruktur
 {
-  "system": {
-    "uptime": 12345.12,
-    "cpu": 8,
-    "loadavg": ["0.12", "0.10", "0.09"],
-    "memory": {
-      "free": "1024 MB",
-      "total": "32000 MB"
-    }
-  },
-  "ai": {
-    "fallback_config_source": "defaults",
-    "wiki_enabled": true,
-    "modules": {
-      "fallback_ai": true,
-      "annotator_ai": true,
-      "rag_ai": false
-    }
-  },
-  "erp": {
-    "openOrders": 14,
-    "pendingInvoices": 7,
-    "stockItems": 1240,
-    "customers": 328
-  },
-  "version": {
-    "name": "erp-steinmetz",
-    "version": "1.0.0",
-    "description": "..."
-  },
-  "timestamp": "2025-01-01T12:00:00.000Z"
+"system": {
+"uptime": 12345.12,
+"cpu": 8,
+"loadavg": ["0.12", "0.10", "0.09"],
+"memory": {
+"free": "1024 MB",
+"total": "32000 MB"
+}
+},
+"ai": {
+"fallback_config_source": "defaults",
+"wiki_enabled": true,
+"modules": {
+"fallback_ai": true,
+"annotator_ai": true,
+"rag_ai": false
+}
+},
+"erp": {
+"openOrders": 14,
+"pendingInvoices": 7,
+"stockItems": 1240,
+"customers": 328
+},
+"version": {
+"name": "erp-steinmetz",
+"version": "1.0.0",
+"description": "..."
+},
+"timestamp": "2025-01-01T12:00:00.000Z"
 }
 
 Details
@@ -117,10 +117,10 @@ AI-Modulstatus
 
 Wird dynamisch anhand vorhandener Dateien ermittelt:
 
-Modul	Beschreibung
-fallback_ai	Fallback-KI aktiv
-annotator_ai	Datei annotator_ai.ts vorhanden
-rag_ai	Datei rag_ai.ts vorhanden
+Modul Beschreibung
+fallback_ai Fallback-KI aktiv
+annotator_ai Datei annotator_ai.ts vorhanden
+rag_ai Datei rag_ai.ts vorhanden
 Version
 
 Liest Daten aus der lokalen package.json.
@@ -136,18 +136,17 @@ Ausgabe maximal: 10 letzte Logzeilen
 
 Antwortbeispiel
 {
-  "context": [
-    "User: …",
-    "AI: …",
-    "System: …"
-  ]
+"context": [
+"User: …",
+"AI: …",
+"System: …"
+]
 }
-
 
 Wenn die Datei nicht existiert:
 
 {
-  "context": []
+"context": []
 }
 
 Zusammenfassung

@@ -3,24 +3,24 @@
  * ---------------------------------------------------------
  * Wrapper für die Anthropic Claude API (Claude 3 / 3.5 usw.)
  * Mit Tool- und Agentenintegration, vorbereitet für Any-to-Any-Kommunikation.
- * 
+ *
  * Nutzt zentrale Typen und ToolRegistry aus dem Framework.
  */
 
-import type { 
-  ChatMessage, 
-  ToolResult, 
+import type {
+  ChatMessage,
+  ToolResult,
   ToolFunction,
   AIResponse,
   AIOptions,
   ModelResponse,
   Provider,
-  ConversationState
-} from '../types/types.js';
-import { log } from '../utils/logger.js';
-import { toolRegistry } from '../tools/registry.js';
-import { workflowEngine } from '../workflows/workflowEngine.js';
-import { ConversationContext } from '../context/conversationContext.js';
+  ConversationState,
+} from "../types/types.js";
+import { log } from "../utils/logger.js";
+import { toolRegistry } from "../tools/registry.js";
+import { workflowEngine } from "../workflows/workflowEngine.js";
+import { ConversationContext } from "../context/conversationContext.js";
 
 /* ========================================================================== */
 /* 🏗️ Typdefinitionen und Konfiguration                                     */
@@ -38,7 +38,7 @@ interface AnthropicProviderConfig {
 }
 
 interface AnthropicMessage {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
 }
 
@@ -72,26 +72,28 @@ async function initializeAnthropicClient(): Promise<any> {
       try {
         const apiKey = process.env.ANTHROPIC_API_KEY;
         if (!apiKey) {
-          throw new Error('ANTHROPIC_API_KEY fehlt in den Umgebungsvariablen');
+          throw new Error("ANTHROPIC_API_KEY fehlt in den Umgebungsvariablen");
         }
 
         // Dynamischer Import für bessere Performance
-        const { default: Anthropic } = await import('@anthropic-ai/sdk');
-        
-        AnthropicClient = new Anthropic({ 
+        const { default: Anthropic } = await import("@anthropic-ai/sdk");
+
+        AnthropicClient = new Anthropic({
           apiKey,
           timeout: 30000, // 30 Sekunden Timeout
-          maxRetries: 2
+          maxRetries: 2,
         });
 
-        log('info', 'Anthropic Client erfolgreich initialisiert', {
-          sdkVersion: AnthropicClient?._version || 'unknown'
+        log("info", "Anthropic Client erfolgreich initialisiert", {
+          sdkVersion: AnthropicClient?._version || "unknown",
         });
 
         return AnthropicClient;
       } catch (error: any) {
         clientInitialization = null;
-        throw new Error(`Fehler bei Anthropic Client Initialisierung: ${error.message}`);
+        throw new Error(
+          `Fehler bei Anthropic Client Initialisierung: ${error.message}`,
+        );
       }
     })();
   }
@@ -103,8 +105,8 @@ async function getAnthropicClient(): Promise<any> {
   try {
     return await initializeAnthropicClient();
   } catch (error: any) {
-    log('error', 'Fehler beim Holen des Anthropic Clients', {
-      error: error.message
+    log("error", "Fehler beim Holen des Anthropic Clients", {
+      error: error.message,
     });
     throw error;
   }
@@ -114,8 +116,8 @@ async function getAnthropicClient(): Promise<any> {
 /* 💬 Message Mapping - VERBESSERT                                          */
 /* ========================================================================== */
 
-function mapMessages(messages: ChatMessage[]): { 
-  systemPrompt?: string; 
+function mapMessages(messages: ChatMessage[]): {
+  systemPrompt?: string;
   messageHistory: AnthropicMessage[];
   tools?: any[];
 } {
@@ -125,49 +127,52 @@ function mapMessages(messages: ChatMessage[]): {
 
   // System-Prompt aus System-Nachrichten extrahieren
   const systemMessages = messages
-    .filter(m => m.role === 'system')
-    .map(m => String(m.content || ''))
-    .filter(content => content.trim().length > 0);
+    .filter((m) => m.role === "system")
+    .map((m) => String(m.content || ""))
+    .filter((content) => content.trim().length > 0);
 
-  const systemPrompt = systemMessages.length > 0 
-    ? systemMessages.join('\n\n') 
-    : undefined;
+  const systemPrompt =
+    systemMessages.length > 0 ? systemMessages.join("\n\n") : undefined;
 
   // User/Assistant Nachrichten mappen
   const messageHistory: AnthropicMessage[] = [];
-  
+
   for (const message of messages) {
-    if (['user', 'assistant'].includes(message.role)) {
-      const content = String(message.content || '');
+    if (["user", "assistant"].includes(message.role)) {
+      const content = String(message.content || "");
       if (content.trim().length > 0) {
         messageHistory.push({
-          role: message.role as 'user' | 'assistant',
-          content: content
+          role: message.role as "user" | "assistant",
+          content: content,
         });
       }
     }
   }
 
-  return { 
-    systemPrompt, 
+  return {
+    systemPrompt,
     messageHistory,
-    tools: prepareToolsForAnthropic()
+    tools: prepareToolsForAnthropic(),
   };
 }
 
 function prepareToolsForAnthropic(): any[] {
   const tools = toolRegistry.getToolDefinitions();
-  return tools.map(tool => ({
-    name: tool.name,
-    description: tool.description || `Tool: ${tool.name}`,
-    input_schema: {
-      type: "object",
-      properties: tool.parameters || {},
-      required: tool.parameters ? Object.keys(tool.parameters).filter(key => 
-        tool.parameters?.[key]?.required
-      ) : []
-    }
-  })).filter(tool => tool.name && tool.description);
+  return tools
+    .map((tool) => ({
+      name: tool.name,
+      description: tool.description || `Tool: ${tool.name}`,
+      input_schema: {
+        type: "object",
+        properties: tool.parameters || {},
+        required: tool.parameters
+          ? Object.keys(tool.parameters).filter(
+              (key) => tool.parameters?.[key]?.required,
+            )
+          : [],
+      },
+    }))
+    .filter((tool) => tool.name && tool.description);
 }
 
 /* ========================================================================== */
@@ -177,24 +182,27 @@ function prepareToolsForAnthropic(): any[] {
 /**
  * Erweiterte Tool-Erkennung mit multiple Patterns
  */
-async function detectAndRunTools(output: string, config: AnthropicProviderConfig = {}): Promise<ToolResult[]> {
+async function detectAndRunTools(
+  output: string,
+  config: AnthropicProviderConfig = {},
+): Promise<ToolResult[]> {
   const results: ToolResult[] = [];
-  
+
   // Standard Tool-Call Patterns
   const defaultPatterns = [
-    /#TOOL\s*:\s*(\w+)\((.*?)\)/g,                    // #TOOL: tool_name(params)
-    /```tool\s+(\w+)([\s\S]*?)```/g,                  // ```tool tool_name params```
-    /{"tool":\s*"(\w+)",\s*"params":\s*({[^}]*})}/g,  // JSON Format
+    /#TOOL\s*:\s*(\w+)\((.*?)\)/g, // #TOOL: tool_name(params)
+    /```tool\s+(\w+)([\s\S]*?)```/g, // ```tool tool_name params```
+    /{"tool":\s*"(\w+)",\s*"params":\s*({[^}]*})}/g, // JSON Format
   ];
 
   const patterns = config.toolCallPatterns || defaultPatterns;
 
   for (const pattern of patterns) {
     const matches = output.matchAll(pattern);
-    
+
     for (const match of matches) {
       const toolName = match[1]?.trim();
-      let paramString = match[2]?.trim() || '{}';
+      let paramString = match[2]?.trim() || "{}";
 
       if (!toolName) continue;
 
@@ -208,7 +216,7 @@ async function detectAndRunTools(output: string, config: AnthropicProviderConfig
           success: false,
           error: error.message,
           source_tool: toolName,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
     }
@@ -223,9 +231,12 @@ async function detectAndRunTools(output: string, config: AnthropicProviderConfig
 /**
  * Verbesserter Parameter-Parser mit JSON-Support
  */
-function parseToolParams(paramString: string, pattern: RegExp): Record<string, any> {
+function parseToolParams(
+  paramString: string,
+  pattern: RegExp,
+): Record<string, any> {
   // Versuche JSON zu parsen falls vorhanden
-  if (pattern.source.includes('{')) {
+  if (pattern.source.includes("{")) {
     try {
       const jsonMatch = paramString.match(/{[^}]*}/);
       if (jsonMatch) {
@@ -238,21 +249,29 @@ function parseToolParams(paramString: string, pattern: RegExp): Record<string, a
 
   // Key=Value Parsing für einfache Syntax
   const params: Record<string, any> = {};
-  const parts = paramString.split(',').map(p => p.trim()).filter(p => p);
-  
+  const parts = paramString
+    .split(",")
+    .map((p) => p.trim())
+    .filter((p) => p);
+
   for (const part of parts) {
-    const [key, ...valueParts] = part.split('=');
+    const [key, ...valueParts] = part.split("=");
     if (!key) continue;
-    
-    const value = valueParts.join('=').trim();
+
+    const value = valueParts.join("=").trim();
     try {
       params[key.trim()] = JSON.parse(value);
     } catch {
       // Entferne Quotes falls vorhanden
-      const cleanValue = value.replace(/^['"`]|['"`]$/g, '');
-      params[key.trim()] = cleanValue === 'true' ? true : 
-                          cleanValue === 'false' ? false : 
-                          !isNaN(Number(cleanValue)) ? Number(cleanValue) : cleanValue;
+      const cleanValue = value.replace(/^['"`]|['"`]$/g, "");
+      params[key.trim()] =
+        cleanValue === "true"
+          ? true
+          : cleanValue === "false"
+            ? false
+            : !isNaN(Number(cleanValue))
+              ? Number(cleanValue)
+              : cleanValue;
     }
   }
 
@@ -262,9 +281,12 @@ function parseToolParams(paramString: string, pattern: RegExp): Record<string, a
 /**
  * Tool-Ausführung mit erweiterter Fehlerbehandlung
  */
-async function executeToolCall(toolName: string, params: Record<string, any>): Promise<ToolResult> {
+async function executeToolCall(
+  toolName: string,
+  params: Record<string, any>,
+): Promise<ToolResult> {
   const startTime = Date.now();
-  
+
   try {
     const tool = toolRegistry.get(toolName);
     if (!tool) {
@@ -273,16 +295,16 @@ async function executeToolCall(toolName: string, params: Record<string, any>): P
 
     // Parameter-Validierung
     const validatedParams = validateToolParameters(tool, params);
-    
+
     // Tool ausführen
     const result = await (tool as ToolFunction)(validatedParams);
-    
+
     return {
       success: true,
       data: result,
       runtime_ms: Date.now() - startTime,
       source_tool: toolName,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   } catch (error: any) {
     return {
@@ -290,24 +312,29 @@ async function executeToolCall(toolName: string, params: Record<string, any>): P
       error: error.message,
       runtime_ms: Date.now() - startTime,
       source_tool: toolName,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }
 
-function validateToolParameters(tool: any, params: Record<string, any>): Record<string, any> {
+function validateToolParameters(
+  tool: any,
+  params: Record<string, any>,
+): Record<string, any> {
   // Hole alle Tool-Definitionen (Plural)
   const allDefs = toolRegistry.getToolDefinitions?.() ?? [];
 
   // Finde das passende Tool anhand des Namens
-  const toolDef = allDefs.find((t: any) => t.name === (tool.name || 'unknown'));
+  const toolDef = allDefs.find((t: any) => t.name === (tool.name || "unknown"));
 
   if (!toolDef?.parameters) return params;
 
   const validated: Record<string, any> = {};
 
   // Iteriere sicher über Parameterdefinitionen
-  for (const [key, rawSchema] of Object.entries(toolDef.parameters as Record<string, any>)) {
+  for (const [key, rawSchema] of Object.entries(
+    toolDef.parameters as Record<string, any>,
+  )) {
     const schema = rawSchema ?? {};
 
     if (params[key] !== undefined) {
@@ -322,7 +349,6 @@ function validateToolParameters(tool: any, params: Record<string, any>): Record<
   return validated;
 }
 
-
 /* ========================================================================== */
 /* 🧠 Hauptfunktion – KI-Antwort generieren - VERBESSERT                    */
 /* ========================================================================== */
@@ -331,7 +357,7 @@ export async function callAnthropic(
   model: string,
   messages: ChatMessage[],
   options: AIOptions = {},
-  context: ConversationContext = new ConversationContext()
+  context: ConversationContext = new ConversationContext(),
 ): Promise<ModelResponse> {
   const startTime = Date.now();
   const config: AnthropicProviderConfig = {
@@ -341,7 +367,7 @@ export async function callAnthropic(
     enableToolCalls: true,
     enableWorkflows: true,
     fallbackOnError: true,
-    ...options.context?.anthropicConfig
+    ...options.context?.anthropicConfig,
   };
 
   try {
@@ -355,44 +381,48 @@ export async function callAnthropic(
       temperature: config.temperature,
       messages: messageHistory,
       ...(systemPrompt && { system: systemPrompt }),
-      ...(tools && tools.length > 0 && { tools })
+      ...(tools && tools.length > 0 && { tools }),
     };
 
-    log('debug', 'Anthropic API Request vorbereitet', {
+    log("debug", "Anthropic API Request vorbereitet", {
       model,
       messageCount: messageHistory.length,
       hasSystemPrompt: !!systemPrompt,
-      toolsCount: tools?.length || 0
+      toolsCount: tools?.length || 0,
     });
 
     // API Call mit Timeout
-    const response = await Promise.race([
+    const response = (await Promise.race([
       client.messages.create(requestPayload),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Anthropic API Timeout')), config.timeoutMs)
-      )
-    ]) as AnthropicResponse;
+      new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Anthropic API Timeout")),
+          config.timeoutMs,
+        ),
+      ),
+    ])) as AnthropicResponse;
 
     const duration = Date.now() - startTime;
 
     // Verarbeite Response
-    let output = '';
-    const toolCalls: Array<{ name: string; parameters: Record<string, any> }> = [];
+    let output = "";
+    const toolCalls: Array<{ name: string; parameters: Record<string, any> }> =
+      [];
 
     for (const part of response.content) {
-      if (part.type === 'text' && part.text) {
+      if (part.type === "text" && part.text) {
         output += part.text;
       }
       // Hier könnten Tool Use Parts verarbeitet werden
     }
 
     // Logging
-    log('info', 'Anthropic response received', {
+    log("info", "Anthropic response received", {
       model,
-      input_tokens: response.usage?.input_tokens ?? 'unknown',
-      output_tokens: response.usage?.output_tokens ?? 'unknown',
+      input_tokens: response.usage?.input_tokens ?? "unknown",
+      output_tokens: response.usage?.output_tokens ?? "unknown",
       duration_ms: duration,
-      stop_reason: response.stop_reason
+      stop_reason: response.stop_reason,
     });
 
     // Tool-Execution falls aktiviert
@@ -412,8 +442,8 @@ export async function callAnthropic(
     // ModelResponse erstellen
     const modelResponse: ModelResponse = {
       model: response.model,
-      provider: 'anthropic' as Provider,
-      text: output.trim() || '(keine Antwort von Anthropic erhalten)',
+      provider: "anthropic" as Provider,
+      text: output.trim() || "(keine Antwort von Anthropic erhalten)",
       tokens_in: response.usage?.input_tokens,
       tokens_out: response.usage?.output_tokens,
       duration_ms: duration,
@@ -422,20 +452,19 @@ export async function callAnthropic(
       meta: {
         stop_reason: response.stop_reason,
         tool_results: toolResults,
-        response_time: duration
-      }
+        response_time: duration,
+      },
     };
 
     return modelResponse;
-
   } catch (error: any) {
     const duration = Date.now() - startTime;
-    
-    log('error', 'Anthropic Provider Fehler', {
+
+    log("error", "Anthropic Provider Fehler", {
       model,
       error: error.message,
       duration_ms: duration,
-      stack: config.debugMode ? error.stack : undefined
+      stack: config.debugMode ? error.stack : undefined,
     });
 
     // Fallback Response bei aktiviertem Fallback
@@ -451,32 +480,38 @@ export async function callAnthropic(
 /* 🛡️ Fallback & Error Handling                                            */
 /* ========================================================================== */
 
-function createFallbackResponse(model: string, error: any, duration: number): ModelResponse {
+function createFallbackResponse(
+  model: string,
+  error: any,
+  duration: number,
+): ModelResponse {
   const fallbackText = `Entschuldigung, es gab einen Verbindungsfehler zur KI-API (${error.message}). 
 Bitte versuchen Sie es später erneut oder verwenden Sie einen anderen Provider.`;
 
   return {
     model,
-    provider: 'anthropic' as Provider,
+    provider: "anthropic" as Provider,
     text: fallbackText,
     duration_ms: duration,
     success: false,
     errors: [error.message],
     meta: {
-      source: 'fallback',
-      error_type: error.name || 'API_ERROR'
-    }
+      source: "fallback",
+      error_type: error.name || "API_ERROR",
+    },
   };
 }
 
 function formatToolResults(results: ToolResult[]): string {
-  if (results.length === 0) return '';
+  if (results.length === 0) return "";
 
-  const summary = results.map(r => 
-    r.success 
-      ? `✅ [${r.source_tool}] Ausführung erfolgreich (${r.runtime_ms}ms)`
-      : `❌ [${r.source_tool}] Fehler: ${r.error}`
-  ).join('\n');
+  const summary = results
+    .map((r) =>
+      r.success
+        ? `✅ [${r.source_tool}] Ausführung erfolgreich (${r.runtime_ms}ms)`
+        : `❌ [${r.source_tool}] Fehler: ${r.error}`,
+    )
+    .join("\n");
 
   return `\n\n---\n**Tool-Ausführungen:**\n${summary}`;
 }
@@ -486,39 +521,47 @@ function formatToolResults(results: ToolResult[]): string {
 /* ========================================================================== */
 
 export function isAnthropicModel(modelId: string): boolean {
-  if (!modelId || typeof modelId !== 'string') return false;
-  
-  return modelId.startsWith('claude-') || 
-         modelId.includes('anthropic') ||
-         modelId.includes('claude');
+  if (!modelId || typeof modelId !== "string") return false;
+
+  return (
+    modelId.startsWith("claude-") ||
+    modelId.includes("anthropic") ||
+    modelId.includes("claude")
+  );
 }
 
 export function getSupportedAnthropicModels(): string[] {
   return [
-    'claude-3-5-sonnet-20241022',
-    'claude-3-opus-20240229',
-    'claude-3-sonnet-20240229',
-    'claude-3-haiku-20240307',
-    'claude-2.1',
-    'claude-2.0',
-    'claude-instant-1.2'
+    "claude-3-5-sonnet-20241022",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
+    "claude-2.1",
+    "claude-2.0",
+    "claude-instant-1.2",
   ];
 }
 
-export function validateAnthropicConfig(): { valid: boolean; errors: string[] } {
+export function validateAnthropicConfig(): {
+  valid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
-  
+
   if (!process.env.ANTHROPIC_API_KEY) {
-    errors.push('ANTHROPIC_API_KEY Umgebungsvariable fehlt');
+    errors.push("ANTHROPIC_API_KEY Umgebungsvariable fehlt");
   }
 
-  if (process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY.length < 10) {
-    errors.push('ANTHROPIC_API_KEY scheint ungültig zu sein');
+  if (
+    process.env.ANTHROPIC_API_KEY &&
+    process.env.ANTHROPIC_API_KEY.length < 10
+  ) {
+    errors.push("ANTHROPIC_API_KEY scheint ungültig zu sein");
   }
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -527,12 +570,12 @@ export function validateAnthropicConfig(): { valid: boolean; errors: string[] } 
 /* ========================================================================== */
 
 export const anthropicProvider = {
-  name: 'anthropic' as Provider,
+  name: "anthropic" as Provider,
   call: callAnthropic,
   isSupportedModel: isAnthropicModel,
   getSupportedModels: getSupportedAnthropicModels,
   validateConfig: validateAnthropicConfig,
-  
+
   // Erweiterte Methoden
   async healthCheck(): Promise<{ healthy: boolean; details?: any }> {
     try {
@@ -542,19 +585,17 @@ export const anthropicProvider = {
       }
 
       // Test-Call mit minimalem Prompt
-      const testMessages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' }
-      ];
+      const testMessages: ChatMessage[] = [{ role: "user", content: "Hello" }];
 
-      await callAnthropic('claude-3-haiku-20240307', testMessages);
+      await callAnthropic("claude-3-haiku-20240307", testMessages);
       return { healthy: true };
     } catch (error: any) {
-      return { 
-        healthy: false, 
-        details: { error: error.message } 
+      return {
+        healthy: false,
+        details: { error: error.message },
       };
     }
-  }
+  },
 };
 
 export default anthropicProvider;

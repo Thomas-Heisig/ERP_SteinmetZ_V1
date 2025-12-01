@@ -16,7 +16,7 @@ interface CategoryCardProps {
   onSelect: (category: Category) => void;
   onEdit?: (category: Category) => void;
   onDelete?: (categoryId: string) => void;
-  displayMode?: 'grid' | 'list';
+  displayMode?: "grid" | "list";
 }
 
 interface CategoryGridState {
@@ -31,148 +31,151 @@ interface CategoryGridState {
 /**
  * Individual category card component
  */
-const CategoryCard: React.FC<CategoryCardProps> = React.memo(({
-  category,
-  onSelect,
-  onEdit,
-  onDelete,
-  displayMode = 'grid'
-}) => {
-  const { t } = useTranslation();
-  const [isHovered, setIsHovered] = React.useState(false);
-  
-  const categoryColor = getCategoryColor(category.id);
-  const hasActions = !!(onEdit || onDelete);
-  const itemCount = category.nodeIds?.length || 0;
+const CategoryCard: React.FC<CategoryCardProps> = React.memo(
+  ({ category, onSelect, onEdit, onDelete, displayMode = "grid" }) => {
+    const { t } = useTranslation();
+    const [isHovered, setIsHovered] = React.useState(false);
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onSelect(category);
-  };
+    const categoryColor = getCategoryColor(category.id);
+    const hasActions = !!(onEdit || onDelete);
+    const itemCount = category.nodeIds?.length || 0;
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onEdit?.(category);
-  };
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      onSelect(category);
+    };
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDelete?.(category.id);
-  };
+    const handleEdit = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onEdit?.(category);
+    };
 
-const conditionalClasses = [
-  isHovered ? 'category-card--hovered' : null,
-  hasActions ? 'category-card--has-actions' : null,
-  itemCount === 0 ? 'category-card--empty' : null
-].filter(Boolean) as string[];
+    const handleDelete = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onDelete?.(category.id);
+    };
 
-const cardClasses = cls(
-  'category-card',
-  `category-card--${displayMode}`,
-  ...conditionalClasses,
-  undefined // <-- Options-Parameter (Pflicht laut Fehlermeldung)
+    const conditionalClasses = [
+      isHovered ? "category-card--hovered" : null,
+      hasActions ? "category-card--has-actions" : null,
+      itemCount === 0 ? "category-card--empty" : null,
+    ].filter(Boolean) as string[];
+
+    const cardClasses = cls(
+      "category-card",
+      `category-card--${displayMode}`,
+      ...conditionalClasses,
+      undefined, // <-- Options-Parameter (Pflicht laut Fehlermeldung)
+    );
+
+    const cardStyle: React.CSSProperties = {
+      borderColor: categoryColor.primary,
+      backgroundColor: "#ffffff",
+      color: categoryColor.text,
+    };
+
+    return (
+      <article
+        className={cardClasses}
+        style={cardStyle}
+        onClick={handleClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        role="button"
+        tabIndex={0}
+        aria-label={t("dashboard.categories.selectCategory", {
+          name: category.name,
+        })}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onSelect(category);
+          }
+        }}
+      >
+        {/* Header Section */}
+        <header className="category-card__header">
+          <div
+            className="category-card__icon"
+            style={{ color: categoryColor.primary }}
+          >
+            {getNodeIcon("CATEGORY", "emoji")}
+          </div>
+
+          <div className="category-card__info">
+            <h3 className="category-card__title" title={category.name}>
+              {category.name}
+            </h3>
+
+            <div className="category-card__meta">
+              <span className="category-card__count">
+                {t("dashboard.categories.itemCount", { count: itemCount })}
+              </span>
+            </div>
+          </div>
+        </header>
+
+        {/* Description Section (if available) */}
+        {category.description && (
+          <div className="category-card__description">
+            {category.description}
+          </div>
+        )}
+
+        {/* Tags Section (if available) */}
+        {category.tags && category.tags.length > 0 && (
+          <div className="category-card__tags">
+            {category.tags.slice(0, 3).map((tag, index) => (
+              <span key={index} className="category-card__tag">
+                {tag}
+              </span>
+            ))}
+            {category.tags.length > 3 && (
+              <span className="category-card__tag-more">
+                +{category.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Actions Section */}
+        {hasActions && (
+          <footer className="category-card__actions">
+            {onEdit && (
+              <button
+                className="category-card__button category-card__button--edit"
+                onClick={handleEdit}
+                aria-label={t("dashboard.categories.editCategory", {
+                  name: category.name,
+                })}
+                title={t("dashboard.categories.edit")}
+              >
+                {getNodeIcon("FORM", "emoji")}
+                <span>{t("common.edit")}</span>
+              </button>
+            )}
+
+            {onDelete && (
+              <button
+                className="category-card__button category-card__button--delete"
+                onClick={handleDelete}
+                aria-label={t("dashboard.categories.deleteCategory", {
+                  name: category.name,
+                })}
+                title={t("common.delete")}
+              >
+                {getNodeIcon("CUSTOM", "emoji")}
+                <span>{t("common.delete")}</span>
+              </button>
+            )}
+          </footer>
+        )}
+      </article>
+    );
+  },
 );
 
-
-
-  const cardStyle: React.CSSProperties = {
-    borderColor: categoryColor.primary,
-    backgroundColor: '#ffffff',
-    color: categoryColor.text
-  };
-
-  return (
-    <article
-      className={cardClasses}
-      style={cardStyle}
-      onClick={handleClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      role="button"
-      tabIndex={0}
-      aria-label={t('dashboard.categories.selectCategory', { name: category.name })}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onSelect(category);
-        }
-      }}
-    >
-      {/* Header Section */}
-      <header className="category-card__header">
-        <div className="category-card__icon" style={{ color: categoryColor.primary }}>
-          {getNodeIcon('CATEGORY', 'emoji')}
-        </div>
-        
-        <div className="category-card__info">
-          <h3 className="category-card__title" title={category.name}>
-            {category.name}
-          </h3>
-          
-          <div className="category-card__meta">
-            <span className="category-card__count">
-              {t('dashboard.categories.itemCount', { count: itemCount })}
-            </span>
-          </div>
-        </div>
-      </header>
-
-      {/* Description Section (if available) */}
-      {category.description && (
-        <div className="category-card__description">
-          {category.description}
-        </div>
-      )}
-
-      {/* Tags Section (if available) */}
-      {category.tags && category.tags.length > 0 && (
-        <div className="category-card__tags">
-          {category.tags.slice(0, 3).map((tag, index) => (
-            <span key={index} className="category-card__tag">
-              {tag}
-            </span>
-          ))}
-          {category.tags.length > 3 && (
-            <span className="category-card__tag-more">
-              +{category.tags.length - 3}
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Actions Section */}
-      {hasActions && (
-        <footer className="category-card__actions">
-          {onEdit && (
-            <button
-              className="category-card__button category-card__button--edit"
-              onClick={handleEdit}
-              aria-label={t('dashboard.categories.editCategory', { name: category.name })}
-              title={t('dashboard.categories.edit')}
-            >
-              {getNodeIcon('FORM', 'emoji')}
-              <span>{t('common.edit')}</span>
-            </button>
-          )}
-          
-          {onDelete && (
-            <button
-              className="category-card__button category-card__button--delete"
-              onClick={handleDelete}
-              aria-label={t('dashboard.categories.deleteCategory', { name: category.name })}
-              title={t('common.delete')}
-            >
-              {getNodeIcon('CUSTOM', 'emoji')}
-              <span>{t('common.delete')}</span>
-            </button>
-          )}
-        </footer>
-      )}
-    </article>
-  );
-});
-
-CategoryCard.displayName = 'CategoryCard';
+CategoryCard.displayName = "CategoryCard";
 
 // ============================================================================
 // Main Category Grid Component
@@ -180,7 +183,7 @@ CategoryCard.displayName = 'CategoryCard';
 
 /**
  * CategoryGrid - Responsive grid layout for dashboard categories
- * 
+ *
  * Features:
  * - Responsive grid layout with CSS custom properties
  * - Accessibility support (ARIA labels, keyboard navigation)
@@ -188,7 +191,7 @@ CategoryCard.displayName = 'CategoryCard';
  * - Action buttons for edit/delete
  * - Empty state handling
  * - Loading state support
- * 
+ *
  * @component
  * @example
  * ```tsx
@@ -207,42 +210,40 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({
   onCategorySelect,
   onCategoryEdit,
   onCategoryDelete,
-  displayMode = 'grid',
+  displayMode = "grid",
   isLoading = false,
   emptyStateMessage,
   className,
   ...rest
 }) => {
   const { t } = useTranslation();
-  
+
   const [state, setState] = React.useState<CategoryGridState>({
     hoveredCategory: null,
-    activeCategory: null
+    activeCategory: null,
   });
 
   // Handle keyboard navigation
-const handleKeyDown = (e: React.KeyboardEvent, category: Category) => {
-  if (e.key === "Enter" || e.key === " ") {
-    e.preventDefault();
-    onCategorySelect(category);
-  }
+  const handleKeyDown = (e: React.KeyboardEvent, category: Category) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onCategorySelect(category);
+    }
 
-  if (e.key === "Escape") {
-    setState(prev => ({ ...prev, activeCategory: null }));
-  }
-};
+    if (e.key === "Escape") {
+      setState((prev) => ({ ...prev, activeCategory: null }));
+    }
+  };
 
-// Build CSS classes
-const gridClasses = cls(
-  "category-grid",
-  `category-grid--${displayMode}`,
-  isLoading ? "category-grid--loading" : "",
-  categories.length === 0 ? "category-grid--empty" : "",
-  className ? className : undefined,   // <-- jetzt korrekt
-  undefined                             // <-- der Options-Parameter
-);
-
-
+  // Build CSS classes
+  const gridClasses = cls(
+    "category-grid",
+    `category-grid--${displayMode}`,
+    isLoading ? "category-grid--loading" : "",
+    categories.length === 0 ? "category-grid--empty" : "",
+    className ? className : undefined, // <-- jetzt korrekt
+    undefined, // <-- der Options-Parameter
+  );
 
   // Loading state
   if (isLoading) {
@@ -250,7 +251,7 @@ const gridClasses = cls(
       <div className={gridClasses} {...rest}>
         <div className="category-grid__loading">
           <div className="category-grid__loading-spinner"></div>
-          <p>{t('dashboard.categories.loading')}</p>
+          <p>{t("dashboard.categories.loading")}</p>
         </div>
       </div>
     );
@@ -262,13 +263,13 @@ const gridClasses = cls(
       <div className={gridClasses} {...rest}>
         <div className="category-grid__empty">
           <div className="category-grid__empty-icon">
-            {getNodeIcon('CATEGORY', 'emoji')}
+            {getNodeIcon("CATEGORY", "emoji")}
           </div>
           <h3 className="category-grid__empty-title">
-            {emptyStateMessage || t('dashboard.categories.emptyTitle')}
+            {emptyStateMessage || t("dashboard.categories.emptyTitle")}
           </h3>
           <p className="category-grid__empty-description">
-            {t('dashboard.categories.emptyDescription')}
+            {t("dashboard.categories.emptyDescription")}
           </p>
         </div>
       </div>
@@ -278,7 +279,7 @@ const gridClasses = cls(
   return (
     <section
       className={gridClasses}
-      aria-label={t('dashboard.categories.gridLabel')}
+      aria-label={t("dashboard.categories.gridLabel")}
       role="grid"
       {...rest}
     >
@@ -300,6 +301,6 @@ const gridClasses = cls(
 // Display Name
 // ============================================================================
 
-CategoryGrid.displayName = 'CategoryGrid';
+CategoryGrid.displayName = "CategoryGrid";
 
 export default CategoryGrid;

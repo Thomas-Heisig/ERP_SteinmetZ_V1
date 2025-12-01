@@ -18,9 +18,7 @@ export default function Panel({
   padded = true,
   ariaLabel,
 }: PanelProps) {
-  const bodyClass = padded
-    ? "fc-panel-body padded"
-    : "fc-panel-body";
+  const bodyClass = padded ? "fc-panel-body padded" : "fc-panel-body";
 
   return (
     <section

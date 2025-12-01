@@ -47,18 +47,12 @@
     },
     {
       "pattern": "\\b(login|anmeldung|melde\\s+mich\\s+an|einloggen)\\b",
-      "replies": [
-        "Ich melde Sie an.",
-        "Anmeldevorgang wird gestartet."
-      ],
+      "replies": ["Ich melde Sie an.", "Anmeldevorgang wird gestartet."],
       "action": "user_login"
     },
     {
       "pattern": "\\b(logout|abmeldung|melde\\s+mich\\s+ab|ausloggen)\\b",
-      "replies": [
-        "Ich melde Sie ab.",
-        "Abmeldung wird durchgeführt."
-      ],
+      "replies": ["Ich melde Sie ab.", "Abmeldung wird durchgeführt."],
       "action": "user_logout"
     },
     {
