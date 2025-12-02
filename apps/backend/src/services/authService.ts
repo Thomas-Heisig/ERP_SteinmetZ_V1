@@ -41,14 +41,44 @@ export class AuthService {
     const fs = await import("fs/promises");
     const sql = await fs.readFile(migrationPath, "utf-8");
 
-    // Execute migration
-    const statements = sql
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0 && !s.startsWith("--"));
+    // Parse SQL statements, handling comments
+    const lines = sql.split("\n");
+    let currentStatement = "";
+    const statements: string[] = [];
 
+    for (const line of lines) {
+      const trimmed = line.trim();
+      
+      // Skip empty lines and comment-only lines
+      if (!trimmed || trimmed.startsWith("--")) {
+        continue;
+      }
+
+      // Remove inline comments
+      const cleanLine = trimmed.split("--")[0].trim();
+      if (!cleanLine) continue;
+
+      currentStatement += " " + cleanLine;
+
+      // If line ends with semicolon, we have a complete statement
+      if (cleanLine.endsWith(";")) {
+        const stmt = currentStatement.trim().slice(0, -1).trim(); // Remove trailing semicolon
+        if (stmt) {
+          statements.push(stmt);
+        }
+        currentStatement = "";
+      }
+    }
+
+    // Execute each statement
     for (const statement of statements) {
-      await db.exec(statement);
+      try {
+        await db.exec(statement);
+      } catch (error) {
+        console.error(`[auth] Failed to execute statement: ${statement.substring(0, 100)}...`);
+        console.error(`[auth] Error:`, error);
+        throw error;
+      }
     }
 
     console.log("[auth] Authentication tables initialized");
