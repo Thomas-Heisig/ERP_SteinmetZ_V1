@@ -133,7 +133,7 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
   useEffect(() => {
     const fetchRoots = async () => {
       // Only fetch if initialNodes were not provided
-      if (initialNodes && initialNodes.length > 0) {
+      if (initialNodes?.length && initialNodes.length > 0) {
         return;
       }
 
