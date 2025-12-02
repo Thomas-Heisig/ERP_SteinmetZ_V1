@@ -17,6 +17,7 @@
 import "dotenv/config";
 import express, { Request, Response, Application } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import chokidar from "chokidar";
@@ -24,6 +25,7 @@ import fs from "fs/promises";
 import { GlobalApp } from "./utils/globalApp.js";
 
 /* ---------------------- Router ---------------------- */
+import authRouter from "./routes/auth/authRouter.js";
 import dashboardRouter from "./routes/dashboard/dashboard.js";
 import aiRouter from "./routes/ai/aiRouter.js";
 import healthRouter from "./routes/systemInfoRouter/health.js";
@@ -41,6 +43,7 @@ toolRegistry.register(listRoutesTool);
 
 /* ---------------------- Services ---------------------- */
 import { FunctionsCatalogService } from "./services/functionsCatalogService.js";
+import { AuthService } from "./services/authService.js";
 import db from "./services/dbService.js";
 
 /* ---------------------- Error-Handler ---------------------- */
@@ -87,6 +90,7 @@ app.use(
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 /* ---------------------- Optionale Admin-Auth ---------------------- */
 app.use((req, res, next) => {
@@ -118,6 +122,7 @@ app.get("/", async (_req: Request, res: Response) => {
 
 /* ---------------------- API-Routen ---------------------- */
 console.log("[router] Initialisiere API-Routen...");
+app.use("/api/auth", authRouter);
 app.use("/api/health", healthRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/ai", aiRouter);
@@ -181,6 +186,10 @@ async function bootstrapFunctionsCatalog() {
   try {
     await db.init();
     console.log("[bootstrap] Datenbank initialisiert");
+
+    // Initialize authentication system
+    await AuthService.init();
+    console.log("[bootstrap] Authentication system initialisiert");
 
     if (process.env.FUNCTIONS_AUTOLOAD !== "0") {
       const result = await service.refreshFunctionsIndex();
