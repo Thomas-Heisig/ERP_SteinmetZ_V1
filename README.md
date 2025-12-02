@@ -1,11 +1,13 @@
 # ERP SteinmetZ V2.0 - Intelligente Betriebsassistenz für KMU
 
 ## 🎯 Vision
+
 ERP Steinmetz ist eine **intelligente Betriebsassistenz für KMU** - kein komplexes Enterprise-System, sondern ein KI-gestützter Betriebsassistent, der tägliche Abläufe vereinfacht, Prozesse automatisiert und Entscheidungen datenbasiert unterstützt.
 
 ## ✅ Aktueller Status (Stand: Dezember 2024)
 
 ### Frontend ✅ Vollständig Funktionsfähig
+
 - ✅ React 19 + Vite Setup funktioniert
 - ✅ Dashboard lädt dynamisch 11 Funktionsbereiche vom Backend
 - ✅ Theme-System (Light, Dark, LCARS) vollständig funktionsfähig
@@ -15,6 +17,7 @@ ERP Steinmetz ist eine **intelligente Betriebsassistenz für KMU** - kein komple
 - ✅ Responsive Design
 
 ### Backend ✅ Stabil & Funktionsfähig
+
 - ✅ Express 5 Server läuft stabil
 - ✅ Health-Check Endpoint aktiv (`/api/health`)
 - ✅ Functions Catalog API mit 11 Kategorien und 15.472 Funktionsknoten
@@ -24,6 +27,7 @@ ERP Steinmetz ist eine **intelligente Betriebsassistenz für KMU** - kein komple
 - ✅ File-Watcher für automatisches Reload der Funktionen
 
 ### API-Endpunkte
+
 - `GET /api/health` - System Health Status
 - `GET /api/functions` - Vollständiger Funktionskatalog
 - `GET /api/functions/roots` - Top-Level Kategorien (11 Bereiche)
@@ -36,6 +40,7 @@ ERP Steinmetz ist eine **intelligente Betriebsassistenz für KMU** - kein komple
 ## 🚀 Quick Start
 
 ### Voraussetzungen
+
 - Node.js >= 18.18.0
 - npm oder yarn
 
@@ -60,6 +65,7 @@ npm start
 ```
 
 ### URLs
+
 - **Frontend:** http://localhost:5173
 - **Backend:** http://localhost:3000
 - **Health Check:** http://localhost:3000/api/health
@@ -97,6 +103,7 @@ ERP_SteinmetZ_V1/
 ## 🔧 Technologie-Stack
 
 ### Frontend
+
 - **Framework:** React 19 + Vite
 - **Routing:** React Router v7
 - **Styling:** CSS Modules + Design System
@@ -105,6 +112,7 @@ ERP_SteinmetZ_V1/
 - **Themes:** Light, Dark, LCARS
 
 ### Backend
+
 - **Runtime:** Node.js + Express 5
 - **Database:** SQLite (dev) / PostgreSQL (prod)
 - **AI:** OpenAI API + Ollama + Lokale Modelle
@@ -113,6 +121,7 @@ ERP_SteinmetZ_V1/
 ## 📊 Features
 
 ### ✅ Implementiert
+
 - **Dashboard** mit 11 Funktionsbereichen
 - **QuickChat** KI-Assistent
 - **Funktionskatalog** mit 15.472 Knoten
@@ -122,6 +131,7 @@ ERP_SteinmetZ_V1/
 - **Auto-Reload** für Entwicklung
 
 ### 🔄 In Entwicklung
+
 - WebSocket für Echtzeit-Updates
 - Erweiterte Suche mit Filtern
 - Kategorie-Navigation im Dashboard
@@ -129,6 +139,7 @@ ERP_SteinmetZ_V1/
 - Mobile Optimierung
 
 ### 📋 Geplant (Roadmap)
+
 - SLA-Monitoring & Alerting
 - Workflow-Engine
 - Document Management (AI-gestützt)
@@ -138,6 +149,7 @@ ERP_SteinmetZ_V1/
 ## 🏗️ Architektur
 
 ### Resilience & Production-Readiness
+
 - **SAGA Pattern:** TransactionCoordinator, IdempotencyStore
 - **Resilience:** CircuitBreaker, RetryPolicy
 - **Database:** Audit Trail, Migrations
@@ -148,6 +160,7 @@ Siehe [ARCHITECTURE.md](docs/ARCHITECTURE.md) für Details.
 ## 🔐 Sicherheit & Compliance
 
 Siehe [COMPLIANCE.md](docs/COMPLIANCE.md) für:
+
 - Datenschutz (GDPR)
 - Audit Trail
 - Sicherheitsrichtlinien
@@ -182,6 +195,7 @@ npm test
 ## 📧 Kontakt
 
 **Projektverantwortlicher:** Thomas Heisig
+
 - GitHub: [@Thomas-Heisig](https://github.com/Thomas-Heisig)
 
 ## 📄 Lizenz
