@@ -13,7 +13,7 @@
   --primary-700: #000099;
   --primary-800: #000066;
   --primary-900: #000033;
-  
+
   /* Pure black and white */
   --gray-50: #ffffff;
   --gray-100: #ffffff;
@@ -26,27 +26,27 @@
   --gray-800: #000000;
   --gray-900: #000000;
   --gray-950: #000000;
-  
+
   /* High contrast semantic */
   --surface: #ffffff;
   --surface-elevated: #ffffff;
   --surface-overlay: rgba(0, 0, 0, 0.9);
-  
+
   --text-primary: #000000;
   --text-secondary: #000000;
   --text-tertiary: #333333;
   --text-inverted: #ffffff;
-  
+
   --border: #000000;
   --border-light: #333333;
   --border-dark: #000000;
-  
+
   /* High contrast status colors */
   --success-500: #008000;
   --warning-500: #ff8c00;
   --error-500: #ff0000;
   --info-500: #0000ff;
-  
+
   /* Larger focus rings */
   --focus-ring-width: 4px;
   --focus-ring-offset: 4px;

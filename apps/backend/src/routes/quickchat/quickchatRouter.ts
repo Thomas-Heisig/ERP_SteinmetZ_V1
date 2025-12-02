@@ -119,7 +119,9 @@ router.post("/message", async (req: Request, res: Response) => {
         response = result.message;
         userMessage.command = cmd;
       } else {
-        response = `Unbekannter Befehl: ${cmd}\n\nVerfügbare Befehle:\n${Object.entries(COMMANDS)
+        response = `Unbekannter Befehl: ${cmd}\n\nVerfügbare Befehle:\n${Object.entries(
+          COMMANDS,
+        )
           .map(([k, v]) => `${k} - ${v.description}`)
           .join("\n")}`;
       }
@@ -171,7 +173,7 @@ router.post("/command", async (req: Request, res: Response) => {
     }
 
     const cmd = command.startsWith("/") ? command : `/${command}`;
-    
+
     if (!(cmd in COMMANDS)) {
       res.status(400).json({
         success: false,
@@ -252,7 +254,7 @@ router.delete("/sessions/:id", (req: Request, res: Response) => {
 async function executeCommand(
   command: CommandKey,
   args: string,
-  context?: unknown
+  context?: unknown,
 ): Promise<{ success: boolean; message: string; data?: unknown }> {
   switch (command) {
     case "/rechnung":
@@ -321,15 +323,17 @@ async function executeCommand(
 async function generateAIResponse(
   message: string,
   history: QuickChatMessage[],
-  context?: unknown
+  context?: unknown,
 ): Promise<string> {
   // Hier würde normalerweise der AI-Provider aufgerufen werden
   // Für jetzt eine einfache Pattern-basierte Antwort
-  
+
   const lowerMessage = message.toLowerCase();
 
   if (lowerMessage.includes("hilfe") || lowerMessage.includes("help")) {
-    return `Wie kann ich Ihnen helfen? Verfügbare Befehle:\n${Object.entries(COMMANDS)
+    return `Wie kann ich Ihnen helfen? Verfügbare Befehle:\n${Object.entries(
+      COMMANDS,
+    )
       .map(([k, v]) => `• ${k} - ${v.description}`)
       .join("\n")}\n\nOder stellen Sie mir einfach eine Frage!`;
   }

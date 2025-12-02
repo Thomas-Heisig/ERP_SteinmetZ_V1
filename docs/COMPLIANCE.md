@@ -1,12 +1,14 @@
 # Compliance & Audit — ERP SteinmetZ
 
 Ziele:
+
 - GoBD-konforme Protokollierung (vollständige Nachvollziehbarkeit)
 - GDPR-konforme Prozesse (Right-to-be-Forgotten)
 - Aufbewahrungsfristen & automatisches Archivieren/Löschen
 - Vier-Augen-Prinzip (Approval-Flows)
 
 Empfohlene Implementierungen:
+
 1. Audit Trail
    - Jede Änderung an kritischen Entities (buchungen, payroll, bank_accounts, employees) schreibt einen Audit-Record (before/after).
    - Audit-Einträge sind append-only.

@@ -8,12 +8,12 @@ const router = Router();
 
 // Ideen-Phasen
 export const IDEA_PHASES = [
-  "parked",      // Geparkt
-  "analysis",    // In Analyse
+  "parked", // Geparkt
+  "analysis", // In Analyse
   "development", // In Entwicklung
-  "testing",     // Testing
-  "completed",   // Abgeschlossen
-  "archived",    // Archiviert
+  "testing", // Testing
+  "completed", // Abgeschlossen
+  "archived", // Archiviert
 ] as const;
 
 export type IdeaPhase = (typeof IDEA_PHASES)[number];
@@ -70,10 +70,14 @@ async function ensureIdeasTable(): Promise<void> {
         updated_at TEXT DEFAULT (datetime('now'))
       )
     `);
-    
+
     await db.exec(`CREATE INDEX IF NOT EXISTS idx_ideas_phase ON ideas(phase)`);
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_ideas_priority ON ideas(priority)`);
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_ideas_author ON ideas(author)`);
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_ideas_priority ON ideas(priority)`,
+    );
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_ideas_author ON ideas(author)`,
+    );
   } catch (error) {
     console.error("❌ [Innovation] Failed to create ideas table:", error);
   }
@@ -88,8 +92,15 @@ ensureIdeasTable();
  */
 router.get("/ideas", async (req: Request, res: Response) => {
   try {
-    const { phase, priority, author, search, limit = "100", offset = "0" } = req.query;
-    
+    const {
+      phase,
+      priority,
+      author,
+      search,
+      limit = "100",
+      offset = "0",
+    } = req.query;
+
     let sql = "SELECT * FROM ideas WHERE 1=1";
     const params: unknown[] = [];
 
@@ -145,7 +156,7 @@ router.get("/ideas/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
     const row = await db.get<Record<string, unknown>>(
       "SELECT * FROM ideas WHERE id = ?",
-      [id]
+      [id],
     );
 
     if (!row) {
@@ -232,7 +243,7 @@ router.post("/ideas", async (req: Request, res: Response) => {
         dueDate ?? null,
         now,
         now,
-      ]
+      ],
     );
 
     const newIdea: Idea = {
@@ -276,7 +287,7 @@ router.put("/ideas/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
     const existingRow = await db.get<Record<string, unknown>>(
       "SELECT * FROM ideas WHERE id = ?",
-      [id]
+      [id],
     );
 
     if (!existingRow) {
@@ -346,7 +357,7 @@ router.put("/ideas/:id", async (req: Request, res: Response) => {
         dueDate ?? null,
         now,
         id,
-      ]
+      ],
     );
 
     const updatedIdea: Idea = {
@@ -401,7 +412,7 @@ router.patch("/ideas/:id/phase", async (req: Request, res: Response) => {
 
     const existingRow = await db.get<Record<string, unknown>>(
       "SELECT * FROM ideas WHERE id = ?",
-      [id]
+      [id],
     );
 
     if (!existingRow) {
@@ -428,7 +439,7 @@ router.patch("/ideas/:id/phase", async (req: Request, res: Response) => {
 
     await db.run(
       `UPDATE ideas SET phase = ?, phase_history_json = ?, updated_at = ? WHERE id = ?`,
-      [phase, JSON.stringify(phaseHistory), now, id]
+      [phase, JSON.stringify(phaseHistory), now, id],
     );
 
     res.json({
@@ -486,7 +497,7 @@ router.delete("/ideas/:id", async (req: Request, res: Response) => {
 router.get("/board", async (req: Request, res: Response) => {
   try {
     const rows = await db.all<Record<string, unknown>>(
-      "SELECT * FROM ideas ORDER BY priority DESC, created_at DESC"
+      "SELECT * FROM ideas ORDER BY priority DESC, created_at DESC",
     );
 
     const ideas = rows.map(rowToIdea);
@@ -510,7 +521,7 @@ router.get("/board", async (req: Request, res: Response) => {
       stats: {
         total: ideas.length,
         byPhase: Object.fromEntries(
-          IDEA_PHASES.map((phase) => [phase, board[phase].length])
+          IDEA_PHASES.map((phase) => [phase, board[phase].length]),
         ),
       },
     });
@@ -532,7 +543,7 @@ router.get("/roadmap", async (req: Request, res: Response) => {
     const rows = await db.all<Record<string, unknown>>(
       `SELECT * FROM ideas 
        WHERE phase NOT IN ('archived', 'completed')
-       ORDER BY due_date ASC, priority DESC`
+       ORDER BY due_date ASC, priority DESC`,
     );
 
     const ideas = rows.map(rowToIdea);

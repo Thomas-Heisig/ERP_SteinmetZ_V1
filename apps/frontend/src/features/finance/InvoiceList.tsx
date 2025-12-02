@@ -20,7 +20,9 @@ interface Invoice {
 export const InvoiceList: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all">(
+    "all",
+  );
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export const InvoiceList: React.FC = () => {
         id: "1",
         invoiceNumber: "RE-2024-001",
         customerName: "ABC GmbH",
-        amount: 1500.00,
+        amount: 1500.0,
         currency: "EUR",
         dueDate: new Date(Date.now() + 7 * 86400000).toISOString(),
         status: "sent",
@@ -40,7 +42,7 @@ export const InvoiceList: React.FC = () => {
         id: "2",
         invoiceNumber: "RE-2024-002",
         customerName: "XYZ AG",
-        amount: 3250.50,
+        amount: 3250.5,
         currency: "EUR",
         dueDate: new Date(Date.now() - 5 * 86400000).toISOString(),
         status: "overdue",
@@ -50,7 +52,7 @@ export const InvoiceList: React.FC = () => {
         id: "3",
         invoiceNumber: "RE-2024-003",
         customerName: "Musterfirma",
-        amount: 890.00,
+        amount: 890.0,
         currency: "EUR",
         dueDate: new Date(Date.now() - 20 * 86400000).toISOString(),
         status: "paid",
@@ -60,7 +62,7 @@ export const InvoiceList: React.FC = () => {
         id: "4",
         invoiceNumber: "RE-2024-004",
         customerName: "Test KG",
-        amount: 2100.00,
+        amount: 2100.0,
         currency: "EUR",
         dueDate: new Date(Date.now() + 14 * 86400000).toISOString(),
         status: "draft",
@@ -92,12 +94,35 @@ export const InvoiceList: React.FC = () => {
   };
 
   const getStatusBadge = (status: InvoiceStatus) => {
-    const config: Record<InvoiceStatus, { label: string; bg: string; color: string }> = {
-      draft: { label: "Entwurf", bg: "var(--gray-100)", color: "var(--gray-600)" },
-      sent: { label: "Versendet", bg: "var(--info-50)", color: "var(--info-600)" },
-      paid: { label: "Bezahlt", bg: "var(--success-50)", color: "var(--success-600)" },
-      overdue: { label: "Überfällig", bg: "var(--error-50)", color: "var(--error-600)" },
-      cancelled: { label: "Storniert", bg: "var(--gray-100)", color: "var(--gray-500)" },
+    const config: Record<
+      InvoiceStatus,
+      { label: string; bg: string; color: string }
+    > = {
+      draft: {
+        label: "Entwurf",
+        bg: "var(--gray-100)",
+        color: "var(--gray-600)",
+      },
+      sent: {
+        label: "Versendet",
+        bg: "var(--info-50)",
+        color: "var(--info-600)",
+      },
+      paid: {
+        label: "Bezahlt",
+        bg: "var(--success-50)",
+        color: "var(--success-600)",
+      },
+      overdue: {
+        label: "Überfällig",
+        bg: "var(--error-50)",
+        color: "var(--error-600)",
+      },
+      cancelled: {
+        label: "Storniert",
+        bg: "var(--gray-100)",
+        color: "var(--gray-500)",
+      },
     };
     const c = config[status];
     return (
@@ -132,14 +157,17 @@ export const InvoiceList: React.FC = () => {
       header: "Betrag",
       width: "120px",
       render: (value: unknown, row: Invoice) => (
-        <span style={{ fontWeight: 500 }}>{formatCurrency(value as number, row.currency)}</span>
+        <span style={{ fontWeight: 500 }}>
+          {formatCurrency(value as number, row.currency)}
+        </span>
       ),
     },
     {
       key: "dueDate",
       header: "Fällig",
       width: "100px",
-      render: (value: unknown) => new Date(value as string).toLocaleDateString("de-DE"),
+      render: (value: unknown) =>
+        new Date(value as string).toLocaleDateString("de-DE"),
     },
     {
       key: "status",
@@ -167,7 +195,13 @@ export const InvoiceList: React.FC = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       {/* Stats Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: "1rem",
+        }}
+      >
         <Card variant="outlined" padding="md">
           <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
             Gesamt offen
@@ -180,7 +214,13 @@ export const InvoiceList: React.FC = () => {
           <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
             Überfällig
           </div>
-          <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--error-500)" }}>
+          <div
+            style={{
+              fontSize: "1.5rem",
+              fontWeight: 700,
+              color: "var(--error-500)",
+            }}
+          >
             {formatCurrency(totalOverdue, "EUR")}
           </div>
         </Card>
@@ -188,7 +228,9 @@ export const InvoiceList: React.FC = () => {
           <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
             Rechnungen gesamt
           </div>
-          <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>{invoices.length}</div>
+          <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>
+            {invoices.length}
+          </div>
         </Card>
         <Card variant="outlined" padding="md">
           <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
@@ -233,16 +275,20 @@ export const InvoiceList: React.FC = () => {
             gap: "0.5rem",
           }}
         >
-          {(["all", "draft", "sent", "paid", "overdue"] as const).map((status) => (
-            <Button
-              key={status}
-              variant={statusFilter === status ? "primary" : "ghost"}
-              size="sm"
-              onClick={() => setStatusFilter(status)}
-            >
-              {status === "all" ? "Alle" : getStatusBadge(status as InvoiceStatus)}
-            </Button>
-          ))}
+          {(["all", "draft", "sent", "paid", "overdue"] as const).map(
+            (status) => (
+              <Button
+                key={status}
+                variant={statusFilter === status ? "primary" : "ghost"}
+                size="sm"
+                onClick={() => setStatusFilter(status)}
+              >
+                {status === "all"
+                  ? "Alle"
+                  : getStatusBadge(status as InvoiceStatus)}
+              </Button>
+            ),
+          )}
         </div>
 
         <Table

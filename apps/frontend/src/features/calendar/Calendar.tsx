@@ -25,8 +25,18 @@ interface CalendarProps {
 
 const WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 const MONTHS = [
-  "Januar", "Februar", "März", "April", "Mai", "Juni",
-  "Juli", "August", "September", "Oktober", "November", "Dezember"
+  "Januar",
+  "Februar",
+  "März",
+  "April",
+  "Mai",
+  "Juni",
+  "Juli",
+  "August",
+  "September",
+  "Oktober",
+  "November",
+  "Dezember",
 ];
 
 export const Calendar: React.FC<CalendarProps> = ({
@@ -38,7 +48,9 @@ export const Calendar: React.FC<CalendarProps> = ({
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null,
+  );
 
   useEffect(() => {
     fetchEvents();
@@ -46,10 +58,10 @@ export const Calendar: React.FC<CalendarProps> = ({
 
   const fetchEvents = async () => {
     const { start, end } = getDateRange();
-    
+
     try {
       const response = await fetch(
-        `/api/calendar/events?start=${start.toISOString()}&end=${end.toISOString()}`
+        `/api/calendar/events?start=${start.toISOString()}&end=${end.toISOString()}`,
       );
       if (response.ok) {
         const data = await response.json();
@@ -98,13 +110,13 @@ export const Calendar: React.FC<CalendarProps> = ({
   const monthDays = useMemo(() => {
     const days: Date[] = [];
     const { start, end } = getDateRange();
-    
+
     let current = new Date(start);
     while (current <= end) {
       days.push(new Date(current));
       current.setDate(current.getDate() + 1);
     }
-    
+
     return days;
   }, [currentDate, viewMode]);
 
@@ -116,7 +128,7 @@ export const Calendar: React.FC<CalendarProps> = ({
       dayStart.setHours(0, 0, 0, 0);
       const dayEnd = new Date(date);
       dayEnd.setHours(23, 59, 59, 999);
-      
+
       return eventStart <= dayEnd && eventEnd >= dayStart;
     });
   };
@@ -159,7 +171,11 @@ export const Calendar: React.FC<CalendarProps> = ({
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <Button variant="outline" size="sm" onClick={() => navigatePeriod(-1)}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigatePeriod(-1)}
+          >
             ←
           </Button>
           <Button variant="outline" size="sm" onClick={goToToday}>
@@ -226,7 +242,7 @@ export const Calendar: React.FC<CalendarProps> = ({
           >
             {monthDays.map((date, index) => {
               const dayEvents = getEventsForDate(date);
-              
+
               return (
                 <div
                   key={index}
@@ -249,13 +265,15 @@ export const Calendar: React.FC<CalendarProps> = ({
                       borderRadius: "50%",
                       fontSize: "0.875rem",
                       fontWeight: isToday(date) ? 600 : 400,
-                      background: isToday(date) ? "var(--primary-500)" : "transparent",
+                      background: isToday(date)
+                        ? "var(--primary-500)"
+                        : "transparent",
                       color: isToday(date) ? "white" : "var(--text-primary)",
                     }}
                   >
                     {date.getDate()}
                   </div>
-                  
+
                   <div style={{ marginTop: "0.25rem" }}>
                     {dayEvents.slice(0, 3).map((event) => (
                       <div
@@ -326,7 +344,9 @@ export const Calendar: React.FC<CalendarProps> = ({
         size="md"
       >
         {selectedEvent && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
             <div>
               <strong>Beschreibung:</strong>
               <p>{selectedEvent.description || "Keine Beschreibung"}</p>

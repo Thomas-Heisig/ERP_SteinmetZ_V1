@@ -36,10 +36,10 @@ export class HealingReport {
     additionalData?: {
       issues?: IntegrityIssue[];
       repairSession?: RepairSession;
-    }
+    },
   ): Promise<HealingReportEntry> {
     const reportId = crypto.randomUUID();
-    
+
     let status: "success" | "warning" | "error";
     if (healthResult.status === "healthy") {
       status = "success";
@@ -60,12 +60,17 @@ export class HealingReport {
       repairSession: additionalData?.repairSession,
       details: {
         checksPerformed: healthResult.checks.length,
-        checksPassed: healthResult.checks.filter((c) => c.status === "pass").length,
-        checksWarned: healthResult.checks.filter((c) => c.status === "warn").length,
-        checksFailed: healthResult.checks.filter((c) => c.status === "fail").length,
+        checksPassed: healthResult.checks.filter((c) => c.status === "pass")
+          .length,
+        checksWarned: healthResult.checks.filter((c) => c.status === "warn")
+          .length,
+        checksFailed: healthResult.checks.filter((c) => c.status === "fail")
+          .length,
         issuesFound: additionalData?.issues?.length ?? 0,
         repairsAttempted: additionalData?.repairSession?.results.length ?? 0,
-        repairsSuccessful: additionalData?.repairSession?.results.filter((r) => r.success).length ?? 0,
+        repairsSuccessful:
+          additionalData?.repairSession?.results.filter((r) => r.success)
+            .length ?? 0,
       },
     };
 
@@ -84,7 +89,9 @@ export class HealingReport {
   /**
    * Speichert einen Report in der Datenbank
    */
-  private async saveReportToDatabase(report: HealingReportEntry): Promise<void> {
+  private async saveReportToDatabase(
+    report: HealingReportEntry,
+  ): Promise<void> {
     try {
       await db.run(
         `INSERT INTO audit_log (entity, entity_id, action, details, created_at)
@@ -99,12 +106,12 @@ export class HealingReport {
             details: report.details,
           }),
           report.timestamp.toISOString(),
-        ]
+        ],
       );
     } catch (error) {
       console.error(
         "❌ [HealingReport] Failed to save report to database:",
-        error instanceof Error ? error.message : error
+        error instanceof Error ? error.message : error,
       );
     }
   }
@@ -118,7 +125,7 @@ export class HealingReport {
     additionalData?: {
       issues?: IntegrityIssue[];
       repairSession?: RepairSession;
-    }
+    },
   ): string {
     const parts: string[] = [];
 
@@ -135,25 +142,31 @@ export class HealingReport {
     parts.push(`Status: ${healthResult.status}`);
 
     // Checks
-    const passed = healthResult.checks.filter((c) => c.status === "pass").length;
-    const warned = healthResult.checks.filter((c) => c.status === "warn").length;
-    const failed = healthResult.checks.filter((c) => c.status === "fail").length;
-    parts.push(
-      `Checks: ${passed} OK, ${warned} Warnungen, ${failed} Fehler`
-    );
+    const passed = healthResult.checks.filter(
+      (c) => c.status === "pass",
+    ).length;
+    const warned = healthResult.checks.filter(
+      (c) => c.status === "warn",
+    ).length;
+    const failed = healthResult.checks.filter(
+      (c) => c.status === "fail",
+    ).length;
+    parts.push(`Checks: ${passed} OK, ${warned} Warnungen, ${failed} Fehler`);
 
     // Issues
     if (additionalData?.issues && additionalData.issues.length > 0) {
-      parts.push(`${additionalData.issues.length} Integritätsprobleme gefunden`);
+      parts.push(
+        `${additionalData.issues.length} Integritätsprobleme gefunden`,
+      );
     }
 
     // Reparaturen
     if (additionalData?.repairSession) {
       const successful = additionalData.repairSession.results.filter(
-        (r) => r.success
+        (r) => r.success,
       ).length;
       parts.push(
-        `${successful}/${additionalData.repairSession.results.length} Reparaturen erfolgreich`
+        `${successful}/${additionalData.repairSession.results.length} Reparaturen erfolgreich`,
       );
     }
 
@@ -166,12 +179,13 @@ export class HealingReport {
   private cleanupOldReports(): void {
     if (this.reports.size <= this.maxReportsKept) return;
 
-    const sortedReports = Array.from(this.reports.entries())
-      .sort((a, b) => a[1].timestamp.getTime() - b[1].timestamp.getTime());
+    const sortedReports = Array.from(this.reports.entries()).sort(
+      (a, b) => a[1].timestamp.getTime() - b[1].timestamp.getTime(),
+    );
 
     const toRemove = sortedReports.slice(
       0,
-      sortedReports.length - this.maxReportsKept
+      sortedReports.length - this.maxReportsKept,
     );
     for (const [id] of toRemove) {
       this.reports.delete(id);
@@ -210,7 +224,7 @@ export class HealingReport {
          WHERE entity = 'selfhealing_report' 
          ORDER BY created_at DESC 
          LIMIT ?`,
-        [limit]
+        [limit],
       );
 
       return rows.map((row) => {
@@ -227,7 +241,7 @@ export class HealingReport {
     } catch (error) {
       console.error(
         "❌ [HealingReport] Failed to load reports from database:",
-        error instanceof Error ? error.message : error
+        error instanceof Error ? error.message : error,
       );
       return [];
     }
@@ -263,7 +277,7 @@ export class HealingReport {
       byType,
       byStatus,
       lastReport: reports.sort(
-        (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+        (a, b) => b.timestamp.getTime() - a.timestamp.getTime(),
       )[0],
     };
   }

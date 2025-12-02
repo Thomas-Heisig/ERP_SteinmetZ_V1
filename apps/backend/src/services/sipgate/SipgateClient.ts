@@ -58,13 +58,18 @@ export class SipgateClient {
   private isConfigured: boolean;
 
   constructor(config?: SipgateConfig) {
-    this.baseUrl = config?.baseUrl || process.env.SIPGATE_BASE_URL || "https://api.sipgate.com/v2";
+    this.baseUrl =
+      config?.baseUrl ||
+      process.env.SIPGATE_BASE_URL ||
+      "https://api.sipgate.com/v2";
     this.tokenId = config?.tokenId || process.env.SIPGATE_TOKEN_ID || "";
     this.token = config?.token || process.env.SIPGATE_TOKEN || "";
     this.isConfigured = !!(this.tokenId && this.token);
 
     if (!this.isConfigured) {
-      console.warn("⚠️ [Sipgate] No credentials configured - API calls will be mocked");
+      console.warn(
+        "⚠️ [Sipgate] No credentials configured - API calls will be mocked",
+      );
     }
   }
 
@@ -72,7 +77,9 @@ export class SipgateClient {
    * Creates authorization header
    */
   private getAuthHeader(): string {
-    const credentials = Buffer.from(`${this.tokenId}:${this.token}`).toString("base64");
+    const credentials = Buffer.from(`${this.tokenId}:${this.token}`).toString(
+      "base64",
+    );
     return `Basic ${credentials}`;
   }
 
@@ -82,7 +89,7 @@ export class SipgateClient {
   private async request<T>(
     method: string,
     endpoint: string,
-    body?: unknown
+    body?: unknown,
   ): Promise<T> {
     if (!this.isConfigured) {
       // Return mock data when not configured
@@ -91,7 +98,7 @@ export class SipgateClient {
 
     const url = `${this.baseUrl}${endpoint}`;
     const headers: Record<string, string> = {
-      "Authorization": this.getAuthHeader(),
+      Authorization: this.getAuthHeader(),
       "Content-Type": "application/json",
     };
 
@@ -106,9 +113,11 @@ export class SipgateClient {
 
     try {
       const response = await fetch(url, options);
-      
+
       if (!response.ok) {
-        throw new Error(`Sipgate API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Sipgate API error: ${response.status} ${response.statusText}`,
+        );
       }
 
       const contentType = response.headers.get("content-type");
@@ -130,16 +139,21 @@ export class SipgateClient {
     const mocks: Record<string, unknown> = {
       "/users": {
         items: [
-          { id: "w0", firstname: "Max", lastname: "Mustermann", email: "max@example.com" }
-        ]
+          {
+            id: "w0",
+            firstname: "Max",
+            lastname: "Mustermann",
+            email: "max@example.com",
+          },
+        ],
       },
       "/devices": {
         items: [
-          { id: "e0", alias: "Haupttelefon", type: "register", online: true }
-        ]
+          { id: "e0", alias: "Haupttelefon", type: "register", online: true },
+        ],
       },
       "/history": {
-        items: []
+        items: [],
       },
     };
 
@@ -178,11 +192,11 @@ export class SipgateClient {
     if (params?.limit) queryParams.set("limit", String(params.limit));
     if (params?.offset) queryParams.set("offset", String(params.offset));
     if (params?.direction) queryParams.set("direction", params.direction);
-    
+
     const query = queryParams.toString();
     return this.request<{ items: SipgateCall[] }>(
       "GET",
-      `/history${query ? `?${query}` : ""}`
+      `/history${query ? `?${query}` : ""}`,
     );
   }
 
@@ -195,7 +209,9 @@ export class SipgateClient {
     callee: string;
   }): Promise<{ sessionId: string }> {
     if (!this.isConfigured) {
-      console.log(`📞 [Sipgate Mock] Initiating call from ${params.caller} to ${params.callee}`);
+      console.log(
+        `📞 [Sipgate Mock] Initiating call from ${params.caller} to ${params.callee}`,
+      );
       return { sessionId: `mock-${Date.now()}` };
     }
 
@@ -215,7 +231,9 @@ export class SipgateClient {
     message: string;
   }): Promise<SipgateSMS> {
     if (!this.isConfigured) {
-      console.log(`📱 [Sipgate Mock] Sending SMS to ${params.recipient}: ${params.message}`);
+      console.log(
+        `📱 [Sipgate Mock] Sending SMS to ${params.recipient}: ${params.message}`,
+      );
       return {
         id: `sms-${Date.now()}`,
         to: params.recipient,

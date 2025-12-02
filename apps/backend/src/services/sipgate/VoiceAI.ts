@@ -56,7 +56,7 @@ export class VoiceAI {
    */
   async textToSpeech(
     text: string,
-    options?: TTSOptions
+    options?: TTSOptions,
   ): Promise<{ audioBase64: string; audioUrl?: string }> {
     const voice = options?.voice || this.defaultTTSVoice;
     const language = options?.language || this.defaultLanguage;
@@ -65,7 +65,9 @@ export class VoiceAI {
 
     // Mock implementation
     // In production, call actual TTS API
-    const mockAudioBase64 = Buffer.from(`TTS Audio for: ${text}`).toString("base64");
+    const mockAudioBase64 = Buffer.from(`TTS Audio for: ${text}`).toString(
+      "base64",
+    );
 
     return {
       audioBase64: mockAudioBase64,
@@ -83,7 +85,7 @@ export class VoiceAI {
    */
   async speechToText(
     audioBase64: string,
-    options?: STTOptions
+    options?: STTOptions,
   ): Promise<TranscriptionResult> {
     const language = options?.language || this.defaultLanguage;
 
@@ -100,7 +102,12 @@ export class VoiceAI {
         { word: "Dies", startTime: 0.0, endTime: 0.3, confidence: 0.98 },
         { word: "ist", startTime: 0.3, endTime: 0.5, confidence: 0.97 },
         { word: "ein", startTime: 0.5, endTime: 0.7, confidence: 0.96 },
-        { word: "Beispieltext", startTime: 0.7, endTime: 1.5, confidence: 0.94 },
+        {
+          word: "Beispieltext",
+          startTime: 0.7,
+          endTime: 1.5,
+          confidence: 0.94,
+        },
       ],
     };
   }
@@ -120,7 +127,9 @@ export class VoiceAI {
   }): Promise<VoiceResponse> {
     const { transcript, callerInfo, context } = params;
 
-    console.log(`🤖 [VoiceAI] Generating response for: "${transcript.substring(0, 50)}..."`);
+    console.log(
+      `🤖 [VoiceAI] Generating response for: "${transcript.substring(0, 50)}..."`,
+    );
 
     // Intent detection (simplified)
     const intent = this.detectIntent(transcript);
@@ -229,7 +238,7 @@ export class VoiceAI {
    */
   async transcribeCall(
     audioBase64: string,
-    options?: STTOptions
+    options?: STTOptions,
   ): Promise<TranscriptionResult> {
     return this.speechToText(audioBase64, options);
   }
@@ -255,10 +264,7 @@ export class VoiceAI {
         "Preisanfrage gestellt",
         "Rückruf gewünscht",
       ],
-      actionItems: [
-        "Angebot erstellen",
-        "Rückruf vereinbaren",
-      ],
+      actionItems: ["Angebot erstellen", "Rückruf vereinbaren"],
       sentiment: "neutral",
     };
   }

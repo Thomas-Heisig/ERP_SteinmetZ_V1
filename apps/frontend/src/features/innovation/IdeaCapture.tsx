@@ -5,11 +5,18 @@ import React, { useState } from "react";
 import { Button, Input, Card } from "../../components/ui";
 
 interface IdeaCaptureProps {
-  onSubmit?: (idea: { title: string; description: string; tags: string[] }) => void;
+  onSubmit?: (idea: {
+    title: string;
+    description: string;
+    tags: string[];
+  }) => void;
   onClose?: () => void;
 }
 
-export const IdeaCapture: React.FC<IdeaCaptureProps> = ({ onSubmit, onClose }) => {
+export const IdeaCapture: React.FC<IdeaCaptureProps> = ({
+  onSubmit,
+  onClose,
+}) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tagInput, setTagInput] = useState("");
@@ -173,13 +180,23 @@ export const IdeaCapture: React.FC<IdeaCaptureProps> = ({ onSubmit, onClose }) =
             )}
           </div>
 
-          <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              justifyContent: "flex-end",
+            }}
+          >
             {onClose && (
               <Button type="button" variant="ghost" onClick={onClose}>
                 Abbrechen
               </Button>
             )}
-            <Button type="submit" loading={isSubmitting} disabled={!title.trim()}>
+            <Button
+              type="submit"
+              loading={isSubmitting}
+              disabled={!title.trim()}
+            >
               🚀 Idee parken
             </Button>
           </div>

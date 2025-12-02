@@ -31,7 +31,7 @@ export const Modal: React.FC<ModalProps> = ({
         onClose();
       }
     },
-    [onClose, closeOnEscape]
+    [onClose, closeOnEscape],
   );
 
   useEffect(() => {

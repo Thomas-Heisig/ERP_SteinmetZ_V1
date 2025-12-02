@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/ui/Toast.tsx
 
-import React, { useEffect, useState, createContext, useContext, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+  useCallback,
+} from "react";
 import { createPortal } from "react-dom";
 
 export type ToastType = "success" | "error" | "warning" | "info";
@@ -39,7 +45,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       const id = Math.random().toString(36).substr(2, 9);
       setToasts((prev) => [...prev, { id, type, message, duration }]);
     },
-    []
+    [],
   );
 
   const removeToast = useCallback((id: string) => {
@@ -78,7 +84,7 @@ const ToastContainer: React.FC<{
         <ToastItem key={toast.id} toast={toast} onRemove={removeToast} />
       ))}
     </div>,
-    document.body
+    document.body,
   );
 };
 
@@ -93,7 +99,10 @@ const ToastItem: React.FC<{
     }
   }, [toast.id, toast.duration, onRemove]);
 
-  const typeStyles: Record<ToastType, { bg: string; border: string; icon: string }> = {
+  const typeStyles: Record<
+    ToastType,
+    { bg: string; border: string; icon: string }
+  > = {
     success: {
       bg: "var(--success-50)",
       border: "var(--success-500)",
@@ -156,10 +165,26 @@ const ToastItem: React.FC<{
 
 // Convenience functions
 export const toast = {
-  success: (message: string, duration?: number) => ({ type: "success" as const, message, duration }),
-  error: (message: string, duration?: number) => ({ type: "error" as const, message, duration }),
-  warning: (message: string, duration?: number) => ({ type: "warning" as const, message, duration }),
-  info: (message: string, duration?: number) => ({ type: "info" as const, message, duration }),
+  success: (message: string, duration?: number) => ({
+    type: "success" as const,
+    message,
+    duration,
+  }),
+  error: (message: string, duration?: number) => ({
+    type: "error" as const,
+    message,
+    duration,
+  }),
+  warning: (message: string, duration?: number) => ({
+    type: "warning" as const,
+    message,
+    duration,
+  }),
+  info: (message: string, duration?: number) => ({
+    type: "info" as const,
+    message,
+    duration,
+  }),
 };
 
 export default ToastProvider;

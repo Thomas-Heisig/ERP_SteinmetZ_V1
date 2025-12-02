@@ -40,9 +40,7 @@ export class AutoRepair {
   /**
    * Startet eine automatische Reparatur-Session
    */
-  async startRepairSession(
-    dryRun = false
-  ): Promise<RepairSession> {
+  async startRepairSession(dryRun = false): Promise<RepairSession> {
     const sessionId = crypto.randomUUID();
     const session: RepairSession = {
       id: sessionId,
@@ -56,7 +54,7 @@ export class AutoRepair {
     try {
       const issues = await this.healthMonitor.findIntegrityIssues();
       console.log(
-        `🔧 [AutoRepair] Starting repair session ${sessionId} with ${issues.length} issues`
+        `🔧 [AutoRepair] Starting repair session ${sessionId} with ${issues.length} issues`,
       );
 
       for (const issue of issues) {
@@ -71,14 +69,14 @@ export class AutoRepair {
       this.cleanupOldSessions();
 
       console.log(
-        `✅ [AutoRepair] Session ${sessionId} completed: ${session.results.filter((r) => r.success).length}/${session.results.length} repairs successful`
+        `✅ [AutoRepair] Session ${sessionId} completed: ${session.results.filter((r) => r.success).length}/${session.results.length} repairs successful`,
       );
     } catch (error) {
       session.status = "failed";
       session.endTime = new Date();
       console.error(
         `❌ [AutoRepair] Session ${sessionId} failed:`,
-        error instanceof Error ? error.message : error
+        error instanceof Error ? error.message : error,
       );
     }
 
@@ -90,7 +88,7 @@ export class AutoRepair {
    */
   private async repairIssue(
     issue: IntegrityIssue,
-    dryRun: boolean
+    dryRun: boolean,
   ): Promise<RepairResult> {
     const result: RepairResult = {
       timestamp: new Date(),
@@ -132,7 +130,7 @@ export class AutoRepair {
   private async repairOrphanEdge(
     issue: IntegrityIssue,
     result: RepairResult,
-    dryRun: boolean
+    dryRun: boolean,
   ): Promise<void> {
     if (!issue.recordId) {
       result.error = "No record ID provided";
@@ -144,7 +142,7 @@ export class AutoRepair {
     // Backup erstellen
     const existingEdge = await db.get(
       "SELECT * FROM functions_edges WHERE parent_id = ? AND child_id = ?",
-      [parentId, childId]
+      [parentId, childId],
     );
 
     if (!existingEdge) {
@@ -164,7 +162,7 @@ export class AutoRepair {
 
     await db.run(
       "DELETE FROM functions_edges WHERE parent_id = ? AND child_id = ?",
-      [parentId, childId]
+      [parentId, childId],
     );
 
     result.action = `DELETED orphan edge ${parentId} -> ${childId}`;
@@ -177,7 +175,7 @@ export class AutoRepair {
   private async repairInvalidData(
     issue: IntegrityIssue,
     result: RepairResult,
-    dryRun: boolean
+    dryRun: boolean,
   ): Promise<void> {
     if (!issue.recordId) {
       result.error = "No record ID provided";
@@ -187,7 +185,7 @@ export class AutoRepair {
     // Backup erstellen
     const existingNode = await db.get(
       "SELECT * FROM functions_nodes WHERE id = ?",
-      [issue.recordId]
+      [issue.recordId],
     );
 
     if (!existingNode) {
@@ -214,7 +212,7 @@ export class AutoRepair {
 
       await db.run(
         "UPDATE functions_nodes SET title = ?, updated_at = datetime('now') WHERE id = ?",
-        [newTitle, issue.recordId]
+        [newTitle, issue.recordId],
       );
 
       result.action = `UPDATED title to "${newTitle}"`;
@@ -231,7 +229,7 @@ export class AutoRepair {
   private async repairDuplicate(
     issue: IntegrityIssue,
     result: RepairResult,
-    dryRun: boolean
+    dryRun: boolean,
   ): Promise<void> {
     // Duplikate werden vorerst nur gemeldet, nicht automatisch gelöscht
     result.action = "REPORTED_ONLY";
@@ -246,13 +244,12 @@ export class AutoRepair {
   private async repairMissingReference(
     issue: IntegrityIssue,
     result: RepairResult,
-    dryRun: boolean
+    dryRun: boolean,
   ): Promise<void> {
     // Fehlende Referenzen werden vorerst nur gemeldet
     result.action = "REPORTED_ONLY";
     result.success = true;
-    result.error =
-      "Missing reference repair requires manual review";
+    result.error = "Missing reference repair requires manual review";
   }
 
   /**
@@ -279,7 +276,7 @@ export class AutoRepair {
         } catch (error) {
           console.error(
             `❌ [AutoRepair] Rollback failed for ${result.issue.recordId}:`,
-            error
+            error,
           );
         }
       }
@@ -287,7 +284,7 @@ export class AutoRepair {
 
     session.status = "rolledback";
     console.log(
-      `✅ [AutoRepair] Session ${sessionId} rolled back (${rollbackCount} actions undone)`
+      `✅ [AutoRepair] Session ${sessionId} rolled back (${rollbackCount} actions undone)`,
     );
 
     return true;
@@ -308,13 +305,13 @@ export class AutoRepair {
           data.child_id,
           data.weight ?? 1,
           data.relationship_type ?? "contains",
-        ]
+        ],
       );
     } else if (result.issue.type === "invalid_data" && data) {
       // Node wiederherstellen
       await db.run(
         "UPDATE functions_nodes SET title = ?, updated_at = datetime('now') WHERE id = ?",
-        [data.title, data.id]
+        [data.title, data.id],
       );
     }
   }
@@ -325,12 +322,13 @@ export class AutoRepair {
   private cleanupOldSessions(): void {
     if (this.sessions.size <= this.maxSessionsKept) return;
 
-    const sortedSessions = Array.from(this.sessions.entries())
-      .sort((a, b) => a[1].startTime.getTime() - b[1].startTime.getTime());
+    const sortedSessions = Array.from(this.sessions.entries()).sort(
+      (a, b) => a[1].startTime.getTime() - b[1].startTime.getTime(),
+    );
 
     const toRemove = sortedSessions.slice(
       0,
-      sortedSessions.length - this.maxSessionsKept
+      sortedSessions.length - this.maxSessionsKept,
     );
     for (const [id] of toRemove) {
       this.sessions.delete(id);

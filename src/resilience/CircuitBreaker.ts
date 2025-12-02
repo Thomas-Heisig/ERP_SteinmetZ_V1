@@ -4,18 +4,18 @@
      await cb.call(() => someRemoteCall());
 */
 
-type CBState = 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+type CBState = "CLOSED" | "OPEN" | "HALF_OPEN";
 
 export class CircuitBreaker {
   private failureCount = 0;
   private successCount = 0;
-  private state: CBState = 'CLOSED';
+  private state: CBState = "CLOSED";
   private lastFailureAt: number | null = null;
 
   constructor(
     private failureThreshold = 5,
     private successThreshold = 2,
-    private timeoutMs = 30_000
+    private timeoutMs = 30_000,
   ) {}
 
   private now() {
@@ -28,12 +28,12 @@ export class CircuitBreaker {
   }
 
   async call<T>(fn: () => Promise<T>): Promise<T> {
-    if (this.state === 'OPEN' && !this.isTimeoutExpired()) {
-      throw new Error('Circuit is open');
+    if (this.state === "OPEN" && !this.isTimeoutExpired()) {
+      throw new Error("Circuit is open");
     }
 
-    if (this.state === 'OPEN' && this.isTimeoutExpired()) {
-      this.state = 'HALF_OPEN';
+    if (this.state === "OPEN" && this.isTimeoutExpired()) {
+      this.state = "HALF_OPEN";
     }
 
     try {
@@ -47,7 +47,7 @@ export class CircuitBreaker {
   }
 
   private onSuccess() {
-    if (this.state === 'HALF_OPEN') {
+    if (this.state === "HALF_OPEN") {
       this.successCount += 1;
       if (this.successCount >= this.successThreshold) {
         this.reset();
@@ -62,14 +62,14 @@ export class CircuitBreaker {
     this.lastFailureAt = this.now();
 
     if (this.failureCount >= this.failureThreshold) {
-      this.state = 'OPEN';
+      this.state = "OPEN";
     }
   }
 
   private reset() {
     this.failureCount = 0;
     this.successCount = 0;
-    this.state = 'CLOSED';
+    this.state = "CLOSED";
     this.lastFailureAt = null;
   }
 

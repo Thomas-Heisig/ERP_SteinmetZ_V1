@@ -7,7 +7,7 @@
 export async function retryWithBackoff<T>(
   fn: () => Promise<T>,
   maxRetries = 3,
-  baseMs = 200
+  baseMs = 200,
 ): Promise<T> {
   let attempt = 0;
   while (true) {

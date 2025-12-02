@@ -54,7 +54,9 @@ export class FaxProcessor {
     this.processedFaxes.set(fax.id, fax);
     this.pendingQueue.push(fax);
 
-    console.log(`📠 [FaxProcessor] Received fax from ${fax.from} (${fax.pages} pages)`);
+    console.log(
+      `📠 [FaxProcessor] Received fax from ${fax.from} (${fax.pages} pages)`,
+    );
 
     // Start async processing
     this.processFaxAsync(fax, webhookData.base64Content);
@@ -65,7 +67,10 @@ export class FaxProcessor {
   /**
    * Process fax asynchronously (OCR + Classification)
    */
-  private async processFaxAsync(fax: FaxDocument, base64Content?: string): Promise<void> {
+  private async processFaxAsync(
+    fax: FaxDocument,
+    base64Content?: string,
+  ): Promise<void> {
     try {
       // Update status
       fax.status = "processing";
@@ -91,10 +96,13 @@ export class FaxProcessor {
       }
 
       console.log(
-        `✅ [FaxProcessor] Processed fax ${fax.id}: ${fax.classification?.type || "unknown"} (${(fax.classification?.confidence || 0) * 100}% confidence)`
+        `✅ [FaxProcessor] Processed fax ${fax.id}: ${fax.classification?.type || "unknown"} (${(fax.classification?.confidence || 0) * 100}% confidence)`,
       );
     } catch (error) {
-      console.error(`❌ [FaxProcessor] Failed to process fax ${fax.id}:`, error);
+      console.error(
+        `❌ [FaxProcessor] Failed to process fax ${fax.id}:`,
+        error,
+      );
       fax.status = "failed";
       this.processedFaxes.set(fax.id, fax);
     }
@@ -113,7 +121,7 @@ export class FaxProcessor {
     // - Azure Computer Vision
 
     console.log("🔍 [FaxProcessor] Performing OCR...");
-    
+
     // Simulate OCR processing time
     await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -141,7 +149,7 @@ Sender
 
     // Simple keyword-based classification
     // In production, use ML models for better accuracy
-    
+
     if (lowerText.includes("rechnung") || lowerText.includes("invoice")) {
       return {
         type: "invoice",
@@ -156,7 +164,7 @@ Sender
     if (lowerText.includes("bestellung") || lowerText.includes("order")) {
       return {
         type: "order",
-        confidence: 0.80,
+        confidence: 0.8,
         suggestedAction: "Create new order in system",
       };
     }
@@ -172,14 +180,14 @@ Sender
     if (lowerText.includes("beschwerde") || lowerText.includes("complaint")) {
       return {
         type: "complaint",
-        confidence: 0.80,
+        confidence: 0.8,
         suggestedAction: "Route to customer service",
       };
     }
 
     return {
       type: "other",
-      confidence: 0.50,
+      confidence: 0.5,
       suggestedAction: "Manual review required",
     };
   }
@@ -231,7 +239,8 @@ Sender
     }
 
     faxes.sort(
-      (a, b) => new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime()
+      (a, b) =>
+        new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime(),
     );
 
     if (params?.limit) {

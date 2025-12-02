@@ -64,7 +64,7 @@ export const FaxInbox: React.FC = () => {
         status: "processing",
       },
     ];
-    
+
     setFaxes(mockFaxes);
     setLoading(false);
   }, []);
@@ -80,12 +80,29 @@ export const FaxInbox: React.FC = () => {
   };
 
   const getStatusBadge = (status: FaxDocument["status"]) => {
-    const config: Record<string, { label: string; bg: string; color: string }> = {
-      received: { label: "Empfangen", bg: "var(--info-50)", color: "var(--info-500)" },
-      processing: { label: "Wird verarbeitet", bg: "var(--warning-50)", color: "var(--warning-500)" },
-      processed: { label: "Verarbeitet", bg: "var(--success-50)", color: "var(--success-500)" },
-      failed: { label: "Fehlgeschlagen", bg: "var(--error-50)", color: "var(--error-500)" },
-    };
+    const config: Record<string, { label: string; bg: string; color: string }> =
+      {
+        received: {
+          label: "Empfangen",
+          bg: "var(--info-50)",
+          color: "var(--info-500)",
+        },
+        processing: {
+          label: "Wird verarbeitet",
+          bg: "var(--warning-50)",
+          color: "var(--warning-500)",
+        },
+        processed: {
+          label: "Verarbeitet",
+          bg: "var(--success-50)",
+          color: "var(--success-500)",
+        },
+        failed: {
+          label: "Fehlgeschlagen",
+          bg: "var(--error-50)",
+          color: "var(--error-500)",
+        },
+      };
     const c = config[status];
     return (
       <span
@@ -103,7 +120,9 @@ export const FaxInbox: React.FC = () => {
     );
   };
 
-  const getClassificationBadge = (classification?: FaxDocument["classification"]) => {
+  const getClassificationBadge = (
+    classification?: FaxDocument["classification"],
+  ) => {
     if (!classification) return null;
 
     const typeLabels: Record<string, string> = {
@@ -124,8 +143,8 @@ export const FaxInbox: React.FC = () => {
           fontSize: "0.75rem",
         }}
       >
-        {typeLabels[classification.type] || classification.type}{" "}
-        ({Math.round(classification.confidence * 100)}%)
+        {typeLabels[classification.type] || classification.type} (
+        {Math.round(classification.confidence * 100)}%)
       </span>
     );
   };
@@ -154,12 +173,14 @@ export const FaxInbox: React.FC = () => {
       key: "status",
       header: "Status",
       width: "140px",
-      render: (value: unknown) => getStatusBadge(value as FaxDocument["status"]),
+      render: (value: unknown) =>
+        getStatusBadge(value as FaxDocument["status"]),
     },
     {
       key: "classification",
       header: "Klassifikation",
-      render: (value: unknown) => getClassificationBadge(value as FaxDocument["classification"]),
+      render: (value: unknown) =>
+        getClassificationBadge(value as FaxDocument["classification"]),
     },
     {
       key: "actions",
@@ -219,7 +240,9 @@ export const FaxInbox: React.FC = () => {
         size="lg"
       >
         {selectedFax && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
             <div
               style={{
                 display: "grid",
@@ -258,7 +281,8 @@ export const FaxInbox: React.FC = () => {
                 <strong>KI-Klassifikation:</strong>
                 <p style={{ margin: "0.5rem 0" }}>
                   Typ: {selectedFax.classification.type} (
-                  {Math.round(selectedFax.classification.confidence * 100)}% Konfidenz)
+                  {Math.round(selectedFax.classification.confidence * 100)}%
+                  Konfidenz)
                 </p>
                 {selectedFax.classification.suggestedAction && (
                   <p style={{ margin: 0, color: "var(--primary-600)" }}>
@@ -288,7 +312,13 @@ export const FaxInbox: React.FC = () => {
               </div>
             )}
 
-            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "0.5rem",
+                justifyContent: "flex-end",
+              }}
+            >
               <Button variant="outline">📥 Herunterladen</Button>
               <Button variant="primary">✅ Verarbeiten</Button>
             </div>

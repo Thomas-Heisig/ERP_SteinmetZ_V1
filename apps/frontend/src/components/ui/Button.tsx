@@ -66,7 +66,8 @@ export const Button: React.FC<ButtonProps> = ({
             : size === "lg"
               ? "0.75rem 1.5rem"
               : "0.5rem 1rem",
-        fontSize: size === "sm" ? "0.875rem" : size === "lg" ? "1.125rem" : "1rem",
+        fontSize:
+          size === "sm" ? "0.875rem" : size === "lg" ? "1.125rem" : "1rem",
         background:
           variant === "primary"
             ? "var(--primary-500)"
@@ -79,8 +80,7 @@ export const Button: React.FC<ButtonProps> = ({
           variant === "primary" || variant === "danger"
             ? "white"
             : "var(--text-primary)",
-        border:
-          variant === "outline" ? "1px solid var(--border)" : "none",
+        border: variant === "outline" ? "1px solid var(--border)" : "none",
       }}
       {...props}
     >

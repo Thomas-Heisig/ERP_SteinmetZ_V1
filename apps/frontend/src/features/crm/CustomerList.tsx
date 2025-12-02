@@ -21,7 +21,9 @@ export const CustomerList: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
 
   useEffect(() => {
     const mockCustomers: Customer[] = [
@@ -72,11 +74,30 @@ export const CustomerList: React.FC = () => {
   });
 
   const getStatusBadge = (status: CustomerStatus) => {
-    const config: Record<CustomerStatus, { label: string; color: string; bg: string }> = {
-      lead: { label: "Lead", bg: "var(--primary-50)", color: "var(--primary-600)" },
-      prospect: { label: "Interessent", bg: "var(--warning-50)", color: "var(--warning-600)" },
-      customer: { label: "Kunde", bg: "var(--success-50)", color: "var(--success-600)" },
-      inactive: { label: "Inaktiv", bg: "var(--gray-100)", color: "var(--gray-600)" },
+    const config: Record<
+      CustomerStatus,
+      { label: string; color: string; bg: string }
+    > = {
+      lead: {
+        label: "Lead",
+        bg: "var(--primary-50)",
+        color: "var(--primary-600)",
+      },
+      prospect: {
+        label: "Interessent",
+        bg: "var(--warning-50)",
+        color: "var(--warning-600)",
+      },
+      customer: {
+        label: "Kunde",
+        bg: "var(--success-50)",
+        color: "var(--success-600)",
+      },
+      inactive: {
+        label: "Inaktiv",
+        bg: "var(--gray-100)",
+        color: "var(--gray-600)",
+      },
     };
     const c = config[status];
     return (
@@ -96,7 +117,10 @@ export const CustomerList: React.FC = () => {
   };
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(amount);
+    new Intl.NumberFormat("de-DE", {
+      style: "currency",
+      currency: "EUR",
+    }).format(amount);
 
   const columns = [
     {
@@ -123,20 +147,26 @@ export const CustomerList: React.FC = () => {
       key: "revenue",
       header: "Umsatz",
       width: "120px",
-      render: (value: unknown) => ((value as number) > 0 ? formatCurrency(value as number) : "-"),
+      render: (value: unknown) =>
+        (value as number) > 0 ? formatCurrency(value as number) : "-",
     },
     {
       key: "lastContact",
       header: "Letzter Kontakt",
       width: "120px",
-      render: (value: unknown) => new Date(value as string).toLocaleDateString("de-DE"),
+      render: (value: unknown) =>
+        new Date(value as string).toLocaleDateString("de-DE"),
     },
     {
       key: "actions",
       header: "",
       width: "80px",
       render: (_: unknown, row: Customer) => (
-        <Button variant="ghost" size="sm" onClick={() => setSelectedCustomer(row)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setSelectedCustomer(row)}
+        >
           👁️
         </Button>
       ),
@@ -184,34 +214,60 @@ export const CustomerList: React.FC = () => {
         size="md"
       >
         {selectedCustomer && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "1rem",
+              }}
+            >
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                <label
+                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
+                >
                   Ansprechpartner
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>{selectedCustomer.contactPerson}</p>
+                <p style={{ margin: "0.25rem 0" }}>
+                  {selectedCustomer.contactPerson}
+                </p>
               </div>
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                <label
+                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
+                >
                   E-Mail
                 </label>
                 <p style={{ margin: "0.25rem 0" }}>{selectedCustomer.email}</p>
               </div>
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                <label
+                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
+                >
                   Telefon
                 </label>
                 <p style={{ margin: "0.25rem 0" }}>{selectedCustomer.phone}</p>
               </div>
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                <label
+                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
+                >
                   Umsatz
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>{formatCurrency(selectedCustomer.revenue)}</p>
+                <p style={{ margin: "0.25rem 0" }}>
+                  {formatCurrency(selectedCustomer.revenue)}
+                </p>
               </div>
             </div>
-            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "0.5rem",
+                justifyContent: "flex-end",
+              }}
+            >
               <Button variant="outline">✏️ Bearbeiten</Button>
               <Button variant="primary">📞 Kontaktieren</Button>
             </div>

@@ -4,7 +4,13 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button } from "../../components/ui";
 
-type IdeaPhase = "parked" | "analysis" | "development" | "testing" | "completed" | "archived";
+type IdeaPhase =
+  | "parked"
+  | "analysis"
+  | "development"
+  | "testing"
+  | "completed"
+  | "archived";
 
 interface Idea {
   id: string;
@@ -23,15 +29,39 @@ interface IdeaBoardProps {
   onPhaseChange?: (ideaId: string, newPhase: IdeaPhase) => void;
 }
 
-const PHASES: { key: IdeaPhase; label: string; icon: string; color: string }[] = [
-  { key: "parked", label: "Geparkt", icon: "🅿️", color: "var(--gray-500)" },
-  { key: "analysis", label: "In Analyse", icon: "🔍", color: "var(--info-500)" },
-  { key: "development", label: "In Entwicklung", icon: "🛠️", color: "var(--warning-500)" },
-  { key: "testing", label: "Testing", icon: "🧪", color: "var(--primary-500)" },
-  { key: "completed", label: "Abgeschlossen", icon: "✅", color: "var(--success-500)" },
-];
+const PHASES: { key: IdeaPhase; label: string; icon: string; color: string }[] =
+  [
+    { key: "parked", label: "Geparkt", icon: "🅿️", color: "var(--gray-500)" },
+    {
+      key: "analysis",
+      label: "In Analyse",
+      icon: "🔍",
+      color: "var(--info-500)",
+    },
+    {
+      key: "development",
+      label: "In Entwicklung",
+      icon: "🛠️",
+      color: "var(--warning-500)",
+    },
+    {
+      key: "testing",
+      label: "Testing",
+      icon: "🧪",
+      color: "var(--primary-500)",
+    },
+    {
+      key: "completed",
+      label: "Abgeschlossen",
+      icon: "✅",
+      color: "var(--success-500)",
+    },
+  ];
 
-export const IdeaBoard: React.FC<IdeaBoardProps> = ({ onIdeaClick, onPhaseChange }) => {
+export const IdeaBoard: React.FC<IdeaBoardProps> = ({
+  onIdeaClick,
+  onPhaseChange,
+}) => {
   const [ideas, setIdeas] = useState<Record<IdeaPhase, Idea[]>>({
     parked: [],
     analysis: [],
@@ -78,20 +108,26 @@ export const IdeaBoard: React.FC<IdeaBoardProps> = ({ onIdeaClick, onPhaseChange
     if (!draggedIdea || draggedIdea.phase === targetPhase) return;
 
     try {
-      const response = await fetch(`/api/innovation/ideas/${draggedIdea.id}/phase`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phase: targetPhase }),
-      });
+      const response = await fetch(
+        `/api/innovation/ideas/${draggedIdea.id}/phase`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phase: targetPhase }),
+        },
+      );
 
       if (response.ok) {
         // Update local state
         setIdeas((prev) => {
           const newIdeas = { ...prev };
           newIdeas[draggedIdea.phase] = newIdeas[draggedIdea.phase].filter(
-            (i) => i.id !== draggedIdea.id
+            (i) => i.id !== draggedIdea.id,
           );
-          newIdeas[targetPhase] = [...newIdeas[targetPhase], { ...draggedIdea, phase: targetPhase }];
+          newIdeas[targetPhase] = [
+            ...newIdeas[targetPhase],
+            { ...draggedIdea, phase: targetPhase },
+          ];
           return newIdeas;
         });
         onPhaseChange?.(draggedIdea.id, targetPhase);
@@ -105,7 +141,9 @@ export const IdeaBoard: React.FC<IdeaBoardProps> = ({ onIdeaClick, onPhaseChange
 
   if (loading) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", padding: "3rem" }}>
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "3rem" }}
+      >
         <div
           style={{
             width: "40px",
@@ -200,7 +238,13 @@ export const IdeaBoard: React.FC<IdeaBoardProps> = ({ onIdeaClick, onPhaseChange
                   transition: "all 0.2s ease",
                 }}
               >
-                <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.875rem", fontWeight: 600 }}>
+                <h4
+                  style={{
+                    margin: "0 0 0.5rem",
+                    fontSize: "0.875rem",
+                    fontWeight: 600,
+                  }}
+                >
                   {idea.title}
                 </h4>
                 {idea.description && (
@@ -220,7 +264,13 @@ export const IdeaBoard: React.FC<IdeaBoardProps> = ({ onIdeaClick, onPhaseChange
                   </p>
                 )}
                 {idea.tags.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "0.25rem",
+                    }}
+                  >
                     {idea.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
@@ -260,7 +310,9 @@ export const IdeaBoard: React.FC<IdeaBoardProps> = ({ onIdeaClick, onPhaseChange
                   }}
                 >
                   <span>👤 {idea.author}</span>
-                  <span>{new Date(idea.createdAt).toLocaleDateString("de-DE")}</span>
+                  <span>
+                    {new Date(idea.createdAt).toLocaleDateString("de-DE")}
+                  </span>
                 </div>
               </div>
             ))}

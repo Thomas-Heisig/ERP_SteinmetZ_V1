@@ -20,7 +20,9 @@ export const EmployeeList: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
+    null,
+  );
 
   useEffect(() => {
     // Mock data
@@ -56,7 +58,7 @@ export const EmployeeList: React.FC = () => {
         status: "on_leave",
       },
     ];
-    
+
     setEmployees(mockEmployees);
     setLoading(false);
   }, []);
@@ -141,7 +143,8 @@ export const EmployeeList: React.FC = () => {
       key: "startDate",
       header: "Eintritt",
       width: "100px",
-      render: (value: unknown) => new Date(value as string).toLocaleDateString("de-DE"),
+      render: (value: unknown) =>
+        new Date(value as string).toLocaleDateString("de-DE"),
     },
     {
       key: "status",
@@ -154,7 +157,11 @@ export const EmployeeList: React.FC = () => {
       header: "",
       width: "80px",
       render: (_: unknown, row: Employee) => (
-        <Button variant="ghost" size="sm" onClick={() => setSelectedEmployee(row)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setSelectedEmployee(row)}
+        >
           👁️
         </Button>
       ),
@@ -202,36 +209,64 @@ export const EmployeeList: React.FC = () => {
         size="md"
       >
         {selectedEmployee && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "1rem",
+              }}
+            >
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                <label
+                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
+                >
                   E-Mail
                 </label>
                 <p style={{ margin: "0.25rem 0" }}>{selectedEmployee.email}</p>
               </div>
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                <label
+                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
+                >
                   Abteilung
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>{selectedEmployee.department}</p>
+                <p style={{ margin: "0.25rem 0" }}>
+                  {selectedEmployee.department}
+                </p>
               </div>
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                <label
+                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
+                >
                   Position
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>{selectedEmployee.position}</p>
+                <p style={{ margin: "0.25rem 0" }}>
+                  {selectedEmployee.position}
+                </p>
               </div>
               <div>
-                <label style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+                <label
+                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
+                >
                   Eintritt
                 </label>
                 <p style={{ margin: "0.25rem 0" }}>
-                  {new Date(selectedEmployee.startDate).toLocaleDateString("de-DE")}
+                  {new Date(selectedEmployee.startDate).toLocaleDateString(
+                    "de-DE",
+                  )}
                 </p>
               </div>
             </div>
-            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "0.5rem",
+                justifyContent: "flex-end",
+              }}
+            >
               <Button variant="outline">✏️ Bearbeiten</Button>
               <Button variant="primary">📅 Zeiterfassung</Button>
             </div>
