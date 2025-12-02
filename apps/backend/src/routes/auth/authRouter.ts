@@ -12,6 +12,31 @@ import {
 
 const router = Router();
 
+// Helper to parse JWT expiry to milliseconds
+function parseExpiryToMs(expiry: string): number {
+  const match = expiry.match(/^(\d+)([smhd])$/);
+  if (!match) return 24 * 60 * 60 * 1000; // Default 24h
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2];
+
+  switch (unit) {
+    case "s":
+      return value * 1000;
+    case "m":
+      return value * 60 * 1000;
+    case "h":
+      return value * 60 * 60 * 1000;
+    case "d":
+      return value * 24 * 60 * 60 * 1000;
+    default:
+      return 24 * 60 * 60 * 1000;
+  }
+}
+
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "24h";
+const COOKIE_MAX_AGE = parseExpiryToMs(JWT_EXPIRES_IN);
+
 // Validation schemas
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -104,7 +129,7 @@ router.post("/login", rateLimitLogin, async (req: Request, res: Response) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        maxAge: COOKIE_MAX_AGE,
       });
     }
 
@@ -182,7 +207,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: COOKIE_MAX_AGE,
     });
 
     res.json({
