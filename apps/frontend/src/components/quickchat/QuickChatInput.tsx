@@ -19,7 +19,10 @@ interface QuickChatInputProps {
   disabled?: boolean;
 }
 
-export const QuickChatInput: React.FC<QuickChatInputProps> = ({ onSend, disabled }) => {
+export const QuickChatInput: React.FC<QuickChatInputProps> = ({
+  onSend,
+  disabled,
+}) => {
   const [input, setInput] = useState("");
   const [showCommands, setShowCommands] = useState(false);
   const [filteredCommands, setFilteredCommands] = useState(COMMANDS);
@@ -32,7 +35,7 @@ export const QuickChatInput: React.FC<QuickChatInputProps> = ({ onSend, disabled
       const filtered = COMMANDS.filter(
         (c) =>
           c.command.toLowerCase().includes(search) ||
-          c.description.toLowerCase().includes(search.slice(1))
+          c.description.toLowerCase().includes(search.slice(1)),
       );
       setFilteredCommands(filtered);
       setShowCommands(filtered.length > 0);
@@ -56,12 +59,12 @@ export const QuickChatInput: React.FC<QuickChatInputProps> = ({ onSend, disabled
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setSelectedCommandIndex((prev) =>
-          prev < filteredCommands.length - 1 ? prev + 1 : 0
+          prev < filteredCommands.length - 1 ? prev + 1 : 0,
         );
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         setSelectedCommandIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredCommands.length - 1
+          prev > 0 ? prev - 1 : filteredCommands.length - 1,
         );
       } else if (e.key === "Tab" || e.key === "Enter") {
         if (filteredCommands.length > 0 && !input.includes(" ")) {
@@ -110,17 +113,28 @@ export const QuickChatInput: React.FC<QuickChatInputProps> = ({ onSend, disabled
                 display: "flex",
                 alignItems: "center",
                 gap: "0.75rem",
-                background: index === selectedCommandIndex ? "var(--primary-50)" : "transparent",
+                background:
+                  index === selectedCommandIndex
+                    ? "var(--primary-50)"
+                    : "transparent",
                 border: "none",
                 cursor: "pointer",
                 textAlign: "left",
                 transition: "background 0.15s ease",
               }}
             >
-              <span style={{ fontFamily: "monospace", fontWeight: 600, color: "var(--primary-600)" }}>
+              <span
+                style={{
+                  fontFamily: "monospace",
+                  fontWeight: 600,
+                  color: "var(--primary-600)",
+                }}
+              >
                 {cmd.command}
               </span>
-              <span style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>
+              <span
+                style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}
+              >
                 {cmd.description}
               </span>
             </button>

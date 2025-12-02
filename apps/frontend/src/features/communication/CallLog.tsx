@@ -51,7 +51,7 @@ export const CallLog: React.FC = () => {
         status: "missed",
       },
     ];
-    
+
     setCalls(mockCalls);
     setLoading(false);
   }, []);
@@ -79,11 +79,17 @@ export const CallLog: React.FC = () => {
     const date = new Date(timestamp);
     const now = new Date();
     const isToday = date.toDateString() === now.toDateString();
-    
+
     if (isToday) {
-      return date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+      return date.toLocaleTimeString("de-DE", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     }
-    return date.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+    return date.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+    });
   };
 
   const columns = [
@@ -102,7 +108,9 @@ export const CallLog: React.FC = () => {
       header: "Nummer",
       render: (value: unknown, row: Call) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{row.contactName || (value as string)}</div>
+          <div style={{ fontWeight: 500 }}>
+            {row.contactName || (value as string)}
+          </div>
           {row.contactName && (
             <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
               {value as string}
@@ -134,7 +142,10 @@ export const CallLog: React.FC = () => {
           missed: { label: "Verpasst", color: "var(--error-500)" },
           rejected: { label: "Abgelehnt", color: "var(--warning-500)" },
         };
-        const config = statusConfig[value as string] || { label: value as string, color: "var(--text-tertiary)" };
+        const config = statusConfig[value as string] || {
+          label: value as string,
+          color: "var(--text-tertiary)",
+        };
         return (
           <span style={{ color: config.color, fontSize: "0.875rem" }}>
             {config.label}
@@ -183,7 +194,11 @@ export const CallLog: React.FC = () => {
               size="sm"
               onClick={() => setFilter(f)}
             >
-              {f === "all" ? "Alle" : f === "incoming" ? "Eingehend" : "Ausgehend"}
+              {f === "all"
+                ? "Alle"
+                : f === "incoming"
+                  ? "Eingehend"
+                  : "Ausgehend"}
             </Button>
           ))}
         </div>

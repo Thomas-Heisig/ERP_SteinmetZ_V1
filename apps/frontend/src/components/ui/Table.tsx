@@ -46,7 +46,11 @@ export function Table<T extends object>({
 }: TableProps<T>) {
   const getNestedValue = (obj: T, path: string): unknown => {
     return path.split(".").reduce((acc: unknown, part) => {
-      if (acc && typeof acc === "object" && part in (acc as Record<string, unknown>)) {
+      if (
+        acc &&
+        typeof acc === "object" &&
+        part in (acc as Record<string, unknown>)
+      ) {
         return (acc as Record<string, unknown>)[part];
       }
       return undefined;
@@ -95,7 +99,9 @@ export function Table<T extends object>({
             {columns.map((column) => (
               <th
                 key={column.key as string}
-                onClick={() => column.sortable && onSort?.(column.key as string)}
+                onClick={() =>
+                  column.sortable && onSort?.(column.key as string)
+                }
                 style={{
                   padding: cellPadding,
                   textAlign: "left",
@@ -108,7 +114,13 @@ export function Table<T extends object>({
                   width: column.width,
                 }}
               >
-                <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
                   {column.header}
                   {column.sortable && sortColumn === column.key && (
                     <span>{sortDirection === "asc" ? "↑" : "↓"}</span>

@@ -35,7 +35,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       searchable = false,
       className = "",
     },
-    ref
+    ref,
   ) => {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
@@ -45,7 +45,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
 
     const filteredOptions = searchable
       ? options.filter((opt) =>
-          opt.label.toLowerCase().includes(search.toLowerCase())
+          opt.label.toLowerCase().includes(search.toLowerCase()),
         )
       : options;
 
@@ -60,7 +60,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       };
 
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     const handleSelect = (optionValue: string) => {
@@ -96,7 +97,9 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
               justifyContent: "space-between",
               padding: "0.5rem 0.75rem",
               fontSize: "1rem",
-              color: selectedOption ? "var(--text-primary)" : "var(--text-tertiary)",
+              color: selectedOption
+                ? "var(--text-primary)"
+                : "var(--text-tertiary)",
               background: "var(--surface)",
               border: `1px solid ${error ? "var(--error-500)" : isOpen ? "var(--primary-500)" : "var(--border)"}`,
               borderRadius: "8px",
@@ -105,11 +108,18 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
               transition: "border-color 0.2s ease",
             }}
           >
-            <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
               {selectedOption?.icon}
               {selectedOption?.label || placeholder}
             </span>
-            <span style={{ transition: "transform 0.2s ease", transform: isOpen ? "rotate(180deg)" : "none" }}>
+            <span
+              style={{
+                transition: "transform 0.2s ease",
+                transform: isOpen ? "rotate(180deg)" : "none",
+              }}
+            >
               ▼
             </span>
           </button>
@@ -132,7 +142,12 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
               }}
             >
               {searchable && (
-                <div style={{ padding: "0.5rem", borderBottom: "1px solid var(--border)" }}>
+                <div
+                  style={{
+                    padding: "0.5rem",
+                    borderBottom: "1px solid var(--border)",
+                  }}
+                >
                   <input
                     type="text"
                     value={search}
@@ -151,7 +166,13 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                 </div>
               )}
               {filteredOptions.length === 0 ? (
-                <div style={{ padding: "1rem", textAlign: "center", color: "var(--text-tertiary)" }}>
+                <div
+                  style={{
+                    padding: "1rem",
+                    textAlign: "center",
+                    color: "var(--text-tertiary)",
+                  }}
+                >
                   Keine Optionen gefunden
                 </div>
               ) : (
@@ -159,7 +180,9 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => !option.disabled && handleSelect(option.value)}
+                    onClick={() =>
+                      !option.disabled && handleSelect(option.value)
+                    }
                     disabled={option.disabled}
                     style={{
                       width: "100%",
@@ -168,9 +191,14 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                       gap: "0.5rem",
                       padding: "0.5rem 0.75rem",
                       textAlign: "left",
-                      background: option.value === value ? "var(--primary-50)" : "transparent",
+                      background:
+                        option.value === value
+                          ? "var(--primary-50)"
+                          : "transparent",
                       border: "none",
-                      color: option.disabled ? "var(--text-tertiary)" : "var(--text-primary)",
+                      color: option.disabled
+                        ? "var(--text-tertiary)"
+                        : "var(--text-primary)",
                       cursor: option.disabled ? "not-allowed" : "pointer",
                       transition: "background 0.2s ease",
                     }}
@@ -184,13 +212,20 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           )}
         </div>
         {error && (
-          <span style={{ display: "block", marginTop: "0.25rem", fontSize: "0.75rem", color: "var(--error-500)" }}>
+          <span
+            style={{
+              display: "block",
+              marginTop: "0.25rem",
+              fontSize: "0.75rem",
+              color: "var(--error-500)",
+            }}
+          >
             {error}
           </span>
         )}
       </div>
     );
-  }
+  },
 );
 
 Select.displayName = "Select";

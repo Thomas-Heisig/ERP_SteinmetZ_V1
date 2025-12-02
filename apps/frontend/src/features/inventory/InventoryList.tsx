@@ -72,12 +72,29 @@ export const InventoryList: React.FC = () => {
     );
   });
 
-  const getStatusBadge = (status: InventoryItem["status"], quantity: number, minQuantity: number) => {
-    const config: Record<string, { label: string; bg: string; color: string }> = {
-      in_stock: { label: "Auf Lager", bg: "var(--success-50)", color: "var(--success-600)" },
-      low_stock: { label: "Niedrig", bg: "var(--warning-50)", color: "var(--warning-600)" },
-      out_of_stock: { label: "Nicht verfügbar", bg: "var(--error-50)", color: "var(--error-600)" },
-    };
+  const getStatusBadge = (
+    status: InventoryItem["status"],
+    quantity: number,
+    minQuantity: number,
+  ) => {
+    const config: Record<string, { label: string; bg: string; color: string }> =
+      {
+        in_stock: {
+          label: "Auf Lager",
+          bg: "var(--success-50)",
+          color: "var(--success-600)",
+        },
+        low_stock: {
+          label: "Niedrig",
+          bg: "var(--warning-50)",
+          color: "var(--warning-600)",
+        },
+        out_of_stock: {
+          label: "Nicht verfügbar",
+          bg: "var(--error-50)",
+          color: "var(--error-600)",
+        },
+      };
     const c = config[status];
     return (
       <span
@@ -96,7 +113,10 @@ export const InventoryList: React.FC = () => {
   };
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(amount);
+    new Intl.NumberFormat("de-DE", {
+      style: "currency",
+      currency: "EUR",
+    }).format(amount);
 
   const columns = [
     { key: "sku", header: "SKU", width: "100px" },
@@ -117,7 +137,12 @@ export const InventoryList: React.FC = () => {
       header: "Bestand",
       width: "100px",
       render: (value: unknown, row: InventoryItem) => (
-        <span style={{ color: row.status === "out_of_stock" ? "var(--error-500)" : "inherit" }}>
+        <span
+          style={{
+            color:
+              row.status === "out_of_stock" ? "var(--error-500)" : "inherit",
+          }}
+        >
           {value as number} / {row.minQuantity}
         </span>
       ),
@@ -134,7 +159,11 @@ export const InventoryList: React.FC = () => {
       header: "Status",
       width: "130px",
       render: (value: unknown, row: InventoryItem) =>
-        getStatusBadge(value as InventoryItem["status"], row.quantity, row.minQuantity),
+        getStatusBadge(
+          value as InventoryItem["status"],
+          row.quantity,
+          row.minQuantity,
+        ),
     },
     {
       key: "actions",

@@ -47,10 +47,7 @@ export const Tabs: React.FC<TabsProps> = ({
           gap: variant === "pills" ? "0.5rem" : "0",
           borderBottom:
             variant === "underline" ? "1px solid var(--border)" : "none",
-          background:
-            variant === "default"
-              ? "var(--gray-100)"
-              : "transparent",
+          background: variant === "default" ? "var(--gray-100)" : "transparent",
           borderRadius: variant === "default" ? "8px" : "0",
           padding: variant === "default" ? "0.25rem" : "0",
         }}

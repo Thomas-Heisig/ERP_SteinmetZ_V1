@@ -24,7 +24,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       id,
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -70,7 +70,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             style={{
               width: "100%",
               padding: "0.5rem 0.75rem",
-              paddingLeft: icon && iconPosition === "left" ? "2.5rem" : "0.75rem",
+              paddingLeft:
+                icon && iconPosition === "left" ? "2.5rem" : "0.75rem",
               paddingRight:
                 icon && iconPosition === "right" ? "2.5rem" : "0.75rem",
               fontSize: "1rem",
@@ -123,7 +124,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 Input.displayName = "Input";

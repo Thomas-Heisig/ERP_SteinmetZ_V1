@@ -4,7 +4,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, Table, Button, Input } from "../../components/ui";
 
-type ProjectStatus = "planning" | "active" | "on_hold" | "completed" | "cancelled";
+type ProjectStatus =
+  | "planning"
+  | "active"
+  | "on_hold"
+  | "completed"
+  | "cancelled";
 
 interface Project {
   id: string;
@@ -78,12 +83,35 @@ export const ProjectList: React.FC = () => {
   });
 
   const getStatusBadge = (status: ProjectStatus) => {
-    const config: Record<ProjectStatus, { label: string; bg: string; color: string }> = {
-      planning: { label: "Planung", bg: "var(--gray-100)", color: "var(--gray-600)" },
-      active: { label: "Aktiv", bg: "var(--success-50)", color: "var(--success-600)" },
-      on_hold: { label: "Pausiert", bg: "var(--warning-50)", color: "var(--warning-600)" },
-      completed: { label: "Abgeschlossen", bg: "var(--primary-50)", color: "var(--primary-600)" },
-      cancelled: { label: "Abgebrochen", bg: "var(--error-50)", color: "var(--error-600)" },
+    const config: Record<
+      ProjectStatus,
+      { label: string; bg: string; color: string }
+    > = {
+      planning: {
+        label: "Planung",
+        bg: "var(--gray-100)",
+        color: "var(--gray-600)",
+      },
+      active: {
+        label: "Aktiv",
+        bg: "var(--success-50)",
+        color: "var(--success-600)",
+      },
+      on_hold: {
+        label: "Pausiert",
+        bg: "var(--warning-50)",
+        color: "var(--warning-600)",
+      },
+      completed: {
+        label: "Abgeschlossen",
+        bg: "var(--primary-50)",
+        color: "var(--primary-600)",
+      },
+      cancelled: {
+        label: "Abgebrochen",
+        bg: "var(--error-50)",
+        color: "var(--error-600)",
+      },
     };
     const c = config[status];
     return (
@@ -103,7 +131,10 @@ export const ProjectList: React.FC = () => {
   };
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(amount);
+    new Intl.NumberFormat("de-DE", {
+      style: "currency",
+      currency: "EUR",
+    }).format(amount);
 
   const columns = [
     {
@@ -140,12 +171,17 @@ export const ProjectList: React.FC = () => {
                 style={{
                   width: `${progress}%`,
                   height: "100%",
-                  background: progress === 100 ? "var(--success-500)" : "var(--primary-500)",
+                  background:
+                    progress === 100
+                      ? "var(--success-500)"
+                      : "var(--primary-500)",
                   transition: "width 0.3s ease",
                 }}
               />
             </div>
-            <span style={{ fontSize: "0.75rem", fontWeight: 500 }}>{progress}%</span>
+            <span style={{ fontSize: "0.75rem", fontWeight: 500 }}>
+              {progress}%
+            </span>
           </div>
         );
       },
@@ -156,7 +192,9 @@ export const ProjectList: React.FC = () => {
       width: "140px",
       render: (value: unknown, row: Project) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{formatCurrency(value as number)}</div>
+          <div style={{ fontWeight: 500 }}>
+            {formatCurrency(value as number)}
+          </div>
           <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
             {formatCurrency(row.spent)} verbraucht
           </div>

@@ -29,7 +29,13 @@ export const CommunicationCenter: React.FC = () => {
       label: "SMS",
       icon: "💬",
       content: (
-        <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
+        <div
+          style={{
+            padding: "2rem",
+            textAlign: "center",
+            color: "var(--text-secondary)",
+          }}
+        >
           <p>SMS-Funktion wird in einer zukünftigen Version verfügbar sein.</p>
         </div>
       ),
@@ -59,7 +65,9 @@ export const CommunicationCenter: React.FC = () => {
             >
               📡 Kommunikationszentrale
             </h1>
-            <p style={{ margin: "0.25rem 0 0", color: "var(--text-secondary)" }}>
+            <p
+              style={{ margin: "0.25rem 0 0", color: "var(--text-secondary)" }}
+            >
               Unified Inbox für Anrufe, Fax und Nachrichten
             </p>
           </div>

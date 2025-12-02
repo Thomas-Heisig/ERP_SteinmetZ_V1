@@ -62,12 +62,19 @@ export const Settings: React.FC = () => {
 };
 
 // General Settings
-const GeneralSettings: React.FC<{ theme: string; setTheme: (t: string) => void }> = ({
-  theme,
-  setTheme,
-}) => {
+const GeneralSettings: React.FC<{
+  theme: string;
+  setTheme: (t: string) => void;
+}> = ({ theme, setTheme }) => {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", padding: "1rem" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.5rem",
+        padding: "1rem",
+      }}
+    >
       <div>
         <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 600 }}>
           Erscheinungsbild
@@ -90,7 +97,13 @@ const GeneralSettings: React.FC<{ theme: string; setTheme: (t: string) => void }
         <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 600 }}>
           Sprache & Region
         </h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "1rem",
+          }}
+        >
           <Select
             label="Sprache"
             value="de"
@@ -123,14 +136,30 @@ const GeneralSettings: React.FC<{ theme: string; setTheme: (t: string) => void }
 const UserSettings: React.FC = () => {
   return (
     <div style={{ padding: "1rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "1rem",
+        }}
+      >
         <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 600 }}>
           Benutzer & Rollen (RBAC)
         </h3>
-        <Button variant="primary" size="sm">+ Benutzer hinzufügen</Button>
+        <Button variant="primary" size="sm">
+          + Benutzer hinzufügen
+        </Button>
       </div>
 
-      <div style={{ background: "var(--gray-50)", borderRadius: "8px", padding: "2rem", textAlign: "center" }}>
+      <div
+        style={{
+          background: "var(--gray-50)",
+          borderRadius: "8px",
+          padding: "2rem",
+          textAlign: "center",
+        }}
+      >
         <p style={{ color: "var(--text-secondary)" }}>
           Benutzerverwaltung mit rollenbasierter Zugriffskontrolle (RBAC)
         </p>
@@ -146,14 +175,30 @@ const UserSettings: React.FC = () => {
 const TenantSettings: React.FC = () => {
   return (
     <div style={{ padding: "1rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "1rem",
+        }}
+      >
         <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 600 }}>
           Mandantenverwaltung
         </h3>
-        <Button variant="primary" size="sm">+ Mandant hinzufügen</Button>
+        <Button variant="primary" size="sm">
+          + Mandant hinzufügen
+        </Button>
       </div>
 
-      <div style={{ background: "var(--gray-50)", borderRadius: "8px", padding: "2rem", textAlign: "center" }}>
+      <div
+        style={{
+          background: "var(--gray-50)",
+          borderRadius: "8px",
+          padding: "2rem",
+          textAlign: "center",
+        }}
+      >
         <p style={{ color: "var(--text-secondary)" }}>
           Multi-Tenant-Konfiguration
         </p>
@@ -175,38 +220,80 @@ const ApiSettings: React.FC = () => {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <Card variant="outlined" padding="md">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <div>
               <strong>OpenAI API</strong>
-              <p style={{ margin: "0.25rem 0 0", fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: "0.25rem 0 0",
+                  fontSize: "0.875rem",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 GPT-4 für KI-Funktionen
               </p>
             </div>
-            <Button variant="outline" size="sm">Konfigurieren</Button>
+            <Button variant="outline" size="sm">
+              Konfigurieren
+            </Button>
           </div>
         </Card>
 
         <Card variant="outlined" padding="md">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <div>
               <strong>Sipgate</strong>
-              <p style={{ margin: "0.25rem 0 0", fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: "0.25rem 0 0",
+                  fontSize: "0.875rem",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 Telefonie, SMS und Fax
               </p>
             </div>
-            <Button variant="outline" size="sm">Konfigurieren</Button>
+            <Button variant="outline" size="sm">
+              Konfigurieren
+            </Button>
           </div>
         </Card>
 
         <Card variant="outlined" padding="md">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <div>
               <strong>DATEV</strong>
-              <p style={{ margin: "0.25rem 0 0", fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+              <p
+                style={{
+                  margin: "0.25rem 0 0",
+                  fontSize: "0.875rem",
+                  color: "var(--text-secondary)",
+                }}
+              >
                 Buchhaltungsexport
               </p>
             </div>
-            <Button variant="outline" size="sm">Konfigurieren</Button>
+            <Button variant="outline" size="sm">
+              Konfigurieren
+            </Button>
           </div>
         </Card>
       </div>
@@ -222,16 +309,29 @@ const BackupSettings: React.FC = () => {
         Backup & Wiederherstellung
       </h3>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gap: "1rem",
+          marginBottom: "1.5rem",
+        }}
+      >
         <Card variant="outlined" padding="md">
-          <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.875rem" }}>💾 Letztes Backup</h4>
+          <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.875rem" }}>
+            💾 Letztes Backup
+          </h4>
           <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
             {new Date().toLocaleDateString("de-DE")}
           </p>
         </Card>
         <Card variant="outlined" padding="md">
-          <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.875rem" }}>📊 Datenbankgröße</h4>
-          <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>124 MB</p>
+          <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.875rem" }}>
+            📊 Datenbankgröße
+          </h4>
+          <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
+            124 MB
+          </p>
         </Card>
       </div>
 
@@ -251,17 +351,43 @@ const DiagnosticsSettings: React.FC = () => {
         System-Diagnose & Logs
       </h3>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "1rem",
+          marginBottom: "1.5rem",
+        }}
+      >
         <Card variant="outlined" padding="md">
-          <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+          <h4
+            style={{
+              margin: "0 0 0.5rem",
+              fontSize: "0.75rem",
+              color: "var(--text-tertiary)",
+            }}
+          >
             System-Status
           </h4>
-          <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600, color: "var(--success-500)" }}>
+          <p
+            style={{
+              margin: 0,
+              fontSize: "1.25rem",
+              fontWeight: 600,
+              color: "var(--success-500)",
+            }}
+          >
             🟢 Gesund
           </p>
         </Card>
         <Card variant="outlined" padding="md">
-          <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+          <h4
+            style={{
+              margin: "0 0 0.5rem",
+              fontSize: "0.75rem",
+              color: "var(--text-tertiary)",
+            }}
+          >
             Selbstheilung
           </h4>
           <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
@@ -269,7 +395,13 @@ const DiagnosticsSettings: React.FC = () => {
           </p>
         </Card>
         <Card variant="outlined" padding="md">
-          <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+          <h4
+            style={{
+              margin: "0 0 0.5rem",
+              fontSize: "0.75rem",
+              color: "var(--text-tertiary)",
+            }}
+          >
             Letzter Check
           </h4>
           <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
@@ -279,7 +411,10 @@ const DiagnosticsSettings: React.FC = () => {
       </div>
 
       <div style={{ display: "flex", gap: "0.5rem" }}>
-        <Button variant="primary" onClick={() => window.open("/diagnostics", "_blank")}>
+        <Button
+          variant="primary"
+          onClick={() => window.open("/diagnostics", "_blank")}
+        >
           🔍 Diagnoseseite öffnen
         </Button>
         <Button variant="outline">📋 Logs anzeigen</Button>

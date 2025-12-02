@@ -9,7 +9,10 @@ interface PhoneDialerProps {
   onCall?: (phoneNumber: string) => void;
 }
 
-export const PhoneDialer: React.FC<PhoneDialerProps> = ({ onClose, onCall }) => {
+export const PhoneDialer: React.FC<PhoneDialerProps> = ({
+  onClose,
+  onCall,
+}) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isDialing, setIsDialing] = useState(false);
 
@@ -27,7 +30,7 @@ export const PhoneDialer: React.FC<PhoneDialerProps> = ({ onClose, onCall }) => 
 
   const handleCall = async () => {
     if (!phoneNumber.trim()) return;
-    
+
     setIsDialing(true);
     try {
       // In production, call the API
@@ -132,11 +135,7 @@ export const PhoneDialer: React.FC<PhoneDialerProps> = ({ onClose, onCall }) => 
           gap: "0.5rem",
         }}
       >
-        <Button
-          variant="ghost"
-          onClick={handleClear}
-          disabled={!phoneNumber}
-        >
+        <Button variant="ghost" onClick={handleClear} disabled={!phoneNumber}>
           C
         </Button>
         <Button
@@ -178,7 +177,9 @@ export const PhoneDialer: React.FC<PhoneDialerProps> = ({ onClose, onCall }) => 
         >
           Letzte Anrufe
         </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}
+        >
           {["+49 30 12345678", "+49 40 98765432"].map((number) => (
             <button
               key={number}

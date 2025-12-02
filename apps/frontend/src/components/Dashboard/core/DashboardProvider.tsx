@@ -17,6 +17,7 @@ import type {
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useSystemInfo } from "../../../hooks/useSystemInfo";
+import { safeGet } from "../utils/safeFetch";
 
 export interface DashboardProviderProps {
   backendUrl?: string; // aktuell nicht mehr für Health genutzt
@@ -125,6 +126,50 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
       } as DashboardAction);
     }
   }, [initialNodes]);
+
+  // ---------------------------------------------------------------
+  // Fetch Roots from Backend (if not provided as initialNodes)
+  // ---------------------------------------------------------------
+  useEffect(() => {
+    const fetchRoots = async () => {
+      // Only fetch if initialNodes were not provided
+      if (initialNodes?.length && initialNodes.length > 0) {
+        return;
+      }
+
+      try {
+        dispatch({ type: "LOAD_ROOTS_START" } as DashboardAction);
+
+        const apiUrl =
+          backendUrl ||
+          import.meta.env.VITE_BACKEND_URL ||
+          "http://localhost:3000";
+        const result = await safeGet<{ success: boolean; roots: NodeDetail[] }>(
+          `${apiUrl}/api/functions/roots`,
+        );
+
+        if (result.ok && result.data?.success && result.data.roots) {
+          dispatch({
+            type: "LOAD_ROOTS_SUCCESS",
+            payload: result.data.roots,
+          } as DashboardAction);
+        } else {
+          throw new Error(result.error || "Failed to load roots");
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        console.error("Failed to fetch roots:", errorMessage);
+        dispatch({
+          type: "LOAD_ROOTS_ERROR",
+          payload: errorMessage,
+        } as DashboardAction);
+        handleError(error as Error, "fetchRoots");
+      }
+    };
+
+    void fetchRoots();
+  }, [initialNodes, backendUrl]);
 
   // ---------------------------------------------------------------
   // Performance-Marking (einmalig)

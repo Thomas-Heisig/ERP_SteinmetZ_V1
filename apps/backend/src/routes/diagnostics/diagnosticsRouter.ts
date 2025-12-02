@@ -4,7 +4,11 @@
 import { Router, Request, Response } from "express";
 import os from "node:os";
 import db from "../../services/dbService.js";
-import { healthMonitor, scheduler, healingReport } from "../../services/selfhealing/index.js";
+import {
+  healthMonitor,
+  scheduler,
+  healingReport,
+} from "../../services/selfhealing/index.js";
 
 const router = Router();
 
@@ -36,7 +40,7 @@ router.get("/", async (_req: Request, res: Response) => {
       dbStats,
       schedulerStatus,
       reportStats,
-      systemInfo
+      systemInfo,
     );
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
@@ -160,7 +164,7 @@ function generateDiagnosticsHTML(
   dbStats: any,
   schedulerStatus: any,
   reportStats: any,
-  systemInfo: any
+  systemInfo: any,
 ): string {
   const statusColors: Record<string, string> = {
     healthy: "#22c55e",
@@ -408,7 +412,7 @@ function generateDiagnosticsHTML(
                 ${check.status}
               </span>
             </li>
-          `
+          `,
             )
             .join("")}
         </ul>
@@ -504,12 +508,12 @@ function formatUptime(seconds: number): string {
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  
+
   const parts: string[] = [];
   if (days > 0) parts.push(`${days}d`);
   if (hours > 0) parts.push(`${hours}h`);
   if (minutes > 0) parts.push(`${minutes}m`);
-  
+
   return parts.join(" ") || "0m";
 }
 

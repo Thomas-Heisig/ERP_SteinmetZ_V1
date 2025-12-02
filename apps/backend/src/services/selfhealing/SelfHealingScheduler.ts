@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/services/selfhealing/SelfHealingScheduler.ts
 
-import { DatabaseHealthMonitor, HealthCheckResult } from "./DatabaseHealthMonitor.js";
+import {
+  DatabaseHealthMonitor,
+  HealthCheckResult,
+} from "./DatabaseHealthMonitor.js";
 import { AutoRepair, RepairSession } from "./AutoRepair.js";
 import { HealingReport } from "./HealingReport.js";
 
@@ -42,7 +45,7 @@ export class SelfHealingScheduler {
   constructor(
     healthMonitor: DatabaseHealthMonitor,
     autoRepair: AutoRepair,
-    report: HealingReport
+    report: HealingReport,
   ) {
     this.healthMonitor = healthMonitor;
     this.autoRepair = autoRepair;
@@ -74,7 +77,7 @@ export class SelfHealingScheduler {
     // Stündlich prüfen, ob eine geplante Aufgabe ausgeführt werden soll
     this.nightlyInterval = setInterval(
       () => this.checkScheduledTasks(),
-      60 * 60 * 1000 // 1 Stunde
+      60 * 60 * 1000, // 1 Stunde
     );
 
     // Initiale Prüfung
@@ -148,7 +151,7 @@ export class SelfHealingScheduler {
       ) {
         console.log("🔧 [Scheduler] Issues found, starting auto-repair");
         const repairSession = await this.autoRepair.startRepairSession(
-          this.config.autoRepairDryRunOnly
+          this.config.autoRepairDryRunOnly,
         );
         task.result = repairSession;
       }
@@ -197,10 +200,10 @@ export class SelfHealingScheduler {
       let repairSession: RepairSession | undefined;
       if (this.config.autoRepairEnabled && issues.length > 0) {
         console.log(
-          `🔧 [Scheduler] Found ${issues.length} issues, starting repair`
+          `🔧 [Scheduler] Found ${issues.length} issues, starting repair`,
         );
         repairSession = await this.autoRepair.startRepairSession(
-          this.config.autoRepairDryRunOnly
+          this.config.autoRepairDryRunOnly,
         );
       }
 

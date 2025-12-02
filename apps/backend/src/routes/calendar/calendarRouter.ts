@@ -62,13 +62,13 @@ async function ensureEventsTable(): Promise<void> {
     `);
 
     await db.exec(
-      `CREATE INDEX IF NOT EXISTS idx_events_start ON calendar_events(start_time)`
+      `CREATE INDEX IF NOT EXISTS idx_events_start ON calendar_events(start_time)`,
     );
     await db.exec(
-      `CREATE INDEX IF NOT EXISTS idx_events_end ON calendar_events(end_time)`
+      `CREATE INDEX IF NOT EXISTS idx_events_end ON calendar_events(end_time)`,
     );
     await db.exec(
-      `CREATE INDEX IF NOT EXISTS idx_events_category ON calendar_events(category)`
+      `CREATE INDEX IF NOT EXISTS idx_events_category ON calendar_events(category)`,
     );
   } catch (error) {
     console.error("❌ [Calendar] Failed to create events table:", error);
@@ -130,7 +130,7 @@ router.get("/events", async (req: Request, res: Response) => {
       events = expandRecurringEvents(
         events,
         new Date(start as string),
-        new Date(end as string)
+        new Date(end as string),
       );
     }
 
@@ -157,7 +157,7 @@ router.get("/events/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
     const row = await db.get<Record<string, unknown>>(
       "SELECT * FROM calendar_events WHERE id = ?",
-      [id]
+      [id],
     );
 
     if (!row) {
@@ -245,7 +245,7 @@ router.post("/events", async (req: Request, res: Response) => {
         createdBy,
         now,
         now,
-      ]
+      ],
     );
 
     const newEvent: CalendarEvent = {
@@ -289,7 +289,7 @@ router.put("/events/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
     const existingRow = await db.get<Record<string, unknown>>(
       "SELECT * FROM calendar_events WHERE id = ?",
-      [id]
+      [id],
     );
 
     if (!existingRow) {
@@ -340,7 +340,7 @@ router.put("/events/:id", async (req: Request, res: Response) => {
         JSON.stringify(attendees),
         now,
         id,
-      ]
+      ],
     );
 
     const updatedEvent: CalendarEvent = {
@@ -418,7 +418,7 @@ router.get("/categories", async (req: Request, res: Response) => {
        FROM calendar_events 
        WHERE category IS NOT NULL 
        GROUP BY category 
-       ORDER BY count DESC`
+       ORDER BY count DESC`,
     );
 
     res.json({
@@ -448,7 +448,7 @@ router.get("/upcoming", async (req: Request, res: Response) => {
       `SELECT * FROM calendar_events 
        WHERE start_time BETWEEN ? AND ?
        ORDER BY start_time ASC`,
-      [now.toISOString(), until.toISOString()]
+      [now.toISOString(), until.toISOString()],
     );
 
     const events = rows.map(rowToEvent);
@@ -496,7 +496,7 @@ function rowToEvent(row: Record<string, unknown>): CalendarEvent {
 function expandRecurringEvents(
   events: CalendarEvent[],
   rangeStart: Date,
-  rangeEnd: Date
+  rangeEnd: Date,
 ): CalendarEvent[] {
   const result: CalendarEvent[] = [];
 
@@ -517,7 +517,11 @@ function expandRecurringEvents(
     let instanceCount = 0;
     const maxInstances = 365; // Limit
 
-    while (current <= rangeEnd && current <= recurrenceEnd && instanceCount < maxInstances) {
+    while (
+      current <= rangeEnd &&
+      current <= recurrenceEnd &&
+      instanceCount < maxInstances
+    ) {
       if (current >= rangeStart) {
         const instanceEnd = new Date(current.getTime() + duration);
         result.push({
@@ -552,7 +556,7 @@ function expandRecurringEvents(
   }
 
   return result.sort(
-    (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+    (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
   );
 }
 

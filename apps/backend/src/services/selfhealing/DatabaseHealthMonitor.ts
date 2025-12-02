@@ -104,7 +104,7 @@ export class DatabaseHealthMonitor {
     const start = Date.now();
     try {
       const result = await db.get<{ health_check: number }>(
-        "SELECT 1 as health_check"
+        "SELECT 1 as health_check",
       );
       return {
         name: "connection",
@@ -141,11 +141,11 @@ export class DatabaseHealthMonitor {
 
     try {
       const existingTables = await db.all<{ name: string }>(
-        "SELECT name FROM sqlite_master WHERE type='table'"
+        "SELECT name FROM sqlite_master WHERE type='table'",
       );
       const tableNames = existingTables.map((t) => t.name);
       const missingTables = requiredTables.filter(
-        (t) => !tableNames.includes(t)
+        (t) => !tableNames.includes(t),
       );
 
       if (missingTables.length > 0) {
@@ -202,7 +202,10 @@ export class DatabaseHealthMonitor {
           name: "referential_integrity",
           status: "warn",
           message: `Found ${totalOrphans} orphan edges`,
-          details: { orphanParents: orphanParentCount, orphanChildren: orphanChildCount },
+          details: {
+            orphanParents: orphanParentCount,
+            orphanChildren: orphanChildCount,
+          },
           duration: Date.now() - start,
         };
       }
@@ -230,7 +233,11 @@ export class DatabaseHealthMonitor {
     const start = Date.now();
     try {
       // Doppelte Einträge in functions_nodes basierend auf title + kind
-      const duplicates = await db.all<{ title: string; kind: string; cnt: number }>(`
+      const duplicates = await db.all<{
+        title: string;
+        kind: string;
+        cnt: number;
+      }>(`
         SELECT title, kind, COUNT(*) as cnt 
         FROM functions_nodes 
         GROUP BY title, kind 
@@ -273,7 +280,7 @@ export class DatabaseHealthMonitor {
     try {
       // Nodes ohne Titel
       const noTitle = await db.get<{ count: number }>(
-        "SELECT COUNT(*) as count FROM functions_nodes WHERE title IS NULL OR title = ''"
+        "SELECT COUNT(*) as count FROM functions_nodes WHERE title IS NULL OR title = ''",
       );
       if ((noTitle?.count ?? 0) > 0) {
         issues.push(`${noTitle?.count} nodes without title`);
@@ -295,7 +302,7 @@ export class DatabaseHealthMonitor {
       ];
       const invalidKind = await db.get<{ count: number }>(
         `SELECT COUNT(*) as count FROM functions_nodes WHERE kind NOT IN (${validKinds.map(() => "?").join(",")})`,
-        validKinds
+        validKinds,
       );
       if ((invalidKind?.count ?? 0) > 0) {
         issues.push(`${invalidKind?.count} nodes with invalid kind`);
@@ -334,13 +341,13 @@ export class DatabaseHealthMonitor {
     const start = Date.now();
     try {
       const nodeCount = await db.get<{ count: number }>(
-        "SELECT COUNT(*) as count FROM functions_nodes"
+        "SELECT COUNT(*) as count FROM functions_nodes",
       );
       const edgeCount = await db.get<{ count: number }>(
-        "SELECT COUNT(*) as count FROM functions_edges"
+        "SELECT COUNT(*) as count FROM functions_edges",
       );
       const logCount = await db.get<{ count: number }>(
-        "SELECT COUNT(*) as count FROM ai_annotations_log"
+        "SELECT COUNT(*) as count FROM ai_annotations_log",
       );
 
       const totalRecords =
@@ -394,7 +401,10 @@ export class DatabaseHealthMonitor {
 
     try {
       // Orphan edges (parent)
-      const orphanParents = await db.all<{ parent_id: string; child_id: string }>(`
+      const orphanParents = await db.all<{
+        parent_id: string;
+        child_id: string;
+      }>(`
         SELECT parent_id, child_id FROM functions_edges 
         WHERE parent_id NOT IN (SELECT id FROM functions_nodes)
       `);
@@ -410,7 +420,10 @@ export class DatabaseHealthMonitor {
       }
 
       // Orphan edges (child)
-      const orphanChildren = await db.all<{ parent_id: string; child_id: string }>(`
+      const orphanChildren = await db.all<{
+        parent_id: string;
+        child_id: string;
+      }>(`
         SELECT parent_id, child_id FROM functions_edges 
         WHERE child_id NOT IN (SELECT id FROM functions_nodes)
       `);
@@ -427,7 +440,7 @@ export class DatabaseHealthMonitor {
 
       // Nodes without required fields
       const nodesWithoutTitle = await db.all<{ id: string }>(
-        "SELECT id FROM functions_nodes WHERE title IS NULL OR title = ''"
+        "SELECT id FROM functions_nodes WHERE title IS NULL OR title = ''",
       );
       for (const node of nodesWithoutTitle) {
         issues.push({
@@ -442,7 +455,7 @@ export class DatabaseHealthMonitor {
     } catch (error) {
       console.error(
         "Error finding integrity issues:",
-        error instanceof Error ? error.message : error
+        error instanceof Error ? error.message : error,
       );
     }
 

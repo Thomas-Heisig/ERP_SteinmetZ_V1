@@ -362,7 +362,23 @@ router.post(
 );
 
 /* ------------------------------------------------------------------- */
-/* 12️⃣  Root‑Endpoint – kompakte Zusammenfassung für das Dashboard   */
+/* 12️⃣  Roots-Endpoint für Dashboard                                   */
+/* ------------------------------------------------------------------- */
+router.get(
+  "/roots",
+  asyncHandler(async (_req, res) => {
+    const index = await service.getFunctionsIndex();
+    // Return only top-level nodes (roots)
+    res.json({
+      success: true,
+      roots: index.nodes, // Top-level category nodes
+      loadedAt: index.loadedAt,
+    });
+  }),
+);
+
+/* ------------------------------------------------------------------- */
+/* 13️⃣  Root‑Endpoint – kompakte Zusammenfassung für das Dashboard   */
 /* ------------------------------------------------------------------- */
 router.get(
   "/",

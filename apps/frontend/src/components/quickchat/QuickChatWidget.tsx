@@ -81,7 +81,14 @@ export const QuickChatWidget: React.FC = () => {
         }}
         onClick={toggleMinimize}
       >
-        <span style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <span
+          style={{
+            fontWeight: 600,
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+          }}
+        >
           💬 QuickChat
           {isLoading && (
             <span
@@ -178,20 +185,31 @@ export const QuickChatWidget: React.FC = () => {
                   key={message.id}
                   style={{
                     display: "flex",
-                    justifyContent: message.role === "user" ? "flex-end" : "flex-start",
+                    justifyContent:
+                      message.role === "user" ? "flex-end" : "flex-start",
                   }}
                 >
                   <div
                     style={{
                       maxWidth: "85%",
                       padding: "0.75rem 1rem",
-                      borderRadius: message.role === "user" ? "12px 12px 0 12px" : "12px 12px 12px 0",
+                      borderRadius:
+                        message.role === "user"
+                          ? "12px 12px 0 12px"
+                          : "12px 12px 12px 0",
                       background:
-                        message.role === "user" ? "var(--primary-500)" : "var(--gray-100)",
-                      color: message.role === "user" ? "white" : "var(--text-primary)",
+                        message.role === "user"
+                          ? "var(--primary-500)"
+                          : "var(--gray-100)",
+                      color:
+                        message.role === "user"
+                          ? "white"
+                          : "var(--text-primary)",
                     }}
                   >
-                    <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{message.content}</p>
+                    <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>
+                      {message.content}
+                    </p>
                     {message.command && (
                       <span
                         style={{
@@ -229,7 +247,9 @@ export const QuickChatWidget: React.FC = () => {
           </div>
 
           {/* Input */}
-          <div style={{ padding: "1rem", borderTop: "1px solid var(--border)" }}>
+          <div
+            style={{ padding: "1rem", borderTop: "1px solid var(--border)" }}
+          >
             <QuickChatInput onSend={sendMessage} disabled={isLoading} />
           </div>
         </>

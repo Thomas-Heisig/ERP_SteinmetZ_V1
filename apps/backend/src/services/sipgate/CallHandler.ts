@@ -58,7 +58,9 @@ export class CallHandler {
 
     this.activeCalls.set(call.id, call);
 
-    console.log(`📞 [CallHandler] Incoming call from ${call.from} (${call.contactName || "Unknown"})`);
+    console.log(
+      `📞 [CallHandler] Incoming call from ${call.from} (${call.contactName || "Unknown"})`,
+    );
 
     return call;
   }
@@ -69,7 +71,7 @@ export class CallHandler {
   updateCallStatus(
     callId: string,
     status: IncomingCall["status"],
-    duration?: number
+    duration?: number,
   ): IncomingCall | null {
     const call = this.activeCalls.get(callId);
     if (!call) return null;
@@ -79,7 +81,11 @@ export class CallHandler {
       call.duration = duration;
     }
 
-    if (status === "missed" || status === "rejected" || (status === "answered" && duration)) {
+    if (
+      status === "missed" ||
+      status === "rejected" ||
+      (status === "answered" && duration)
+    ) {
       // Move to call log
       this.addToCallLog(call, "incoming");
       this.activeCalls.delete(callId);
@@ -94,7 +100,7 @@ export class CallHandler {
   async initiateCall(
     deviceId: string,
     from: string,
-    to: string
+    to: string,
   ): Promise<{ sessionId: string; call: CallLog }> {
     const result = await sipgateClient.initiateCall({
       deviceId,
@@ -165,10 +171,10 @@ export class CallHandler {
   async syncCallHistory(): Promise<number> {
     try {
       const history = await sipgateClient.getCallHistory({ limit: 100 });
-      
+
       for (const call of history.items) {
         const existingIndex = this.callLogs.findIndex((l) => l.id === call.id);
-        
+
         const log: CallLog = {
           id: call.id,
           direction: call.direction,
@@ -187,7 +193,8 @@ export class CallHandler {
 
       // Sort by timestamp
       this.callLogs.sort(
-        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       );
       this.trimCallLogs();
 
@@ -201,7 +208,9 @@ export class CallHandler {
   /**
    * Look up contact name from CRM
    */
-  private async lookupContactName(phoneNumber: string): Promise<string | undefined> {
+  private async lookupContactName(
+    phoneNumber: string,
+  ): Promise<string | undefined> {
     // This would integrate with the CRM module in a real implementation
     // For now, return undefined
     return undefined;
@@ -210,7 +219,10 @@ export class CallHandler {
   /**
    * Add call to log
    */
-  private addToCallLog(call: IncomingCall, direction: "incoming" | "outgoing"): void {
+  private addToCallLog(
+    call: IncomingCall,
+    direction: "incoming" | "outgoing",
+  ): void {
     const log: CallLog = {
       id: call.id,
       direction,
