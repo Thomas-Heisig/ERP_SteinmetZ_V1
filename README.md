@@ -1,8 +1,14 @@
-# ERP SteinmetZ V2.0 - Intelligente Betriebsassistenz für KMU
+# ERP SteinmetZ – Enterprise ERP mit KI-gestütztem AI Annotator
+
+[![Version](https://img.shields.io/badge/Version-0.2.0-blue.svg)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1)
+[![Node](https://img.shields.io/badge/Node-%3E%3D18.18.0-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+> 📘 **Hinweis**: Für eine vollständige Dokumentation siehe [README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)
 
 ## 🎯 Vision
 
-ERP Steinmetz ist eine **intelligente Betriebsassistenz für KMU** - kein komplexes Enterprise-System, sondern ein KI-gestützter Betriebsassistent, der tägliche Abläufe vereinfacht, Prozesse automatisiert und Entscheidungen datenbasiert unterstützt.
+ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit einem innovativen **KI-gestützten Architekturansatz**. Das System nutzt einen **AI Annotator**, um Funktionen, Metadaten, Regeln und Formulare flexibel zu analysieren, generieren und zu erweitern – damit wird das ERP zu einer sich selbst dokumentierenden und kontinuierlich lernenden Plattform.
 
 ## ✅ Aktueller Status (Stand: Dezember 2024)
 
@@ -180,9 +186,23 @@ npm test
 
 ## 📚 Dokumentation
 
-- [Architecture](docs/ARCHITECTURE.md) - System-Architektur
-- [Compliance](docs/COMPLIANCE.md) - Sicherheit & Datenschutz
-- [API Docs](apps/backend/src/routes/README.md) - API Dokumentation
+### Haupt-Dokumentation
+- **[README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)** - Vollständige Projekt-Dokumentation
+- **[TODO.md](TODO.md)** - Priorisierte Aufgabenliste
+- **[ISSUES.md](ISSUES.md)** - Bekannte Probleme & Technical Debt
+
+### Architektur & Konzept
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System-Architektur & Production-Readiness
+- **[AUTHENTICATION.md](docs/AUTHENTICATION.md)** - Authentifizierungs-System
+- **[COMPLIANCE.md](docs/COMPLIANCE.md)** - Sicherheit, Datenschutz & GoBD
+- **[Konzept](docs/concept/_0_KONZEPT.md)** - Vollständiges Projektkonzept
+- **[Roadmap](docs/concept/_ROADMAP.md)** - Detaillierte Projektphasen
+
+### API-Dokumentation
+- **[AI Router](apps/backend/src/routes/ai/docs/)** - Vollständige AI-API-Dokumentation
+- **[AI Annotator](apps/backend/src/routes/aiAnnotatorRouter/docs/)** - AI Annotator API
+- **[Dashboard](apps/backend/src/routes/dashboard/docs/)** - Dashboard-API
+- **[Functions Catalog](apps/backend/src/routes/functionsCatalog/docs/)** - Funktionskatalog-API
 
 ## 🤝 Beitragen
 
