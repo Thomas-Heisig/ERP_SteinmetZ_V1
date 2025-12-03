@@ -104,12 +104,13 @@ export function validateEnv(): Env {
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("❌ Environment variable validation failed:");
-      // Zod 4.x might have different error structure
-      const issues = (error as any).issues || [];
-      issues.forEach((err: any) => {
-        const path = err.path ? err.path.join(".") : "unknown";
-        console.error(`  - ${path}: ${err.message || "Validation failed"}`);
-      });
+      // Zod 4.x uses 'issues' instead of 'errors'
+      if ("issues" in error && Array.isArray(error.issues)) {
+        error.issues.forEach((issue: any) => {
+          const path = issue.path ? issue.path.join(".") : "unknown";
+          console.error(`  - ${path}: ${issue.message || "Validation failed"}`);
+        });
+      }
       throw new Error("Invalid environment configuration");
     }
     throw error;

@@ -5,13 +5,11 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import os from "os";
 
 describe("Database Migration System", () => {
-  const testDbPath = path.resolve(__dirname, "../../data/test-migration.db");
+  // Use a temp file for testing to avoid path issues
+  const testDbPath = path.join(os.tmpdir(), `test-migration-${Date.now()}.db`);
   let db: Database.Database;
 
   beforeEach(() => {
