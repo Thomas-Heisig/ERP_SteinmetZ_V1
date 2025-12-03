@@ -5723,11 +5723,16 @@ textarea:focus-visible,
 
 /* Ensure minimum touch target size (WCAG 2.1 AA) */
 button,
-a,
 input[type="checkbox"],
 input[type="radio"],
 select {
   min-height: 44px;
+}
+
+/* Buttons and controls need both height and width */
+button,
+input[type="checkbox"],
+input[type="radio"] {
   min-width: 44px;
 }
 

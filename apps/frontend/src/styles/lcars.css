@@ -22,11 +22,6 @@
   --lcars-bar-height: 44px;
   --lcars-padding: 20px;
   --lcars-margin: 16px;
-  
-  /* Enhanced transitions */
-  --transition-fast: 100ms linear;
-  --transition-base: 200ms linear;
-  --transition-slow: 300ms linear;
 
   /* LCARS spezifische Variablen */
   --surface: var(--lcars-black);
