@@ -127,7 +127,7 @@ export default function App() {
 --------------------------------------------------------- */
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
-  const THEMES: readonly Theme[] = ["light", "dark", "lcars"] as const;
+  const THEMES: readonly Theme[] = ["light", "dark", "lcars", "contrast"] as const;
 
   const getThemeIcon = (t: Theme): string => {
     switch (t) {
@@ -137,6 +137,8 @@ function ThemeToggle() {
         return "🌙";
       case "lcars":
         return "🚀";
+      case "contrast":
+        return "◐";
       default:
         return "⚙️";
     }

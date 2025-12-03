@@ -6,7 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 
-export type Theme = "light" | "dark" | "lcars";
+export type Theme = "light" | "dark" | "lcars" | "contrast";
 
 interface ThemeContextType {
   theme: Theme;
@@ -34,7 +34,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
     const saved = localStorage.getItem("theme");
 
-    if (saved === "light" || saved === "dark" || saved === "lcars") {
+    if (saved === "light" || saved === "dark" || saved === "lcars" || saved === "contrast") {
       return saved;
     }
 
@@ -50,12 +50,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     document.documentElement.setAttribute("data-theme", theme);
 
     // body-Klasse setzen
-    document.body.classList.remove("light", "dark", "lcars");
+    document.body.classList.remove("light", "dark", "lcars", "contrast");
     document.body.classList.add(theme);
 
     localStorage.setItem("theme", theme);
 
-    const themes = ["light", "dark", "lcars"];
+    const themes = ["light", "dark", "lcars", "contrast"];
 
     // Bestehende Stylesheets entfernen
     themes.forEach((t) => {
@@ -78,7 +78,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, [theme]);
 
   const toggleTheme = () => {
-    const order: Theme[] = ["light", "dark", "lcars"];
+    const order: Theme[] = ["light", "dark", "lcars", "contrast"];
     setTheme((current) => {
       const idx = order.indexOf(current);
       return order[(idx + 1) % order.length];

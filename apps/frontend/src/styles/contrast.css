@@ -1,0 +1,445 @@
+/* ==================== CONTRAST THEME ==================== */
+/* High contrast theme for improved accessibility and legibility */
+
+[data-theme="contrast"] {
+  /* High contrast color palette - Black and White with bold accent colors */
+  --primary-50: #000033;
+  --primary-100: #000066;
+  --primary-200: #0000cc;
+  --primary-300: #0000ff;
+  --primary-400: #3333ff;
+  --primary-500: #0000ff;
+  --primary-600: #0000cc;
+  --primary-700: #000099;
+  --primary-800: #000066;
+  --primary-900: #000033;
+
+  /* Strict black and white with limited grays */
+  --gray-50: #ffffff;
+  --gray-100: #f0f0f0;
+  --gray-200: #d0d0d0;
+  --gray-300: #a0a0a0;
+  --gray-400: #707070;
+  --gray-500: #404040;
+  --gray-600: #303030;
+  --gray-700: #202020;
+  --gray-800: #101010;
+  --gray-900: #000000;
+
+  /* Bold status colors for maximum visibility */
+  --success-50: #003300;
+  --success-100: #006600;
+  --success-200: #009900;
+  --success-300: #00cc00;
+  --success-400: #00ff00;
+  --success-500: #00cc00;
+  --success-600: #009900;
+  --success-700: #006600;
+  --success-800: #004400;
+  --success-900: #002200;
+
+  --warning-50: #332200;
+  --warning-100: #664400;
+  --warning-200: #996600;
+  --warning-300: #cc8800;
+  --warning-400: #ffaa00;
+  --warning-500: #ff8800;
+  --warning-600: #cc6600;
+  --warning-700: #994400;
+  --warning-800: #662200;
+  --warning-900: #331100;
+
+  --error-50: #330000;
+  --error-100: #660000;
+  --error-200: #990000;
+  --error-300: #cc0000;
+  --error-400: #ff0000;
+  --error-500: #ff0000;
+  --error-600: #cc0000;
+  --error-700: #990000;
+  --error-800: #660000;
+  --error-900: #330000;
+
+  --info-50: #003366;
+  --info-100: #0066cc;
+  --info-500: #0099ff;
+  --info-700: #006699;
+
+  /* High contrast surfaces */
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-inverted: #000000;
+  --border: #000000;
+  --border-light: #303030;
+  --border-dark: #000000;
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --text-tertiary: #303030;
+  --text-inverted: #ffffff;
+
+  /* Strong shadows for depth perception */
+  --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.6);
+  --shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.7);
+  --shadow-md:
+    0 6px 12px -2px rgba(0, 0, 0, 0.8), 0 4px 8px -2px rgba(0, 0, 0, 0.6);
+  --shadow-lg:
+    0 12px 24px -4px rgba(0, 0, 0, 0.9), 0 8px 16px -4px rgba(0, 0, 0, 0.7);
+  --shadow-xl:
+    0 24px 48px -8px rgba(0, 0, 0, 1), 0 16px 32px -8px rgba(0, 0, 0, 0.8);
+
+  /* Enhanced focus indicators for accessibility */
+  --focus-ring: 4px solid #0000ff;
+  --focus-ring-offset: 4px;
+}
+
+/* ==================== CONTRAST MODE GLOBAL STYLES ==================== */
+[data-theme="contrast"] body {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 500;
+}
+
+[data-theme="contrast"] * {
+  /* Remove all text shadows for clarity */
+  text-shadow: none !important;
+}
+
+[data-theme="contrast"] .dashboard-root {
+  background: #ffffff;
+  color: #000000;
+}
+
+/* ==================== CONTRAST MODE COMPONENTS ==================== */
+
+/* Enhanced borders for all components */
+[data-theme="contrast"] .category-widget,
+[data-theme="contrast"] .node-header,
+[data-theme="contrast"] .node-section,
+[data-theme="contrast"] .result-card,
+[data-theme="contrast"] .model-card,
+[data-theme="contrast"] .ai-annotator-card {
+  background: #ffffff;
+  border: 3px solid #000000;
+  box-shadow: var(--shadow-md);
+  font-weight: 500;
+}
+
+[data-theme="contrast"] .category-widget:hover,
+[data-theme="contrast"] .result-card:hover,
+[data-theme="contrast"] .model-card:hover,
+[data-theme="contrast"] .ai-annotator-card:hover {
+  background: #f0f0f0;
+  border-color: #0000ff;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* Header with strong contrast */
+[data-theme="contrast"] .dashboard-header,
+[data-theme="contrast"] .app-header {
+  background: #ffffff;
+  border-bottom: 4px solid #000000;
+  box-shadow: var(--shadow);
+}
+
+/* Bold buttons */
+[data-theme="contrast"] .topbar-category-btn {
+  background: #ffffff;
+  border: 3px solid #000000;
+  color: #000000;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+[data-theme="contrast"] .topbar-category-btn:hover {
+  background: #0000ff;
+  color: #ffffff;
+  border-color: #0000ff;
+}
+
+[data-theme="contrast"] .topbar-category-btn.active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+  box-shadow: var(--shadow-md);
+}
+
+/* Form elements with strong borders */
+[data-theme="contrast"] input,
+[data-theme="contrast"] select,
+[data-theme="contrast"] textarea {
+  background: #ffffff;
+  border: 3px solid #000000;
+  color: #000000;
+  font-weight: 500;
+  padding: 10px;
+}
+
+[data-theme="contrast"] input:focus,
+[data-theme="contrast"] select:focus,
+[data-theme="contrast"] textarea:focus {
+  border-color: #0000ff;
+  outline: 4px solid #0000ff;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 8px rgba(0, 0, 255, 0.2);
+}
+
+/* Enhanced focus states for all interactive elements */
+[data-theme="contrast"] button:focus,
+[data-theme="contrast"] a:focus,
+[data-theme="contrast"] [tabindex]:focus {
+  outline: 4px solid #0000ff !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 0 8px rgba(0, 0, 255, 0.2) !important;
+}
+
+/* Status badges with bold colors */
+[data-theme="contrast"] .node-kind-badge,
+[data-theme="contrast"] .result-kind {
+  background: #000000;
+  color: #ffffff;
+  font-weight: 700;
+  border: 3px solid #000000;
+  padding: 6px 12px;
+}
+
+[data-theme="contrast"] .node-area-badge {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 700;
+  border: 3px solid #000000;
+}
+
+[data-theme="contrast"] .node-priority-badge {
+  background: #ff8800;
+  color: #000000;
+  font-weight: 700;
+  border: 3px solid #000000;
+}
+
+/* Links with high contrast */
+[data-theme="contrast"] a {
+  color: #0000ff;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+[data-theme="contrast"] a:visited {
+  color: #660099;
+}
+
+[data-theme="contrast"] a:hover {
+  color: #0000cc;
+  text-decoration: underline;
+  background-color: #e6e6ff;
+}
+
+/* Theme toggle button */
+[data-theme="contrast"] .theme-toggle {
+  background: #ffffff;
+  border: 3px solid #000000;
+  color: #000000;
+  font-weight: 600;
+}
+
+[data-theme="contrast"] .theme-toggle:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* Navigation links */
+[data-theme="contrast"] .nav-link {
+  color: #000000;
+  font-weight: 600;
+  border: 2px solid transparent;
+}
+
+[data-theme="contrast"] .nav-link:hover {
+  background: #e6e6ff;
+  border-color: #0000ff;
+  color: #0000ff;
+}
+
+[data-theme="contrast"] .nav-link.active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+/* FAB with strong contrast */
+[data-theme="contrast"] .fab {
+  background: #000000;
+  color: #ffffff;
+  border: 3px solid #000000;
+  box-shadow: var(--shadow-xl);
+}
+
+[data-theme="contrast"] .fab:hover {
+  background: #0000ff;
+  border-color: #0000ff;
+  transform: scale(1.1);
+}
+
+/* Modal and overlays */
+[data-theme="contrast"] .quick-chat-overlay {
+  background: rgba(0, 0, 0, 0.95);
+}
+
+[data-theme="contrast"] .quick-chat-container {
+  background: #ffffff;
+  border: 4px solid #000000;
+  box-shadow: var(--shadow-xl);
+}
+
+[data-theme="contrast"] .quick-chat-header {
+  background: #ffffff;
+  border-bottom: 3px solid #000000;
+}
+
+[data-theme="contrast"] .message-content {
+  background: #ffffff;
+  border: 2px solid #000000;
+  color: #000000;
+  font-weight: 500;
+}
+
+[data-theme="contrast"] .message.user .message-content {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+/* Scrollbar with high contrast */
+[data-theme="contrast"] ::-webkit-scrollbar {
+  width: 12px;
+  background: #f0f0f0;
+}
+
+[data-theme="contrast"] ::-webkit-scrollbar-thumb {
+  background: #000000;
+  border: 2px solid #ffffff;
+}
+
+[data-theme="contrast"] ::-webkit-scrollbar-thumb:hover {
+  background: #0000ff;
+}
+
+/* Selection with high contrast */
+[data-theme="contrast"] ::selection {
+  background: #0000ff;
+  color: #ffffff;
+}
+
+[data-theme="contrast"] ::-moz-selection {
+  background: #0000ff;
+  color: #ffffff;
+}
+
+/* Ensure minimum text size for readability */
+[data-theme="contrast"] body,
+[data-theme="contrast"] p,
+[data-theme="contrast"] span,
+[data-theme="contrast"] div {
+  font-size: max(16px, 1em);
+  line-height: 1.6;
+}
+
+/* Loading states with high contrast */
+[data-theme="contrast"] .loading-spinner {
+  border: 4px solid #d0d0d0;
+  border-top: 4px solid #000000;
+}
+
+[data-theme="contrast"] .skeleton {
+  background: linear-gradient(
+    90deg,
+    #d0d0d0 25%,
+    #a0a0a0 50%,
+    #d0d0d0 75%
+  );
+}
+
+/* Breadcrumb navigation */
+[data-theme="contrast"] .breadcrumb-nav {
+  background: #ffffff;
+  border: 2px solid #000000;
+}
+
+[data-theme="contrast"] .breadcrumb-item:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* Status display with strong borders */
+[data-theme="contrast"] .status-display {
+  background: #ffffff;
+  border: 3px solid #000000;
+  color: #000000;
+  font-weight: 600;
+}
+
+/* Legacy body class support */
+body.contrast {
+  --header-bg: #ffffff;
+  --border-color: #000000;
+  --nav-hover-bg: #e6e6ff;
+  --nav-hover-fg: #0000ff;
+  --nav-active-bg: #000000;
+  --nav-active-fg: #ffffff;
+  --btn-bg: #ffffff;
+  --btn-hover-bg: #000000;
+  --btn-fg: #000000;
+  --text-muted: #303030;
+}
+
+/* Ensure all images have visible borders */
+[data-theme="contrast"] img {
+  border: 2px solid #000000;
+}
+
+/* Tables with high contrast */
+[data-theme="contrast"] table {
+  border: 3px solid #000000;
+}
+
+[data-theme="contrast"] th,
+[data-theme="contrast"] td {
+  border: 2px solid #000000;
+  padding: 12px;
+  font-weight: 500;
+}
+
+[data-theme="contrast"] th {
+  background: #000000;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+[data-theme="contrast"] tr:nth-child(even) {
+  background: #f0f0f0;
+}
+
+[data-theme="contrast"] tr:hover {
+  background: #e6e6ff;
+}
+
+/* High contrast for disabled elements */
+[data-theme="contrast"] button:disabled,
+[data-theme="contrast"] input:disabled,
+[data-theme="contrast"] select:disabled {
+  opacity: 1;
+  background: #d0d0d0 !important;
+  color: #707070 !important;
+  border-color: #707070 !important;
+  cursor: not-allowed;
+}
+
+/* Ensure proper contrast for code elements */
+[data-theme="contrast"] code,
+[data-theme="contrast"] pre {
+  background: #f0f0f0;
+  border: 2px solid #000000;
+  color: #000000;
+  padding: 4px 8px;
+  font-weight: 500;
+}

@@ -13,15 +13,20 @@
   --lcars-white: #ffffff;
   --lcars-beige: #f8f8f0;
 
-  /* LCARS Design Tokens - KEINE abgerundeten Ecken */
+  /* LCARS Design Tokens - Sharp, angular design */
   --lcars-radius: 0;
   --lcars-radius-lg: 0;
   --lcars-radius-full: 0;
 
   /* LCARS Layout Variablen */
-  --lcars-bar-height: 40px;
+  --lcars-bar-height: 44px;
   --lcars-padding: 20px;
-  --lcars-margin: 15px;
+  --lcars-margin: 16px;
+  
+  /* Enhanced transitions */
+  --transition-fast: 100ms linear;
+  --transition-base: 200ms linear;
+  --transition-slow: 300ms linear;
 
   /* LCARS spezifische Variablen */
   --surface: var(--lcars-black);
@@ -43,10 +48,10 @@
   --warning-500: var(--lcars-orange);
   --error-500: #ff3366;
 
-  /* LCARS Schatten */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.5);
-  --shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.5);
+  /* Enhanced LCARS shadows with glow effects */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.6), 0 0 8px rgba(255, 158, 0, 0.2);
+  --shadow: 0 4px 8px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 158, 0, 0.3);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.7), 0 0 16px rgba(255, 158, 0, 0.4);
 }
 
 /* ==================== LCARS GLOBALE STYLES ==================== */
