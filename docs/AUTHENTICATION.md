@@ -28,11 +28,13 @@ The ERP SteinmetZ authentication system provides secure user authentication, ses
 ## Security Features
 
 ### Password Security
+
 - **Hashing**: bcrypt with 10 rounds
 - **Requirements**: Minimum 8 characters, mixed case, numbers
 - **Validation**: Zod schema validation on both frontend and backend
 
 ### Session Management
+
 - **Token Type**: JWT (JSON Web Tokens)
 - **Access Token**: 24 hours expiration (configurable via JWT_EXPIRES_IN)
 - **Refresh Token**: 7 days expiration (configurable via REFRESH_TOKEN_EXPIRES_IN)
@@ -40,11 +42,13 @@ The ERP SteinmetZ authentication system provides secure user authentication, ses
 - **Validation**: Token signature and expiration checked on every request
 
 ### Account Protection
+
 - **Rate Limiting**: Max 10 login attempts per IP per 15 minutes
 - **Account Lockout**: 5 failed attempts = 15 minute lockout
 - **Session Tracking**: IP address and user agent logged
 
 ### Authorization
+
 - **Role-Based Access Control (RBAC)**
   - Admin: Full system access (`*` permission)
   - User: Standard access (dashboard, catalog, AI)
@@ -57,9 +61,11 @@ The ERP SteinmetZ authentication system provides secure user authentication, ses
 ### Authentication
 
 #### POST /api/auth/register
+
 Register a new user account.
 
 **Request:**
+
 ```json
 {
   "username": "string",
@@ -70,6 +76,7 @@ Register a new user account.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -87,9 +94,11 @@ Register a new user account.
 ```
 
 #### POST /api/auth/login
+
 Authenticate user and create session.
 
 **Request:**
+
 ```json
 {
   "username": "string",
@@ -98,10 +107,13 @@ Authenticate user and create session.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
-  "user": { /* user object */ },
+  "user": {
+    /* user object */
+  },
   "token": "jwt_token",
   "refreshToken": "refresh_token",
   "expiresAt": "timestamp"
@@ -111,11 +123,13 @@ Authenticate user and create session.
 **Rate Limit:** 10 attempts per IP per 15 minutes
 
 #### POST /api/auth/logout
+
 Invalidate current session.
 
 **Headers:** `Authorization: Bearer <token>`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -124,24 +138,32 @@ Invalidate current session.
 ```
 
 #### GET /api/auth/me
+
 Get current authenticated user information.
 
 **Headers:** `Authorization: Bearer <token>`
 
 **Response:**
+
 ```json
 {
   "success": true,
-  "user": { /* user object */ },
-  "roles": [ /* role objects */ ],
+  "user": {
+    /* user object */
+  },
+  "roles": [
+    /* role objects */
+  ],
   "permissions": ["permission1", "permission2"]
 }
 ```
 
 #### POST /api/auth/refresh
+
 Refresh access token using refresh token.
 
 **Request:**
+
 ```json
 {
   "refreshToken": "string"
@@ -149,6 +171,7 @@ Refresh access token using refresh token.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -158,11 +181,13 @@ Refresh access token using refresh token.
 ```
 
 #### POST /api/auth/change-password
+
 Change user password (requires authentication).
 
 **Headers:** `Authorization: Bearer <token>`
 
 **Request:**
+
 ```json
 {
   "oldPassword": "string",
@@ -171,6 +196,7 @@ Change user password (requires authentication).
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -181,6 +207,7 @@ Change user password (requires authentication).
 ### User Management (Admin Only)
 
 #### GET /api/auth/users
+
 List all users.
 
 **Headers:** `Authorization: Bearer <token>`
@@ -188,27 +215,35 @@ List all users.
 **Role Required:** Admin
 
 **Response:**
+
 ```json
 {
   "success": true,
-  "users": [ /* array of user objects */ ]
+  "users": [
+    /* array of user objects */
+  ]
 }
 ```
 
 #### GET /api/auth/roles
+
 List all available roles.
 
 **Headers:** `Authorization: Bearer <token>`
 
 **Response:**
+
 ```json
 {
   "success": true,
-  "roles": [ /* array of role objects */ ]
+  "roles": [
+    /* array of role objects */
+  ]
 }
 ```
 
 #### POST /api/auth/users/:userId/roles
+
 Assign role to user.
 
 **Headers:** `Authorization: Bearer <token>`
@@ -216,6 +251,7 @@ Assign role to user.
 **Role Required:** Admin
 
 **Request:**
+
 ```json
 {
   "roleId": "string"
@@ -223,6 +259,7 @@ Assign role to user.
 ```
 
 #### DELETE /api/auth/users/:userId/roles/:roleId
+
 Remove role from user.
 
 **Headers:** `Authorization: Bearer <token>`
@@ -230,6 +267,7 @@ Remove role from user.
 **Role Required:** Admin
 
 #### DELETE /api/auth/users/:userId
+
 Delete user account.
 
 **Headers:** `Authorization: Bearer <token>`
@@ -243,7 +281,7 @@ Delete user account.
 ### Using AuthContext
 
 ```typescript
-import { useAuth } from './contexts/AuthContext';
+import { useAuth } from "./contexts/AuthContext";
 
 function MyComponent() {
   const {
@@ -253,16 +291,16 @@ function MyComponent() {
     login,
     logout,
     hasPermission,
-    hasRole
+    hasRole,
   } = useAuth();
 
   // Check if user has permission
-  if (hasPermission('dashboard.write')) {
+  if (hasPermission("dashboard.write")) {
     // Allow action
   }
 
   // Check if user has role
-  if (hasRole('Admin')) {
+  if (hasRole("Admin")) {
     // Show admin features
   }
 }
@@ -325,6 +363,7 @@ npx tsx src/scripts/createAdminUser.ts
 ```
 
 Default credentials:
+
 - Username: `admin`
 - Password: `Admin123!`
 
@@ -347,6 +386,7 @@ Open http://localhost:5173 and login with admin credentials.
 ### Current Implementation
 
 ✅ **Implemented:**
+
 - Password hashing with bcrypt
 - JWT token authentication
 - HttpOnly cookies
@@ -359,6 +399,7 @@ Open http://localhost:5173 and login with admin credentials.
 - Role-based access control
 
 ⚠️ **Known Limitations:**
+
 - No CSRF protection (planned for future release)
 - No email verification
 - No 2FA support
@@ -399,7 +440,8 @@ Open http://localhost:5173 and login with admin credentials.
 
 **Cause:** Migration not run during initialization
 
-**Solution:** 
+**Solution:**
+
 ```bash
 cd apps/backend
 npx tsx src/scripts/createAdminUser.ts
@@ -460,15 +502,15 @@ curl http://localhost:3000/api/auth/users \
 Sessions are automatically marked as invalid when they expire. To clean up old session records:
 
 ```sql
-DELETE FROM sessions 
-WHERE expires_at < datetime('now') 
+DELETE FROM sessions
+WHERE expires_at < datetime('now')
   AND is_valid = 0;
 ```
 
 ### Monitoring Failed Login Attempts
 
 ```sql
-SELECT 
+SELECT
   user_id,
   COUNT(*) as failed_attempts,
   MAX(created_at) as last_attempt

@@ -133,7 +133,9 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
+              autoComplete={
+                mode === "login" ? "current-password" : "new-password"
+              }
               aria-required="true"
               aria-invalid={error ? "true" : "false"}
               disabled={isLoading}
