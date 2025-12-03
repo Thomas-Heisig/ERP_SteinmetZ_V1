@@ -2,9 +2,10 @@
 // apps/frontend/src/App.tsx
 
 import React, { useState } from "react";
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 
 import { useTheme, type Theme } from "./contexts/ThemeContext";
+import { useAuth } from "./contexts/AuthContext";
 import { LanguageProvider } from "./components/LanguageSwitch/LanguageProvider";
 import { LanguageSwitcher } from "./components/LanguageSwitch/LanguageSwitcher";
 
@@ -12,6 +13,13 @@ import QuickChat from "./components/QuickChat";
 
 export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
 
   return (
     <LanguageProvider>
@@ -80,6 +88,21 @@ export default function App() {
             >
               💬
             </button>
+
+            {/* User Menu */}
+            {isAuthenticated && user && (
+              <div className="user-menu">
+                <span className="user-name">{user.username}</span>
+                <button
+                  className="logout-button"
+                  onClick={handleLogout}
+                  aria-label="Abmelden"
+                  title="Abmelden"
+                >
+                  🚪
+                </button>
+              </div>
+            )}
           </div>
         </header>
 

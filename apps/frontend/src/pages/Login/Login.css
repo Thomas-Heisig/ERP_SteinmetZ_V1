@@ -1,0 +1,258 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/pages/Login/Login.css */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-primary, #f5f5f5);
+  padding: 1rem;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-bg-secondary, #ffffff);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-brand .brand-icon {
+  font-size: 2rem;
+}
+
+.login-brand h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #333);
+}
+
+.login-subtitle {
+  margin: 0;
+  color: var(--color-text-secondary, #666);
+  font-size: 0.95rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-error {
+  padding: 0.75rem 1rem;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  color: #c33;
+  font-size: 0.9rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #333);
+}
+
+.form-group label span {
+  color: #c33;
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--color-bg-primary, #fff);
+  color: var(--color-text-primary, #333);
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-accent, #007bff);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-group input[aria-invalid="true"] {
+  border-color: #c33;
+}
+
+.form-hint {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #666);
+  margin-top: -0.25rem;
+}
+
+.login-button {
+  padding: 0.875rem;
+  background: var(--color-accent, #007bff);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.login-button:hover:not(:disabled) {
+  background: var(--color-accent-hover, #0056b3);
+}
+
+.login-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+}
+
+.login-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.toggle-mode-button {
+  background: none;
+  border: none;
+  color: var(--color-accent, #007bff);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  text-decoration: underline;
+}
+
+.toggle-mode-button:hover:not(:disabled) {
+  color: var(--color-accent-hover, #0056b3);
+}
+
+.toggle-mode-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.toggle-mode-button:focus {
+  outline: 2px solid var(--color-accent, #007bff);
+  outline-offset: 2px;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .login-page {
+  background: #1a1a1a;
+}
+
+[data-theme="dark"] .login-container {
+  background: #2a2a2a;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .form-group input {
+  background: #333;
+  border-color: #444;
+  color: #eee;
+}
+
+[data-theme="dark"] .login-error {
+  background: #3a1a1a;
+  border-color: #6a2a2a;
+  color: #faa;
+}
+
+/* LCARS theme adjustments */
+[data-theme="lcars"] .login-page {
+  background: #000;
+}
+
+[data-theme="lcars"] .login-container {
+  background: #1a1a2e;
+  border: 2px solid #ffaa00;
+  border-radius: 16px;
+}
+
+[data-theme="lcars"] .login-button {
+  background: #ffaa00;
+  color: #000;
+  border-radius: 16px;
+  font-weight: 700;
+}
+
+[data-theme="lcars"] .login-button:hover:not(:disabled) {
+  background: #ff8800;
+}
+
+[data-theme="lcars"] .form-group input {
+  background: #2a2a3e;
+  border-color: #666;
+  border-radius: 8px;
+  color: #ffaa00;
+}
+
+[data-theme="lcars"] .form-group input:focus {
+  border-color: #ffaa00;
+  box-shadow: 0 0 0 3px rgba(255, 170, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 1.5rem;
+  }
+
+  .login-brand h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .form-group input {
+    border-width: 2px;
+  }
+
+  .login-button {
+    font-weight: 700;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .login-button,
+  .form-group input {
+    transition: none;
+  }
+}
