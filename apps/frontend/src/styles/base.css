@@ -166,6 +166,47 @@ body {
     color 0.3s ease;
 }
 
+/* ==================== SMOOTH TRANSITIONS FOR INTERACTIVE ELEMENTS ==================== */
+button,
+a,
+input,
+select,
+textarea,
+.category-widget,
+.result-card,
+.model-card,
+.nav-link,
+.theme-toggle {
+  transition: 
+    background-color var(--transition-base, 250ms) cubic-bezier(0.4, 0, 0.2, 1),
+    color var(--transition-base, 250ms) cubic-bezier(0.4, 0, 0.2, 1),
+    border-color var(--transition-base, 250ms) cubic-bezier(0.4, 0, 0.2, 1),
+    transform var(--transition-base, 250ms) cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow var(--transition-base, 250ms) cubic-bezier(0.4, 0, 0.2, 1),
+    opacity var(--transition-fast, 150ms) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Optimize animations for performance */
+button,
+a,
+.category-widget,
+.result-card,
+.model-card {
+  will-change: auto;
+}
+
+/* Enhanced focus states with smooth transitions */
+*:focus {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+  transition: outline-offset var(--transition-fast, 150ms) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 3px;
+}
+
 /* ==================== GLOBALE ANIMATIONEN ==================== */
 @keyframes float {
   0%,
@@ -5597,8 +5638,137 @@ textarea:focus-visible {
   .user-name {
     display: none;
   }
-  
+
   .user-menu {
     padding: 0.5rem;
+  }
+}
+
+/* ==================== ACCESSIBILITY ENHANCEMENTS ==================== */
+
+/* Respect user's reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Enhanced contrast for high contrast mode preference */
+@media (prefers-contrast: high) {
+  :root {
+    --border: rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    border-width: 2px !important;
+  }
+
+  *:focus {
+    outline-width: 3px !important;
+  }
+}
+
+/* Skip to main content for keyboard navigation */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 1rem;
+  background: var(--primary-500);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius);
+}
+
+.skip-to-main:focus {
+  left: 1rem;
+  top: 1rem;
+  outline: 3px solid var(--primary-700);
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Enhanced focus indicators for better accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--primary-500);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(14, 165, 233, 0.2);
+}
+
+/* Ensure minimum touch target size (WCAG 2.1 AA) */
+button,
+input[type="checkbox"],
+input[type="radio"],
+select {
+  min-height: 44px;
+}
+
+/* Buttons and controls need both height and width */
+button,
+input[type="checkbox"],
+input[type="radio"] {
+  min-width: 44px;
+}
+
+/* Improve text readability */
+p,
+li,
+td,
+th {
+  line-height: 1.6;
+}
+
+/* Ensure sufficient color contrast for links */
+a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Responsive typography for better readability */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  body {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 1025px) {
+  body {
+    font-size: 18px;
   }
 }

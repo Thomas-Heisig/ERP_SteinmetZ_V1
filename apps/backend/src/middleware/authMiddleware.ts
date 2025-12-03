@@ -155,9 +155,7 @@ export function requireRole(roleName: string) {
 
       const hasRole = req.auth.roles.some((role) => role.name === roleName);
       if (!hasRole) {
-        res
-          .status(403)
-          .json({ error: `Role '${roleName}' required` });
+        res.status(403).json({ error: `Role '${roleName}' required` });
         return;
       }
 

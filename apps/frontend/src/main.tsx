@@ -25,6 +25,7 @@ import "./styles/base.css";
 import "./styles/light.css";
 import "./styles/dark.css";
 import "./styles/lcars.css";
+import "./styles/contrast.css";
 
 const router = createBrowserRouter([
   {

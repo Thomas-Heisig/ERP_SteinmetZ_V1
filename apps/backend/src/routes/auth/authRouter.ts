@@ -158,8 +158,7 @@ router.post("/login", rateLimitLogin, async (req: Request, res: Response) => {
  */
 router.post("/logout", authenticate, async (req: Request, res: Response) => {
   try {
-    const token =
-      req.headers.authorization?.substring(7) || req.cookies?.token;
+    const token = req.headers.authorization?.substring(7) || req.cookies?.token;
 
     if (token) {
       await AuthService.logout(token);
@@ -289,7 +288,8 @@ router.post(
       console.error("[auth] Change password error:", error);
       res.status(400).json({
         success: false,
-        error: error instanceof Error ? error.message : "Password change failed",
+        error:
+          error instanceof Error ? error.message : "Password change failed",
       });
     }
   },

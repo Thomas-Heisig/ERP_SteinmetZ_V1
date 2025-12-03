@@ -48,7 +48,7 @@ export class AuthService {
 
     for (const line of lines) {
       const trimmed = line.trim();
-      
+
       // Skip empty lines and comment-only lines
       if (!trimmed || trimmed.startsWith("--")) {
         continue;
@@ -75,7 +75,9 @@ export class AuthService {
       try {
         await db.exec(statement);
       } catch (error) {
-        console.error(`[auth] Failed to execute statement: ${statement.substring(0, 100)}...`);
+        console.error(
+          `[auth] Failed to execute statement: ${statement.substring(0, 100)}...`,
+        );
         console.error(`[auth] Error:`, error);
         throw error;
       }
@@ -130,15 +132,14 @@ export class AuthService {
     );
 
     // Assign default user role
-    const userRole = await db.get<Role>(
-      "SELECT * FROM roles WHERE name = ?",
-      ["User"],
-    );
+    const userRole = await db.get<Role>("SELECT * FROM roles WHERE name = ?", [
+      "User",
+    ]);
     if (userRole) {
-      await db.run(
-        "INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)",
-        [userId, userRole.id],
-      );
+      await db.run("INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)", [
+        userId,
+        userRole.id,
+      ]);
     }
 
     const user = await db.get<User>("SELECT * FROM users WHERE id = ?", [
@@ -308,10 +309,10 @@ export class AuthService {
 
       // Update last activity
       const now = new Date().toISOString();
-      await db.run(
-        "UPDATE sessions SET last_activity_at = ? WHERE id = ?",
-        [now, session.id],
-      );
+      await db.run("UPDATE sessions SET last_activity_at = ? WHERE id = ?", [
+        now,
+        session.id,
+      ]);
 
       // Get user
       const user = await db.get<User>(
@@ -380,7 +381,9 @@ export class AuthService {
       permissions,
     };
 
-    const token = jwt.sign(payload as any, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as any);
+    const token = jwt.sign(payload as any, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    } as any);
     const expiresAt = new Date(
       Date.now() + this.parseExpiry(JWT_EXPIRES_IN),
     ).toISOString();
@@ -420,7 +423,9 @@ export class AuthService {
       permissions,
     };
 
-    const token = jwt.sign(payload as any, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as any);
+    const token = jwt.sign(payload as any, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    } as any);
     const refreshToken = jwt.sign({ userId: user.id } as any, JWT_SECRET, {
       expiresIn: REFRESH_TOKEN_EXPIRES_IN,
     } as any);
@@ -621,10 +626,7 @@ export class AuthService {
     values.push(new Date().toISOString());
     values.push(userId);
 
-    await db.run(
-      `UPDATE users SET ${fields.join(", ")} WHERE id = ?`,
-      values,
-    );
+    await db.run(`UPDATE users SET ${fields.join(", ")} WHERE id = ?`, values);
 
     const updated = await db.get<User>("SELECT * FROM users WHERE id = ?", [
       userId,
@@ -680,7 +682,9 @@ export class AuthService {
    * List all users (admin only)
    */
   static async listUsers(): Promise<SafeUser[]> {
-    const users = await db.all<User>("SELECT * FROM users ORDER BY created_at DESC");
+    const users = await db.all<User>(
+      "SELECT * FROM users ORDER BY created_at DESC",
+    );
     return users.map((u) => this.toSafeUser(u));
   }
 

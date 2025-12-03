@@ -27,7 +27,9 @@ async function createAdminUser() {
     if (existingAdmin) {
       console.log("Admin user already exists!");
       console.log("Username: admin");
-      console.log("If you forgot the password, delete the user from the database and run this script again.");
+      console.log(
+        "If you forgot the password, delete the user from the database and run this script again.",
+      );
       process.exit(0);
     }
 
