@@ -17,6 +17,7 @@ Dieses Dokument listet alle bekannten Probleme, Bugs und Technical Debt im Proje
 Der TypeScript-Build schlägt mit zahlreichen Type-Fehlern fehl. Hauptprobleme:
 
 **Fehlerdetails**:
+
 ```
 - Cannot find name 'process' (~50 Instanzen)
 - Cannot find module 'express' or its corresponding type declarations
@@ -29,29 +30,34 @@ Der TypeScript-Build schlägt mit zahlreichen Type-Fehlern fehl. Hauptprobleme:
 ```
 
 **Betroffene Dateien**:
+
 - `apps/backend/src/index.ts`
 - `apps/backend/src/routes/**/*.ts` (alle Router)
 - `apps/backend/src/middleware/**/*.ts`
 - `apps/backend/src/routes/ai/**/*.ts` (alle AI-Provider)
 
 **Ursache**:
+
 1. @types/node fehlt oder ist nicht korrekt konfiguriert im Backend-tsconfig.json
 2. Type-Definitionen für Express und andere Libraries nicht gefunden
 3. Strikte TypeScript-Konfiguration ohne explizite Types
 
 **Lösungsansatz**:
+
 1. @types/node explizit in apps/backend/package.json dependencies aufnehmen
 2. tsconfig.json im Backend anpassen: `"types": ["node"]`
 3. Alle impliziten any-Types explizit typisieren
 4. Express Request/Response Types importieren und verwenden
 
 **Lösung**:
+
 1. ✅ Backend tsconfig.json aktualisiert: `strict: false`, `noImplicitAny: false` gesetzt
 2. ✅ Alle `fetch().json()` Aufrufe mit `as any` Type-Assertions versehen
 3. ✅ SipgateClient Type-Assertion korrigiert
 4. ✅ Build erfolgreich: Backend und Frontend bauen ohne Fehler
 
-**Auswirkung**: 
+**Auswirkung**:
+
 - ✅ Build läuft erfolgreich
 - ✅ Production-Deployment jetzt möglich
 - ⚠️ Strikte TypeScript-Prüfung noch nicht aktiviert (siehe ISSUE-011)
@@ -68,10 +74,12 @@ Der TypeScript-Build schlägt mit zahlreichen Type-Fehlern fehl. Hauptprobleme:
 Die .env.example Dateien fehlen im Repository. Entwickler wissen nicht, welche Umgebungsvariablen benötigt werden.
 
 **Betroffene Bereiche**:
+
 - Backend: `apps/backend/.env.example`
 - Frontend: `apps/frontend/.env.example`
 
 **Erforderliche Umgebungsvariablen (Backend)**:
+
 ```
 # Server
 PORT=3000
@@ -109,6 +117,7 @@ LOG_LEVEL=info
 ```
 
 **Erforderliche Umgebungsvariablen (Frontend)**:
+
 ```
 VITE_API_URL=http://localhost:3000
 VITE_WS_URL=ws://localhost:3000
@@ -128,6 +137,7 @@ VITE_WS_URL=ws://localhost:3000
 Es gibt keine automatisierten Tests. Keine Unit-Tests, keine Integration-Tests, keine E2E-Tests.
 
 **Fehlende Test-Tools**:
+
 - Test-Framework (Jest / Vitest)
 - Testing-Library (@testing-library/react)
 - Test-Scripts in package.json
@@ -135,12 +145,14 @@ Es gibt keine automatisierten Tests. Keine Unit-Tests, keine Integration-Tests, 
 - Code-Coverage-Reporting
 
 **Konsequenzen**:
+
 - Keine Regression-Detection
 - Refactoring ist riskant
 - Code-Quality nicht messbar
 - Bugs werden erst in Production entdeckt
 
 **Erforderlich**:
+
 1. Jest oder Vitest konfigurieren
 2. Test-Scripts erstellen (`npm test`, `npm test:watch`, `npm test:coverage`)
 3. Mindestens 50% Code-Coverage für kritische Services
@@ -160,10 +172,12 @@ Es gibt keine automatisierten Tests. Keine Unit-Tests, keine Integration-Tests, 
 Das Frontend hat keine Error-Boundaries. Ein Runtime-Error in einer Komponente führt zum Crash der ganzen App.
 
 **Betroffene Bereiche**:
+
 - Alle Komponenten ohne Error-Handling
 - Besonders kritisch: Dashboard, FunctionsCatalog, QuickChat
 
 **Lösungsansatz**:
+
 1. ErrorBoundary-Komponente erstellen
 2. Fallback-UI gestalten
 3. Error-Logging implementieren
@@ -183,6 +197,7 @@ Das Frontend hat keine Error-Boundaries. Ein Runtime-Error in einer Komponente f
 API-Fehler haben kein einheitliches Format. Manche Router geben `{ error: "..." }` zurück, andere `{ message: "..." }`, wieder andere nur Status-Codes.
 
 **Beispiele**:
+
 ```javascript
 // Router A
 res.status(404).json({ error: "Not found" });
@@ -196,6 +211,7 @@ res.status(400).send("Bad request");
 
 **Erforderlich**:
 Einheitliches Error-Response-Format:
+
 ```typescript
 {
   success: false,
@@ -223,26 +239,29 @@ Einheitliches Error-Response-Format:
 Viele API-Endpunkte validieren Eingaben nicht oder nur unzureichend. Malformed Requests können zu unerwarteten Fehlern führen.
 
 **Betroffene Routen**:
+
 - POST /api/ai/chat
-- POST /api/ai-annotator/nodes/:id/*
+- POST /api/ai-annotator/nodes/:id/\*
 - POST /api/functions/menu
 - Und viele mehr
 
 **Lösungsansatz**:
+
 1. Zod-Schemas für alle Request-Bodies definieren
 2. Validation-Middleware erstellen
 3. In allen Routen einsetzen
 4. Klare Validation-Error-Messages
 
 **Beispiel**:
+
 ```typescript
 const chatMessageSchema = z.object({
   message: z.string().min(1).max(5000),
   sessionId: z.string().uuid().optional(),
-  model: z.string().optional()
+  model: z.string().optional(),
 });
 
-router.post('/chat', validate(chatMessageSchema), async (req, res) => {
+router.post("/chat", validate(chatMessageSchema), async (req, res) => {
   // req.body ist garantiert valide
 });
 ```
@@ -261,18 +280,21 @@ router.post('/chat', validate(chatMessageSchema), async (req, res) => {
 Die AI-Endpunkte haben kein Rate-Limiting. Ein User könnte unlimitiert teure AI-API-Calls auslösen.
 
 **Betroffene Routen**:
+
 - POST /api/ai/chat/:sessionId/message
 - POST /api/ai/audio/transcribe
 - POST /api/ai-annotator/nodes/:id/generate-meta
 - POST /api/ai-annotator/batch
 
 **Lösungsansatz**:
+
 1. express-rate-limit ist bereits installiert
 2. Rate-Limiter für AI-Endpunkte konfigurieren
 3. User-spezifisches Limiting (nach JWT)
 4. Quota-System implementieren
 
 **Beispiel**:
+
 ```typescript
 const aiRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 Minuten
@@ -297,6 +319,7 @@ router.post('/ai/chat/:sessionId/message', aiRateLimiter, ...);
 Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tracking.
 
 **Fehlende Features**:
+
 - Structured Logging (Pino ist da, aber nicht überall genutzt)
 - Metrics (Prometheus-Exporter)
 - Distributed Tracing (OpenTelemetry)
@@ -305,6 +328,7 @@ Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tr
 - Log-Aggregation (ELK, Loki)
 
 **Konsequenzen**:
+
 - Schwierig, Probleme in Production zu debuggen
 - Keine Performance-Insights
 - Keine Anomalie-Detection
@@ -324,11 +348,13 @@ Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tr
 Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veraltet.
 
 **Beispiele**:
+
 - `monaco-editor` in root package.json (sollte in Frontend sein)
 - Möglicherweise veraltete AI-Provider-SDKs
 - Dev-Dependencies, die nicht mehr benötigt werden
 
 **Lösungsansatz**:
+
 1. `npm list` ausführen und ungenutzte Packages identifizieren
 2. Dependency-Audit mit `npm audit`
 3. Update auf neueste Versionen wo möglich
@@ -348,10 +374,12 @@ Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veral
 Viele console.log() Statements im Code, die in Production nicht sein sollten.
 
 **Betroffen**:
+
 - Backend: `apps/backend/src/**/*.ts`
 - Frontend: `apps/frontend/src/**/*.tsx`
 
 **Lösungsansatz**:
+
 1. ESLint-Rule aktivieren: `no-console: ["error", { allow: ["warn", "error"] }]`
 2. Logger-Service verwenden (Backend hat Pino)
 3. Frontend: Conditional Logging basierend auf ENV
@@ -370,15 +398,17 @@ Viele console.log() Statements im Code, die in Production nicht sein sollten.
 TypeScript läuft nicht im Strict-Mode. Viele potentielle Fehler werden nicht erkannt.
 
 **Aktuelle Konfiguration**:
+
 ```json
 {
   "strict": false,
-  "noImplicitAny": false,
+  "noImplicitAny": false
   // etc.
 }
 ```
 
 **Empfohlen**:
+
 ```json
 {
   "strict": true,
@@ -406,6 +436,7 @@ TypeScript läuft nicht im Strict-Mode. Viele potentielle Fehler werden nicht er
 Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigation ist unvollständig, Screen-Reader-Support fehlt.
 
 **Probleme**:
+
 - Fehlende ARIA-Labels auf interaktiven Elementen
 - Nicht alle Komponenten keyboard-navigable
 - Unzureichende Focus-Styles
@@ -413,6 +444,7 @@ Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigatio
 - Keine Skip-Links
 
 **Lösungsansatz**:
+
 1. react-axe im Development-Mode
 2. Lighthouse Audits durchführen
 3. Systematisch ARIA-Attribute hinzufügen
@@ -433,12 +465,14 @@ Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigatio
 Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind nicht erklärt.
 
 **Betroffen**:
+
 - Alle Services
 - Komplexe Utilities
 - AI-Provider-Implementierungen
 - Resilience-Patterns
 
 **Lösungsansatz**:
+
 1. JSDoc für alle öffentlichen Functions/Classes
 2. README in komplexen Modulen
 3. Inline-Comments für komplexe Logik
@@ -458,6 +492,7 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 
 **Beschreibung**:
 `.gitignore` könnte erweitert werden:
+
 - `*.log` Files
 - OS-spezifische Files (`.DS_Store`, `Thumbs.db`)
 - IDE-spezifische Files (`.idea/`, `.vscode/settings.json`)
@@ -489,11 +524,13 @@ Namenskonventionen verwenden oder `package.json` "description" nutzen.
 Keine enforzierten Commit-Message-Conventions. Commits sind unstrukturiert.
 
 **Lösungsansatz**:
+
 1. Conventional Commits einführen
 2. Commitlint installieren
 3. Husky pre-commit hooks
 
 **Beispiel**:
+
 ```
 feat(backend): add rate limiting to AI endpoints
 fix(frontend): resolve theme toggle bug
@@ -507,6 +544,7 @@ docs(readme): update installation instructions
 ## 📊 Issue-Statistiken
 
 ### Nach Priorität
+
 - 🔴 Kritisch: 2 Issues (1 behoben)
 - 🟠 Hoch: 5 Issues
 - 🟡 Mittel: 5 Issues
@@ -516,6 +554,7 @@ docs(readme): update installation instructions
 **Gesamt**: 16 dokumentierte Issues (15 offen, 1 behoben)
 
 ### Nach Kategorie
+
 - **Build & Infrastruktur**: 3
 - **Testing & Quality**: 2
 - **Security**: 2
@@ -525,6 +564,7 @@ docs(readme): update installation instructions
 - **Developer Experience**: 2
 
 ### Geschätzter Gesamtaufwand
+
 - **Kritische Issues**: 1-2 Wochen
 - **Hohe Priorität**: 2-3 Wochen
 - **Mittlere Priorität**: 3-4 Wochen
@@ -537,6 +577,7 @@ docs(readme): update installation instructions
 ## 🔧 Issue-Management-Prozess
 
 ### Issue-Labels
+
 - `critical` - Blockiert Production-Deployment
 - `bug` - Funktionalität funktioniert nicht wie erwartet
 - `enhancement` - Verbesserung bestehender Features
@@ -545,6 +586,7 @@ docs(readme): update installation instructions
 - `documentation` - Fehlende/fehlerhafte Doku
 
 ### Workflow
+
 1. **New Issue** → Beschreibung, Priorität, Aufwand-Schätzung
 2. **Triaging** → Validierung, Priorität bestätigen
 3. **In Progress** → Entwickler zugewiesen
@@ -552,6 +594,7 @@ docs(readme): update installation instructions
 5. **Done** → Deployed, dokumentiert, Issue geschlossen
 
 ### Reporting
+
 Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ---

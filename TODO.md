@@ -417,11 +417,13 @@ Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und
 ## 📝 Notizen
 
 ### Aufwand-Legende
+
 - **Stunden**: Kleine Aufgaben, schnell umsetzbar
 - **Tage**: Mittlere Aufgaben, 1-5 Tage
 - **Wochen**: Große Features, mehrere Wochen
 
 ### Prioritäten-Legende
+
 - 🔴 **Kritisch**: Blockiert weitere Entwicklung oder Production-Deployment
 - 🟠 **Hoch**: Wichtig für Core-Funktionalität oder User-Experience
 - 🟡 **Mittel**: Verbessert das System, aber nicht dringend
@@ -429,17 +431,20 @@ Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und
 
 ### Nächste Sprint-Planung
 
-**Sprint 1 (KW 49-50/2024)**: 
+**Sprint 1 (KW 49-50/2024)**:
+
 - TypeScript Build-Fehler beheben
 - Test-Infrastruktur aufsetzen
 - Environment-Variables validieren
 
 **Sprint 2 (KW 51-52/2024)**:
+
 - API-Error-Handling vereinheitlichen
 - Responsive Design verbessern
 - AI Provider Connection Tests
 
 **Sprint 3 (KW 1-2/2025)**:
+
 - Performance-Optimierung (Frontend & Backend)
 - WebSocket Integration
 - Advanced Search Implementation

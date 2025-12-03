@@ -187,11 +187,13 @@ npm test
 ## 📚 Dokumentation
 
 ### Haupt-Dokumentation
+
 - **[README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)** - Vollständige Projekt-Dokumentation
 - **[TODO.md](TODO.md)** - Priorisierte Aufgabenliste
 - **[ISSUES.md](ISSUES.md)** - Bekannte Probleme & Technical Debt
 
 ### Architektur & Konzept
+
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System-Architektur & Production-Readiness
 - **[AUTHENTICATION.md](docs/AUTHENTICATION.md)** - Authentifizierungs-System
 - **[COMPLIANCE.md](docs/COMPLIANCE.md)** - Sicherheit, Datenschutz & GoBD
@@ -199,6 +201,7 @@ npm test
 - **[Roadmap](docs/concept/_ROADMAP.md)** - Detaillierte Projektphasen
 
 ### API-Dokumentation
+
 - **[AI Router](apps/backend/src/routes/ai/docs/)** - Vollständige AI-API-Dokumentation
 - **[AI Annotator](apps/backend/src/routes/aiAnnotatorRouter/docs/)** - AI Annotator API
 - **[Dashboard](apps/backend/src/routes/dashboard/docs/)** - Dashboard-API
