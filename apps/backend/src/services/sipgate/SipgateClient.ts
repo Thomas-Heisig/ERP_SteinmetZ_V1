@@ -122,7 +122,7 @@ export class SipgateClient {
 
       const contentType = response.headers.get("content-type");
       if (contentType?.includes("application/json")) {
-        return await response.json();
+        return (await response.json()) as T;
       }
 
       return {} as T;

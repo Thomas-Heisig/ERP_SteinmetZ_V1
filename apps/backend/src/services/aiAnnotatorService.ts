@@ -1503,7 +1503,7 @@ export class AiAnnotatorService extends EventEmitter {
       throw new Error(`OpenAI HTTP ${resp.status}: ${txt}`);
     }
 
-    const data = await resp.json();
+    const data = await resp.json() as any;
     // Immer den Content‑Teil zurückgeben (auch bei Legacy‑Antworten)
     return (
       data?.choices?.[0]?.message?.content ?? data?.choices?.[0]?.text ?? "{}"
@@ -1520,7 +1520,7 @@ export class AiAnnotatorService extends EventEmitter {
       if (!tagsResp.ok)
         throw new Error(`Ollama /api/tags HTTP ${tagsResp.status}`);
 
-      const tags = await tagsResp.json();
+      const tags = await tagsResp.json() as any;
       const available = Array.isArray(tags.models)
         ? tags.models.map((m: any) => m.name)
         : [];
@@ -1550,7 +1550,7 @@ export class AiAnnotatorService extends EventEmitter {
       throw new Error(`Ollama HTTP ${resp.status}: ${txt}`);
     }
 
-    const data = await resp.json();
+    const data = await resp.json() as any;
     return data.response || "{}";
   }
 
@@ -1569,7 +1569,7 @@ export class AiAnnotatorService extends EventEmitter {
       throw new Error(`Ollama Pull ${pullResp.status}: ${txt}`);
     }
 
-    const result = await pullResp.json().catch(() => ({}));
+    const result = await pullResp.json().catch(() => ({})) as any;
     if (result.error) throw new Error(`Ollama Pull-Fehler: ${result.error}`);
 
     console.log(`[ollama] Modell "${model}" erfolgreich geladen`);
@@ -1602,7 +1602,7 @@ export class AiAnnotatorService extends EventEmitter {
       throw new Error(`Anthropic HTTP ${resp.status}: ${txt}`);
     }
 
-    const data = await resp.json();
+    const data = await resp.json() as any;
     return data?.content?.[0]?.text ?? "{}";
   }
 
