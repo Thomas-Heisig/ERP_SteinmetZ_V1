@@ -3,21 +3,21 @@ info:
   title: ERP SteinmetZ API
   description: |
     Enterprise Resource Planning System with AI-powered features.
-    
+
     This API provides comprehensive ERP functionality including:
     - AI Chat & Assistant
     - Functions Catalog Management
     - AI Annotator for metadata generation
     - Dashboard & Analytics
     - System Health & Monitoring
-    
+
     ## Authentication
     Most endpoints require authentication via JWT token or Admin token.
-    
+
     ## Base URL
     - Development: `http://localhost:3000`
     - Production: Configure via environment variables
-    
+
   version: 0.2.0
   contact:
     name: Thomas Heisig
@@ -133,7 +133,7 @@ components:
         messages:
           type: array
           items:
-            $ref: '#/components/schemas/ChatMessage'
+            $ref: "#/components/schemas/ChatMessage"
         createdAt:
           type: string
           format: date-time
@@ -180,7 +180,7 @@ components:
         children:
           type: array
           items:
-            $ref: '#/components/schemas/FunctionNode'
+            $ref: "#/components/schemas/FunctionNode"
 
 paths:
   /api/health:
@@ -192,12 +192,12 @@ paths:
       operationId: getHealth
       security: []
       responses:
-        '200':
+        "200":
           description: System health status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthStatus'
+                $ref: "#/components/schemas/HealthStatus"
 
   /api/ai/models:
     get:
@@ -206,7 +206,7 @@ paths:
       summary: List available AI models
       operationId: getModels
       responses:
-        '200':
+        "200":
           description: List of available models
           content:
             application/json:
@@ -235,7 +235,7 @@ paths:
                 model:
                   type: string
       responses:
-        '200':
+        "200":
           description: Chat session created
           content:
             application/json:
@@ -245,7 +245,7 @@ paths:
                   success:
                     type: boolean
                   session:
-                    $ref: '#/components/schemas/ChatSession'
+                    $ref: "#/components/schemas/ChatSession"
 
   /api/ai/chat/{sessionId}/message:
     post:
@@ -271,7 +271,7 @@ paths:
                 message:
                   type: string
       responses:
-        '200':
+        "200":
           description: AI response
           content:
             application/json:
@@ -281,7 +281,7 @@ paths:
                   success:
                     type: boolean
                   response:
-                    $ref: '#/components/schemas/ChatMessage'
+                    $ref: "#/components/schemas/ChatMessage"
 
   /api/functions:
     get:
@@ -290,7 +290,7 @@ paths:
       summary: Get complete functions catalog
       operationId: getFunctionsCatalog
       responses:
-        '200':
+        "200":
           description: Complete functions catalog
           content:
             application/json:
@@ -317,7 +317,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: Search results
           content:
             application/json:

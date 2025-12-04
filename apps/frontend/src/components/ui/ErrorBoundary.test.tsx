@@ -1,5 +1,5 @@
 // apps/frontend/src/components/ui/ErrorBoundary.test.tsx
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErrorBoundary, withErrorBoundary } from "./ErrorBoundary";

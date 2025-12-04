@@ -35,11 +35,13 @@ The ERP SteinmetZ API provides a comprehensive REST API for enterprise resource 
 ## Base URL
 
 ### Development
+
 ```
 http://localhost:3000
 ```
 
 ### Production
+
 ```
 https://api.erp-steinmetz.example.com
 ```
@@ -55,6 +57,7 @@ Authorization: Bearer <your-jwt-token>
 ```
 
 **Example:**
+
 ```bash
 curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \
   http://localhost:3000/api/functions
@@ -69,6 +72,7 @@ x-admin-token: <your-admin-token>
 ```
 
 **Example:**
+
 ```bash
 curl -H "x-admin-token: your-admin-token-here" \
   http://localhost:3000/api/system/info
@@ -124,6 +128,7 @@ Get comprehensive system health status.
 **Authentication:** None required
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -143,6 +148,7 @@ Get comprehensive system health status.
 ```
 
 **Example:**
+
 ```bash
 curl http://localhost:3000/api/health
 ```
@@ -158,6 +164,7 @@ List all available AI models across all configured providers.
 **Authentication:** Required
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -181,6 +188,7 @@ List all available AI models across all configured providers.
 ```
 
 **Example:**
+
 ```bash
 curl -H "Authorization: Bearer <token>" \
   http://localhost:3000/api/ai/models
@@ -193,6 +201,7 @@ Create a new chat session with AI.
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "model": "gpt-4o-mini"
@@ -200,6 +209,7 @@ Create a new chat session with AI.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -214,6 +224,7 @@ Create a new chat session with AI.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Authorization: Bearer <token>" \
@@ -229,9 +240,11 @@ Send a message to an existing chat session.
 **Authentication:** Required
 
 **Path Parameters:**
+
 - `sessionId` (string, required) - Chat session UUID
 
 **Request Body:**
+
 ```json
 {
   "message": "Hello, how can you help me?"
@@ -239,6 +252,7 @@ Send a message to an existing chat session.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -251,6 +265,7 @@ Send a message to an existing chat session.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Authorization: Bearer <token>" \
@@ -266,6 +281,7 @@ List all active chat sessions.
 **Authentication:** Required
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -288,6 +304,7 @@ List all active chat sessions.
 ```
 
 **Example:**
+
 ```bash
 curl -H "Authorization: Bearer <token>" \
   http://localhost:3000/api/ai/sessions
@@ -300,9 +317,11 @@ Delete a chat session.
 **Authentication:** Required
 
 **Path Parameters:**
+
 - `sessionId` (string, required) - Chat session UUID
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -311,6 +330,7 @@ Delete a chat session.
 ```
 
 **Example:**
+
 ```bash
 curl -X DELETE \
   -H "Authorization: Bearer <token>" \
@@ -326,9 +346,11 @@ Transcribe audio file to text (Speech-to-Text).
 **Content-Type:** `multipart/form-data`
 
 **Request Body:**
+
 - `audio` (file, required) - Audio file (mp3, wav, m4a, etc.)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -337,6 +359,7 @@ Transcribe audio file to text (Speech-to-Text).
 ```
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Authorization: Bearer <token>" \
@@ -351,6 +374,7 @@ Translate text to another language.
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "text": "Hello, world!",
@@ -360,6 +384,7 @@ Translate text to another language.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -370,6 +395,7 @@ Translate text to another language.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Authorization: Bearer <token>" \
@@ -389,6 +415,7 @@ Get the complete functions catalog tree.
 **Authentication:** Required
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -409,6 +436,7 @@ Get the complete functions catalog tree.
 ```
 
 **Example:**
+
 ```bash
 curl -H "Authorization: Bearer <token>" \
   http://localhost:3000/api/functions
@@ -421,6 +449,7 @@ Get only the root-level function categories (11 business areas).
 **Authentication:** Required
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -442,6 +471,7 @@ Get only the root-level function categories (11 business areas).
 ```
 
 **Example:**
+
 ```bash
 curl -H "Authorization: Bearer <token>" \
   http://localhost:3000/api/functions/roots
@@ -454,9 +484,11 @@ Get a specific function node by ID.
 **Authentication:** Required
 
 **Path Parameters:**
+
 - `id` (string, required) - Function node ID
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -472,6 +504,7 @@ Get a specific function node by ID.
 ```
 
 **Example:**
+
 ```bash
 curl -H "Authorization: Bearer <token>" \
   http://localhost:3000/api/functions/nodes/1_dashboard
@@ -484,6 +517,7 @@ Search for functions with full-text search and filtering.
 **Authentication:** Required
 
 **Query Parameters:**
+
 - `q` (string, optional) - Search query
 - `kinds` (string, optional) - Comma-separated kinds (category, function, action, rule, form)
 - `tags` (string, optional) - Comma-separated tags
@@ -492,6 +526,7 @@ Search for functions with full-text search and filtering.
 - `offset` (integer, optional, default: 0) - Pagination offset
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -511,6 +546,7 @@ Search for functions with full-text search and filtering.
 ```
 
 **Example:**
+
 ```bash
 curl -H "Authorization: Bearer <token>" \
   "http://localhost:3000/api/functions/search?q=rechnung&limit=10"
@@ -523,6 +559,7 @@ Get filtered menu based on user context (RBAC).
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "roles": ["admin", "manager"],
@@ -532,6 +569,7 @@ Get filtered menu based on user context (RBAC).
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -547,6 +585,7 @@ Get filtered menu based on user context (RBAC).
 ```
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Authorization: Bearer <token>" \
@@ -566,9 +605,11 @@ Generate metadata for a function node using AI.
 **Authentication:** Required
 
 **Path Parameters:**
+
 - `id` (string, required) - Function node ID
 
 **Request Body:**
+
 ```json
 {
   "fields": ["description", "tags", "permissions"]
@@ -576,6 +617,7 @@ Generate metadata for a function node using AI.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -591,6 +633,7 @@ Generate metadata for a function node using AI.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Authorization: Bearer <token>" \
@@ -606,6 +649,7 @@ Process multiple nodes in batch for metadata generation.
 **Authentication:** Required
 
 **Request Body:**
+
 ```json
 {
   "nodeIds": ["node1", "node2", "node3"],
@@ -618,6 +662,7 @@ Process multiple nodes in batch for metadata generation.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -629,6 +674,7 @@ Process multiple nodes in batch for metadata generation.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Authorization: Bearer <token>" \
@@ -648,6 +694,7 @@ Get dashboard data including widgets and analytics.
 **Authentication:** Required
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -670,6 +717,7 @@ Get dashboard data including widgets and analytics.
 ```
 
 **Example:**
+
 ```bash
 curl -H "Authorization: Bearer <token>" \
   http://localhost:3000/api/dashboard
@@ -686,6 +734,7 @@ Authenticate user and receive JWT token.
 **Authentication:** None required
 
 **Request Body:**
+
 ```json
 {
   "username": "admin",
@@ -694,6 +743,7 @@ Authenticate user and receive JWT token.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -708,6 +758,7 @@ Authenticate user and receive JWT token.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
@@ -722,6 +773,7 @@ Refresh JWT token using refresh token.
 **Authentication:** None required
 
 **Request Body:**
+
 ```json
 {
   "refreshToken": "eyJhbGciOiJIUzI1NiIs..."
@@ -729,6 +781,7 @@ Refresh JWT token using refresh token.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -738,6 +791,7 @@ Refresh JWT token using refresh token.
 ```
 
 **Example:**
+
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
@@ -756,6 +810,7 @@ Get system information (requires admin token).
 **Authentication:** Admin token required
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -773,6 +828,7 @@ Get system information (requires admin token).
 ```
 
 **Example:**
+
 ```bash
 curl -H "x-admin-token: your-admin-token" \
   http://localhost:3000/api/system/info
@@ -785,6 +841,7 @@ curl -H "x-admin-token: your-admin-token" \
 Endpoints supporting pagination use `limit` and `offset` parameters:
 
 **Example:**
+
 ```bash
 # Get results 21-40
 curl "http://localhost:3000/api/functions/search?q=invoice&limit=20&offset=20"
@@ -795,6 +852,7 @@ curl "http://localhost:3000/api/functions/search?q=invoice&limit=20&offset=20"
 Many endpoints support filtering via query parameters:
 
 **Example:**
+
 ```bash
 # Filter by multiple criteria
 curl "http://localhost:3000/api/functions/search?kinds=function,action&tags=finance&area=Accounting"
@@ -805,6 +863,7 @@ curl "http://localhost:3000/api/functions/search?kinds=function,action&tags=fina
 Configure webhooks to receive real-time notifications about events:
 
 ### Supported Events
+
 - `function.created`
 - `function.updated`
 - `function.deleted`
@@ -812,6 +871,7 @@ Configure webhooks to receive real-time notifications about events:
 - `annotation.completed`
 
 **Webhook Payload:**
+
 ```json
 {
   "event": "function.updated",
@@ -828,24 +888,30 @@ Configure webhooks to receive real-time notifications about events:
 ## Best Practices
 
 ### 1. Use Appropriate HTTP Methods
+
 - `GET` for retrieving data
 - `POST` for creating resources
 - `PUT`/`PATCH` for updating resources
 - `DELETE` for removing resources
 
 ### 2. Handle Errors Gracefully
+
 Always check the `success` field in responses and handle errors appropriately.
 
 ### 3. Implement Exponential Backoff
+
 When rate limited, implement exponential backoff before retrying.
 
 ### 4. Cache Responses
+
 Cache responses where appropriate to reduce API calls.
 
 ### 5. Use Pagination
+
 Always use pagination for large datasets.
 
 ### 6. Validate Input
+
 Validate all input on the client side before sending to the API.
 
 ---

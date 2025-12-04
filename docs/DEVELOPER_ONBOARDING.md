@@ -23,11 +23,13 @@ Before you begin, ensure you have the following installed on your system:
 ### Required Software
 
 - **Node.js** >= 18.18.0 (LTS recommended)
+
   ```bash
   node --version  # Should be >= 18.18.0
   ```
 
 - **npm** >= 9.0.0 (comes with Node.js)
+
   ```bash
   npm --version
   ```
@@ -47,6 +49,7 @@ Before you begin, ensure you have the following installed on your system:
     - EditorConfig
 
 - **Ollama** (for local AI development)
+
   ```bash
   # Install Ollama from https://ollama.ai
   ollama pull qwen2.5:3b
@@ -154,6 +157,7 @@ npm run dev:frontend # Frontend on http://localhost:5173
 ### 6. Verify Installation
 
 Open your browser and navigate to:
+
 - Frontend: http://localhost:5173
 - Backend Health: http://localhost:3000/api/health
 
@@ -308,11 +312,11 @@ Example: Adding a new endpoint to the backend
 
 ```typescript
 // apps/backend/src/routes/myFeature/myFeatureRouter.ts
-import { Router } from 'express';
+import { Router } from "express";
 
 const router = Router();
 
-router.get('/my-endpoint', async (req, res) => {
+router.get("/my-endpoint", async (req, res) => {
   try {
     // Your logic here
     res.json({ success: true, data: {} });
@@ -327,9 +331,9 @@ export default router;
 Register it in `apps/backend/src/index.ts`:
 
 ```typescript
-import myFeatureRouter from './routes/myFeature/myFeatureRouter.js';
+import myFeatureRouter from "./routes/myFeature/myFeatureRouter.js";
 
-app.use('/api/my-feature', myFeatureRouter);
+app.use("/api/my-feature", myFeatureRouter);
 ```
 
 ### 3. Adding a New React Component
@@ -378,13 +382,13 @@ Example test:
 
 ```typescript
 // apps/backend/src/services/myService.test.ts
-import { describe, it, expect } from 'vitest';
-import { myFunction } from './myService';
+import { describe, it, expect } from "vitest";
+import { myFunction } from "./myService";
 
-describe('myFunction', () => {
-  it('should return expected result', () => {
-    const result = myFunction('input');
-    expect(result).toBe('expected output');
+describe("myFunction", () => {
+  it("should return expected result", () => {
+    const result = myFunction("input");
+    expect(result).toBe("expected output");
   });
 });
 ```
@@ -429,12 +433,14 @@ describe('MyComponent', () => {
 ### Naming Conventions
 
 **Files:**
+
 - Components: `PascalCase.tsx` (e.g., `Dashboard.tsx`)
 - Services: `camelCase.ts` (e.g., `authService.ts`)
 - Tests: `*.test.ts` or `*.test.tsx`
 - CSS: `PascalCase.css` matching component name
 
 **Variables & Functions:**
+
 - Variables: `camelCase`
 - Constants: `UPPER_SNAKE_CASE`
 - Functions: `camelCase`
@@ -449,6 +455,7 @@ describe('MyComponent', () => {
 **ESLint:** Follow ESLint rules. Run `npm run lint` to check.
 
 **Comments:**
+
 ```typescript
 // Single-line comments for simple explanations
 
@@ -477,6 +484,7 @@ chore: maintenance tasks
 ```
 
 Examples:
+
 ```bash
 git commit -m "feat(auth): add JWT refresh token endpoint"
 git commit -m "fix(dashboard): resolve widget loading issue"
@@ -486,6 +494,7 @@ git commit -m "docs: update API documentation"
 ### API Conventions
 
 **Response Format:**
+
 ```typescript
 // Success
 {
@@ -503,6 +512,7 @@ git commit -m "docs: update API documentation"
 ```
 
 **HTTP Status Codes:**
+
 - 200: Success
 - 201: Created
 - 400: Bad Request
@@ -522,6 +532,7 @@ git commit -m "docs: update API documentation"
 **Problem:** Port 3000 or 5173 is already in use.
 
 **Solution:**
+
 ```bash
 # Find and kill the process
 lsof -ti:3000 | xargs kill -9  # macOS/Linux
@@ -536,6 +547,7 @@ PORT=3001
 **Problem:** `npm install` fails or shows errors.
 
 **Solution:**
+
 ```bash
 # Clear cache and reinstall
 npm cache clean --force
@@ -548,6 +560,7 @@ npm install
 **Problem:** TypeScript compilation fails.
 
 **Solution:**
+
 ```bash
 # Check TypeScript version
 npx tsc --version
@@ -563,6 +576,7 @@ npm run build
 **Problem:** AI endpoints return "Provider unavailable".
 
 **Solution:**
+
 ```bash
 # Check if Ollama is running
 ollama list
@@ -582,6 +596,7 @@ OLLAMA_BASE_URL=http://localhost:11434
 **Problem:** Database errors on startup.
 
 **Solution:**
+
 ```bash
 # For SQLite, ensure directory exists
 mkdir -p data
@@ -597,6 +612,7 @@ psql -h localhost -U your_user -d erp_steinmetz
 **Problem:** Blank page or errors in browser console.
 
 **Solution:**
+
 ```bash
 # Check backend is running
 curl http://localhost:3000/api/health
@@ -612,6 +628,7 @@ CORS_ORIGIN=http://localhost:5173
 **Problem:** Tests fail unexpectedly.
 
 **Solution:**
+
 ```bash
 # Update test snapshots if needed
 npm run test -- -u
@@ -710,6 +727,7 @@ npm run clean:frontend       # Frontend only
 ### Environment Variables Quick Reference
 
 **Backend:**
+
 ```bash
 PORT=3000
 NODE_ENV=development
@@ -718,6 +736,7 @@ DATABASE_URL=sqlite:./data/dev.sqlite3
 ```
 
 **Frontend:**
+
 ```bash
 VITE_API_BASE_URL=http://localhost:3000
 ```

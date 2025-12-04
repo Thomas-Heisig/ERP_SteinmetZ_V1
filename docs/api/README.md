@@ -15,6 +15,7 @@ This directory contains comprehensive API documentation for the ERP SteinmetZ sy
 ### Using the API Documentation
 
 Read [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) for:
+
 - Complete endpoint reference
 - Request/response examples
 - Authentication details
@@ -26,6 +27,7 @@ Read [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) for:
 The [openapi.yaml](./openapi.yaml) file can be used with:
 
 **Swagger UI:**
+
 ```bash
 # Install swagger-ui-express
 npm install swagger-ui-express swagger-jsdoc
@@ -34,10 +36,12 @@ npm install swagger-ui-express swagger-jsdoc
 ```
 
 **Online Validators:**
+
 - [Swagger Editor](https://editor.swagger.io/) - Paste the YAML content
 - [Swagger UI](https://petstore.swagger.io/) - Load the URL
 
 **Code Generation:**
+
 ```bash
 # Generate TypeScript client
 npx @openapitools/openapi-generator-cli generate \
@@ -68,30 +72,33 @@ npx @openapitools/openapi-generator-cli generate \
 ## API Overview
 
 ### Base URL
+
 - Development: `http://localhost:3000`
 - Production: `https://api.erp-steinmetz.example.com`
 
 ### Authentication
+
 - **JWT Bearer Token** for user endpoints
 - **Admin Token** for system endpoints
 
 ### Endpoints
 
-| Category | Base Path | Description |
-|----------|-----------|-------------|
-| Health | `/api/health` | System health and monitoring |
-| AI & Chat | `/api/ai` | AI chat, models, audio |
-| Functions | `/api/functions` | Functions catalog |
-| AI Annotator | `/api/ai-annotator` | Metadata generation |
-| Dashboard | `/api/dashboard` | Dashboard data |
-| Auth | `/api/auth` | Authentication |
-| System | `/api/system` | System administration |
+| Category     | Base Path           | Description                  |
+| ------------ | ------------------- | ---------------------------- |
+| Health       | `/api/health`       | System health and monitoring |
+| AI & Chat    | `/api/ai`           | AI chat, models, audio       |
+| Functions    | `/api/functions`    | Functions catalog            |
+| AI Annotator | `/api/ai-annotator` | Metadata generation          |
+| Dashboard    | `/api/dashboard`    | Dashboard data               |
+| Auth         | `/api/auth`         | Authentication               |
+| System       | `/api/system`       | System administration        |
 
 ## Development
 
 ### Testing the API
 
 **Using curl:**
+
 ```bash
 # Health check
 curl http://localhost:3000/api/health
@@ -102,11 +109,13 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ```
 
 **Using Postman:**
+
 - Import the collection
 - Set up environment variables
 - Run requests
 
 **Using OpenAPI:**
+
 - Use Swagger UI for interactive testing
 - Generate client code for your language
 
@@ -123,14 +132,16 @@ When adding new API endpoints:
 ### Example: Adding a New Endpoint
 
 **1. Backend Implementation:**
+
 ```typescript
 // apps/backend/src/routes/myFeature/myRouter.ts
-router.get('/my-endpoint', async (req, res) => {
+router.get("/my-endpoint", async (req, res) => {
   res.json({ success: true, data: {} });
 });
 ```
 
 **2. OpenAPI Specification:**
+
 ```yaml
 paths:
   /api/my-endpoint:
@@ -139,7 +150,7 @@ paths:
         - MyFeature
       summary: Description
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -152,6 +163,7 @@ Add to the appropriate folder in the collection.
 
 **4. Documentation:**
 Add section in API_DOCUMENTATION.md with:
+
 - Endpoint description
 - Request/response examples
 - Error cases
@@ -179,6 +191,7 @@ Add section in API_DOCUMENTATION.md with:
 ## Support
 
 For issues or questions:
+
 - Check the [API Documentation](./API_DOCUMENTATION.md)
 - Review [GitHub Issues](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
 - Create a new issue if needed

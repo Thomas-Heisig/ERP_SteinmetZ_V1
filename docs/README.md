@@ -5,6 +5,7 @@ Welcome to the ERP SteinmetZ documentation! This directory contains comprehensiv
 ## 📚 Quick Navigation
 
 ### For New Developers
+
 Start here if you're new to the project:
 
 1. **[Developer Onboarding Guide](./DEVELOPER_ONBOARDING.md)** ⭐
@@ -20,6 +21,7 @@ Start here if you're new to the project:
    - Testing guidelines
 
 ### For API Users
+
 If you're integrating with the API:
 
 1. **[API Documentation](./api/API_DOCUMENTATION.md)** ⭐
@@ -38,6 +40,7 @@ If you're integrating with the API:
    - Pre-configured examples
 
 ### For Architects & Tech Leads
+
 Understanding architectural decisions:
 
 1. **[Architecture Decision Records](./adr/README.md)** ⭐
@@ -108,23 +111,27 @@ docs/
 ### Quick Start (5 minutes)
 
 1. **Clone the repo:**
+
    ```bash
    git clone https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1.git
    cd ERP_SteinmetZ_V1
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Configure environment:**
+
    ```bash
    cp apps/backend/.env.example apps/backend/.env
    cp apps/frontend/.env.example apps/frontend/.env
    ```
 
 4. **Start development servers:**
+
    ```bash
    npm run dev
    ```
@@ -142,6 +149,7 @@ docs/
 ### When to Update Documentation
 
 Update documentation when you:
+
 - Add a new API endpoint → Update `api/`
 - Change architecture → Create/update ADR
 - Add new feature → Update README
@@ -170,6 +178,7 @@ Update documentation when you:
 ## 🎯 Documentation Goals
 
 Our documentation aims to:
+
 - ✅ Enable new developers to start quickly (< 30 minutes)
 - ✅ Provide complete API reference with examples
 - ✅ Document architectural decisions and rationale
@@ -180,15 +189,15 @@ Our documentation aims to:
 
 ## 📊 Documentation Coverage
 
-| Area | Status | Quality |
-|------|--------|---------|
-| Getting Started | ✅ Complete | ⭐⭐⭐⭐⭐ |
-| API Reference | ✅ Complete | ⭐⭐⭐⭐⭐ |
+| Area             | Status      | Quality    |
+| ---------------- | ----------- | ---------- |
+| Getting Started  | ✅ Complete | ⭐⭐⭐⭐⭐ |
+| API Reference    | ✅ Complete | ⭐⭐⭐⭐⭐ |
 | Code Conventions | ✅ Complete | ⭐⭐⭐⭐⭐ |
-| Architecture | ✅ Complete | ⭐⭐⭐⭐⭐ |
-| Troubleshooting | ✅ Complete | ⭐⭐⭐⭐ |
-| Testing Guide | ⚠️ Partial | ⭐⭐⭐ |
-| Deployment | ⚠️ Partial | ⭐⭐ |
+| Architecture     | ✅ Complete | ⭐⭐⭐⭐⭐ |
+| Troubleshooting  | ✅ Complete | ⭐⭐⭐⭐   |
+| Testing Guide    | ⚠️ Partial  | ⭐⭐⭐     |
+| Deployment       | ⚠️ Partial  | ⭐⭐       |
 
 ---
 
@@ -225,6 +234,7 @@ Our documentation aims to:
 ## 🤝 Contributing
 
 See [DEVELOPER_ONBOARDING.md](./DEVELOPER_ONBOARDING.md#development-workflow) for:
+
 - Git workflow
 - Branch naming
 - Commit messages
@@ -235,15 +245,18 @@ See [DEVELOPER_ONBOARDING.md](./DEVELOPER_ONBOARDING.md#development-workflow) fo
 ## 📧 Support
 
 **Questions?**
+
 - Check [GitHub Issues](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
 - Read [Troubleshooting](./DEVELOPER_ONBOARDING.md#troubleshooting)
 - Review [FAQ](./DEVELOPER_ONBOARDING.md)
 
 **Found a bug?**
+
 - Check [Known Issues](../ISSUES.md)
 - Create new issue if not listed
 
 **Need help?**
+
 - Contact: Thomas Heisig
 - GitHub: [@Thomas-Heisig](https://github.com/Thomas-Heisig)
 

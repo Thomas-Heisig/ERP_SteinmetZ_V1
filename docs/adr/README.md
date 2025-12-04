@@ -29,24 +29,27 @@ What is the change that we're proposing and/or doing?
 What becomes easier or more difficult to do because of this change?
 
 ### Positive
+
 - Benefits of this decision
 
 ### Negative
+
 - Drawbacks or costs
 
 ### Risks
+
 - Potential risks
 ```
 
 ## ADR List
 
-| ADR | Title | Status | Date |
-|-----|-------|--------|------|
-| [001](./001-monorepo-structure.md) | Monorepo Structure with npm Workspaces | Accepted | 2024-12-04 |
-| [002](./002-typescript-adoption.md) | TypeScript for All New Code | Accepted | 2024-12-04 |
+| ADR                                      | Title                                  | Status   | Date       |
+| ---------------------------------------- | -------------------------------------- | -------- | ---------- |
+| [001](./001-monorepo-structure.md)       | Monorepo Structure with npm Workspaces | Accepted | 2024-12-04 |
+| [002](./002-typescript-adoption.md)      | TypeScript for All New Code            | Accepted | 2024-12-04 |
 | [003](./003-multi-provider-ai-system.md) | Multi-Provider AI System with Fallback | Accepted | 2024-12-04 |
-| [004](./004-sqlite-for-development.md) | SQLite for Development Database | Accepted | 2024-12-04 |
-| [005](./005-react-19-adoption.md) | React 19 for Frontend | Accepted | 2024-12-04 |
+| [004](./004-sqlite-for-development.md)   | SQLite for Development Database        | Accepted | 2024-12-04 |
+| [005](./005-react-19-adoption.md)        | React 19 for Frontend                  | Accepted | 2024-12-04 |
 
 ## Creating a New ADR
 
