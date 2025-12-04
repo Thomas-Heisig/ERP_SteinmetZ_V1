@@ -1,0 +1,211 @@
+/* apps/frontend/src/components/ui/Skeleton.module.css */
+
+.skeleton {
+  background: var(--gray-200, #e5e7eb);
+  border-radius: 4px;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Variants */
+.text {
+  height: 1em;
+  margin-bottom: 0.5em;
+  transform: scale(1, 0.6);
+  border-radius: 4px;
+}
+
+.circular {
+  border-radius: 50%;
+}
+
+.rectangular {
+  border-radius: 0;
+}
+
+.rounded {
+  border-radius: 8px;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(-100%);
+  }
+  50%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.wave::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: wave 1.6s linear infinite;
+}
+
+/* SkeletonText */
+.skeletonText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* SkeletonCard */
+.skeletonCard {
+  padding: 1.5rem;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+}
+
+.skeletonCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.skeletonCardHeaderText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeletonCardContent {
+  margin-bottom: 1rem;
+}
+
+.skeletonCardFooter {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* SkeletonTable */
+.skeletonTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.skeletonTableHeader,
+.skeletonTableRow {
+  display: grid;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.skeletonTableHeader {
+  background: var(--surface-elevated, #f8fafc);
+}
+
+/* SkeletonList */
+.skeletonList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeletonListItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+}
+
+.skeletonListItemContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* SkeletonDashboard */
+.skeletonDashboard {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.skeletonDashboardCard {
+  padding: 1.5rem;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: var(--gray-700, #374151);
+  }
+
+  .wave::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+  }
+
+  .skeletonCard,
+  .skeletonListItem,
+  .skeletonDashboardCard {
+    background: var(--surface, #1e293b);
+    border-color: var(--gray-700, #374151);
+  }
+
+  .skeletonTableHeader {
+    background: var(--gray-800, #1f2937);
+  }
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .skeletonDashboard {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .skeletonDashboard {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1536px) {
+  .skeletonDashboard {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
