@@ -273,7 +273,9 @@ small, .small {
   button:hover,
   a:hover,
   .button:hover {
-    /* Disable hover effects */
+    transform: none;
+    box-shadow: none;
+    opacity: 1;
   }
 }
 
