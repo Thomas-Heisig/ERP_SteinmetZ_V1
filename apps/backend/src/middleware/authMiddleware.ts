@@ -4,6 +4,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/authService.js";
 import type { AuthContext } from "../types/auth.js";
+import { sendUnauthorized, sendForbidden, sendRateLimitError, ErrorCode } from "../utils/errorResponse.js";
 
 // Extend Express Request to include auth context
 declare global {
@@ -35,14 +36,14 @@ export async function authenticate(
     }
 
     if (!token) {
-      res.status(401).json({ error: "Authentication required" });
+      sendUnauthorized(res, "Authentication required");
       return;
     }
 
     // Validate token
     const authContext = await AuthService.validateToken(token);
     if (!authContext) {
-      res.status(401).json({ error: "Invalid or expired token" });
+      sendUnauthorized(res, "Invalid or expired token");
       return;
     }
 
@@ -51,7 +52,7 @@ export async function authenticate(
     next();
   } catch (error) {
     console.error("[auth] Authentication error:", error);
-    res.status(401).json({ error: "Authentication failed" });
+    sendUnauthorized(res, "Authentication failed");
   }
 }
 
@@ -101,7 +102,7 @@ export function requirePermission(permission: string) {
   ): Promise<void> => {
     try {
       if (!req.auth) {
-        res.status(401).json({ error: "Authentication required" });
+        sendUnauthorized(res, "Authentication required");
         return;
       }
 
@@ -129,10 +130,10 @@ export function requirePermission(permission: string) {
         }
       }
 
-      res.status(403).json({ error: "Insufficient permissions" });
+      sendForbidden(res, "Insufficient permissions", { required: permission });
     } catch (error) {
       console.error("[auth] Authorization error:", error);
-      res.status(500).json({ error: "Authorization failed" });
+      sendForbidden(res, "Authorization failed");
     }
   };
 }
@@ -149,20 +150,20 @@ export function requireRole(roleName: string) {
   ): Promise<void> => {
     try {
       if (!req.auth) {
-        res.status(401).json({ error: "Authentication required" });
+        sendUnauthorized(res, "Authentication required");
         return;
       }
 
       const hasRole = req.auth.roles.some((role) => role.name === roleName);
       if (!hasRole) {
-        res.status(403).json({ error: `Role '${roleName}' required` });
+        sendForbidden(res, `Role '${roleName}' required`, { role: roleName });
         return;
       }
 
       next();
     } catch (error) {
       console.error("[auth] Role check error:", error);
-      res.status(500).json({ error: "Authorization failed" });
+      sendForbidden(res, "Authorization failed");
     }
   };
 }
@@ -199,10 +200,7 @@ export function rateLimitLogin(
   // Check if limit exceeded
   if (attempts.count >= maxAttempts) {
     const retryAfter = Math.ceil((attempts.resetAt - now) / 1000);
-    res.status(429).json({
-      error: "Too many login attempts. Please try again later.",
-      retryAfter,
-    });
+    sendRateLimitError(res, "Too many login attempts. Please try again later.", retryAfter);
     return;
   }
 

@@ -10,6 +10,9 @@ import multer from "multer";
 import path from "node:path";
 import fs from "node:fs";
 
+// Middleware
+import { aiRateLimiter, strictAiRateLimiter, audioRateLimiter } from "../../middleware/rateLimiters.js";
+
 // Services
 import { getModelOverview } from "./services/modelService.js";
 import {
@@ -73,7 +76,7 @@ router.get("/models", async (_req, res) => {
 /* ========================================================================== */
 
 // Neue Chat-Session
-router.post("/chat", async (req, res) => {
+router.post("/chat", aiRateLimiter, async (req, res) => {
   try {
     const model = req.body?.model ?? "gpt-4o-mini";
     const session = await createSession(model);
@@ -84,7 +87,7 @@ router.post("/chat", async (req, res) => {
 });
 
 // Nachricht an eine Session
-router.post("/chat/:sessionId/message", async (req, res) => {
+router.post("/chat/:sessionId/message", aiRateLimiter, async (req, res) => {
   const session = getSession(req.params.sessionId);
   if (!session) return errorResponse(res, 404, "Session nicht gefunden");
 
@@ -140,7 +143,7 @@ router.delete("/chat/:sessionId", (req, res) => {
 /* 🔊 Audioverarbeitung (STT / TTS)                                           */
 /* ========================================================================== */
 
-router.post("/audio/transcribe", upload.single("audio"), async (req, res) => {
+router.post("/audio/transcribe", audioRateLimiter, upload.single("audio"), async (req, res) => {
   if (!req.file) return errorResponse(res, 400, "Keine Datei vorhanden");
   try {
     const transcript = await transcribeAudio(req.file.path);
@@ -154,7 +157,7 @@ router.post("/audio/transcribe", upload.single("audio"), async (req, res) => {
 /* 🌍 Übersetzungen                                                           */
 /* ========================================================================== */
 
-router.post("/translate", async (req, res) => {
+router.post("/translate", aiRateLimiter, async (req, res) => {
   const { text, targetLang, engine = "openai" } = req.body;
   if (!text || !targetLang)
     return errorResponse(res, 400, "Fehlende Parameter: text, targetLang");
