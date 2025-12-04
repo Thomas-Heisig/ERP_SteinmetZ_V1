@@ -30,7 +30,7 @@ servers:
   - url: http://localhost:3000
     description: Development server
   - url: https://api.erp-steinmetz.example.com
-    description: Production server
+    description: Production server (replace with actual production URL)
 
 tags:
   - name: Health
