@@ -87,9 +87,9 @@ describe("Database Migration System", () => {
       );
     `);
 
-    db.prepare(
-      "INSERT INTO schema_migrations (filename) VALUES (?)",
-    ).run("001_test.sql");
+    db.prepare("INSERT INTO schema_migrations (filename) VALUES (?)").run(
+      "001_test.sql",
+    );
 
     const appliedMigrations = db
       .prepare("SELECT filename FROM schema_migrations")

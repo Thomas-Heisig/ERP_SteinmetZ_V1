@@ -15,6 +15,7 @@ GET /api/ai/health
 Returns health status for all configured AI providers.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -51,6 +52,7 @@ GET /api/ai/health/fallback
 Returns health status for a specific provider.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -72,6 +74,7 @@ GET /api/ai/health/available
 Returns a list of currently healthy providers.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -93,6 +96,7 @@ Returns the best available provider based on priority and health status.
 Priority order: OpenAI > Anthropic > Ollama > Fallback
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -121,18 +125,21 @@ The overall system status is determined by the number of healthy providers:
 AI providers are configured via environment variables:
 
 ### OpenAI
+
 ```bash
 OPENAI_API_KEY=sk-...
 OPENAI_MODEL=gpt-4o-mini
 ```
 
 ### Ollama
+
 ```bash
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=mistral:latest
 ```
 
 ### Anthropic
+
 ```bash
 ANTHROPIC_API_KEY=sk-ant-...
 ```
@@ -149,22 +156,26 @@ The system automatically falls back to available providers when the primary prov
 ## Health Check Behavior
 
 ### OpenAI
+
 - Checks connectivity by listing available models
 - Timeout: 10 seconds
 - Error states: API key missing, network errors, API errors
 
 ### Ollama
+
 - Checks local Ollama installation via `/api/tags` endpoint
 - Default URL: `http://localhost:11434`
 - Timeout: 5 seconds
 - Returns model count in details
 
 ### Anthropic
+
 - Makes minimal API request to verify connectivity
 - Handles rate limits gracefully (marked as degraded)
 - Timeout: 10 seconds
 
 ### Fallback
+
 - Always returns healthy status
 - No external dependencies
 - Provides basic responses when other providers fail
@@ -194,6 +205,7 @@ fi
 ## Error Handling
 
 All health check errors are:
+
 - Logged with appropriate severity (warn/error)
 - Returned in the response with error details
 - Non-blocking (system continues with available providers)
@@ -207,6 +219,7 @@ npm run test -- aiProviderHealthService.test.ts
 ```
 
 The test suite covers:
+
 - Individual provider checks
 - Overall system health
 - Fallback mechanisms

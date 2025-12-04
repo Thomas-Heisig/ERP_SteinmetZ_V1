@@ -11,9 +11,9 @@ export interface SkeletonProps {
 
 /**
  * Skeleton Component
- * 
+ *
  * Displays a placeholder while content is loading.
- * 
+ *
  * Usage:
  * ```tsx
  * <Skeleton variant="text" width="80%" />
@@ -78,7 +78,10 @@ export interface SkeletonAvatarProps {
   className?: string;
 }
 
-export function SkeletonAvatar({ size = 40, className = "" }: SkeletonAvatarProps) {
+export function SkeletonAvatar({
+  size = 40,
+  className = "",
+}: SkeletonAvatarProps) {
   return (
     <Skeleton
       variant="circular"

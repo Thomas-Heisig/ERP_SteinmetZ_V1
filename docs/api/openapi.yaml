@@ -1,0 +1,325 @@
+openapi: 3.0.3
+info:
+  title: ERP SteinmetZ API
+  description: |
+    Enterprise Resource Planning System with AI-powered features.
+    
+    This API provides comprehensive ERP functionality including:
+    - AI Chat & Assistant
+    - Functions Catalog Management
+    - AI Annotator for metadata generation
+    - Dashboard & Analytics
+    - System Health & Monitoring
+    
+    ## Authentication
+    Most endpoints require authentication via JWT token or Admin token.
+    
+    ## Base URL
+    - Development: `http://localhost:3000`
+    - Production: Configure via environment variables
+    
+  version: 0.2.0
+  contact:
+    name: Thomas Heisig
+    url: https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.erp-steinmetz.example.com
+    description: Production server (replace with actual production URL)
+
+tags:
+  - name: Health
+    description: System health and monitoring endpoints
+  - name: AI
+    description: AI chat, models, and AI-powered features
+  - name: Functions
+    description: Functions Catalog management
+  - name: AI Annotator
+    description: AI-powered metadata generation and annotation
+  - name: Dashboard
+    description: Dashboard data and analytics
+  - name: Auth
+    description: Authentication and authorization
+  - name: System
+    description: System information and administration
+  - name: Innovation
+    description: Innovation management features
+  - name: Calendar
+    description: Calendar and scheduling
+  - name: QuickChat
+    description: Quick chat assistant
+
+security:
+  - BearerAuth: []
+  - AdminToken: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for user authentication
+    AdminToken:
+      type: apiKey
+      in: header
+      name: x-admin-token
+      description: Admin token for system operations
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Error message
+          example: "Resource not found"
+
+    SuccessResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          description: Success message
+
+    HealthStatus:
+      type: object
+      required:
+        - status
+        - timestamp
+        - uptime
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+        version:
+          type: string
+
+    ChatSession:
+      type: object
+      required:
+        - id
+        - model
+        - messages
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        model:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ChatMessage:
+      type: object
+      required:
+        - role
+        - content
+        - timestamp
+      properties:
+        role:
+          type: string
+          enum: [user, assistant, system]
+        content:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    FunctionNode:
+      type: object
+      required:
+        - id
+        - name
+        - kind
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        kind:
+          type: string
+          enum: [category, function, action, rule, form]
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/FunctionNode'
+
+paths:
+  /api/health:
+    get:
+      tags:
+        - Health
+      summary: Get system health status
+      description: Returns comprehensive system health information
+      operationId: getHealth
+      security: []
+      responses:
+        '200':
+          description: System health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+  /api/ai/models:
+    get:
+      tags:
+        - AI
+      summary: List available AI models
+      operationId: getModels
+      responses:
+        '200':
+          description: List of available models
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  models:
+                    type: array
+                    items:
+                      type: object
+
+  /api/ai/chat:
+    post:
+      tags:
+        - AI
+      summary: Create new chat session
+      operationId: createChatSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model:
+                  type: string
+      responses:
+        '200':
+          description: Chat session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  session:
+                    $ref: '#/components/schemas/ChatSession'
+
+  /api/ai/chat/{sessionId}/message:
+    post:
+      tags:
+        - AI
+      summary: Send message to chat session
+      operationId: sendChatMessage
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+      responses:
+        '200':
+          description: AI response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  response:
+                    $ref: '#/components/schemas/ChatMessage'
+
+  /api/functions:
+    get:
+      tags:
+        - Functions
+      summary: Get complete functions catalog
+      operationId: getFunctionsCatalog
+      responses:
+        '200':
+          description: Complete functions catalog
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/functions/search:
+    get:
+      tags:
+        - Functions
+      summary: Search functions
+      operationId: searchFunctions
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object

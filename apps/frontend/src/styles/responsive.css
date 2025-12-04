@@ -3,24 +3,24 @@
 
 :root {
   /* ==================== Breakpoints ==================== */
-  --breakpoint-xs: 320px;  /* Mobile Small */
-  --breakpoint-sm: 640px;  /* Mobile Large */
-  --breakpoint-md: 768px;  /* Tablet */
+  --breakpoint-xs: 320px; /* Mobile Small */
+  --breakpoint-sm: 640px; /* Mobile Large */
+  --breakpoint-md: 768px; /* Tablet */
   --breakpoint-lg: 1024px; /* Desktop */
   --breakpoint-xl: 1280px; /* Desktop Large */
   --breakpoint-2xl: 1536px; /* Desktop XL */
 
   /* ==================== Spacing Scale (Responsive) ==================== */
-  --space-xs: 0.25rem;   /* 4px */
-  --space-sm: 0.5rem;    /* 8px */
-  --space-md: 1rem;      /* 16px */
-  --space-lg: 1.5rem;    /* 24px */
-  --space-xl: 2rem;      /* 32px */
-  --space-2xl: 3rem;     /* 48px */
-  --space-3xl: 4rem;     /* 64px */
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 1rem; /* 16px */
+  --space-lg: 1.5rem; /* 24px */
+  --space-xl: 2rem; /* 32px */
+  --space-2xl: 3rem; /* 48px */
+  --space-3xl: 4rem; /* 64px */
 
   /* ==================== Touch Targets ==================== */
-  --touch-target-min: 44px;  /* iOS minimum */
+  --touch-target-min: 44px; /* iOS minimum */
   --touch-target-comfortable: 48px;
 
   /* ==================== Container Widths ==================== */
@@ -52,7 +52,7 @@ body {
   /* Improve font rendering on mobile */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+
   /* Prevent horizontal scroll on mobile */
   overflow-x: hidden;
 }
@@ -208,32 +208,38 @@ a.button,
 
 /* ==================== Typography Responsive ==================== */
 
-h1, .h1 {
+h1,
+.h1 {
   font-size: var(--font-3xl);
   line-height: 1.2;
 }
 
-h2, .h2 {
+h2,
+.h2 {
   font-size: var(--font-2xl);
   line-height: 1.3;
 }
 
-h3, .h3 {
+h3,
+.h3 {
   font-size: var(--font-xl);
   line-height: 1.4;
 }
 
-h4, .h4 {
+h4,
+.h4 {
   font-size: var(--font-lg);
   line-height: 1.5;
 }
 
-p, .body {
+p,
+.body {
   font-size: var(--font-base);
   line-height: 1.6;
 }
 
-small, .small {
+small,
+.small {
   font-size: var(--font-sm);
 }
 
@@ -241,7 +247,11 @@ small, .small {
 
 /* Increase tap target size on mobile */
 @media (hover: none) and (pointer: coarse) {
-  a, button, input, select, textarea {
+  a,
+  button,
+  input,
+  select,
+  textarea {
     /* Ensure minimum touch target */
     min-height: var(--touch-target-min);
   }
@@ -339,12 +349,12 @@ small, .small {
   .p-responsive {
     padding: var(--space-lg);
   }
-  
+
   .px-responsive {
     padding-left: var(--space-lg);
     padding-right: var(--space-lg);
   }
-  
+
   .py-responsive {
     padding-top: var(--space-lg);
     padding-bottom: var(--space-lg);
@@ -355,12 +365,12 @@ small, .small {
   .p-responsive {
     padding: var(--space-xl);
   }
-  
+
   .px-responsive {
     padding-left: var(--space-xl);
     padding-right: var(--space-xl);
   }
-  
+
   .py-responsive {
     padding-top: var(--space-xl);
     padding-bottom: var(--space-xl);

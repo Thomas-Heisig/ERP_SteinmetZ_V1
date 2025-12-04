@@ -75,7 +75,7 @@ Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und
   - [x] Health-Checks für alle Provider (OpenAI, Ollama, Anthropic, Fallback)
   - [x] Fallback-Mechanismus mit Prioritätsreihenfolge
   - [x] Provider-Verfügbarkeit dokumentieren (HEALTH_CHECKS.md)
-  - [x] Health-Check-Endpoints (/api/ai/health/*)
+  - [x] Health-Check-Endpoints (/api/ai/health/\*)
   - [x] 8 Provider-Connection-Tests
   - **Aufwand**: 1 Tag
   - **Ergebnis**: Automatisches Fallback-System mit vollständiger Dokumentation
@@ -111,18 +111,20 @@ Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und
 
 ### Documentation
 
-- [ ] **API-Dokumentation vervollständigen**
-  - [ ] OpenAPI/Swagger Spec generieren
-  - [ ] Postman Collection erstellen
-  - [ ] Request/Response-Beispiele für alle Endpoints
+- [x] **API-Dokumentation vervollständigen** ✅ ERLEDIGT (2024-12-04)
+  - [x] OpenAPI/Swagger Spec generieren (docs/api/openapi.yaml)
+  - [x] Postman Collection erstellen (docs/api/postman-collection.json)
+  - [x] Request/Response-Beispiele für alle Endpoints (docs/api/API_DOCUMENTATION.md)
   - **Aufwand**: 2-3 Tage
+  - **Ergebnis**: Vollständige API-Dokumentation mit OpenAPI 3.0 Spec, Postman Collection und umfangreichen Beispielen
 
-- [ ] **Developer Onboarding Guide**
-  - [ ] Setup-Anleitung erweitern
-  - [ ] Troubleshooting-Sektion
-  - [ ] Code-Conventions dokumentieren
-  - [ ] Architecture Decision Records (ADR) beginnen
+- [x] **Developer Onboarding Guide** ✅ ERLEDIGT (2024-12-04)
+  - [x] Setup-Anleitung erweitern (docs/DEVELOPER_ONBOARDING.md)
+  - [x] Troubleshooting-Sektion mit Common Issues und Solutions
+  - [x] Code-Conventions dokumentieren (docs/CODE_CONVENTIONS.md)
+  - [x] Architecture Decision Records (ADR) beginnen (docs/adr/ mit 5 ADRs)
   - **Aufwand**: 1-2 Tage
+  - **Ergebnis**: Umfassende Onboarding-Dokumentation, Code-Style-Guide, ADR-Template und 5 initiale ADRs
 
 ---
 

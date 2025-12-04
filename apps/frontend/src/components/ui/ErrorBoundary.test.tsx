@@ -26,7 +26,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <div>Test content</div>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText("Test content")).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText(/Etwas ist schiefgelaufen/i)).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary fallback={<div>Custom error message</div>}>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText("Custom error message")).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary onError={onError}>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(onError).toHaveBeenCalled();
@@ -67,7 +67,7 @@ describe("ErrorBoundary", () => {
       expect.any(Error),
       expect.objectContaining({
         componentStack: expect.any(String),
-      })
+      }),
     );
   });
 
@@ -78,7 +78,7 @@ describe("ErrorBoundary", () => {
     const { rerender } = render(
       <ErrorBoundary>
         <ThrowError shouldThrow={shouldThrow} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText(/Etwas ist schiefgelaufen/i)).toBeInTheDocument();
@@ -93,10 +93,12 @@ describe("ErrorBoundary", () => {
     rerender(
       <ErrorBoundary>
         <ThrowError shouldThrow={shouldThrow} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(screen.queryByText(/Etwas ist schiefgelaufen/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Etwas ist schiefgelaufen/i),
+    ).not.toBeInTheDocument();
   });
 
   it("should use custom fallbackRender function", () => {
@@ -110,7 +112,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary fallbackRender={fallbackRender}>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText(/Custom: Test error/i)).toBeInTheDocument();
@@ -124,11 +126,11 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(
-      screen.getByText(/Fehlerdetails \(nur in Entwicklung sichtbar\)/i)
+      screen.getByText(/Fehlerdetails \(nur in Entwicklung sichtbar\)/i),
     ).toBeInTheDocument();
 
     process.env.NODE_ENV = originalEnv;
@@ -138,7 +140,7 @@ describe("ErrorBoundary", () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText(/Erneut versuchen/i)).toBeInTheDocument();
@@ -150,7 +152,7 @@ describe("ErrorBoundary", () => {
     const { rerender } = render(
       <ErrorBoundary resetKeys={["key1"]}>
         <ThrowError shouldThrow={shouldThrow} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText(/Etwas ist schiefgelaufen/i)).toBeInTheDocument();
@@ -160,10 +162,12 @@ describe("ErrorBoundary", () => {
     rerender(
       <ErrorBoundary resetKeys={["key2"]}>
         <ThrowError shouldThrow={shouldThrow} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(screen.queryByText(/Etwas ist schiefgelaufen/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Etwas ist schiefgelaufen/i),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("No error")).toBeInTheDocument();
   });
 });

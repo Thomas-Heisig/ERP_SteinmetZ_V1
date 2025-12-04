@@ -44,12 +44,12 @@ export async function checkOpenAIHealth(): Promise<ProviderHealth> {
     }
 
     const client = new OpenAI({ apiKey });
-    
+
     // Simple API check by listing models
     await client.models.list();
-    
+
     const latency = Date.now() - start;
-    
+
     return {
       provider,
       status: "healthy",
@@ -92,7 +92,7 @@ export async function checkOllamaHealth(): Promise<ProviderHealth> {
 
     const data = (await response.json()) as any;
     const latency = Date.now() - start;
-    
+
     return {
       provider,
       status: "healthy",
@@ -249,17 +249,17 @@ export async function getAvailableProviders(): Promise<string[]> {
  */
 export async function getBestAvailableProvider(): Promise<string> {
   const available = await getAvailableProviders();
-  
+
   // Priority order: OpenAI > Anthropic > Ollama > Fallback
   const priority = ["openai", "anthropic", "ollama", "fallback"];
-  
+
   for (const provider of priority) {
     if (available.includes(provider)) {
       log("info", `Selected provider: ${provider}`);
       return provider;
     }
   }
-  
+
   // Always return fallback as last resort
   return "fallback";
 }

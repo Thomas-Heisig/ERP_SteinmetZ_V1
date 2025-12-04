@@ -1,6 +1,11 @@
 // apps/frontend/src/components/ui/Suspense.tsx
 import { Suspense as ReactSuspense, ReactNode } from "react";
-import { SkeletonCard, SkeletonDashboard, SkeletonList, SkeletonTable } from "./Skeleton";
+import {
+  SkeletonCard,
+  SkeletonDashboard,
+  SkeletonList,
+  SkeletonTable,
+} from "./Skeleton";
 
 export interface SuspenseProps {
   children: ReactNode;
@@ -10,23 +15,27 @@ export interface SuspenseProps {
 
 /**
  * Enhanced Suspense wrapper with built-in skeleton fallbacks
- * 
+ *
  * Usage:
  * ```tsx
  * <Suspense type="dashboard">
  *   <LazyDashboard />
  * </Suspense>
- * 
+ *
  * <Suspense type="list">
  *   <LazyList />
  * </Suspense>
- * 
+ *
  * <Suspense fallback={<CustomLoader />}>
  *   <LazyComponent />
  * </Suspense>
  * ```
  */
-export function Suspense({ children, fallback, type = "custom" }: SuspenseProps) {
+export function Suspense({
+  children,
+  fallback,
+  type = "custom",
+}: SuspenseProps) {
   let defaultFallback: ReactNode;
 
   switch (type) {
@@ -69,7 +78,13 @@ export function SuspenseDashboard({ children }: { children: ReactNode }) {
 /**
  * Suspense wrapper specifically for List components
  */
-export function SuspenseList({ children, items = 5 }: { children: ReactNode; items?: number }) {
+export function SuspenseList({
+  children,
+  items = 5,
+}: {
+  children: ReactNode;
+  items?: number;
+}) {
   return (
     <ReactSuspense fallback={<SkeletonList items={items} />}>
       {children}
@@ -100,9 +115,5 @@ export function SuspenseTable({
  * Suspense wrapper specifically for Card components
  */
 export function SuspenseCard({ children }: { children: ReactNode }) {
-  return (
-    <ReactSuspense fallback={<SkeletonCard />}>
-      {children}
-    </ReactSuspense>
-  );
+  return <ReactSuspense fallback={<SkeletonCard />}>{children}</ReactSuspense>;
 }

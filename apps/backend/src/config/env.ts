@@ -165,7 +165,9 @@ export function validateProviderConfig(env: Env): void {
   }
 
   if (env.DB_DRIVER === "sqlite" && !env.SQLITE_FILE) {
-    console.warn("⚠️  SQLITE_FILE not set, using default: ../../data/dev.sqlite3");
+    console.warn(
+      "⚠️  SQLITE_FILE not set, using default: ../../data/dev.sqlite3",
+    );
   }
 
   if (env.DB_DRIVER === "postgresql" && !env.DATABASE_URL) {
