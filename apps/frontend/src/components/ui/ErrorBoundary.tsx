@@ -18,21 +18,21 @@ interface State {
 
 /**
  * Error Boundary Component
- * 
+ *
  * Catches JavaScript errors anywhere in the child component tree,
  * logs those errors, and displays a fallback UI.
- * 
+ *
  * Usage:
  * ```tsx
  * <ErrorBoundary>
  *   <YourComponent />
  * </ErrorBoundary>
- * 
+ *
  * // With custom fallback
  * <ErrorBoundary fallback={<CustomErrorUI />}>
  *   <YourComponent />
  * </ErrorBoundary>
- * 
+ *
  * // With custom fallback render function
  * <ErrorBoundary
  *   fallbackRender={(error, reset) => (
@@ -183,7 +183,7 @@ interface ErrorBoundaryWrapperProps {
 
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
-  errorBoundaryProps?: Omit<Props, "children">
+  errorBoundaryProps?: Omit<Props, "children">,
 ) {
   const WrappedComponent = (props: P) => (
     <ErrorBoundary {...errorBoundaryProps}>

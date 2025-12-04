@@ -122,7 +122,7 @@ Implementierung der nächsten 5 priorisierten TODO-Punkte mit umfassenden Tests 
 
 - **Safe Areas**
   - Support für Notched Devices (iPhone X+)
-  - env(safe-area-inset-*) für alle Richtungen
+  - env(safe-area-inset-\*) für alle Richtungen
 
 - **Print Styles**
   - Optimierte Print-Layouts

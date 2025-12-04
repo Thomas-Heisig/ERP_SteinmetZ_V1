@@ -9,21 +9,25 @@ The migration system uses SQLite as the primary database with support for Postgr
 ## Migration Script Location
 
 The main migration script is located at:
+
 - `apps/backend/src/utils/migrateSchema.ts`
 
 ## Migration Files Location
 
 Migration files are stored in:
+
 - `apps/backend/data/migrations/`
 
 ## Migration File Naming Convention
 
 Migration files should follow this naming pattern:
+
 ```
 <number>_<description>.sql
 ```
 
 Examples:
+
 - `001_initial_schema.sql`
 - `002_add_ai_tables.sql`
 - `003_add_annotation_status.sql`
@@ -92,9 +96,11 @@ PRAGMA foreign_keys = on;
 ## Migration Best Practices
 
 ### 1. Use Transactions
+
 The migration script automatically wraps migrations in transactions unless they contain their own `BEGIN TRANSACTION`.
 
 ### 2. Add Column Checks
+
 Before adding columns, check if they exist:
 
 ```sql
@@ -104,6 +110,7 @@ ALTER TABLE nodes ADD COLUMN new_field TEXT DEFAULT 'default_value';
 ```
 
 ### 3. Use IF NOT EXISTS
+
 Always use `IF NOT EXISTS` for CREATE statements:
 
 ```sql
@@ -114,6 +121,7 @@ CREATE TABLE IF NOT EXISTS new_table (
 ```
 
 ### 4. Preserve Foreign Keys
+
 When modifying tables with foreign keys:
 
 ```sql
@@ -123,6 +131,7 @@ PRAGMA foreign_keys = on;
 ```
 
 ### 5. Add Indexes
+
 Create indexes for frequently queried columns:
 
 ```sql
@@ -151,6 +160,7 @@ The current migration system does not support automatic rollbacks. If a migratio
 ### Before Production
 
 1. **Test on a copy of production data:**
+
    ```bash
    cp data/production.db data/test.db
    # Update DATABASE_URL to point to test.db
@@ -158,6 +168,7 @@ The current migration system does not support automatic rollbacks. If a migratio
    ```
 
 2. **Verify the changes:**
+
    ```bash
    sqlite3 data/test.db ".schema"
    ```
@@ -179,15 +190,19 @@ npm run test:migrations
 ## Common Issues
 
 ### Issue: Migration already applied
+
 **Solution:** The system automatically skips already-applied migrations.
 
 ### Issue: Column already exists
+
 **Solution:** The migration script checks for existing columns before ALTER TABLE ADD COLUMN.
 
 ### Issue: Syntax error in SQL
+
 **Solution:** Validate SQL syntax before committing. Test locally first.
 
 ### Issue: Foreign key constraint failure
+
 **Solution:** Ensure foreign key references exist before creating relationships.
 
 ## Migration Script Features
@@ -225,19 +240,20 @@ Migrations run the same way in all environments. Use environment variables to co
 Check migration status with this query:
 
 ```sql
-SELECT 
+SELECT
   filename,
   status,
   applied_at,
   message
-FROM schema_migrations 
-ORDER BY applied_at DESC 
+FROM schema_migrations
+ORDER BY applied_at DESC
 LIMIT 10;
 ```
 
 ## Support
 
 For issues or questions about migrations, refer to:
+
 - Migration script: `apps/backend/src/utils/migrateSchema.ts`
 - Migration files: `apps/backend/data/migrations/`
 - Issue tracker: Create an issue in the repository

@@ -18,7 +18,8 @@ export function errorHandler(
   }
 
   const isDevelopment = process.env.NODE_ENV === "development";
-  const requestId = (req.headers["x-request-id"] as string) || generateRequestId();
+  const requestId =
+    (req.headers["x-request-id"] as string) || generateRequestId();
 
   let errorDetails: ErrorDetails;
   let statusCode: number;

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 
 /**
  * Wrapper for async route handlers to catch errors and pass to error middleware
- * 
+ *
  * Usage:
  * router.get('/endpoint', asyncHandler(async (req, res) => {
  *   const data = await someAsyncOperation();

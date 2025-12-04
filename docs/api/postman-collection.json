@@ -1,0 +1,508 @@
+{
+  "info": {
+    "name": "ERP SteinmetZ API",
+    "description": "Complete API collection for ERP SteinmetZ system",
+    "version": "0.2.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Get Health Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Get comprehensive system health status"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI & Chat",
+      "item": [
+        {
+          "name": "List AI Models",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "models"]
+            },
+            "description": "Get list of all available AI models"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Chat Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"gpt-4o-mini\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "chat"]
+            },
+            "description": "Create a new chat session"
+          },
+          "response": []
+        },
+        {
+          "name": "Send Chat Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Hello, how can you help me?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat/:sessionId/message",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "chat", ":sessionId", "message"],
+              "variable": [
+                {
+                  "key": "sessionId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Send a message to an existing chat session"
+          },
+          "response": []
+        },
+        {
+          "name": "List Chat Sessions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/sessions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "sessions"]
+            },
+            "description": "Get list of all active chat sessions"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Chat Session",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat/:sessionId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "chat", ":sessionId"],
+              "variable": [
+                {
+                  "key": "sessionId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Delete a chat session"
+          },
+          "response": []
+        },
+        {
+          "name": "Transcribe Audio",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "audio",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/audio/transcribe",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "audio", "transcribe"]
+            },
+            "description": "Transcribe audio file to text"
+          },
+          "response": []
+        },
+        {
+          "name": "Translate Text",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Hello, world!\",\n  \"targetLanguage\": \"de\",\n  \"sourceLanguage\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/translate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "translate"]
+            },
+            "description": "Translate text to another language"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Functions Catalog",
+      "item": [
+        {
+          "name": "Get Complete Catalog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/functions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "functions"]
+            },
+            "description": "Get the complete functions catalog tree"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Root Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/functions/roots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "functions", "roots"]
+            },
+            "description": "Get only root-level function categories"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Function Node by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/functions/nodes/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "functions", "nodes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1_dashboard"
+                }
+              ]
+            },
+            "description": "Get a specific function node by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Functions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/functions/search?q=invoice&limit=20&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "functions", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "invoice"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "kinds",
+                  "value": "function,action",
+                  "disabled": true
+                },
+                {
+                  "key": "tags",
+                  "value": "finance",
+                  "disabled": true
+                },
+                {
+                  "key": "area",
+                  "value": "Finance",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Search for functions with filters"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Filtered Menu (RBAC)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roles\": [\"admin\", \"manager\"],\n  \"features\": [\"ai\", \"analytics\"],\n  \"area\": \"Finance\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/functions/menu",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "functions", "menu"]
+            },
+            "description": "Get filtered menu based on user roles and permissions"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AI Annotator",
+      "item": [
+        {
+          "name": "Generate Node Metadata",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fields\": [\"description\", \"tags\", \"permissions\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai-annotator/nodes/:id/generate-meta",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai-annotator", "nodes", ":id", "generate-meta"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Generate metadata for a function node using AI"
+          },
+          "response": []
+        },
+        {
+          "name": "Batch Process Nodes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nodeIds\": [\"node1\", \"node2\", \"node3\"],\n  \"fields\": [\"description\", \"tags\"],\n  \"options\": {\n    \"overwrite\": false,\n    \"async\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai-annotator/batch",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai-annotator", "batch"]
+            },
+            "description": "Process multiple nodes in batch for metadata generation"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dashboard"]
+            },
+            "description": "Get dashboard data including widgets and analytics"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Authenticate user and receive JWT token"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            },
+            "description": "Refresh JWT token using refresh token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Get System Info",
+          "request": {
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "value",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                },
+                {
+                  "key": "key",
+                  "value": "x-admin-token",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/system/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "system", "info"]
+            },
+            "description": "Get system information (requires admin token)"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

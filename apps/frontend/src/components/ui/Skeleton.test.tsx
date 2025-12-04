@@ -163,13 +163,13 @@ describe("SkeletonTable", () => {
 describe("SkeletonList", () => {
   it("should render default number of items", () => {
     const { container } = render(<SkeletonList />);
-    const items = container.querySelectorAll('.skeletonListItem');
+    const items = container.querySelectorAll(".skeletonListItem");
     expect(items).toHaveLength(5);
   });
 
   it("should render specified number of items", () => {
     const { container } = render(<SkeletonList items={3} />);
-    const items = container.querySelectorAll('.skeletonListItem');
+    const items = container.querySelectorAll(".skeletonListItem");
     expect(items).toHaveLength(3);
   });
 
@@ -191,18 +191,20 @@ describe("SkeletonList", () => {
 describe("SkeletonDashboard", () => {
   it("should render default number of cards", () => {
     const { container } = render(<SkeletonDashboard />);
-    const cards = container.querySelectorAll('.skeletonDashboardCard');
+    const cards = container.querySelectorAll(".skeletonDashboardCard");
     expect(cards).toHaveLength(6);
   });
 
   it("should render specified number of cards", () => {
     const { container } = render(<SkeletonDashboard cards={9} />);
-    const cards = container.querySelectorAll('.skeletonDashboardCard');
+    const cards = container.querySelectorAll(".skeletonDashboardCard");
     expect(cards).toHaveLength(9);
   });
 
   it("should apply custom className", () => {
-    const { container } = render(<SkeletonDashboard className="custom-dashboard" />);
+    const { container } = render(
+      <SkeletonDashboard className="custom-dashboard" />,
+    );
     expect(container.firstChild).toHaveClass("custom-dashboard");
   });
 });
