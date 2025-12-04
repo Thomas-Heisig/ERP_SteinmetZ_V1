@@ -24,3 +24,5 @@ export type { Toast, ToastType } from "./Toast";
 
 export { Table } from "./Table";
 export type { Column, TableProps } from "./Table";
+
+export { ErrorBoundary, withErrorBoundary } from "./ErrorBoundary";
