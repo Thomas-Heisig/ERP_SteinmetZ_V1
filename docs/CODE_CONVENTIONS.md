@@ -26,6 +26,7 @@ This document defines the coding standards and best practices for the ERP Steinm
 ### SOLID Principles
 
 Follow SOLID principles:
+
 - **S**ingle Responsibility Principle
 - **O**pen/Closed Principle
 - **L**iskov Substitution Principle
@@ -51,6 +52,7 @@ Write code that is easy to review. Think about the next developer who will read 
 ### Type Safety
 
 **DO:**
+
 ```typescript
 // Define proper interfaces
 interface User {
@@ -67,21 +69,24 @@ function getUser(id: string): Promise<User> {
 
 // Use unknown instead of any when type is uncertain
 function processData(data: unknown): void {
-  if (typeof data === 'string') {
+  if (typeof data === "string") {
     // Process string
   }
 }
 ```
 
 **DON'T:**
+
 ```typescript
 // Avoid any
-function processData(data: any) {  // ❌
+function processData(data: any) {
+  // ❌
   // Implementation
 }
 
 // Avoid implicit any
-function getValue(key) {  // ❌
+function getValue(key) {
+  // ❌
   return storage[key];
 }
 ```
@@ -89,6 +94,7 @@ function getValue(key) {  // ❌
 ### Type Definitions
 
 **Interfaces vs Types:**
+
 ```typescript
 // Use interfaces for object shapes
 interface UserProfile {
@@ -97,7 +103,7 @@ interface UserProfile {
 }
 
 // Use types for unions, intersections, or primitives
-type Status = 'active' | 'inactive' | 'pending';
+type Status = "active" | "inactive" | "pending";
 type ID = string | number;
 ```
 
@@ -113,9 +119,9 @@ const enum HttpStatus {
 
 // Use string enums for runtime values
 enum UserRole {
-  Admin = 'ADMIN',
-  User = 'USER',
-  Guest = 'GUEST',
+  Admin = "ADMIN",
+  User = "USER",
+  Guest = "GUEST",
 }
 ```
 
@@ -155,31 +161,31 @@ feature/
 
 ```typescript
 // 1. External libraries
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // 2. Internal absolute imports
-import { Button } from '@/components/ui/Button';
-import { useAuth } from '@/hooks/useAuth';
+import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/hooks/useAuth";
 
 // 3. Relative imports
-import { formatDate } from './utils';
-import type { User } from './types';
+import { formatDate } from "./utils";
+import type { User } from "./types";
 
 // 4. Styles (last)
-import './Component.css';
+import "./Component.css";
 ```
 
 ### Barrel Exports (index.ts)
 
 ```typescript
 // Good: Clean public API
-export { Dashboard } from './Dashboard';
-export { DashboardWidget } from './DashboardWidget';
-export type { DashboardProps } from './types';
+export { Dashboard } from "./Dashboard";
+export { DashboardWidget } from "./DashboardWidget";
+export type { DashboardProps } from "./types";
 
 // Avoid: Don't re-export everything
-export * from './Dashboard';  // ❌
+export * from "./Dashboard"; // ❌
 ```
 
 ---
@@ -199,11 +205,11 @@ UPPER_SNAKE_CASE.md    # Documentation
 
 ```typescript
 // Variables: camelCase
-const userName = 'John';
+const userName = "John";
 const isActive = true;
 
 // Constants: UPPER_SNAKE_CASE
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = "http://localhost:3000";
 const MAX_RETRY_COUNT = 3;
 
 // Functions: camelCase
@@ -227,7 +233,7 @@ function hasPermission(user: User, permission: string): boolean {
 // Classes: PascalCase
 class UserService {
   private users: User[];
-  
+
   constructor() {
     this.users = [];
   }
@@ -304,10 +310,10 @@ We use Prettier for automatic code formatting. Configuration is in `.prettierrc`
 
 ### JSDoc Comments
 
-```typescript
+````typescript
 /**
  * Fetches a user by ID from the database.
- * 
+ *
  * @param id - The unique user identifier
  * @returns Promise resolving to the user object
  * @throws {NotFoundError} If user is not found
@@ -320,18 +326,18 @@ We use Prettier for automatic code formatting. Configuration is in `.prettierrc`
 async function getUserById(id: string): Promise<User> {
   // Implementation
 }
-```
+````
 
 ### Inline Comments
 
 ```typescript
 // Good: Explain WHY, not WHAT
 // Using exponential backoff to avoid overwhelming the API
-await retry(fetchData, { maxAttempts: 3, backoff: 'exponential' });
+await retry(fetchData, { maxAttempts: 3, backoff: "exponential" });
 
 // Bad: Stating the obvious
 // Increment counter by 1
-counter++;  // ❌
+counter++; // ❌
 ```
 
 ### TODO Comments
@@ -353,7 +359,7 @@ counter++;  // ❌
  * Provides detailed explanation when needed.
  */
 
-/* 
+/*
  * Block comment for temporarily disabling code
  * (but prefer deleting unused code)
  */
@@ -379,22 +385,22 @@ interface MyComponentProps {
 export const MyComponent: React.FC<MyComponentProps> = ({ title, onAction }) => {
   // 3. Hooks
   const [count, setCount] = useState(0);
-  
+
   useEffect(() => {
     // Effect logic
   }, []);
-  
+
   // 4. Event handlers
   const handleClick = () => {
     setCount(count + 1);
     onAction?.();
   };
-  
+
   // 5. Render helpers (if needed)
   const renderContent = () => {
     return <div>{count}</div>;
   };
-  
+
   // 6. Return JSX
   return (
     <div className="my-component">
@@ -413,26 +419,28 @@ export const MyComponent: React.FC<MyComponentProps> = ({ title, onAction }) => 
 function useUserData(userId: string) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
-    fetchUser(userId).then(setUser).finally(() => setLoading(false));
+    fetchUser(userId)
+      .then(setUser)
+      .finally(() => setLoading(false));
   }, [userId]);
-  
+
   return { user, loading };
 }
 
 // Hook dependencies: Always specify
 useEffect(() => {
   // Effect
-}, [dependency1, dependency2]);  // ✓
+}, [dependency1, dependency2]); // ✓
 
 useEffect(() => {
   // Effect
-}, []);  // ✓ Empty for mount only
+}, []); // ✓ Empty for mount only
 
 useEffect(() => {
   // Effect
-});  // ❌ Missing dependencies
+}); // ❌ Missing dependencies
 ```
 
 ### Props Destructuring
@@ -476,8 +484,8 @@ return <div>{renderStatus()}</div>;
 ### Route Handlers
 
 ```typescript
-import { Router, Request, Response } from 'express';
-import { z } from 'zod';
+import { Router, Request, Response } from "express";
+import { z } from "zod";
 
 const router = Router();
 
@@ -488,14 +496,14 @@ const createUserSchema = z.object({
 });
 
 // Route handler
-router.post('/users', async (req: Request, res: Response) => {
+router.post("/users", async (req: Request, res: Response) => {
   try {
     // 1. Validate input
     const data = createUserSchema.parse(req.body);
-    
+
     // 2. Business logic
     const user = await userService.createUser(data);
-    
+
     // 3. Success response
     res.status(201).json({
       success: true,
@@ -506,14 +514,14 @@ router.post('/users', async (req: Request, res: Response) => {
     if (err instanceof z.ZodError) {
       return res.status(400).json({
         success: false,
-        error: 'Validation failed',
+        error: "Validation failed",
         details: err.errors,
       });
     }
-    
+
     res.status(500).json({
       success: false,
-      error: 'Internal server error',
+      error: "Internal server error",
     });
   }
 });
@@ -529,18 +537,18 @@ export class UserService {
   async createUser(data: CreateUserDto): Promise<User> {
     // Validation
     if (await this.userExists(data.email)) {
-      throw new ConflictError('User already exists');
+      throw new ConflictError("User already exists");
     }
-    
+
     // Business logic
     const user = await db.users.create(data);
-    
+
     // Side effects
     await emailService.sendWelcomeEmail(user);
-    
+
     return user;
   }
-  
+
   private async userExists(email: string): Promise<boolean> {
     const user = await db.users.findByEmail(email);
     return user !== null;
@@ -552,14 +560,11 @@ export class UserService {
 
 ```typescript
 // Good: Use parameterized queries
-const user = await db.query(
-  'SELECT * FROM users WHERE id = ?',
-  [userId]
-);
+const user = await db.query("SELECT * FROM users WHERE id = ?", [userId]);
 
 // Bad: String concatenation (SQL injection risk)
 const user = await db.query(
-  `SELECT * FROM users WHERE id = ${userId}`  // ❌
+  `SELECT * FROM users WHERE id = ${userId}`, // ❌
 );
 ```
 
@@ -575,7 +580,7 @@ export class AppError extends Error {
   constructor(
     public statusCode: number,
     message: string,
-    public isOperational = true
+    public isOperational = true,
   ) {
     super(message);
     Object.setPrototypeOf(this, AppError.prototype);
@@ -583,13 +588,13 @@ export class AppError extends Error {
 }
 
 export class NotFoundError extends AppError {
-  constructor(message = 'Resource not found') {
+  constructor(message = "Resource not found") {
     super(404, message);
   }
 }
 
 export class BadRequestError extends AppError {
-  constructor(message = 'Bad request') {
+  constructor(message = "Bad request") {
     super(400, message);
   }
 }
@@ -611,8 +616,8 @@ try {
     res.status(400).json({ error: err.message });
   } else {
     // Unknown error
-    logger.error('Unexpected error', err);
-    res.status(500).json({ error: 'Internal server error' });
+    logger.error("Unexpected error", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -621,7 +626,7 @@ try {
   const data = await fetchData();
   setData(data);
 } catch (err) {
-  const message = err instanceof Error ? err.message : 'Unknown error';
+  const message = err instanceof Error ? err.message : "Unknown error";
   setError(message);
   toast.error(message);
 }
@@ -634,40 +639,40 @@ try {
 ### Test Structure
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from "vitest";
 
-describe('UserService', () => {
+describe("UserService", () => {
   let service: UserService;
-  
+
   beforeEach(() => {
     service = new UserService();
   });
-  
-  describe('createUser', () => {
-    it('should create a new user with valid data', async () => {
+
+  describe("createUser", () => {
+    it("should create a new user with valid data", async () => {
       // Arrange
       const userData = {
-        name: 'John Doe',
-        email: 'john@example.com',
+        name: "John Doe",
+        email: "john@example.com",
       };
-      
+
       // Act
       const user = await service.createUser(userData);
-      
+
       // Assert
       expect(user).toBeDefined();
-      expect(user.name).toBe('John Doe');
-      expect(user.email).toBe('john@example.com');
+      expect(user.name).toBe("John Doe");
+      expect(user.email).toBe("john@example.com");
     });
-    
-    it('should throw error if user already exists', async () => {
+
+    it("should throw error if user already exists", async () => {
       // Arrange
-      const userData = { name: 'Jane', email: 'existing@example.com' };
-      
+      const userData = { name: "Jane", email: "existing@example.com" };
+
       // Act & Assert
-      await expect(service.createUser(userData))
-        .rejects
-        .toThrow('User already exists');
+      await expect(service.createUser(userData)).rejects.toThrow(
+        "User already exists",
+      );
     });
   });
 });
@@ -677,9 +682,9 @@ describe('UserService', () => {
 
 ```typescript
 // Pattern: should [expected behavior] when [condition]
-it('should return user when valid ID is provided', () => {});
-it('should throw NotFoundError when user does not exist', () => {});
-it('should cache results after first fetch', () => {});
+it("should return user when valid ID is provided", () => {});
+it("should throw NotFoundError when user does not exist", () => {});
+it("should cache results after first fetch", () => {});
 ```
 
 ---
@@ -716,29 +721,36 @@ chore: update dependencies
 ### Pull Requests
 
 **PR Title:**
+
 ```
 feat: Add user authentication system
 ```
 
 **PR Description Template:**
+
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Changes
+
 - Added JWT authentication
 - Created login/logout endpoints
 - Added auth middleware
 
 ## Testing
+
 - [ ] Unit tests added/updated
 - [ ] Manual testing completed
 - [ ] No console errors
 
 ## Screenshots
+
 (if applicable)
 
 ## Related Issues
+
 Closes #123
 ```
 
@@ -809,7 +821,7 @@ const users = await db.users.find({
 });
 
 // Use database indexes
-await db.query('CREATE INDEX idx_users_email ON users(email)');
+await db.query("CREATE INDEX idx_users_email ON users(email)");
 ```
 
 ---
@@ -832,10 +844,10 @@ const validated = schema.parse(req.body);
 
 ```typescript
 // Use parameterized queries
-db.query('SELECT * FROM users WHERE email = ?', [email]);
+db.query("SELECT * FROM users WHERE email = ?", [email]);
 
 // Never concatenate user input
-db.query(`SELECT * FROM users WHERE email = '${email}'`);  // ❌
+db.query(`SELECT * FROM users WHERE email = '${email}'`); // ❌
 ```
 
 ### XSS Prevention
@@ -858,7 +870,7 @@ const hashedPassword = await bcrypt.hash(password, 10);
 const decoded = jwt.verify(token, JWT_SECRET);
 
 // Implement rate limiting
-app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, max: 5 }));
+app.use("/api/auth", rateLimit({ windowMs: 15 * 60 * 1000, max: 5 }));
 ```
 
 ---

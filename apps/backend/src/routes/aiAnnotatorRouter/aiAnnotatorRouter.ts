@@ -10,6 +10,7 @@ import aiAnnotatorService, {
   FormSpec,
   DatabaseTool,
 } from "../../services/aiAnnotatorService.js";
+import { strictAiRateLimiter } from "../../middleware/rateLimiters.js";
 
 const router = Router();
 const databaseTool = DatabaseTool.getInstance();
@@ -261,7 +262,7 @@ router.post("/nodes/:id/validate", async (req: Request, res: Response) => {
 
 // ============ SINGLE OPERATIONS MIT ERROR CORRECTION ============
 
-router.post("/nodes/:id/generate-meta", async (req: Request, res: Response) => {
+router.post("/nodes/:id/generate-meta", strictAiRateLimiter, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -296,7 +297,7 @@ router.post("/nodes/:id/generate-meta", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/nodes/:id/generate-rule", async (req: Request, res: Response) => {
+router.post("/nodes/:id/generate-rule", strictAiRateLimiter, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -331,7 +332,7 @@ router.post("/nodes/:id/generate-rule", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/nodes/:id/generate-form", async (req: Request, res: Response) => {
+router.post("/nodes/:id/generate-form", strictAiRateLimiter, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -467,7 +468,7 @@ router.post(
 
 // ============ ERWEITERTE BATCH OPERATIONS ============
 
-router.post("/batch", async (req: Request, res: Response) => {
+router.post("/batch", strictAiRateLimiter, async (req: Request, res: Response) => {
   try {
     const operation: BatchOperation = req.body;
 

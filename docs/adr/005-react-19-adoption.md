@@ -6,6 +6,7 @@
 ## Context
 
 We needed to choose a frontend framework for the ERP SteinmetZ user interface. The frontend must:
+
 - Provide a responsive, modern UI
 - Support complex state management
 - Enable component reusability
@@ -19,6 +20,7 @@ React 19 was recently released with new features and improvements.
 Adopt **React 19** as the frontend framework with **Vite** as the build tool.
 
 **Key Technologies:**
+
 - React 19 (latest stable)
 - Vite 5 (fast build tool)
 - React Router v7 (routing)
@@ -26,6 +28,7 @@ Adopt **React 19** as the frontend framework with **Vite** as the build tool.
 - CSS Modules (styling)
 
 **React 19 Features Used:**
+
 - Function components with hooks
 - Server Components (future consideration)
 - Improved Suspense
@@ -35,21 +38,25 @@ Adopt **React 19** as the frontend framework with **Vite** as the build tool.
 ## Alternatives Considered
 
 ### Alternative 1: Vue.js 3
+
 - **Pros:** Simpler learning curve, good DX
 - **Cons:** Smaller ecosystem than React
 - **Why not:** Team more familiar with React
 
 ### Alternative 2: Angular 18
+
 - **Pros:** Full framework, batteries included
 - **Cons:** Steep learning curve, verbose
 - **Why not:** Too opinionated, slower development
 
 ### Alternative 3: Svelte
+
 - **Pros:** Lightweight, fast, simple
 - **Cons:** Smaller ecosystem, fewer libraries
 - **Why not:** Less mature ecosystem for enterprise
 
 ### Alternative 4: React 18
+
 - **Pros:** More stable, fewer edge cases
 - **Cons:** Missing React 19 improvements
 - **Why not:** React 19 is stable enough, better features
@@ -57,6 +64,7 @@ Adopt **React 19** as the frontend framework with **Vite** as the build tool.
 ## Consequences
 
 ### Positive
+
 - **Modern Features:** Latest React capabilities
 - **Performance:** Automatic batching, better rendering
 - **Developer Experience:** Excellent tooling and ecosystem
@@ -67,6 +75,7 @@ Adopt **React 19** as the frontend framework with **Vite** as the build tool.
 - **Future-Proof:** New features like Server Components
 
 ### Negative
+
 - **Learning Curve:** React 19 has new patterns to learn
 - **Bundle Size:** React adds to bundle size
 - **Complexity:** Can become complex with state management
@@ -74,6 +83,7 @@ Adopt **React 19** as the frontend framework with **Vite** as the build tool.
 - **Bleeding Edge:** Some third-party libraries may not support React 19 yet
 
 ### Risks
+
 - **Risk:** Third-party components break with React 19
   - **Mitigation:** Test libraries, use compatible versions
 - **Risk:** Developers unfamiliar with React 19 features
@@ -114,11 +124,11 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
   const [data, setData] = useState(null);
-  
+
   useEffect(() => {
     fetchDashboardData(userId).then(setData);
   }, [userId]);
-  
+
   return (
     <div className="dashboard">
       {/* Component content */}
@@ -130,6 +140,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ userId }) => {
 ### State Management
 
 Use React Context for global state:
+
 - AuthContext for authentication
 - ThemeContext for theming
 - No Redux needed initially (add if complexity grows)
@@ -162,16 +173,17 @@ const router = createBrowserRouter([
 ### Build Configuration
 
 Vite configuration for optimal performance:
+
 ```typescript
 // vite.config.ts
 export default defineConfig({
   plugins: [react()],
   build: {
-    target: 'esnext',
+    target: "esnext",
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
+          "react-vendor": ["react", "react-dom"],
         },
       },
     },
@@ -182,6 +194,7 @@ export default defineConfig({
 ## Migration Path
 
 For future React updates:
+
 1. Check breaking changes in release notes
 2. Update dependencies
 3. Run tests

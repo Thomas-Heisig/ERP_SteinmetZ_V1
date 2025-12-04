@@ -14,6 +14,7 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import FunctionsCatalog from "./components/FunctionsCatalog/FunctionsCatalog";
 import Login from "./pages/Login/Login";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 
 // i18n MUSS zuerst geladen werden
 import "./components/i18n/i18n";
@@ -30,7 +31,11 @@ import "./styles/contrast.css";
 const router = createBrowserRouter([
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <ErrorBoundary>
+        <Login />
+      </ErrorBoundary>
+    ),
   },
   {
     path: "/",
@@ -40,7 +45,9 @@ const router = createBrowserRouter([
         index: true,
         element: (
           <ProtectedRoute>
-            <Dashboard />
+            <ErrorBoundary>
+              <Dashboard />
+            </ErrorBoundary>
           </ProtectedRoute>
         ),
       },
@@ -48,7 +55,9 @@ const router = createBrowserRouter([
         path: "dashboard",
         element: (
           <ProtectedRoute>
-            <Dashboard />
+            <ErrorBoundary>
+              <Dashboard />
+            </ErrorBoundary>
           </ProtectedRoute>
         ),
       },
@@ -56,7 +65,9 @@ const router = createBrowserRouter([
         path: "catalog",
         element: (
           <ProtectedRoute>
-            <FunctionsCatalog />
+            <ErrorBoundary>
+              <FunctionsCatalog />
+            </ErrorBoundary>
           </ProtectedRoute>
         ),
       },
@@ -64,7 +75,9 @@ const router = createBrowserRouter([
         path: "ai",
         element: (
           <ProtectedRoute>
-            <div>AI Annotator – folgt später</div>
+            <ErrorBoundary>
+              <div>AI Annotator – folgt später</div>
+            </ErrorBoundary>
           </ProtectedRoute>
         ),
       },
@@ -86,10 +99,12 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 );

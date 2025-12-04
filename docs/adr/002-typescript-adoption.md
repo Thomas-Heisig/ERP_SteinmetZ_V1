@@ -6,6 +6,7 @@
 ## Context
 
 The project was initially developed with a mix of JavaScript and TypeScript. As the codebase grew, we faced increasing challenges:
+
 - Runtime type errors that could have been caught at compile time
 - Difficulty understanding function signatures and data structures
 - Refactoring was risky without type safety
@@ -18,6 +19,7 @@ We needed to decide on a language strategy going forward.
 All new code must be written in TypeScript. Existing JavaScript code will be gradually migrated to TypeScript.
 
 **Requirements:**
+
 - All `.ts` and `.tsx` files for new code
 - Strict mode enabled in `tsconfig.json`
 - Type definitions for all public APIs
@@ -25,6 +27,7 @@ All new code must be written in TypeScript. Existing JavaScript code will be gra
 - Proper interface definitions for all data structures
 
 **Configuration:**
+
 ```json
 {
   "compilerOptions": {
@@ -40,16 +43,19 @@ All new code must be written in TypeScript. Existing JavaScript code will be gra
 ## Alternatives Considered
 
 ### Alternative 1: Continue with JavaScript
+
 - **Pros:** No migration effort, no learning curve
 - **Cons:** Continued type errors, poor IDE support
 - **Why not:** Type safety is critical for maintainability
 
 ### Alternative 2: JSDoc Type Annotations
+
 - **Pros:** Type checking without TypeScript
 - **Cons:** Verbose, not enforced, limited features
 - **Why not:** TypeScript provides better DX and enforcement
 
 ### Alternative 3: Flow
+
 - **Pros:** Similar to TypeScript, Facebook-backed
 - **Cons:** Smaller ecosystem, declining popularity
 - **Why not:** TypeScript is the industry standard
@@ -57,6 +63,7 @@ All new code must be written in TypeScript. Existing JavaScript code will be gra
 ## Consequences
 
 ### Positive
+
 - **Type Safety:** Catch errors at compile time
 - **Better IDE Support:** Autocomplete, refactoring, navigation
 - **Self-Documenting:** Types serve as documentation
@@ -65,12 +72,14 @@ All new code must be written in TypeScript. Existing JavaScript code will be gra
 - **Onboarding:** Easier for new developers to understand code
 
 ### Negative
+
 - **Build Step:** Requires compilation before running
 - **Learning Curve:** Developers must learn TypeScript
 - **Initial Slowdown:** Type definitions take time to write
 - **Dependency Types:** Need @types packages for libraries
 
 ### Risks
+
 - **Risk:** Developers may use `any` to bypass type checking
   - **Mitigation:** ESLint rule to warn on `any`, code review
 - **Risk:** Complex types may become hard to understand
@@ -87,6 +96,7 @@ All new code must be written in TypeScript. Existing JavaScript code will be gra
 ### Type Definitions
 
 **Example Service:**
+
 ```typescript
 interface User {
   id: string;
@@ -104,7 +114,7 @@ class UserService {
   async createUser(data: CreateUserDto): Promise<User> {
     // Implementation
   }
-  
+
   async getUserById(id: string): Promise<User | null> {
     // Implementation
   }

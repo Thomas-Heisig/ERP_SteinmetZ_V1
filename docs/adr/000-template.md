@@ -10,6 +10,7 @@
 Describe the context and problem statement. What is the issue that we're seeing that is motivating this decision or change?
 
 Include:
+
 - Background information
 - Current situation
 - Problem to solve
@@ -20,6 +21,7 @@ Include:
 Describe the change that we're proposing and/or doing.
 
 Include:
+
 - The chosen solution
 - Why this solution was chosen
 - Key implementation details
@@ -28,12 +30,14 @@ Include:
 ## Alternatives Considered
 
 ### Alternative 1: [Name]
+
 - Description
 - Pros
 - Cons
 - Why not chosen
 
 ### Alternative 2: [Name]
+
 - Description
 - Pros
 - Cons
@@ -44,16 +48,19 @@ Include:
 What becomes easier or more difficult to do because of this change?
 
 ### Positive
+
 - Benefit 1
 - Benefit 2
 - Benefit 3
 
 ### Negative
+
 - Drawback 1
 - Drawback 2
 - Trade-off 1
 
 ### Risks
+
 - Risk 1 and mitigation strategy
 - Risk 2 and mitigation strategy
 
