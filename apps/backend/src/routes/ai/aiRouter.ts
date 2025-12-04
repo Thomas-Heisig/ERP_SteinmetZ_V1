@@ -20,6 +20,9 @@ import {
 import { transcribeAudio } from "./services/audioService.js";
 import { translateText } from "./services/translationService.js";
 
+// Health Router
+import healthRouter from "./healthRouter.js";
+
 // Core
 import {
   createSession,
@@ -257,6 +260,12 @@ router.get("/status", (_req, res) => {
     },
   });
 });
+
+/* ========================================================================== */
+/* 🏥 Provider Health Checks                                                  */
+/* ========================================================================== */
+
+router.use("/health", healthRouter);
 
 /* ========================================================================== */
 /* ✅ Export                                                                  */

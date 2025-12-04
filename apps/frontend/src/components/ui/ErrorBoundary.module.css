@@ -1,0 +1,205 @@
+/* apps/frontend/src/components/ui/ErrorBoundary.module.css */
+
+.errorBoundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background: var(--surface, #ffffff);
+}
+
+.errorContainer {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  padding: 2rem;
+  background: var(--surface-elevated, #f8fafc);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+  .errorContainer {
+    padding: 3rem;
+  }
+}
+
+.errorIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.errorTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 1rem 0;
+}
+
+@media (min-width: 768px) {
+  .errorTitle {
+    font-size: 2rem;
+  }
+}
+
+.errorMessage {
+  font-size: 1rem;
+  color: var(--text-secondary, #64748b);
+  margin: 0 0 2rem 0;
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .errorMessage {
+    font-size: 1.125rem;
+  }
+}
+
+.errorDetails {
+  margin: 2rem 0;
+  text-align: left;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.errorDetailsSummary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 0.5rem;
+  user-select: none;
+}
+
+.errorDetailsSummary:hover {
+  color: var(--primary-600, #2563eb);
+}
+
+.errorStack,
+.errorComponentStack {
+  margin: 1rem 0 0 0;
+  padding: 1rem;
+  background: var(--gray-50, #f9fafb);
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--error-700, #b91c1c);
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.errorComponentStack {
+  color: var(--text-secondary, #64748b);
+}
+
+.errorActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 640px) {
+  .errorActions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
+.errorButton,
+.errorButtonSecondary {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.errorButton {
+  background: var(--primary-500, #3b82f6);
+  color: white;
+}
+
+.errorButton:hover {
+  background: var(--primary-600, #2563eb);
+}
+
+.errorButton:active {
+  transform: scale(0.98);
+  background: var(--primary-700, #1d4ed8);
+}
+
+.errorButtonSecondary {
+  background: var(--gray-100, #f3f4f6);
+  color: var(--text-primary, #1e293b);
+  border: 1px solid var(--border, #e2e8f0);
+}
+
+.errorButtonSecondary:hover {
+  background: var(--gray-200, #e5e7eb);
+}
+
+.errorButtonSecondary:active {
+  transform: scale(0.98);
+  background: var(--gray-300, #d1d5db);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .errorBoundary {
+    background: var(--surface, #0f172a);
+  }
+
+  .errorContainer {
+    background: var(--surface-elevated, #1e293b);
+  }
+
+  .errorTitle {
+    color: var(--text-inverted, #ffffff);
+  }
+
+  .errorMessage {
+    color: var(--text-secondary, #94a3b8);
+  }
+
+  .errorDetails {
+    background: var(--gray-900, #111827);
+    border-color: var(--gray-700, #374151);
+  }
+
+  .errorStack,
+  .errorComponentStack {
+    background: var(--gray-800, #1f2937);
+  }
+
+  .errorButtonSecondary {
+    background: var(--gray-700, #374151);
+    color: var(--text-inverted, #ffffff);
+    border-color: var(--gray-600, #4b5563);
+  }
+
+  .errorButtonSecondary:hover {
+    background: var(--gray-600, #4b5563);
+  }
+}

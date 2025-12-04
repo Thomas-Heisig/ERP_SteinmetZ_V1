@@ -1,0 +1,408 @@
+/* ==================== RESPONSIVE DESIGN SYSTEM ==================== */
+/* apps/frontend/src/styles/responsive.css */
+
+:root {
+  /* ==================== Breakpoints ==================== */
+  --breakpoint-xs: 320px;  /* Mobile Small */
+  --breakpoint-sm: 640px;  /* Mobile Large */
+  --breakpoint-md: 768px;  /* Tablet */
+  --breakpoint-lg: 1024px; /* Desktop */
+  --breakpoint-xl: 1280px; /* Desktop Large */
+  --breakpoint-2xl: 1536px; /* Desktop XL */
+
+  /* ==================== Spacing Scale (Responsive) ==================== */
+  --space-xs: 0.25rem;   /* 4px */
+  --space-sm: 0.5rem;    /* 8px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+  --space-3xl: 4rem;     /* 64px */
+
+  /* ==================== Touch Targets ==================== */
+  --touch-target-min: 44px;  /* iOS minimum */
+  --touch-target-comfortable: 48px;
+
+  /* ==================== Container Widths ==================== */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+
+  /* ==================== Font Sizes (Responsive) ==================== */
+  --font-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --font-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --font-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --font-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --font-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --font-2xl: clamp(1.5rem, 1.3rem + 1vw, 1.875rem);
+  --font-3xl: clamp(1.875rem, 1.6rem + 1.375vw, 2.25rem);
+  --font-4xl: clamp(2.25rem, 1.9rem + 1.75vw, 3rem);
+}
+
+/* ==================== Base Responsive Styles ==================== */
+
+html {
+  /* Prevent text size adjust on orientation change */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+body {
+  /* Improve font rendering on mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
+}
+
+/* ==================== Container ==================== */
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: var(--container-sm);
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: var(--container-md);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: var(--container-lg);
+    padding-left: var(--space-xl);
+    padding-right: var(--space-xl);
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: var(--container-xl);
+  }
+}
+
+/* ==================== Touch-Friendly Buttons ==================== */
+
+button,
+.button,
+a.button,
+[role="button"] {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  /* Add padding for better touch targets */
+  padding: var(--space-sm) var(--space-md);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* Desktop: smaller padding is ok */
+  button,
+  .button,
+  a.button,
+  [role="button"] {
+    padding: var(--space-xs) var(--space-md);
+  }
+}
+
+/* ==================== Grid System ==================== */
+
+.grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+/* Mobile: 1 column */
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+/* Tablet and up: 2 columns */
+@media (min-width: 768px) {
+  .grid-cols-md-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-cols-md-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid-cols-md-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Desktop and up: 3+ columns */
+@media (min-width: 1024px) {
+  .grid-cols-lg-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid-cols-lg-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grid-cols-lg-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* ==================== Flex Utilities ==================== */
+
+.flex-col-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .flex-row-tablet {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* ==================== Visibility Utilities ==================== */
+
+.hide-on-mobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hide-on-mobile {
+    display: block;
+  }
+}
+
+.show-on-mobile {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .show-on-mobile {
+    display: none;
+  }
+}
+
+.hide-on-tablet {
+  display: block;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hide-on-tablet {
+    display: none;
+  }
+}
+
+/* ==================== Typography Responsive ==================== */
+
+h1, .h1 {
+  font-size: var(--font-3xl);
+  line-height: 1.2;
+}
+
+h2, .h2 {
+  font-size: var(--font-2xl);
+  line-height: 1.3;
+}
+
+h3, .h3 {
+  font-size: var(--font-xl);
+  line-height: 1.4;
+}
+
+h4, .h4 {
+  font-size: var(--font-lg);
+  line-height: 1.5;
+}
+
+p, .body {
+  font-size: var(--font-base);
+  line-height: 1.6;
+}
+
+small, .small {
+  font-size: var(--font-sm);
+}
+
+/* ==================== Touch Interactions ==================== */
+
+/* Increase tap target size on mobile */
+@media (hover: none) and (pointer: coarse) {
+  a, button, input, select, textarea {
+    /* Ensure minimum touch target */
+    min-height: var(--touch-target-min);
+  }
+
+  /* Add more spacing between interactive elements */
+  a + a,
+  button + button {
+    margin-top: var(--space-sm);
+  }
+
+  /* Increase form control size */
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: var(--space-md);
+  }
+
+  /* Better checkbox/radio sizing */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+  }
+}
+
+/* Remove hover effects on touch devices */
+@media (hover: none) {
+  button:hover,
+  a:hover,
+  .button:hover {
+    transform: none;
+    box-shadow: none;
+    opacity: 1;
+  }
+}
+
+/* ==================== Scrollable Areas ==================== */
+
+.scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin;
+}
+
+.scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: 4px;
+}
+
+/* ==================== Cards Responsive ==================== */
+
+.card {
+  padding: var(--space-md);
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: var(--space-xl);
+  }
+}
+
+/* ==================== Spacing Utilities ==================== */
+
+/* Mobile-first spacing */
+.p-responsive {
+  padding: var(--space-md);
+}
+
+.px-responsive {
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.py-responsive {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .p-responsive {
+    padding: var(--space-lg);
+  }
+  
+  .px-responsive {
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+  
+  .py-responsive {
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .p-responsive {
+    padding: var(--space-xl);
+  }
+  
+  .px-responsive {
+    padding-left: var(--space-xl);
+    padding-right: var(--space-xl);
+  }
+  
+  .py-responsive {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+  }
+}
+
+/* ==================== Safe Areas (for notched devices) ==================== */
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* ==================== Print Styles ==================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  /* Show URLs after links */
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+}
