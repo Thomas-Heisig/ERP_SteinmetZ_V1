@@ -12,6 +12,7 @@
 **Ziel**: Vollständige Analyse des ERP SteinmetZ Projekts und Vergleich zwischen Vision (vollständiges Enterprise ERP mit flexiblem AI Annotator) und aktuellem Implementierungsstand.
 
 **Lieferables**:
+
 1. ✅ Vollständige README-Dokumentation
 2. ✅ Priorisierte TODO-Liste
 3. ✅ Dokumentation bekannter Probleme (ISSUES)
@@ -23,7 +24,8 @@
 
 ### Vision: Vollständiges Enterprise ERP mit AI Annotator
 
-Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreibt ein **instruction-driven ERP** mit:
+Das Konzept ([docs/concept/\_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreibt ein **instruction-driven ERP** mit:
+
 - Fachprozesse als Arbeitsanweisungen (AA/DSL) und JSON-Schemas
 - KI als Moderator für deterministische Services
 - Automatische Navigation/Dashboards aus Manifesten
@@ -35,6 +37,7 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
 **Was ist implementiert** (siehe [README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)):
 
 #### ✅ Vollständig funktionsfähig
+
 - **Frontend**: React 19, 4 Themes, Dashboard, QuickChat, i18n (7 Sprachen)
 - **Backend**: Express 5, 77 TypeScript-Dateien, 28.800 LOC
 - **AI-Layer**: 13 Provider (OpenAI, Ollama, Anthropic, etc.), Tool-Registry, Workflow-Engine
@@ -45,12 +48,14 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
 - **Spezial-Services**: Sipgate (Telefonie), Self-Healing, System-Diagnostics
 
 #### ⏳ In Entwicklung / Teilweise implementiert
+
 - **WebSocket**: Vorbereitet, aber nicht vollständig integriert
 - **Erweiterte Suche**: Basis vorhanden, Filter fehlen
 - **Mobile Optimierung**: Responsive Design vorhanden, könnte besser sein
 - **Testing**: Keine Test-Infrastruktur vorhanden
 
 #### 📋 Geplant / Noch nicht implementiert
+
 - **HR-Modul**: Mitarbeiter anlegen, Zeiterfassung, Payroll (konzipiert, nicht implementiert)
 - **Finance-Modul**: Rechnungen, XRechnung, ZUGFeRD (konzipiert, nicht implementiert)
 - **Workflow-Engine**: Approval-Flows, BPMN (Basis vorhanden, nicht vollständig)
@@ -60,19 +65,19 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
 
 ### Gap-Analyse
 
-| Bereich | Vision | Aktuell | Gap | Priorität |
-|---------|--------|---------|-----|-----------|
-| **Foundation** | ✅ | ✅ | 0% | ✅ Fertig |
-| **AI Integration** | ✅ | ✅ | 5% | ✅ ~95% fertig |
-| **Dashboard/Navigation** | ✅ | ✅ | 10% | ⏳ ~90% fertig |
-| **Functions Catalog** | ✅ | ✅ | 5% | ✅ ~95% fertig |
-| **HR-Modul** | ✅ | 📋 | 95% | 🔴 Nicht implementiert |
-| **Finance-Modul** | ✅ | 📋 | 95% | 🔴 Nicht implementiert |
-| **Workflow-Engine** | ✅ | ⏳ | 70% | 🟠 Teilweise |
-| **Document Management** | ✅ | 📋 | 100% | 🔴 Nicht implementiert |
-| **RAG/Vector Search** | ✅ | 📋 | 100% | 🔴 Nicht implementiert |
-| **Testing** | ✅ | 📋 | 100% | 🔴 Nicht vorhanden |
-| **Production-Ready** | ✅ | ⏳ | 40% | 🟠 Teilweise |
+| Bereich                  | Vision | Aktuell | Gap  | Priorität              |
+| ------------------------ | ------ | ------- | ---- | ---------------------- |
+| **Foundation**           | ✅     | ✅      | 0%   | ✅ Fertig              |
+| **AI Integration**       | ✅     | ✅      | 5%   | ✅ ~95% fertig         |
+| **Dashboard/Navigation** | ✅     | ✅      | 10%  | ⏳ ~90% fertig         |
+| **Functions Catalog**    | ✅     | ✅      | 5%   | ✅ ~95% fertig         |
+| **HR-Modul**             | ✅     | 📋      | 95%  | 🔴 Nicht implementiert |
+| **Finance-Modul**        | ✅     | 📋      | 95%  | 🔴 Nicht implementiert |
+| **Workflow-Engine**      | ✅     | ⏳      | 70%  | 🟠 Teilweise           |
+| **Document Management**  | ✅     | 📋      | 100% | 🔴 Nicht implementiert |
+| **RAG/Vector Search**    | ✅     | 📋      | 100% | 🔴 Nicht implementiert |
+| **Testing**              | ✅     | 📋      | 100% | 🔴 Nicht vorhanden     |
+| **Production-Ready**     | ✅     | ⏳      | 40%  | 🟠 Teilweise           |
 
 **Gesamtfortschritt**: ~55% der Vision ist implementiert
 
@@ -81,6 +86,7 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
 ## 📊 Code-Statistik & Struktur
 
 ### Backend (apps/backend/)
+
 - **Zeilen Code**: 28.796 (77 TypeScript-Dateien)
 - **Hauptkomponenten**:
   - 10 Router-Module (AI, AI Annotator, Auth, Dashboard, Functions, etc.)
@@ -91,6 +97,7 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
   - Spezial-Integrationen (Sipgate, Self-Healing)
 
 ### Frontend (apps/frontend/)
+
 - **Zeilen Code**: 18.827 (137 TypeScript/TSX-Dateien)
 - **Hauptkomponenten**:
   - 4 Haupt-Features (Dashboard, FunctionsCatalog, QuickChat, AI Annotator)
@@ -99,11 +106,13 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
   - Auth-System mit geschützten Routen
 
 ### Shared Code (src/)
+
 - **Resilience**: Circuit Breaker, Retry Policy
 - **SAGA**: Transaction Coordinator, Idempotency Store
 - **Database**: Migrations
 
 ### Gesamtstruktur
+
 - **Monorepo**: npm Workspaces mit 2 Apps (frontend, backend)
 - **Dependencies**: 741 npm packages
 - **Build-System**: TypeScript 5.9, Vite 7.1 (Frontend), tsc (Backend)
@@ -114,12 +123,14 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
 ## 🐛 Identifizierte Probleme
 
 ### Kritische Issues (gelöst)
+
 1. ✅ **ISSUE-001**: TypeScript Build-Fehler (BEHOBEN)
    - Problem: Build schlug fehl wegen fehlender Type-Definitionen
    - Lösung: tsconfig.json aktualisiert, Type-Assertions hinzugefügt
    - Status: ✅ Build läuft erfolgreich
 
 ### Kritische Issues (offen)
+
 2. 🔴 **ISSUE-002**: Fehlende .env Dateien
    - Status: ⚠️ .env.example existiert, aber unvollständig dokumentiert
    - Aufwand: 1 Stunde
@@ -129,6 +140,7 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
    - Aufwand: 1-2 Tage Setup
 
 ### Weitere Issues
+
 - Siehe [ISSUES.md](ISSUES.md) für vollständige Liste (16 dokumentierte Issues)
 - Kategorien: Build, Testing, Security, Code-Quality, Documentation, Accessibility
 
@@ -137,16 +149,18 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
 ## ✅ Durchgeführte Korrekturen
 
 ### 1. TypeScript-Konfiguration (Backend)
+
 **Problem**: Build schlug mit hunderten Type-Errors fehl
 
 **Lösung**:
+
 ```json
 // apps/backend/tsconfig.json
 {
   "compilerOptions": {
     "strict": false,
     "noImplicitAny": false,
-    "strictNullChecks": false,
+    "strictNullChecks": false
     // ... weitere Anpassungen
   }
 }
@@ -155,25 +169,30 @@ Das Konzept ([docs/concept/_0_KONZEPT.md](docs/concept/_0_KONZEPT.md)) beschreib
 **Resultat**: ✅ Backend baut ohne Fehler
 
 ### 2. Type-Assertions in AI Services
+
 **Problem**: `fetch().json()` returniert `unknown` Type
 
 **Lösung**: Alle JSON-Response-Aufrufe mit `as any` Type-Assertions versehen
+
 ```typescript
 // Vorher
 const data = await resp.json();
 
 // Nachher
-const data = await resp.json() as any;
+const data = (await resp.json()) as any;
 ```
 
 **Betroffene Dateien**:
+
 - `apps/backend/src/services/aiAnnotatorService.ts` (6 Fixes)
 - `apps/backend/src/services/sipgate/SipgateClient.ts` (1 Fix)
 
 **Resultat**: ✅ Frontend und Backend bauen erfolgreich
 
 ### 3. Dokumentation
+
 **Erstellt**:
+
 - ✅ [README_COMPREHENSIVE.md](README_COMPREHENSIVE.md) - 19.823 Zeichen, vollständige Projekt-Dokumentation
 - ✅ [TODO.md](TODO.md) - 11.425 Zeichen, priorisierte Aufgabenliste mit ~8-10 Wochen Aufwand
 - ✅ [ISSUES.md](ISSUES.md) - 14.187 Zeichen, 16 dokumentierte Issues mit Lösungsansätzen
@@ -184,6 +203,7 @@ const data = await resp.json() as any;
 ## 📋 Handlungsempfehlungen
 
 ### Sofort (nächste 1-2 Wochen)
+
 1. **Test-Infrastruktur einrichten** (ISSUE-003)
    - Jest/Vitest konfigurieren
    - Erste Unit-Tests für kritische Services
@@ -201,6 +221,7 @@ const data = await resp.json() as any;
    - **Aufwand**: 1 Tag
 
 ### Kurzfristig (nächste 4-6 Wochen)
+
 4. **Performance-Optimierung**
    - Frontend Code-Splitting
    - Backend Caching-Layer (Redis)
@@ -219,6 +240,7 @@ const data = await resp.json() as any;
    - **Aufwand**: 1 Woche
 
 ### Mittelfristig (nächste 2-3 Monate)
+
 7. **HR-Modul MVP** (gemäß Konzept Phase 2)
    - Mitarbeiter anlegen E2E
    - Bank-Validierung
@@ -238,6 +260,7 @@ const data = await resp.json() as any;
    - **Aufwand**: 2-3 Wochen
 
 ### Langfristig (6+ Monate)
+
 10. **Enterprise Features**
     - Workflow-Engine vollständig
     - Multi-Tenancy
@@ -250,6 +273,7 @@ const data = await resp.json() as any;
 ## 🎯 Empfohlene Roadmap
 
 ### Q1 2025: Stabilisierung & Testing
+
 - ✅ TypeScript Build-Fehler behoben
 - 🔄 Test-Infrastruktur einrichten
 - 🔄 Error-Handling vereinheitlichen
@@ -258,6 +282,7 @@ const data = await resp.json() as any;
 - **Ziel**: Production-Ready Foundation
 
 ### Q2 2025: Core Business-Module
+
 - HR-Modul MVP
 - Finance-Modul MVP
 - Workflow-Engine vervollständigen
@@ -265,12 +290,14 @@ const data = await resp.json() as any;
 - **Ziel**: Erste produktiv nutzbare Business-Features
 
 ### Q3 2025: KI-Erweiterungen
+
 - RAG für Dokumenten-Suche
 - Erweiterte AI-Workflows
 - Predictive Analytics Basis
 - **Ziel**: KI-gestützte Intelligenz voll ausnutzen
 
 ### Q4 2025: Enterprise-Features
+
 - Multi-Tenancy
 - Advanced Analytics
 - Mobile Optimierung
@@ -282,6 +309,7 @@ const data = await resp.json() as any;
 ## 📈 Erfolgskennzahlen (KPIs)
 
 ### Technische Qualität
+
 - ✅ **Build-Erfolg**: 100% (Backend + Frontend bauen)
 - ⚠️ **Test-Coverage**: 0% → Ziel: 70%+
 - ⚠️ **TypeScript Strict-Mode**: Nein → Ziel: Ja
@@ -289,6 +317,7 @@ const data = await resp.json() as any;
 - ⚠️ **Dokumentation**: Jetzt vorhanden, aber API-Docs fehlen teilweise
 
 ### Feature-Vollständigkeit (vs. Konzept)
+
 - ✅ **Foundation**: 100%
 - ✅ **AI-Integration**: 95%
 - ✅ **Dashboard/Navigation**: 90%
@@ -301,6 +330,7 @@ const data = await resp.json() as any;
 **Gesamt**: ~55% der Vision implementiert
 
 ### Production-Readiness
+
 - ✅ **Build funktioniert**: Ja
 - ✅ **Resilience-Patterns**: Ja (SAGA, Circuit Breaker, Retry)
 - ✅ **Authentication**: Ja (JWT, RBAC)
@@ -317,6 +347,7 @@ const data = await resp.json() as any;
 ## 💡 Fazit
 
 ### Stärken
+
 1. ✅ **Solide technische Foundation**: Modernes Stack (React 19, Express 5, TypeScript)
 2. ✅ **Umfangreiche AI-Integration**: 13 Provider, vollständiger AI-Service-Layer
 3. ✅ **AI Annotator ist Kernstück**: Innovative Metadaten-Generierung funktioniert
@@ -325,6 +356,7 @@ const data = await resp.json() as any;
 6. ✅ **Vollständige Konzeption**: Detaillierte Pläne für alle Module vorhanden
 
 ### Schwächen
+
 1. ⚠️ **Keine Tests**: Kritisch für Production-Einsatz
 2. ⚠️ **Business-Module fehlen**: HR, Finance, etc. nur konzipiert
 3. ⚠️ **Unvollständiges Monitoring**: Logging/Tracing nicht durchgängig
@@ -332,12 +364,14 @@ const data = await resp.json() as any;
 5. ⚠️ **Dokumentation war unvollständig**: Jetzt behoben durch diese Analyse
 
 ### Opportunitäten
+
 1. 🚀 **Innovativer Ansatz**: AI Annotator ist Alleinstellungsmerkmal
 2. 🚀 **Marktreife Foundation**: Basis für schnelle Business-Modul-Entwicklung
 3. 🚀 **Skalierbarkeit**: Architektur ermöglicht Ausbau ohne Rewrites
 4. 🚀 **Open-Source-Potential**: Könnte Community-Projekt werden
 
 ### Risiken
+
 1. ⚠️ **Technical Debt**: TypeScript Strict-Mode deaktiviert
 2. ⚠️ **Fehlende Tests**: Regression-Gefahr bei Änderungen
 3. ⚠️ **Abhängigkeiten**: 741 npm Packages, Updates erforderlich
@@ -348,6 +382,7 @@ const data = await resp.json() as any;
 ## 📝 Nächste Schritte (Konkret)
 
 ### Diese Woche
+
 - [x] Analyse durchführen
 - [x] Dokumentation erstellen
 - [x] TypeScript Build fixen
@@ -355,12 +390,14 @@ const data = await resp.json() as any;
 - [ ] Erste Unit-Tests schreiben (Auth, Functions Catalog)
 
 ### Nächste Woche
+
 - [ ] CI/CD Pipeline aufsetzen (GitHub Actions)
 - [ ] Error-Handling vereinheitlichen
 - [ ] API-Dokumentation mit OpenAPI/Swagger
 - [ ] Environment-Variables validieren (Zod)
 
 ### Nächster Monat
+
 - [ ] HR-Modul MVP starten
 - [ ] Performance-Optimierung (Code-Splitting, Caching)
 - [ ] Monitoring & Observability (Prometheus, Sentry)
@@ -374,6 +411,7 @@ const data = await resp.json() as any;
 **Status**: ✅ Vollständig
 
 **Dokumente**:
+
 - [README_COMPREHENSIVE.md](README_COMPREHENSIVE.md) - Vollständige Projekt-Dokumentation
 - [TODO.md](TODO.md) - Priorisierte Aufgabenliste
 - [ISSUES.md](ISSUES.md) - Bekannte Probleme & Technical Debt

@@ -10,6 +10,11 @@
     "clean": "rimraf dist",
     "preview": "node dist/index.js",
     "start": "node dist/index.js",
+    "migrate": "tsx src/utils/migrateSchema.ts",
+    "migrate:prod": "node dist/utils/migrateSchema.js",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
     "lint": "eslint ."
   },
   "dependencies": {

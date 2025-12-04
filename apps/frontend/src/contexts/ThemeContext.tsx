@@ -34,7 +34,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
     const saved = localStorage.getItem("theme");
 
-    if (saved === "light" || saved === "dark" || saved === "lcars" || saved === "contrast") {
+    if (
+      saved === "light" ||
+      saved === "dark" ||
+      saved === "lcars" ||
+      saved === "contrast"
+    ) {
       return saved;
     }
 

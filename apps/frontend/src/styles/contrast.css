@@ -351,12 +351,7 @@
 }
 
 [data-theme="contrast"] .skeleton {
-  background: linear-gradient(
-    90deg,
-    #d0d0d0 25%,
-    #a0a0a0 50%,
-    #d0d0d0 75%
-  );
+  background: linear-gradient(90deg, #d0d0d0 25%, #a0a0a0 50%, #d0d0d0 75%);
 }
 
 /* Breadcrumb navigation */

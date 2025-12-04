@@ -16,6 +16,11 @@
     "start": "npm run build && npm run start:backend",
     "start:frontend": "npm run start -w @erp-steinmetz/frontend",
     "start:backend": "npm run start -w @erp-steinmetz/backend",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:backend": "npm run test -w @erp-steinmetz/backend",
+    "test:frontend": "npm run test -w @erp-steinmetz/frontend",
     "clean": "rimraf node_modules **/node_modules **/dist",
     "clean:frontend": "rimraf apps/frontend/dist",
     "clean:backend": "rimraf apps/backend/dist",
@@ -28,11 +33,14 @@
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
+    "@vitest/coverage-v8": "^4.0.15",
+    "@vitest/ui": "^4.0.15",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.3.3",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   },
   "engines": {
     "node": ">=18.18.0"

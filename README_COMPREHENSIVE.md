@@ -23,6 +23,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 ### ✅ Vollständig Implementiert
 
 #### Frontend (React 19 + Vite)
+
 - ✅ **Modernes Framework**: React 19 mit Vite Build-System
 - ✅ **Routing**: React Router v7 für Navigation
 - ✅ **Theme-System**: 4 Themes (Light, Dark, LCARS, Contrast)
@@ -33,6 +34,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - ✅ **Authentifizierung**: Login/Logout mit geschützten Routen
 
 #### Backend (Express 5 + Node.js)
+
 - ✅ **Express 5**: Moderner API-Server mit TypeScript
 - ✅ **Health-Checks**: System-Monitoring (`/api/health`)
 - ✅ **Functions Catalog**: 15.472 Funktionsknoten in 11 Kategorien
@@ -44,12 +46,13 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - ✅ **Authentifizierung**: JWT-basiertes Auth-System mit RBAC
 
 #### AI & Machine Learning Layer
+
 - ✅ **13 AI-Provider**: OpenAI, Ollama, Anthropic, Azure OpenAI, Vertex AI, HuggingFace, llama.cpp, Custom, Fallback, Eliza
 - ✅ **AI Services**: Chat, Audio (STT), Translation, Vision, Embedding, Knowledge Base
 - ✅ **Tool-Registry**: ERP-Tools, Database-Tools, File-Tools, System-Tools, Calculation-Tools
 - ✅ **Workflow-Engine**: Orchestrierung komplexer AI-Workflows
 - ✅ **Session-Management**: Konversationskontext und Memory-Store
-- ✅ **AI Annotator Service**: 
+- ✅ **AI Annotator Service**:
   - Meta-Generierung (Beschreibungen, Tags, Business Area)
   - Regel-Generierung (Dashboard-Widgets, Validierung)
   - Formular-Generierung (JSON-Schema basiert)
@@ -59,6 +62,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
   - Qualitätsanalyse
 
 #### Resilience & Production-Ready Features
+
 - ✅ **SAGA Pattern**: Transaction Coordinator für verteilte Transaktionen
 - ✅ **Idempotency Store**: Vermeidung doppelter Operationen
 - ✅ **Circuit Breaker**: Resiliente externe Service-Aufrufe
@@ -68,6 +72,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - ✅ **Self-Healing**: Automatische Reparatur und Health-Monitoring
 
 #### Spezial-Services
+
 - ✅ **Sipgate Integration**: Telefonie (CallHandler, FaxProcessor, VoiceAI)
 - ✅ **System-Diagnostics**: Umfassendes System-Monitoring
 - ✅ **Innovation Router**: Feature-Tracking und Innovation-Management
@@ -209,6 +214,7 @@ npm start
 ## 🏗️ Technologie-Stack
 
 ### Frontend
+
 - **Framework**: React 19.2.0
 - **Build-Tool**: Vite 7.1
 - **Routing**: React Router DOM v7.9
@@ -218,23 +224,24 @@ npm start
 - **TypeScript**: 5.9.3
 
 ### Backend
+
 - **Runtime**: Node.js >= 18.18.0
 - **Framework**: Express 5.1.0
 - **Language**: TypeScript 5.9.3
-- **Database**: 
+- **Database**:
   - SQLite (better-sqlite3 12.4) für Development
   - PostgreSQL (pg 8.16) für Production
-- **AI/ML**: 
+- **AI/ML**:
   - OpenAI 6.7
   - Anthropic SDK 0.68
   - node-llama-cpp 3.14
   - node-fetch 3.3 (für Custom Provider)
 - **File Upload**: Multer 2.0
-- **Authentication**: 
+- **Authentication**:
   - jsonwebtoken 9.0
   - bcrypt 6.0
   - express-session 1.18
-- **Security**: 
+- **Security**:
   - express-rate-limit 8.2
   - cookie-parser 1.4
   - cors 2.8
@@ -242,6 +249,7 @@ npm start
 - **File Watching**: chokidar 4.0
 
 ### Shared Dependencies
+
 - **Validation**: Zod 4.1
 - **Utilities**: lodash-es 4.17, clsx 2.1
 - **Async**: await-lock 3.0
@@ -256,17 +264,20 @@ npm start
 ### Core APIs
 
 #### Health & System
+
 - `GET /api/health` - System Health Status
 - `GET /api/system` - System Information
 - `GET /diagnostics` - Diagnostic Information
 
 #### Authentication
+
 - `POST /api/auth/login` - User Login
 - `POST /api/auth/logout` - User Logout
 - `POST /api/auth/register` - User Registration
 - `GET /api/auth/me` - Current User Info
 
 #### Functions Catalog
+
 - `GET /api/functions` - Vollständiger Funktionskatalog
 - `GET /api/functions/roots` - Top-Level Kategorien (11 Bereiche)
 - `GET /api/functions/nodes/:id` - Einzelner Funktionsknoten mit Details
@@ -274,14 +285,17 @@ npm start
 - `POST /api/functions/menu` - RBAC-gefiltertes Menü
 
 #### Dashboard
+
 - `GET /api/dashboard` - Dashboard-Daten und Widgets
 
 #### QuickChat (AI Assistant)
+
 - `POST /api/quickchat` - Chat-Nachricht senden
 
 ### AI APIs (Ausführlich dokumentiert in `/apps/backend/src/routes/ai/docs/`)
 
 #### AI Models & Chat
+
 - `GET /api/ai/models` - Liste aller AI-Modelle
 - `POST /api/ai/chat` - Neue Chat-Session
 - `POST /api/ai/chat/:sessionId/message` - Nachricht senden
@@ -289,29 +303,34 @@ npm start
 - `DELETE /api/ai/chat/:sessionId` - Session löschen
 
 #### AI Services
+
 - `POST /api/ai/audio/transcribe` - Speech-to-Text
 - `POST /api/ai/translate` - Text-Übersetzung
 - `GET /api/ai/settings` - AI-Konfiguration
 - `PUT /api/ai/settings` - Konfiguration aktualisieren
 
 #### AI Tools & Workflows
+
 - `GET /api/ai/tools` - Verfügbare Tools
 - `POST /api/ai/tools/:name/run` - Tool ausführen
 - `GET /api/ai/workflows` - Workflow-Katalog
 - `POST /api/ai/workflow/:name/run` - Workflow starten
 
 #### AI Status & Diagnostics
+
 - `GET /api/ai/status` - AI-System Status
 - `GET /api/ai/diagnostics` - Ausführliche Diagnose
 
 ### AI Annotator APIs (Ausführlich dokumentiert in `/apps/backend/src/routes/aiAnnotatorRouter/docs/`)
 
 #### Node Management
+
 - `GET /api/ai-annotator/nodes` - Nodes filtern und auflisten
 - `GET /api/ai-annotator/nodes/:id` - Einzelnen Node abrufen
 - `POST /api/ai-annotator/nodes/:id/validate` - Node validieren
 
 #### Annotation Operations
+
 - `POST /api/ai-annotator/nodes/:id/generate-meta` - Metadaten generieren
 - `POST /api/ai-annotator/nodes/:id/generate-rule` - Regeln generieren
 - `POST /api/ai-annotator/nodes/:id/generate-form` - Formular generieren
@@ -319,16 +338,19 @@ npm start
 - `POST /api/ai-annotator/nodes/:id/full-annotation` - Vollständige Annotation
 
 #### Batch Operations
+
 - `POST /api/ai-annotator/batch` - Batch-Operation erstellen
 - `GET /api/ai-annotator/batch/:id` - Batch-Status abrufen
 - `POST /api/ai-annotator/batch/:id/cancel` - Batch abbrechen
 
 #### Quality & Analysis
+
 - `GET /api/ai-annotator/quality/report` - Qualitätsbericht
 - `POST /api/ai-annotator/classify-pii` - PII-Klassifizierung
 - `POST /api/ai-annotator/validate-batch` - Batch-Validierung
 
 #### System
+
 - `GET /api/ai-annotator/status` - System-Status
 - `GET /api/ai-annotator/database/stats` - Datenbank-Statistiken
 - `GET /api/ai-annotator/rules` - Dashboard-Regeln
@@ -401,18 +423,21 @@ Das System unterstützt 13 verschiedene AI-Provider mit automatischem Fallback:
 ## 🔐 Sicherheit & Compliance
 
 ### Authentifizierung & Autorisierung
+
 - **JWT-basiert**: Sichere Token-Authentifizierung
 - **RBAC**: Role-Based Access Control
 - **Session-Management**: Sichere Session-Verwaltung
 - **Password-Hashing**: bcrypt mit Salting
 
 ### Datenschutz (GDPR/DSGVO)
+
 - **PII-Klassifizierung**: Automatische Erkennung personenbezogener Daten
 - **Audit Trail**: Lückenlose Protokollierung
 - **Data Retention**: Konfigurierbare Aufbewahrungsfristen
 - **Encryption**: Verschlüsselung at-rest und in-transit
 
 ### Compliance (GoBD)
+
 - **Unveränderbarkeit**: Append-only Event-Logs
 - **Nummernkreise**: Lückenlose Belegnummerierung
 - **Archivierung**: Langfristige Datenspeicherung
@@ -465,6 +490,7 @@ npm run clean:backend
 ## 🗺️ Roadmap
 
 ### Phase 1: Foundation ✅ (Abgeschlossen)
+
 - ✅ Grundlegende Architektur
 - ✅ Frontend mit React 19 + Vite
 - ✅ Backend mit Express 5
@@ -476,6 +502,7 @@ npm run clean:backend
 - ✅ AI Annotator Core
 
 ### Phase 2: Erweiterung & Stabilisierung 🔄 (In Arbeit)
+
 - ⏳ WebSocket für Echtzeit-Updates
 - ⏳ Erweiterte Suche mit Filtern
 - ⏳ Mobile Optimierung
@@ -485,6 +512,7 @@ npm run clean:backend
 - ⏳ Docker Containerisierung
 
 ### Phase 3: Enterprise Features 📋 (Geplant)
+
 - 📋 HR-Modul: Mitarbeiter anlegen, Zeiterfassung, Payroll
 - 📋 Finance-Modul: Rechnung E2E (XRechnung, ZUGFeRD)
 - 📋 Workflow-Engine mit Approval-Flows
@@ -494,6 +522,7 @@ npm run clean:backend
 - 📋 Multi-Tenancy Support
 
 ### Phase 4: KI-Erweiterungen 🚀 (Vision)
+
 - 🚀 RAG für Dokumenten-Suche
 - 🚀 Preisvergleich mit Web-Scraping
 - 🚀 Automatisierte Prozess-Optimierung
@@ -526,6 +555,7 @@ Contributions sind willkommen! Bitte beachte:
 5. Öffne einen Pull Request
 
 ### Coding Standards
+
 - TypeScript für alle neuen Dateien
 - ESLint Regeln beachten
 - Aussagekräftige Commit-Messages
@@ -550,6 +580,7 @@ Siehe [LICENSE](LICENSE) für Details.
 ## 🙏 Danksagungen
 
 Dieses Projekt nutzt zahlreiche Open-Source-Technologien und -Bibliotheken:
+
 - React, Vite, Express, TypeScript
 - OpenAI, Anthropic, Ollama und weitere AI-Provider
 - Alle Contributors und Open-Source-Community
