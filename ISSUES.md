@@ -1,6 +1,6 @@
 # ERP SteinmetZ - Aktive Issues
 
-**Stand**: Dezember 2024  
+**Stand**: Dezember 2025
 **Version**: 0.2.0
 
 Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical Debt im Projekt auf.
