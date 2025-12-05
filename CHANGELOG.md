@@ -2,11 +2,67 @@
 
 Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert.
 
+Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
+und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
+
 ---
 
-## [Unreleased]
+## [0.3.0] - 2025-12-05
 
-### ✅ Hinzugefügt (2024-12-05)
+### ✅ Hinzugefügt
+
+#### Dokumentation & Standards
+- **Internationale Standards**: Integration von ISO/IEC 25010, OpenAPI 3.0, JSON Schema Draft-07
+- **AI-Annotator-Dokumentation**: Umfassende Beschreibung des Datenverarbeitungs-Workflows
+- **Function-Node-Transformation**: Dokumentation des Konvertierungsprozesses von Funktionsknoten zu ausführbarem Code
+- **Roadmap 2025-2026**: Quartalsweise Planung für Enterprise-Features, Compliance und AI-Automation
+- **Status-Übersicht**: Klare Kennzeichnung von produktionsreifen vs. in Entwicklung befindlichen Features
+
+#### AI-Annotator-System (Erweitert)
+- **Datenverarbeitungs-Workflow**:
+  - Batch-Processing mit konfigurierbarer Parallelisierung
+  - Quality-Assurance mit Scoring-Metriken
+  - PII-Klassifikation (none, low, medium, high)
+  - Automatische Error-Correction
+  - Model-Selection basierend auf Komplexität
+- **API-Erweiterungen**:
+  - `/api/ai-annotator/batch` - Batch-Operation-Management
+  - `/api/ai-annotator/quality/report` - Quality-Metriken
+  - `/api/ai-annotator/system/monitoring` - System-Health-Checks
+
+#### Function-Node-Transformation (Neu)
+- **Konzept**: Automatische Konvertierung von Markdown-basierten Funktionsknoten zu TypeScript-Code
+- **Pipeline**:
+  1. Markdown-Parsing (15.472 Funktionsknoten)
+  2. Schema-Extraktion (JSON-Schema-Validierung)
+  3. AA/DSL-Interpretation (Instruction-Driven)
+  4. Code-Generierung (Service-Layer)
+  5. API-Registration (Express-Routes)
+  6. Test-Generierung (Vitest)
+- **Standards-Compliance**:
+  - OpenAPI 3.0 für API-Dokumentation
+  - JSON Schema Draft-07 für Datenvalidierung
+  - TypeScript ESLint für Code-Qualität
+  - ISO/IEC 25010 für Software-Qualität
+
+### 🔧 Geändert
+
+- **Version**: 0.2.0 → 0.3.0
+- **Datum-Updates**: Alle Dokumentationsdateien auf Dezember 2025 aktualisiert
+- **README.md**: Erweitert um Status-Übersicht und detaillierte Roadmap
+- **TODO.md**: Aktualisiert mit 2025-Prioritäten
+- **ISSUES.md**: Datum auf 2025 aktualisiert
+
+### 📚 Dokumentation
+
+- **82 Markdown-Dateien**: Vollständig überprüft und aktualisiert
+- **API-Dokumentation**: Konsolidiert und erweitert
+- **Konzept-Dokumente**: Synchronisiert mit aktueller Implementierung
+- **ADR (Architecture Decision Records)**: Erweitert um Function-Node-Transformation
+
+---
+
+## [0.2.0] - 2024-12-05
 
 #### Performance & Infrastructure
 

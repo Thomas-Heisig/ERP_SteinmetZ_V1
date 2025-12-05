@@ -396,9 +396,9 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ---
 
-**Letzte Aktualisierung**: 5. Dezember 2024  
+**Letzte Aktualisierung**: 5. Dezember 2025  
 **Maintainer**: Thomas Heisig  
-**Nächster Review**: Januar 2025
+**Nächster Review**: Januar 2026
 
 **Siehe auch**:
 

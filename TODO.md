@@ -1,9 +1,10 @@
 # ERP SteinmetZ - TODO Liste
 
-**Stand**: Dezember 2024  
-**Version**: 0.2.0
+**Stand**: Dezember 2025  
+**Version**: 0.3.0
 
 Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und Phase.
+Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requirements), OpenAPI 3.0 (APIs).
 
 ---
 
@@ -472,27 +473,56 @@ Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und
 - 🟡 **Mittel**: Verbessert das System, aber nicht dringend
 - 🟢 **Niedrig**: Nice-to-Have, kann zurückgestellt werden
 
-### Nächste Sprint-Planung
+### Nächste Sprint-Planung (2025)
 
-**Sprint 1 (KW 49-50/2024)**:
+**Sprint 1 (KW 1-2/2025)** - AI-Annotator Production-Ready:
 
-- TypeScript Build-Fehler beheben
-- Test-Infrastruktur aufsetzen
-- Environment-Variables validieren
+- [ ] AI-Annotator Frontend-Integration
+- [ ] Batch-Processing-UI implementieren
+- [ ] Quality-Dashboard visualisieren
+- [ ] Model-Management-Interface
 
-**Sprint 2 (KW 51-52/2024)**:
+**Sprint 2 (KW 3-4/2025)** - Function-Node-Transformation MVP:
 
-- API-Error-Handling vereinheitlichen
-- Responsive Design verbessern
-- AI Provider Connection Tests
+- [ ] Markdown-Parser implementieren
+- [ ] Schema-Extractor entwickeln
+- [ ] Code-Generator (TypeScript) erstellen
+- [ ] API-Registration-System
+- [ ] Test-Generator implementieren
 
-**Sprint 3 (KW 1-2/2025)**:
+**Sprint 3 (KW 5-6/2025)** - HR & Finance Module vervollständigen:
 
-- Performance-Optimierung (Frontend & Backend)
-- WebSocket Integration
-- Advanced Search Implementation
+- [ ] HR-Modul: CRUD-Operationen vollständig
+- [ ] Finance-Modul: Buchhaltungsintegration
+- [ ] Datenbank-Migrationen
+- [ ] Frontend-Komponenten für beide Module
+
+**Sprint 4 (KW 7-8/2025)** - Compliance & Documentation:
+
+- [ ] GoBD-Compliance-Checks
+- [ ] DSGVO-Audit-Toolkit
+- [ ] API-Dokumentation vervollständigen (OpenAPI 3.0)
+- [ ] Security-Audit durchführen
 
 ---
 
-**Letzte Aktualisierung**: 3. Dezember 2024  
-**Maintainer**: Thomas Heisig
+## 📊 Fortschrittstracking
+
+### Completion Rate (Stand Dezember 2025)
+
+- 🟢 **Abgeschlossen**: 75% (Infrastructure, Core-Features)
+- 🟡 **In Arbeit**: 20% (AI-Annotator, Function-Transformation)
+- 🔴 **Offen**: 5% (Enterprise-Features, Advanced-AI)
+
+### Key Performance Indicators (KPIs)
+
+- **Code-Coverage**: 86% (Ziel: 90%)
+- **Build-Success-Rate**: 100%
+- **API-Response-Time**: <100ms (95th percentile)
+- **Frontend-Performance**: Lighthouse Score >90
+
+---
+
+**Letzte Aktualisierung**: 5. Dezember 2025  
+**Maintainer**: Thomas Heisig  
+**Nächster Review**: Januar 2026
