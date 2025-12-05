@@ -29,7 +29,7 @@ router.get("/invoices", async (req: Request, res: Response) => {
         invoiceNumber: "RE-2024-001",
         customerName: "ABC GmbH",
         customerId: "C001",
-        amount: 1500.00,
+        amount: 1500.0,
         currency: "EUR",
         dueDate: new Date(Date.now() + 7 * 86400000).toISOString(),
         status: "sent",
@@ -40,7 +40,7 @@ router.get("/invoices", async (req: Request, res: Response) => {
         invoiceNumber: "RE-2024-002",
         customerName: "XYZ AG",
         customerId: "C002",
-        amount: 3250.50,
+        amount: 3250.5,
         currency: "EUR",
         dueDate: new Date(Date.now() - 5 * 86400000).toISOString(),
         status: "overdue",
@@ -51,7 +51,7 @@ router.get("/invoices", async (req: Request, res: Response) => {
         invoiceNumber: "RE-2024-003",
         customerName: "Musterfirma",
         customerId: "C003",
-        amount: 890.00,
+        amount: 890.0,
         currency: "EUR",
         dueDate: new Date(Date.now() - 20 * 86400000).toISOString(),
         status: "paid",
@@ -62,7 +62,7 @@ router.get("/invoices", async (req: Request, res: Response) => {
         invoiceNumber: "RE-2024-004",
         customerName: "Test KG",
         customerId: "C004",
-        amount: 2100.00,
+        amount: 2100.0,
         currency: "EUR",
         dueDate: new Date(Date.now() + 14 * 86400000).toISOString(),
         status: "draft",
@@ -74,12 +74,12 @@ router.get("/invoices", async (req: Request, res: Response) => {
     let filteredInvoices = mockInvoices;
     if (status) {
       filteredInvoices = filteredInvoices.filter(
-        (inv) => inv.status === status
+        (inv) => inv.status === status,
       );
     }
     if (customerId) {
       filteredInvoices = filteredInvoices.filter(
-        (inv) => inv.customerId === customerId
+        (inv) => inv.customerId === customerId,
       );
     }
 
@@ -114,7 +114,7 @@ router.get("/invoices/:id", async (req: Request, res: Response) => {
       invoiceNumber: "RE-2024-001",
       customerName: "ABC GmbH",
       customerId: "C001",
-      amount: 1500.00,
+      amount: 1500.0,
       currency: "EUR",
       dueDate: new Date(Date.now() + 7 * 86400000).toISOString(),
       status: "sent",
@@ -124,12 +124,12 @@ router.get("/invoices/:id", async (req: Request, res: Response) => {
           id: "1",
           description: "Beratungsleistung",
           quantity: 10,
-          unitPrice: 150.00,
-          total: 1500.00,
+          unitPrice: 150.0,
+          total: 1500.0,
         },
       ],
-      tax: 285.00,
-      grossAmount: 1785.00,
+      tax: 285.0,
+      grossAmount: 1785.0,
     };
 
     // Note: This check is for demonstration purposes only
@@ -294,7 +294,7 @@ router.get("/customers", async (req: Request, res: Response) => {
         phone: "+49 89 9876543",
         address: "Leopoldstraße 50, 80802 München",
         creditLimit: 20000,
-        currentBalance: 3250.50,
+        currentBalance: 3250.5,
       },
     ];
 
@@ -451,7 +451,7 @@ router.get("/payments", async (req: Request, res: Response) => {
       {
         id: "P001",
         type: "incoming",
-        amount: 1500.00,
+        amount: 1500.0,
         currency: "EUR",
         date: new Date().toISOString(),
         status: "completed",
@@ -516,19 +516,19 @@ router.get("/accounts", async (_req: Request, res: Response) => {
         id: "1000",
         name: "Kasse",
         type: "asset",
-        balance: 5000.00,
+        balance: 5000.0,
       },
       {
         id: "1200",
         name: "Bank",
         type: "asset",
-        balance: 50000.00,
+        balance: 50000.0,
       },
       {
         id: "4000",
         name: "Umsatzerlöse",
         type: "revenue",
-        balance: 100000.00,
+        balance: 100000.0,
       },
     ];
 
@@ -566,7 +566,7 @@ router.get("/transactions", async (req: Request, res: Response) => {
         description: "Zahlungseingang Rechnung RE-2024-001",
         debitAccount: "1200",
         creditAccount: "1400",
-        amount: 1500.00,
+        amount: 1500.0,
         currency: "EUR",
       },
     ];
@@ -622,13 +622,13 @@ router.post("/transactions", async (req: Request, res: Response) => {
 router.get("/statistics", async (_req: Request, res: Response) => {
   try {
     const mockStats = {
-      totalRevenue: 100000.00,
-      totalExpenses: 60000.00,
-      netProfit: 40000.00,
+      totalRevenue: 100000.0,
+      totalExpenses: 60000.0,
+      netProfit: 40000.0,
       openInvoices: 7,
       overdueInvoices: 2,
-      totalOpenAmount: 4750.50,
-      totalOverdueAmount: 3250.50,
+      totalOpenAmount: 4750.5,
+      totalOverdueAmount: 3250.5,
     };
 
     res.json({
@@ -653,16 +653,16 @@ router.get("/reports/balance-sheet", async (_req: Request, res: Response) => {
     // TODO: Generate balance sheet from accounts
     const mockBalanceSheet = {
       assets: {
-        current: 55000.00,
-        fixed: 100000.00,
-        total: 155000.00,
+        current: 55000.0,
+        fixed: 100000.0,
+        total: 155000.0,
       },
       liabilities: {
-        current: 25000.00,
-        longTerm: 50000.00,
-        total: 75000.00,
+        current: 25000.0,
+        longTerm: 50000.0,
+        total: 75000.0,
       },
-      equity: 80000.00,
+      equity: 80000.0,
     };
 
     res.json({
@@ -686,12 +686,12 @@ router.get("/reports/profit-loss", async (_req: Request, res: Response) => {
   try {
     // TODO: Generate P&L from accounts
     const mockProfitLoss = {
-      revenue: 100000.00,
-      costOfGoodsSold: 40000.00,
-      grossProfit: 60000.00,
-      operatingExpenses: 20000.00,
-      operatingIncome: 40000.00,
-      netIncome: 40000.00,
+      revenue: 100000.0,
+      costOfGoodsSold: 40000.0,
+      grossProfit: 60000.0,
+      operatingExpenses: 20000.0,
+      operatingIncome: 40000.0,
+      netIncome: 40000.0,
     };
 
     res.json({

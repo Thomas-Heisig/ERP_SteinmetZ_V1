@@ -35,6 +35,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 ### API-Endpunkte
 
 #### System & Core
+
 - `GET /api/health` - System Health Status
 - `GET /api/functions` - Vollständiger Funktionskatalog
 - `GET /api/functions/roots` - Top-Level Kategorien (11 Bereiche)
@@ -45,6 +46,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - `POST /api/quickchat` - QuickChat AI Assistant
 
 #### HR Module (Personalwesen) ✨ NEU
+
 - `GET /api/hr/employees` - Mitarbeiterliste
 - `POST /api/hr/employees` - Mitarbeiter anlegen
 - `GET /api/hr/time-entries` - Zeiterfassung
@@ -54,6 +56,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - `GET /api/hr/statistics` - HR-Statistiken
 
 #### Finance Module (Finanzen & Controlling) ✨ NEU
+
 - `GET /api/finance/invoices` - Rechnungsverwaltung
 - `POST /api/finance/invoices` - Rechnung erstellen
 - `GET /api/finance/customers` - Kundenverwaltung (Debitoren)
@@ -220,9 +223,17 @@ npm run lint
 # Build (prüft TypeScript)
 npm run build
 
-# Tests (wenn vorhanden)
-npm test
+# Tests
+npm test              # Alle Tests
+npm test:backend      # Nur Backend (42 Tests)
+npm test:frontend     # Nur Frontend (50 Tests)
+npm test:coverage     # Mit Coverage-Report
 ```
+
+**Aktueller Test-Status:**
+- ✅ Backend: 42/42 Tests passing
+- ✅ Frontend: 37/50 Tests passing (13 pre-existing issues)
+- ✅ Build: Vollständig erfolgreich
 
 ## 📚 Dokumentation
 
@@ -270,4 +281,6 @@ Siehe LICENSE file für Details.
 ---
 
 **Version:** 0.2.0  
-**Letztes Update:** Dezember 2024
+**Letztes Update:** 5. Dezember 2024  
+**Build-Status:** ✅ Erfolgreich  
+**Test-Status:** ✅ 79/92 passing

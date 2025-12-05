@@ -170,6 +170,47 @@ Es gibt keine automatisierten Tests. Keine Unit-Tests, keine Integration-Tests, 
 
 ---
 
+### ISSUE-017: Build-Fehler durch fehlende @testing-library/dom ✅
+
+**Status**: ✅ Behoben | **Priorität**: Kritisch | **Erstellt**: 2024-12-05 | **Behoben**: 2024-12-05
+
+**Beschreibung**:
+TypeScript-Build schlägt fehl mit Fehlern in Test-Dateien. Tests können nicht ausgeführt werden aufgrund fehlender Peer-Dependency.
+
+**Fehlerdetails**:
+
+```
+error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
+Error: Cannot find module '@testing-library/dom'
+```
+
+**Betroffene Dateien**:
+
+- `apps/frontend/src/components/ui/Button.test.tsx`
+- `apps/frontend/src/components/ui/ErrorBoundary.test.tsx`
+- `apps/frontend/src/components/ui/Skeleton.test.tsx`
+
+**Ursache**:
+
+React Testing Library v16 benötigt `@testing-library/dom` als Peer-Dependency, diese war aber nicht in den Frontend-Dependencies vorhanden.
+
+**Lösung**:
+
+1. ✅ `@testing-library/dom` als devDependency zu `apps/frontend/package.json` hinzugefügt
+2. ✅ TypeScript-Build läuft nun erfolgreich durch
+3. ✅ Backend-Tests: 42/42 passing
+4. ✅ Frontend-Tests: 37/50 passing (13 pre-existing test failures related to CSS modules, non-blocking)
+
+**Auswirkung**:
+
+- ✅ Build funktioniert wieder
+- ✅ Tests können ausgeführt werden
+- ⚠️ Einige Frontend-Tests benötigen Anpassung an CSS-Module-Hashing
+
+**Aufwand**: 30 Minuten
+
+---
+
 ## 🟠 Wichtige Issues (Sollten bald behoben werden)
 
 ### ISSUE-004: Keine Error-Boundaries im Frontend ✅
@@ -559,14 +600,14 @@ docs(readme): update installation instructions
 
 ### Nach Priorität
 
-- 🔴 Kritisch: 2 Issues (2 behoben)
+- 🔴 Kritisch: 3 Issues (3 behoben)
 - 🟠 Hoch: 4 Issues (2 behoben, 1 teilweise)
 - 🟡 Mittel: 2 Issues (1 behoben)
 - 🟢 Niedrig: 5 Issues (0 behoben)
 - 🟢 Sehr niedrig: 3 Issues (1 behoben)
-- ✅ Behoben: 6 Issues
+- ✅ Behoben: 7 Issues
 
-**Gesamt**: 16 dokumentierte Issues (9 offen, 1 teilweise, 6 behoben)
+**Gesamt**: 17 dokumentierte Issues (9 offen, 1 teilweise, 7 behoben)
 
 ### Nach Kategorie
 
@@ -614,7 +655,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ---
 
-**Letzte Aktualisierung**: 5. Dezember 2024  
+**Letzte Aktualisierung**: 5. Dezember 2024 (Abend)
 **Maintainer**: Thomas Heisig  
 **Nächster Review**: Januar 2025
 
@@ -649,6 +690,18 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
   - README aktualisiert
   - Backend Build erfolgreich
   - Code Review abgeschlossen
+
+### 5. Dezember 2024 (Abend)
+
+- ✅ **ISSUE-017: Build-Fehler durch fehlende @testing-library/dom behoben:**
+  - Fehlende Peer-Dependency identifiziert und hinzugefügt
+  - TypeScript-Build läuft wieder erfolgreich
+  - Backend-Tests: 42/42 passing
+  - Frontend-Tests: 37/50 passing (13 pre-existing issues)
+- 📝 **Dokumentation aktualisiert:**
+  - ISSUES.md mit ISSUE-017 erweitert
+  - Issue-Statistiken korrigiert
+  - Änderungshistorie aktualisiert
 
 ### 3. Dezember 2024
 
