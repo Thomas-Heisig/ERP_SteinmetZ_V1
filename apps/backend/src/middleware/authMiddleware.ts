@@ -4,7 +4,12 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/authService.js";
 import type { AuthContext } from "../types/auth.js";
-import { sendUnauthorized, sendForbidden, sendRateLimitError, ErrorCode } from "../utils/errorResponse.js";
+import {
+  sendUnauthorized,
+  sendForbidden,
+  sendRateLimitError,
+  ErrorCode,
+} from "../utils/errorResponse.js";
 
 // Extend Express Request to include auth context
 declare global {
@@ -200,7 +205,11 @@ export function rateLimitLogin(
   // Check if limit exceeded
   if (attempts.count >= maxAttempts) {
     const retryAfter = Math.ceil((attempts.resetAt - now) / 1000);
-    sendRateLimitError(res, "Too many login attempts. Please try again later.", retryAfter);
+    sendRateLimitError(
+      res,
+      "Too many login attempts. Please try again later.",
+      retryAfter,
+    );
     return;
   }
 

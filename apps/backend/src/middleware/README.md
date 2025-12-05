@@ -17,16 +17,25 @@ Provides authentication and authorization middleware:
 - **`rateLimitLogin()`**: Rate limiter specifically for login endpoints
 
 **Usage:**
-```typescript
-import { authenticate, requirePermission } from './middleware/authMiddleware.js';
 
-router.get('/protected', authenticate, (req, res) => {
+```typescript
+import {
+  authenticate,
+  requirePermission,
+} from "./middleware/authMiddleware.js";
+
+router.get("/protected", authenticate, (req, res) => {
   res.json({ user: req.auth?.userId });
 });
 
-router.post('/admin', authenticate, requirePermission('admin.*'), (req, res) => {
-  // Only users with admin.* permission can access
-});
+router.post(
+  "/admin",
+  authenticate,
+  requirePermission("admin.*"),
+  (req, res) => {
+    // Only users with admin.* permission can access
+  },
+);
 ```
 
 ### Error Handling
@@ -36,8 +45,9 @@ router.post('/admin', authenticate, requirePermission('admin.*'), (req, res) => 
 Global error handling middleware with standardized error responses.
 
 **Usage:**
+
 ```typescript
-import { errorHandler } from './middleware/errorHandler.js';
+import { errorHandler } from "./middleware/errorHandler.js";
 
 // Add as last middleware
 app.use(errorHandler);
@@ -48,13 +58,17 @@ app.use(errorHandler);
 Wraps async route handlers to catch errors and pass them to error middleware.
 
 **Usage:**
-```typescript
-import { asyncHandler } from './middleware/asyncHandler.js';
 
-router.get('/data', asyncHandler(async (req, res) => {
-  const data = await fetchData();
-  res.json(data);
-}));
+```typescript
+import { asyncHandler } from "./middleware/asyncHandler.js";
+
+router.get(
+  "/data",
+  asyncHandler(async (req, res) => {
+    const data = await fetchData();
+    res.json(data);
+  }),
+);
 ```
 
 ### Rate Limiting
@@ -72,10 +86,11 @@ Pre-configured rate limiters for different endpoint types:
 Set `SKIP_RATE_LIMIT=true` in development to disable rate limiting.
 
 **Usage:**
-```typescript
-import { aiRateLimiter } from './middleware/rateLimiters.js';
 
-router.post('/ai/chat', aiRateLimiter, async (req, res) => {
+```typescript
+import { aiRateLimiter } from "./middleware/rateLimiters.js";
+
+router.post("/ai/chat", aiRateLimiter, async (req, res) => {
   // Handle AI chat
 });
 ```
@@ -104,11 +119,12 @@ All middleware uses the standardized error response format defined in `utils/err
 3. **Use authentication middleware** before protected routes
 4. **Combine middleware** for layered security:
    ```typescript
-   router.post('/ai/generate',
-     aiRateLimiter,           // Rate limit first
-     authenticate,             // Then authenticate
-     requirePermission('ai'), // Then authorize
-     asyncHandler(handler)    // Finally handle
+   router.post(
+     "/ai/generate",
+     aiRateLimiter, // Rate limit first
+     authenticate, // Then authenticate
+     requirePermission("ai"), // Then authorize
+     asyncHandler(handler), // Finally handle
    );
    ```
 

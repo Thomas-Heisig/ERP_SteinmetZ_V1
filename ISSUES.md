@@ -228,6 +228,7 @@ res.status(400).send("Bad request");
 6. ⚠️ Weitere Router müssen noch aktualisiert werden (AI, Functions, etc.)
 
 **Format**:
+
 ```typescript
 {
   success: false,
@@ -504,6 +505,7 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 
 **Lösung**:
 ✅ .gitignore ist bereits vollständig und enthält:
+
 - ✅ `*.log` Files
 - ✅ OS-spezifische Files (`.DS_Store`, `Thumbs.db`)
 - ✅ IDE-spezifische Files (`.vscode/`, `.idea/`)
@@ -557,13 +559,14 @@ docs(readme): update installation instructions
 
 ### Nach Priorität
 
-- 🔴 Kritisch: 3 Issues (3 behoben)
-- 🟠 Hoch: 5 Issues (3 behoben, 1 teilweise)
-- 🟡 Mittel: 5 Issues (1 behoben)
-- 🟢 Niedrig: 3 Issues (1 behoben)
-- ✅ Behoben: 8 Issues
+- 🔴 Kritisch: 2 Issues (2 behoben)
+- 🟠 Hoch: 4 Issues (2 behoben, 1 teilweise)
+- 🟡 Mittel: 2 Issues (1 behoben)
+- 🟢 Niedrig: 5 Issues (0 behoben)
+- 🟢 Sehr niedrig: 3 Issues (1 behoben)
+- ✅ Behoben: 6 Issues
 
-**Gesamt**: 16 dokumentierte Issues (7 offen, 1 teilweise, 8 behoben)
+**Gesamt**: 16 dokumentierte Issues (9 offen, 1 teilweise, 6 behoben)
 
 ### Nach Kategorie
 
@@ -611,7 +614,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ---
 
-**Letzte Aktualisierung**: 4. Dezember 2024  
+**Letzte Aktualisierung**: 5. Dezember 2024  
 **Maintainer**: Thomas Heisig  
 **Nächster Review**: Januar 2025
 
@@ -619,7 +622,17 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ## 📝 Änderungshistorie
 
+### 5. Dezember 2024
+
+- 📝 **Dokumentationsfehler korrigiert:**
+  - Dateiname `_3_2_KENZAHLEN.md` → `_3_2_KENNZAHLEN.md` umbenannt (Rechtschreibfehler)
+  - Issue-Statistiken korrigiert (war: 8 behoben, korrekt: 6 behoben)
+  - Prioritätszählungen aktualisiert und korrigiert
+  - Kategorie "Sehr niedrig" zur Prioritätsübersicht hinzugefügt
+  - Gesamtzählung korrigiert: 9 offen, 1 teilweise, 6 behoben (statt 7 offen, 1 teilweise, 8 behoben)
+
 ### 4. Dezember 2024
+
 - ✅ ISSUE-001: TypeScript Build-Fehler behoben
 - ✅ ISSUE-004: Error-Boundaries im Frontend implementiert
 - 🟡 ISSUE-005: Error-Responses standardisiert (Auth-Middleware aktualisiert)
@@ -627,6 +640,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 - ✅ ISSUE-014: .gitignore als vollständig bestätigt
 
 ### 3. Dezember 2024
+
 - ✅ ISSUE-001: TypeScript Build-Fehler initial behoben
 - ✅ ISSUE-002: .env.example Dateien erstellt
 - ✅ ISSUE-003: Test-Infrastruktur implementiert
