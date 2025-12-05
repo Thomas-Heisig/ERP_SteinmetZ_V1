@@ -287,7 +287,7 @@ export async function start() {
         `[backend] AI Annotator API:       http://localhost:${PORT}/api/ai-annotator`,
       );
       console.log("--------------------------------------------------------");
-      
+
       // Initialize WebSocket server
       websocketService.initialize(server);
       console.log(`[backend] WebSocket initialized:  ws://localhost:${PORT}`);

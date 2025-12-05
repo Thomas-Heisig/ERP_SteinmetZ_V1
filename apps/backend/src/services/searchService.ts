@@ -3,7 +3,7 @@
 
 /**
  * Enhanced Full-Text Search Service
- * 
+ *
  * Provides advanced search capabilities including:
  * - Text highlighting
  * - Relevance scoring
@@ -66,7 +66,7 @@ export interface FacetValue {
 export interface SearchSuggestion {
   text: string;
   score: number;
-  type: 'node' | 'tag' | 'area';
+  type: "node" | "tag" | "area";
 }
 
 /**
@@ -79,7 +79,7 @@ export class SearchService {
   search(
     nodes: CatalogNode[],
     query: SearchQuery,
-    pagination?: { limit?: number; offset?: number }
+    pagination?: { limit?: number; offset?: number },
   ): {
     results: SearchResult[];
     total: number;
@@ -93,13 +93,13 @@ export class SearchService {
 
     // Apply minimum score filter
     const minScore = query.minScore || 0;
-    const relevantResults = scoredResults.filter(r => r.score >= minScore);
+    const relevantResults = scoredResults.filter((r) => r.score >= minScore);
 
     // Sort by relevance
     relevantResults.sort((a, b) => b.score - a.score);
 
     // Calculate facets before pagination
-    const facets = this.calculateFacets(relevantResults.map(r => r.node));
+    const facets = this.calculateFacets(relevantResults.map((r) => r.node));
 
     // Apply pagination
     const offset = pagination?.offset || 0;
@@ -121,25 +121,25 @@ export class SearchService {
 
     // Filter by kinds
     if (query.kinds && query.kinds.length > 0) {
-      filtered = filtered.filter(node => 
-        query.kinds!.includes(node.kind)
-      );
+      filtered = filtered.filter((node) => query.kinds!.includes(node.kind));
     }
 
     // Filter by tags
     if (query.tags && query.tags.length > 0) {
-      filtered = filtered.filter(node => {
+      filtered = filtered.filter((node) => {
         const nodeTags = (node.meta?.tags || []) as string[];
-        return query.tags!.some(tag => 
-          nodeTags.some((nt) => String(nt).toLowerCase().includes(tag.toLowerCase()))
+        return query.tags!.some((tag) =>
+          nodeTags.some((nt) =>
+            String(nt).toLowerCase().includes(tag.toLowerCase()),
+          ),
         );
       });
     }
 
     // Filter by area
     if (query.area) {
-      filtered = filtered.filter(node => {
-        const nodeArea = String(node.meta?.businessArea || '');
+      filtered = filtered.filter((node) => {
+        const nodeArea = String(node.meta?.businessArea || "");
         return nodeArea.toLowerCase().includes(query.area!.toLowerCase());
       });
     }
@@ -151,9 +151,9 @@ export class SearchService {
    * Score nodes based on relevance to query
    */
   private scoreNodes(nodes: CatalogNode[], query: SearchQuery): SearchResult[] {
-    if (!query.q || query.q.trim() === '') {
+    if (!query.q || query.q.trim() === "") {
       // No text query - return all with equal score
-      return nodes.map(node => ({
+      return nodes.map((node) => ({
         node,
         score: 0.5,
         matchedFields: [],
@@ -163,10 +163,12 @@ export class SearchService {
 
     const searchTerms = this.tokenize(query.q);
 
-    return nodes.map(node => {
-      const result = this.scoreNode(node, searchTerms, query);
-      return result;
-    }).filter(r => r.score > 0);
+    return nodes
+      .map((node) => {
+        const result = this.scoreNode(node, searchTerms, query);
+        return result;
+      })
+      .filter((r) => r.score > 0);
   }
 
   /**
@@ -175,7 +177,7 @@ export class SearchService {
   private scoreNode(
     node: CatalogNode,
     searchTerms: string[],
-    query: SearchQuery
+    query: SearchQuery,
   ): SearchResult {
     let totalScore = 0;
     const matchedFields: string[] = [];
@@ -183,37 +185,38 @@ export class SearchService {
 
     // Search in title (highest weight)
     const titleScore = this.scoreField(
-      node.title || '',
+      node.title || "",
       searchTerms,
       3.0,
-      query.fuzzy || false
+      query.fuzzy || false,
     );
     if (titleScore > 0) {
       totalScore += titleScore;
-      matchedFields.push('title');
+      matchedFields.push("title");
       if (query.highlight) {
         highlights.push({
-          field: 'title',
-          snippets: this.highlightText(node.title || '', searchTerms),
+          field: "title",
+          snippets: this.highlightText(node.title || "", searchTerms),
         });
       }
     }
 
     // Search in description (medium weight)
-    const descValue = node.meta?.description || '';
-    const description = typeof descValue === 'string' ? descValue : JSON.stringify(descValue);
+    const descValue = node.meta?.description || "";
+    const description =
+      typeof descValue === "string" ? descValue : JSON.stringify(descValue);
     const descScore = this.scoreField(
       description,
       searchTerms,
       2.0,
-      query.fuzzy || false
+      query.fuzzy || false,
     );
     if (descScore > 0) {
       totalScore += descScore;
-      matchedFields.push('description');
+      matchedFields.push("description");
       if (query.highlight) {
         highlights.push({
-          field: 'description',
+          field: "description",
           snippets: this.highlightText(description, searchTerms, 150),
         });
       }
@@ -221,19 +224,19 @@ export class SearchService {
 
     // Search in tags (medium-low weight)
     const tags = (node.meta?.tags || []) as string[];
-    const tagsText = tags.join(' ');
+    const tagsText = tags.join(" ");
     const tagsScore = this.scoreField(
       tagsText,
       searchTerms,
       1.5,
-      query.fuzzy || false
+      query.fuzzy || false,
     );
     if (tagsScore > 0) {
       totalScore += tagsScore;
-      matchedFields.push('tags');
+      matchedFields.push("tags");
       if (query.highlight) {
         highlights.push({
-          field: 'tags',
+          field: "tags",
           snippets: this.highlightText(tagsText, searchTerms),
         });
       }
@@ -244,15 +247,18 @@ export class SearchService {
       node.id,
       searchTerms,
       1.0,
-      query.fuzzy || false
+      query.fuzzy || false,
     );
     if (idScore > 0) {
       totalScore += idScore;
-      matchedFields.push('id');
+      matchedFields.push("id");
     }
 
     // Normalize score to 0-1 range
-    const normalizedScore = Math.min(totalScore / (searchTerms.length * 5), 1.0);
+    const normalizedScore = Math.min(
+      totalScore / (searchTerms.length * 5),
+      1.0,
+    );
 
     return {
       node,
@@ -269,7 +275,7 @@ export class SearchService {
     fieldValue: string,
     searchTerms: string[],
     weight: number,
-    fuzzy: boolean
+    fuzzy: boolean,
   ): number {
     if (!fieldValue) return 0;
 
@@ -313,7 +319,7 @@ export class SearchService {
     return query
       .toLowerCase()
       .split(/\s+/)
-      .filter(term => term.length > 0);
+      .filter((term) => term.length > 0);
   }
 
   /**
@@ -328,18 +334,18 @@ export class SearchService {
 
     // Check if pattern exists in text with at most maxDistance edits
     const words = text.split(/\s+/);
-    
+
     for (const word of words) {
       // Skip words that are too different in length
       if (Math.abs(word.length - pattern.length) > maxDistance * 2) {
         continue;
       }
-      
+
       if (this.levenshteinDistance(word, pattern) <= maxDistance) {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -368,7 +374,7 @@ export class SearchService {
 
     for (let i = 1; i <= b.length; i++) {
       let minInRow = Infinity;
-      
+
       for (let j = 1; j <= a.length; j++) {
         if (b.charAt(i - 1) === a.charAt(j - 1)) {
           matrix[i][j] = matrix[i - 1][j - 1];
@@ -376,12 +382,12 @@ export class SearchService {
           matrix[i][j] = Math.min(
             matrix[i - 1][j - 1] + 1,
             matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
+            matrix[i - 1][j] + 1,
           );
         }
         minInRow = Math.min(minInRow, matrix[i][j]);
       }
-      
+
       // Early exit if no cell in this row is within maxDistance
       if (minInRow > maxDistance) {
         return maxDistance + 1;
@@ -397,7 +403,7 @@ export class SearchService {
   private highlightText(
     text: string,
     searchTerms: string[],
-    maxLength = 200
+    maxLength = 200,
   ): string[] {
     if (!text) return [];
 
@@ -415,17 +421,17 @@ export class SearchService {
         let snippet = text.substring(start, end);
 
         // Add ellipsis
-        if (start > 0) snippet = '...' + snippet;
-        if (end < text.length) snippet = snippet + '...';
+        if (start > 0) snippet = "..." + snippet;
+        if (end < text.length) snippet = snippet + "...";
 
         // Highlight the match
         const matchStart = snippet.toLowerCase().indexOf(normalizedTerm);
         if (matchStart !== -1) {
           snippet =
             snippet.substring(0, matchStart) +
-            '<mark>' +
+            "<mark>" +
             snippet.substring(matchStart, matchStart + normalizedTerm.length) +
-            '</mark>' +
+            "</mark>" +
             snippet.substring(matchStart + normalizedTerm.length);
         }
 
@@ -459,7 +465,7 @@ export class SearchService {
       }
 
       // Count areas
-      const area = String(node.meta?.businessArea || 'Other');
+      const area = String(node.meta?.businessArea || "Other");
       areaCounts.set(area, (areaCounts.get(area) || 0) + 1);
     }
 
@@ -483,7 +489,7 @@ export class SearchService {
   getSuggestions(
     nodes: CatalogNode[],
     partialQuery: string,
-    limit = 10
+    limit = 10,
   ): SearchSuggestion[] {
     const suggestions: SearchSuggestion[] = [];
     const normalizedQuery = partialQuery.toLowerCase();
@@ -495,12 +501,12 @@ export class SearchService {
 
     for (const node of nodes) {
       if (node.title) nodeTexts.add(node.title);
-      
+
       const nodeTags = (node.meta?.tags || []) as string[];
-      nodeTags.forEach(tag => tags.add(String(tag)));
+      nodeTags.forEach((tag) => tags.add(String(tag)));
 
       const area = node.meta?.businessArea;
-      if (area && typeof area === 'string') areas.add(area);
+      if (area && typeof area === "string") areas.add(area);
     }
 
     // Score and filter suggestions
@@ -509,7 +515,7 @@ export class SearchService {
         suggestions.push({
           text,
           score: this.scoreField(text, [normalizedQuery], 1.0, false),
-          type: 'node',
+          type: "node",
         });
       }
     }
@@ -519,7 +525,7 @@ export class SearchService {
         suggestions.push({
           text: tag,
           score: this.scoreField(tag, [normalizedQuery], 1.0, false),
-          type: 'tag',
+          type: "tag",
         });
       }
     }
@@ -529,15 +535,13 @@ export class SearchService {
         suggestions.push({
           text: area,
           score: this.scoreField(area, [normalizedQuery], 1.0, false),
-          type: 'area',
+          type: "area",
         });
       }
     }
 
     // Sort by score and limit
-    return suggestions
-      .sort((a, b) => b.score - a.score)
-      .slice(0, limit);
+    return suggestions.sort((a, b) => b.score - a.score).slice(0, limit);
   }
 }
 
