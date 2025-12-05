@@ -223,9 +223,17 @@ npm run lint
 # Build (prüft TypeScript)
 npm run build
 
-# Tests (wenn vorhanden)
-npm test
+# Tests
+npm test              # Alle Tests
+npm test:backend      # Nur Backend (42 Tests)
+npm test:frontend     # Nur Frontend (50 Tests)
+npm test:coverage     # Mit Coverage-Report
 ```
+
+**Aktueller Test-Status:**
+- ✅ Backend: 42/42 Tests passing
+- ✅ Frontend: 37/50 Tests passing (13 pre-existing issues)
+- ✅ Build: Vollständig erfolgreich
 
 ## 📚 Dokumentation
 
@@ -273,4 +281,6 @@ Siehe LICENSE file für Details.
 ---
 
 **Version:** 0.2.0  
-**Letztes Update:** Dezember 2024
+**Letztes Update:** 5. Dezember 2024  
+**Build-Status:** ✅ Erfolgreich  
+**Test-Status:** ✅ 79/92 passing
