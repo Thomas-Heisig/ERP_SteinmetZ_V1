@@ -34,6 +34,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 
 ### API-Endpunkte
 
+#### System & Core
 - `GET /api/health` - System Health Status
 - `GET /api/functions` - Vollständiger Funktionskatalog
 - `GET /api/functions/roots` - Top-Level Kategorien (11 Bereiche)
@@ -42,6 +43,27 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - `POST /api/functions/menu` - RBAC-gefiltertes Menü
 - `GET /api/dashboard` - Dashboard-Daten
 - `POST /api/quickchat` - QuickChat AI Assistant
+
+#### HR Module (Personalwesen) ✨ NEU
+- `GET /api/hr/employees` - Mitarbeiterliste
+- `POST /api/hr/employees` - Mitarbeiter anlegen
+- `GET /api/hr/time-entries` - Zeiterfassung
+- `GET /api/hr/leave-requests` - Urlaubsanträge
+- `GET /api/hr/payroll/:employeeId` - Gehaltsabrechnung
+- `GET /api/hr/departments` - Abteilungen
+- `GET /api/hr/statistics` - HR-Statistiken
+
+#### Finance Module (Finanzen & Controlling) ✨ NEU
+- `GET /api/finance/invoices` - Rechnungsverwaltung
+- `POST /api/finance/invoices` - Rechnung erstellen
+- `GET /api/finance/customers` - Kundenverwaltung (Debitoren)
+- `GET /api/finance/suppliers` - Lieferantenverwaltung (Kreditoren)
+- `GET /api/finance/payments` - Zahlungsabwicklung
+- `GET /api/finance/accounts` - Kontenplan
+- `GET /api/finance/transactions` - Buchungen
+- `GET /api/finance/reports/balance-sheet` - Bilanz
+- `GET /api/finance/reports/profit-loss` - GuV
+- `GET /api/finance/statistics` - Finanzstatistiken
 
 ## 🚀 Quick Start
 
@@ -135,9 +157,27 @@ ERP_SteinmetZ_V1/
 - **Mehrsprachigkeit** (7 Sprachen)
 - **Health Monitoring**
 - **Auto-Reload** für Entwicklung
+- **HR-Modul** ✨ NEU
+  - Mitarbeiterverwaltung
+  - Zeiterfassung
+  - Urlaubsmanagement
+  - Gehaltsabrechnung (Basis)
+- **Finance-Modul** ✨ NEU
+  - Rechnungsmanagement
+  - Kunden-/Lieferantenverwaltung
+  - Zahlungsabwicklung
+  - Buchhaltung (Hauptbuch, Debitoren, Kreditoren)
+  - Finanzberichte (Bilanz, GuV)
 
 ### 🔄 In Entwicklung
 
+- **HR & Finance Module**
+  - Datenbank-Integration für persistente Speicherung
+  - Services-Layer für Business-Logik
+  - Frontend-Komponenten für vollständige Benutzeroberfläche
+  - Workflow-Automatisierung (Genehmigungen, Mahnwesen)
+  - OCR für Eingangsrechnungen
+  - XRechnung/ZUGFeRD-Unterstützung
 - WebSocket für Echtzeit-Updates
 - Erweiterte Suche mit Filtern
 - Kategorie-Navigation im Dashboard
@@ -206,6 +246,8 @@ npm test
 - **[AI Annotator](apps/backend/src/routes/aiAnnotatorRouter/docs/)** - AI Annotator API
 - **[Dashboard](apps/backend/src/routes/dashboard/docs/)** - Dashboard-API
 - **[Functions Catalog](apps/backend/src/routes/functionsCatalog/docs/)** - Funktionskatalog-API
+- **[HR Module](apps/backend/src/routes/hr/docs/)** ✨ NEU - Personal & HR Management API
+- **[Finance Module](apps/backend/src/routes/finance/docs/)** ✨ NEU - Finanzen & Controlling API
 
 ## 🤝 Beitragen
 

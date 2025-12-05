@@ -36,6 +36,8 @@ import innovationRouter from "./routes/innovation/innovationRouter.js";
 import calendarRouter from "./routes/calendar/calendarRouter.js";
 import quickchatRouter from "./routes/quickchat/quickchatRouter.js";
 import diagnosticsRouter from "./routes/diagnostics/diagnosticsRouter.js";
+import hrRouter from "./routes/hr/hrRouter.js";
+import financeRouter from "./routes/finance/financeRouter.js";
 
 import { toolRegistry } from "./tools/registry.js";
 import { listRoutesTool } from "./tools/listRoutesTool.js";
@@ -133,6 +135,8 @@ app.use("/api/innovation", innovationRouter);
 app.use("/api/calendar", calendarRouter);
 app.use("/api/quickchat", quickchatRouter);
 app.use("/diagnostics", diagnosticsRouter);
+app.use("/api/hr", hrRouter);
+app.use("/api/finance", financeRouter);
 console.log("[router] API-Routen aktiv");
 
 /* --------------------------------------------------------
