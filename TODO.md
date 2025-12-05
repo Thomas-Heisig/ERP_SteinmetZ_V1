@@ -187,12 +187,16 @@ Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und
 
 ### Features - Erweiterte Suche
 
-- [ ] **Full-Text-Search verbessern**
-  - [ ] ElasticSearch oder MeiliSearch evaluieren
-  - [ ] Faceted Search implementieren
-  - [ ] Search-Highlighting
-  - [ ] Search-Analytics
+- [x] **Full-Text-Search verbessern** ✅ ERLEDIGT (2024-12-05)
+  - [x] Enhanced Search Service mit Relevance-Scoring
+  - [x] Faceted Search implementieren (kinds, tags, areas)
+  - [x] Search-Highlighting mit Snippet-Extraktion
+  - [x] Fuzzy Matching mit Levenshtein Distance
+  - [x] Search-Suggestions-Funktion
+  - [ ] ElasticSearch oder MeiliSearch evaluieren (optional für Skalierung)
+  - [ ] Search-Analytics Dashboard (folgt)
   - **Aufwand**: 3-5 Tage
+  - **Ergebnis**: Vollständiger SearchService, Frontend-Integration ausstehend
 
 - [ ] **Advanced Filters**
   - [ ] Filter-Builder-UI
