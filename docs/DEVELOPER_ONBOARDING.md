@@ -1,5 +1,9 @@
 # Developer Onboarding Guide
 
+**Version**: 2.0  
+**Stand**: Dezember 2025  
+**Maintenance**: Aktiv  
+
 Welcome to ERP SteinmetZ! This guide will help you get started with development on this project.
 
 ## Table of Contents

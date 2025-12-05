@@ -268,8 +268,33 @@ See [LICENSE](../LICENSE) file for details.
 
 ---
 
-**Version:** 0.2.0  
-**Last Updated:** December 4, 2024  
+## 🆕 Neue Dokumentation (Dezember 2025)
+
+### AI & Function Transformation
+
+- **[AI Annotator Workflow](./AI_ANNOTATOR_WORKFLOW.md)** ⭐ NEU
+  - Vollständiger Datenverarbeitungs-Workflow
+  - 15.472 Funktionsknoten-Verarbeitung
+  - PII-Klassifikation und Compliance
+  - Quality Assurance Prozess
+
+- **[Function Node Transformation](./FUNCTION_NODE_TRANSFORMATION.md)** ⭐ NEU
+  - Markdown → TypeScript Code-Generierung
+  - Instruction-Driven ERP Konzept
+  - Automatische API-Endpoint-Erstellung
+  - Test-Generierung
+
+### Internationale Standards
+
+- **ISO/IEC 25010**: Software-Qualitätsmodell (siehe [ARCHITECTURE.md](./ARCHITECTURE.md))
+- **IEEE 1471**: Architektur-Beschreibung
+- **OpenAPI 3.0**: API-Spezifikation
+- **JSON Schema Draft-07**: Datenvalidierung
+
+---
+
+**Version:** 0.3.0  
+**Last Updated:** December 5, 2025  
 **Maintainer:** Thomas Heisig
 
-**Documentation Status:** ✅ Complete and up-to-date
+**Documentation Status:** ✅ Complete and up-to-date (82 Dateien, 91% aktuell)

@@ -10,7 +10,7 @@
 
 ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit einem innovativen **KI-gestützten Architekturansatz**. Das System nutzt einen **AI Annotator**, um Funktionen, Metadaten, Regeln und Formulare flexibel zu analysieren, generieren und zu erweitern – damit wird das ERP zu einer sich selbst dokumentierenden und kontinuierlich lernenden Plattform.
 
-## ✅ Aktueller Status (Stand: Dezember 2024)
+## ✅ Aktueller Status (Stand: Dezember 2025)
 
 ### Frontend ✅ Vollständig Funktionsfähig
 
@@ -302,7 +302,95 @@ Siehe LICENSE file für Details.
 
 ---
 
-**Version:** 0.2.0  
-**Letztes Update:** 5. Dezember 2024  
+**Version:** 0.3.0  
+**Letztes Update:** 5. Dezember 2025  
 **Build-Status:** ✅ Erfolgreich  
 **Test-Status:** ✅ 79/92 passing
+
+---
+
+## 📋 Status-Übersicht (Dezember 2025)
+
+### ✅ Produktionsreif & Abgeschlossen
+
+#### Infrastruktur
+- React 19 + Vite Frontend (Lazy Loading, Code-Splitting)
+- Express 5 Backend (API, WebSocket, Caching)
+- SQLite (Development) / PostgreSQL (Production Ready)
+- WebSocket-Server mit Socket.IO (Real-Time-Unterstützung)
+- API-Response-Caching mit TTL
+- Query-Performance-Monitoring
+- Strukturiertes Error-Handling
+- Health-Check-System
+
+#### Frontend-Komponenten
+- Dashboard mit 11 Funktionsbereichen
+- QuickChat KI-Assistent
+- Theme-System (Light, Dark, LCARS)
+- Mehrsprachigkeit (7 Sprachen: DE, EN, ES, FR, IT, PL, TR)
+- Error Boundaries
+- Skeleton Loaders
+- Responsive Design (Mobile-First)
+
+#### Backend-Module
+- Functions Catalog API (15.472 Funktionsknoten)
+- AI-Integration (OpenAI, Ollama, Anthropic, Fallback-System)
+- HR-Modul (Basis-APIs)
+- Finance-Modul (Basis-APIs)
+- Enhanced Search Service (Full-Text, Fuzzy, Faceted)
+
+### 🔄 In Entwicklung
+
+#### AI-Annotator-System
+- **Status**: Architektur definiert, Core-Komponenten implementiert
+- **Ziel**: Automatische Analyse und Anreicherung von Funktionsknoten
+- **Datenverarbeitung**:
+  - Batch-Processing für große Datenmengen
+  - Quality-Assurance-Dashboard
+  - PII-Klassifikation
+  - Validierung und Error-Correction
+- **Nächste Schritte**:
+  - Integration mit Function-Catalog
+  - Frontend-UI für Batch-Operations
+  - Automatische Metadaten-Generierung
+
+#### Function-Node-Transformation
+- **Status**: Konzeptphase
+- **Ziel**: Konvertierung von Funktionsknoten zu ausführbaren Funktionen
+- **Prozess**:
+  1. Funktionsknoten-Parsing (Markdown-basiert)
+  2. Schema-Extraktion (JSON-Schema für Validierung)
+  3. AA/DSL-Interpretation (Arbeitsanweisungen)
+  4. Code-Generierung (TypeScript-Services)
+  5. API-Endpoint-Registration
+  6. Test-Generierung
+- **Standards**:
+  - ISO/IEC 25010 (Software-Qualitätsmodell)
+  - OpenAPI 3.0 (API-Spezifikation)
+  - JSON Schema Draft-07 (Datenvalidierung)
+
+### 📋 Roadmap 2025-2026
+
+#### Q1 2025: Core-Module vervollständigen
+- [ ] HR-Modul: Vollständige CRUD-Operationen
+- [ ] Finance-Modul: Buchhaltungsintegration
+- [ ] AI-Annotator: Production-Ready
+- [ ] Function-Node-Transformation: MVP
+
+#### Q2 2025: Enterprise-Features
+- [ ] Workflow-Engine (BPMN 2.0)
+- [ ] Document-Management (OCR, AI-Tagging)
+- [ ] Advanced Analytics (BI-Dashboard)
+- [ ] Multi-Tenant-Support
+
+#### Q3 2025: Compliance & Security
+- [ ] GoBD-Zertifizierung
+- [ ] DSGVO-Audit-Toolkit
+- [ ] Pen-Test & Security-Hardening
+- [ ] ISO 27001-Vorbereitung
+
+#### Q4 2025: AI & Automation
+- [ ] RAG-System für Dokumentensuche
+- [ ] Process-Mining & Optimization
+- [ ] Natural-Language-Querying (NLQ)
+- [ ] Predictive Analytics

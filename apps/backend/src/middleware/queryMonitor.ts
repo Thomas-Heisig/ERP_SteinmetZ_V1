@@ -3,7 +3,7 @@
 
 /**
  * Database Query Performance Monitor
- * 
+ *
  * Monitors query execution time and logs slow queries for optimization.
  */
 
@@ -43,10 +43,10 @@ class QueryMonitor {
   async trackQuery<T>(
     query: string,
     params: any[] | undefined,
-    executor: () => Promise<T>
+    executor: () => Promise<T>,
   ): Promise<T> {
     const startTime = performance.now();
-    
+
     try {
       const result = await executor();
       const duration = performance.now() - startTime;
@@ -103,36 +103,45 @@ class QueryMonitor {
    */
   private sanitizeQuery(query: string): string {
     // Remove extra whitespace and newlines
-    return query.replace(/\s+/g, ' ').trim().substring(0, 500);
+    return query.replace(/\s+/g, " ").trim().substring(0, 500);
   }
 
   /**
    * Sanitizes query parameters for logging
    */
   private sanitizeParams(params: any[]): any[] {
-    const sensitiveKeywords = ['password', 'token', 'secret', 'key', 'auth', 'credential', 'pin', 'ssn'];
-    
-    return params.map(param => {
+    const sensitiveKeywords = [
+      "password",
+      "token",
+      "secret",
+      "key",
+      "auth",
+      "credential",
+      "pin",
+      "ssn",
+    ];
+
+    return params.map((param) => {
       // Check if param is an object with sensitive keys
-      if (typeof param === 'object' && param !== null) {
+      if (typeof param === "object" && param !== null) {
         const paramStr = JSON.stringify(param).toLowerCase();
-        if (sensitiveKeywords.some(keyword => paramStr.includes(keyword))) {
-          return '***REDACTED_OBJECT***';
+        if (sensitiveKeywords.some((keyword) => paramStr.includes(keyword))) {
+          return "***REDACTED_OBJECT***";
         }
       }
-      
+
       // Mask potentially sensitive strings
-      if (typeof param === 'string') {
+      if (typeof param === "string") {
         const lowerParam = param.toLowerCase();
-        if (sensitiveKeywords.some(keyword => lowerParam.includes(keyword))) {
-          return '***REDACTED***';
+        if (sensitiveKeywords.some((keyword) => lowerParam.includes(keyword))) {
+          return "***REDACTED***";
         }
         // Truncate long strings
         if (param.length > 100) {
-          return param.substring(0, 97) + '...';
+          return param.substring(0, 97) + "...";
         }
       }
-      
+
       return param;
     });
   }
@@ -142,7 +151,7 @@ class QueryMonitor {
    */
   getSlowQueries(limit = 20): QueryMetrics[] {
     return this.queryHistory
-      .filter(q => q.duration > this.slowQueryThreshold)
+      .filter((q) => q.duration > this.slowQueryThreshold)
       .sort((a, b) => b.duration - a.duration)
       .slice(0, limit);
   }
@@ -152,7 +161,9 @@ class QueryMonitor {
    */
   getStats() {
     const queries = this.queryHistory;
-    const slowQueries = queries.filter(q => q.duration > this.slowQueryThreshold);
+    const slowQueries = queries.filter(
+      (q) => q.duration > this.slowQueryThreshold,
+    );
 
     if (queries.length === 0) {
       return {
@@ -164,15 +175,17 @@ class QueryMonitor {
       };
     }
 
-    const durations = queries.map(q => q.duration);
-    const avgDuration = durations.reduce((sum, d) => sum + d, 0) / durations.length;
+    const durations = queries.map((q) => q.duration);
+    const avgDuration =
+      durations.reduce((sum, d) => sum + d, 0) / durations.length;
     const maxDuration = Math.max(...durations);
     const minDuration = Math.min(...durations);
 
     return {
       totalQueries: queries.length,
       slowQueries: slowQueries.length,
-      slowQueryPercentage: ((slowQueries.length / queries.length) * 100).toFixed(2) + '%',
+      slowQueryPercentage:
+        ((slowQueries.length / queries.length) * 100).toFixed(2) + "%",
       avgDuration: `${avgDuration.toFixed(2)}ms`,
       maxDuration: `${maxDuration.toFixed(2)}ms`,
       minDuration: `${minDuration.toFixed(2)}ms`,
@@ -205,8 +218,8 @@ class QueryMonitor {
 
 // Global query monitor instance
 export const queryMonitor = new QueryMonitor({
-  slowQueryThreshold: parseInt(process.env.SLOW_QUERY_THRESHOLD || '100', 10),
-  logAllQueries: process.env.LOG_ALL_QUERIES === 'true',
+  slowQueryThreshold: parseInt(process.env.SLOW_QUERY_THRESHOLD || "100", 10),
+  logAllQueries: process.env.LOG_ALL_QUERIES === "true",
 });
 
 /**
@@ -216,7 +229,7 @@ export function queryMonitorStatsHandler(req: any, res: any): void {
   const action = req.query.action;
 
   switch (action) {
-    case 'slow':
+    case "slow":
       const limit = parseInt(req.query.limit as string, 10) || 20;
       res.json({
         success: true,
@@ -224,11 +237,11 @@ export function queryMonitorStatsHandler(req: any, res: any): void {
       });
       break;
 
-    case 'clear':
+    case "clear":
       queryMonitor.clearHistory();
       res.json({
         success: true,
-        message: 'Query history cleared',
+        message: "Query history cleared",
       });
       break;
 
