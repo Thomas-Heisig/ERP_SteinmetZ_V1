@@ -6,17 +6,59 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 
 ## [Unreleased]
 
-### ✅ In Arbeit
+### ✅ Hinzugefügt (2024-12-05)
+
+#### Performance & Infrastructure
+
+- **Frontend Performance-Optimierung**:
+  - Lazy Loading für Routes (Dashboard, FunctionsCatalog, Login)
+  - Code-Splitting mit Manual Chunks (react-vendor, i18n-vendor, monaco-vendor)
+  - Optimierte Vite Build-Config mit esbuild Minification
+  
+- **Backend Caching-Layer**:
+  - cacheMiddleware für API-Response-Caching mit konfigurierbarem TTL
+  - Cache-Invalidierung-Middleware
+  - X-Cache Headers für Monitoring
+  - Integration in Functions Catalog Routes
+  
+- **Database Query-Optimierung**:
+  - QueryMonitor-Service mit Slow-Query-Detection
+  - Performance-Tracking mit konfigurierbarem Threshold (default 100ms)
+  - Query-Statistiken API-Endpoint
+  
+- **WebSocket Infrastructure**:
+  - Socket.IO Integration mit CORS-Support
+  - JWT-basierte WebSocket-Authentifizierung
+  - Connection-Management mit Room-Support
+  - Event-Broadcasting-System (broadcast, toRoom, toUser)
+  - Event-Typen für dashboard, chat, system, batch, catalog
+  - WebSocket-Statistiken-Endpoint
+
+- **Enhanced Search Service**:
+  - Full-Text-Search mit Relevance-Scoring
+  - Text-Highlighting für Search-Results
+  - Fuzzy Matching (Levenshtein Distance)
+  - Faceted Search (by kind, tags, areas)
+  - Search-Suggestions
+
+### 📊 Statistiken
+
+- **Neue Dateien**: 5 Services/Middleware
+- **Build-Status**: ✅ Erfolgreich
+- **Test-Status**: Build passing
+
+### 🔄 In Arbeit
 
 - **Code-Qualität**: ESLint-Regeln für console.logs aktiviert, Migration-Guide erstellt
 - **Dokumentation**: Konsolidierung und Archivierung (CHANGELOG.md, ISSUES.md, ARCHIVE.md)
 
-### Geplant
+### 📋 Geplant
 
-- Frontend Performance-Optimierung (Code-Splitting, Lazy Loading)
-- Backend Caching-Layer (Redis Integration)
-- Database Query-Optimierung
-- WebSocket Integration für Real-Time Updates
+- Advanced Filters (Filter-Builder-UI, Gespeicherte Filter, Export)
+- Batch-Processing-UI (Batch-Creation-Formular, Progress-Tracking, History)
+- Quality Assurance Dashboard (Annotation-Quality-Metrics, Review-Interface, Charts)
+- AI Model Management UI (Model-Selection, Performance-Comparison, Cost-Tracking)
+- Real-Time Frontend Integration (WebSocket-Client-Integration)
 
 ---
 

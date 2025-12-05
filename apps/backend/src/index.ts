@@ -47,6 +47,7 @@ toolRegistry.register(listRoutesTool);
 import { FunctionsCatalogService } from "./services/functionsCatalogService.js";
 import { AuthService } from "./services/authService.js";
 import db from "./services/dbService.js";
+import { websocketService } from "./services/websocketService.js";
 
 /* ---------------------- Error-Handler ---------------------- */
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -137,6 +138,15 @@ app.use("/api/quickchat", quickchatRouter);
 app.use("/diagnostics", diagnosticsRouter);
 app.use("/api/hr", hrRouter);
 app.use("/api/finance", financeRouter);
+
+// WebSocket statistics endpoint
+app.get("/api/ws/stats", (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    ...websocketService.getStats(),
+  });
+});
+
 console.log("[router] API-Routen aktiv");
 
 /* --------------------------------------------------------
@@ -277,6 +287,10 @@ export async function start() {
         `[backend] AI Annotator API:       http://localhost:${PORT}/api/ai-annotator`,
       );
       console.log("--------------------------------------------------------");
+      
+      // Initialize WebSocket server
+      websocketService.initialize(server);
+      console.log(`[backend] WebSocket initialized:  ws://localhost:${PORT}`);
     });
 
     return server;

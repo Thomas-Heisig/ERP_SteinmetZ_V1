@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/main.tsx
 
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import {
   createBrowserRouter,
@@ -10,11 +10,29 @@ import {
 } from "react-router-dom";
 
 import App from "./App";
-import Dashboard from "./components/Dashboard/Dashboard";
-import FunctionsCatalog from "./components/FunctionsCatalog/FunctionsCatalog";
-import Login from "./pages/Login/Login";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
+
+// Lazy load heavy components for better initial load time
+const Dashboard = lazy(() => import("./components/Dashboard/Dashboard"));
+const FunctionsCatalog = lazy(
+  () => import("./components/FunctionsCatalog/FunctionsCatalog"),
+);
+const Login = lazy(() => import("./pages/Login/Login"));
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+    }}
+  >
+    <div>Loading...</div>
+  </div>
+);
 
 // i18n MUSS zuerst geladen werden
 import "./components/i18n/i18n";
@@ -33,7 +51,9 @@ const router = createBrowserRouter([
     path: "/login",
     element: (
       <ErrorBoundary>
-        <Login />
+        <Suspense fallback={<LoadingFallback />}>
+          <Login />
+        </Suspense>
       </ErrorBoundary>
     ),
   },
@@ -46,7 +66,9 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ErrorBoundary>
-              <Dashboard />
+              <Suspense fallback={<LoadingFallback />}>
+                <Dashboard />
+              </Suspense>
             </ErrorBoundary>
           </ProtectedRoute>
         ),
@@ -56,7 +78,9 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ErrorBoundary>
-              <Dashboard />
+              <Suspense fallback={<LoadingFallback />}>
+                <Dashboard />
+              </Suspense>
             </ErrorBoundary>
           </ProtectedRoute>
         ),
@@ -66,7 +90,9 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ErrorBoundary>
-              <FunctionsCatalog />
+              <Suspense fallback={<LoadingFallback />}>
+                <FunctionsCatalog />
+              </Suspense>
             </ErrorBoundary>
           </ProtectedRoute>
         ),
@@ -76,7 +102,9 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ErrorBoundary>
-              <div>AI Annotator – folgt später</div>
+              <Suspense fallback={<LoadingFallback />}>
+                <div>AI Annotator – folgt später</div>
+              </Suspense>
             </ErrorBoundary>
           </ProtectedRoute>
         ),

@@ -247,6 +247,7 @@ npm start
   - cors 2.8
 - **Audio Processing**: fluent-ffmpeg 2.1
 - **File Watching**: chokidar 4.0
+- **Real-Time Communication**: socket.io (latest) ✨ NEU
 
 ### Shared Dependencies
 
@@ -278,11 +279,17 @@ npm start
 
 #### Functions Catalog
 
-- `GET /api/functions` - Vollständiger Funktionskatalog
+- `GET /api/functions` - Vollständiger Funktionskatalog (mit Caching ✨)
 - `GET /api/functions/roots` - Top-Level Kategorien (11 Bereiche)
 - `GET /api/functions/nodes/:id` - Einzelner Funktionsknoten mit Details
-- `GET /api/functions/search` - Volltextsuche mit Pagination
+- `GET /api/functions/search` - Volltextsuche mit Pagination (Enhanced Search ✨)
 - `POST /api/functions/menu` - RBAC-gefiltertes Menü
+
+#### WebSocket & Real-Time ✨ NEU
+
+- `ws://localhost:3000` - WebSocket-Verbindung
+- `GET /api/ws/stats` - WebSocket-Statistiken
+- Events: `dashboard:*`, `chat:*`, `system:*`, `batch:*`, `catalog:*`
 
 #### Dashboard
 
