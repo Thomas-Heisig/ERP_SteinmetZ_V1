@@ -28,17 +28,20 @@ Authorization: Bearer <your-token>
 Listet alle Rechnungen mit optionalen Filtern auf.
 
 **Query-Parameter:**
+
 - `status` (optional): Filter nach Status (`draft`, `sent`, `paid`, `overdue`, `cancelled`)
 - `customerId` (optional): Filter nach Kunden-ID
 - `startDate` (optional): Startdatum (ISO 8601)
 - `endDate` (optional): Enddatum (ISO 8601)
 
 **Beispiel-Request:**
+
 ```bash
 GET /api/finance/invoices?status=overdue
 ```
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -48,7 +51,7 @@ GET /api/finance/invoices?status=overdue
       "invoiceNumber": "RE-2024-001",
       "customerName": "ABC GmbH",
       "customerId": "C001",
-      "amount": 1500.00,
+      "amount": 1500.0,
       "currency": "EUR",
       "dueDate": "2024-12-12",
       "status": "sent",
@@ -64,6 +67,7 @@ GET /api/finance/invoices?status=overdue
 Ruft Details einer einzelnen Rechnung ab.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -72,7 +76,7 @@ Ruft Details einer einzelnen Rechnung ab.
     "invoiceNumber": "RE-2024-001",
     "customerName": "ABC GmbH",
     "customerId": "C001",
-    "amount": 1500.00,
+    "amount": 1500.0,
     "currency": "EUR",
     "dueDate": "2024-12-12",
     "status": "sent",
@@ -82,12 +86,12 @@ Ruft Details einer einzelnen Rechnung ab.
         "id": "1",
         "description": "Beratungsleistung",
         "quantity": 10,
-        "unitPrice": 150.00,
-        "total": 1500.00
+        "unitPrice": 150.0,
+        "total": 1500.0
       }
     ],
-    "tax": 285.00,
-    "grossAmount": 1785.00
+    "tax": 285.0,
+    "grossAmount": 1785.0
   }
 }
 ```
@@ -97,6 +101,7 @@ Ruft Details einer einzelnen Rechnung ab.
 Erstellt eine neue Rechnung.
 
 **Request-Body:**
+
 ```json
 {
   "customerId": "C001",
@@ -104,7 +109,7 @@ Erstellt eine neue Rechnung.
     {
       "description": "Beratungsleistung",
       "quantity": 10,
-      "unitPrice": 150.00
+      "unitPrice": 150.0
     }
   ],
   "dueDate": "2024-12-31",
@@ -113,6 +118,7 @@ Erstellt eine neue Rechnung.
 ```
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -139,6 +145,7 @@ Löscht eine Rechnung (nur Entwürfe).
 Versendet eine Rechnung an den Kunden.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -153,9 +160,11 @@ Versendet eine Rechnung an den Kunden.
 Listet alle Kunden auf.
 
 **Query-Parameter:**
+
 - `search` (optional): Suche nach Name oder E-Mail
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -179,6 +188,7 @@ Listet alle Kunden auf.
 Ruft Details eines einzelnen Kunden ab.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -201,6 +211,7 @@ Ruft Details eines einzelnen Kunden ab.
 Erstellt einen neuen Kunden.
 
 **Request-Body:**
+
 ```json
 {
   "name": "XYZ AG",
@@ -220,6 +231,7 @@ Erstellt einen neuen Kunden.
 Listet alle Lieferanten auf.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -242,6 +254,7 @@ Listet alle Lieferanten auf.
 Erstellt einen neuen Lieferanten.
 
 **Request-Body:**
+
 ```json
 {
   "name": "New Supplier GmbH",
@@ -259,10 +272,12 @@ Erstellt einen neuen Lieferanten.
 Listet alle Zahlungen auf.
 
 **Query-Parameter:**
+
 - `type` (optional): Filter nach Typ (`incoming`, `outgoing`)
 - `status` (optional): Filter nach Status (`pending`, `completed`, `failed`)
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -270,7 +285,7 @@ Listet alle Zahlungen auf.
     {
       "id": "P001",
       "type": "incoming",
-      "amount": 1500.00,
+      "amount": 1500.0,
       "currency": "EUR",
       "date": "2024-12-05",
       "status": "completed",
@@ -287,10 +302,11 @@ Listet alle Zahlungen auf.
 Erfasst eine neue Zahlung.
 
 **Request-Body:**
+
 ```json
 {
   "type": "incoming",
-  "amount": 1500.00,
+  "amount": 1500.0,
   "currency": "EUR",
   "date": "2024-12-05",
   "invoiceId": "1",
@@ -307,6 +323,7 @@ Erfasst eine neue Zahlung.
 Ruft den Kontenplan ab (SKR03/SKR04 kompatibel).
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -315,19 +332,19 @@ Ruft den Kontenplan ab (SKR03/SKR04 kompatibel).
       "id": "1000",
       "name": "Kasse",
       "type": "asset",
-      "balance": 5000.00
+      "balance": 5000.0
     },
     {
       "id": "1200",
       "name": "Bank",
       "type": "asset",
-      "balance": 50000.00
+      "balance": 50000.0
     },
     {
       "id": "4000",
       "name": "Umsatzerlöse",
       "type": "revenue",
-      "balance": 100000.00
+      "balance": 100000.0
     }
   ],
   "count": 3
@@ -341,11 +358,13 @@ Ruft den Kontenplan ab (SKR03/SKR04 kompatibel).
 Listet Buchungen auf.
 
 **Query-Parameter:**
+
 - `accountId` (optional): Filter nach Konto-ID
 - `startDate` (optional): Startdatum (ISO 8601)
 - `endDate` (optional): Enddatum (ISO 8601)
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -356,7 +375,7 @@ Listet Buchungen auf.
       "description": "Zahlungseingang Rechnung RE-2024-001",
       "debitAccount": "1200",
       "creditAccount": "1400",
-      "amount": 1500.00,
+      "amount": 1500.0,
       "currency": "EUR"
     }
   ],
@@ -369,13 +388,14 @@ Listet Buchungen auf.
 Erstellt eine neue Buchung.
 
 **Request-Body:**
+
 ```json
 {
   "date": "2024-12-05",
   "description": "Zahlung Lieferant",
   "debitAccount": "3300",
   "creditAccount": "1200",
-  "amount": 1000.00,
+  "amount": 1000.0,
   "currency": "EUR"
 }
 ```
@@ -387,21 +407,22 @@ Erstellt eine neue Buchung.
 Ruft die Bilanz ab.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
   "data": {
     "assets": {
-      "current": 55000.00,
-      "fixed": 100000.00,
-      "total": 155000.00
+      "current": 55000.0,
+      "fixed": 100000.0,
+      "total": 155000.0
     },
     "liabilities": {
-      "current": 25000.00,
-      "longTerm": 50000.00,
-      "total": 75000.00
+      "current": 25000.0,
+      "longTerm": 50000.0,
+      "total": 75000.0
     },
-    "equity": 80000.00
+    "equity": 80000.0
   }
 }
 ```
@@ -411,16 +432,17 @@ Ruft die Bilanz ab.
 Ruft die Gewinn- und Verlustrechnung ab.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
   "data": {
-    "revenue": 100000.00,
-    "costOfGoodsSold": 40000.00,
-    "grossProfit": 60000.00,
-    "operatingExpenses": 20000.00,
-    "operatingIncome": 40000.00,
-    "netIncome": 40000.00
+    "revenue": 100000.0,
+    "costOfGoodsSold": 40000.0,
+    "grossProfit": 60000.0,
+    "operatingExpenses": 20000.0,
+    "operatingIncome": 40000.0,
+    "netIncome": 40000.0
   }
 }
 ```
@@ -432,17 +454,18 @@ Ruft die Gewinn- und Verlustrechnung ab.
 Ruft Finanzstatistiken ab.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
   "data": {
-    "totalRevenue": 100000.00,
-    "totalExpenses": 60000.00,
-    "netProfit": 40000.00,
+    "totalRevenue": 100000.0,
+    "totalExpenses": 60000.0,
+    "netProfit": 40000.0,
     "openInvoices": 7,
     "overdueInvoices": 2,
-    "totalOpenAmount": 4750.50,
-    "totalOverdueAmount": 3250.50
+    "totalOpenAmount": 4750.5,
+    "totalOverdueAmount": 3250.5
   }
 }
 ```
@@ -459,21 +482,25 @@ Die folgenden Rollen haben Zugriff auf das Finance-Modul:
 ## 📝 Hinweise
 
 ### Buchhaltung
+
 - Alle Buchungen folgen dem Prinzip der doppelten Buchführung (Soll = Haben)
 - GoBD-konforme Archivierung aller Belege
 - Unveränderbarkeit gebuchter Transaktionen (nur Stornierung möglich)
 
 ### Rechnungsstellung
+
 - Automatische Nummerierung nach konfigurierbarem Schema
 - Unterstützung für XRechnung und ZUGFeRD (geplant)
 - Automatische Steuerberechnung
 
 ### Zahlungsmanagement
+
 - Automatisches Matching von Banktransaktionen
 - Skonto-Verwaltung
 - Mahnwesen mit konfigurierbaren Mahnstufen
 
 ### Compliance
+
 - HGB-konform
 - GoBD-konforme Archivierung
 - DATEV-Schnittstelle (geplant)

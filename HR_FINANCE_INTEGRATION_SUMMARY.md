@@ -15,6 +15,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 ### HR-Modul (`/api/hr`)
 
 #### Mitarbeiterverwaltung
+
 - ✅ `GET /api/hr/employees` - Mitarbeiter abrufen (mit Filtern)
 - ✅ `GET /api/hr/employees/:id` - Einzelnen Mitarbeiter abrufen
 - ✅ `POST /api/hr/employees` - Neuen Mitarbeiter anlegen
@@ -22,25 +23,30 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 - ✅ `DELETE /api/hr/employees/:id` - Mitarbeiter deaktivieren
 
 #### Zeiterfassung
+
 - ✅ `GET /api/hr/time-entries` - Zeiteinträge abrufen
 - ✅ `POST /api/hr/time-entries` - Zeiteintrag erstellen
 
 #### Urlaubsverwaltung
+
 - ✅ `GET /api/hr/leave-requests` - Urlaubsanträge abrufen
 - ✅ `POST /api/hr/leave-requests` - Urlaubsantrag erstellen
 - ✅ `PUT /api/hr/leave-requests/:id/approve` - Urlaubsantrag genehmigen
 - ✅ `PUT /api/hr/leave-requests/:id/reject` - Urlaubsantrag ablehnen
 
 #### Gehaltsabrechnung
+
 - ✅ `GET /api/hr/payroll/:employeeId` - Gehaltsinfos abrufen
 
 #### Organisatorisches
+
 - ✅ `GET /api/hr/departments` - Abteilungen abrufen
 - ✅ `GET /api/hr/statistics` - HR-Statistiken abrufen
 
 ### Finance-Modul (`/api/finance`)
 
 #### Rechnungsmanagement
+
 - ✅ `GET /api/finance/invoices` - Rechnungen abrufen (mit Filtern)
 - ✅ `GET /api/finance/invoices/:id` - Einzelne Rechnung abrufen
 - ✅ `POST /api/finance/invoices` - Neue Rechnung erstellen
@@ -49,35 +55,42 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 - ✅ `POST /api/finance/invoices/:id/send` - Rechnung versenden
 
 #### Kunden (Debitoren)
+
 - ✅ `GET /api/finance/customers` - Kunden abrufen
 - ✅ `GET /api/finance/customers/:id` - Einzelnen Kunden abrufen
 - ✅ `POST /api/finance/customers` - Neuen Kunden anlegen
 
 #### Lieferanten (Kreditoren)
+
 - ✅ `GET /api/finance/suppliers` - Lieferanten abrufen
 - ✅ `POST /api/finance/suppliers` - Neuen Lieferanten anlegen
 
 #### Zahlungen
+
 - ✅ `GET /api/finance/payments` - Zahlungen abrufen
 - ✅ `POST /api/finance/payments` - Zahlung erfassen
 
 #### Buchhaltung
+
 - ✅ `GET /api/finance/accounts` - Kontenplan abrufen
 - ✅ `GET /api/finance/transactions` - Buchungen abrufen
 - ✅ `POST /api/finance/transactions` - Buchung erstellen
 
 #### Berichte
+
 - ✅ `GET /api/finance/reports/balance-sheet` - Bilanz
 - ✅ `GET /api/finance/reports/profit-loss` - GuV
 - ✅ `GET /api/finance/statistics` - Finanzstatistiken
 
 ### Dokumentation
+
 - ✅ [HR Module API Dokumentation](apps/backend/src/routes/hr/docs/README.md)
 - ✅ [Finance Module API Dokumentation](apps/backend/src/routes/finance/docs/README.md)
 - ✅ README.md aktualisiert mit neuen Endpoints
 - ✅ Integration in main backend index.ts
 
 ### Build & Tests
+
 - ✅ TypeScript-Kompilierung erfolgreich
 - ✅ Backend baut ohne Fehler
 
@@ -88,11 +101,11 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 ### Phase 2: Datenbank-Schema & Models
 
 #### HR-Datenbank
+
 - [ ] **employees** - Mitarbeiter-Stammdaten
   - id, employee_number, first_name, last_name, email, phone
   - department, position, status, start_date, end_date
   - created_at, updated_at
-  
 - [ ] **employee_contracts** - Verträge
   - id, employee_id, contract_type, start_date, end_date
   - salary, working_hours, probation_period
@@ -123,6 +136,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
   - created_at, updated_at
 
 #### Finance-Datenbank
+
 - [ ] **invoices** - Rechnungen
   - id, invoice_number, customer_id, issue_date, due_date
   - amount, tax_amount, gross_amount, currency
@@ -162,6 +176,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
   - status, reference, created_at, updated_at
 
 #### Migration-Scripts
+
 - [ ] Erstellen von Knex/Prisma Migrations
 - [ ] Seed-Daten für Entwicklung
 - [ ] Rollback-Strategien
@@ -169,11 +184,11 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 ### Phase 3: Backend Services & Business Logic
 
 #### HR Services
+
 - [ ] **EmployeeService**
   - CRUD-Operationen mit Datenbank
   - Validierung mit Zod-Schemas
   - Geschäftslogik (Mitarbeiter-Nr. generieren, Status-Übergänge)
-  
 - [ ] **TimeTrackingService**
   - Zeiterfassung mit Validierung (ArbZG-konform)
   - Pausen-Berechnung
@@ -192,6 +207,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
   - Schnittstelle zu externem Lohnsystem
 
 #### Finance Services
+
 - [ ] **InvoiceService**
   - CRUD mit Datenbank
   - Automatische Rechnungs-Nr. Generierung
@@ -204,7 +220,6 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
   - Debitoren-Verwaltung
   - Kreditoren-Verwaltung
   - Automatisches Matching von Zahlungen
-  
 - [ ] **PaymentService**
   - Zahlungserfassung
   - Zahlungsabgleich
@@ -220,6 +235,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 ### Phase 4: Frontend-Integration
 
 #### HR Frontend
+
 - [ ] Aktualisierung `EmployeeList.tsx` mit echten API-Calls
 - [ ] CRUD-Dialoge für Mitarbeiter
 - [ ] Zeiterfassungs-UI
@@ -233,6 +249,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 - [ ] Dashboard mit HR-Statistiken
 
 #### Finance Frontend
+
 - [ ] Aktualisierung `InvoiceList.tsx` mit echten API-Calls
 - [ ] CRUD-Dialoge für Rechnungen
   - Positions-Editor
@@ -254,6 +271,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 ### Phase 5: Erweiterte Features
 
 #### HR
+
 - [ ] Workflow-Automatisierung
   - Onboarding-Prozesse
   - Genehmigungs-Workflows
@@ -264,6 +282,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
   - Zeugnisse
 
 #### Finance
+
 - [ ] OCR für Eingangsrechnungen
 - [ ] XRechnung/ZUGFeRD-Unterstützung
 - [ ] Automatisches Mahnwesen
@@ -275,16 +294,19 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 ### Phase 6: Testing & Qualitätssicherung
 
 #### Backend Tests
+
 - [ ] Unit-Tests für Services
 - [ ] Integration-Tests für API-Endpoints
 - [ ] E2E-Tests für kritische Workflows
 
 #### Frontend Tests
+
 - [ ] Component-Tests mit Testing Library
 - [ ] Integration-Tests
 - [ ] E2E-Tests mit Playwright
 
 #### Security
+
 - [ ] Authentifizierung & Autorisierung
 - [ ] RBAC (Role-Based Access Control)
 - [ ] Datenschutz (DSGVO-konform)
@@ -292,6 +314,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 - [ ] Input-Validierung
 
 #### Performance
+
 - [ ] Datenbank-Indizes optimieren
 - [ ] API-Response-Caching
 - [ ] Frontend-Optimierung (Code-Splitting, Lazy Loading)
@@ -301,6 +324,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 ## 🎯 Nächste konkrete Schritte
 
 ### Sofort (Prio 1)
+
 1. **Datenbank-Schema Design finalisieren**
    - ER-Diagramm erstellen
    - Relationships definieren
@@ -316,6 +340,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
    - Schrittweise erweitern
 
 ### Kurzfristig (Prio 2)
+
 4. **Frontend-Komponenten mit APIs verbinden**
    - EmployeeList mit echten Daten
    - InvoiceList mit echten Daten
@@ -325,6 +350,7 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
    - API-Tests für Finance-Endpoints
 
 ### Mittelfristig (Prio 3)
+
 6. **Erweiterte Features**
    - Workflow-Automatisierung
    - PDF-Generierung
@@ -340,18 +366,21 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 ## 📋 Offene Fragen & Entscheidungen
 
 ### Technische Entscheidungen
+
 - [ ] Welches ORM/Query-Builder? (Prisma, Knex, TypeORM)
 - [ ] PDF-Generierung: Welche Library? (pdfkit, puppeteer)
 - [ ] E-Mail-Versand: Welcher Service? (nodemailer, sendgrid)
 - [ ] Datei-Upload: Lokales Filesystem oder S3-kompatibel?
 
 ### Business-Logik
+
 - [ ] Genehmigungs-Workflows: Wer kann was genehmigen?
 - [ ] Urlaubsberechnung: Welche Regeln gelten?
 - [ ] Rechnungs-Nummerierung: Welches Schema?
 - [ ] Mahnwesen: Welche Mahnstufen?
 
 ### Compliance
+
 - [ ] DSGVO: Welche Daten müssen besonders geschützt werden?
 - [ ] GoBD: Welche Anforderungen an Buchführung?
 - [ ] ArbZG: Welche Validierungen für Zeiterfassung?
@@ -361,12 +390,14 @@ Die Integration der HR- und Finance-Module wurde erfolgreich begonnen. Die Backe
 ## 📚 Ressourcen & Links
 
 ### Dokumentation
+
 - [HR Module API](apps/backend/src/routes/hr/docs/README.md)
 - [Finance Module API](apps/backend/src/routes/finance/docs/README.md)
 - [HR Konzept](docs/concept/_8_PERSONAL%20&%20HR.md)
 - [Finance Konzept](docs/concept/_3_0_FINANZEN%20&%20CONTROLLING.md)
 
 ### Gesetzliche Grundlagen
+
 - **Arbeitszeiterfassung:** BAG 1 ABR 22/21, EuGH C-55/18
 - **Urlaubsrecht:** BUrlG
 - **Datenschutz:** DSGVO Art. 6/9, § 26 BDSG

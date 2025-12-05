@@ -21,7 +21,7 @@ const router = Router();
 router.get("/employees", async (req: Request, res: Response) => {
   try {
     const { department, status, search } = req.query;
-    
+
     // TODO: Replace with actual database query
     const mockEmployees = [
       {
@@ -63,12 +63,12 @@ router.get("/employees", async (req: Request, res: Response) => {
     let filteredEmployees = mockEmployees;
     if (department) {
       filteredEmployees = filteredEmployees.filter(
-        (emp) => emp.department === department
+        (emp) => emp.department === department,
       );
     }
     if (status) {
       filteredEmployees = filteredEmployees.filter(
-        (emp) => emp.status === status
+        (emp) => emp.status === status,
       );
     }
     if (search) {
@@ -77,7 +77,7 @@ router.get("/employees", async (req: Request, res: Response) => {
         (emp) =>
           emp.firstName.toLowerCase().includes(searchLower) ||
           emp.lastName.toLowerCase().includes(searchLower) ||
-          emp.email.toLowerCase().includes(searchLower)
+          emp.email.toLowerCase().includes(searchLower),
       );
     }
 
@@ -370,49 +370,55 @@ router.post("/leave-requests", async (req: Request, res: Response) => {
  * PUT /api/hr/leave-requests/:id/approve
  * Approve a leave request
  */
-router.put("/leave-requests/:id/approve", async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
+router.put(
+  "/leave-requests/:id/approve",
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
 
-    // TODO: Update status in database
-    // TODO: Deduct from leave balance
+      // TODO: Update status in database
+      // TODO: Deduct from leave balance
 
-    res.json({
-      success: true,
-      message: "Leave request approved successfully",
-    });
-  } catch (error) {
-    console.error("[HR] Error approving leave request:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to approve leave request",
-    });
-  }
-});
+      res.json({
+        success: true,
+        message: "Leave request approved successfully",
+      });
+    } catch (error) {
+      console.error("[HR] Error approving leave request:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to approve leave request",
+      });
+    }
+  },
+);
 
 /**
  * PUT /api/hr/leave-requests/:id/reject
  * Reject a leave request
  */
-router.put("/leave-requests/:id/reject", async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { reason } = req.body;
+router.put(
+  "/leave-requests/:id/reject",
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body;
 
-    // TODO: Update status in database
+      // TODO: Update status in database
 
-    res.json({
-      success: true,
-      message: "Leave request rejected",
-    });
-  } catch (error) {
-    console.error("[HR] Error rejecting leave request:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to reject leave request",
-    });
-  }
-});
+      res.json({
+        success: true,
+        message: "Leave request rejected",
+      });
+    } catch (error) {
+      console.error("[HR] Error rejecting leave request:", error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to reject leave request",
+      });
+    }
+  },
+);
 
 // ============================================================================
 // PAYROLL
@@ -460,9 +466,19 @@ router.get("/payroll/:employeeId", async (req: Request, res: Response) => {
 router.get("/departments", async (_req: Request, res: Response) => {
   try {
     const mockDepartments = [
-      { id: "1", name: "Entwicklung", manager: "Max Mustermann", employeeCount: 15 },
+      {
+        id: "1",
+        name: "Entwicklung",
+        manager: "Max Mustermann",
+        employeeCount: 15,
+      },
       { id: "2", name: "Vertrieb", manager: "Anna Schmidt", employeeCount: 8 },
-      { id: "3", name: "Marketing", manager: "Thomas Müller", employeeCount: 5 },
+      {
+        id: "3",
+        name: "Marketing",
+        manager: "Thomas Müller",
+        employeeCount: 5,
+      },
       { id: "4", name: "Personal", manager: "Lisa Weber", employeeCount: 3 },
     ];
 

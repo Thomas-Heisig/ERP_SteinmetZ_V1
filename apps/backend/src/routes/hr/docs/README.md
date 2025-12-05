@@ -26,16 +26,19 @@ Authorization: Bearer <your-token>
 Listet alle Mitarbeiter mit optionalen Filtern auf.
 
 **Query-Parameter:**
+
 - `department` (optional): Filter nach Abteilung
 - `status` (optional): Filter nach Status (`active`, `inactive`, `on_leave`)
 - `search` (optional): Suche nach Name oder E-Mail
 
 **Beispiel-Request:**
+
 ```bash
 GET /api/hr/employees?department=Entwicklung&status=active
 ```
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -61,6 +64,7 @@ GET /api/hr/employees?department=Entwicklung&status=active
 Ruft Details eines einzelnen Mitarbeiters ab.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -96,6 +100,7 @@ Ruft Details eines einzelnen Mitarbeiters ab.
 Erstellt einen neuen Mitarbeiter.
 
 **Request-Body:**
+
 ```json
 {
   "firstName": "Anna",
@@ -120,6 +125,7 @@ Erstellt einen neuen Mitarbeiter.
 ```
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -139,6 +145,7 @@ Erstellt einen neuen Mitarbeiter.
 Aktualisiert einen Mitarbeiter.
 
 **Request-Body:** (beliebige Felder)
+
 ```json
 {
   "position": "Lead Developer",
@@ -151,6 +158,7 @@ Aktualisiert einen Mitarbeiter.
 Deaktiviert einen Mitarbeiter (Soft Delete).
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -165,11 +173,13 @@ Deaktiviert einen Mitarbeiter (Soft Delete).
 Listet Zeiteinträge mit optionalen Filtern auf.
 
 **Query-Parameter:**
+
 - `employeeId` (optional): Filter nach Mitarbeiter-ID
 - `startDate` (optional): Startdatum (ISO 8601)
 - `endDate` (optional): Enddatum (ISO 8601)
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -194,6 +204,7 @@ Listet Zeiteinträge mit optionalen Filtern auf.
 Erstellt einen neuen Zeiteintrag.
 
 **Request-Body:**
+
 ```json
 {
   "employeeId": "1",
@@ -212,10 +223,12 @@ Erstellt einen neuen Zeiteintrag.
 Listet Urlaubsanträge auf.
 
 **Query-Parameter:**
+
 - `employeeId` (optional): Filter nach Mitarbeiter-ID
 - `status` (optional): Filter nach Status (`pending`, `approved`, `rejected`)
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -241,6 +254,7 @@ Listet Urlaubsanträge auf.
 Erstellt einen neuen Urlaubsantrag.
 
 **Request-Body:**
+
 ```json
 {
   "employeeId": "1",
@@ -260,6 +274,7 @@ Genehmigt einen Urlaubsantrag.
 Lehnt einen Urlaubsantrag ab.
 
 **Request-Body:**
+
 ```json
 {
   "reason": "Keine Kapazität in diesem Zeitraum"
@@ -273,6 +288,7 @@ Lehnt einen Urlaubsantrag ab.
 Ruft Gehaltsabrechnungsinformationen für einen Mitarbeiter ab.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -294,6 +310,7 @@ Ruft Gehaltsabrechnungsinformationen für einen Mitarbeiter ab.
 Listet alle Abteilungen auf.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -316,6 +333,7 @@ Listet alle Abteilungen auf.
 Ruft HR-Statistiken ab.
 
 **Beispiel-Response:**
+
 ```json
 {
   "success": true,
@@ -343,16 +361,19 @@ Die folgenden Rollen haben Zugriff auf das HR-Modul:
 ## 📝 Hinweise
 
 ### Zeiterfassung
+
 - Die Zeiterfassung muss den gesetzlichen Anforderungen entsprechen (BAG-Beschluss, EuGH)
 - Alle Zeiteinträge sind unveränderlich (nur Korrekturen mit Audit-Trail)
 - Pausenzeiten müssen korrekt erfasst werden
 
 ### Urlaubsverwaltung
+
 - Urlaubsanspruch wird automatisch berechnet (BUrlG)
 - Resturlaub wird automatisch übertragen
 - Genehmigungsworkflows sind konfigurierbar
 
 ### Datenschutz
+
 - Alle personenbezogenen Daten werden nach DSGVO/BDSG verarbeitet
 - Zugriff nur nach Need-to-Know-Prinzip
 - Audit-Trail für alle Änderungen

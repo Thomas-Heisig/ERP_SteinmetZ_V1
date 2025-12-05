@@ -35,6 +35,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 ### API-Endpunkte
 
 #### System & Core
+
 - `GET /api/health` - System Health Status
 - `GET /api/functions` - Vollständiger Funktionskatalog
 - `GET /api/functions/roots` - Top-Level Kategorien (11 Bereiche)
@@ -45,6 +46,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - `POST /api/quickchat` - QuickChat AI Assistant
 
 #### HR Module (Personalwesen) ✨ NEU
+
 - `GET /api/hr/employees` - Mitarbeiterliste
 - `POST /api/hr/employees` - Mitarbeiter anlegen
 - `GET /api/hr/time-entries` - Zeiterfassung
@@ -54,6 +56,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - `GET /api/hr/statistics` - HR-Statistiken
 
 #### Finance Module (Finanzen & Controlling) ✨ NEU
+
 - `GET /api/finance/invoices` - Rechnungsverwaltung
 - `POST /api/finance/invoices` - Rechnung erstellen
 - `GET /api/finance/customers` - Kundenverwaltung (Debitoren)
