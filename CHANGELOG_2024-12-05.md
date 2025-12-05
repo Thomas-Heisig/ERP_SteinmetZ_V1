@@ -37,6 +37,7 @@ Die Aufgabe war: "Korrigiere alle Fehler der issues Dateien und dokumentiere das
 ### Durchgeführte Korrekturen
 
 #### 1. Dateinamen-Korrektur
+
 ```bash
 git mv docs/concept/_3_2_KENZAHLEN.md docs/concept/_3_2_KENNZAHLEN.md
 ```
@@ -44,6 +45,7 @@ git mv docs/concept/_3_2_KENZAHLEN.md docs/concept/_3_2_KENNZAHLEN.md
 #### 2. ISSUES.md - Statistiken aktualisiert
 
 **Vorher:**
+
 ```markdown
 ### Nach Priorität
 
@@ -57,6 +59,7 @@ git mv docs/concept/_3_2_KENZAHLEN.md docs/concept/_3_2_KENNZAHLEN.md
 ```
 
 **Nachher:**
+
 ```markdown
 ### Nach Priorität
 
@@ -73,6 +76,7 @@ git mv docs/concept/_3_2_KENZAHLEN.md docs/concept/_3_2_KENNZAHLEN.md
 #### 3. ISSUES.md - Änderungshistorie erweitert
 
 Neuer Eintrag für den 5. Dezember 2024:
+
 ```markdown
 ### 5. Dezember 2024
 
@@ -94,6 +98,7 @@ Neuer Eintrag für den 5. Dezember 2024:
 Die korrekten Issue-Zählungen wurden durch manuelle Analyse der Status-Angaben ermittelt:
 
 **Behobene Issues (6):**
+
 - ISSUE-001: TypeScript Build schlägt fehl ✅
 - ISSUE-002: Fehlende .env Dateien ✅
 - ISSUE-003: Fehlende Test-Infrastruktur ✅
@@ -102,9 +107,11 @@ Die korrekten Issue-Zählungen wurden durch manuelle Analyse der Status-Angaben 
 - ISSUE-014: Git .gitignore unvollständig ✅
 
 **Teilweise behoben (1):**
+
 - ISSUE-005: Inkonsistente Error-Responses vom Backend 🟡
 
 **Offene Issues (9):**
+
 - ISSUE-006: Fehlende Input-Validierung auf Backend 🟠
 - ISSUE-008: Fehlende Monitoring & Observability 🟠
 - ISSUE-009: Ungenutzte Dependencies 🟡
@@ -126,6 +133,7 @@ Die korrekten Issue-Zählungen wurden durch manuelle Analyse der Status-Angaben 
 ## ✅ Ergebnis
 
 Alle Fehler in den Issues-Dateien wurden korrigiert:
+
 - ✅ Rechtschreibfehler im Dateinamen behoben
 - ✅ Issue-Statistiken korrigiert und aktualisiert
 - ✅ Prioritätsübersicht vervollständigt
