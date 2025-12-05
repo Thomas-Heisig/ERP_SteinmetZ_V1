@@ -241,7 +241,9 @@ npm test:coverage     # Mit Coverage-Report
 
 - **[README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)** - Vollständige Projekt-Dokumentation
 - **[TODO.md](TODO.md)** - Priorisierte Aufgabenliste
-- **[ISSUES.md](ISSUES.md)** - Bekannte Probleme & Technical Debt
+- **[ISSUES.md](ISSUES.md)** - Aktive Issues & Technical Debt
+- **[CHANGELOG.md](CHANGELOG.md)** - Projekt-Changelog mit allen Versionen
+- **[ARCHIVE.md](ARCHIVE.md)** - Behobene Issues & alte Changelogs
 
 ### Architektur & Konzept
 

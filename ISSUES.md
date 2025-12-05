@@ -1,253 +1,24 @@
-# ERP SteinmetZ - Bekannte Probleme & Technical Debt
+# ERP SteinmetZ - Aktive Issues
 
 **Stand**: Dezember 2024  
 **Version**: 0.2.0
 
-Dieses Dokument listet alle bekannten Probleme, Bugs und Technical Debt im Projekt auf.
+Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical Debt im Projekt auf.
+
+> **Hinweis**: Behobene Issues wurden nach [ARCHIVE.md](ARCHIVE.md) verschoben.
 
 ---
 
-## 🔴 Kritische Issues (Müssen sofort behoben werden)
+## 🟠 Hohe Priorität (Sollten bald behoben werden)
 
-### ISSUE-001: TypeScript Build schlägt fehl ✅
-
-**Status**: ✅ Behoben | **Priorität**: Kritisch | **Erstellt**: 2024-12-03 | **Behoben**: 2024-12-03
-
-**Beschreibung**:
-Der TypeScript-Build schlägt mit zahlreichen Type-Fehlern fehl. Hauptprobleme:
-
-**Fehlerdetails**:
-
-```
-- Cannot find name 'process' (~50 Instanzen)
-- Cannot find module 'express' or its corresponding type declarations
-- Cannot find module 'multer' or its corresponding type declarations
-- Cannot find module 'node:fs', 'node:path', 'node:url'
-- Cannot find module '@anthropic-ai/sdk'
-- Cannot find module 'openai'
-- Cannot find namespace 'NodeJS'
-- Parameter implicitly has 'any' type (~100+ Instanzen)
-```
-
-**Betroffene Dateien**:
-
-- `apps/backend/src/index.ts`
-- `apps/backend/src/routes/**/*.ts` (alle Router)
-- `apps/backend/src/middleware/**/*.ts`
-- `apps/backend/src/routes/ai/**/*.ts` (alle AI-Provider)
-
-**Ursache**:
-
-1. @types/node fehlt oder ist nicht korrekt konfiguriert im Backend-tsconfig.json
-2. Type-Definitionen für Express und andere Libraries nicht gefunden
-3. Strikte TypeScript-Konfiguration ohne explizite Types
-
-**Lösungsansatz**:
-
-1. @types/node explizit in apps/backend/package.json dependencies aufnehmen
-2. tsconfig.json im Backend anpassen: `"types": ["node"]`
-3. Alle impliziten any-Types explizit typisieren
-4. Express Request/Response Types importieren und verwenden
-
-**Lösung**:
-
-1. ✅ Backend tsconfig.json aktualisiert: `strict: false`, `noImplicitAny: false` gesetzt
-2. ✅ Alle `fetch().json()` Aufrufe mit `as any` Type-Assertions versehen
-3. ✅ SipgateClient Type-Assertion korrigiert
-4. ✅ Build erfolgreich: Backend und Frontend bauen ohne Fehler
-
-**Auswirkung**:
-
-- ✅ Build läuft erfolgreich
-- ✅ Production-Deployment jetzt möglich
-- ⚠️ Strikte TypeScript-Prüfung noch nicht aktiviert (siehe ISSUE-011)
-
-**Aufwand**: 2 Stunden (tatsächlich)
-
----
-
-### ISSUE-002: Fehlende .env Dateien ✅
-
-**Status**: ✅ Behoben | **Priorität**: Kritisch | **Erstellt**: 2024-12-03 | **Behoben**: 2024-12-04
-
-**Beschreibung**:
-Die .env.example Dateien fehlen im Repository. Entwickler wissen nicht, welche Umgebungsvariablen benötigt werden.
-
-**Betroffene Bereiche**:
-
-- Backend: `apps/backend/.env.example`
-- Frontend: `apps/frontend/.env.example`
-
-**Erforderliche Umgebungsvariablen (Backend)**:
-
-```
-# Server
-PORT=3000
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:5173
-
-# Database
-DATABASE_URL=sqlite:./data/erp.db
-# oder für PostgreSQL:
-# DATABASE_URL=postgresql://user:password@localhost:5432/erp_steinmetz
-
-# AI Providers
-AI_PROVIDER=ollama
-AI_DEFAULT_MODEL=qwen3:4b
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-AZURE_OPENAI_API_KEY=...
-AZURE_OPENAI_ENDPOINT=...
-AZURE_OPENAI_DEPLOYMENT=...
-OLLAMA_BASE_URL=http://localhost:11434
-
-# Functions Catalog
-FUNCTIONS_DIR=../../docs/functions
-FUNCTIONS_AUTOLOAD=1
-FUNCTIONS_AUTOPERSIST=1
-FUNCTIONS_WATCH=1
-
-# Authentication
-JWT_SECRET=your-secret-key-here
-ADMIN_TOKEN=admin-token-here
-SESSION_SECRET=session-secret-here
-
-# Optional
-LOG_LEVEL=info
-```
-
-**Erforderliche Umgebungsvariablen (Frontend)**:
-
-```
-VITE_API_URL=http://localhost:3000
-VITE_WS_URL=ws://localhost:3000
-```
-
-**Lösung**:
-
-1. ✅ Backend .env.example vorhanden und vollständig dokumentiert
-2. ✅ Frontend .env.example vorhanden
-3. ✅ Alle erforderlichen Variablen sind dokumentiert in ENVIRONMENT_VARIABLES.md
-4. ✅ Developer Onboarding Guide erstellt mit Setup-Anleitung
-
-**Auswirkung**: Entwickler können System ohne Probleme starten
-
-**Aufwand**: Bereits erledigt
-
----
-
-### ISSUE-003: Fehlende Test-Infrastruktur ✅
-
-**Status**: ✅ Behoben | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Behoben**: 2024-12-03
-
-**Beschreibung**:
-Es gibt keine automatisierten Tests. Keine Unit-Tests, keine Integration-Tests, keine E2E-Tests.
-
-**Fehlende Test-Tools**:
-
-- Test-Framework (Jest / Vitest)
-- Testing-Library (@testing-library/react)
-- Test-Scripts in package.json
-- CI-Integration
-- Code-Coverage-Reporting
-
-**Konsequenzen**:
-
-- Keine Regression-Detection
-- Refactoring ist riskant
-- Code-Quality nicht messbar
-- Bugs werden erst in Production entdeckt
-
-**Lösung**:
-
-1. ✅ Vitest konfiguriert für Backend und Frontend
-2. ✅ Test-Scripts vorhanden (`npm test`, `npm test:watch`, `npm test:coverage`)
-3. ✅ 30 Tests implementiert (22 Backend, 8 Frontend) - alle passing
-4. ✅ Code-Coverage-Reporting aktiviert
-5. ✅ Testing-Library für React-Komponenten
-
-**Aufwand**: Bereits erledigt (laut TODO.md)
-
----
-
-### ISSUE-017: Build-Fehler durch fehlende @testing-library/dom ✅
-
-**Status**: ✅ Behoben | **Priorität**: Kritisch | **Erstellt**: 2024-12-05 | **Behoben**: 2024-12-05
-
-**Beschreibung**:
-TypeScript-Build schlägt fehl mit Fehlern in Test-Dateien. Tests können nicht ausgeführt werden aufgrund fehlender Peer-Dependency.
-
-**Fehlerdetails**:
-
-```
-error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
-Error: Cannot find module '@testing-library/dom'
-```
-
-**Betroffene Dateien**:
-
-- `apps/frontend/src/components/ui/Button.test.tsx`
-- `apps/frontend/src/components/ui/ErrorBoundary.test.tsx`
-- `apps/frontend/src/components/ui/Skeleton.test.tsx`
-
-**Ursache**:
-
-React Testing Library v16 benötigt `@testing-library/dom` als Peer-Dependency, diese war aber nicht in den Frontend-Dependencies vorhanden.
-
-**Lösung**:
-
-1. ✅ `@testing-library/dom` als devDependency zu `apps/frontend/package.json` hinzugefügt
-2. ✅ TypeScript-Build läuft nun erfolgreich durch
-3. ✅ Backend-Tests: 42/42 passing
-4. ✅ Frontend-Tests: 37/50 passing (13 pre-existing test failures related to CSS modules, non-blocking)
-
-**Auswirkung**:
-
-- ✅ Build funktioniert wieder
-- ✅ Tests können ausgeführt werden
-- ⚠️ Einige Frontend-Tests benötigen Anpassung an CSS-Module-Hashing
-
-**Aufwand**: 30 Minuten
-
----
-
-## 🟠 Wichtige Issues (Sollten bald behoben werden)
-
-### ISSUE-004: Keine Error-Boundaries im Frontend ✅
-
-**Status**: ✅ Behoben | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Behoben**: 2024-12-04
-
-**Beschreibung**:
-Das Frontend hat keine Error-Boundaries. Ein Runtime-Error in einer Komponente führt zum Crash der ganzen App.
-
-**Betroffene Bereiche**:
-
-- Alle Komponenten ohne Error-Handling
-- Besonders kritisch: Dashboard, FunctionsCatalog, QuickChat
-
-**Lösung**:
-
-1. ✅ ErrorBoundary-Komponente existiert bereits (mit Tests)
-2. ✅ ErrorBoundary in main.tsx um gesamte App gewickelt
-3. ✅ ErrorBoundary zu allen Hauptrouten hinzugefügt (Login, Dashboard, Catalog, AI)
-4. ✅ Fallback-UI mit Fehlermeldung und Reset-Button vorhanden
-5. ✅ Error-Logging implementiert (console.error)
-
-**Auswirkung**: App ist nun gegen Runtime-Fehler geschützt
-
-**Aufwand**: 1 Stunde (Komponente existierte bereits, nur Integration nötig)
-
----
-
-### ISSUE-005: Inkonsistente Error-Responses vom Backend 📡
+### ISSUE-005: Inkonsistente Error-Responses vom Backend 🔄
 
 **Status**: 🟡 Teilweise behoben | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2024-12-04
 
 **Beschreibung**:
-API-Fehler haben kein einheitliches Format. Manche Router geben `{ error: "..." }` zurück, andere `{ message: "..." }`, wieder andere nur Status-Codes.
+API-Fehler haben kein einheitliches Format. Auth-Middleware wurde bereits standardisiert, aber viele Router geben immer noch unterschiedliche Error-Formate zurück.
 
 **Beispiele**:
-
 ```javascript
 // Router A
 res.status(404).json({ error: "Not found" });
@@ -259,17 +30,15 @@ res.status(500).json({ message: "Internal error", details: {...} });
 res.status(400).send("Bad request");
 ```
 
-**Lösung**:
-
+**Lösung (teilweise)**:
 1. ✅ Standardisiertes Error-Response-Format definiert in `errorResponse.ts`
-2. ✅ Helper-Funktionen erstellt (sendBadRequest, sendUnauthorized, sendForbidden, etc.)
-3. ✅ Error-Codes definiert (BAD_REQUEST, UNAUTHORIZED, VALIDATION_ERROR, etc.)
-4. ✅ authMiddleware komplett aktualisiert mit standardisierten Responses
+2. ✅ Helper-Funktionen erstellt (sendBadRequest, sendUnauthorized, etc.)
+3. ✅ Error-Codes definiert (BAD_REQUEST, UNAUTHORIZED, etc.)
+4. ✅ authMiddleware komplett aktualisiert
 5. ✅ rateLimitLogin Middleware aktualisiert
-6. ⚠️ Weitere Router müssen noch aktualisiert werden (AI, Functions, etc.)
+6. ⚠️ **Weitere Router müssen noch aktualisiert werden** (AI, Functions, etc.)
 
-**Format**:
-
+**Standardformat**:
 ```typescript
 {
   success: false,
@@ -283,9 +52,9 @@ res.status(400).send("Bad request");
 }
 ```
 
-**Auswirkung**: Auth-Endpunkte haben jetzt konsistente Fehlerbehandlung
+**Auswirkung**: Inkonsistente API-Responses erschweren Frontend-Integration
 
-**Aufwand**: 2 Stunden (teilweise erledigt, weitere Router folgen)
+**Aufwand**: 4-6 Stunden für alle verbleibenden Router
 
 ---
 
@@ -297,21 +66,18 @@ res.status(400).send("Bad request");
 Viele API-Endpunkte validieren Eingaben nicht oder nur unzureichend. Malformed Requests können zu unerwarteten Fehlern führen.
 
 **Betroffene Routen**:
-
 - POST /api/ai/chat
-- POST /api/ai-annotator/nodes/:id/\*
+- POST /api/ai-annotator/nodes/:id/*
 - POST /api/functions/menu
 - Und viele mehr
 
 **Lösungsansatz**:
-
 1. Zod-Schemas für alle Request-Bodies definieren
 2. Validation-Middleware erstellen
 3. In allen Routen einsetzen
 4. Klare Validation-Error-Messages
 
 **Beispiel**:
-
 ```typescript
 const chatMessageSchema = z.object({
   message: z.string().min(1).max(5000),
@@ -324,41 +90,9 @@ router.post("/chat", validate(chatMessageSchema), async (req, res) => {
 });
 ```
 
-**Auswirkung**: Security-Risiko, instabile API
+**Auswirkung**: **Security-Risiko**, instabile API
 
 **Aufwand**: 2-3 Tage
-
----
-
-### ISSUE-007: Keine Rate-Limiting auf AI-Endpoints 🚦
-
-**Status**: ✅ Behoben | **Priorität**: Mittel | **Erstellt**: 2024-12-03 | **Behoben**: 2024-12-04
-
-**Beschreibung**:
-Die AI-Endpunkte haben kein Rate-Limiting. Ein User könnte unlimitiert teure AI-API-Calls auslösen.
-
-**Lösung**:
-
-1. ✅ Rate-Limiter in `rateLimiters.ts` implementiert:
-   - `aiRateLimiter`: 20 Requests pro 15 Minuten
-   - `strictAiRateLimiter`: 5 Requests pro 15 Minuten für teure Operationen
-   - `audioRateLimiter`: 10 Requests pro Stunde
-   - `generalRateLimiter`: 100 Requests pro 15 Minuten
-2. ✅ Alle verwenden standardisierte Error-Responses mit Retry-After Header
-3. ✅ Konfigurierbar über SKIP_RATE_LIMIT Umgebungsvariable für Development
-4. ✅ Angewendet auf folgende Routen:
-   - POST /api/ai/chat (aiRateLimiter)
-   - POST /api/ai/chat/:sessionId/message (aiRateLimiter)
-   - POST /api/ai/audio/transcribe (audioRateLimiter)
-   - POST /api/ai/translate (aiRateLimiter)
-   - POST /api/ai-annotator/nodes/:id/generate-meta (strictAiRateLimiter)
-   - POST /api/ai-annotator/nodes/:id/generate-rule (strictAiRateLimiter)
-   - POST /api/ai-annotator/nodes/:id/generate-form (strictAiRateLimiter)
-   - POST /api/ai-annotator/batch (strictAiRateLimiter)
-
-**Auswirkung**: AI-Endpunkte sind nun vor Missbrauch geschützt, API-Kosten kontrollierbar
-
-**Aufwand**: 2 Stunden
 
 ---
 
@@ -370,7 +104,6 @@ Die AI-Endpunkte haben kein Rate-Limiting. Ein User könnte unlimitiert teure AI
 Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tracking.
 
 **Fehlende Features**:
-
 - Structured Logging (Pino ist da, aber nicht überall genutzt)
 - Metrics (Prometheus-Exporter)
 - Distributed Tracing (OpenTelemetry)
@@ -379,7 +112,6 @@ Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tr
 - Log-Aggregation (ELK, Loki)
 
 **Konsequenzen**:
-
 - Schwierig, Probleme in Production zu debuggen
 - Keine Performance-Insights
 - Keine Anomalie-Detection
@@ -398,20 +130,16 @@ Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tr
 **Beschreibung**:
 Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veraltet.
 
-**Beispiele**:
+**Analyse durchgeführt (5. Dezember 2024)**:
+- `monaco-editor` → **WIRD VERWENDET** in `apps/frontend/src/components/FunctionsCatalog/features/code/`
+- Keine offensichtlich ungenutzten Dependencies gefunden
 
-- `monaco-editor` in root package.json (sollte in Frontend sein)
-- Möglicherweise veraltete AI-Provider-SDKs
-- Dev-Dependencies, die nicht mehr benötigt werden
+**Empfehlung**:
+- Regelmäßige Dependency-Audits mit `npm list`
+- `npm audit` für Security-Vulnerabilities
+- Update auf neueste Versionen wo möglich
 
-**Lösungsansatz**:
-
-1. `npm list` ausführen und ungenutzte Packages identifizieren
-2. Dependency-Audit mit `npm audit`
-3. Update auf neueste Versionen wo möglich
-4. Ungenutzte entfernen
-
-**Auswirkung**: Bundle-Size, Security-Vulnerabilities
+**Auswirkung**: Bundle-Size, Security-Vulnerabilities (minimal)
 
 **Aufwand**: 2-3 Stunden
 
@@ -424,13 +152,16 @@ Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veral
 **Beschreibung**:
 Viele console.log() Statements im Code, die in Production nicht sein sollten.
 
-**Betroffen**:
+**Analyse (5. Dezember 2024)**:
+- **Backend**: 153 console.log Statements
+- **Frontend**: 6 console.log Statements
+- **Gesamt**: 159 Instanzen
 
+**Betroffen**:
 - Backend: `apps/backend/src/**/*.ts`
 - Frontend: `apps/frontend/src/**/*.tsx`
 
 **Lösungsansatz**:
-
 1. ESLint-Rule aktivieren: `no-console: ["error", { allow: ["warn", "error"] }]`
 2. Logger-Service verwenden (Backend hat Pino)
 3. Frontend: Conditional Logging basierend auf ENV
@@ -449,17 +180,14 @@ Viele console.log() Statements im Code, die in Production nicht sein sollten.
 TypeScript läuft nicht im Strict-Mode. Viele potentielle Fehler werden nicht erkannt.
 
 **Aktuelle Konfiguration**:
-
 ```json
 {
   "strict": false,
   "noImplicitAny": false
-  // etc.
 }
 ```
 
 **Empfohlen**:
-
 ```json
 {
   "strict": true,
@@ -487,7 +215,6 @@ TypeScript läuft nicht im Strict-Mode. Viele potentielle Fehler werden nicht er
 Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigation ist unvollständig, Screen-Reader-Support fehlt.
 
 **Probleme**:
-
 - Fehlende ARIA-Labels auf interaktiven Elementen
 - Nicht alle Komponenten keyboard-navigable
 - Unzureichende Focus-Styles
@@ -495,7 +222,6 @@ Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigatio
 - Keine Skip-Links
 
 **Lösungsansatz**:
-
 1. react-axe im Development-Mode
 2. Lighthouse Audits durchführen
 3. Systematisch ARIA-Attribute hinzufügen
@@ -516,14 +242,12 @@ Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigatio
 Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind nicht erklärt.
 
 **Betroffen**:
-
 - Alle Services
 - Komplexe Utilities
 - AI-Provider-Implementierungen
 - Resilience-Patterns
 
 **Lösungsansatz**:
-
 1. JSDoc für alle öffentlichen Functions/Classes
 2. README in komplexen Modulen
 3. Inline-Comments für komplexe Logik
@@ -536,26 +260,6 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 ---
 
 ## 🟢 Kleinere Issues & Verbesserungsvorschläge
-
-### ISSUE-014: Git .gitignore unvollständig 📝
-
-**Status**: ✅ Behoben | **Priorität**: Sehr niedrig | **Erstellt**: 2024-12-03 | **Behoben**: 2024-12-04
-
-**Beschreibung**:
-`.gitignore` könnte erweitert werden.
-
-**Lösung**:
-✅ .gitignore ist bereits vollständig und enthält:
-
-- ✅ `*.log` Files
-- ✅ OS-spezifische Files (`.DS_Store`, `Thumbs.db`)
-- ✅ IDE-spezifische Files (`.vscode/`, `.idea/`)
-- ✅ Temporäre Files (`tmp/`, `temp/`)
-- ✅ Build-Artefakte, node_modules, Datenbanken, Uploads, etc.
-
-**Aufwand**: 0 Minuten (bereits vorhanden)
-
----
 
 ### ISSUE-015: Package.json Scripts fehlen Beschreibungen 📋
 
@@ -579,13 +283,11 @@ Namenskonventionen verwenden oder `package.json` "description" nutzen.
 Keine enforzierten Commit-Message-Conventions. Commits sind unstrukturiert.
 
 **Lösungsansatz**:
-
 1. Conventional Commits einführen
 2. Commitlint installieren
 3. Husky pre-commit hooks
 
 **Beispiel**:
-
 ```
 feat(backend): add rate limiting to AI endpoints
 fix(frontend): resolve theme toggle bug
@@ -599,42 +301,33 @@ docs(readme): update installation instructions
 ## 📊 Issue-Statistiken
 
 ### Nach Priorität
+- 🟠 Hoch: 3 Issues (1 teilweise behoben)
+- 🟡 Mittel: 5 Issues
+- 🟢 Niedrig: 2 Issues
 
-- 🔴 Kritisch: 3 Issues (3 behoben)
-- 🟠 Hoch: 4 Issues (2 behoben, 1 teilweise)
-- 🟡 Mittel: 2 Issues (1 behoben)
-- 🟢 Niedrig: 5 Issues (0 behoben)
-- 🟢 Sehr niedrig: 3 Issues (1 behoben)
-- ✅ Behoben: 7 Issues
-
-**Gesamt**: 17 dokumentierte Issues (9 offen, 1 teilweise, 7 behoben)
+**Gesamt**: 10 aktive Issues (1 teilweise, 9 offen)
 
 ### Nach Kategorie
-
-- **Build & Infrastruktur**: 3
-- **Testing & Quality**: 2
-- **Security**: 2
-- **Code-Quality**: 4
-- **Documentation**: 2
-- **Accessibility**: 1
-- **Developer Experience**: 2
+- **Security**: 1 (ISSUE-006)
+- **Code-Quality**: 4 (ISSUE-005, 010, 011, 013)
+- **Monitoring**: 1 (ISSUE-008)
+- **Dependencies**: 1 (ISSUE-009)
+- **Accessibility**: 1 (ISSUE-012)
+- **Developer Experience**: 2 (ISSUE-015, 016)
 
 ### Geschätzter Gesamtaufwand
+- **Hohe Priorität**: 1-2 Wochen
+- **Mittlere Priorität**: 1-2 Wochen
+- **Niedrige Priorität**: 3-4 Tage
 
-- **Kritische Issues**: 1-2 Wochen
-- **Hohe Priorität**: 2-3 Wochen
-- **Mittlere Priorität**: 3-4 Wochen
-- **Niedrige Priorität**: 1 Woche
-
-**Gesamt**: ~8-10 Wochen für alle Issues
+**Gesamt**: ~3-5 Wochen für alle offenen Issues
 
 ---
 
 ## 🔧 Issue-Management-Prozess
 
 ### Issue-Labels
-
-- `critical` - Blockiert Production-Deployment
+- `high-priority` - Sollte bald behoben werden
 - `bug` - Funktionalität funktioniert nicht wie erwartet
 - `enhancement` - Verbesserung bestehender Features
 - `technical-debt` - Code-Quality-Probleme
@@ -642,70 +335,33 @@ docs(readme): update installation instructions
 - `documentation` - Fehlende/fehlerhafte Doku
 
 ### Workflow
-
 1. **New Issue** → Beschreibung, Priorität, Aufwand-Schätzung
 2. **Triaging** → Validierung, Priorität bestätigen
 3. **In Progress** → Entwickler zugewiesen
 4. **Review** → Code-Review, Testing
-5. **Done** → Deployed, dokumentiert, Issue geschlossen
+5. **Done** → Deployed, dokumentiert, nach ARCHIVE.md verschoben
 
 ### Reporting
-
 Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ---
 
-**Letzte Aktualisierung**: 5. Dezember 2024 (Abend)
-**Maintainer**: Thomas Heisig  
-**Nächster Review**: Januar 2025
+## 📝 Nächste Schritte
+
+### Empfohlene Reihenfolge
+1. **ISSUE-006** (Input-Validierung) - Security-Risiko
+2. **ISSUE-005** (Error-Responses standardisieren) - API-Konsistenz
+3. **ISSUE-010** (Console.logs entfernen) - Code-Qualität
+4. **ISSUE-008** (Monitoring) - Production-Readiness
+5. Weitere nach Bedarf
 
 ---
 
-## 📝 Änderungshistorie
+**Letzte Aktualisierung**: 5. Dezember 2024  
+**Maintainer**: Thomas Heisig  
+**Nächster Review**: Januar 2025
 
-### 5. Dezember 2024
-
-- 📝 **Dokumentationsfehler korrigiert:**
-  - Dateiname `_3_2_KENZAHLEN.md` → `_3_2_KENNZAHLEN.md` umbenannt (Rechtschreibfehler)
-  - Issue-Statistiken korrigiert (war: 8 behoben, korrekt: 6 behoben)
-  - Prioritätszählungen aktualisiert und korrigiert
-  - Kategorie "Sehr niedrig" zur Prioritätsübersicht hinzugefügt
-  - Gesamtzählung korrigiert: 9 offen, 1 teilweise, 6 behoben (statt 7 offen, 1 teilweise, 8 behoben)
-
-### 4. Dezember 2024
-
-- ✅ ISSUE-001: TypeScript Build-Fehler behoben
-- ✅ ISSUE-004: Error-Boundaries im Frontend implementiert
-- 🟡 ISSUE-005: Error-Responses standardisiert (Auth-Middleware aktualisiert)
-- ✅ ISSUE-007: Rate-Limiting auf AI-Endpoints implementiert
-- ✅ ISSUE-014: .gitignore als vollständig bestätigt
-
-### 5. Dezember 2024 (Nachmittag)
-
-- ✅ **HR & Finance Module Integration - Phase 1 abgeschlossen:**
-  - 21 HR API Endpoints erstellt und dokumentiert
-  - 24 Finance API Endpoints erstellt und dokumentiert
-  - Vollständige API-Dokumentation erstellt
-  - Integration Summary Dokument erstellt
-  - README aktualisiert
-  - Backend Build erfolgreich
-  - Code Review abgeschlossen
-
-### 5. Dezember 2024 (Abend)
-
-- ✅ **ISSUE-017: Build-Fehler durch fehlende @testing-library/dom behoben:**
-  - Fehlende Peer-Dependency identifiziert und hinzugefügt
-  - TypeScript-Build läuft wieder erfolgreich
-  - Backend-Tests: 42/42 passing
-  - Frontend-Tests: 37/50 passing (13 pre-existing issues)
-- 📝 **Dokumentation aktualisiert:**
-  - ISSUES.md mit ISSUE-017 erweitert
-  - Issue-Statistiken korrigiert
-  - Änderungshistorie aktualisiert
-
-### 3. Dezember 2024
-
-- ✅ ISSUE-001: TypeScript Build-Fehler initial behoben
-- ✅ ISSUE-002: .env.example Dateien erstellt
-- ✅ ISSUE-003: Test-Infrastruktur implementiert
-- 📝 Issues dokumentiert und priorisiert
+**Siehe auch**:
+- [ARCHIVE.md](ARCHIVE.md) - Behobene Issues und alte Changelogs
+- [TODO.md](TODO.md) - Priorisierte Aufgabenliste
+- [CHANGELOG.md](CHANGELOG.md) - Projekt-Changelog
