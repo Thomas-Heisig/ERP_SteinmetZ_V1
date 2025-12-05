@@ -1,7 +1,23 @@
 📘 Functions Catalog Router – API Referenz
 
-Dieser Router kapselt sämtliche Endpunkte rund um den
-FunctionsCatalogService.
+**Version**: 1.0  
+**Stand**: Dezember 2025  
+**Status**: Production-Ready  
+**Funktionsknoten**: 15.472
+
+Dieser Router kapselt sämtliche Endpunkte rund um den FunctionsCatalogService.
+
+## 📖 Übersicht
+
+Der Functions Catalog ist die zentrale Datenquelle für alle ERP-Funktionen. Er verwaltet:
+- **15.472 Funktionsknoten** aus 11 Geschäftsbereichen
+- Hierarchische Struktur (Kategorien, Gruppen, Einzelfunktionen)
+- Metadaten (RBAC, PII-Level, Komplexität, Tags)
+- Regeln und Validierungen
+- Volltext-Suche mit Facetten
+
+Für die Transformation von Funktionsknoten zu ausführbarem Code siehe:
+[FUNCTION_NODE_TRANSFORMATION.md](../../../../../docs/FUNCTION_NODE_TRANSFORMATION.md)
 Er deckt Index-Building, Caching, Suche, Datei-Import, Menü-Generierung und Validierungen ab.
 
 Pfadpräfix:

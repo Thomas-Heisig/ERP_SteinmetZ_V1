@@ -198,6 +198,7 @@ For issues or questions:
 
 ---
 
-**Version:** 0.2.0  
-**Last Updated:** December 4, 2024  
-**Maintainer:** Thomas Heisig
+**Version:** 0.3.0  
+**Last Updated:** December 5, 2025  
+**Maintainer:** Thomas Heisig  
+**Standards**: OpenAPI 3.0, RESTful API Design Principles
