@@ -104,6 +104,9 @@ router.get("/employees/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
 
     // TODO: Replace with actual database query
+    // In real implementation, this would be:
+    // const employee = await employeeService.findById(id);
+    // if (!employee) { return res.status(404).json(...) }
     const mockEmployee = {
       id,
       firstName: "Max",
@@ -129,6 +132,8 @@ router.get("/employees/:id", async (req: Request, res: Response) => {
       },
     };
 
+    // Note: This check is for demonstration purposes only
+    // Will be replaced with actual DB query in Phase 2
     if (!mockEmployee) {
       return res.status(404).json({
         success: false,

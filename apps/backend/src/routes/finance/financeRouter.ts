@@ -106,6 +106,9 @@ router.get("/invoices/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
 
     // TODO: Replace with actual database query
+    // In real implementation, this would be:
+    // const invoice = await invoiceService.findById(id);
+    // if (!invoice) { return res.status(404).json(...) }
     const mockInvoice = {
       id,
       invoiceNumber: "RE-2024-001",
@@ -129,6 +132,8 @@ router.get("/invoices/:id", async (req: Request, res: Response) => {
       grossAmount: 1785.00,
     };
 
+    // Note: This check is for demonstration purposes only
+    // Will be replaced with actual DB query in Phase 2
     if (!mockInvoice) {
       return res.status(404).json({
         success: false,
