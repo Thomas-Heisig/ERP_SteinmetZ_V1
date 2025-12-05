@@ -262,110 +262,122 @@ router.post("/nodes/:id/validate", async (req: Request, res: Response) => {
 
 // ============ SINGLE OPERATIONS MIT ERROR CORRECTION ============
 
-router.post("/nodes/:id/generate-meta", strictAiRateLimiter, async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
+router.post(
+  "/nodes/:id/generate-meta",
+  strictAiRateLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
 
-    const nodes = await aiAnnotatorService.listCandidates({
-      limit: 1,
-      search: id,
-    });
-    const node = nodes.find((n) => n.id === id);
+      const nodes = await aiAnnotatorService.listCandidates({
+        limit: 1,
+        search: id,
+      });
+      const node = nodes.find((n) => n.id === id);
 
-    if (!node) {
-      return res
-        .status(404)
-        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      if (!node) {
+        return res
+          .status(404)
+          .json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      }
+
+      const meta = await aiAnnotatorService.generateMeta(node);
+      await aiAnnotatorService.saveMeta(id, meta);
+
+      res.json({
+        success: true,
+        message: "Metadaten erfolgreich generiert und gespeichert.",
+        data: { node, meta },
+      });
+    } catch (error: any) {
+      console.error("❌ Fehler bei generate-meta:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unbekannter Fehler",
+        details:
+          process.env.NODE_ENV === "development" ? error?.stack : undefined,
+      });
     }
+  },
+);
 
-    const meta = await aiAnnotatorService.generateMeta(node);
-    await aiAnnotatorService.saveMeta(id, meta);
+router.post(
+  "/nodes/:id/generate-rule",
+  strictAiRateLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
 
-    res.json({
-      success: true,
-      message: "Metadaten erfolgreich generiert und gespeichert.",
-      data: { node, meta },
-    });
-  } catch (error: any) {
-    console.error("❌ Fehler bei generate-meta:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unbekannter Fehler",
-      details:
-        process.env.NODE_ENV === "development" ? error?.stack : undefined,
-    });
-  }
-});
+      const nodes = await aiAnnotatorService.listCandidates({
+        limit: 1,
+        search: id,
+      });
+      const node = nodes.find((n) => n.id === id);
 
-router.post("/nodes/:id/generate-rule", strictAiRateLimiter, async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
+      if (!node) {
+        return res
+          .status(404)
+          .json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      }
 
-    const nodes = await aiAnnotatorService.listCandidates({
-      limit: 1,
-      search: id,
-    });
-    const node = nodes.find((n) => n.id === id);
+      const rule = await aiAnnotatorService.generateRule(node);
+      await aiAnnotatorService.saveRule(id, rule);
 
-    if (!node) {
-      return res
-        .status(404)
-        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      res.json({
+        success: true,
+        message: "Regel erfolgreich generiert und gespeichert.",
+        data: { node, rule },
+      });
+    } catch (error: any) {
+      console.error("❌ Fehler bei generate-rule:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unbekannter Fehler",
+        details:
+          process.env.NODE_ENV === "development" ? error?.stack : undefined,
+      });
     }
+  },
+);
 
-    const rule = await aiAnnotatorService.generateRule(node);
-    await aiAnnotatorService.saveRule(id, rule);
+router.post(
+  "/nodes/:id/generate-form",
+  strictAiRateLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
 
-    res.json({
-      success: true,
-      message: "Regel erfolgreich generiert und gespeichert.",
-      data: { node, rule },
-    });
-  } catch (error: any) {
-    console.error("❌ Fehler bei generate-rule:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unbekannter Fehler",
-      details:
-        process.env.NODE_ENV === "development" ? error?.stack : undefined,
-    });
-  }
-});
+      const nodes = await aiAnnotatorService.listCandidates({
+        limit: 1,
+        search: id,
+      });
+      const node = nodes.find((n) => n.id === id);
 
-router.post("/nodes/:id/generate-form", strictAiRateLimiter, async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
+      if (!node) {
+        return res
+          .status(404)
+          .json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      }
 
-    const nodes = await aiAnnotatorService.listCandidates({
-      limit: 1,
-      search: id,
-    });
-    const node = nodes.find((n) => n.id === id);
+      const formSpec = await aiAnnotatorService.generateFormSpec(node);
+      await aiAnnotatorService.saveFormSpec(id, formSpec);
 
-    if (!node) {
-      return res
-        .status(404)
-        .json({ success: false, error: `Knoten ${id} nicht gefunden` });
+      res.json({
+        success: true,
+        message: "Formular erfolgreich generiert und gespeichert.",
+        data: { node, formSpec },
+      });
+    } catch (error: any) {
+      console.error("❌ Fehler bei generate-form:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unbekannter Fehler",
+        details:
+          process.env.NODE_ENV === "development" ? error?.stack : undefined,
+      });
     }
-
-    const formSpec = await aiAnnotatorService.generateFormSpec(node);
-    await aiAnnotatorService.saveFormSpec(id, formSpec);
-
-    res.json({
-      success: true,
-      message: "Formular erfolgreich generiert und gespeichert.",
-      data: { node, formSpec },
-    });
-  } catch (error: any) {
-    console.error("❌ Fehler bei generate-form:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unbekannter Fehler",
-      details:
-        process.env.NODE_ENV === "development" ? error?.stack : undefined,
-    });
-  }
-});
+  },
+);
 
 router.post(
   "/nodes/:id/enhance-schema",
@@ -468,40 +480,44 @@ router.post(
 
 // ============ ERWEITERTE BATCH OPERATIONS ============
 
-router.post("/batch", strictAiRateLimiter, async (req: Request, res: Response) => {
-  try {
-    const operation: BatchOperation = req.body;
+router.post(
+  "/batch",
+  strictAiRateLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const operation: BatchOperation = req.body;
 
-    if (!operation.operation || !operation.filters) {
-      return res.status(400).json({
+      if (!operation.operation || !operation.filters) {
+        return res.status(400).json({
+          success: false,
+          error: "Operation und Filters sind erforderlich",
+        });
+      }
+
+      // Setze Default-Optionen
+      operation.options = {
+        retryFailed: true,
+        maxRetries: 3,
+        chunkSize: 10,
+        parallelRequests: 2,
+        modelPreference: "balanced",
+        ...operation.options,
+      };
+
+      const result = await aiAnnotatorService.executeBatchOperation(operation);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      res.status(500).json({
         success: false,
-        error: "Operation und Filters sind erforderlich",
+        error: error instanceof Error ? error.message : "Unknown error",
       });
     }
-
-    // Setze Default-Optionen
-    operation.options = {
-      retryFailed: true,
-      maxRetries: 3,
-      chunkSize: 10,
-      parallelRequests: 2,
-      modelPreference: "balanced",
-      ...operation.options,
-    };
-
-    const result = await aiAnnotatorService.executeBatchOperation(operation);
-
-    res.json({
-      success: true,
-      data: result,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  },
+);
 
 router.get("/batch/:id", async (req: Request, res: Response) => {
   try {

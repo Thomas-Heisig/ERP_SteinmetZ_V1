@@ -19,7 +19,7 @@ export const aiRateLimiter = rateLimit({
     sendRateLimitError(
       res,
       "Too many AI requests from this IP, please try again later.",
-      retryAfter
+      retryAfter,
     );
   },
   skip: (req) => {
@@ -37,13 +37,14 @@ export const strictAiRateLimiter = rateLimit({
   max: 5, // 5 requests per window
   standardHeaders: true,
   legacyHeaders: false,
-  message: "Too many expensive AI requests from this IP, please try again later.",
+  message:
+    "Too many expensive AI requests from this IP, please try again later.",
   handler: (req, res, next, options) => {
     const retryAfter = Math.ceil(options.windowMs / 1000);
     sendRateLimitError(
       res,
       "Too many expensive AI requests from this IP, please try again later.",
-      retryAfter
+      retryAfter,
     );
   },
   skip: (req) => {
@@ -60,13 +61,14 @@ export const audioRateLimiter = rateLimit({
   max: 10, // 10 requests per window
   standardHeaders: true,
   legacyHeaders: false,
-  message: "Too many audio transcription requests from this IP, please try again later.",
+  message:
+    "Too many audio transcription requests from this IP, please try again later.",
   handler: (req, res, next, options) => {
     const retryAfter = Math.ceil(options.windowMs / 1000);
     sendRateLimitError(
       res,
       "Too many audio transcription requests from this IP, please try again later.",
-      retryAfter
+      retryAfter,
     );
   },
   skip: (req) => {
@@ -89,7 +91,7 @@ export const generalRateLimiter = rateLimit({
     sendRateLimitError(
       res,
       "Too many requests from this IP, please try again later.",
-      retryAfter
+      retryAfter,
     );
   },
   skip: (req) => {

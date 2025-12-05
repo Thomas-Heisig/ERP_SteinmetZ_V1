@@ -11,7 +11,11 @@ import path from "node:path";
 import fs from "node:fs";
 
 // Middleware
-import { aiRateLimiter, strictAiRateLimiter, audioRateLimiter } from "../../middleware/rateLimiters.js";
+import {
+  aiRateLimiter,
+  strictAiRateLimiter,
+  audioRateLimiter,
+} from "../../middleware/rateLimiters.js";
 
 // Services
 import { getModelOverview } from "./services/modelService.js";
@@ -143,15 +147,20 @@ router.delete("/chat/:sessionId", (req, res) => {
 /* 🔊 Audioverarbeitung (STT / TTS)                                           */
 /* ========================================================================== */
 
-router.post("/audio/transcribe", audioRateLimiter, upload.single("audio"), async (req, res) => {
-  if (!req.file) return errorResponse(res, 400, "Keine Datei vorhanden");
-  try {
-    const transcript = await transcribeAudio(req.file.path);
-    res.json({ success: true, transcript });
-  } catch (err: any) {
-    errorResponse(res, 500, "Fehler bei der Audioverarbeitung", err);
-  }
-});
+router.post(
+  "/audio/transcribe",
+  audioRateLimiter,
+  upload.single("audio"),
+  async (req, res) => {
+    if (!req.file) return errorResponse(res, 400, "Keine Datei vorhanden");
+    try {
+      const transcript = await transcribeAudio(req.file.path);
+      res.json({ success: true, transcript });
+    } catch (err: any) {
+      errorResponse(res, 500, "Fehler bei der Audioverarbeitung", err);
+    }
+  },
+);
 
 /* ========================================================================== */
 /* 🌍 Übersetzungen                                                           */

@@ -29,12 +29,12 @@ export const ErrorCode = {
   CONFLICT: "CONFLICT",
   VALIDATION_ERROR: "VALIDATION_ERROR",
   RATE_LIMIT_EXCEEDED: "RATE_LIMIT_EXCEEDED",
-  
+
   // Server errors (5xx)
   INTERNAL_ERROR: "INTERNAL_ERROR",
   SERVICE_UNAVAILABLE: "SERVICE_UNAVAILABLE",
   DATABASE_ERROR: "DATABASE_ERROR",
-  
+
   // AI-specific errors
   AI_PROVIDER_ERROR: "AI_PROVIDER_ERROR",
   AI_MODEL_NOT_FOUND: "AI_MODEL_NOT_FOUND",
@@ -50,7 +50,7 @@ export function sendErrorResponse(
   code: string,
   message: string,
   details?: any,
-  path?: string
+  path?: string,
 ): void {
   const errorResponse: ErrorResponse = {
     success: false,
@@ -72,7 +72,7 @@ export function sendErrorResponse(
 export function sendBadRequest(
   res: Response,
   message: string = "Bad request",
-  details?: any
+  details?: any,
 ): void {
   sendErrorResponse(res, 400, ErrorCode.BAD_REQUEST, message, details);
 }
@@ -83,7 +83,7 @@ export function sendBadRequest(
 export function sendUnauthorized(
   res: Response,
   message: string = "Authentication required",
-  details?: any
+  details?: any,
 ): void {
   sendErrorResponse(res, 401, ErrorCode.UNAUTHORIZED, message, details);
 }
@@ -94,7 +94,7 @@ export function sendUnauthorized(
 export function sendForbidden(
   res: Response,
   message: string = "Insufficient permissions",
-  details?: any
+  details?: any,
 ): void {
   sendErrorResponse(res, 403, ErrorCode.FORBIDDEN, message, details);
 }
@@ -105,7 +105,7 @@ export function sendForbidden(
 export function sendNotFound(
   res: Response,
   message: string = "Resource not found",
-  details?: any
+  details?: any,
 ): void {
   sendErrorResponse(res, 404, ErrorCode.NOT_FOUND, message, details);
 }
@@ -116,7 +116,7 @@ export function sendNotFound(
 export function sendValidationError(
   res: Response,
   message: string = "Validation failed",
-  details?: any
+  details?: any,
 ): void {
   sendErrorResponse(res, 422, ErrorCode.VALIDATION_ERROR, message, details);
 }
@@ -127,12 +127,14 @@ export function sendValidationError(
 export function sendRateLimitError(
   res: Response,
   message: string = "Too many requests. Please try again later.",
-  retryAfter?: number
+  retryAfter?: number,
 ): void {
   if (retryAfter) {
     res.setHeader("Retry-After", retryAfter);
   }
-  sendErrorResponse(res, 429, ErrorCode.RATE_LIMIT_EXCEEDED, message, { retryAfter });
+  sendErrorResponse(res, 429, ErrorCode.RATE_LIMIT_EXCEEDED, message, {
+    retryAfter,
+  });
 }
 
 /**
@@ -141,7 +143,7 @@ export function sendRateLimitError(
 export function sendInternalError(
   res: Response,
   message: string = "Internal server error",
-  details?: any
+  details?: any,
 ): void {
   sendErrorResponse(res, 500, ErrorCode.INTERNAL_ERROR, message, details);
 }
@@ -152,7 +154,7 @@ export function sendInternalError(
 export function sendServiceUnavailable(
   res: Response,
   message: string = "Service temporarily unavailable",
-  details?: any
+  details?: any,
 ): void {
   sendErrorResponse(res, 503, ErrorCode.SERVICE_UNAVAILABLE, message, details);
 }
