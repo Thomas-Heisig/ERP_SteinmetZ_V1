@@ -1,6 +1,6 @@
 # ERP SteinmetZ - Archiv
 
-**Stand**: Dezember 2024
+**Stand**: Dezember 2025
 
 Dieses Dokument enthält archivierte Informationen, die nicht mehr aktiv sind, aber für historische Zwecke aufbewahrt werden.
 
@@ -8,7 +8,7 @@ Dieses Dokument enthält archivierte Informationen, die nicht mehr aktiv sind, a
 
 ## 📋 Archivierte Changelogs
 
-### Changelog - 4. Dezember 2024
+### Changelog - 4. Dezember 2025
 
 Implementierung der nächsten 5 priorisierten TODO-Punkte mit umfassenden Tests und Dokumentation.
 
