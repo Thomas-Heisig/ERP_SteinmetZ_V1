@@ -61,7 +61,15 @@ class WebSocketService {
     if (!this.io) return;
 
     this.io.use((socket: AuthenticatedSocket, next) => {
-      const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
+      // Prioritize auth.token, fallback to authorization header
+      let token = socket.handshake.auth.token;
+      
+      if (!token && socket.handshake.headers.authorization) {
+        const authHeader = socket.handshake.headers.authorization;
+        if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+          token = authHeader.substring(7);
+        }
+      }
 
       if (!token) {
         // Allow anonymous connections but with limited access
@@ -72,7 +80,7 @@ class WebSocketService {
       try {
         // Verify JWT token
         const jwtSecret = process.env.JWT_SECRET || 'your-secret-key';
-        const decoded = jwt.verify(token.replace('Bearer ', ''), jwtSecret) as any;
+        const decoded = jwt.verify(token, jwtSecret) as any;
         
         socket.userId = decoded.id || decoded.userId;
         socket.userRoles = decoded.roles || [];

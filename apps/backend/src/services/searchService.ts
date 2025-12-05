@@ -318,12 +318,23 @@ export class SearchService {
 
   /**
    * Simple fuzzy matching (Levenshtein distance)
+   * Optimized with early exit conditions
    */
   private fuzzyMatch(text: string, pattern: string, maxDistance = 2): boolean {
+    // Early exit for very different lengths
+    if (Math.abs(text.length - pattern.length) > maxDistance * 2) {
+      return false;
+    }
+
     // Check if pattern exists in text with at most maxDistance edits
     const words = text.split(/\s+/);
     
     for (const word of words) {
+      // Skip words that are too different in length
+      if (Math.abs(word.length - pattern.length) > maxDistance * 2) {
+        continue;
+      }
+      
       if (this.levenshteinDistance(word, pattern) <= maxDistance) {
         return true;
       }
@@ -334,10 +345,16 @@ export class SearchService {
 
   /**
    * Calculate Levenshtein distance between two strings
+   * Optimized with early exit for performance
    */
-  private levenshteinDistance(a: string, b: string): number {
+  private levenshteinDistance(a: string, b: string, maxDistance = 3): number {
     if (a.length === 0) return b.length;
     if (b.length === 0) return a.length;
+
+    // Early exit if length difference is too large
+    if (Math.abs(a.length - b.length) > maxDistance) {
+      return maxDistance + 1;
+    }
 
     const matrix: number[][] = [];
 
@@ -350,6 +367,8 @@ export class SearchService {
     }
 
     for (let i = 1; i <= b.length; i++) {
+      let minInRow = Infinity;
+      
       for (let j = 1; j <= a.length; j++) {
         if (b.charAt(i - 1) === a.charAt(j - 1)) {
           matrix[i][j] = matrix[i - 1][j - 1];
@@ -360,6 +379,12 @@ export class SearchService {
             matrix[i - 1][j] + 1
           );
         }
+        minInRow = Math.min(minInRow, matrix[i][j]);
+      }
+      
+      // Early exit if no cell in this row is within maxDistance
+      if (minInRow > maxDistance) {
+        return maxDistance + 1;
       }
     }
 

@@ -110,19 +110,29 @@ class QueryMonitor {
    * Sanitizes query parameters for logging
    */
   private sanitizeParams(params: any[]): any[] {
+    const sensitiveKeywords = ['password', 'token', 'secret', 'key', 'auth', 'credential', 'pin', 'ssn'];
+    
     return params.map(param => {
-      // Mask potentially sensitive data
-      if (typeof param === 'string' && (
-        param.toLowerCase().includes('password') ||
-        param.toLowerCase().includes('token') ||
-        param.toLowerCase().includes('secret')
-      )) {
-        return '***REDACTED***';
+      // Check if param is an object with sensitive keys
+      if (typeof param === 'object' && param !== null) {
+        const paramStr = JSON.stringify(param).toLowerCase();
+        if (sensitiveKeywords.some(keyword => paramStr.includes(keyword))) {
+          return '***REDACTED_OBJECT***';
+        }
       }
-      // Truncate long strings
-      if (typeof param === 'string' && param.length > 100) {
-        return param.substring(0, 97) + '...';
+      
+      // Mask potentially sensitive strings
+      if (typeof param === 'string') {
+        const lowerParam = param.toLowerCase();
+        if (sensitiveKeywords.some(keyword => lowerParam.includes(keyword))) {
+          return '***REDACTED***';
+        }
+        // Truncate long strings
+        if (param.length > 100) {
+          return param.substring(0, 97) + '...';
+        }
       }
+      
       return param;
     });
   }
