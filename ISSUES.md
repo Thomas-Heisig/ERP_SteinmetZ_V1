@@ -19,6 +19,7 @@ Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical D
 API-Fehler haben kein einheitliches Format. Auth-Middleware wurde bereits standardisiert, aber viele Router geben immer noch unterschiedliche Error-Formate zurück.
 
 **Beispiele**:
+
 ```javascript
 // Router A
 res.status(404).json({ error: "Not found" });
@@ -31,6 +32,7 @@ res.status(400).send("Bad request");
 ```
 
 **Lösung (teilweise)**:
+
 1. ✅ Standardisiertes Error-Response-Format definiert in `errorResponse.ts`
 2. ✅ Helper-Funktionen erstellt (sendBadRequest, sendUnauthorized, etc.)
 3. ✅ Error-Codes definiert (BAD_REQUEST, UNAUTHORIZED, etc.)
@@ -39,6 +41,7 @@ res.status(400).send("Bad request");
 6. ⚠️ **Weitere Router müssen noch aktualisiert werden** (AI, Functions, etc.)
 
 **Standardformat**:
+
 ```typescript
 {
   success: false,
@@ -66,18 +69,21 @@ res.status(400).send("Bad request");
 Viele API-Endpunkte validieren Eingaben nicht oder nur unzureichend. Malformed Requests können zu unerwarteten Fehlern führen.
 
 **Betroffene Routen**:
+
 - POST /api/ai/chat
-- POST /api/ai-annotator/nodes/:id/*
+- POST /api/ai-annotator/nodes/:id/\*
 - POST /api/functions/menu
 - Und viele mehr
 
 **Lösungsansatz**:
+
 1. Zod-Schemas für alle Request-Bodies definieren
 2. Validation-Middleware erstellen
 3. In allen Routen einsetzen
 4. Klare Validation-Error-Messages
 
 **Beispiel**:
+
 ```typescript
 const chatMessageSchema = z.object({
   message: z.string().min(1).max(5000),
@@ -104,6 +110,7 @@ router.post("/chat", validate(chatMessageSchema), async (req, res) => {
 Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tracking.
 
 **Fehlende Features**:
+
 - Structured Logging (Pino ist da, aber nicht überall genutzt)
 - Metrics (Prometheus-Exporter)
 - Distributed Tracing (OpenTelemetry)
@@ -112,6 +119,7 @@ Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tr
 - Log-Aggregation (ELK, Loki)
 
 **Konsequenzen**:
+
 - Schwierig, Probleme in Production zu debuggen
 - Keine Performance-Insights
 - Keine Anomalie-Detection
@@ -131,10 +139,12 @@ Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tr
 Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veraltet.
 
 **Analyse durchgeführt (5. Dezember 2024)**:
+
 - `monaco-editor` → **WIRD VERWENDET** in `apps/frontend/src/components/FunctionsCatalog/features/code/`
 - Keine offensichtlich ungenutzten Dependencies gefunden
 
 **Empfehlung**:
+
 - Regelmäßige Dependency-Audits mit `npm list`
 - `npm audit` für Security-Vulnerabilities
 - Update auf neueste Versionen wo möglich
@@ -147,28 +157,42 @@ Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veral
 
 ### ISSUE-010: Console.logs im Production-Code 🐛
 
-**Status**: 🟡 Offen | **Priorität**: Niedrig | **Erstellt**: 2024-12-03
+**Status**: 🟡 Teilweise behoben | **Priorität**: Niedrig | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2024-12-05
 
 **Beschreibung**:
 Viele console.log() Statements im Code, die in Production nicht sein sollten.
 
 **Analyse (5. Dezember 2024)**:
-- **Backend**: 153 console.log Statements
+
+- **Backend**: 171 console.log Statements
 - **Frontend**: 6 console.log Statements
-- **Gesamt**: 159 Instanzen
+- **Gesamt**: 177 Instanzen
+
+**Lösung (Phase 1 - Infrastruktur) ✅**:
+
+1. ✅ ESLint-Rule aktiviert: `no-console: ["warn", { allow: ["warn", "error", "info"] }]`
+2. ✅ Comprehensive Migration Guide erstellt: [CODE_QUALITY_IMPROVEMENTS.md](docs/CODE_QUALITY_IMPROVEMENTS.md)
+3. ✅ Strukturierte Logging-Guidelines dokumentiert
+4. ⏳ Schrittweise Migration geplant (3 Sprints)
+
+**Nächste Schritte (Phase 2-4)**:
+
+- [ ] Kritische Backend-Services migrieren (Auth, AI)
+- [ ] Business-Logik migrieren (HR, Finance)
+- [ ] Frontend komplett migrieren
+- [ ] ESLint auf "error" hochstufen
+- [ ] Pre-commit Hooks einrichten
 
 **Betroffen**:
+
 - Backend: `apps/backend/src/**/*.ts`
 - Frontend: `apps/frontend/src/**/*.tsx`
 
-**Lösungsansatz**:
-1. ESLint-Rule aktivieren: `no-console: ["error", { allow: ["warn", "error"] }]`
-2. Logger-Service verwenden (Backend hat Pino)
-3. Frontend: Conditional Logging basierend auf ENV
+**Auswirkung**: Performance (minimal), Security (Info-Leakage), Code-Qualität
 
-**Auswirkung**: Performance (minimal), Security (Info-Leakage)
+**Aufwand**: ~8-10 Stunden verteilt über 3 Sprints
 
-**Aufwand**: 2-3 Stunden
+**Dokumentation**: [CODE_QUALITY_IMPROVEMENTS.md](docs/CODE_QUALITY_IMPROVEMENTS.md)
 
 ---
 
@@ -180,6 +204,7 @@ Viele console.log() Statements im Code, die in Production nicht sein sollten.
 TypeScript läuft nicht im Strict-Mode. Viele potentielle Fehler werden nicht erkannt.
 
 **Aktuelle Konfiguration**:
+
 ```json
 {
   "strict": false,
@@ -188,6 +213,7 @@ TypeScript läuft nicht im Strict-Mode. Viele potentielle Fehler werden nicht er
 ```
 
 **Empfohlen**:
+
 ```json
 {
   "strict": true,
@@ -215,6 +241,7 @@ TypeScript läuft nicht im Strict-Mode. Viele potentielle Fehler werden nicht er
 Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigation ist unvollständig, Screen-Reader-Support fehlt.
 
 **Probleme**:
+
 - Fehlende ARIA-Labels auf interaktiven Elementen
 - Nicht alle Komponenten keyboard-navigable
 - Unzureichende Focus-Styles
@@ -222,6 +249,7 @@ Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigatio
 - Keine Skip-Links
 
 **Lösungsansatz**:
+
 1. react-axe im Development-Mode
 2. Lighthouse Audits durchführen
 3. Systematisch ARIA-Attribute hinzufügen
@@ -242,12 +270,14 @@ Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigatio
 Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind nicht erklärt.
 
 **Betroffen**:
+
 - Alle Services
 - Komplexe Utilities
 - AI-Provider-Implementierungen
 - Resilience-Patterns
 
 **Lösungsansatz**:
+
 1. JSDoc für alle öffentlichen Functions/Classes
 2. README in komplexen Modulen
 3. Inline-Comments für komplexe Logik
@@ -283,11 +313,13 @@ Namenskonventionen verwenden oder `package.json` "description" nutzen.
 Keine enforzierten Commit-Message-Conventions. Commits sind unstrukturiert.
 
 **Lösungsansatz**:
+
 1. Conventional Commits einführen
 2. Commitlint installieren
 3. Husky pre-commit hooks
 
 **Beispiel**:
+
 ```
 feat(backend): add rate limiting to AI endpoints
 fix(frontend): resolve theme toggle bug
@@ -301,6 +333,7 @@ docs(readme): update installation instructions
 ## 📊 Issue-Statistiken
 
 ### Nach Priorität
+
 - 🟠 Hoch: 3 Issues (1 teilweise behoben)
 - 🟡 Mittel: 5 Issues
 - 🟢 Niedrig: 2 Issues
@@ -308,6 +341,7 @@ docs(readme): update installation instructions
 **Gesamt**: 10 aktive Issues (1 teilweise, 9 offen)
 
 ### Nach Kategorie
+
 - **Security**: 1 (ISSUE-006)
 - **Code-Quality**: 4 (ISSUE-005, 010, 011, 013)
 - **Monitoring**: 1 (ISSUE-008)
@@ -316,6 +350,7 @@ docs(readme): update installation instructions
 - **Developer Experience**: 2 (ISSUE-015, 016)
 
 ### Geschätzter Gesamtaufwand
+
 - **Hohe Priorität**: 1-2 Wochen
 - **Mittlere Priorität**: 1-2 Wochen
 - **Niedrige Priorität**: 3-4 Tage
@@ -327,6 +362,7 @@ docs(readme): update installation instructions
 ## 🔧 Issue-Management-Prozess
 
 ### Issue-Labels
+
 - `high-priority` - Sollte bald behoben werden
 - `bug` - Funktionalität funktioniert nicht wie erwartet
 - `enhancement` - Verbesserung bestehender Features
@@ -335,6 +371,7 @@ docs(readme): update installation instructions
 - `documentation` - Fehlende/fehlerhafte Doku
 
 ### Workflow
+
 1. **New Issue** → Beschreibung, Priorität, Aufwand-Schätzung
 2. **Triaging** → Validierung, Priorität bestätigen
 3. **In Progress** → Entwickler zugewiesen
@@ -342,6 +379,7 @@ docs(readme): update installation instructions
 5. **Done** → Deployed, dokumentiert, nach ARCHIVE.md verschoben
 
 ### Reporting
+
 Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ---
@@ -349,6 +387,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 ## 📝 Nächste Schritte
 
 ### Empfohlene Reihenfolge
+
 1. **ISSUE-006** (Input-Validierung) - Security-Risiko
 2. **ISSUE-005** (Error-Responses standardisieren) - API-Konsistenz
 3. **ISSUE-010** (Console.logs entfernen) - Code-Qualität
@@ -362,6 +401,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 **Nächster Review**: Januar 2025
 
 **Siehe auch**:
+
 - [ARCHIVE.md](ARCHIVE.md) - Behobene Issues und alte Changelogs
 - [TODO.md](TODO.md) - Priorisierte Aufgabenliste
 - [CHANGELOG.md](CHANGELOG.md) - Projekt-Changelog

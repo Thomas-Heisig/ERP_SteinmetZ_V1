@@ -231,6 +231,7 @@ npm test:coverage     # Mit Coverage-Report
 ```
 
 **Aktueller Test-Status:**
+
 - ✅ Backend: 42/42 Tests passing
 - ✅ Frontend: 37/50 Tests passing (13 pre-existing issues)
 - ✅ Build: Vollständig erfolgreich

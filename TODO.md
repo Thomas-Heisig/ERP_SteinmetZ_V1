@@ -126,6 +126,15 @@ Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und
   - **Aufwand**: 1-2 Tage
   - **Ergebnis**: Umfassende Onboarding-Dokumentation, Code-Style-Guide, ADR-Template und 5 initiale ADRs
 
+- [x] **Dokumentations-Konsolidierung** ✅ ERLEDIGT (2024-12-05)
+  - [x] Changelogs zusammenführen (CHANGELOG.md)
+  - [x] Issues aufräumen (nur aktive in ISSUES.md)
+  - [x] Archiv erstellen (ARCHIVE.md) für behobene Issues
+  - [x] Redundante Dateien entfernen (6 Dateien)
+  - [x] README aktualisieren mit neuer Struktur
+  - **Aufwand**: 1-2 Stunden
+  - **Ergebnis**: Klare, wartbare Dokumentationsstruktur
+
 ---
 
 ## 🟡 Mittlere Priorität
