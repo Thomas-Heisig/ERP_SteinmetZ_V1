@@ -31,4 +31,24 @@ export default defineConfig({
   optimizeDeps: {
     exclude: [],
   },
+
+  build: {
+    // Enable code splitting and chunk optimization
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separate vendor chunks for better caching
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
+          "i18n-vendor": ["i18next", "react-i18next"],
+          "monaco-vendor": ["monaco-editor"],
+        },
+      },
+    },
+    // Optimize chunk size warnings
+    chunkSizeWarningLimit: 1000,
+    // Enable source maps for production debugging
+    sourcemap: true,
+    // Use default esbuild minification (faster and no extra dependencies needed)
+    minify: "esbuild",
+  },
 });

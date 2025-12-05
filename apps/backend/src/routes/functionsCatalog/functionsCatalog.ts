@@ -19,6 +19,10 @@ import {
 
 import db from "../../services/dbService.js";
 import pino from "pino";
+import {
+  cacheMiddleware,
+  invalidateCacheMiddleware,
+} from "../../middleware/cacheMiddleware.js";
 
 /* ------------------------------------------------------------------- */
 /* Logging / Error‑Handling                                            */
@@ -112,6 +116,7 @@ function asyncHandler(fn: (req: Request, res: Response) => Promise<unknown>) {
 /* ------------------------------------------------------------------- */
 router.get(
   "/rules",
+  cacheMiddleware({ ttl: 10 * 60 * 1000 }), // Cache for 10 minutes
   asyncHandler(async (_req, res) => {
     const rules = service.getRuleSnapshot();
     res.json({ success: true, rules });
@@ -132,6 +137,7 @@ router.post(
       warnings: result.warnings ?? [],
     });
   }),
+  invalidateCacheMiddleware("/api/functions"), // Invalidate all functions cache after reload
 );
 
 /* ------------------------------------------------------------------- */
@@ -139,6 +145,10 @@ router.post(
 /* ------------------------------------------------------------------- */
 router.get(
   "/index",
+  cacheMiddleware({
+    ttl: 15 * 60 * 1000, // Cache for 15 minutes
+    skip: (req) => req.query.strict === "1", // Don't cache strict mode requests
+  }),
   asyncHandler(async (req, res) => {
     const strict = req.query.strict === "1";
 
