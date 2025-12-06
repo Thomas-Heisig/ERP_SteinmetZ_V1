@@ -17,20 +17,23 @@ Dieses Repository soll **stabil, nachvollziehbar und wartbar** bleiben. Änderun
 ### 1.1 TODO und ISSUES
 
 **Grundprinzipien:**
+
 - Bearbeite jeweils den nächsten offenen Punkt aus [TODO.md](TODO.md).
 - Arbeite die Einträge aus [ISSUES.md](ISSUES.md) ab, sofern sie technisch nachvollziehbar sind.
 - Markiere erledigte Punkte und verschiebe sie in die jeweils vorgesehenen Bereiche (z. B. [ARCHIVE.md](ARCHIVE.md), [CHANGELOG.md](CHANGELOG.md)).
 - Aktualisiere anschließend die [TODO.md](TODO.md) und [ISSUES.md](ISSUES.md).
 
 **Workflow:**
+
 1. **Vor Beginn**: Prüfe die aktuelle Priorität in TODO.md (🔴 Kritisch > 🟠 Hoch > 🟡 Mittel > 🟢 Niedrig)
 2. **Während der Arbeit**: Halte den Status in TODO.md aktuell (✅ für erledigt)
-3. **Nach Abschluss**: 
+3. **Nach Abschluss**:
    - Aktualisiere CHANGELOG.md mit einer aussagekräftigen Beschreibung
    - Verschiebe behobene Issues nach ARCHIVE.md
    - Entferne erledigte Einträge oder markiere sie als abgeschlossen
 
 **Issue-Management:**
+
 - Jedes Issue benötigt: Status, Priorität, Beschreibung, Aufwand-Schätzung
 - Bei Abschluss: Issue mit Datum und Lösung dokumentieren
 - Referenziere verwandte PRs und Commits
@@ -42,6 +45,7 @@ Dieses Repository soll **stabil, nachvollziehbar und wartbar** bleiben. Änderun
 ### 2.1 Ergänzung der Dokumentation
 
 **Standards:**
+
 - Ergänze fehlende Dokumentationsabschnitte an Stellen, an denen Funktionen, Module oder Schnittstellen unvollständig beschrieben sind.
 - Halte die Beschreibung sachlich, strukturiert und nachvollziehbar.
 - Füge alle notwendigen Dateien hinzu, wenn sie für Funktion, Build, Tests oder Dokumentation relevant sind.
@@ -49,19 +53,22 @@ Dieses Repository soll **stabil, nachvollziehbar und wartbar** bleiben. Änderun
 **Dokumentationsstruktur:**
 
 Folge dem **Diátaxis Framework**:
+
 - **Tutorials** (`docs/tutorials/`): Lernorientierte Schritt-für-Schritt-Anleitungen
 - **How-To Guides** (`docs/how-to/`): Problemorientierte praktische Anleitungen
 - **Reference** (`docs/reference/`): Informationsorientierte technische Spezifikationen
 - **Explanation** (`docs/explanation/`): Verständnisorientierte konzeptionelle Inhalte
 
 **Dokumentations-Anforderungen:**
+
 - Jedes neue Modul benötigt mindestens ein README.md im Modul-Verzeichnis
 - API-Änderungen müssen in der entsprechenden API-Dokumentation reflektiert werden
 - Komplexe Entscheidungen werden als Architecture Decision Record (ADR) in `docs/adr/` dokumentiert
 - Code-Kommentare für komplexe Logik (TSDoc/JSDoc-Format)
 
 **Code-Dokumentation:**
-```typescript
+
+````typescript
 /**
  * Beschreibung der Funktion
  * @param paramName - Beschreibung des Parameters
@@ -72,7 +79,7 @@ Folge dem **Diátaxis Framework**:
  * const result = functionName(param);
  * ```
  */
-```
+````
 
 ---
 
@@ -81,17 +88,20 @@ Folge dem **Diátaxis Framework**:
 ### 3.1 Entfernen nicht benötigter Elemente
 
 **Vorsichtsprinzip:**
+
 - Entferne nur solche Komponenten, die nach einer sachlichen Prüfung eindeutig als überflüssig gelten.
 - Vermeide Eingriffe, deren Folgen nicht sicher bestimmt werden können.
 - Führe vor dem Löschen eine Impact-Analyse durch (Suche nach Abhängigkeiten).
 
 **Prüfkriterien:**
+
 1. Wird der Code irgendwo importiert? (`grep -r "import.*ComponentName"`)
 2. Gibt es Tests, die diesen Code verwenden?
 3. Ist er in der Dokumentation erwähnt?
 4. Könnte er zukünftig benötigt werden?
 
 **Bei Unsicherheit:**
+
 - Verschiebe Code nach `ARCHIVE.md` oder in ein `deprecated/` Verzeichnis
 - Markiere ihn mit `@deprecated` Annotation
 - Plane die Entfernung für ein zukünftiges Release
@@ -99,17 +109,20 @@ Folge dem **Diátaxis Framework**:
 ### 3.2 Systemanalyse
 
 **Kontinuierliche Verbesserung:**
+
 - Prüfe Abhängigkeiten, Schnittstellen, Fehlerpfade und doppelte Strukturen.
 - Überarbeite Code, wenn sich unnötige Komplexität oder wiederholte Muster ergeben.
 - Achte darauf, dass das Gesamtsystem nach Änderungen weiterhin lauffähig bleibt.
 
 **Refactoring-Richtlinien:**
+
 1. **DRY (Don't Repeat Yourself)**: Vermeide Code-Duplikation
 2. **SOLID-Prinzipien**: Single Responsibility, Open/Closed, etc.
 3. **KISS (Keep It Simple, Stupid)**: Bevorzuge einfache Lösungen
 4. **YAGNI (You Aren't Gonna Need It)**: Implementiere nur, was aktuell benötigt wird
 
 **Qualitätssicherung:**
+
 - Führe nach größeren Änderungen `npm run build` aus
 - Führe Tests aus: `npm test`
 - Prüfe mit Linter: `npm run lint`
@@ -122,16 +135,19 @@ Folge dem **Diátaxis Framework**:
 ### 4.1 Integration neuer Komponenten
 
 **Standards:**
+
 - Binde neue Funktionen oder Module sauber und vollständig ins Frontend ein.
 - Achte auf ein einheitliches Erscheinungsbild und konsistente Benennungen.
 - Prüfe unterschiedliche Darstellungsvarianten, sofern dies für die Nutzeroberfläche relevant ist.
 
 **Theme-System:**
+
 - Verwende CSS-Variablen aus `apps/frontend/src/styles/theme/`
 - Unterstütze alle Themes: Light, Dark, LCARS, High Contrast
 - Teste Komponenten in allen Theme-Varianten
 
 **Responsive Design:**
+
 - Nutze die definierten Breakpoints:
   - Mobile: 320px, 640px
   - Tablet: 768px, 1024px
@@ -140,6 +156,7 @@ Folge dem **Diátaxis Framework**:
 - Teste auf verschiedenen Bildschirmgrößen
 
 **Komponentenstruktur:**
+
 ```
 apps/frontend/src/components/
 ├── ui/              # Wiederverwendbare UI-Komponenten
@@ -148,12 +165,14 @@ apps/frontend/src/components/
 ```
 
 **Naming Conventions:**
+
 - Komponenten: PascalCase (`MyComponent.tsx`)
 - Hooks: camelCase mit "use" Prefix (`useMyHook.ts`)
 - Utilities: camelCase (`formatDate.ts`)
 - Types: PascalCase (`MyType.ts` oder in `types.ts`)
 
 **Internationalisierung:**
+
 - Alle UI-Texte müssen übersetzbar sein
 - Verwende `react-i18next` für Übersetzungen
 - Füge Übersetzungen in alle 7 Sprachen hinzu (DE, EN, ES, FR, IT, PL, TR)
@@ -166,6 +185,7 @@ apps/frontend/src/components/
 ### 5.1 Fehlerbehandlung
 
 **Prinzipien:**
+
 - Ergänze oder verbessere Fehlerbehandlungen nur auf Grundlage nachvollziehbarer Hinweise.
 - Vermeide unklare oder redundante Fehlerreaktionen.
 - Verwende standardisierte Error-Responses (siehe `docs/ERROR_HANDLING.md`).
@@ -173,16 +193,22 @@ apps/frontend/src/components/
 **Backend Error-Handling:**
 
 Verwende die standardisierten APIError-Klassen:
+
 ```typescript
-import { BadRequestError, NotFoundError, ValidationError } from '../middleware/errors/apiErrors';
+import {
+  BadRequestError,
+  NotFoundError,
+  ValidationError,
+} from "../middleware/errors/apiErrors";
 
 // Beispiel
 if (!resource) {
-  throw new NotFoundError('Resource not found', { resourceId: id });
+  throw new NotFoundError("Resource not found", { resourceId: id });
 }
 ```
 
 **Standardisiertes Error-Response-Format:**
+
 ```typescript
 {
   success: false,
@@ -197,26 +223,28 @@ if (!resource) {
 ```
 
 **Input-Validierung:**
+
 - Verwende Zod-Schemas für alle Request-Bodies
 - Validiere vor der Verarbeitung
 - Gib klare Validierungsfehler zurück
 
 ```typescript
-import { z } from 'zod';
-import { validate } from '../middleware/validate';
+import { z } from "zod";
+import { validate } from "../middleware/validate";
 
 const createUserSchema = z.object({
   name: z.string().min(1).max(100),
   email: z.string().email(),
-  age: z.number().int().positive().optional()
+  age: z.number().int().positive().optional(),
 });
 
-router.post('/users', validate(createUserSchema), async (req, res) => {
+router.post("/users", validate(createUserSchema), async (req, res) => {
   // req.body ist garantiert valide
 });
 ```
 
 **Frontend Error-Handling:**
+
 - Verwende Error Boundaries für React-Komponenten
 - Zeige benutzerfreundliche Fehlermeldungen
 - Logge technische Details für Debugging
@@ -224,6 +252,7 @@ router.post('/users', validate(createUserSchema), async (req, res) => {
 ### 5.2 Logging
 
 **Strukturiertes Logging:**
+
 - Stelle sicher, dass Logmeldungen strukturiert, reserviert und nachvollziehbar sind.
 - Entferne überflüssige Logeinträge.
 - Dokumentiere relevante Fehlerereignisse und Systemzustände.
@@ -231,20 +260,22 @@ router.post('/users', validate(createUserSchema), async (req, res) => {
 **Backend Logging:**
 
 Verwende Pino für strukturiertes Logging:
+
 ```typescript
-import logger from '../utils/logger';
+import logger from "../utils/logger";
 
 // Info-Level für normale Operationen
-logger.info({ userId, action: 'login' }, 'User logged in');
+logger.info({ userId, action: "login" }, "User logged in");
 
 // Warn-Level für potentielle Probleme
-logger.warn({ endpoint, duration }, 'Slow API response');
+logger.warn({ endpoint, duration }, "Slow API response");
 
 // Error-Level für Fehler
-logger.error({ err, context }, 'Operation failed');
+logger.error({ err, context }, "Operation failed");
 ```
 
 **Log-Levels:**
+
 - `trace`: Sehr detaillierte Debug-Informationen
 - `debug`: Debug-Informationen für Entwicklung
 - `info`: Normale Operationen und wichtige Events
@@ -253,6 +284,7 @@ logger.error({ err, context }, 'Operation failed');
 - `fatal`: Kritische Fehler, die zum Absturz führen
 
 **Logging-Richtlinien:**
+
 - **KEINE** `console.log()` in Production-Code (siehe CODE_QUALITY_IMPROVEMENTS.md)
 - Verwende strukturierte Logging-Objekte statt String-Konkatenation
 - Logge niemals sensible Daten (Passwörter, Tokens, PII)
@@ -260,6 +292,7 @@ logger.error({ err, context }, 'Operation failed');
 - Verwende passende Log-Levels
 
 **Frontend Logging:**
+
 - Development: `console.info()`, `console.warn()`, `console.error()` erlaubt
 - Production: Verwende einen Error-Tracking-Service (z.B. Sentry)
 - Logge User-Aktionen für Analytics (anonymisiert)
@@ -271,6 +304,7 @@ logger.error({ err, context }, 'Operation failed');
 ### 6.1 Vorgehensprinzipien
 
 **Grundsätze:**
+
 - Arbeite in kleinen, klar dokumentierten Schritten.
 - Begründe Entscheidungen kurz, wenn mehrere Möglichkeiten bestehen.
 - Priorisiere Stabilität und Nachvollziehbarkeit.
@@ -313,6 +347,7 @@ logger.error({ err, context }, 'Operation failed');
 **Commit-Messages:**
 
 Folge den Conventional Commits:
+
 ```
 <type>(<scope>): <subject>
 
@@ -322,6 +357,7 @@ Folge den Conventional Commits:
 ```
 
 **Types:**
+
 - `feat`: Neue Funktion
 - `fix`: Bugfix
 - `docs`: Dokumentation
@@ -334,6 +370,7 @@ Folge den Conventional Commits:
 - `chore`: Wartungsarbeiten
 
 **Beispiele:**
+
 ```
 feat(hr): add employee time tracking endpoint
 fix(frontend): resolve theme toggle bug in dark mode
@@ -342,6 +379,7 @@ refactor(backend): simplify error handling middleware
 ```
 
 **Branch-Strategie:**
+
 - `main`: Produktionsreife Releases
 - `develop`: Entwicklungsbranch (falls verwendet)
 - `feature/*`: Feature-Branches
@@ -349,6 +387,7 @@ refactor(backend): simplify error handling middleware
 - `docs/*`: Dokumentations-Branches
 
 **Pull Requests:**
+
 - Beschreibende Titel
 - Ausführliche Beschreibung der Änderungen
 - Referenziere verwandte Issues
@@ -362,12 +401,14 @@ refactor(backend): simplify error handling middleware
 ### 7.1 TypeScript
 
 **Typ-Sicherheit:**
+
 - Verwende explizite Typen, vermeide `any`
 - Definiere Interfaces für komplexe Objekte
 - Nutze Union-Types und Type Guards
 - Dokumentiere Types mit TSDoc
 
 **Best Practices:**
+
 ```typescript
 // ✅ Gut: Explizite Typen
 interface User {
@@ -389,21 +430,23 @@ function getData(param) {
 ### 7.2 Testing
 
 **Test-Anforderungen:**
+
 - Neue Features benötigen Tests (Mindest-Coverage: 80%)
 - Bugfixes benötigen Regression-Tests
 - Kritische Funktionen: Mindest-Coverage 90%
 
 **Test-Struktur:**
+
 ```typescript
-describe('ComponentName', () => {
-  describe('methodName', () => {
-    it('should do something', () => {
+describe("ComponentName", () => {
+  describe("methodName", () => {
+    it("should do something", () => {
       // Arrange
       const input = setupTest();
-      
+
       // Act
       const result = methodName(input);
-      
+
       // Assert
       expect(result).toBe(expected);
     });
@@ -412,6 +455,7 @@ describe('ComponentName', () => {
 ```
 
 **Test-Commands:**
+
 ```bash
 npm test              # Alle Tests
 npm test:backend      # Nur Backend
@@ -422,12 +466,14 @@ npm test:coverage     # Mit Coverage-Report
 ### 7.3 Performance
 
 **Optimierungen:**
+
 - Verwende React.memo für teure Komponenten
 - useMemo/useCallback für aufwändige Berechnungen
 - Lazy Loading für große Komponenten
 - Code-Splitting für bessere Ladezeiten
 
 **Monitoring:**
+
 - Query-Performance überwachen (< 100ms Ziel)
 - API-Response-Zeiten tracken
 - Frontend-Performance: Lighthouse Score > 90
@@ -439,21 +485,25 @@ npm test:coverage     # Mit Coverage-Report
 ### 8.1 Security Best Practices
 
 **Input-Validierung:**
+
 - Validiere alle User-Inputs (Client- und Server-seitig)
 - Verwende Zod für Type-safe Validierung
 - Sanitize Inputs gegen XSS
 
 **Authentifizierung & Autorisierung:**
+
 - JWT-Tokens für API-Authentifizierung
 - RBAC (Role-Based Access Control) für Berechtigungen
 - Rate-Limiting für sensible Endpoints
 
 **Datenschutz:**
+
 - Keine sensiblen Daten in Logs
 - Verschlüsselte Speicherung von Credentials
 - GDPR-Compliance beachten
 
 **Dependencies:**
+
 - Regelmäßige Sicherheitsupdates (`npm audit`)
 - Keine bekannten Vulnerabilities in Production
 - Lock-Files committen (`package-lock.json`)
@@ -467,25 +517,30 @@ npm test:coverage     # Mit Coverage-Report
 Dieses Projekt folgt folgenden Standards:
 
 **Code-Qualität:**
+
 - ISO/IEC 25010 - Software-Qualitätsmodell
 - SOLID-Prinzipien
 - Clean Code Practices
 
 **API-Design:**
+
 - OpenAPI 3.0 - API-Spezifikation
 - RESTful API Principles
 - JSON:API Standard (wo anwendbar)
 
 **Dokumentation:**
+
 - ISO/IEC/IEEE 26514 - User Documentation Design
 - Diátaxis Framework - Documentation Structure
 
 **Versionierung:**
+
 - Semantic Versioning 2.0.0
 - Keep a Changelog 1.0.0
 - Conventional Commits 1.0.0
 
 **Compliance:**
+
 - GDPR (DSGVO) - Datenschutz
 - GoBD - Buchführungsrichtlinien (geplant)
 - ISO 27001 - Informationssicherheit (Vorbereitung)
@@ -493,12 +548,14 @@ Dieses Projekt folgt folgenden Standards:
 ### 9.2 Projekt-spezifische Standards
 
 **Dateistruktur:**
+
 - Backend: `apps/backend/src/`
 - Frontend: `apps/frontend/src/`
 - Shared: `src/` (z.B. Resilience-Patterns)
 - Docs: `docs/`
 
 **Naming Conventions:**
+
 - Dateien: kebab-case (`my-component.tsx`)
 - Komponenten: PascalCase (`MyComponent`)
 - Variablen/Funktionen: camelCase (`myFunction`)
@@ -548,6 +605,7 @@ Dieses Projekt folgt folgenden Standards:
 Bevor ein Feature als "fertig" gilt, prüfe:
 
 ### Code
+
 - [ ] Code folgt den Projekt-Standards
 - [ ] TypeScript-Typen sind vollständig definiert
 - [ ] Keine `any`-Types (außer begründete Ausnahmen)
@@ -557,6 +615,7 @@ Bevor ein Feature als "fertig" gilt, prüfe:
 - [ ] Code ist kommentiert (komplexe Logik)
 
 ### Tests
+
 - [ ] Unit-Tests geschrieben (Coverage > 80%)
 - [ ] Integration-Tests vorhanden (bei API-Änderungen)
 - [ ] Manuelle Tests durchgeführt
@@ -565,6 +624,7 @@ Bevor ein Feature als "fertig" gilt, prüfe:
 - [ ] Lint-Check ist erfolgreich (`npm run lint`)
 
 ### Dokumentation
+
 - [ ] Code ist mit TSDoc/JSDoc dokumentiert
 - [ ] README aktualisiert (falls relevant)
 - [ ] API-Dokumentation aktualisiert (bei API-Änderungen)
@@ -572,6 +632,7 @@ Bevor ein Feature als "fertig" gilt, prüfe:
 - [ ] TODO.md/ISSUES.md aktualisiert
 
 ### Frontend (falls relevant)
+
 - [ ] Alle Themes unterstützt (Light, Dark, LCARS, Contrast)
 - [ ] Responsive Design (Mobile, Tablet, Desktop)
 - [ ] Internationalisierung (alle 7 Sprachen)
@@ -580,6 +641,7 @@ Bevor ein Feature als "fertig" gilt, prüfe:
 - [ ] Error Boundaries vorhanden
 
 ### Backend (falls relevant)
+
 - [ ] API-Endpoints validieren Input (Zod)
 - [ ] Standardisiertes Error-Response-Format
 - [ ] Logging implementiert (Pino)
@@ -588,18 +650,21 @@ Bevor ein Feature als "fertig" gilt, prüfe:
 - [ ] Health-Checks aktualisiert (bei Bedarf)
 
 ### Sicherheit
+
 - [ ] Input-Validierung (Client + Server)
 - [ ] Keine sensiblen Daten in Logs
 - [ ] Keine bekannten Security-Vulnerabilities (`npm audit`)
 - [ ] Authentication/Authorization geprüft
 
 ### Performance
+
 - [ ] API-Response-Zeit < 100ms (95th percentile)
 - [ ] Frontend Lighthouse Score > 90
 - [ ] Keine N+1-Queries
 - [ ] Lazy Loading verwendet (bei großen Komponenten)
 
 ### Review
+
 - [ ] Selbst-Review durchgeführt
 - [ ] Peer-Review angefordert
 - [ ] Feedback eingearbeitet
@@ -637,11 +702,13 @@ Eine `.github/COPILOT.md` könnte für GitHub Copilot spezifische Hinweise entha
 Diese Datei enthält Kontext für GitHub Copilot zur Unterstützung der Entwicklung.
 
 ## Projekt-Kontext
+
 - ERP-System für Steinmetz-Betriebe
 - Stack: React 19, Express 5, TypeScript, SQLite/PostgreSQL
 - Standards: OpenAPI 3.0, GDPR-Compliance, GoBD-Vorbereitung
 
 ## Coding-Standards
+
 - Verwende TypeScript mit expliziten Typen
 - Error-Handling mit standardisierten APIError-Klassen
 - Input-Validierung mit Zod
@@ -649,6 +716,7 @@ Diese Datei enthält Kontext für GitHub Copilot zur Unterstützung der Entwickl
 - Testing mit Vitest
 
 ## Ressourcen
+
 Siehe [COPILOT_RULESET.md](../COPILOT_RULESET.md) für vollständige Richtlinien.
 ```
 
@@ -670,20 +738,20 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
-      
+          node-version: "18"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Lint
         run: npm run lint
-      
+
       - name: Type check
         run: npm run build
-      
+
       - name: Test
         run: npm test
-      
+
       - name: Check TODO/ISSUES updated
         run: |
           git diff --name-only origin/main...HEAD | grep -E "(TODO|ISSUES|CHANGELOG).md" || \

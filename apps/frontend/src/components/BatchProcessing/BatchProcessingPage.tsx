@@ -35,7 +35,9 @@ interface BatchResult {
 }
 
 export const BatchProcessingPage: React.FC = () => {
-  const [view, setView] = useState<"create" | "tracking" | "history">("history");
+  const [view, setView] = useState<"create" | "tracking" | "history">(
+    "history",
+  );
   const [batches, setBatches] = useState<BatchOperation[]>([]);
   const [selectedBatch, setSelectedBatch] = useState<BatchOperation | null>(
     null,
@@ -55,7 +57,7 @@ export const BatchProcessingPage: React.FC = () => {
     if (view === "tracking" && selectedBatch) {
       // Load initial details
       loadBatchDetails(selectedBatch.id);
-      
+
       // WebSocket updates will be handled by useBatchUpdates hook if integrated
       // For now, use longer polling interval as fallback (30 seconds instead of 2)
       const interval = setInterval(() => {
@@ -82,11 +84,13 @@ export const BatchProcessingPage: React.FC = () => {
 
   const loadBatchDetails = async (batchId: string) => {
     try {
-      const response = await fetch(`${apiUrl}/api/ai-annotator/batch/${batchId}`);
+      const response = await fetch(
+        `${apiUrl}/api/ai-annotator/batch/${batchId}`,
+      );
       const data = await response.json();
       if (data.success) {
         setSelectedBatch(data.data);
-        
+
         // Load results if batch is completed
         if (data.data.status === "completed") {
           const resultsResponse = await fetch(
@@ -188,7 +192,9 @@ export const BatchProcessingPage: React.FC = () => {
             <div style={styles.resultsGrid}>
               <div style={styles.statCard}>
                 <div style={styles.statLabel}>Total Processed</div>
-                <div style={styles.statValue}>{batchResults.overview.total}</div>
+                <div style={styles.statValue}>
+                  {batchResults.overview.total}
+                </div>
               </div>
               <div style={styles.statCard}>
                 <div style={styles.statLabel}>Successful</div>
@@ -219,10 +225,7 @@ export const BatchProcessingPage: React.FC = () => {
     <div style={styles.historyContainer}>
       <div style={styles.historyHeader}>
         <h2>Batch History</h2>
-        <button
-          onClick={() => setView("create")}
-          style={styles.button}
-        >
+        <button onClick={() => setView("create")} style={styles.button}>
           + Create New Batch
         </button>
       </div>
@@ -232,10 +235,7 @@ export const BatchProcessingPage: React.FC = () => {
       ) : batches.length === 0 ? (
         <div style={styles.empty}>
           <p>No batch operations yet</p>
-          <button
-            onClick={() => setView("create")}
-            style={styles.button}
-          >
+          <button onClick={() => setView("create")} style={styles.button}>
             Create Your First Batch
           </button>
         </div>
@@ -257,9 +257,7 @@ export const BatchProcessingPage: React.FC = () => {
                   </h4>
                   <p style={styles.batchOperation}>{batch.operation}</p>
                 </div>
-                <div style={getStatusStyle(batch.status)}>
-                  {batch.status}
-                </div>
+                <div style={getStatusStyle(batch.status)}>{batch.status}</div>
               </div>
               <div style={styles.batchInfo}>
                 <span>Progress: {batch.progress}%</span>
@@ -315,9 +313,7 @@ export const BatchProcessingPage: React.FC = () => {
   );
 };
 
-const getStatusStyle = (
-  status: string,
-): React.CSSProperties => {
+const getStatusStyle = (status: string): React.CSSProperties => {
   const baseStyle: React.CSSProperties = {
     padding: "0.25rem 0.75rem",
     borderRadius: "12px",

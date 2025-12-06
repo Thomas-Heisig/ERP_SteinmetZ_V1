@@ -111,13 +111,19 @@ export function useWebSocket(
     }
   }, []);
 
-  const joinRoom = useCallback((room: string) => {
-    emit("join-room", room);
-  }, [emit]);
+  const joinRoom = useCallback(
+    (room: string) => {
+      emit("join-room", room);
+    },
+    [emit],
+  );
 
-  const leaveRoom = useCallback((room: string) => {
-    emit("leave-room", room);
-  }, [emit]);
+  const leaveRoom = useCallback(
+    (room: string) => {
+      emit("leave-room", room);
+    },
+    [emit],
+  );
 
   const on = useCallback((event: string, handler: (data: any) => void) => {
     if (socketRef.current) {

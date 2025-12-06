@@ -15,7 +15,8 @@ import { log } from "../routes/ai/utils/logger.js";
  * Create session middleware with Redis store
  */
 export function createSessionMiddleware() {
-  const sessionSecret = process.env.SESSION_SECRET || "dev-secret-key-change-in-production";
+  const sessionSecret =
+    process.env.SESSION_SECRET || "dev-secret-key-change-in-production";
 
   // Redis client for session store
   const redisClient = redisService.getClient();
@@ -43,7 +44,10 @@ export function createSessionMiddleware() {
       ttl: 86400, // 24 hours in seconds
     });
   } else {
-    log("warn", "⚠️ Using in-memory session store (not recommended for production)");
+    log(
+      "warn",
+      "⚠️ Using in-memory session store (not recommended for production)",
+    );
     // Default MemoryStore is used when no store is specified
   }
 
