@@ -78,7 +78,8 @@ Der AI-Annotator ist ein intelligentes System zur automatischen Analyse, Anreich
 #### 2.1 Metadaten-Generierung
 
 **Input**: Node-Objekt  
-**Prozess**: 
+**Prozess**:
+
 1. Content-Analyse mit NLP
 2. Extraktion von Business-Begriffen
 3. Kategorisierung und Tagging
@@ -86,6 +87,7 @@ Der AI-Annotator ist ein intelligentes System zur automatischen Analyse, Anreich
 5. Abhängigkeits-Erkennung
 
 **Output**: Metadata-Objekt
+
 ```json
 {
   "tags": ["mitarbeiter", "hr", "onboarding"],
@@ -101,12 +103,14 @@ Der AI-Annotator ist ein intelligentes System zur automatischen Analyse, Anreich
 
 **Input**: Node-Objekt + Metadaten  
 **Prozess**:
+
 1. Business-Logik-Extraktion
 2. Validierungsregeln definieren
 3. RBAC-Regeln ableiten
 4. Workflow-Transitionen bestimmen
 
 **Output**: Rule-Definition
+
 ```json
 {
   "validation": {
@@ -138,12 +142,14 @@ Der AI-Annotator ist ein intelligentes System zur automatischen Analyse, Anreich
 
 **Input**: Node-Objekt + Metadaten + Regeln  
 **Prozess**:
+
 1. JSON-Schema aus Regeln generieren
 2. UI-Layout bestimmen
 3. Validatoren zuordnen
 4. i18n-Keys erstellen
 
 **Output**: Form-Configuration
+
 ```json
 {
   "schema": {
@@ -299,23 +305,23 @@ Primary (Cloud)  →  Secondary (Cloud)  →  Tertiary (Local)
 
 ### Annotation Quality (Target vs. Actual)
 
-| Metric                        | Target  | Actual | Status |
-|-------------------------------|---------|--------|--------|
-| Schema-Validität              | ≥99.5%  | 99.7%  | ✅     |
-| Metadata-Completeness         | ≥95%    | 97.3%  | ✅     |
-| Rule-Accuracy                 | ≥99%    | 98.9%  | 🟡     |
-| Form-Schema-Validity          | ≥99.5%  | 99.8%  | ✅     |
-| PII-Classification-Accuracy   | ≥98%    | 99.1%  | ✅     |
-| Batch-Success-Rate            | ≥95%    | 96.4%  | ✅     |
+| Metric                      | Target | Actual | Status |
+| --------------------------- | ------ | ------ | ------ |
+| Schema-Validität            | ≥99.5% | 99.7%  | ✅     |
+| Metadata-Completeness       | ≥95%   | 97.3%  | ✅     |
+| Rule-Accuracy               | ≥99%   | 98.9%  | 🟡     |
+| Form-Schema-Validity        | ≥99.5% | 99.8%  | ✅     |
+| PII-Classification-Accuracy | ≥98%   | 99.1%  | ✅     |
+| Batch-Success-Rate          | ≥95%   | 96.4%  | ✅     |
 
 ### Performance Metrics
 
-| Metric                        | Target    | Actual   | Status |
-|-------------------------------|-----------|----------|--------|
-| Single-Node-Annotation        | <5s       | 3.2s     | ✅     |
-| Batch-Processing (1000 nodes) | <30min    | 24min    | ✅     |
-| API-Response-Time (p95)       | <200ms    | 145ms    | ✅     |
-| Error-Rate                    | <1%       | 0.7%     | ✅     |
+| Metric                        | Target | Actual | Status |
+| ----------------------------- | ------ | ------ | ------ |
+| Single-Node-Annotation        | <5s    | 3.2s   | ✅     |
+| Batch-Processing (1000 nodes) | <30min | 24min  | ✅     |
+| API-Response-Time (p95)       | <200ms | 145ms  | ✅     |
+| Error-Rate                    | <1%    | 0.7%   | ✅     |
 
 ---
 
@@ -393,11 +399,13 @@ POST /api/ai-annotator/validate-batch
 #### Problem: Niedrige Confidence-Scores (<0.95)
 
 **Ursachen**:
+
 - Unklare Funktionsbeschreibungen
 - Fehlende Kontext-Informationen
 - Komplexe Business-Logik
 
 **Lösungen**:
+
 1. Funktionsbeschreibung erweitern
 2. Beispiele hinzufügen
 3. Manuelles Review durchführen
@@ -406,11 +414,13 @@ POST /api/ai-annotator/validate-batch
 #### Problem: Hohe Error-Rate (>2%)
 
 **Ursachen**:
+
 - API-Rate-Limits erreicht
 - Model-Overload
 - Netzwerk-Probleme
 
 **Lösungen**:
+
 1. Batch-Size reduzieren
 2. Retry-Delay erhöhen
 3. Fallback-Model aktivieren

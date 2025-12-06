@@ -2,13 +2,14 @@
 
 **Version**: 1.0  
 **Stand**: Dezember 2025  
-**Status**: Production-Ready  
+**Status**: Production-Ready
 
 Dieses Dokument beschreibt die bereitgestellten API-Endpunkte des AI Annotator Routers.
 
 ## 📖 Übersicht
 
 Der AI Annotator Router verarbeitet Funktionsknoten und reichert diese automatisch mit:
+
 - **Metadaten** (Tags, Komplexität, Kategorisierung)
 - **Regeln** (Validierung, Business-Logic, RBAC)
 - **Formulare** (JSON-Schema, UI-Konfiguration)

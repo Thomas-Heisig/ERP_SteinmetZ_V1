@@ -155,20 +155,24 @@ ERP SteinmetZ ist eine produktionsreife Enterprise-Resource-Planning-Plattform m
 ERP SteinmetZ folgt dem **ISO/IEC 25010 Software-Qualitätsmodell** mit acht Hauptcharakteristiken:
 
 #### Functional Suitability (Funktionale Eignung)
+
 - **Functional Completeness**: 15.472 Funktionsknoten decken alle ERP-Bereiche ab
 - **Functional Correctness**: 92%+ Test-Coverage sichert korrekte Implementierung
 - **Functional Appropriateness**: Instruction-Driven Design für fachliche Anforderungen
 
 #### Performance Efficiency (Leistungseffizienz)
+
 - **Time Behaviour**: API-Response <100ms (p95)
 - **Resource Utilization**: Optimierte Queries, Caching, Lazy-Loading
 - **Capacity**: Skalierbar für 1000+ gleichzeitige Benutzer
 
 #### Compatibility (Kompatibilität)
+
 - **Co-existence**: RESTful API, WebSocket, Standard-Protokolle
 - **Interoperability**: OpenAPI 3.0, JSON Schema, XRechnung, ZUGFeRD
 
 #### Usability (Benutzbarkeit)
+
 - **Appropriateness Recognizability**: Intuitive UI, Dashboard-basiert
 - **Learnability**: Inline-Help, QuickChat-Assistent
 - **Operability**: Keyboard-Navigation, Touch-Optimiert
@@ -177,12 +181,14 @@ ERP SteinmetZ folgt dem **ISO/IEC 25010 Software-Qualitätsmodell** mit acht Hau
 - **Accessibility**: WCAG 2.1 AA konform (geplant)
 
 #### Reliability (Zuverlässigkeit)
+
 - **Maturity**: SAGA Pattern, Idempotency, Circuit Breaker
 - **Availability**: Health Checks, Auto-Recovery, Fallback-Systeme
 - **Fault Tolerance**: Retry-Policies, Dead Letter Queue
 - **Recoverability**: Backup-Strategien, Rollback-fähig
 
 #### Security (Sicherheit)
+
 - **Confidentiality**: Encryption at-rest & in-transit (TLS 1.3)
 - **Integrity**: Audit Trail, Checksums, Unveränderlichkeit
 - **Non-repudiation**: Vollständige Audit-Logs
@@ -190,6 +196,7 @@ ERP SteinmetZ folgt dem **ISO/IEC 25010 Software-Qualitätsmodell** mit acht Hau
 - **Authenticity**: JWT-basierte Authentifizierung
 
 #### Maintainability (Wartbarkeit)
+
 - **Modularity**: Monorepo, klare Modul-Grenzen
 - **Reusability**: Shared Components, Services
 - **Analysability**: Structured Logging, Metrics, Tracing
@@ -197,6 +204,7 @@ ERP SteinmetZ folgt dem **ISO/IEC 25010 Software-Qualitätsmodell** mit acht Hau
 - **Testability**: 92%+ Coverage, Unit & Integration Tests
 
 #### Portability (Übertragbarkeit)
+
 - **Adaptability**: Multi-Database-Support (SQLite, PostgreSQL)
 - **Installability**: Docker, Docker-Compose, Kubernetes
 - **Replaceability**: Standard-APIs, keine Vendor-Lock-in
@@ -219,6 +227,7 @@ info:
 ```
 
 **Vorteile**:
+
 - Automatische API-Dokumentation
 - Code-Generierung für Client-SDKs
 - Contract-Testing möglich
@@ -247,6 +256,7 @@ Alle Datenstrukturen sind mit **JSON Schema Draft-07** definiert:
 ### 10.4 Compliance & Regulatorik
 
 #### DSGVO (GDPR) Compliance
+
 - PII-Klassifikation (none, low, medium, high)
 - Recht auf Auskunft (Data Export)
 - Recht auf Vergessenwerden (Deletion Workflow)
@@ -255,6 +265,7 @@ Alle Datenstrukturen sind mit **JSON Schema Draft-07** definiert:
 - Breach-Notification-System
 
 #### GoBD (Grundsätze ordnungsmäßiger Buchführung)
+
 - Lückenlose Nummernkreise
 - Unveränderbarkeit nach Buchung
 - Vollständigkeit und Richtigkeit
@@ -263,6 +274,7 @@ Alle Datenstrukturen sind mit **JSON Schema Draft-07** definiert:
 - Aufbewahrungsfristen (10 Jahre)
 
 #### ISO 27001 (Information Security)
+
 - Risk Assessment
 - Security Policies
 - Access Control (RBAC/ABAC)
@@ -276,7 +288,7 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 
 - **Stakeholder**: Entwickler, Product Owner, Endbenutzer
 - **Concerns**: Performance, Security, Maintainability
-- **Viewpoints**: 
+- **Viewpoints**:
   - Logical View (Komponenten-Struktur)
   - Process View (Runtime-Verhalten)
   - Development View (Code-Organisation)
@@ -286,6 +298,7 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 ### 10.6 Code-Qualität (ESLint, TypeScript)
 
 **TypeScript Strict-Mode** (geplant für Q1 2026):
+
 ```json
 {
   "compilerOptions": {
@@ -298,6 +311,7 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 ```
 
 **ESLint-Konfiguration**:
+
 - Airbnb Style Guide als Basis
 - Zusätzliche Rules für Security
 - Accessibility-Checks (jsx-a11y)
@@ -305,6 +319,7 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 ### 10.7 Test-Standards
 
 **Test-Pyramide**:
+
 ```
         ┌────────┐
         │  E2E   │  10% (Playwright)
@@ -316,6 +331,7 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 ```
 
 **Coverage-Ziele**:
+
 - Statements: ≥90%
 - Branches: ≥85%
 - Functions: ≥90%
@@ -324,12 +340,14 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 ### 10.8 Documentation-Standards
 
 **Markdown-Konventionen**:
+
 - Folgt [CommonMark Spec](https://commonmark.org/)
 - README-Style: [Standard Readme](https://github.com/RichardLitt/standard-readme)
 - Changelog: [Keep a Changelog](https://keepachangelog.com/)
 - Commits: [Conventional Commits](https://www.conventionalcommits.org/)
 
 **ADR (Architecture Decision Records)**:
+
 - Format: [MADR](https://adr.github.io/madr/)
 - Location: `docs/adr/`
 - Template: `docs/adr/000-template.md`
@@ -337,6 +355,7 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 ### 10.9 Accessibility-Standards (WCAG 2.1)
 
 **Level AA Compliance** (geplant):
+
 - Perceivable: Alt-Text, Color-Contrast, Text-Resizing
 - Operable: Keyboard-Navigation, Focus-Visible, Skip-Links
 - Understandable: Error-Messages, Labels, Consistent-Navigation
@@ -345,12 +364,14 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 ### 10.10 Performance-Standards
 
 **Web Vitals** (Target):
+
 - Largest Contentful Paint (LCP): <2.5s
 - First Input Delay (FID): <100ms
 - Cumulative Layout Shift (CLS): <0.1
 - Time to Interactive (TTI): <3.5s
 
 **Lighthouse Score** (Target):
+
 - Performance: >90
 - Accessibility: >90
 - Best Practices: >95
@@ -361,24 +382,28 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 ## 11. Roadmap & Phasenplan (2025-2026)
 
 ### Q1 2025: Consolidation
+
 - [x] Performance-Optimierung abgeschlossen
 - [x] Documentation-Update (82 .md Dateien)
 - [ ] TypeScript Strict-Mode aktivieren
 - [ ] Test-Coverage auf 95%+
 
 ### Q2 2025: AI-Features
+
 - [ ] AI-Annotator Production-Deployment
 - [ ] Function-Node Transformation MVP
 - [ ] RAG-System für Dokumentensuche
 - [ ] NLQ (Natural Language Querying)
 
 ### Q3 2025: Enterprise
+
 - [ ] Multi-Tenant-Support
 - [ ] Advanced Workflow-Engine (BPMN)
 - [ ] Document-Management-System
 - [ ] Advanced BI & Analytics
 
 ### Q4 2025: Compliance
+
 - [ ] GoBD-Zertifizierung
 - [ ] ISO 27001-Audit-Vorbereitung
 - [ ] Pen-Test & Security-Audit
@@ -389,6 +414,7 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 ## 12. Referenzen & Standards
 
 ### Internationale Standards
+
 - **ISO/IEC 25010**: Systems and software Quality Requirements and Evaluation (SQuaRE)
 - **IEEE 1471**: Recommended Practice for Architectural Description (ISO/IEC 42010)
 - **ISO 27001**: Information Security Management
@@ -396,10 +422,12 @@ Architektur-Dokumentation folgt **IEEE 1471 (ISO/IEC 42010)**:
 - **JSON Schema Draft-07**: https://json-schema.org/
 
 ### Regulatorik
+
 - **DSGVO/GDPR**: https://eur-lex.europa.eu/eli/reg/2016/679
 - **GoBD**: https://www.bundesfinanzministerium.de/Content/DE/Downloads/BMF_Schreiben/Weitere_Steuerthemen/Abgabenordnung/2019-11-28-GoBD.html
 
 ### Best Practices
+
 - **12-Factor App**: https://12factor.net/
 - **RESTful API Design**: https://restfulapi.net/
 - **Semantic Versioning**: https://semver.org/

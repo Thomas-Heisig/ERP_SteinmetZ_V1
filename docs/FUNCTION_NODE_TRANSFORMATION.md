@@ -14,6 +14,7 @@ Die Function-Node Transformation ist der Prozess der automatischen Konvertierung
 ### Vision: Instruction-Driven ERP
 
 Das Konzept basiert auf der Vision eines **instruction-driven ERP**, in dem:
+
 1. Fachprozesse als **Arbeitsanweisungen (AA/DSL)** dokumentiert sind
 2. Datenstrukturen durch **JSON-Schemas** definiert werden
 3. **KI moderiert** die Eingaben und Prozesse
@@ -34,13 +35,13 @@ Das Konzept basiert auf der Vision eines **instruction-driven ERP**, in dem:
 
 ### Messbare Erfolgs-Kriterien
 
-| Kriterium                    | Target  | Methode                           |
-|------------------------------|---------|-----------------------------------|
-| Schema-Validität             | ≥99.5%  | JSON-Schema-Validator            |
-| Code-Coverage                | ≥90%    | Vitest Coverage-Report           |
-| API-Compliance               | 100%    | OpenAPI-Validator                |
-| Build-Success-Rate           | 100%    | TypeScript-Compiler              |
-| Service-Response-Time (p95)  | <100ms  | Performance-Monitoring           |
+| Kriterium                   | Target | Methode                |
+| --------------------------- | ------ | ---------------------- |
+| Schema-Validität            | ≥99.5% | JSON-Schema-Validator  |
+| Code-Coverage               | ≥90%   | Vitest Coverage-Report |
+| API-Compliance              | 100%   | OpenAPI-Validator      |
+| Build-Success-Rate          | 100%   | TypeScript-Compiler    |
+| Service-Response-Time (p95) | <100ms | Performance-Monitoring |
 
 ---
 
@@ -69,16 +70,19 @@ Das Konzept basiert auf der Vision eines **instruction-driven ERP**, in dem:
 
 Beispiel: `data/functions/_8_PERSONAL & HR.md`
 
-```markdown
+````markdown
 ## 🏛️ Mitarbeiter anlegen (w:100)
+
 id: fn-hr-employee-create
 kind: workflow
 businessArea: hr
 
 ### Beschreibung
+
 Erfassung eines neuen Mitarbeiters mit allen relevanten Stammdaten.
 
 ### Arbeitsanweisung (AA)
+
 1. Personalstammdaten erfassen (Name, Geburtsdatum, Adresse)
 2. Vertragsdaten eingeben (Eintrittsdatum, Position, Abteilung)
 3. Bankverbindung hinterlegen (IBAN, BIC)
@@ -87,21 +91,24 @@ Erfassung eines neuen Mitarbeiters mit allen relevanten Stammdaten.
 6. Bei Erfolg: Mitarbeiter-ID generieren und speichern
 
 ### Schema
+
 ```json
 {
   "type": "object",
   "properties": {
-    "firstName": {"type": "string", "minLength": 2, "maxLength": 50},
-    "lastName": {"type": "string", "minLength": 2, "maxLength": 50},
-    "birthDate": {"type": "string", "format": "date"},
-    "email": {"type": "string", "format": "email"},
-    "iban": {"type": "string", "pattern": "^[A-Z]{2}[0-9]{2}[A-Z0-9]+$"}
+    "firstName": { "type": "string", "minLength": 2, "maxLength": 50 },
+    "lastName": { "type": "string", "minLength": 2, "maxLength": 50 },
+    "birthDate": { "type": "string", "format": "date" },
+    "email": { "type": "string", "format": "email" },
+    "iban": { "type": "string", "pattern": "^[A-Z]{2}[0-9]{2}[A-Z0-9]+$" }
   },
   "required": ["firstName", "lastName", "birthDate", "email"]
 }
 ```
+````
 
 ### RBAC
+
 ```yaml
 rbac:
   create: [hr_manager, hr_admin]
@@ -111,10 +118,12 @@ rbac:
 ```
 
 ### PII-Level
+
 ```
 pii: high
 ```
-```
+
+````
 
 ### Parser-Output: AST (Abstract Syntax Tree)
 
@@ -136,7 +145,7 @@ interface FunctionNodeAST {
   parent?: string;
   children?: string[];
 }
-```
+````
 
 ---
 
@@ -216,10 +225,10 @@ interface WorkInstruction {
 ```typescript
 // Generated: apps/backend/src/services/hr/employeeService.ts
 
-import { z } from 'zod';
-import { db } from '../../database';
-import { IBANValidator } from '../validators/ibanValidator';
-import { generateEmployeeID } from '../generators/idGenerator';
+import { z } from "zod";
+import { db } from "../../database";
+import { IBANValidator } from "../validators/ibanValidator";
+import { generateEmployeeID } from "../generators/idGenerator";
 
 // Auto-generated from JSON Schema
 const EmployeeCreateSchema = z.object({
@@ -234,45 +243,45 @@ export type EmployeeCreateInput = z.infer<typeof EmployeeCreateSchema>;
 
 /**
  * Mitarbeiter anlegen
- * 
+ *
  * Erfassung eines neuen Mitarbeiters mit allen relevanten Stammdaten.
- * 
+ *
  * @param input - Mitarbeiterdaten
  * @returns Erstellter Mitarbeiter mit generierter ID
  * @throws ValidationError - Bei ungültigen Eingabedaten
  * @throws DuplicateError - Bei bereits existierender E-Mail
- * 
+ *
  * @see {@link ../../docs/api/hr.md#create-employee}
  * @rbac hr_manager, hr_admin
  * @pii high
  */
 export async function createEmployee(
-  input: EmployeeCreateInput
+  input: EmployeeCreateInput,
 ): Promise<Employee> {
   // Step 1-4: Input validation (auto-generated from AA)
   const validatedData = EmployeeCreateSchema.parse(input);
-  
+
   // Step 5: Validierung durchführen
   const ibanValid = await IBANValidator.validate(validatedData.iban);
   if (!ibanValid) {
-    throw new ValidationError('Invalid IBAN');
+    throw new ValidationError("Invalid IBAN");
   }
-  
+
   const duplicate = await db.employees.findOne({ email: validatedData.email });
   if (duplicate) {
-    throw new DuplicateError('Employee with this email already exists');
+    throw new DuplicateError("Employee with this email already exists");
   }
-  
+
   // Step 6: Generate ID and persist
   const employeeId = generateEmployeeID();
-  
+
   const employee = await db.employees.create({
     id: employeeId,
     ...validatedData,
     createdAt: new Date(),
-    status: 'active',
+    status: "active",
   });
-  
+
   return employee;
 }
 ```
@@ -282,11 +291,14 @@ export async function createEmployee(
 ```typescript
 // Generated: apps/backend/src/routes/hr/employeeRoutes.ts
 
-import { Router } from 'express';
-import { asyncHandler } from '../../middleware/asyncHandler';
-import { authorize } from '../../middleware/auth';
-import { validateRequest } from '../../middleware/validation';
-import { createEmployee, EmployeeCreateSchema } from '../../services/hr/employeeService';
+import { Router } from "express";
+import { asyncHandler } from "../../middleware/asyncHandler";
+import { authorize } from "../../middleware/auth";
+import { validateRequest } from "../../middleware/validation";
+import {
+  createEmployee,
+  EmployeeCreateSchema,
+} from "../../services/hr/employeeService";
 
 const router = Router();
 
@@ -323,8 +335,8 @@ const router = Router();
  *         description: Mitarbeiter existiert bereits
  */
 router.post(
-  '/employees',
-  authorize(['hr_manager', 'hr_admin']),
+  "/employees",
+  authorize(["hr_manager", "hr_admin"]),
   validateRequest(EmployeeCreateSchema),
   asyncHandler(async (req, res) => {
     const employee = await createEmployee(req.body);
@@ -332,7 +344,7 @@ router.post(
       success: true,
       data: employee,
     });
-  })
+  }),
 );
 
 export default router;
@@ -343,54 +355,54 @@ export default router;
 ```typescript
 // Generated: apps/backend/src/services/hr/__tests__/employeeService.test.ts
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createEmployee } from '../employeeService';
-import { ValidationError, DuplicateError } from '../../../errors';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { createEmployee } from "../employeeService";
+import { ValidationError, DuplicateError } from "../../../errors";
 
-describe('EmployeeService - createEmployee', () => {
+describe("EmployeeService - createEmployee", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('Happy Path', () => {
-    it('should create employee with valid data', async () => {
+  describe("Happy Path", () => {
+    it("should create employee with valid data", async () => {
       const input = {
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        birthDate: '1990-01-01',
-        email: 'max@example.com',
-        iban: 'DE89370400440532013000',
+        firstName: "Max",
+        lastName: "Mustermann",
+        birthDate: "1990-01-01",
+        email: "max@example.com",
+        iban: "DE89370400440532013000",
       };
 
       const result = await createEmployee(input);
 
-      expect(result).toHaveProperty('id');
+      expect(result).toHaveProperty("id");
       expect(result.id).toMatch(/^EMP-\d{6}$/);
-      expect(result.firstName).toBe('Max');
-      expect(result.status).toBe('active');
+      expect(result.firstName).toBe("Max");
+      expect(result.status).toBe("active");
     });
   });
 
-  describe('Validation', () => {
-    it('should reject invalid IBAN', async () => {
+  describe("Validation", () => {
+    it("should reject invalid IBAN", async () => {
       const input = {
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        birthDate: '1990-01-01',
-        email: 'max@example.com',
-        iban: 'INVALID',
+        firstName: "Max",
+        lastName: "Mustermann",
+        birthDate: "1990-01-01",
+        email: "max@example.com",
+        iban: "INVALID",
       };
 
       await expect(createEmployee(input)).rejects.toThrow(ValidationError);
     });
 
-    it('should reject duplicate email', async () => {
+    it("should reject duplicate email", async () => {
       const input = {
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        birthDate: '1990-01-01',
-        email: 'existing@example.com',
-        iban: 'DE89370400440532013000',
+        firstName: "Max",
+        lastName: "Mustermann",
+        birthDate: "1990-01-01",
+        email: "existing@example.com",
+        iban: "DE89370400440532013000",
       };
 
       // First creation succeeds
@@ -400,39 +412,39 @@ describe('EmployeeService - createEmployee', () => {
       await expect(createEmployee(input)).rejects.toThrow(DuplicateError);
     });
 
-    it('should validate required fields', async () => {
+    it("should validate required fields", async () => {
       const input = {
-        firstName: 'Max',
+        firstName: "Max",
         // lastName missing
-        birthDate: '1990-01-01',
-        email: 'max@example.com',
+        birthDate: "1990-01-01",
+        email: "max@example.com",
       };
 
       await expect(createEmployee(input as any)).rejects.toThrow();
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle minimum length names', async () => {
+  describe("Edge Cases", () => {
+    it("should handle minimum length names", async () => {
       const input = {
-        firstName: 'Jo',
-        lastName: 'Li',
-        birthDate: '1990-01-01',
-        email: 'jo@example.com',
-        iban: 'DE89370400440532013000',
+        firstName: "Jo",
+        lastName: "Li",
+        birthDate: "1990-01-01",
+        email: "jo@example.com",
+        iban: "DE89370400440532013000",
       };
 
       const result = await createEmployee(input);
-      expect(result.firstName).toBe('Jo');
+      expect(result.firstName).toBe("Jo");
     });
 
-    it('should handle maximum length names', async () => {
+    it("should handle maximum length names", async () => {
       const input = {
-        firstName: 'A'.repeat(50),
-        lastName: 'B'.repeat(50),
-        birthDate: '1990-01-01',
-        email: 'max@example.com',
-        iban: 'DE89370400440532013000',
+        firstName: "A".repeat(50),
+        lastName: "B".repeat(50),
+        birthDate: "1990-01-01",
+        email: "max@example.com",
+        iban: "DE89370400440532013000",
       };
 
       const result = await createEmployee(input);
@@ -479,10 +491,10 @@ components:
           type: string
           pattern: "^[A-Z]{2}[0-9]{2}[A-Z0-9]+$"
           example: DE89370400440532013000
-    
+
     Employee:
       allOf:
-        - $ref: '#/components/schemas/EmployeeCreate'
+        - $ref: "#/components/schemas/EmployeeCreate"
         - type: object
           required:
             - id
@@ -512,18 +524,19 @@ components:
 ```typescript
 // Auto-generated from RBAC definition
 const rbacConfig = {
-  'fn-hr-employee-create': {
-    operation: 'create',
-    requiredRoles: ['hr_manager', 'hr_admin'],
-    resourceType: 'employee',
-  }
+  "fn-hr-employee-create": {
+    operation: "create",
+    requiredRoles: ["hr_manager", "hr_admin"],
+    resourceType: "employee",
+  },
 };
 
 // Applied in route middleware
-router.post('/employees',
-  authorize(['hr_manager', 'hr_admin']),  // Auto-generated
+router.post(
+  "/employees",
+  authorize(["hr_manager", "hr_admin"]), // Auto-generated
   validateRequest(EmployeeCreateSchema),
-  asyncHandler(createEmployeeHandler)
+  asyncHandler(createEmployeeHandler),
 );
 ```
 
@@ -532,25 +545,27 @@ router.post('/employees',
 ```typescript
 // Auto-generated from pii-level: high
 
-import { PIILogger } from '../../logging/piiLogger';
+import { PIILogger } from "../../logging/piiLogger";
 
-export async function createEmployee(input: EmployeeCreateInput): Promise<Employee> {
+export async function createEmployee(
+  input: EmployeeCreateInput,
+): Promise<Employee> {
   // PII-Level: HIGH → No logging of sensitive fields
-  PIILogger.info('Creating employee', {
+  PIILogger.info("Creating employee", {
     // Safe fields only
-    action: 'create',
+    action: "create",
     timestamp: new Date(),
     // Sensitive fields masked
     email: maskEmail(input.email),
     iban: maskIBAN(input.iban),
   });
-  
+
   // ... implementation
 }
 
 // Auto-generated masking functions
 function maskEmail(email: string): string {
-  const [name, domain] = email.split('@');
+  const [name, domain] = email.split("@");
   return `${name[0]}***@${domain}`;
 }
 
@@ -568,7 +583,7 @@ import { auditLog } from '../../services/auditService';
 
 export async function createEmployee(input: EmployeeCreateInput): Promise<Employee> {
   const employee = await db.employees.create({...});
-  
+
   await auditLog.record({
     action: 'employee.create',
     resourceId: employee.id,
@@ -578,7 +593,7 @@ export async function createEmployee(input: EmployeeCreateInput): Promise<Employ
     timestamp: new Date(),
     ipAddress: getRequestIP(),
   });
-  
+
   return employee;
 }
 ```
@@ -602,7 +617,7 @@ interface TransformationValidation {
 
 async function validateTransformation(
   functionNode: FunctionNodeAST,
-  generatedCode: GeneratedCode
+  generatedCode: GeneratedCode,
 ): Promise<TransformationValidation> {
   return {
     schemaValid: await validateJSONSchema(generatedCode.schema),
@@ -620,30 +635,30 @@ async function validateTransformation(
 
 ```typescript
 interface QualityScore {
-  overall: number;        // 0-100
-  completeness: number;   // All required components generated
-  correctness: number;    // Code compiles and tests pass
-  compliance: number;     // RBAC, PII, Audit complete
+  overall: number; // 0-100
+  completeness: number; // All required components generated
+  correctness: number; // Code compiles and tests pass
+  compliance: number; // RBAC, PII, Audit complete
   maintainability: number; // Code quality metrics
 }
 
-function calculateQualityScore(validation: TransformationValidation): QualityScore {
-  const completeness = (
+function calculateQualityScore(
+  validation: TransformationValidation,
+): QualityScore {
+  const completeness =
     (validation.schemaValid ? 20 : 0) +
     (validation.codeCompiles ? 20 : 0) +
     (validation.apiSpecValid ? 20 : 0) +
     (validation.testsPass ? 20 : 0) +
-    (validation.rbacComplete ? 20 : 0)
-  );
-  
-  const compliance = (
+    (validation.rbacComplete ? 20 : 0);
+
+  const compliance =
     (validation.rbacComplete ? 33.33 : 0) +
     (validation.piiHandled ? 33.33 : 0) +
-    (validation.auditTrailImplemented ? 33.33 : 0)
-  );
-  
+    (validation.auditTrailImplemented ? 33.33 : 0);
+
   const overall = (completeness + compliance) / 2;
-  
+
   return {
     overall,
     completeness,
@@ -662,27 +677,27 @@ function calculateQualityScore(validation: TransformationValidation): QualitySco
 
 ```typescript
 interface BatchTransformationConfig {
-  concurrency: number;          // Parallel workers (default: 10)
-  chunkSize: number;            // Nodes per chunk (default: 100)
-  skipExisting: boolean;        // Skip already transformed (default: true)
-  validateOnly: boolean;        // Only validate, don't write (default: false)
+  concurrency: number; // Parallel workers (default: 10)
+  chunkSize: number; // Nodes per chunk (default: 100)
+  skipExisting: boolean; // Skip already transformed (default: true)
+  validateOnly: boolean; // Only validate, don't write (default: false)
   filters: {
-    businessAreas?: string[];   // Filter by business area
-    kinds?: NodeKind[];         // Filter by node kind
-    piiLevel?: PIILevel[];      // Filter by PII level
+    businessAreas?: string[]; // Filter by business area
+    kinds?: NodeKind[]; // Filter by node kind
+    piiLevel?: PIILevel[]; // Filter by PII level
   };
 }
 
-async function batchTransform(config: BatchTransformationConfig): Promise<BatchResult> {
+async function batchTransform(
+  config: BatchTransformationConfig,
+): Promise<BatchResult> {
   const nodes = await loadFunctionNodes(config.filters);
   const chunks = chunkArray(nodes, config.chunkSize);
-  
+
   const results = await Promise.all(
-    chunks.map(chunk => 
-      transformChunk(chunk, config.concurrency)
-    )
+    chunks.map((chunk) => transformChunk(chunk, config.concurrency)),
   );
-  
+
   return aggregateResults(results);
 }
 ```
@@ -702,7 +717,7 @@ interface BatchProgress {
 }
 
 // WebSocket-Updates
-wsService.broadcast('transformation:progress', progress);
+wsService.broadcast("transformation:progress", progress);
 ```
 
 ---
@@ -711,14 +726,14 @@ wsService.broadcast('transformation:progress', progress);
 
 ### Transformation-Metriken
 
-| Metric                          | Target  | Actual | Status |
-|---------------------------------|---------|--------|--------|
-| Nodes transformiert             | 15.472  | 1.247  | 🔄     |
-| Success-Rate                    | ≥95%    | 97.3%  | ✅     |
-| Avg. Transformation-Time        | <5s     | 3.8s   | ✅     |
-| Code-Coverage                   | ≥90%    | 92.1%  | ✅     |
-| OpenAPI-Compliance              | 100%    | 100%   | ✅     |
-| RBAC-Coverage                   | 100%    | 100%   | ✅     |
+| Metric                   | Target | Actual | Status |
+| ------------------------ | ------ | ------ | ------ |
+| Nodes transformiert      | 15.472 | 1.247  | 🔄     |
+| Success-Rate             | ≥95%   | 97.3%  | ✅     |
+| Avg. Transformation-Time | <5s    | 3.8s   | ✅     |
+| Code-Coverage            | ≥90%   | 92.1%  | ✅     |
+| OpenAPI-Compliance       | 100%   | 100%   | ✅     |
+| RBAC-Coverage            | 100%   | 100%   | ✅     |
 
 ---
 

@@ -10,6 +10,7 @@ Dieser Router kapselt sämtliche Endpunkte rund um den FunctionsCatalogService.
 ## 📖 Übersicht
 
 Der Functions Catalog ist die zentrale Datenquelle für alle ERP-Funktionen. Er verwaltet:
+
 - **15.472 Funktionsknoten** aus 11 Geschäftsbereichen
 - Hierarchische Struktur (Kategorien, Gruppen, Einzelfunktionen)
 - Metadaten (RBAC, PII-Level, Komplexität, Tags)
