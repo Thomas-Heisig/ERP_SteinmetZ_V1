@@ -70,12 +70,12 @@ When contributing to ERP SteinmetZ, follow these security guidelines:
 Always validate and sanitize user input:
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 const UserSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1).max(100),
-  age: z.number().int().positive().optional()
+  age: z.number().int().positive().optional(),
 });
 
 // In your route handler
@@ -90,7 +90,7 @@ const validatedData = UserSchema.parse(req.body);
 - Use bcrypt with appropriate salt rounds
 
 ```typescript
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
 const SALT_ROUNDS = 12;
 const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
@@ -102,10 +102,7 @@ Always use parameterized queries:
 
 ```typescript
 // Good - Parameterized query
-const user = await db.query(
-  'SELECT * FROM users WHERE email = $1',
-  [email]
-);
+const user = await db.query("SELECT * FROM users WHERE email = $1", [email]);
 
 // Bad - String concatenation
 // const user = await db.query(`SELECT * FROM users WHERE email = '${email}'`);
@@ -121,8 +118,8 @@ const user = await db.query(
 // Set CSP headers
 app.use((req, res, next) => {
   res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline'"
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline'",
   );
   next();
 });
@@ -133,15 +130,15 @@ app.use((req, res, next) => {
 Implement rate limiting to prevent abuse:
 
 ```typescript
-import rateLimit from 'express-rate-limit';
+import rateLimit from "express-rate-limit";
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP'
+  message: "Too many requests from this IP",
 });
 
-app.use('/api/', limiter);
+app.use("/api/", limiter);
 ```
 
 #### Secure Headers
@@ -149,7 +146,7 @@ app.use('/api/', limiter);
 Use security-focused middleware:
 
 ```typescript
-import helmet from 'helmet';
+import helmet from "helmet";
 app.use(helmet());
 ```
 
@@ -188,7 +185,7 @@ npm outdated
 
 ```typescript
 app.use((req, res, next) => {
-  if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+  if (req.secure || req.headers["x-forwarded-proto"] === "https") {
     next();
   } else {
     res.redirect(`https://${req.headers.host}${req.url}`);
@@ -212,11 +209,11 @@ app.use((req, res, next) => {
 - Protect log files
 
 ```typescript
-import pino from 'pino';
+import pino from "pino";
 
 const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-  redact: ['password', 'token', 'secret'] // Prevent sensitive data in logs
+  level: process.env.LOG_LEVEL || "info",
+  redact: ["password", "token", "secret"], // Prevent sensitive data in logs
 });
 ```
 
@@ -229,9 +226,9 @@ const logger = pino({
 ```typescript
 app.use((err, req, res, next) => {
   logger.error(err);
-  
-  if (process.env.NODE_ENV === 'production') {
-    res.status(500).json({ error: 'Internal server error' });
+
+  if (process.env.NODE_ENV === "production") {
+    res.status(500).json({ error: "Internal server error" });
   } else {
     res.status(500).json({ error: err.message, stack: err.stack });
   }
@@ -243,6 +240,7 @@ app.use((err, req, res, next) => {
 ### Current Security Features
 
 ✅ **Implemented:**
+
 - JWT-based authentication
 - Password hashing with bcrypt
 - Input validation with Zod
@@ -253,6 +251,7 @@ app.use((err, req, res, next) => {
 - RBAC (Role-Based Access Control)
 
 ⚠️ **Planned:**
+
 - Two-factor authentication (2FA)
 - API key management
 - Advanced threat detection
@@ -273,11 +272,13 @@ See [COMPLIANCE.md](docs/COMPLIANCE.md) for detailed compliance documentation.
 ## Security Audit History
 
 ### 2025-12-06
+
 - **Status**: Internal security review completed
 - **Findings**: No critical issues
 - **Actions**: Enhanced error handling, added input validation
 
 ### Future Audits
+
 - External penetration testing planned for Q2 2026
 - Automated security scanning to be integrated in CI/CD
 
@@ -285,7 +286,7 @@ See [COMPLIANCE.md](docs/COMPLIANCE.md) for detailed compliance documentation.
 
 We thank the following security researchers for their responsible disclosure:
 
-*(No security researchers to acknowledge yet)*
+_(No security researchers to acknowledge yet)_
 
 ---
 

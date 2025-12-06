@@ -30,9 +30,9 @@ Das ERP SteinmetZ System verwendet **Socket.IO** für bidirektionale Real-Time-K
 Implementiert in `apps/backend/src/services/websocket/websocketService.ts`:
 
 ```typescript
-import { Server as HTTPServer } from 'http';
-import { Server as SocketIOServer } from 'socket.io';
-import jwt from 'jsonwebtoken';
+import { Server as HTTPServer } from "http";
+import { Server as SocketIOServer } from "socket.io";
+import jwt from "jsonwebtoken";
 
 export class WebSocketService {
   private io: SocketIOServer;
@@ -41,17 +41,17 @@ export class WebSocketService {
   initialize(httpServer: HTTPServer) {
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-        credentials: true
-      }
+        origin: process.env.FRONTEND_URL || "http://localhost:5173",
+        credentials: true,
+      },
     });
 
     // Authentication Middleware
     this.io.use((socket, next) => {
       const token = socket.handshake.auth.token;
-      
+
       if (!token) {
-        return next(new Error('Authentication required'));
+        return next(new Error("Authentication required"));
       }
 
       try {
@@ -59,14 +59,14 @@ export class WebSocketService {
         socket.data.user = decoded;
         next();
       } catch (error) {
-        next(new Error('Invalid token'));
+        next(new Error("Invalid token"));
       }
     });
 
     // Connection Handler
-    this.io.on('connection', (socket) => {
+    this.io.on("connection", (socket) => {
       const userId = socket.data.user.id;
-      
+
       // Track connection
       if (!this.connections.has(userId)) {
         this.connections.set(userId, new Set());
@@ -76,7 +76,7 @@ export class WebSocketService {
       console.log(`User ${userId} connected (socket: ${socket.id})`);
 
       // Handle disconnection
-      socket.on('disconnect', () => {
+      socket.on("disconnect", () => {
         this.connections.get(userId)?.delete(socket.id);
         if (this.connections.get(userId)?.size === 0) {
           this.connections.delete(userId);
@@ -85,12 +85,12 @@ export class WebSocketService {
       });
 
       // Join rooms
-      socket.on('join-room', (room: string) => {
+      socket.on("join-room", (room: string) => {
         socket.join(room);
         console.log(`Socket ${socket.id} joined room: ${room}`);
       });
 
-      socket.on('leave-room', (room: string) => {
+      socket.on("leave-room", (room: string) => {
         socket.leave(room);
         console.log(`Socket ${socket.id} left room: ${room}`);
       });
@@ -111,7 +111,7 @@ export class WebSocketService {
   toUser(userId: string, event: string, data: any) {
     const socketIds = this.connections.get(userId);
     if (socketIds) {
-      socketIds.forEach(socketId => {
+      socketIds.forEach((socketId) => {
         this.io.to(socketId).emit(event, data);
       });
     }
@@ -122,7 +122,7 @@ export class WebSocketService {
     return {
       totalConnections: this.io.sockets.sockets.size,
       totalUsers: this.connections.size,
-      rooms: Array.from(this.io.sockets.adapter.rooms.keys())
+      rooms: Array.from(this.io.sockets.adapter.rooms.keys()),
     };
   }
 }
@@ -135,9 +135,9 @@ export const websocketService = new WebSocketService();
 In `apps/backend/src/server.ts`:
 
 ```typescript
-import { createServer } from 'http';
-import express from 'express';
-import { websocketService } from './services/websocket/websocketService.js';
+import { createServer } from "http";
+import express from "express";
+import { websocketService } from "./services/websocket/websocketService.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -147,8 +147,8 @@ websocketService.initialize(httpServer);
 
 // Start server
 httpServer.listen(3000, () => {
-  console.log('Server running on port 3000');
-  console.log('WebSocket server ready');
+  console.log("Server running on port 3000");
+  console.log("WebSocket server ready");
 });
 ```
 
@@ -279,7 +279,7 @@ httpServer.listen(3000, () => {
 
 ```typescript
 // src/services/websocket.ts
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from "socket.io-client";
 
 class WebSocketClient {
   private socket: Socket | null = null;
@@ -287,29 +287,29 @@ class WebSocketClient {
   private maxReconnectAttempts = 5;
 
   connect(token: string) {
-    this.socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
+    this.socket = io(import.meta.env.VITE_API_URL || "http://localhost:3000", {
       auth: { token },
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      reconnectionAttempts: this.maxReconnectAttempts
+      reconnectionAttempts: this.maxReconnectAttempts,
     });
 
-    this.socket.on('connect', () => {
-      console.log('WebSocket connected');
+    this.socket.on("connect", () => {
+      console.log("WebSocket connected");
       this.reconnectAttempts = 0;
     });
 
-    this.socket.on('disconnect', (reason) => {
-      console.log('WebSocket disconnected:', reason);
+    this.socket.on("disconnect", (reason) => {
+      console.log("WebSocket disconnected:", reason);
     });
 
-    this.socket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
+    this.socket.on("connect_error", (error) => {
+      console.error("WebSocket connection error:", error);
       this.reconnectAttempts++;
-      
+
       if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-        console.error('Max reconnection attempts reached');
+        console.error("Max reconnection attempts reached");
         this.disconnect();
       }
     });
@@ -337,11 +337,11 @@ class WebSocketClient {
   }
 
   joinRoom(room: string) {
-    this.socket?.emit('join-room', room);
+    this.socket?.emit("join-room", room);
   }
 
   leaveRoom(room: string) {
-    this.socket?.emit('leave-room', room);
+    this.socket?.emit("leave-room", room);
   }
 }
 
@@ -352,13 +352,16 @@ export const wsClient = new WebSocketClient();
 
 ```typescript
 // src/hooks/useWebSocket.ts
-import { useEffect, useCallback } from 'react';
-import { wsClient } from '../services/websocket';
+import { useEffect, useCallback } from "react";
+import { wsClient } from "../services/websocket";
 
 export function useWebSocket(event: string, callback: (data: any) => void) {
-  const handleEvent = useCallback((data: any) => {
-    callback(data);
-  }, [callback]);
+  const handleEvent = useCallback(
+    (data: any) => {
+      callback(data);
+    },
+    [callback],
+  );
 
   useEffect(() => {
     wsClient.on(event, handleEvent);
@@ -480,13 +483,13 @@ export function Chat({ sessionId }: { sessionId: string }) {
 // JWT-basierte Authentifizierung
 this.io.use((socket, next) => {
   const token = socket.handshake.auth.token;
-  
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
     socket.data.user = decoded;
     next();
   } catch (error) {
-    next(new Error('Invalid token'));
+    next(new Error("Invalid token"));
   }
 });
 ```
@@ -495,13 +498,13 @@ this.io.use((socket, next) => {
 
 ```typescript
 // Room-basierte Zugriffskontrolle
-socket.on('join-room', (room: string) => {
+socket.on("join-room", (room: string) => {
   // Überprüfe Berechtigung
   if (!hasAccessToRoom(socket.data.user, room)) {
-    socket.emit('error', { message: 'Access denied' });
+    socket.emit("error", { message: "Access denied" });
     return;
   }
-  
+
   socket.join(room);
 });
 ```
@@ -509,15 +512,17 @@ socket.on('join-room', (room: string) => {
 ### Rate Limiting
 
 ```typescript
-import rateLimit from 'socket.io-rate-limiter';
+import rateLimit from "socket.io-rate-limiter";
 
-this.io.use(rateLimit({
-  maxRequests: 100,
-  windowMs: 60000, // 1 minute
-  onRateLimitExceeded: (socket) => {
-    socket.emit('error', { message: 'Rate limit exceeded' });
-  }
-}));
+this.io.use(
+  rateLimit({
+    maxRequests: 100,
+    windowMs: 60000, // 1 minute
+    onRateLimitExceeded: (socket) => {
+      socket.emit("error", { message: "Rate limit exceeded" });
+    },
+  }),
+);
 ```
 
 ---
@@ -528,11 +533,11 @@ this.io.use(rateLimit({
 
 ```typescript
 // GET /api/ws/stats
-router.get('/ws/stats', (req, res) => {
+router.get("/ws/stats", (req, res) => {
   const stats = websocketService.getStats();
   res.json({
     success: true,
-    data: stats
+    data: stats,
   });
 });
 ```
@@ -545,11 +550,7 @@ router.get('/ws/stats', (req, res) => {
   "data": {
     "totalConnections": 47,
     "totalUsers": 42,
-    "rooms": [
-      "dashboard",
-      "chat-session-123",
-      "notifications"
-    ]
+    "rooms": ["dashboard", "chat-session-123", "notifications"]
   }
 }
 ```
@@ -557,21 +558,21 @@ router.get('/ws/stats', (req, res) => {
 ### Logging
 
 ```typescript
-import { logger } from '../utils/logger';
+import { logger } from "../utils/logger";
 
-this.io.on('connection', (socket) => {
+this.io.on("connection", (socket) => {
   logger.info({
-    event: 'websocket:connection',
+    event: "websocket:connection",
     userId: socket.data.user.id,
-    socketId: socket.id
+    socketId: socket.id,
   });
 });
 
-socket.on('disconnect', () => {
+socket.on("disconnect", () => {
   logger.info({
-    event: 'websocket:disconnection',
+    event: "websocket:disconnection",
     userId: socket.data.user.id,
-    socketId: socket.id
+    socketId: socket.id,
   });
 });
 ```
@@ -583,50 +584,50 @@ socket.on('disconnect', () => {
 ### Backend Tests
 
 ```typescript
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { io as ioClient, Socket } from 'socket.io-client';
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { io as ioClient, Socket } from "socket.io-client";
 
-describe('WebSocket Service', () => {
+describe("WebSocket Service", () => {
   let clientSocket: Socket;
-  const token = 'test-jwt-token';
+  const token = "test-jwt-token";
 
   beforeAll((done) => {
-    clientSocket = ioClient('http://localhost:3000', {
-      auth: { token }
+    clientSocket = ioClient("http://localhost:3000", {
+      auth: { token },
     });
-    clientSocket.on('connect', done);
+    clientSocket.on("connect", done);
   });
 
   afterAll(() => {
     clientSocket.disconnect();
   });
 
-  it('should connect with valid token', (done) => {
+  it("should connect with valid token", (done) => {
     expect(clientSocket.connected).toBe(true);
     done();
   });
 
-  it('should receive dashboard update', (done) => {
-    clientSocket.on('dashboard:update', (data) => {
+  it("should receive dashboard update", (done) => {
+    clientSocket.on("dashboard:update", (data) => {
       expect(data.widgetId).toBeDefined();
       expect(data.value).toBeDefined();
       done();
     });
 
     // Trigger event from backend
-    websocketService.broadcast('dashboard:update', {
-      widgetId: 'test',
-      value: 42
+    websocketService.broadcast("dashboard:update", {
+      widgetId: "test",
+      value: 42,
     });
   });
 
-  it('should join and leave rooms', (done) => {
-    const room = 'test-room';
-    
-    clientSocket.emit('join-room', room);
-    
+  it("should join and leave rooms", (done) => {
+    const room = "test-room";
+
+    clientSocket.emit("join-room", room);
+
     setTimeout(() => {
-      clientSocket.emit('leave-room', room);
+      clientSocket.emit("leave-room", room);
       done();
     }, 100);
   });

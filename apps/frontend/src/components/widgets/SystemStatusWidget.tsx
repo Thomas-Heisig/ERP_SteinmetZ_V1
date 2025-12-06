@@ -90,10 +90,14 @@ export const SystemStatusWidget: React.FC = () => {
   }
 
   return (
-    <div className={`system-status-widget status-${getStatusColor(health.status)}`}>
+    <div
+      className={`system-status-widget status-${getStatusColor(health.status)}`}
+    >
       <div className="widget-header">
         <h3>🖥️ System Status</h3>
-        <span className={`status-badge status-${getStatusColor(health.status)}`}>
+        <span
+          className={`status-badge status-${getStatusColor(health.status)}`}
+        >
           {health.status}
         </span>
       </div>

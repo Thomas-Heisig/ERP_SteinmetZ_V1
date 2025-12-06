@@ -38,17 +38,17 @@ export class QueryMonitor {
       query,
       duration,
       timestamp: new Date().toISOString(),
-      success
+      success,
     };
-    
+
     this.metrics.push(metric);
-    
+
     if (duration > this.slowQueryThreshold) {
       logger.warn({
-        message: 'Slow query detected',
+        message: "Slow query detected",
         query,
         duration: `${duration}ms`,
-        threshold: `${this.slowQueryThreshold}ms`
+        threshold: `${this.slowQueryThreshold}ms`,
       });
     }
   }
@@ -56,10 +56,18 @@ export class QueryMonitor {
   getStats(): QueryStats {
     return {
       totalQueries: this.metrics.length,
-      slowQueries: this.metrics.filter(m => m.duration > this.slowQueryThreshold).length,
-      avgDuration: this.calculateAverage(this.metrics.map(m => m.duration)),
-      p95Duration: this.calculatePercentile(this.metrics.map(m => m.duration), 95),
-      p99Duration: this.calculatePercentile(this.metrics.map(m => m.duration), 99)
+      slowQueries: this.metrics.filter(
+        (m) => m.duration > this.slowQueryThreshold,
+      ).length,
+      avgDuration: this.calculateAverage(this.metrics.map((m) => m.duration)),
+      p95Duration: this.calculatePercentile(
+        this.metrics.map((m) => m.duration),
+        95,
+      ),
+      p99Duration: this.calculatePercentile(
+        this.metrics.map((m) => m.duration),
+        99,
+      ),
     };
   }
 }
@@ -68,15 +76,15 @@ export class QueryMonitor {
 ### Verwendung
 
 ```typescript
-import { queryMonitor } from '../services/queryMonitor.js';
+import { queryMonitor } from "../services/queryMonitor.js";
 
 const startTime = Date.now();
 try {
-  const result = await db.query('SELECT * FROM employees WHERE id = ?', [id]);
-  queryMonitor.trackQuery('SELECT employees', Date.now() - startTime, true);
+  const result = await db.query("SELECT * FROM employees WHERE id = ?", [id]);
+  queryMonitor.trackQuery("SELECT employees", Date.now() - startTime, true);
   return result;
 } catch (error) {
-  queryMonitor.trackQuery('SELECT employees', Date.now() - startTime, false);
+  queryMonitor.trackQuery("SELECT employees", Date.now() - startTime, false);
   throw error;
 }
 ```
@@ -112,12 +120,12 @@ GET /api/query-stats
 
 ```sql
 -- Zeige alle Indices
-SELECT name, tbl_name, sql 
-FROM sqlite_master 
+SELECT name, tbl_name, sql
+FROM sqlite_master
 WHERE type='index';
 
 -- Analysiere Query-Plan
-EXPLAIN QUERY PLAN 
+EXPLAIN QUERY PLAN
 SELECT * FROM employees WHERE email = 'test@example.com';
 
 -- Statistiken aktualisieren
@@ -128,28 +136,28 @@ ANALYZE;
 
 ```sql
 -- Zeige alle Indices
-SELECT tablename, indexname, indexdef 
-FROM pg_indexes 
+SELECT tablename, indexname, indexdef
+FROM pg_indexes
 WHERE schemaname = 'public';
 
 -- Analysiere Query-Plan
-EXPLAIN ANALYZE 
+EXPLAIN ANALYZE
 SELECT * FROM employees WHERE email = 'test@example.com';
 
 -- Ungenutzte Indices finden
-SELECT 
-  schemaname, 
-  tablename, 
-  indexname, 
+SELECT
+  schemaname,
+  tablename,
+  indexname,
   idx_scan
 FROM pg_stat_user_indexes
 WHERE idx_scan = 0
 ORDER BY idx_scan;
 
 -- Index-Größe
-SELECT 
-  tablename, 
-  indexname, 
+SELECT
+  tablename,
+  indexname,
   pg_size_pretty(pg_relation_size(indexrelid)) as index_size
 FROM pg_stat_user_indexes
 ORDER BY pg_relation_size(indexrelid) DESC;
@@ -173,12 +181,12 @@ CREATE INDEX IF NOT EXISTS idx_employees_department ON employees(department);
 CREATE INDEX IF NOT EXISTS idx_employees_status ON employees(status);
 
 -- Composite Index für häufige Kombinationen
-CREATE INDEX IF NOT EXISTS idx_employees_dept_status 
+CREATE INDEX IF NOT EXISTS idx_employees_dept_status
 ON employees(department, status);
 
 -- Full-Text Search (PostgreSQL)
-CREATE INDEX IF NOT EXISTS idx_employees_fulltext 
-ON employees USING GIN(to_tsvector('german', 
+CREATE INDEX IF NOT EXISTS idx_employees_fulltext
+ON employees USING GIN(to_tsvector('german',
   first_name || ' ' || last_name || ' ' || email));
 ```
 
@@ -201,7 +209,7 @@ CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status);
 CREATE INDEX IF NOT EXISTS idx_invoices_due_date ON invoices(due_date);
 
 -- Composite Index für Dashboard-Queries
-CREATE INDEX IF NOT EXISTS idx_invoices_status_date 
+CREATE INDEX IF NOT EXISTS idx_invoices_status_date
 ON invoices(status, created_at DESC);
 ```
 
@@ -209,11 +217,11 @@ ON invoices(status, created_at DESC);
 
 ```sql
 -- Employee ID + Date (häufige Kombination)
-CREATE INDEX IF NOT EXISTS idx_time_entries_emp_date 
+CREATE INDEX IF NOT EXISTS idx_time_entries_emp_date
 ON time_entries(employee_id, date DESC);
 
 -- Date Range Queries
-CREATE INDEX IF NOT EXISTS idx_time_entries_date 
+CREATE INDEX IF NOT EXISTS idx_time_entries_date
 ON time_entries(date);
 ```
 
@@ -226,16 +234,16 @@ ON time_entries(date);
 ```typescript
 // ❌ BAD: N+1 Query Problem
 async function getEmployeesWithDepartments() {
-  const employees = await db.all('SELECT * FROM employees');
-  
+  const employees = await db.all("SELECT * FROM employees");
+
   for (const employee of employees) {
     // Dies führt zu N zusätzlichen Queries!
     employee.department = await db.get(
-      'SELECT * FROM departments WHERE id = ?',
-      [employee.department_id]
+      "SELECT * FROM departments WHERE id = ?",
+      [employee.department_id],
     );
   }
-  
+
   return employees;
 }
 ```
@@ -261,19 +269,19 @@ async function getEmployeesWithDepartments() {
 ```typescript
 // ✅ GOOD: Batch Loading (für komplexere Fälle)
 async function getEmployeesWithDepartments() {
-  const employees = await db.all('SELECT * FROM employees');
-  const departmentIds = [...new Set(employees.map(e => e.department_id))];
-  
+  const employees = await db.all("SELECT * FROM employees");
+  const departmentIds = [...new Set(employees.map((e) => e.department_id))];
+
   const departments = await db.all(
-    `SELECT * FROM departments WHERE id IN (${departmentIds.map(() => '?').join(',')})`,
-    departmentIds
+    `SELECT * FROM departments WHERE id IN (${departmentIds.map(() => "?").join(",")})`,
+    departmentIds,
   );
-  
-  const departmentMap = new Map(departments.map(d => [d.id, d]));
-  
-  return employees.map(e => ({
+
+  const departmentMap = new Map(departments.map((d) => [d.id, d]));
+
+  return employees.map((e) => ({
     ...e,
-    department: departmentMap.get(e.department_id)
+    department: departmentMap.get(e.department_id),
   }));
 }
 ```
@@ -281,16 +289,16 @@ async function getEmployeesWithDepartments() {
 ### Lösung 3: DataLoader (für GraphQL)
 
 ```typescript
-import DataLoader from 'dataloader';
+import DataLoader from "dataloader";
 
 const departmentLoader = new DataLoader(async (ids: string[]) => {
   const departments = await db.all(
-    `SELECT * FROM departments WHERE id IN (${ids.map(() => '?').join(',')})`,
-    ids
+    `SELECT * FROM departments WHERE id IN (${ids.map(() => "?").join(",")})`,
+    ids,
   );
-  
-  const departmentMap = new Map(departments.map(d => [d.id, d]));
-  return ids.map(id => departmentMap.get(id));
+
+  const departmentMap = new Map(departments.map((d) => [d.id, d]));
+  return ids.map((id) => departmentMap.get(id));
 });
 
 // Verwendung
@@ -309,26 +317,26 @@ Implementiert in `apps/backend/src/middleware/cache.ts`:
 ```typescript
 export function cacheMiddleware(ttl: number = 60) {
   const cache = new Map<string, CacheEntry>();
-  
+
   return (req: Request, res: Response, next: NextFunction) => {
     const key = `${req.method}:${req.path}:${JSON.stringify(req.query)}`;
     const cached = cache.get(key);
-    
+
     if (cached && Date.now() - cached.timestamp < ttl * 1000) {
-      res.setHeader('X-Cache', 'HIT');
+      res.setHeader("X-Cache", "HIT");
       return res.json(cached.data);
     }
-    
+
     const originalJson = res.json.bind(res);
     res.json = (data: any) => {
       cache.set(key, {
         data,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
-      res.setHeader('X-Cache', 'MISS');
+      res.setHeader("X-Cache", "MISS");
       return originalJson(data);
     };
-    
+
     next();
   };
 }
@@ -338,13 +346,13 @@ export function cacheMiddleware(ttl: number = 60) {
 
 ```typescript
 // Functions Catalog - 15 Minuten Cache
-router.get('/functions', cacheMiddleware(900), async (req, res) => {
+router.get("/functions", cacheMiddleware(900), async (req, res) => {
   const functions = await getFunctions();
   res.json({ success: true, data: functions });
 });
 
 // Dashboard Stats - 5 Minuten Cache
-router.get('/dashboard/stats', cacheMiddleware(300), async (req, res) => {
+router.get("/dashboard/stats", cacheMiddleware(300), async (req, res) => {
   const stats = await getDashboardStats();
   res.json({ success: true, data: stats });
 });
@@ -358,7 +366,7 @@ export function invalidateCacheMiddleware(patterns: string[]) {
     const originalJson = res.json.bind(res);
     res.json = (data: any) => {
       if (data.success) {
-        patterns.forEach(pattern => {
+        patterns.forEach((pattern) => {
           cache.invalidate(pattern);
         });
       }
@@ -370,12 +378,12 @@ export function invalidateCacheMiddleware(patterns: string[]) {
 
 // Verwendung
 router.post(
-  '/employees',
-  invalidateCacheMiddleware(['/employees', '/dashboard/stats']),
+  "/employees",
+  invalidateCacheMiddleware(["/employees", "/dashboard/stats"]),
   async (req, res) => {
     const employee = await createEmployee(req.body);
     res.json({ success: true, data: employee });
-  }
+  },
 );
 ```
 
@@ -386,29 +394,29 @@ router.post(
 ### SQLite
 
 ```typescript
-import Database from 'better-sqlite3';
+import Database from "better-sqlite3";
 
-const db = new Database('data/erp.db', {
+const db = new Database("data/erp.db", {
   readonly: false,
   fileMustExist: false,
-  timeout: 5000
+  timeout: 5000,
 });
 
 // Optimierungen
-db.pragma('journal_mode = WAL'); // Write-Ahead Logging
-db.pragma('synchronous = NORMAL'); // Balance zwischen Performance und Sicherheit
-db.pragma('cache_size = -64000'); // 64MB Cache
-db.pragma('temp_store = MEMORY'); // Temp tables in memory
+db.pragma("journal_mode = WAL"); // Write-Ahead Logging
+db.pragma("synchronous = NORMAL"); // Balance zwischen Performance und Sicherheit
+db.pragma("cache_size = -64000"); // 64MB Cache
+db.pragma("temp_store = MEMORY"); // Temp tables in memory
 ```
 
 ### PostgreSQL
 
 ```typescript
-import { Pool } from 'pg';
+import { Pool } from "pg";
 
 const pool = new Pool({
   host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || '5432'),
+  port: parseInt(process.env.DB_PORT || "5432"),
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -439,14 +447,14 @@ export async function query(text: string, params?: any[]) {
 
 ```typescript
 // ❌ BAD: Hoher Offset ist langsam
-SELECT * FROM employees 
-ORDER BY created_at DESC 
+SELECT * FROM employees
+ORDER BY created_at DESC
 LIMIT 50 OFFSET 10000;
 
 // ✅ GOOD: Cursor-based Pagination
-SELECT * FROM employees 
+SELECT * FROM employees
 WHERE created_at < '2024-01-01T00:00:00Z'
-ORDER BY created_at DESC 
+ORDER BY created_at DESC
 LIMIT 50;
 ```
 
@@ -457,8 +465,8 @@ LIMIT 50;
 SELECT COUNT(*) FROM employees WHERE status = 'active';
 
 // ✅ GOOD: Approximation (wenn exakte Zahl nicht nötig)
-SELECT reltuples::bigint as estimate 
-FROM pg_class 
+SELECT reltuples::bigint as estimate
+FROM pg_class
 WHERE relname = 'employees';
 
 // ✅ GOOD: Mit Index
@@ -471,28 +479,32 @@ SELECT COUNT(*) FROM employees WHERE status = 'active';
 ```typescript
 // ❌ BAD: COUNT wenn nur Existenz geprüft wird
 const count = await db.get(
-  'SELECT COUNT(*) as count FROM employees WHERE email = ?',
-  [email]
+  "SELECT COUNT(*) as count FROM employees WHERE email = ?",
+  [email],
 );
-if (count.count > 0) { /* ... */ }
+if (count.count > 0) {
+  /* ... */
+}
 
 // ✅ GOOD: EXISTS
 const exists = await db.get(
-  'SELECT EXISTS(SELECT 1 FROM employees WHERE email = ? LIMIT 1) as exists',
-  [email]
+  "SELECT EXISTS(SELECT 1 FROM employees WHERE email = ? LIMIT 1) as exists",
+  [email],
 );
-if (exists.exists) { /* ... */ }
+if (exists.exists) {
+  /* ... */
+}
 ```
 
-### 4. SELECT * vermeiden
+### 4. SELECT \* vermeiden
 
 ```typescript
 // ❌ BAD: Lädt alle Spalten
 SELECT * FROM employees WHERE id = ?;
 
 // ✅ GOOD: Nur benötigte Spalten
-SELECT id, first_name, last_name, email 
-FROM employees 
+SELECT id, first_name, last_name, email
+FROM employees
 WHERE id = ?;
 ```
 
@@ -503,24 +515,24 @@ WHERE id = ?;
 ### Performance Tests
 
 ```typescript
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 
-describe('Database Performance', () => {
-  it('should execute employee query within 50ms', async () => {
+describe("Database Performance", () => {
+  it("should execute employee query within 50ms", async () => {
     const startTime = Date.now();
-    await db.all('SELECT * FROM employees LIMIT 100');
+    await db.all("SELECT * FROM employees LIMIT 100");
     const duration = Date.now() - startTime;
-    
+
     expect(duration).toBeLessThan(50);
   });
 
-  it('should use index for email lookup', async () => {
+  it("should use index for email lookup", async () => {
     const plan = await db.get(
-      'EXPLAIN QUERY PLAN SELECT * FROM employees WHERE email = ?',
-      ['test@example.com']
+      "EXPLAIN QUERY PLAN SELECT * FROM employees WHERE email = ?",
+      ["test@example.com"],
     );
-    
-    expect(plan.detail).toContain('USING INDEX');
+
+    expect(plan.detail).toContain("USING INDEX");
   });
 });
 ```
@@ -540,12 +552,12 @@ describe('Database Performance', () => {
 
 ### Current Performance (Dezember 2025)
 
-| Operation | Avg Duration | P95 | P99 |
-|-----------|-------------|-----|-----|
-| GET /api/employees | 23ms | 45ms | 67ms |
-| GET /api/invoices | 18ms | 32ms | 51ms |
-| POST /api/employees | 35ms | 58ms | 89ms |
-| Complex JOIN Query | 67ms | 112ms | 156ms |
+| Operation           | Avg Duration | P95   | P99   |
+| ------------------- | ------------ | ----- | ----- |
+| GET /api/employees  | 23ms         | 45ms  | 67ms  |
+| GET /api/invoices   | 18ms         | 32ms  | 51ms  |
+| POST /api/employees | 35ms         | 58ms  | 89ms  |
+| Complex JOIN Query  | 67ms         | 112ms | 156ms |
 
 **Ziele erreicht**: ✅ 95% der Queries <100ms
 

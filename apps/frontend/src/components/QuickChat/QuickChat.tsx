@@ -7,7 +7,7 @@ import { SettingsTab } from "./components/SettingsTab";
 import { InfoTab } from "./components/InfoTab";
 import { Tab, QuickAction, Settings, AIModel, ChatSession } from "./types";
 import { QUICK_ACTIONS, DEFAULT_SETTINGS, BACKEND_URL } from "./constants";
-// import './styles/QuickChat.css';
+import "./QuickChat.css";
 
 interface QuickChatProps {
   isOpen: boolean;

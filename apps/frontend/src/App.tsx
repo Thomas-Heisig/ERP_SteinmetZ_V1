@@ -48,7 +48,7 @@ export default function App() {
               <span className="nav-icon" aria-hidden="true">
                 🏠
               </span>
-              Übersicht
+              Dashboard
             </NavLink>
 
             <NavLink
@@ -60,7 +60,7 @@ export default function App() {
               <span className="nav-icon" aria-hidden="true">
                 🧭
               </span>
-              Funktionen
+              Funktionskatalog
             </NavLink>
 
             <NavLink
@@ -73,6 +73,30 @@ export default function App() {
                 🤖
               </span>
               AI-Annotator
+            </NavLink>
+
+            <NavLink
+              to="/hr"
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <span className="nav-icon" aria-hidden="true">
+                👥
+              </span>
+              Personal
+            </NavLink>
+
+            <NavLink
+              to="/finance"
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <span className="nav-icon" aria-hidden="true">
+                💰
+              </span>
+              Finanzen
             </NavLink>
           </nav>
 

@@ -22,6 +22,7 @@ This project and everyone participating in it is governed by our [Code of Conduc
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - Node.js >= 18.18.0
 - npm or yarn
 - Git
@@ -30,22 +31,26 @@ Before you begin, ensure you have the following installed:
 
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/ERP_SteinmetZ_V1.git
    cd ERP_SteinmetZ_V1
    ```
 
 3. **Add upstream remote**:
+
    ```bash
    git remote add upstream https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1.git
    ```
 
 4. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 5. **Set up environment variables**:
+
    ```bash
    cp apps/backend/.env.example apps/backend/.env
    cp apps/frontend/.env.example apps/frontend/.env
@@ -112,6 +117,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 ```
 
 **Types:**
+
 - `feat`: A new feature
 - `fix`: A bug fix
 - `docs`: Documentation only changes
@@ -122,6 +128,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 - `chore`: Changes to build process or auxiliary tools
 
 **Examples:**
+
 ```bash
 feat(hr): add employee search functionality
 fix(finance): correct invoice calculation error
@@ -134,6 +141,7 @@ test(backend): add tests for AI provider service
 ### Pull Request Process
 
 1. **Update your branch** with the latest changes:
+
    ```bash
    git checkout main
    git pull upstream main
@@ -142,6 +150,7 @@ test(backend): add tests for AI provider service
    ```
 
 2. **Push your changes**:
+
    ```bash
    git push origin your-branch
    ```
@@ -167,18 +176,22 @@ When creating a PR, include:
 
 ```markdown
 ## Description
+
 Brief description of the changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 How has this been tested?
 
 ## Checklist
+
 - [ ] My code follows the project's style guidelines
 - [ ] I have performed a self-review
 - [ ] I have commented my code where necessary
@@ -195,6 +208,7 @@ How has this been tested?
 We follow strict TypeScript guidelines. See [CODE_CONVENTIONS.md](docs/CODE_CONVENTIONS.md) for complete details.
 
 **Key Points:**
+
 - Use TypeScript strict mode
 - Prefer `const` over `let`
 - Use meaningful variable names
@@ -203,6 +217,7 @@ We follow strict TypeScript guidelines. See [CODE_CONVENTIONS.md](docs/CODE_CONV
 - Handle errors properly with try-catch
 
 **Example:**
+
 ```typescript
 /**
  * Retrieves employee by ID
@@ -222,6 +237,7 @@ async function getEmployeeById(id: string): Promise<Employee> {
 ### Error Handling
 
 Use standardized error classes from `src/utils/apiErrors.ts`:
+
 - `BadRequestError` - Invalid input (400)
 - `UnauthorizedError` - Authentication required (401)
 - `ForbiddenError` - Insufficient permissions (403)
@@ -250,40 +266,43 @@ Configuration is in `.prettierrc`.
 ### Writing Tests
 
 We use Vitest for testing. Write tests for:
+
 - All new features
 - Bug fixes
 - Critical business logic
 - API endpoints
 
 **Test Structure:**
-```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
 
-describe('EmployeeService', () => {
+```typescript
+import { describe, it, expect, beforeEach } from "vitest";
+
+describe("EmployeeService", () => {
   beforeEach(() => {
     // Setup
   });
 
-  describe('getEmployeeById', () => {
-    it('should return employee when found', async () => {
+  describe("getEmployeeById", () => {
+    it("should return employee when found", async () => {
       // Arrange
-      const employeeId = '123';
-      
+      const employeeId = "123";
+
       // Act
       const result = await service.getEmployeeById(employeeId);
-      
+
       // Assert
       expect(result).toBeDefined();
       expect(result.id).toBe(employeeId);
     });
 
-    it('should throw NotFoundError when employee not found', async () => {
+    it("should throw NotFoundError when employee not found", async () => {
       // Arrange
-      const invalidId = '999';
-      
+      const invalidId = "999";
+
       // Act & Assert
-      await expect(service.getEmployeeById(invalidId))
-        .rejects.toThrow(NotFoundError);
+      await expect(service.getEmployeeById(invalidId)).rejects.toThrow(
+        NotFoundError,
+      );
     });
   });
 });
@@ -308,6 +327,7 @@ npm test -- --watch
 ### Test Coverage
 
 We aim for:
+
 - Overall coverage: > 80%
 - Critical paths: > 95%
 - New code: > 90%
@@ -324,6 +344,7 @@ We aim for:
 ### Updating Documentation
 
 When making changes, update:
+
 1. **README.md** - If affecting getting started or main features
 2. **API Documentation** - For API changes
 3. **Architecture Docs** - For architectural changes
@@ -333,6 +354,7 @@ When making changes, update:
 ### Documentation Standards
 
 Follow these guidelines:
+
 - Use clear, concise language
 - Include code examples
 - Add diagrams for complex concepts
@@ -376,6 +398,7 @@ All contributions go through code review:
 4. **Approval and merge** by maintainer
 
 **Review Checklist:**
+
 - Code quality and style
 - Test coverage
 - Documentation completeness
@@ -386,6 +409,7 @@ All contributions go through code review:
 ## Recognition
 
 Contributors are recognized in:
+
 - [CONTRIBUTORS.md](CONTRIBUTORS.md) - All contributors
 - Release notes - Significant contributions
 - GitHub insights - Automatic tracking
@@ -399,6 +423,7 @@ By contributing, you agree that your contributions will be licensed under the pr
 ---
 
 **Questions?** Contact the maintainers:
+
 - GitHub: [@Thomas-Heisig](https://github.com/Thomas-Heisig)
 - Email: [Contact via GitHub]
 

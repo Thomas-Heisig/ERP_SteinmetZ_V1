@@ -78,11 +78,7 @@ export const DashboardWidgets: React.FC = () => {
 
         <KPIWidget
           title="Stock Items"
-          value={
-            loading
-              ? "..."
-              : (data?.erp.stockItems || 0).toLocaleString()
-          }
+          value={loading ? "..." : (data?.erp.stockItems || 0).toLocaleString()}
           subtitle="Total inventory"
           icon="📊"
           color="success"

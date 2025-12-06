@@ -7,7 +7,7 @@ Welcome to the ERP SteinmetZ documentation! This directory contains comprehensiv
 This documentation follows the **[Diátaxis Framework](https://diataxis.fr/)**, organizing content into four distinct categories:
 
 - **📚 Tutorials** - Learning-oriented: Take users by the hand through practical lessons
-- **🔧 How-To Guides** - Problem-oriented: Guide users through solving specific problems  
+- **🔧 How-To Guides** - Problem-oriented: Guide users through solving specific problems
 - **📖 Reference** - Information-oriented: Describe the system and its operations
 - **💡 Explanation** - Understanding-oriented: Clarify and illuminate particular topics
 
@@ -86,11 +86,13 @@ Step-by-step guides for learning core concepts:
 Practical guides for specific tasks:
 
 **Setup & Configuration:**
+
 - **[How to Setup Development Environment](./how-to/setup-environment.md)**
 - **[How to Configure Environment Variables](./ENVIRONMENT_VARIABLES.md)**
 - **[How to Setup Database](./how-to/setup-database.md)**
 
 **Development:**
+
 - **[How to Add a New API Endpoint](./how-to/add-api-endpoint.md)**
 - **[How to Implement Authentication](./how-to/authentication.md)**
 - **[How to Handle Errors](./ERROR_STANDARDIZATION_GUIDE.md)**
@@ -98,6 +100,7 @@ Practical guides for specific tasks:
 - **[How to Migrate Database](./DATABASE_MIGRATIONS.md)**
 
 **Features:**
+
 - **[How to Implement Error Handling](./ERROR_HANDLING.md)** ⭐ NEW
 - **[How to Optimize Database Queries](./DATABASE_OPTIMIZATION.md)** ⭐ NEW
 - **[How to Integrate WebSocket](./WEBSOCKET_REALTIME.md)** ⭐ NEW
@@ -112,18 +115,21 @@ Practical guides for specific tasks:
 Technical reference material:
 
 **API Reference:**
+
 - **[API Documentation](./api/API_DOCUMENTATION.md)** - Complete API reference
 - **[OpenAPI Specification](./api/openapi.yaml)** - Machine-readable spec
 - **[Error Codes](./reference/error-codes.md)** - All error codes and meanings
 
 **Code Reference:**
+
 - **[Code Conventions](./CODE_CONVENTIONS.md)** - Coding standards
 - **[TypeScript Guidelines](./reference/typescript-guide.md)** - TS best practices
 - **[Database Schema](./reference/database-schema.md)** - Data models
 
 **Module Reference:**
+
 - **[AI Module Reference](./reference/ai-module.md)** - AI components
-- **[HR Module Reference](./reference/hr-module.md)** - HR components  
+- **[HR Module Reference](./reference/hr-module.md)** - HR components
 - **[Finance Module Reference](./reference/finance-module.md)** - Finance components
 
 ### 4️⃣ Explanation (Understanding-Oriented)
@@ -131,17 +137,20 @@ Technical reference material:
 Deep dives into concepts and decisions:
 
 **Architecture:**
+
 - **[Architecture Overview](./ARCHITECTURE.md)** - System design
 - **[Architecture Decisions](./explanation/architecture-decisions.md)** - Why we chose this design
 - **[Design Patterns](./explanation/design-patterns.md)** - Patterns used
 
 **Advanced Topics:**
+
 - **[AI Annotator Workflow](./AI_ANNOTATOR_WORKFLOW.md)** - How AI annotation works
 - **[Function Node Transformation](./FUNCTION_NODE_TRANSFORMATION.md)** - Code generation
 - **[Authentication System](./AUTHENTICATION.md)** - Auth deep dive
 - **[Compliance & Security](./COMPLIANCE.md)** - GDPR, GoBD, security
 
 **Concepts:**
+
 - **[Project Vision](./concept/_0_KONZEPT.md)** - Original concept
 - **[Roadmap](./concept/_ROADMAP.md)** - Future plans
 - **[Implementation Roadmap 2025](./IMPLEMENTATION_ROADMAP_2025.md)** ⭐ NEW - Current status & next steps
@@ -152,29 +161,34 @@ Deep dives into concepts and decisions:
 ## 📑 Documentation Index by Topic
 
 ### Setup & Installation
+
 - [Developer Onboarding](./DEVELOPER_ONBOARDING.md) - Complete setup guide
 - [Environment Variables](./ENVIRONMENT_VARIABLES.md) - Configuration reference
 - [Database Migrations](./DATABASE_MIGRATIONS.md) - Database setup
 
 ### Development
+
 - [Code Conventions](./CODE_CONVENTIONS.md) - Coding standards
 - [Error Standardization](./ERROR_STANDARDIZATION_GUIDE.md) - Error handling
 - [Testing Guidelines](./CODE_CONVENTIONS.md#testing) - How to test
 
 ### Architecture & Design
+
 - [System Architecture](./ARCHITECTURE.md) - Overall system design
 - [ADR Index](./adr/README.md) - All architectural decisions
 - [Design Patterns](./explanation/design-patterns.md) - Patterns used
 
-### Features & Modules  
+### Features & Modules
+
 - [AI Features](./ADVANCED_FEATURES.md) - AI capabilities
 - [Performance Features](./PERFORMANCE_FEATURES.md) - Optimization
 - [Module Documentation](../apps/backend/src/routes/) - Module-specific docs
 
 ### Project Management
+
 - [Implementation Roadmap 2025](./IMPLEMENTATION_ROADMAP_2025.md) ⭐ NEW - Structured roadmap
 - [TODO List](../TODO.md) - Planned features and tasks
-- [Issues](../ISSUES.md) - Known problems and technical debt  
+- [Issues](../ISSUES.md) - Known problems and technical debt
 - [Changelog](../CHANGELOG.md) - Version history
 
 ---
@@ -425,12 +439,14 @@ See [LICENSE](../LICENSE) file for details.
 This documentation adheres to international standards:
 
 ### ISO/IEC/IEEE Standards
+
 - **ISO/IEC/IEEE 26514:2022** - Design of user documentation
-- **ISO/IEC/IEEE 26512:2018** - Acquisition and supply of software user documentation  
+- **ISO/IEC/IEEE 26512:2018** - Acquisition and supply of software user documentation
 - **ISO/IEC 25010:2011** - Software quality model (see [ARCHITECTURE.md](./ARCHITECTURE.md))
 - **IEEE 1471-2000** - Architecture description
 
 ### Open Source Best Practices
+
 - **Diátaxis Framework** - Four-category documentation structure
 - **OpenAPI 3.0** - API specification standard
 - **JSON Schema Draft-07** - Data validation
@@ -439,6 +455,7 @@ This documentation adheres to international standards:
 - **Conventional Commits** - Commit message standard
 
 ### Accessibility & Internationalization
+
 - Clear, concise language
 - Consistent terminology
 - Multi-language support (i18n ready)
@@ -450,12 +467,14 @@ This documentation adheres to international standards:
 ## 🆕 Recent Documentation Updates (December 2025)
 
 ### New Root Documentation
+
 - ✨ **[CONTRIBUTING.md](../CONTRIBUTING.md)** - Contribution guidelines
 - ✨ **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** - Community standards
 - ✨ **[SECURITY.md](../SECURITY.md)** - Security policy & vulnerability reporting
 - ✨ **[SUPPORT.md](../SUPPORT.md)** - Getting help & FAQ
 
 ### Enhanced Documentation Structure
+
 - ✨ Reorganized following **Diátaxis Framework**
 - ✨ Added tutorials/ directory for learning materials
 - ✨ Added how-to/ directory for practical guides
@@ -463,6 +482,7 @@ This documentation adheres to international standards:
 - ✨ Added explanation/ directory for conceptual content
 
 ### AI & Advanced Features
+
 - **[AI Annotator Workflow](./AI_ANNOTATOR_WORKFLOW.md)** ⭐
   - Complete data processing workflow
   - 15,472 function node processing
@@ -479,19 +499,20 @@ This documentation adheres to international standards:
 
 ## 📊 Documentation Metrics
 
-| Category          | Files | Status      | Coverage |
-|-------------------|-------|-------------|----------|
-| Core Docs         | 15    | ✅ Complete | 100%     |
-| Tutorials         | 4     | 🔄 Growing  | 75%      |
-| How-To Guides     | 7     | 🔄 Growing  | 80%      |
-| Reference Docs    | 7     | ✅ Complete | 95%      |
-| Explanations      | 4     | ✅ Complete | 90%      |
-| API Docs          | 4     | ✅ Complete | 100%     |
-| ADR Records       | 6     | ✅ Complete | 100%     |
-| Module Docs       | 15    | ✅ Complete | 95%      |
-| **Total**         | **62**| **✅ 93%**  | **93%**  |
+| Category       | Files  | Status      | Coverage |
+| -------------- | ------ | ----------- | -------- |
+| Core Docs      | 15     | ✅ Complete | 100%     |
+| Tutorials      | 4      | 🔄 Growing  | 75%      |
+| How-To Guides  | 7      | 🔄 Growing  | 80%      |
+| Reference Docs | 7      | ✅ Complete | 95%      |
+| Explanations   | 4      | ✅ Complete | 90%      |
+| API Docs       | 4      | ✅ Complete | 100%     |
+| ADR Records    | 6      | ✅ Complete | 100%     |
+| Module Docs    | 15     | ✅ Complete | 95%      |
+| **Total**      | **62** | **✅ 93%**  | **93%**  |
 
 ### Documentation Quality
+
 - ✅ Follows international standards
 - ✅ Clear navigation structure
 - ✅ Comprehensive cross-referencing
@@ -505,6 +526,7 @@ This documentation adheres to international standards:
 ## 🤝 Contributing to Documentation
 
 Documentation improvements are always welcome! See:
+
 - [Contributing Guide](../CONTRIBUTING.md#documentation)
 - [Documentation Style Guide](./CODE_CONVENTIONS.md#documentation)
 
@@ -532,6 +554,7 @@ Documentation improvements are always welcome! See:
 ## 📧 Documentation Contact
 
 **Questions or suggestions?**
+
 - Open an [issue](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
 - Check [SUPPORT.md](../SUPPORT.md) for help
 - Contact: Thomas Heisig ([@Thomas-Heisig](https://github.com/Thomas-Heisig))

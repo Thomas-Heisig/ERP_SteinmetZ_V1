@@ -9,17 +9,20 @@ Thank you for using ERP SteinmetZ! We're here to help you get the most out of th
 Before seeking support, please check our comprehensive documentation:
 
 ### Getting Started
+
 - **[README.md](README.md)** - Project overview and quick start
 - **[README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)** - Complete documentation
 - **[Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)** - Setup and development guide
 
 ### Technical Documentation
+
 - **[Architecture](docs/ARCHITECTURE.md)** - System architecture
 - **[API Documentation](docs/api/API_DOCUMENTATION.md)** - Complete API reference
 - **[Code Conventions](docs/CODE_CONVENTIONS.md)** - Coding standards
 - **[Environment Variables](docs/ENVIRONMENT_VARIABLES.md)** - Configuration guide
 
 ### Module-Specific Documentation
+
 - **[AI Module](apps/backend/src/routes/ai/docs/)** - AI integration docs
 - **[HR Module](apps/backend/src/routes/hr/docs/)** - HR management docs
 - **[Finance Module](apps/backend/src/routes/finance/docs/)** - Finance docs
@@ -42,22 +45,28 @@ Before seeking support, please check our comprehensive documentation:
 If you've found a bug, please [create a new issue](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues/new) with:
 
 **Bug Report Template:**
+
 ```markdown
 ## Bug Description
+
 Clear and concise description of the bug
 
 ## Steps to Reproduce
+
 1. Go to '...'
 2. Click on '...'
 3. See error
 
 ## Expected Behavior
+
 What you expected to happen
 
 ## Actual Behavior
+
 What actually happened
 
 ## Environment
+
 - OS: [e.g., Windows 10, macOS 12.1, Ubuntu 20.04]
 - Node.js Version: [e.g., 18.18.0]
 - Browser: [e.g., Chrome 120]
@@ -65,7 +74,9 @@ What actually happened
 
 ## Error Messages
 ```
+
 Paste error messages or logs here
+
 ```
 
 ## Screenshots
@@ -88,9 +99,11 @@ Any other information about the problem
 ### GitHub Discussions
 
 For questions, ideas, and discussions:
+
 - [GitHub Discussions](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/discussions)
 
 **Categories:**
+
 - **💡 Ideas** - Feature suggestions and brainstorming
 - **❓ Q&A** - Ask the community for help
 - **📣 Announcements** - Updates and news
@@ -98,7 +111,7 @@ For questions, ideas, and discussions:
 
 ### Chat & Community
 
-*(Future community channels will be listed here)*
+_(Future community channels will be listed here)_
 
 ## 🚀 Feature Requests
 
@@ -109,20 +122,26 @@ We welcome feature suggestions! Before submitting:
 3. **Provide use case**: Explain why this feature would be valuable
 
 **Feature Request Template:**
+
 ```markdown
 ## Feature Description
+
 Clear description of the proposed feature
 
 ## Use Case
+
 Who would benefit and how?
 
 ## Proposed Solution
+
 Your suggested approach (optional)
 
 ## Alternatives Considered
+
 Other ways you've considered solving this (optional)
 
 ## Additional Context
+
 Mockups, examples, or references
 ```
 
@@ -131,6 +150,7 @@ Mockups, examples, or references
 ### Installation & Setup
 
 **Q: I get "Module not found" errors when running npm install**
+
 ```bash
 # Try clearing cache and reinstalling
 rm -rf node_modules package-lock.json
@@ -139,6 +159,7 @@ npm install
 ```
 
 **Q: Backend won't start - "Port 3000 already in use"**
+
 ```bash
 # Find and kill the process using port 3000
 # Linux/Mac:
@@ -151,6 +172,7 @@ taskkill /PID <PID> /F
 ```
 
 **Q: Frontend shows CORS errors**
+
 ```bash
 # Ensure backend is running and CORS is configured
 # Check apps/backend/.env:
@@ -160,6 +182,7 @@ FRONTEND_URL=http://localhost:5173
 ### Development
 
 **Q: How do I run only frontend or backend?**
+
 ```bash
 npm run dev:frontend  # Frontend only
 npm run dev:backend   # Backend only
@@ -167,6 +190,7 @@ npm run dev          # Both
 ```
 
 **Q: How do I reset the database?**
+
 ```bash
 # Delete SQLite database and restart
 rm data/dev.db
@@ -174,6 +198,7 @@ npm run dev:backend
 ```
 
 **Q: TypeScript errors during build**
+
 ```bash
 # Ensure types are installed
 npm install
@@ -194,10 +219,12 @@ Yes! See [API Documentation](docs/api/API_DOCUMENTATION.md)
 ### Deployment
 
 **Q: How do I deploy to production?**
+
 ```bash
 npm run build
 npm start
 ```
+
 See [Architecture Documentation](docs/ARCHITECTURE.md#deployment) for detailed production setup.
 
 **Q: What database should I use in production?**
@@ -227,6 +254,7 @@ Please follow our [Security Policy](SECURITY.md) for responsible disclosure.
 ## 🤝 Contributing
 
 Want to help improve ERP SteinmetZ? Check out our:
+
 - [Contributing Guide](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Development Workflow](docs/DEVELOPER_ONBOARDING.md)
@@ -236,6 +264,7 @@ Want to help improve ERP SteinmetZ? Check out our:
 ### Current Version: 0.3.0
 
 **Release Status:**
+
 - ✅ Core Features: Stable
 - ✅ API: Functional
 - ✅ Documentation: Comprehensive
@@ -244,6 +273,7 @@ Want to help improve ERP SteinmetZ? Check out our:
 - 🔄 Finance Module: Beta
 
 **Build Status:**
+
 - ✅ Backend Tests: 42/42 passing
 - ⚠️ Frontend Tests: 37/50 passing (13 pre-existing issues)
 - ✅ TypeScript Build: Successful
@@ -278,6 +308,7 @@ See [CHANGELOG.md](CHANGELOG.md) for version history.
 ## 🎯 Roadmap
 
 Want to see what's planned? Check out:
+
 - [TODO.md](TODO.md) - Prioritized task list
 - [Project Roadmap](docs/concept/_ROADMAP.md) - Long-term plans
 - [GitHub Projects](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/projects) - Current work

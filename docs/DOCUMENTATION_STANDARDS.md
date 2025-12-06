@@ -13,9 +13,11 @@ ERP SteinmetZ documentation follows these international standards:
 ### ISO/IEC/IEEE Standards
 
 #### ISO/IEC/IEEE 26514:2022
+
 **Design of user documentation**
 
 Applied principles:
+
 - Audience analysis and user personas
 - Clear, consistent language
 - Logical information architecture
@@ -23,18 +25,22 @@ Applied principles:
 - Accessibility considerations
 
 #### ISO/IEC/IEEE 26512:2018
+
 **Acquisition and supply of software user documentation**
 
 Applied principles:
+
 - Documentation planning and management
 - Quality criteria for documentation
 - Documentation deliverables
 - Review and approval processes
 
 #### ISO/IEC 25010:2011
+
 **Software quality model**
 
 Documentation quality characteristics:
+
 - **Functional suitability** - Documentation serves its purpose
 - **Performance efficiency** - Quick to find information
 - **Usability** - Easy to understand and navigate
@@ -43,6 +49,7 @@ Documentation quality characteristics:
 ### Documentation Frameworks
 
 #### Diátaxis Framework
+
 **Four-category documentation structure**
 
 1. **Tutorials** (Learning-oriented)
@@ -70,6 +77,7 @@ Documentation quality characteristics:
    - Location: `docs/explanation/`
 
 **Benefits:**
+
 - Clear separation of concerns
 - Users find what they need quickly
 - Easier to maintain
@@ -151,34 +159,44 @@ ERP_SteinmetZ_V1/
 ### Style
 
 #### Headings
+
 ```markdown
 # H1 - Document Title (One per document)
+
 ## H2 - Major Section
+
 ### H3 - Subsection
+
 #### H4 - Minor Section
 ```
 
 #### Code Blocks
+
 Always specify language:
-```markdown
+
+````markdown
 ```typescript
 const example = "Use syntax highlighting";
 ```
-```
+````
+
+````
 
 #### Links
 Use descriptive link text:
 ```markdown
 ❌ Click [here](link) for more info
 ✅ See [Contributing Guide](CONTRIBUTING.md) for details
-```
+````
 
 #### Lists
+
 - Use `-` for unordered lists
 - Use `1.` for ordered lists
 - Indent consistently (2 spaces)
 
 #### Emphasis
+
 - `**bold**` for strong emphasis
 - `*italic*` for mild emphasis
 - `` `code` `` for inline code
@@ -198,12 +216,12 @@ Use descriptive link text:
 
 ### Coverage
 
-| Category | Target | Current |
-|----------|--------|---------|
-| API Endpoints | 100% | 95%+ |
-| Modules | 100% | 95%+ |
-| Public Functions | 80%+ | 75% |
-| Error Codes | 100% | 100% |
+| Category         | Target | Current |
+| ---------------- | ------ | ------- |
+| API Endpoints    | 100%   | 95%+    |
+| Modules          | 100%   | 95%+    |
+| Public Functions | 80%+   | 75%     |
+| Error Codes      | 100%   | 100%    |
 
 ### Freshness
 
@@ -220,7 +238,7 @@ Use descriptive link text:
 ✅ **Accurate** - Information is correct and current  
 ✅ **Complete** - All features documented  
 ✅ **Consistent** - Follows standards  
-✅ **Accessible** - Works for all users  
+✅ **Accessible** - Works for all users
 
 ---
 
@@ -340,7 +358,7 @@ Common issues and solutions
 
 ### New Reference Template
 
-```markdown
+````markdown
 # [Component] Reference
 
 **Version:** X.Y.Z  
@@ -355,20 +373,24 @@ Brief description
 ### Function/Endpoint Name
 
 **Parameters:**
+
 - `param1` (type): Description
 - `param2` (type): Description
 
 **Returns:** Return type and description
 
 **Example:**
+
 ```typescript
 // Code example
 ```
+````
 
 ## See Also
 
 - [Related Reference]
-```
+
+````
 
 ### New Explanation Template
 
@@ -397,7 +419,7 @@ What does this mean for...
 
 - [Related Explanation]
 - [Architecture Decision]
-```
+````
 
 ---
 
@@ -475,6 +497,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for details.
 ## 📧 Contact
 
 **Documentation Questions?**
+
 - Check [SUPPORT.md](../SUPPORT.md)
 - Open an [issue](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
 - Contact: Thomas Heisig

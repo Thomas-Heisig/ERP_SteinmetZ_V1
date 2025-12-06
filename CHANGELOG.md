@@ -77,7 +77,6 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
   - Reorganized documentation links following Diátaxis Framework
   - Added Getting Started Tutorial link
   - Enhanced documentation structure with clear categories
-  
 - **docs/README.md**: Complete restructuring
   - Reorganized following Diátaxis Framework (tutorials, how-to, reference, explanation)
   - Added international standards compliance section

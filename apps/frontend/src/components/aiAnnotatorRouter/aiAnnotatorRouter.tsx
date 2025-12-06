@@ -10,6 +10,7 @@ import useAiAnnotatorRouter, {
   BatchOperation,
   UseAiAnnotatorRouterReturn,
 } from "../../hooks/useAiAnnotatorRouter";
+import "./aiAnnotatorRouter.css";
 
 // Styling mit verbessertem Design
 const styles = {

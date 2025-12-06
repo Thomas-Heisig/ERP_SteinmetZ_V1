@@ -61,13 +61,13 @@ interface FilterRule {
   field: string;
   operator: FilterOperator;
   value: any;
-  dataType: 'string' | 'number' | 'date' | 'boolean' | 'select';
+  dataType: "string" | "number" | "date" | "boolean" | "select";
 }
 
 // Filter Group
 interface FilterGroup {
   id: string;
-  logic: 'AND' | 'OR';
+  logic: "AND" | "OR";
   rules: (FilterRule | FilterGroup)[];
 }
 
@@ -94,22 +94,22 @@ interface FilterPreset {
 }
 
 // Filter Operators
-type FilterOperator = 
-  | 'equals'
-  | 'notEquals'
-  | 'contains'
-  | 'notContains'
-  | 'startsWith'
-  | 'endsWith'
-  | 'greaterThan'
-  | 'greaterThanOrEqual'
-  | 'lessThan'
-  | 'lessThanOrEqual'
-  | 'between'
-  | 'in'
-  | 'notIn'
-  | 'isEmpty'
-  | 'isNotEmpty';
+type FilterOperator =
+  | "equals"
+  | "notEquals"
+  | "contains"
+  | "notContains"
+  | "startsWith"
+  | "endsWith"
+  | "greaterThan"
+  | "greaterThanOrEqual"
+  | "lessThan"
+  | "lessThanOrEqual"
+  | "between"
+  | "in"
+  | "notIn"
+  | "isEmpty"
+  | "isNotEmpty";
 ```
 
 ---
@@ -626,7 +626,7 @@ export function ExportDialog({ data, onClose }: ExportDialogProps) {
 }
 
 .saved-filter-item:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
@@ -666,75 +666,92 @@ export function ExportDialog({ data, onClose }: ExportDialogProps) {
 ```typescript
 // GET /api/filters
 // List saved filters for current user
-router.get('/filters', asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const filters = await db.all(
-    'SELECT * FROM saved_filters WHERE owner_id = ? OR is_public = 1',
-    [userId]
-  );
-  res.json({ success: true, filters });
-}));
+router.get(
+  "/filters",
+  asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+    const filters = await db.all(
+      "SELECT * FROM saved_filters WHERE owner_id = ? OR is_public = 1",
+      [userId],
+    );
+    res.json({ success: true, filters });
+  }),
+);
 
 // POST /api/filters
 // Save a new filter
-router.post('/filters', validate(saveFilterSchema), asyncHandler(async (req, res) => {
-  const { name, description, filter, isPublic } = req.body;
-  const userId = req.user.id;
+router.post(
+  "/filters",
+  validate(saveFilterSchema),
+  asyncHandler(async (req, res) => {
+    const { name, description, filter, isPublic } = req.body;
+    const userId = req.user.id;
 
-  const result = await db.run(
-    'INSERT INTO saved_filters (name, description, filter, is_public, owner_id) VALUES (?, ?, ?, ?, ?)',
-    [name, description, JSON.stringify(filter), isPublic ? 1 : 0, userId]
-  );
+    const result = await db.run(
+      "INSERT INTO saved_filters (name, description, filter, is_public, owner_id) VALUES (?, ?, ?, ?, ?)",
+      [name, description, JSON.stringify(filter), isPublic ? 1 : 0, userId],
+    );
 
-  res.json({
-    success: true,
-    data: { id: result.lastID }
-  });
-}));
+    res.json({
+      success: true,
+      data: { id: result.lastID },
+    });
+  }),
+);
 
 // DELETE /api/filters/:id
 // Delete a saved filter
-router.delete('/filters/:id', asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const userId = req.user.id;
+router.delete(
+  "/filters/:id",
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
 
-  await db.run(
-    'DELETE FROM saved_filters WHERE id = ? AND owner_id = ?',
-    [id, userId]
-  );
+    await db.run("DELETE FROM saved_filters WHERE id = ? AND owner_id = ?", [
+      id,
+      userId,
+    ]);
 
-  res.json({ success: true });
-}));
+    res.json({ success: true });
+  }),
+);
 
 // POST /api/export
 // Export filtered data
-router.post('/export', asyncHandler(async (req, res) => {
-  const { data, format, includeHeaders, fields } = req.body;
+router.post(
+  "/export",
+  asyncHandler(async (req, res) => {
+    const { data, format, includeHeaders, fields } = req.body;
 
-  let fileBuffer: Buffer;
-  let mimeType: string;
+    let fileBuffer: Buffer;
+    let mimeType: string;
 
-  switch (format) {
-    case 'csv':
-      fileBuffer = exportToCSV(data, fields, includeHeaders);
-      mimeType = 'text/csv';
-      break;
-    case 'excel':
-      fileBuffer = await exportToExcel(data, fields, includeHeaders);
-      mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-      break;
-    case 'pdf':
-      fileBuffer = await exportToPDF(data, fields);
-      mimeType = 'application/pdf';
-      break;
-    default:
-      throw new BadRequestError('Invalid format');
-  }
+    switch (format) {
+      case "csv":
+        fileBuffer = exportToCSV(data, fields, includeHeaders);
+        mimeType = "text/csv";
+        break;
+      case "excel":
+        fileBuffer = await exportToExcel(data, fields, includeHeaders);
+        mimeType =
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        break;
+      case "pdf":
+        fileBuffer = await exportToPDF(data, fields);
+        mimeType = "application/pdf";
+        break;
+      default:
+        throw new BadRequestError("Invalid format");
+    }
 
-  res.setHeader('Content-Type', mimeType);
-  res.setHeader('Content-Disposition', `attachment; filename=export.${format}`);
-  res.send(fileBuffer);
-}));
+    res.setHeader("Content-Type", mimeType);
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=export.${format}`,
+    );
+    res.send(fileBuffer);
+  }),
+);
 ```
 
 ---
@@ -803,7 +820,7 @@ export function EmployeesPage() {
 
   const handleFilterChange = async (newFilter: FilterGroup) => {
     setFilter(newFilter);
-    
+
     // Apply filter
     const response = await fetch('/api/hr/employees', {
       method: 'POST',

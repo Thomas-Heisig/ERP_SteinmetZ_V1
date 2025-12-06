@@ -1,68 +1,13 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/main.tsx
 
-import React, { Suspense, lazy } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Navigate,
-} from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 
-import App from "./App";
-import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import { router } from "./routes";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { getVersionInfo } from "./version";
-
-// Lazy load heavy components for better initial load time
-const Dashboard = lazy(() => import("./components/Dashboard/Dashboard"));
-const FunctionsCatalog = lazy(
-  () => import("./components/FunctionsCatalog/FunctionsCatalog"),
-);
-const Login = lazy(() => import("./pages/Login/Login"));
-
-// Loading fallback component with improved UX
-const LoadingFallback = () => {
-  // Create animation keyframes
-  React.useEffect(() => {
-    const style = document.createElement("style");
-    style.textContent = `
-      @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(0.95); }
-      }
-      .loading-icon {
-        animation: pulse 2s ease-in-out infinite;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        gap: "1rem",
-        background: "var(--bg, #f8fafc)",
-        color: "var(--text, #1e293b)",
-      }}
-    >
-      <div className="loading-icon" style={{ fontSize: "2rem" }}>
-        🧱
-      </div>
-      <div style={{ fontSize: "1rem", fontWeight: 500 }}>
-        ERP SteinmetZ lädt...
-      </div>
-    </div>
-  );
-};
 
 // i18n MUSS zuerst geladen werden
 import "./components/i18n/i18n";
@@ -70,82 +15,13 @@ import "./components/i18n/i18n";
 // Themes & Styles
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import "./styles/theme/variables.css";
 import "./styles/base.css";
+import "./styles/components.css";
 import "./styles/light.css";
 import "./styles/dark.css";
 import "./styles/lcars.css";
 import "./styles/contrast.css";
-
-const router = createBrowserRouter([
-  {
-    path: "/login",
-    element: (
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingFallback />}>
-          <Login />
-        </Suspense>
-      </ErrorBoundary>
-    ),
-  },
-  {
-    path: "/",
-    element: <App />,
-    children: [
-      {
-        index: true,
-        element: (
-          <ProtectedRoute>
-            <ErrorBoundary>
-              <Suspense fallback={<LoadingFallback />}>
-                <Dashboard />
-              </Suspense>
-            </ErrorBoundary>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "dashboard",
-        element: (
-          <ProtectedRoute>
-            <ErrorBoundary>
-              <Suspense fallback={<LoadingFallback />}>
-                <Dashboard />
-              </Suspense>
-            </ErrorBoundary>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "catalog",
-        element: (
-          <ProtectedRoute>
-            <ErrorBoundary>
-              <Suspense fallback={<LoadingFallback />}>
-                <FunctionsCatalog />
-              </Suspense>
-            </ErrorBoundary>
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: "ai",
-        element: (
-          <ProtectedRoute>
-            <ErrorBoundary>
-              <Suspense fallback={<LoadingFallback />}>
-                <div>AI Annotator – folgt später</div>
-              </Suspense>
-            </ErrorBoundary>
-          </ProtectedRoute>
-        ),
-      },
-    ],
-  },
-  {
-    path: "*",
-    element: <Navigate to="/" replace />,
-  },
-]);
 
 // Display version info in console
 const versionInfo = getVersionInfo();
