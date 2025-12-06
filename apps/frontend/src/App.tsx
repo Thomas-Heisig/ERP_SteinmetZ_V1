@@ -10,6 +10,7 @@ import { LanguageProvider } from "./components/LanguageSwitch/LanguageProvider";
 import { LanguageSwitcher } from "./components/LanguageSwitch/LanguageSwitcher";
 
 import QuickChat from "./components/QuickChat";
+import { VERSION_INFO } from "./version";
 
 export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -113,7 +114,10 @@ export default function App() {
 
         {/* ---------- Footer + QuickChat ---------- */}
         <footer className="app-footer">
-          <small>© {new Date().getFullYear()} ERP SteinmetZ</small>
+          <small>
+            © {new Date().getFullYear()} ERP SteinmetZ | v{VERSION_INFO.version}{" "}
+            ({VERSION_INFO.environment})
+          </small>
 
           <QuickChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
         </footer>
