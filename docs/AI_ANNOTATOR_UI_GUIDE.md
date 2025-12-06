@@ -669,7 +669,7 @@ export function AnnotationViewer({ annotation, onApprove, onReject }: Annotation
   padding: 24px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .form-field {
@@ -742,10 +742,22 @@ export function AnnotationViewer({ annotation, onApprove, onReject }: Annotation
   font-weight: 500;
 }
 
-.status-pending { background: #fff3e0; color: #f57c00; }
-.status-processing { background: #e3f2fd; color: #1976d2; }
-.status-completed { background: #e8f5e9; color: #388e3c; }
-.status-failed { background: #ffebee; color: #d32f2f; }
+.status-pending {
+  background: #fff3e0;
+  color: #f57c00;
+}
+.status-processing {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+.status-completed {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+.status-failed {
+  background: #ffebee;
+  color: #d32f2f;
+}
 
 .qa-dashboard {
   padding: 24px;
@@ -762,7 +774,7 @@ export function AnnotationViewer({ annotation, onApprove, onReject }: Annotation
   padding: 24px;
   background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
@@ -882,40 +894,59 @@ export function AnnotationViewer({ annotation, onApprove, onReject }: Annotation
 
 ```typescript
 // POST /api/ai-annotator/batches
-router.post('/batches', validate(batchSchema), asyncHandler(async (req, res) => {
-  const batch = await batchService.create(req.body);
-  res.json({ success: true, data: batch });
-}));
+router.post(
+  "/batches",
+  validate(batchSchema),
+  asyncHandler(async (req, res) => {
+    const batch = await batchService.create(req.body);
+    res.json({ success: true, data: batch });
+  }),
+);
 
 // GET /api/ai-annotator/batches/:id/status
-router.get('/batches/:id/status', asyncHandler(async (req, res) => {
-  const status = await batchService.getStatus(req.params.id);
-  res.json({ success: true, status });
-}));
+router.get(
+  "/batches/:id/status",
+  asyncHandler(async (req, res) => {
+    const status = await batchService.getStatus(req.params.id);
+    res.json({ success: true, status });
+  }),
+);
 
 // GET /api/ai-annotator/qa/stats
-router.get('/qa/stats', asyncHandler(async (req, res) => {
-  const stats = await qaService.getStats();
-  res.json({ success: true, stats });
-}));
+router.get(
+  "/qa/stats",
+  asyncHandler(async (req, res) => {
+    const stats = await qaService.getStats();
+    res.json({ success: true, stats });
+  }),
+);
 
 // GET /api/ai-annotator/qa/queue
-router.get('/qa/queue', asyncHandler(async (req, res) => {
-  const items = await qaService.getReviewQueue();
-  res.json({ success: true, data: items });
-}));
+router.get(
+  "/qa/queue",
+  asyncHandler(async (req, res) => {
+    const items = await qaService.getReviewQueue();
+    res.json({ success: true, data: items });
+  }),
+);
 
 // POST /api/ai-annotator/qa/approve/:id
-router.post('/qa/approve/:id', asyncHandler(async (req, res) => {
-  await qaService.approve(req.params.id);
-  res.json({ success: true });
-}));
+router.post(
+  "/qa/approve/:id",
+  asyncHandler(async (req, res) => {
+    await qaService.approve(req.params.id);
+    res.json({ success: true });
+  }),
+);
 
 // POST /api/ai-annotator/qa/reject/:id
-router.post('/qa/reject/:id', asyncHandler(async (req, res) => {
-  await qaService.reject(req.params.id, req.body.reason);
-  res.json({ success: true });
-}));
+router.post(
+  "/qa/reject/:id",
+  asyncHandler(async (req, res) => {
+    await qaService.reject(req.params.id, req.body.reason);
+    res.json({ success: true });
+  }),
+);
 ```
 
 ---

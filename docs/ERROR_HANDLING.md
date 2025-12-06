@@ -66,20 +66,20 @@ export class APIError extends Error {
 
 #### Verfügbare Error-Klassen
 
-| Klasse | Status Code | Error Code | Verwendung |
-|--------|-------------|------------|------------|
-| `BadRequestError` | 400 | `BAD_REQUEST` | Ungültige Anfrageparameter |
-| `UnauthorizedError` | 401 | `UNAUTHORIZED` | Fehlende/ungültige Authentifizierung |
-| `ForbiddenError` | 403 | `FORBIDDEN` | Keine Berechtigung |
-| `NotFoundError` | 404 | `NOT_FOUND` | Ressource nicht gefunden |
-| `ConflictError` | 409 | `CONFLICT` | Ressourcenkonflikt |
-| `ValidationError` | 422 | `VALIDATION_ERROR` | Validierungsfehler |
-| `RateLimitError` | 429 | `RATE_LIMIT_EXCEEDED` | Rate Limit überschritten |
-| `InternalServerError` | 500 | `INTERNAL_SERVER_ERROR` | Interner Serverfehler |
-| `ServiceUnavailableError` | 503 | `SERVICE_UNAVAILABLE` | Service nicht verfügbar |
-| `DatabaseError` | 500 | `DATABASE_ERROR` | Datenbankfehler |
-| `AIProviderError` | 502 | `AI_PROVIDER_ERROR` | KI-Provider-Fehler |
-| `ExternalAPIError` | 502 | `EXTERNAL_API_ERROR` | Externer API-Fehler |
+| Klasse                    | Status Code | Error Code              | Verwendung                           |
+| ------------------------- | ----------- | ----------------------- | ------------------------------------ |
+| `BadRequestError`         | 400         | `BAD_REQUEST`           | Ungültige Anfrageparameter           |
+| `UnauthorizedError`       | 401         | `UNAUTHORIZED`          | Fehlende/ungültige Authentifizierung |
+| `ForbiddenError`          | 403         | `FORBIDDEN`             | Keine Berechtigung                   |
+| `NotFoundError`           | 404         | `NOT_FOUND`             | Ressource nicht gefunden             |
+| `ConflictError`           | 409         | `CONFLICT`              | Ressourcenkonflikt                   |
+| `ValidationError`         | 422         | `VALIDATION_ERROR`      | Validierungsfehler                   |
+| `RateLimitError`          | 429         | `RATE_LIMIT_EXCEEDED`   | Rate Limit überschritten             |
+| `InternalServerError`     | 500         | `INTERNAL_SERVER_ERROR` | Interner Serverfehler                |
+| `ServiceUnavailableError` | 503         | `SERVICE_UNAVAILABLE`   | Service nicht verfügbar              |
+| `DatabaseError`           | 500         | `DATABASE_ERROR`        | Datenbankfehler                      |
+| `AIProviderError`         | 502         | `AI_PROVIDER_ERROR`     | KI-Provider-Fehler                   |
+| `ExternalAPIError`        | 502         | `EXTERNAL_API_ERROR`    | Externer API-Fehler                  |
 
 ### 2. Error Response Format
 
@@ -125,11 +125,14 @@ export function asyncHandler(
 **Verwendung:**
 
 ```typescript
-router.get('/employees', asyncHandler(async (req, res) => {
-  // Fehler werden automatisch gefangen und an Error-Middleware weitergeleitet
-  const employees = await getEmployees();
-  res.json({ success: true, data: employees });
-}));
+router.get(
+  "/employees",
+  asyncHandler(async (req, res) => {
+    // Fehler werden automatisch gefangen und an Error-Middleware weitergeleitet
+    const employees = await getEmployees();
+    res.json({ success: true, data: employees });
+  }),
+);
 ```
 
 ### 4. Validation Middleware
@@ -137,8 +140,8 @@ router.get('/employees', asyncHandler(async (req, res) => {
 Zod-basierte Validierung für Request-Parameter:
 
 ```typescript
-import { z } from 'zod';
-import { ValidationError } from '../types/errors.js';
+import { z } from "zod";
+import { ValidationError } from "../types/errors.js";
 
 export function validate(schema: z.ZodSchema) {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -147,8 +150,8 @@ export function validate(schema: z.ZodSchema) {
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
-        throw new ValidationError('Validation failed', {
-          issues: error.errors
+        throw new ValidationError("Validation failed", {
+          issues: error.errors,
         });
       }
       next(error);
@@ -170,13 +173,13 @@ const createEmployeeSchema = z.object({
 });
 
 router.post(
-  '/employees',
+  "/employees",
   validate(createEmployeeSchema),
   asyncHandler(async (req, res) => {
     // req.body ist garantiert valide
     const employee = await createEmployee(req.body);
     res.json({ success: true, data: employee });
-  })
+  }),
 );
 ```
 
@@ -189,7 +192,7 @@ export function errorHandler(
   err: Error | APIError,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void {
   // Log error
   logger.error({
@@ -219,7 +222,7 @@ export function errorHandler(
     success: false,
     error: {
       code: ErrorCode.INTERNAL_SERVER_ERROR,
-      message: 'Internal Server Error',
+      message: "Internal Server Error",
       timestamp: new Date().toISOString(),
       path: req.path,
     },
@@ -234,27 +237,30 @@ export function errorHandler(
 ### Beispiel 1: Einfacher Route-Handler
 
 ```typescript
-import { asyncHandler } from '../middleware/asyncHandler.js';
-import { NotFoundError } from '../types/errors.js';
+import { asyncHandler } from "../middleware/asyncHandler.js";
+import { NotFoundError } from "../types/errors.js";
 
-router.get('/employees/:id', asyncHandler(async (req, res) => {
-  const employee = await findEmployeeById(req.params.id);
-  
-  if (!employee) {
-    throw new NotFoundError('Employee not found', { id: req.params.id });
-  }
-  
-  res.json({ success: true, data: employee });
-}));
+router.get(
+  "/employees/:id",
+  asyncHandler(async (req, res) => {
+    const employee = await findEmployeeById(req.params.id);
+
+    if (!employee) {
+      throw new NotFoundError("Employee not found", { id: req.params.id });
+    }
+
+    res.json({ success: true, data: employee });
+  }),
+);
 ```
 
 ### Beispiel 2: Mit Validierung
 
 ```typescript
-import { z } from 'zod';
-import { validate } from '../middleware/validation.js';
-import { asyncHandler } from '../middleware/asyncHandler.js';
-import { BadRequestError } from '../types/errors.js';
+import { z } from "zod";
+import { validate } from "../middleware/validation.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
+import { BadRequestError } from "../types/errors.js";
 
 const updateEmployeeSchema = z.object({
   firstName: z.string().min(1).optional(),
@@ -264,44 +270,47 @@ const updateEmployeeSchema = z.object({
 });
 
 router.put(
-  '/employees/:id',
+  "/employees/:id",
   validate(updateEmployeeSchema),
   asyncHandler(async (req, res) => {
     const employee = await updateEmployee(req.params.id, req.body);
-    
+
     if (!employee) {
-      throw new NotFoundError('Employee not found');
+      throw new NotFoundError("Employee not found");
     }
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       data: employee,
-      message: 'Employee updated successfully'
+      message: "Employee updated successfully",
     });
-  })
+  }),
 );
 ```
 
 ### Beispiel 3: Error mit Details
 
 ```typescript
-import { ValidationError } from '../types/errors.js';
+import { ValidationError } from "../types/errors.js";
 
-router.post('/employees', asyncHandler(async (req, res) => {
-  // Custom validation logic
-  const existingEmployee = await findEmployeeByEmail(req.body.email);
-  
-  if (existingEmployee) {
-    throw new ValidationError('Email already in use', {
-      field: 'email',
-      value: req.body.email,
-      suggestion: 'Please use a different email address'
-    });
-  }
-  
-  const employee = await createEmployee(req.body);
-  res.json({ success: true, data: employee });
-}));
+router.post(
+  "/employees",
+  asyncHandler(async (req, res) => {
+    // Custom validation logic
+    const existingEmployee = await findEmployeeByEmail(req.body.email);
+
+    if (existingEmployee) {
+      throw new ValidationError("Email already in use", {
+        field: "email",
+        value: req.body.email,
+        suggestion: "Please use a different email address",
+      });
+    }
+
+    const employee = await createEmployee(req.body);
+    res.json({ success: true, data: employee });
+  }),
+);
 ```
 
 ---
@@ -333,32 +342,35 @@ router.post('/employees', asyncHandler(async (req, res) => {
 ### Schritt 1: Import Error-Klassen
 
 ```typescript
-import { 
-  BadRequestError, 
-  NotFoundError, 
-  ValidationError 
-} from '../types/errors.js';
-import { asyncHandler } from '../middleware/asyncHandler.js';
+import {
+  BadRequestError,
+  NotFoundError,
+  ValidationError,
+} from "../types/errors.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
 ```
 
 ### Schritt 2: Wrap Route-Handler
 
 ```typescript
 // Vorher
-router.get('/endpoint', async (req, res) => {
+router.get("/endpoint", async (req, res) => {
   try {
     const data = await getData();
     res.json({ success: true, data });
   } catch (error) {
-    res.status(500).json({ error: 'Something went wrong' });
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 
 // Nachher
-router.get('/endpoint', asyncHandler(async (req, res) => {
-  const data = await getData();
-  res.json({ success: true, data });
-}));
+router.get(
+  "/endpoint",
+  asyncHandler(async (req, res) => {
+    const data = await getData();
+    res.json({ success: true, data });
+  }),
+);
 ```
 
 ### Schritt 3: Throw Specific Errors
@@ -366,20 +378,20 @@ router.get('/endpoint', asyncHandler(async (req, res) => {
 ```typescript
 // Vorher
 if (!resource) {
-  return res.status(404).json({ error: 'Not found' });
+  return res.status(404).json({ error: "Not found" });
 }
 
 // Nachher
 if (!resource) {
-  throw new NotFoundError('Resource not found', { id: req.params.id });
+  throw new NotFoundError("Resource not found", { id: req.params.id });
 }
 ```
 
 ### Schritt 4: Add Validation
 
 ```typescript
-import { z } from 'zod';
-import { validate } from '../middleware/validation.js';
+import { z } from "zod";
+import { validate } from "../middleware/validation.js";
 
 const schema = z.object({
   name: z.string().min(1),
@@ -387,13 +399,13 @@ const schema = z.object({
 });
 
 router.post(
-  '/endpoint',
+  "/endpoint",
   validate(schema),
   asyncHandler(async (req, res) => {
     // req.body ist garantiert valide
     const result = await createResource(req.body);
     res.json({ success: true, data: result });
-  })
+  }),
 );
 ```
 
@@ -404,26 +416,26 @@ router.post(
 Beispiel für Error-Handler-Tests:
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { NotFoundError, ValidationError } from '../types/errors.js';
+import { describe, it, expect } from "vitest";
+import { NotFoundError, ValidationError } from "../types/errors.js";
 
-describe('Error Classes', () => {
-  it('should create NotFoundError with correct properties', () => {
-    const error = new NotFoundError('Resource not found', { id: '123' });
-    
+describe("Error Classes", () => {
+  it("should create NotFoundError with correct properties", () => {
+    const error = new NotFoundError("Resource not found", { id: "123" });
+
     expect(error.statusCode).toBe(404);
-    expect(error.code).toBe('NOT_FOUND');
-    expect(error.message).toBe('Resource not found');
-    expect(error.details).toEqual({ id: '123' });
+    expect(error.code).toBe("NOT_FOUND");
+    expect(error.message).toBe("Resource not found");
+    expect(error.details).toEqual({ id: "123" });
     expect(error.isOperational).toBe(true);
   });
 
-  it('should serialize error to JSON', () => {
-    const error = new ValidationError('Invalid input');
+  it("should serialize error to JSON", () => {
+    const error = new ValidationError("Invalid input");
     const json = error.toJSON();
-    
-    expect(json.code).toBe('VALIDATION_ERROR');
-    expect(json.message).toBe('Invalid input');
+
+    expect(json.code).toBe("VALIDATION_ERROR");
+    expect(json.message).toBe("Invalid input");
     expect(json.statusCode).toBe(422);
     expect(json.timestamp).toBeDefined();
   });

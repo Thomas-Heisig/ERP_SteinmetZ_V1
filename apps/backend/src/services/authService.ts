@@ -38,7 +38,10 @@ export class AuthService {
   static async init(): Promise<void> {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    const migrationPath = path.join(__dirname, "../migrations/create_auth_tables.sql");
+    const migrationPath = path.join(
+      __dirname,
+      "../migrations/create_auth_tables.sql",
+    );
     const fs = await import("fs/promises");
     const sql = await fs.readFile(migrationPath, "utf-8");
 

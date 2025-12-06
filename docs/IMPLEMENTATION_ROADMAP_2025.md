@@ -47,24 +47,28 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 #### 5. Module & APIs (80%)
 
 ##### HR-Modul ✅
+
 - 14 Endpoints vollständig implementiert
 - Standardisiertes Error-Handling
 - Zod-Validierung
 - Vollständige API-Dokumentation
 
 ##### Finance-Modul ✅
+
 - 19 Endpoints vollständig implementiert
 - Standardisiertes Error-Handling
 - Zod-Validierung
 - Vollständige API-Dokumentation
 
 ##### Functions Catalog ✅
+
 - 15.472 Funktionsknoten
 - API mit Caching (15 min TTL)
 - Enhanced Search Service
 - Vollständige Dokumentation
 
 ##### AI-Integration ✅
+
 - Multi-Provider-Support (OpenAI, Ollama, Anthropic)
 - Fallback-Mechanismus
 - Health-Checks
@@ -96,6 +100,7 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 ```
 
 **Deliverables:**
+
 - Funktionierendes Real-Time Dashboard
 - Live-Chat mit Typing-Indicator
 - Push-Benachrichtigungen
@@ -113,6 +118,7 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 ```
 
 **Deliverables:**
+
 - Voll funktionsfähiger Filter Builder
 - Gespeicherte Filter pro Benutzer
 - Export in 3 Formaten
@@ -130,6 +136,7 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 ```
 
 **Deliverables:**
+
 - Moderne Search-Experience
 - Fuzzy-Search mit Highlighting
 - Filter-basierte Suche
@@ -147,6 +154,7 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 ```
 
 **Deliverables:**
+
 - Batch-Creation-Workflow
 - Echtzeit-Fortschrittsanzeige
 - Historie aller Batches
@@ -164,6 +172,7 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 ```
 
 **Deliverables:**
+
 - Vollständiges QA-System
 - Review-Prozess für Annotations
 - Qualitätsmetriken-Dashboard
@@ -181,6 +190,7 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 ```
 
 **Deliverables:**
+
 - Performance-Verbesserung 20%+
 - Reduzierte DB-Load
 - Optimierte Indices
@@ -200,6 +210,7 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 ```
 
 **Deliverables:**
+
 - Storybook mit allen Komponenten
 - Automatische Code-Quality-Checks
 - E2E-Test-Suite
@@ -210,15 +221,15 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 
 ### Aktuelle Metriken (Dezember 2025)
 
-| Metrik | Aktuell | Ziel Q1 2026 |
-|--------|---------|--------------|
-| Code Coverage | 86% | 90% |
-| API Response Time (P95) | 87ms | <50ms |
-| Build Time | 45s | <30s |
-| Bundle Size (Frontend) | 850KB | <700KB |
-| Backend Tests | 42 | 60+ |
-| Frontend Tests | 50 | 80+ |
-| Documentation Pages | 25+ | 35+ |
+| Metrik                  | Aktuell | Ziel Q1 2026 |
+| ----------------------- | ------- | ------------ |
+| Code Coverage           | 86%     | 90%          |
+| API Response Time (P95) | 87ms    | <50ms        |
+| Build Time              | 45s     | <30s         |
+| Bundle Size (Frontend)  | 850KB   | <700KB       |
+| Backend Tests           | 42      | 60+          |
+| Frontend Tests          | 50      | 80+          |
+| Documentation Pages     | 25+     | 35+          |
 
 ### Performance-Ziele
 
@@ -241,18 +252,21 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 ### Q2 2025: Enterprise Features
 
 #### HR-Modul Erweiterung
+
 - Vollständige Mitarbeiterverwaltung
 - Zeiterfassung mit Genehmigungsworkflows
 - Payroll-Integration
 - Self-Service-Portal für Mitarbeiter
 
 #### Finance-Modul Erweiterung
+
 - Automatisiertes Mahnwesen
 - XRechnung/ZUGFeRD-Support
 - DATEV-Schnittstelle
 - OCR für Eingangsrechnungen
 
 #### Workflow-Engine
+
 - BPMN 2.0 Editor
 - Process-Automation
 - Eskalationsregeln
@@ -326,6 +340,7 @@ Dieses Dokument bietet eine strukturierte Übersicht über den aktuellen Stand, 
 ### Code Examples
 
 Alle Guides enthalten vollständige, funktionsfähige Code-Beispiele:
+
 - TypeScript/React Components
 - Backend API-Endpoints
 - Tests (Vitest, React Testing Library)
