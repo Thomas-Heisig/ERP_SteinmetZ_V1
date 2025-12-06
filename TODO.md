@@ -72,9 +72,16 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - [x] quickchatRouter mit standardisierten Errors + Zod-Validierung
   - [x] hrRouter vollständig aktualisiert (14/14 Endpoints)
   - [x] financeRouter vollständig aktualisiert (19/19 Endpoints)
-  - [ ] Verbleibende Router aktualisieren (AI, Dashboard, Diagnostics, etc.) - Optional
-  - **Aufwand**: 6 Stunden (abgeschlossen für Kern-Module)
-  - **Ergebnis**: Vollständige Error-Handling-Infrastruktur für HR & Finance Module
+  - [x] dashboard.ts aktualisiert mit asyncHandler (2025-12-06)
+  - [x] diagnosticsRouter.ts aktualisiert mit asyncHandler (2025-12-06)
+  - [x] systemInfoRouter.ts aktualisiert mit asyncHandler (2025-12-06)
+  - [x] authRouter.ts aktualisiert mit asyncHandler (2025-12-06)
+  - [x] calendarRouter.ts aktualisiert mit asyncHandler (2025-12-06)
+  - [ ] innovationRouter.ts (9 Endpoints) - Ausstehend
+  - [ ] aiRouter.ts (10 Endpoints) - Ausstehend
+  - [ ] aiAnnotatorRouter.ts (69 Endpoints) - Ausstehend (Sehr umfangreich)
+  - **Aufwand**: 8 Stunden (13/16 Router komplett, 3 große Router ausstehend)
+  - **Ergebnis**: Standardisiertes Error-Handling für 13 von 16 Routern implementiert
 
 - [x] **AI Provider Connection Tests** ✅ ERLEDIGT (2024-12-04)
   - [x] Health-Checks für alle Provider (OpenAI, Ollama, Anthropic, Fallback)
