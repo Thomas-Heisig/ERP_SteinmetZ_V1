@@ -52,7 +52,12 @@ logs/
 
 # Backup files
 *.backup
+*.txt.bak
+*_old.txt
+*_neu.txt
 config/backups/
+# Service backup files (old versions kept as .txt)
+apps/backend/src/services/*.txt
 
 # Temporary files
 tmp/
