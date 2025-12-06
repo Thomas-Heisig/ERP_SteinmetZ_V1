@@ -39,6 +39,7 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@types/async-retry": "^1.4.9",
     "@types/bcrypt": "^6.0.0",
     "@types/connect-redis": "^0.0.23",
@@ -51,7 +52,10 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.10.1",
     "@types/socket.io": "^3.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.48.1",
+    "@typescript-eslint/parser": "^8.48.1",
     "eslint": "^9.39.0",
+    "globals": "^16.5.0",
     "rimraf": "^5.0.5",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

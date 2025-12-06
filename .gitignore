@@ -62,3 +62,11 @@ apps/backend/src/services/*.txt
 # Temporary files
 tmp/
 temp/
+
+# Secrets and sensitive files
+github.txt
+*.token
+*.secret
+secrets/
+.env.*
+!.env.example
