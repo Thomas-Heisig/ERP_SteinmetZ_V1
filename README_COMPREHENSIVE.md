@@ -1,6 +1,6 @@
 # ERP SteinmetZ – Vollständiges Enterprise ERP mit KI-gestütztem AI Annotator
 
-[![Version](https://img.shields.io/badge/Version-0.2.0-blue.svg)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1)
+[![Version](https://img.shields.io/badge/Version-0.3.0-blue.svg)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1)
 [![Node](https://img.shields.io/badge/Node-%3E%3D18.18.0-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -18,7 +18,9 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 
 ---
 
-## 📊 Aktueller Projektstand (Dezember 2024)
+## 📊 Aktueller Projektstand (Dezember 2025)
+
+> **📘 Hinweis**: Diese Datei enthält die vollständige technische Dokumentation. Für strukturierte Navigation nach internationalen Standards siehe [Documentation Hub](docs/README.md).
 
 ### ✅ Vollständig Implementiert
 
