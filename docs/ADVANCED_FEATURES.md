@@ -25,11 +25,13 @@ The Advanced Filter system allows users to create, save, and apply complex filte
 ### API Endpoints
 
 #### Get All Filters
+
 ```http
 GET /api/ai-annotator/filters?type={filterType}&publicOnly={boolean}
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -50,6 +52,7 @@ GET /api/ai-annotator/filters?type={filterType}&publicOnly={boolean}
 ```
 
 #### Create Filter
+
 ```http
 POST /api/ai-annotator/filters
 Content-Type: application/json
@@ -69,11 +72,13 @@ Content-Type: application/json
 ```
 
 #### Apply Filter
+
 ```http
 POST /api/ai-annotator/filters/{id}/apply
 ```
 
 #### Export Filtered Results
+
 ```http
 POST /api/ai-annotator/filters/export
 Content-Type: application/json
@@ -99,28 +104,29 @@ import { FilterBuilder } from "@/components/AdvancedFilters";
     // Save filter for later use
     console.log("Saving filter:", name, filter);
   }}
-/>
+/>;
 ```
 
 ### Filter Configuration Schema
 
 ```typescript
 interface FilterConfig {
-  query?: string;                          // Text search
-  kinds?: string[];                        // Node types
-  tags?: string[];                         // Tags
-  businessArea?: string[];                 // Business areas
-  annotationStatus?: string[];             // Status filter
-  complexityScore?: {                      // Complexity range
+  query?: string; // Text search
+  kinds?: string[]; // Node types
+  tags?: string[]; // Tags
+  businessArea?: string[]; // Business areas
+  annotationStatus?: string[]; // Status filter
+  complexityScore?: {
+    // Complexity range
     min?: number;
     max?: number;
   };
-  createdAfter?: string;                   // Date filters
+  createdAfter?: string; // Date filters
   createdBefore?: string;
-  minConfidence?: number;                  // Quality filters
+  minConfidence?: number; // Quality filters
   hasSchema?: boolean;
   hasMeta?: boolean;
-  sortBy?: string;                         // Sorting
+  sortBy?: string; // Sorting
   sortOrder?: "asc" | "desc";
 }
 ```
@@ -141,6 +147,7 @@ Enhanced batch processing system with progress tracking, visualization, and deta
 ### API Endpoints
 
 #### Create Batch
+
 ```http
 POST /api/ai-annotator/batch/create
 Content-Type: application/json
@@ -159,6 +166,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -173,16 +181,19 @@ Content-Type: application/json
 ```
 
 #### Get Batch Details
+
 ```http
 GET /api/ai-annotator/batch/{id}/details
 ```
 
 #### Get Batch Visualization
+
 ```http
 GET /api/ai-annotator/batch/{id}/visualization
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -203,11 +214,13 @@ GET /api/ai-annotator/batch/{id}/visualization
 ```
 
 #### Get Batch History
+
 ```http
 GET /api/ai-annotator/batch/history?operation={op}&status={status}&limit={n}
 ```
 
 #### Cancel Batch
+
 ```http
 POST /api/ai-annotator/batch/{id}/cancel-v2
 ```
@@ -276,11 +289,13 @@ Comprehensive quality assurance system for manual review and approval workflows.
 ### API Endpoints
 
 #### Get QA Dashboard
+
 ```http
 GET /api/ai-annotator/qa/dashboard
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -301,11 +316,13 @@ GET /api/ai-annotator/qa/dashboard
 ```
 
 #### Get Reviews by Status
+
 ```http
 GET /api/ai-annotator/qa/reviews?status={status}&limit={n}&offset={m}
 ```
 
 #### Create Review
+
 ```http
 POST /api/ai-annotator/qa/reviews
 Content-Type: application/json
@@ -319,6 +336,7 @@ Content-Type: application/json
 ```
 
 #### Update Review
+
 ```http
 PUT /api/ai-annotator/qa/reviews/{id}
 Content-Type: application/json
@@ -331,6 +349,7 @@ Content-Type: application/json
 ```
 
 #### Approve Review
+
 ```http
 POST /api/ai-annotator/qa/reviews/{id}/approve
 Content-Type: application/json
@@ -342,6 +361,7 @@ Content-Type: application/json
 ```
 
 #### Reject Review
+
 ```http
 POST /api/ai-annotator/qa/reviews/{id}/reject
 Content-Type: application/json
@@ -353,22 +373,25 @@ Content-Type: application/json
 ```
 
 #### Get Quality Trends
+
 ```http
 GET /api/ai-annotator/qa/trends?metricType={type}&days={n}
 ```
 
 #### Calculate Node Quality Metrics
+
 ```http
 POST /api/ai-annotator/qa/metrics/node/{nodeId}
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
     "completeness": 0.85,
-    "accuracy": 0.90,
+    "accuracy": 0.9,
     "consistency": 0.88,
     "confidence": 0.87,
     "overallScore": 87,
@@ -394,7 +417,7 @@ POST /api/ai-annotator/qa/metrics/node/{nodeId}
 ```tsx
 import { QADashboard } from "@/components/QualityDashboard";
 
-<QADashboard apiBaseUrl="http://localhost:3000" />
+<QADashboard apiBaseUrl="http://localhost:3000" />;
 ```
 
 ### Quality Metrics Calculation
@@ -422,11 +445,13 @@ Comprehensive model management system for monitoring, comparison, and cost track
 ### API Endpoints
 
 #### Get All Model Stats
+
 ```http
 GET /api/ai-annotator/models/stats?days={n}
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -438,7 +463,7 @@ GET /api/ai-annotator/models/stats?days={n}
       "successfulRequests": 1450,
       "failedRequests": 50,
       "totalTokens": 150000,
-      "totalCost": 45.50,
+      "totalCost": 45.5,
       "averageDuration": 1200,
       "successRate": 0.967
     }
@@ -447,11 +472,13 @@ GET /api/ai-annotator/models/stats?days={n}
 ```
 
 #### Get Model Stats
+
 ```http
 GET /api/ai-annotator/models/stats/{modelName}?days={n}
 ```
 
 #### Compare Models
+
 ```http
 POST /api/ai-annotator/models/compare
 Content-Type: application/json
@@ -463,6 +490,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -481,11 +509,13 @@ Content-Type: application/json
 ```
 
 #### Get Cost Breakdown
+
 ```http
 GET /api/ai-annotator/models/costs?period={day|week|month}
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -498,7 +528,7 @@ GET /api/ai-annotator/models/costs?period={day|week|month}
       {
         "modelName": "gpt-4",
         "provider": "openai",
-        "cost": 350.50,
+        "cost": 350.5,
         "requests": 1500,
         "tokens": 150000
       }
@@ -515,21 +545,25 @@ GET /api/ai-annotator/models/costs?period={day|week|month}
 ```
 
 #### Get Usage Timeline
+
 ```http
 GET /api/ai-annotator/models/usage-timeline?days={n}&granularity={hour|day}
 ```
 
 #### Get Model Availability
+
 ```http
 GET /api/ai-annotator/models/availability
 ```
 
 #### Get Model Recommendations
+
 ```http
 GET /api/ai-annotator/models/recommendations?prioritize={speed|accuracy|cost|balanced}&maxCost={n}&minAccuracy={n}
 ```
 
 #### Get Registered Models
+
 ```http
 GET /api/ai-annotator/models/registered
 ```
@@ -539,18 +573,20 @@ GET /api/ai-annotator/models/registered
 ```tsx
 import { ModelComparison } from "@/components/ModelManagement";
 
-<ModelComparison apiBaseUrl="http://localhost:3000" />
+<ModelComparison apiBaseUrl="http://localhost:3000" />;
 ```
 
 ### Cost Optimization
 
 The system automatically tracks:
+
 - Cost per request
 - Cost per token
 - Cost per operation type
 - Total cost over time
 
 Use the recommendations endpoint to find the best model for your needs based on:
+
 - Speed requirements
 - Accuracy requirements
 - Budget constraints
@@ -560,6 +596,7 @@ Use the recommendations endpoint to find the best model for your needs based on:
 ## Database Schema
 
 ### Saved Filters Table
+
 ```sql
 CREATE TABLE saved_filters (
   id TEXT PRIMARY KEY,
@@ -577,6 +614,7 @@ CREATE TABLE saved_filters (
 ```
 
 ### QA Reviews Table
+
 ```sql
 CREATE TABLE qa_reviews (
   id TEXT PRIMARY KEY,
@@ -592,6 +630,7 @@ CREATE TABLE qa_reviews (
 ```
 
 ### Batch Results Table
+
 ```sql
 CREATE TABLE batch_results (
   id TEXT PRIMARY KEY,
@@ -608,6 +647,7 @@ CREATE TABLE batch_results (
 ```
 
 ### Model Usage Stats Table
+
 ```sql
 CREATE TABLE model_usage_stats (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -623,6 +663,7 @@ CREATE TABLE model_usage_stats (
 ```
 
 ### Quality Metrics History Table
+
 ```sql
 CREATE TABLE quality_metrics_history (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -670,16 +711,19 @@ npm test -- ModelComparison
 ## Performance Considerations
 
 ### Filtering
+
 - Filters are applied in-memory for fast results
 - Large datasets (>10,000 nodes) may require pagination
 - Consider implementing server-side filtering for very large datasets
 
 ### Batch Processing
+
 - Batch operations are processed in chunks to avoid memory issues
 - Parallel requests are limited to prevent API rate limits
 - Progress is tracked and persisted for reliability
 
 ### Model Management
+
 - Statistics are aggregated periodically for performance
 - Old statistics can be cleaned up automatically
 - Caching is recommended for frequently accessed metrics
@@ -689,24 +733,28 @@ npm test -- ModelComparison
 ## Future Enhancements
 
 ### Advanced Filters
+
 - [ ] Visual query builder with drag-and-drop
 - [ ] Filter templates marketplace
 - [ ] Advanced boolean logic (AND/OR/NOT)
 - [ ] Saved filter sharing between users
 
 ### Batch Processing
+
 - [ ] Scheduled batch operations
 - [ ] Batch dependencies and workflows
 - [ ] Email notifications on completion
 - [ ] Batch result comparison
 
 ### Quality Assurance
+
 - [ ] Automated quality scoring rules
 - [ ] Reviewer assignment automation
 - [ ] Quality improvement suggestions
 - [ ] Compliance reporting
 
 ### Model Management
+
 - [ ] Automatic model selection based on requirements
 - [ ] Cost forecasting
 - [ ] Model A/B testing framework
@@ -717,6 +765,7 @@ npm test -- ModelComparison
 ## Support
 
 For issues, questions, or feature requests, please:
+
 1. Check the existing documentation
 2. Search closed issues in the repository
 3. Open a new issue with detailed information

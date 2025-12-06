@@ -32,7 +32,7 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
     try {
       setLoading(true);
       const response = await fetch(
-        `${apiBaseUrl}/api/ai-annotator/models/stats?days=${selectedDays}`
+        `${apiBaseUrl}/api/ai-annotator/models/stats?days=${selectedDays}`,
       );
       const data = await response.json();
 
@@ -76,7 +76,9 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
         </div>
         <div style={styles.summaryCard}>
           <div style={styles.summaryLabel}>Total Requests</div>
-          <div style={styles.summaryValue}>{totalRequests.toLocaleString()}</div>
+          <div style={styles.summaryValue}>
+            {totalRequests.toLocaleString()}
+          </div>
         </div>
         <div style={styles.summaryCard}>
           <div style={styles.summaryLabel}>Total Cost</div>
@@ -99,14 +101,19 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
               <div style={styles.tableCell}>Total Cost</div>
             </div>
             {models.map((model) => (
-              <div key={`${model.modelName}-${model.provider}`} style={styles.tableRow}>
+              <div
+                key={`${model.modelName}-${model.provider}`}
+                style={styles.tableRow}
+              >
                 <div style={styles.tableCell}>
                   <strong>{model.modelName}</strong>
                 </div>
                 <div style={styles.tableCell}>
                   <span style={styles.providerBadge}>{model.provider}</span>
                 </div>
-                <div style={styles.tableCell}>{model.totalRequests.toLocaleString()}</div>
+                <div style={styles.tableCell}>
+                  {model.totalRequests.toLocaleString()}
+                </div>
                 <div style={styles.tableCell}>
                   <div style={styles.progressContainer}>
                     <div
@@ -126,7 +133,9 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
                     </span>
                   </div>
                 </div>
-                <div style={styles.tableCell}>{Math.round(model.averageDuration)}ms</div>
+                <div style={styles.tableCell}>
+                  {Math.round(model.averageDuration)}ms
+                </div>
                 <div style={styles.tableCell}>
                   <strong>${model.totalCost.toFixed(2)}</strong>
                 </div>
@@ -141,16 +150,22 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
         <h2 style={styles.sectionTitle}>Cost Efficiency</h2>
         <div style={styles.chartContainer}>
           {models.map((model) => {
-            const costPerRequest = model.totalRequests > 0 
-              ? model.totalCost / model.totalRequests 
-              : 0;
-            const maxCost = Math.max(...models.map(m => 
-              m.totalRequests > 0 ? m.totalCost / m.totalRequests : 0
-            ));
+            const costPerRequest =
+              model.totalRequests > 0
+                ? model.totalCost / model.totalRequests
+                : 0;
+            const maxCost = Math.max(
+              ...models.map((m) =>
+                m.totalRequests > 0 ? m.totalCost / m.totalRequests : 0,
+              ),
+            );
             const barWidth = maxCost > 0 ? (costPerRequest / maxCost) * 100 : 0;
 
             return (
-              <div key={`${model.modelName}-${model.provider}`} style={styles.chartRow}>
+              <div
+                key={`${model.modelName}-${model.provider}`}
+                style={styles.chartRow}
+              >
                 <div style={styles.chartLabel}>
                   {model.modelName} ({model.provider})
                 </div>

@@ -31,6 +31,45 @@ const createEmployeeSchema = z.object({
   employeeNumber: z.string().optional(),
 });
 
+const timeEntryQuerySchema = z.object({
+  employeeId: z.string().optional(),
+  startDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  endDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+});
+
+const createTimeEntrySchema = z.object({
+  employeeId: z.string().min(1),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  startTime: z.string().regex(/^\d{2}:\d{2}$/),
+  endTime: z.string().regex(/^\d{2}:\d{2}$/),
+  breakMinutes: z.number().int().min(0),
+  type: z.enum(["regular", "overtime", "sick", "vacation"]).optional(),
+});
+
+const leaveRequestQuerySchema = z.object({
+  employeeId: z.string().optional(),
+  status: z.enum(["pending", "approved", "rejected"]).optional(),
+});
+
+const createLeaveRequestSchema = z.object({
+  employeeId: z.string().min(1),
+  type: z.enum(["vacation", "sick", "unpaid", "parental"]),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  days: z.number().int().positive().optional(),
+  reason: z.string().optional(),
+});
+
+const leaveActionSchema = z.object({
+  reason: z.string().optional(),
+});
+
 /**
  * HR Module Router
  * Handles employee management, time tracking, leave management, and payroll
@@ -220,7 +259,7 @@ router.put(
   "/employees/:id",
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    
+
     // Validate input (using partial schema for updates)
     const validationResult = createEmployeeSchema.partial().safeParse(req.body);
     if (!validationResult.success) {
@@ -229,7 +268,7 @@ router.put(
         validationResult.error.issues,
       );
     }
-    
+
     const updateData = validationResult.data;
 
     // TODO: Update in database
@@ -272,9 +311,19 @@ router.delete(
  * GET /api/hr/time-entries
  * Get time entries with optional filters
  */
-router.get("/time-entries", async (req: Request, res: Response) => {
-  try {
-    const { employeeId, startDate, endDate } = req.query;
+router.get(
+  "/time-entries",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate query parameters
+    const validationResult = timeEntryQuerySchema.safeParse(req.query);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid query parameters",
+        validationResult.error.issues,
+      );
+    }
+
+    const { employeeId, startDate, endDate } = validationResult.data;
 
     // TODO: Replace with actual database query
     const mockEntries = [
@@ -290,43 +339,51 @@ router.get("/time-entries", async (req: Request, res: Response) => {
       },
     ];
 
+    // Apply filters
+    let filteredEntries = mockEntries;
+    if (employeeId) {
+      filteredEntries = filteredEntries.filter(
+        (entry) => entry.employeeId === employeeId,
+      );
+    }
+    // Note: startDate and endDate filtering would be applied here in production
+
     res.json({
       success: true,
-      data: mockEntries,
-      count: mockEntries.length,
+      data: filteredEntries,
+      count: filteredEntries.length,
     });
-  } catch (error) {
-    console.error("[HR] Error fetching time entries:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch time entries",
-    });
-  }
-});
+  }),
+);
 
 /**
  * POST /api/hr/time-entries
  * Create a new time entry
  */
-router.post("/time-entries", async (req: Request, res: Response) => {
-  try {
-    const timeEntry = req.body;
+router.post(
+  "/time-entries",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate input
+    const validationResult = createTimeEntrySchema.safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid time entry data",
+        validationResult.error.issues,
+      );
+    }
 
-    // TODO: Validate and save to database
+    const timeEntry = validationResult.data;
+
+    // TODO: Save to database
+    // In production: const entry = await timeEntryService.create(timeEntry);
 
     res.status(201).json({
       success: true,
-      data: { id: Date.now().toString(), ...timeEntry },
+      data: { id: Date.now().toString(), ...timeEntry, totalHours: 8 },
       message: "Time entry created successfully",
     });
-  } catch (error) {
-    console.error("[HR] Error creating time entry:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to create time entry",
-    });
-  }
-});
+  }),
+);
 
 // ============================================================================
 // LEAVE MANAGEMENT
@@ -336,9 +393,19 @@ router.post("/time-entries", async (req: Request, res: Response) => {
  * GET /api/hr/leave-requests
  * Get leave requests with optional filters
  */
-router.get("/leave-requests", async (req: Request, res: Response) => {
-  try {
-    const { employeeId, status } = req.query;
+router.get(
+  "/leave-requests",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate query parameters
+    const validationResult = leaveRequestQuerySchema.safeParse(req.query);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid query parameters",
+        validationResult.error.issues,
+      );
+    }
+
+    const { employeeId, status } = validationResult.data;
 
     // TODO: Replace with actual database query
     const mockRequests = [
@@ -355,45 +422,61 @@ router.get("/leave-requests", async (req: Request, res: Response) => {
       },
     ];
 
+    // Apply filters
+    let filteredRequests = mockRequests;
+    if (employeeId) {
+      filteredRequests = filteredRequests.filter(
+        (req) => req.employeeId === employeeId,
+      );
+    }
+    if (status) {
+      filteredRequests = filteredRequests.filter(
+        (req) => req.status === status,
+      );
+    }
+
     res.json({
       success: true,
-      data: mockRequests,
-      count: mockRequests.length,
+      data: filteredRequests,
+      count: filteredRequests.length,
     });
-  } catch (error) {
-    console.error("[HR] Error fetching leave requests:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch leave requests",
-    });
-  }
-});
+  }),
+);
 
 /**
  * POST /api/hr/leave-requests
  * Create a new leave request
  */
-router.post("/leave-requests", async (req: Request, res: Response) => {
-  try {
-    const leaveRequest = req.body;
+router.post(
+  "/leave-requests",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate input
+    const validationResult = createLeaveRequestSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid leave request data",
+        validationResult.error.issues,
+      );
+    }
 
-    // TODO: Validate and save to database
-    // TODO: Calculate days automatically
+    const leaveRequest = validationResult.data;
+
+    // TODO: Save to database
+    // TODO: Calculate days automatically if not provided
     // TODO: Check remaining leave balance
 
     res.status(201).json({
       success: true,
-      data: { id: Date.now().toString(), ...leaveRequest, status: "pending" },
+      data: {
+        id: Date.now().toString(),
+        ...leaveRequest,
+        status: "pending",
+        requestedAt: new Date().toISOString(),
+      },
       message: "Leave request submitted successfully",
     });
-  } catch (error) {
-    console.error("[HR] Error creating leave request:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to create leave request",
-    });
-  }
-});
+  }),
+);
 
 /**
  * PUT /api/hr/leave-requests/:id/approve
@@ -401,25 +484,21 @@ router.post("/leave-requests", async (req: Request, res: Response) => {
  */
 router.put(
   "/leave-requests/:id/approve",
-  async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params;
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-      // TODO: Update status in database
-      // TODO: Deduct from leave balance
+    // TODO: Update status in database
+    // In production: const updated = await leaveRequestService.approve(id);
+    // if (!updated) throw new NotFoundError("Leave request not found");
+    // TODO: Deduct from leave balance
 
-      res.json({
-        success: true,
-        message: "Leave request approved successfully",
-      });
-    } catch (error) {
-      console.error("[HR] Error approving leave request:", error);
-      res.status(500).json({
-        success: false,
-        error: "Failed to approve leave request",
-      });
-    }
-  },
+    logger.info({ leaveRequestId: id }, "Leave request approved");
+
+    res.json({
+      success: true,
+      message: "Leave request approved successfully",
+    });
+  }),
 );
 
 /**
@@ -428,25 +507,31 @@ router.put(
  */
 router.put(
   "/leave-requests/:id/reject",
-  async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params;
-      const { reason } = req.body;
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-      // TODO: Update status in database
-
-      res.json({
-        success: true,
-        message: "Leave request rejected",
-      });
-    } catch (error) {
-      console.error("[HR] Error rejecting leave request:", error);
-      res.status(500).json({
-        success: false,
-        error: "Failed to reject leave request",
-      });
+    // Validate input
+    const validationResult = leaveActionSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid rejection data",
+        validationResult.error.issues,
+      );
     }
-  },
+
+    const { reason } = validationResult.data;
+
+    // TODO: Update status in database
+    // In production: const updated = await leaveRequestService.reject(id, reason);
+    // if (!updated) throw new NotFoundError("Leave request not found");
+
+    logger.info({ leaveRequestId: id, reason }, "Leave request rejected");
+
+    res.json({
+      success: true,
+      message: "Leave request rejected",
+    });
+  }),
 );
 
 // ============================================================================
@@ -457,11 +542,15 @@ router.put(
  * GET /api/hr/payroll/:employeeId
  * Get payroll information for an employee
  */
-router.get("/payroll/:employeeId", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/payroll/:employeeId",
+  asyncHandler(async (req: Request, res: Response) => {
     const { employeeId } = req.params;
 
     // TODO: Replace with actual database query
+    // In production: const payroll = await payrollService.findByEmployee(employeeId);
+    // if (!payroll) throw new NotFoundError("Payroll data not found");
+
     const mockPayroll = {
       employeeId,
       baseSalary: 65000,
@@ -475,14 +564,8 @@ router.get("/payroll/:employeeId", async (req: Request, res: Response) => {
       success: true,
       data: mockPayroll,
     });
-  } catch (error) {
-    console.error("[HR] Error fetching payroll:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch payroll information",
-    });
-  }
-});
+  }),
+);
 
 // ============================================================================
 // DEPARTMENTS
@@ -492,8 +575,10 @@ router.get("/payroll/:employeeId", async (req: Request, res: Response) => {
  * GET /api/hr/departments
  * Get all departments
  */
-router.get("/departments", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/departments",
+  asyncHandler(async (_req: Request, res: Response) => {
+    // TODO: Replace with actual database query
     const mockDepartments = [
       {
         id: "1",
@@ -516,14 +601,8 @@ router.get("/departments", async (_req: Request, res: Response) => {
       data: mockDepartments,
       count: mockDepartments.length,
     });
-  } catch (error) {
-    console.error("[HR] Error fetching departments:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch departments",
-    });
-  }
-});
+  }),
+);
 
 // ============================================================================
 // STATISTICS
@@ -533,8 +612,10 @@ router.get("/departments", async (_req: Request, res: Response) => {
  * GET /api/hr/statistics
  * Get HR statistics overview
  */
-router.get("/statistics", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/statistics",
+  asyncHandler(async (_req: Request, res: Response) => {
+    // TODO: Replace with actual database query
     const mockStats = {
       totalEmployees: 31,
       activeEmployees: 29,
@@ -549,13 +630,7 @@ router.get("/statistics", async (_req: Request, res: Response) => {
       success: true,
       data: mockStats,
     });
-  } catch (error) {
-    console.error("[HR] Error fetching statistics:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch statistics",
-    });
-  }
-});
+  }),
+);
 
 export default router;

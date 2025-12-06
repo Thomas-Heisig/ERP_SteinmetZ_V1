@@ -68,7 +68,7 @@ export class ModelManagementService {
     tokensUsed: number,
     cost: number,
     durationMs: number,
-    success: boolean
+    success: boolean,
   ): void {
     const key = `${modelName}-${provider}`;
     const existing = this.stats.get(key) || {
@@ -88,8 +88,9 @@ export class ModelManagementService {
     else existing.failedRequests++;
     existing.totalTokens += tokensUsed;
     existing.totalCost += cost;
-    existing.averageDuration = 
-      (existing.averageDuration * (existing.totalRequests - 1) + durationMs) / existing.totalRequests;
+    existing.averageDuration =
+      (existing.averageDuration * (existing.totalRequests - 1) + durationMs) /
+      existing.totalRequests;
     existing.successRate = existing.successfulRequests / existing.totalRequests;
 
     this.stats.set(key, existing);
@@ -97,7 +98,7 @@ export class ModelManagementService {
 
   getModelStats(modelName: string, days = 30): ModelUsageStats | null {
     const entries = Array.from(this.stats.values());
-    return entries.find(s => s.modelName === modelName) || null;
+    return entries.find((s) => s.modelName === modelName) || null;
   }
 
   getAllModelsStats(days = 30): ModelUsageStats[] {
@@ -105,44 +106,49 @@ export class ModelManagementService {
   }
 
   compareModels(modelNames: string[], days = 30): ModelPerformanceComparison[] {
-    return modelNames.map(name => {
-      const stats = this.getModelStats(name, days);
-      if (!stats) {
+    return modelNames
+      .map((name) => {
+        const stats = this.getModelStats(name, days);
+        if (!stats) {
+          return {
+            modelName: name,
+            provider: "unknown",
+            speed: 0,
+            accuracy: 0,
+            cost: 0,
+            reliability: 0,
+            overallScore: 0,
+          };
+        }
+
+        const normalizedSpeed = Math.max(0, 1 - stats.averageDuration / 10000);
+        const normalizedCost = Math.max(0, 1 - stats.totalCost / 100);
+
         return {
-          modelName: name,
-          provider: "unknown",
-          speed: 0,
-          accuracy: 0,
-          cost: 0,
-          reliability: 0,
-          overallScore: 0,
+          modelName: stats.modelName,
+          provider: stats.provider,
+          speed: stats.averageDuration,
+          accuracy: stats.successRate,
+          cost:
+            stats.totalTokens > 0
+              ? (stats.totalCost / stats.totalTokens) * 1000
+              : 0,
+          reliability: stats.successRate,
+          overallScore: Math.round(
+            normalizedSpeed * 25 +
+              stats.successRate * 35 +
+              normalizedCost * 20 +
+              stats.successRate * 20,
+          ),
         };
-      }
-
-      const normalizedSpeed = Math.max(0, 1 - (stats.averageDuration / 10000));
-      const normalizedCost = Math.max(0, 1 - (stats.totalCost / 100));
-
-      return {
-        modelName: stats.modelName,
-        provider: stats.provider,
-        speed: stats.averageDuration,
-        accuracy: stats.successRate,
-        cost: stats.totalTokens > 0 ? (stats.totalCost / stats.totalTokens) * 1000 : 0,
-        reliability: stats.successRate,
-        overallScore: Math.round(
-          normalizedSpeed * 25 +
-          stats.successRate * 35 +
-          normalizedCost * 20 +
-          stats.successRate * 20
-        ),
-      };
-    }).sort((a, b) => b.overallScore - a.overallScore);
+      })
+      .sort((a, b) => b.overallScore - a.overallScore);
   }
 
   getCostBreakdown(period: "day" | "week" | "month" = "month"): CostBreakdown {
     const now = new Date();
     const startDate = new Date(now);
-    
+
     switch (period) {
       case "day":
         startDate.setDate(now.getDate() - 1);
@@ -163,7 +169,7 @@ export class ModelManagementService {
       startDate: startDate.toISOString(),
       endDate: now.toISOString(),
       totalCost,
-      byModel: allStats.map(s => ({
+      byModel: allStats.map((s) => ({
         modelName: s.modelName,
         provider: s.provider,
         cost: s.totalCost,
@@ -176,8 +182,13 @@ export class ModelManagementService {
 
   getUsageOverTime(
     days = 30,
-    granularity: "hour" | "day" = "day"
-  ): Array<{ timestamp: string; requests: number; cost: number; tokens: number }> {
+    granularity: "hour" | "day" = "day",
+  ): Array<{
+    timestamp: string;
+    requests: number;
+    cost: number;
+    tokens: number;
+  }> {
     return [];
   }
 
@@ -189,7 +200,11 @@ export class ModelManagementService {
     return [];
   }
 
-  updateModelAvailability(modelName: string, available: boolean, error?: string): void {
+  updateModelAvailability(
+    modelName: string,
+    available: boolean,
+    error?: string,
+  ): void {
     console.log(`Model ${modelName} availability: ${available}`);
   }
 
@@ -197,19 +212,23 @@ export class ModelManagementService {
     return [];
   }
 
-  getModelRecommendations(criteria: {
-    prioritize?: "speed" | "accuracy" | "cost" | "balanced";
-    maxCost?: number;
-    minAccuracy?: number;
-  } = {}): ModelPerformanceComparison[] {
+  getModelRecommendations(
+    criteria: {
+      prioritize?: "speed" | "accuracy" | "cost" | "balanced";
+      maxCost?: number;
+      minAccuracy?: number;
+    } = {},
+  ): ModelPerformanceComparison[] {
     const allModels = Array.from(this.stats.keys());
     let comparisons = this.compareModels(allModels);
 
     if (criteria.maxCost !== undefined) {
-      comparisons = comparisons.filter(c => c.cost <= criteria.maxCost!);
+      comparisons = comparisons.filter((c) => c.cost <= criteria.maxCost!);
     }
     if (criteria.minAccuracy !== undefined) {
-      comparisons = comparisons.filter(c => c.accuracy >= criteria.minAccuracy!);
+      comparisons = comparisons.filter(
+        (c) => c.accuracy >= criteria.minAccuracy!,
+      );
     }
 
     return comparisons;

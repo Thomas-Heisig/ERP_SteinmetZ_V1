@@ -18,7 +18,10 @@ interface ProgressTrackerProps {
   onCancel?: (batchId: string) => void;
 }
 
-export const ProgressTracker: React.FC<ProgressTrackerProps> = ({ batch, onCancel }) => {
+export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
+  batch,
+  onCancel,
+}) => {
   const [animated, setAnimated] = useState(false);
 
   useEffect(() => {
@@ -59,7 +62,9 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({ batch, onCance
     <div style={styles.container}>
       <div style={styles.header}>
         <div style={styles.statusBadge}>
-          <span style={{ ...styles.statusIcon, backgroundColor: getStatusColor() }}>
+          <span
+            style={{ ...styles.statusIcon, backgroundColor: getStatusColor() }}
+          >
             {getStatusIcon()}
           </span>
           <span style={styles.statusText}>
@@ -117,7 +122,9 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({ batch, onCance
           {batch.failed !== undefined && batch.failed > 0 && (
             <div style={styles.statItem}>
               <span style={styles.statLabel}>Failed:</span>
-              <span style={{ ...styles.statValue, color: "#dc3545" }}>{batch.failed}</span>
+              <span style={{ ...styles.statValue, color: "#dc3545" }}>
+                {batch.failed}
+              </span>
             </div>
           )}
         </div>

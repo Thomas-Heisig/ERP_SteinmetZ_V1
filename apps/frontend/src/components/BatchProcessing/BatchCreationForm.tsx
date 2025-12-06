@@ -58,7 +58,9 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
         <label style={styles.label}>Operation Type *</label>
         <select
           value={formData.operation}
-          onChange={(e) => setFormData({ ...formData, operation: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, operation: e.target.value })
+          }
           style={styles.input}
           required
         >
@@ -88,7 +90,9 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
         <label style={styles.label}>Description</label>
         <textarea
           value={formData.description || ""}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
           placeholder="Optional description"
           style={{ ...styles.input, minHeight: "80px" }}
         />
@@ -108,7 +112,9 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
             onChange={(e) => updateOptions("chunkSize", Number(e.target.value))}
             style={styles.input}
           />
-          <small style={styles.hint}>Number of nodes to process per batch</small>
+          <small style={styles.hint}>
+            Number of nodes to process per batch
+          </small>
         </div>
 
         <div style={styles.field}>
@@ -118,7 +124,9 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
             min="1"
             max="10"
             value={formData.options?.parallelRequests || 2}
-            onChange={(e) => updateOptions("parallelRequests", Number(e.target.value))}
+            onChange={(e) =>
+              updateOptions("parallelRequests", Number(e.target.value))
+            }
             style={styles.input}
           />
           <small style={styles.hint}>Number of concurrent API requests</small>
@@ -140,7 +148,10 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
 
       {/* Actions */}
       <div style={styles.actions}>
-        <button type="submit" style={{ ...styles.button, ...styles.primaryButton }}>
+        <button
+          type="submit"
+          style={{ ...styles.button, ...styles.primaryButton }}
+        >
           Create Batch
         </button>
         <button

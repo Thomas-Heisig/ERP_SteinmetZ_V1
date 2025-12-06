@@ -12,6 +12,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### ✅ Hinzugefügt
 
 #### Error Standardization & Input Validation
+
 - **Error Standardization Guide**: Umfassende Dokumentation für die Migration von Routern zu standardisierten Error-Responses
   - Migration Patterns und Best Practices
   - Vollständige Code-Beispiele für alle HTTP-Methoden
@@ -20,6 +21,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
   - Migration Checklist
 
 #### Router Improvements
+
 - **quickchatRouter**: Vollständig standardisiert (3/3 Endpoints)
   - APIError-Klassen Integration
   - Zod Input-Validierung für alle Endpoints
@@ -36,15 +38,18 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
   - Zod Validation Schema für Invoices
 
 ### 🔧 Geändert
+
 - **ISSUES.md**: Aktualisiert mit Fortschritt zu ISSUE-005 und ISSUE-006
 - **TODO.md**: API Error-Handling Status aktualisiert
 - **README.md**: Version auf 0.3.0 aktualisiert, Link zum Error Standardization Guide
 
 ### 🐛 Behoben
+
 - **Build-System**: @types/node Installation Problem behoben
 - **Dependencies**: npm install --ignore-scripts für CI/CD-Kompatibilität
 
 ### 📚 Dokumentation
+
 - Neue Datei: `docs/ERROR_STANDARDIZATION_GUIDE.md` - Vollständige Migration-Dokumentation
 - Aktualisierung von ISSUES.md mit detaillierten Fortschritts-Tracking
 - TODO.md mit präzisem Status für Error-Handling

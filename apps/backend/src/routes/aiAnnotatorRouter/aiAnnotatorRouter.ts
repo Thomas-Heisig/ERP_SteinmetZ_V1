@@ -1360,7 +1360,7 @@ router.get("/filters", async (req: Request, res: Response) => {
     const { type, publicOnly } = req.query;
     const filters = await filterService.getFilters(
       type as string | undefined,
-      publicOnly === "true"
+      publicOnly === "true",
     );
     res.json({ success: true, data: filters });
   } catch (error) {
@@ -1376,13 +1376,13 @@ router.get("/filters/presets", async (req: Request, res: Response) => {
     const { type } = req.query;
     const presets = await filterService.getPresets(type as string | undefined);
     const defaultPresets = filterService.getDefaultPresets();
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       data: {
         saved: presets,
-        defaults: defaultPresets
-      }
+        defaults: defaultPresets,
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -1475,13 +1475,13 @@ router.post("/filters/:id/apply", async (req: Request, res: Response) => {
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 10000 });
     const filtered = filterService.applyFilter(allNodes, filter.filterConfig);
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       data: {
         filter,
         results: filtered,
-        total: filtered.length
-      }
+        total: filtered.length,
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -1494,7 +1494,7 @@ router.post("/filters/:id/apply", async (req: Request, res: Response) => {
 router.post("/filters/export", async (req: Request, res: Response) => {
   try {
     const { nodes, format = "json" } = req.body;
-    
+
     if (!Array.isArray(nodes)) {
       return res.status(400).json({
         success: false,
@@ -1541,9 +1541,9 @@ router.get("/qa/reviews", async (req: Request, res: Response) => {
   try {
     const { status, limit = "50", offset = "0" } = req.query;
     const reviews = await qualityAssuranceService.getReviewsByStatus(
-      status as string || "pending",
+      (status as string) || "pending",
       parseInt(limit as string),
-      parseInt(offset as string)
+      parseInt(offset as string),
     );
     res.json({ success: true, data: reviews });
   } catch (error) {
@@ -1556,7 +1556,9 @@ router.get("/qa/reviews", async (req: Request, res: Response) => {
 
 router.get("/qa/reviews/node/:nodeId", async (req: Request, res: Response) => {
   try {
-    const reviews = await qualityAssuranceService.getReviewsByNode(req.params.nodeId);
+    const reviews = await qualityAssuranceService.getReviewsByNode(
+      req.params.nodeId,
+    );
     res.json({ success: true, data: reviews });
   } catch (error) {
     res.status(500).json({
@@ -1582,7 +1584,7 @@ router.put("/qa/reviews/:id", async (req: Request, res: Response) => {
   try {
     const review = await qualityAssuranceService.updateReview(
       req.params.id,
-      req.body
+      req.body,
     );
     if (!review) {
       return res.status(404).json({
@@ -1607,14 +1609,14 @@ router.post("/qa/reviews/:id/approve", async (req: Request, res: Response) => {
       reviewer,
       reviewComments: comments,
     });
-    
+
     if (!review) {
       return res.status(404).json({
         success: false,
         error: "Review nicht gefunden",
       });
     }
-    
+
     res.json({ success: true, data: review });
   } catch (error) {
     res.status(500).json({
@@ -1632,14 +1634,14 @@ router.post("/qa/reviews/:id/reject", async (req: Request, res: Response) => {
       reviewer,
       reviewComments: comments,
     });
-    
+
     if (!review) {
       return res.status(404).json({
         success: false,
         error: "Review nicht gefunden",
       });
     }
-    
+
     res.json({ success: true, data: review });
   } catch (error) {
     res.status(500).json({
@@ -1654,7 +1656,7 @@ router.get("/qa/trends", async (req: Request, res: Response) => {
     const { metricType, days = "30" } = req.query;
     const trends = await qualityAssuranceService.getQualityTrends(
       metricType as string | undefined,
-      parseInt(days as string)
+      parseInt(days as string),
     );
     res.json({ success: true, data: trends });
   } catch (error) {
@@ -1668,8 +1670,8 @@ router.get("/qa/trends", async (req: Request, res: Response) => {
 router.post("/qa/metrics/node/:nodeId", async (req: Request, res: Response) => {
   try {
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 10000 });
-    const node = allNodes.find(n => n.id === req.params.nodeId);
-    
+    const node = allNodes.find((n) => n.id === req.params.nodeId);
+
     if (!node) {
       return res.status(404).json({
         success: false,
@@ -1695,7 +1697,7 @@ router.get("/models/stats", async (req: Request, res: Response) => {
   try {
     const { days = "30" } = req.query;
     const stats = await modelManagementService.getAllModelsStats(
-      parseInt(days as string)
+      parseInt(days as string),
     );
     res.json({ success: true, data: stats });
   } catch (error) {
@@ -1711,16 +1713,16 @@ router.get("/models/stats/:modelName", async (req: Request, res: Response) => {
     const { days = "30" } = req.query;
     const stats = await modelManagementService.getModelStats(
       req.params.modelName,
-      parseInt(days as string)
+      parseInt(days as string),
     );
-    
+
     if (!stats) {
       return res.status(404).json({
         success: false,
         error: "Keine Statistiken für dieses Model gefunden",
       });
     }
-    
+
     res.json({ success: true, data: stats });
   } catch (error) {
     res.status(500).json({
@@ -1733,14 +1735,14 @@ router.get("/models/stats/:modelName", async (req: Request, res: Response) => {
 router.post("/models/compare", async (req: Request, res: Response) => {
   try {
     const { models, days = 30 } = req.body;
-    
+
     if (!Array.isArray(models)) {
       return res.status(400).json({
         success: false,
         error: "models muss ein Array sein",
       });
     }
-    
+
     const comparison = await modelManagementService.compareModels(models, days);
     res.json({ success: true, data: comparison });
   } catch (error) {
@@ -1755,7 +1757,7 @@ router.get("/models/costs", async (req: Request, res: Response) => {
   try {
     const { period = "month" } = req.query;
     const breakdown = await modelManagementService.getCostBreakdown(
-      period as "day" | "week" | "month"
+      period as "day" | "week" | "month",
     );
     res.json({ success: true, data: breakdown });
   } catch (error) {
@@ -1771,7 +1773,7 @@ router.get("/models/usage-timeline", async (req: Request, res: Response) => {
     const { days = "30", granularity = "day" } = req.query;
     const timeline = await modelManagementService.getUsageOverTime(
       parseInt(days as string),
-      granularity as "hour" | "day"
+      granularity as "hour" | "day",
     );
     res.json({ success: true, data: timeline });
   } catch (error) {
@@ -1797,13 +1799,14 @@ router.get("/models/availability", async (_req: Request, res: Response) => {
 router.get("/models/recommendations", async (req: Request, res: Response) => {
   try {
     const { prioritize, maxCost, minAccuracy } = req.query;
-    
+
     const criteria: any = {};
     if (prioritize) criteria.prioritize = prioritize;
     if (maxCost) criteria.maxCost = parseFloat(maxCost as string);
     if (minAccuracy) criteria.minAccuracy = parseFloat(minAccuracy as string);
-    
-    const recommendations = await modelManagementService.getModelRecommendations(criteria);
+
+    const recommendations =
+      await modelManagementService.getModelRecommendations(criteria);
     res.json({ success: true, data: recommendations });
   } catch (error) {
     res.status(500).json({
@@ -1843,8 +1846,15 @@ router.post("/batch/create", async (req: Request, res: Response) => {
 
 router.get("/batch/history", async (req: Request, res: Response) => {
   try {
-    const { operation, status, createdAfter, createdBefore, limit = "50", offset = "0" } = req.query;
-    
+    const {
+      operation,
+      status,
+      createdAfter,
+      createdBefore,
+      limit = "50",
+      offset = "0",
+    } = req.query;
+
     const filter: any = {};
     if (operation) filter.operation = operation;
     if (status) filter.status = status;
@@ -1852,7 +1862,7 @@ router.get("/batch/history", async (req: Request, res: Response) => {
     if (createdBefore) filter.createdBefore = createdBefore;
     filter.limit = parseInt(limit as string);
     filter.offset = parseInt(offset as string);
-    
+
     const history = await batchProcessingService.getBatchHistory(filter);
     res.json({ success: true, data: history });
   } catch (error) {
@@ -1865,7 +1875,9 @@ router.get("/batch/history", async (req: Request, res: Response) => {
 
 router.get("/batch/:id/details", async (req: Request, res: Response) => {
   try {
-    const batch = await batchProcessingService.getBatchWithResults(req.params.id);
+    const batch = await batchProcessingService.getBatchWithResults(
+      req.params.id,
+    );
     if (!batch) {
       return res.status(404).json({
         success: false,
@@ -1883,7 +1895,9 @@ router.get("/batch/:id/details", async (req: Request, res: Response) => {
 
 router.get("/batch/:id/visualization", async (req: Request, res: Response) => {
   try {
-    const visualization = await batchProcessingService.getBatchVisualization(req.params.id);
+    const visualization = await batchProcessingService.getBatchVisualization(
+      req.params.id,
+    );
     if (!visualization) {
       return res.status(404).json({
         success: false,
