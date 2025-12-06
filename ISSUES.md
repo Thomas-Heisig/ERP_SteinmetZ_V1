@@ -152,7 +152,7 @@ Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tr
 
 ### ISSUE-009: Ungenutzte Dependencies 📦
 
-**Status**: 🟡 Offen | **Priorität**: Niedrig | **Erstellt**: 2024-12-03
+**Status**: 🟢 Weitgehend behoben | **Priorität**: Niedrig | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2025-12-06
 
 **Beschreibung**:
 Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veraltet.
@@ -162,15 +162,23 @@ Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veral
 - `monaco-editor` → **WIRD VERWENDET** in `apps/frontend/src/components/FunctionsCatalog/features/code/`
 - Keine offensichtlich ungenutzten Dependencies gefunden
 
+**Fortschritt (6. Dezember 2025)**:
+
+- ✅ npm audit durchgeführt und alle 3 Vulnerabilities behoben (body-parser, js-yaml, jws)
+- ✅ Deprecated packages identifiziert (npmlog, gauge, fluent-ffmpeg, etc.)
+- ✅ ESLint v9 Migration durchgeführt mit aktuellen Paketen
+- ✅ 0 Vulnerabilities im aktuellen Stand
+
 **Empfehlung**:
 
 - Regelmäßige Dependency-Audits mit `npm list`
-- `npm audit` für Security-Vulnerabilities
+- `npm audit` für Security-Vulnerabilities (✅ durchgeführt)
 - Update auf neueste Versionen wo möglich
+- Deprecated packages evaluieren für zukünftige Migration
 
-**Auswirkung**: Bundle-Size, Security-Vulnerabilities (minimal)
+**Auswirkung**: Bundle-Size, Security-Vulnerabilities (✅ behoben)
 
-**Aufwand**: 2-3 Stunden
+**Aufwand**: 2-3 Stunden → 1 Stunde erledigt
 
 ---
 
@@ -351,6 +359,11 @@ Umfassende Dokumentation in SCRIPTS.md erstellt mit:
 - Troubleshooting-Tipps
 - Quick Reference Tabelle
 
+**Zusätzlich (6. Dezember 2025)**:
+- ✅ ESLint-Scripts funktionieren mit ESLint v9
+- ✅ Linting-Workflow komplett eingerichtet
+- ✅ npm audit fix Script erfolgreich getestet
+
 **Aufwand**: 30 Minuten → 45 Minuten (umfassendere Lösung)
 
 ---
@@ -392,32 +405,33 @@ docs(readme): update installation instructions
 ### Nach Priorität
 
 - 🟠 Hoch: 3 Issues (2 weitgehend behoben, 1 offen)
-- 🟡 Mittel: 5 Issues
+- 🟡 Mittel: 5 Issues (1 weitgehend behoben, 4 offen)
 - 🟢 Niedrig: 2 Issues (beide erledigt)
 
-**Gesamt**: 10 Issues (2 weitgehend behoben, 2 komplett erledigt, 6 offen)
+**Gesamt**: 10 Issues (3 weitgehend behoben, 2 komplett erledigt, 5 offen)
 
 ### Nach Kategorie
 
-- **Security**: 1 (ISSUE-006)
-- **Code-Quality**: 4 (ISSUE-005, 010, 011, 013)
+- **Security**: 1 (ISSUE-006 - weitgehend behoben)
+- **Code-Quality**: 4 (ISSUE-005, 010, 011, 013 - 005+010 teilweise behoben)
 - **Monitoring**: 1 (ISSUE-008)
-- **Dependencies**: 1 (ISSUE-009)
+- **Dependencies**: 1 (ISSUE-009 ✅ weitgehend behoben)
 - **Accessibility**: 1 (ISSUE-012)
 - **Developer Experience**: 2 (ISSUE-015 ✅, ISSUE-016 ✅)
 
 ### Geschätzter Gesamtaufwand
 
-- **Hohe Priorität**: 1-2 Wochen
+- **Hohe Priorität**: ~1 Woche (ISSUE-008 verbleibend)
 - **Mittlere Priorität**: 1-2 Wochen
-- **Niedrige Priorität**: ~3 Stunden verbleibend (2 Issues abgeschlossen)
+- **Niedrige Priorität**: ✅ Komplett erledigt
 
-**Gesamt**: ~2.5-4 Wochen für verbleibende offene Issues
+**Gesamt**: ~2-3 Wochen für verbleibende offene Issues
 
 **Erledigt (2025-12-06)**:
 
-- ISSUE-015: Package.json Scripts (45 min)
-- ISSUE-016: Commit Conventions (2 Std.)
+- **Vormittag**: ISSUE-015 (Scripts: 45 min), ISSUE-016 (Commits: 2 Std.)
+- **Nachmittag**: Repository Cleanup (Security + ESLint + npm audit + Docs: 2 Std.)
+- **Teilweise**: ISSUE-009 (Dependencies audit + fixes: 1 Std.)
 
 ---
 
@@ -460,7 +474,26 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ## 🆕 Kürzlich Behobene Probleme (6. Dezember 2025)
 
-### Test-Infrastruktur Verbesserungen ✅
+### Repository Cleanup & Infrastructure ✅ (6. Dezember 2025 - Nachmittag)
+
+**Behobene Probleme**:
+
+1. 🚨 **CRITICAL SECURITY**: GitHub PAT Token in github.txt entfernt
+2. ✅ ESLint v9 Flat Config für Backend und Frontend eingerichtet
+3. ✅ npm audit: Alle 3 Vulnerabilities behoben (body-parser, js-yaml, jws)
+4. ✅ .gitignore erweitert mit umfassenden Patterns
+5. ✅ Dokumentations-Konsolidierung: 8 Dateien nach docs/archive/ verschoben
+6. ✅ Repository-Struktur bereinigt und organisiert
+
+**Details**:
+
+- **Sicherheit**: github.txt mit exposed PAT wurde gelöscht, .gitignore erweitert um *.token, *.secret, secrets/
+- **Linting**: ESLint v9 Migration mit @eslint/js flat config, TypeScript-Plugin, React-Plugin
+- **Dependencies**: 0 Vulnerabilities (von 3), deprecated packages dokumentiert
+- **.gitignore**: Erweitert um Caches, IDE-Patterns, Test-Coverage, Logs, Work-Summary-Patterns
+- **Dokumentation**: WORK_SUMMARY, UPDATE_SUMMARY, FRONTEND_REVAMP_SUMMARY nach archive/ verschoben
+
+### Test-Infrastruktur Verbesserungen ✅ (6. Dezember 2025 - Vormittag)
 
 **Behobene Probleme**:
 
