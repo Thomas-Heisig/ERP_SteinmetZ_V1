@@ -613,7 +613,7 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 - ✅ Router Error-Handling-Standardisierung (5 Router)
   - ✅ dashboard.ts - asyncHandler implementiert
-  - ✅ diagnosticsRouter.ts - asyncHandler implementiert  
+  - ✅ diagnosticsRouter.ts - asyncHandler implementiert
   - ✅ systemInfoRouter.ts - asyncHandler implementiert
   - ✅ authRouter.ts - asyncHandler + APIError-Klassen
   - ✅ calendarRouter.ts - asyncHandler + APIError-Klassen
