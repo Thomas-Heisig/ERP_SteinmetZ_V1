@@ -1,0 +1,106 @@
+/* ==================== DASHBOARD WIDGETS LAYOUT ==================== */
+/* apps/frontend/src/components/DashboardWidgets/DashboardWidgets.css */
+
+.dashboard-widgets-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  animation: fade-in-up 0.6s ease-out;
+}
+
+/* Span utilities */
+.widget-span-2 {
+  grid-column: span 2;
+}
+
+.widget-span-3 {
+  grid-column: span 3;
+}
+
+.widget-span-4 {
+  grid-column: span 4;
+}
+
+/* Animation */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== RESPONSIVE LAYOUT ==================== */
+
+/* Large tablets and small desktops (1024px - 1279px) */
+@media (max-width: 1279px) {
+  .widgets-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .widget-span-2 {
+    grid-column: span 2;
+  }
+
+  .widget-span-3,
+  .widget-span-4 {
+    grid-column: span 3;
+  }
+}
+
+/* Tablets (768px - 1023px) */
+@media (max-width: 1023px) {
+  .dashboard-widgets-container {
+    padding: 1.5rem;
+  }
+
+  .widgets-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .widget-span-2,
+  .widget-span-3,
+  .widget-span-4 {
+    grid-column: span 2;
+  }
+}
+
+/* Mobile devices (< 768px) */
+@media (max-width: 767px) {
+  .dashboard-widgets-container {
+    padding: 1rem;
+  }
+
+  .widgets-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .widget-span-2,
+  .widget-span-3,
+  .widget-span-4 {
+    grid-column: span 1;
+  }
+}
+
+/* Small mobile devices (< 480px) */
+@media (max-width: 479px) {
+  .dashboard-widgets-container {
+    padding: 0.75rem;
+  }
+
+  .widgets-grid {
+    gap: 0.75rem;
+  }
+}

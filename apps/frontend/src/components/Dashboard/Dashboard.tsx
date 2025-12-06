@@ -14,6 +14,9 @@ import {
 // Theme-System
 import { ThemeProvider, useTheme } from "../../contexts/ThemeContext";
 
+// Styles
+import "./styles/dashboard-modern.css";
+
 // Typen
 import type {
   Category,
@@ -32,6 +35,9 @@ import SearchOverlay from "./ui/SearchOverlay";
 import LoadingScreen from "./ui/LoadingScreen";
 import ErrorScreen from "./ui/ErrorScreen";
 import QuickChatButton from "./ui/QuickChatButton";
+
+// Widgets
+import { DashboardWidgets } from "../DashboardWidgets";
 
 // Layout Hook
 import { useDashboardLayout } from "./hooks/useDashboardLayout";
@@ -205,25 +211,39 @@ const DashboardView: React.FC = () => {
 
         {/* Categories Grid View */}
         {showCategories && (
-          <section
-            className="dashboard-main-section"
-            aria-labelledby="categories-title"
-          >
-            <h2 id="categories-title" className="section-title">
-              {t("dashboard.categories.title")}
-            </h2>
+          <>
+            {/* Dashboard Widgets Section */}
+            <section
+              className="dashboard-widgets-section"
+              aria-labelledby="widgets-title"
+            >
+              <h2 id="widgets-title" className="section-title">
+                {t("dashboard.overview", "Dashboard Overview")}
+              </h2>
+              <DashboardWidgets />
+            </section>
 
-            <p className="section-subtitle">
-              {t("dashboard.categories.count", {
-                count: catalog.roots.length,
-              })}
-            </p>
+            {/* Categories Section */}
+            <section
+              className="dashboard-main-section"
+              aria-labelledby="categories-title"
+            >
+              <h2 id="categories-title" className="section-title">
+                {t("dashboard.categories.title")}
+              </h2>
 
-            <CategoryGrid
-              categories={categoryList}
-              onCategorySelect={handleCategorySelect}
-            />
-          </section>
+              <p className="section-subtitle">
+                {t("dashboard.categories.count", {
+                  count: catalog.roots.length,
+                })}
+              </p>
+
+              <CategoryGrid
+                categories={categoryList}
+                onCategorySelect={handleCategorySelect}
+              />
+            </section>
+          </>
         )}
 
         {/* Node Error State */}
