@@ -65,7 +65,7 @@ export class QualityAssuranceService {
   private reviews: Map<string, QAReview> = new Map();
 
   createReview(review: Omit<QAReview, "id" | "createdAt">): QAReview {
-    const id = `review_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const id = `review_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     const qaReview: QAReview = {
       id,
       ...review,

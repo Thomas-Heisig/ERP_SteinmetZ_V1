@@ -42,7 +42,7 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
   };
 
   const updateFilter = (key: keyof FilterConfig, value: any) => {
-    setFilter((prev) => ({  ...prev, [key]: value }));
+    setFilter((prev) => ({ ...prev, [key]: value }));
   };
 
   return (

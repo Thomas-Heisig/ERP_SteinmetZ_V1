@@ -68,7 +68,7 @@ export class BatchProcessingService {
   private results: Map<string, any[]> = new Map();
 
   createBatch(request: BatchCreationRequest): BatchOperation {
-    const id = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const id = `batch_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     const now = new Date().toISOString();
 
     const batch: BatchOperation = {

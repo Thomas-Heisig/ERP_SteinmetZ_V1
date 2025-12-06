@@ -51,7 +51,7 @@ export class FilterService {
   createFilter(
     filter: Omit<SavedFilter, "id" | "createdAt" | "updatedAt" | "usageCount">
   ): SavedFilter {
-    const id = `filter_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const id = `filter_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     const now = new Date().toISOString();
 
     const savedFilter: SavedFilter = {
