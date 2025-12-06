@@ -345,6 +345,7 @@ Die npm-scripts haben keine Beschreibungen. `npm run` zeigt eine unleserliche Li
 
 **Lösung**:
 Umfassende Dokumentation in SCRIPTS.md erstellt mit:
+
 - Detaillierte Beschreibung aller npm-Scripts
 - Verwendungsbeispiele und Workflows
 - Troubleshooting-Tipps
@@ -414,6 +415,7 @@ docs(readme): update installation instructions
 **Gesamt**: ~2.5-4 Wochen für verbleibende offene Issues
 
 **Erledigt (2025-12-06)**:
+
 - ISSUE-015: Package.json Scripts (45 min)
 - ISSUE-016: Commit Conventions (2 Std.)
 
