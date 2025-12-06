@@ -303,6 +303,7 @@ npm test:coverage     # Mit Coverage-Report
 
 - **[Getting Started Tutorial](docs/tutorials/getting-started.md)** ⭐ NEU - 5-Minuten-Setup
 - **[README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)** - Vollständige Projekt-Dokumentation
+- **[COPILOT_RULESET.md](COPILOT_RULESET.md)** ⭐ NEU - Entwicklungsrichtlinien für Copilot
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** ⭐ NEU - Contribution Guidelines
 - **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** ⭐ NEU - Community Standards
 - **[SECURITY.md](SECURITY.md)** ⭐ NEU - Security Policy
@@ -335,6 +336,7 @@ npm test:coverage     # Mit Coverage-Report
 
 ### Entwickler-Dokumentation
 
+- **[Copilot Ruleset](COPILOT_RULESET.md)** - Entwicklungsrichtlinien & Arbeitsweise
 - **[Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)** - Komplette Setup-Anleitung
 - **[Code Conventions](docs/CODE_CONVENTIONS.md)** - Coding Standards & Best Practices
 - **[Error Standardization Guide](docs/ERROR_STANDARDIZATION_GUIDE.md)** - Error-Handling Guide
@@ -360,11 +362,23 @@ npm test:coverage     # Mit Coverage-Report
 
 ## 🤝 Beitragen
 
+Dieses Projekt folgt dem [Copilot Ruleset](COPILOT_RULESET.md) für konsistente Entwicklung:
+
+- **Aufgabenbearbeitung**: Arbeite [TODO.md](TODO.md) und [ISSUES.md](ISSUES.md) systematisch ab
+- **Dokumentation**: Halte Docs aktuell und strukturiert (Diátaxis Framework)
+- **Code-Qualität**: Clean Code, SOLID-Prinzipien, TypeScript mit expliziten Typen
+- **Testing**: Mindest-Coverage 80%, alle Tests müssen bestehen
+- **Standards**: OpenAPI 3.0, Semantic Versioning, Conventional Commits
+
+### Contribution-Workflow
+
 1. Fork das Repository
 2. Erstelle einen Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit deine Änderungen (`git commit -m 'Add AmazingFeature'`)
+3. Commit deine Änderungen (`git commit -m 'feat(scope): Add AmazingFeature'`)
 4. Push zum Branch (`git push origin feature/AmazingFeature`)
 5. Öffne einen Pull Request
+
+Siehe [CONTRIBUTING.md](CONTRIBUTING.md) für detaillierte Guidelines.
 
 ## 📧 Kontakt
 
