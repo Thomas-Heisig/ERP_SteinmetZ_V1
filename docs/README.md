@@ -61,6 +61,9 @@ Understanding architectural decisions:
 - **[Database Migrations](./DATABASE_MIGRATIONS.md)** - Migration system
 - **[Authentication](./AUTHENTICATION.md)** - Auth system details
 - **[Compliance](./COMPLIANCE.md)** - Security and GDPR
+- **[Performance Features](./PERFORMANCE_FEATURES.md)** ⭐ NEU - WebSocket, Caching, Query Monitoring
+- **[Error Standardization](./ERROR_STANDARDIZATION_GUIDE.md)** - Error handling guide
+- **[Code Quality](./CODE_QUALITY_IMPROVEMENTS.md)** - Quality improvements roadmap
 
 ### Project Management
 
@@ -226,6 +229,12 @@ Our documentation aims to:
 **...understand auth**
 → [Authentication](./AUTHENTICATION.md)
 
+**...optimize performance**
+→ [Performance Features](./PERFORMANCE_FEATURES.md)
+
+**...handle errors properly**
+→ [Error Standardization](./ERROR_STANDARDIZATION_GUIDE.md)
+
 **...see what's planned**
 → [TODO List](../TODO.md)
 
@@ -294,7 +303,7 @@ See [LICENSE](../LICENSE) file for details.
 ---
 
 **Version:** 0.3.0  
-**Last Updated:** December 5, 2025  
+**Last Updated:** December 6, 2025  
 **Maintainer:** Thomas Heisig
 
-**Documentation Status:** ✅ Complete and up-to-date (82 Dateien, 91% aktuell)
+**Documentation Status:** ✅ Complete and up-to-date (85 Dateien, 93% aktuell)

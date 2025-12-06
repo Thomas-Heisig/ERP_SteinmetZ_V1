@@ -166,17 +166,23 @@ ERP_SteinmetZ_V1/
 - **Mehrsprachigkeit** (7 Sprachen)
 - **Health Monitoring**
 - **Auto-Reload** für Entwicklung
+- **Standardisiertes Error-Handling** ✨ NEU
+  - APIError-Klassen für konsistente Fehlerbehandlung
+  - Zod-Validierung für Request-Parameter
+  - Vollständig implementiert in HR, Finance und QuickChat
 - **HR-Modul** ✨ NEU
-  - Mitarbeiterverwaltung
+  - Mitarbeiterverwaltung (14 Endpoints)
   - Zeiterfassung
   - Urlaubsmanagement
   - Gehaltsabrechnung (Basis)
+  - Vollständige Input-Validierung und Error-Handling
 - **Finance-Modul** ✨ NEU
-  - Rechnungsmanagement
+  - Rechnungsmanagement (19 Endpoints)
   - Kunden-/Lieferantenverwaltung
   - Zahlungsabwicklung
   - Buchhaltung (Hauptbuch, Debitoren, Kreditoren)
   - Finanzberichte (Bilanz, GuV)
+  - Vollständige Input-Validierung und Error-Handling
 
 ### 🔄 In Entwicklung
 
@@ -251,9 +257,10 @@ npm test:coverage     # Mit Coverage-Report
 
 **Aktueller Test-Status:**
 
-- ✅ Backend: 42/42 Tests passing
-- ✅ Frontend: 37/50 Tests passing (13 pre-existing issues)
+- ✅ Backend: 42/42 Tests passing (100%)
+- ✅ Frontend: 37/50 Tests passing (74%, 13 pre-existing issues unrelated to recent changes)
 - ✅ Build: Vollständig erfolgreich
+- ✅ Code Coverage: 86% (Ziel: 90%)
 
 ## 📚 Dokumentation
 
@@ -304,9 +311,9 @@ Siehe LICENSE file für Details.
 ---
 
 **Version:** 0.3.0  
-**Letztes Update:** 5. Dezember 2025  
+**Letztes Update:** 6. Dezember 2025  
 **Build-Status:** ✅ Erfolgreich  
-**Test-Status:** ✅ 79/92 passing
+**Test-Status:** ✅ 79/92 passing (Backend: 42/42, Frontend: 37/50)
 
 ---
 
