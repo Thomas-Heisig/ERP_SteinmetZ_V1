@@ -24,6 +24,7 @@ import chokidar from "chokidar";
 import fs from "fs/promises";
 import { GlobalApp } from "./utils/globalApp.js";
 import { getVersionInfo, getVersionString } from "./version.js";
+import { createLogger } from "./utils/logger.js";
 
 /* ---------------------- Router ---------------------- */
 import authRouter from "./routes/auth/authRouter.js";
@@ -67,6 +68,7 @@ const ORIGIN = process.env.CORS_ORIGIN ?? "http://localhost:5173";
 
 /* ---------------------- App-Initialisierung ---------------------- */
 const app: Application = express();
+const logger = createLogger("server");
 
 /* --------------------------------------------------------
    WICHTIG: globale Registrierung der App
@@ -77,22 +79,22 @@ GlobalApp.set(app);
 
 /* ---------------------- Initiale Log-Ausgabe ---------------------- */
 const versionInfo = getVersionInfo();
-console.log("========================================================");
-console.log("🧱 ERP-SteinmetZ Backend");
-console.log("========================================================");
-console.log(`📌 Version:           ${versionInfo.version}`);
-console.log(`🕒 Build:             ${versionInfo.buildDate}`);
-console.log(`🔧 Environment:       ${versionInfo.environment}`);
-console.log(`📦 Node:              ${versionInfo.nodeVersion}`);
-console.log(
+logger.info("========================================================");
+logger.info("🧱 ERP-SteinmetZ Backend");
+logger.info("========================================================");
+logger.info(`📌 Version:           ${versionInfo.version}`);
+logger.info(`🕒 Build:             ${versionInfo.buildDate}`);
+logger.info(`🔧 Environment:       ${versionInfo.environment}`);
+logger.info(`📦 Node:              ${versionInfo.nodeVersion}`);
+logger.info(
   `💻 Platform:          ${versionInfo.platform} (${versionInfo.arch})`,
 );
-console.log("--------------------------------------------------------");
-console.log(`📁 Views:             ${VIEWS_DIR}`);
-console.log(`📂 Repo Root:         ${REPO_ROOT}`);
-console.log(`🌐 CORS Origin:       ${ORIGIN}`);
-console.log(`🔌 Port:              ${PORT}`);
-console.log("========================================================");
+logger.info("--------------------------------------------------------");
+logger.info(`📁 Views:             ${VIEWS_DIR}`);
+logger.info(`📂 Repo Root:         ${REPO_ROOT}`);
+logger.info(`🌐 CORS Origin:       ${ORIGIN}`);
+logger.info(`🔌 Port:              ${PORT}`);
+logger.info("========================================================");
 
 /* ---------------------- Middleware ---------------------- */
 app.use(
@@ -109,14 +111,14 @@ app.use(cookieParser());
 // Session middleware with Redis support
 import { createSessionMiddleware } from "./middleware/sessionMiddleware.js";
 app.use(createSessionMiddleware());
-console.log("[middleware] Session middleware configured with Redis support");
+logger.info("Session middleware configured with Redis support");
 
 /* ---------------------- Optionale Admin-Auth ---------------------- */
 app.use((req, res, next) => {
   if (process.env.ADMIN_TOKEN && req.path.startsWith("/api/system")) {
     const token = req.headers["x-admin-token"];
     if (token !== process.env.ADMIN_TOKEN) {
-      console.warn(`[auth] Zugriff verweigert auf ${req.path}`);
+      logger.warn({ path: req.path }, "Access denied: Admin token required");
       return res.status(403).json({ error: "Forbidden: Admin token required" });
     }
   }
@@ -125,22 +127,22 @@ app.use((req, res, next) => {
 
 /* ---------------------- Dashboard-Frontend ---------------------- */
 app.use(express.static(VIEWS_DIR));
-console.log(`[views] Static-Serving aktiviert für: ${VIEWS_DIR}`);
+logger.info({ viewsDir: VIEWS_DIR }, "Static file serving enabled");
 
 app.get("/", async (_req: Request, res: Response) => {
   const dashboardPath = path.join(VIEWS_DIR, "systemDashboard.html");
   try {
     await fs.access(dashboardPath);
-    console.log("[views] Liefere systemDashboard.html aus");
+    logger.debug("Serving systemDashboard.html");
     res.sendFile(dashboardPath);
   } catch (err) {
-    console.error("[views] Dashboard HTML fehlt:", err);
+    logger.error({ err, path: dashboardPath }, "Dashboard HTML not found");
     res.status(404).send("Dashboard HTML nicht gefunden");
   }
 });
 
 /* ---------------------- API-Routen ---------------------- */
-console.log("[router] Initialisiere API-Routen...");
+logger.info("Initializing API routes...");
 app.use("/api/auth", authRouter);
 app.use("/api/health", healthRouter);
 app.use("/api/dashboard", dashboardRouter);
@@ -173,7 +175,7 @@ app.get("/api/session/stats", async (_req: Request, res: Response) => {
   });
 });
 
-console.log("[router] API-Routen aktiv");
+logger.info("API routes activated");
 
 /* --------------------------------------------------------
    Router-Debug
@@ -181,18 +183,18 @@ console.log("[router] API-Routen aktiv");
 
 app.get("/_router_init", (_req, res) => res.json({ ok: true }));
 
-console.log("[debug] Prüfe Router-Struktur nach globaler Registrierung...");
+logger.debug("Checking router structure after global registration...");
 const stack = (app as any)?._router?.stack;
 if (Array.isArray(stack)) {
-  console.log("[debug] Router-Stack-Länge:", stack.length);
+  logger.debug({ stackLength: stack.length }, "Router stack registered");
   const routeNames = stack
     .map(
       (layer: any) => layer?.route?.path || layer?.name || layer?.handle?.name,
     )
     .filter(Boolean);
-  console.log("[debug] Bekannte Router-Einträge:", routeNames.slice(0, 20));
+  logger.debug({ routes: routeNames.slice(0, 20) }, "Known router entries");
 } else {
-  console.warn("[debug] Kein _router-Stack in Express-App gefunden");
+  logger.warn("No _router stack found in Express app");
 }
 
 /* ---------------------- Debug-/Hilfsroute ---------------------- */
@@ -211,7 +213,7 @@ app.get("/api/debug/routes", (_req, res) => {
 
 /* ---------------------- 404-Fallback ---------------------- */
 app.use((_req: Request, res: Response) => {
-  console.warn("[404] Route nicht gefunden:", _req.originalUrl);
+  logger.warn({ url: _req.originalUrl }, "Route not found");
   res.status(404).json({ error: "Not found" });
 });
 
@@ -220,61 +222,64 @@ app.use(errorHandler);
 
 /* ---------------------- Bootstrap Functions-Katalog ---------------------- */
 async function bootstrapFunctionsCatalog() {
-  console.log("[bootstrap] Initialisiere Functions-Katalog...");
+  logger.info("Initializing Functions Catalog...");
   const service = new FunctionsCatalogService();
 
   try {
     await db.init();
-    console.log("[bootstrap] Datenbank initialisiert");
+    logger.info("Database initialized");
 
     // Initialize authentication system
     await AuthService.init();
-    console.log("[bootstrap] Authentication system initialisiert");
+    logger.info("Authentication system initialized");
 
     if (process.env.FUNCTIONS_AUTOLOAD !== "0") {
       const result = await service.refreshFunctionsIndex();
-      console.log(
-        `[functions] initial geladen @ ${result.loadedAt} (${result.nodes.length} Wurzeln)`,
+      logger.info(
+        { loadedAt: result.loadedAt, rootNodes: result.nodes.length },
+        "Functions catalog initially loaded",
       );
 
       if (process.env.FUNCTIONS_AUTOPERSIST === "1") {
         const summary = await db.upsertFunctionsCatalog(result);
-        console.log(
-          `[functions] initial in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`,
+        logger.info(
+          { nodes: summary.nodes, edges: summary.edges },
+          "Functions catalog persisted to database",
         );
       }
     } else {
-      console.log("[functions] FUNCTIONS_AUTOLOAD=0 → kein initiales Laden");
+      logger.info("FUNCTIONS_AUTOLOAD=0 - Skipping initial load");
     }
 
     if (process.env.FUNCTIONS_WATCH === "1") {
       startFunctionsWatcher(service, DEFAULT_FUNCTIONS_DIR);
     }
   } catch (err) {
-    console.error(
-      "[bootstrap] Fehler beim Initialisieren des Function-Katalogs:",
-      err,
+    logger.error(
+      { err },
+      "Failed to initialize Functions Catalog",
     );
   }
 }
 
 /* ---------------------- Watcher ---------------------- */
 function startFunctionsWatcher(service: FunctionsCatalogService, dir: string) {
-  console.log(`[functions] Watcher aktiv: ${dir}`);
+  logger.info({ directory: dir }, "Functions watcher activated");
   let timer: NodeJS.Timeout | null = null;
 
   const reload = async () => {
     try {
       const result = await service.refreshFunctionsIndex();
-      console.log(`[functions] neu geladen @ ${result.loadedAt}`);
+      logger.info({ loadedAt: result.loadedAt }, "Functions catalog reloaded");
       if (process.env.FUNCTIONS_AUTOPERSIST === "1") {
         const summary = await db.upsertFunctionsCatalog(result);
-        console.log(
-          `[functions] in DB gespeichert: nodes=${summary.nodes}, edges=${summary.edges}`,
+        logger.info(
+          { nodes: summary.nodes, edges: summary.edges },
+          "Functions catalog persisted to database",
         );
       }
     } catch (e) {
-      console.error("[functions] Reload fehlgeschlagen:", e);
+      logger.error({ err: e }, "Functions catalog reload failed");
     }
   };
 
@@ -292,36 +297,36 @@ function startFunctionsWatcher(service: FunctionsCatalogService, dir: string) {
 
 /* ---------------------- Server-Start ---------------------- */
 export async function start() {
-  console.log("[server] Starte Backend...");
+  logger.info("Starting backend server...");
   try {
     await bootstrapFunctionsCatalog();
 
     const server = app.listen(PORT, () => {
-      console.log("--------------------------------------------------------");
-      console.log(`[backend] Listening on:           http://localhost:${PORT}`);
-      console.log(`[backend] Dashboard erreichbar:  http://localhost:${PORT}/`);
-      console.log(
-        `[backend] System API:             http://localhost:${PORT}/api/system`,
+      logger.info("--------------------------------------------------------");
+      logger.info({ port: PORT }, `Backend listening on: http://localhost:${PORT}`);
+      logger.info(`Dashboard available:  http://localhost:${PORT}/`);
+      logger.info(
+        `System API:           http://localhost:${PORT}/api/system`,
       );
-      console.log(
-        `[backend] Health API:             http://localhost:${PORT}/api/health`,
+      logger.info(
+        `Health API:           http://localhost:${PORT}/api/health`,
       );
-      console.log(
-        `[backend] Functions API:          http://localhost:${PORT}/api/functions`,
+      logger.info(
+        `Functions API:        http://localhost:${PORT}/api/functions`,
       );
-      console.log(
-        `[backend] AI Annotator API:       http://localhost:${PORT}/api/ai-annotator`,
+      logger.info(
+        `AI Annotator API:     http://localhost:${PORT}/api/ai-annotator`,
       );
-      console.log("--------------------------------------------------------");
+      logger.info("--------------------------------------------------------");
 
       // Initialize WebSocket server
       websocketService.initialize(server);
-      console.log(`[backend] WebSocket initialized:  ws://localhost:${PORT}`);
+      logger.info({ port: PORT }, `WebSocket initialized: ws://localhost:${PORT}`);
     });
 
     return server;
   } catch (err) {
-    console.error("❌ [server] Fehler beim Start:", err);
+    logger.error({ err }, "Failed to start server");
     process.exit(1);
   }
 }
