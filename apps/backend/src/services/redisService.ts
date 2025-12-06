@@ -274,7 +274,9 @@ class RedisService {
     }
 
     const results = await this.client.mGet(keys);
-    return results.map((r) => (r === null || r === undefined ? null : String(r)));
+    return results.map((r) =>
+      r === null || r === undefined ? null : String(r),
+    );
   }
 
   /**

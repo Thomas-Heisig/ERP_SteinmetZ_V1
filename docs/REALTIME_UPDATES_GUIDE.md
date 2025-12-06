@@ -5,6 +5,7 @@ This guide explains how to use the WebSocket integration for real-time updates i
 ## Overview
 
 The application uses Socket.IO for bidirectional real-time communication between the frontend and backend. This enables features like:
+
 - Live dashboard updates
 - Real-time chat messages
 - Batch processing progress tracking
@@ -13,9 +14,11 @@ The application uses Socket.IO for bidirectional real-time communication between
 ## Backend WebSocket Service
 
 ### Location
+
 `apps/backend/src/services/websocketService.ts`
 
 ### Features
+
 - JWT authentication support
 - Room-based messaging
 - Connection tracking
@@ -23,6 +26,7 @@ The application uses Socket.IO for bidirectional real-time communication between
 - Broadcasting to all clients
 
 ### Event Types
+
 ```typescript
 WS_EVENTS = {
   // Dashboard events
@@ -46,44 +50,49 @@ WS_EVENTS = {
   // Functions catalog events
   CATALOG_UPDATE: "catalog:update",
   CATALOG_RELOAD: "catalog:reload",
-}
+};
 ```
 
 ### Backend Usage
 
 #### Broadcast to all clients
+
 ```typescript
-import { websocketService, WS_EVENTS } from './services/websocketService';
+import { websocketService, WS_EVENTS } from "./services/websocketService";
 
 websocketService.broadcast(WS_EVENTS.SYSTEM_NOTIFICATION, {
-  message: 'System maintenance scheduled',
-  severity: 'warning'
+  message: "System maintenance scheduled",
+  severity: "warning",
 });
 ```
 
 #### Send to specific room
+
 ```typescript
-websocketService.toRoom('dashboard', WS_EVENTS.DASHBOARD_UPDATE, {
-  metrics: { cpu: 45, memory: 67 }
+websocketService.toRoom("dashboard", WS_EVENTS.DASHBOARD_UPDATE, {
+  metrics: { cpu: 45, memory: 67 },
 });
 ```
 
 #### Send to specific user
+
 ```typescript
 websocketService.toUser(userId, WS_EVENTS.BATCH_COMPLETE, {
-  batchId: 'batch_123',
-  results: { total: 100, successful: 98, failed: 2 }
+  batchId: "batch_123",
+  results: { total: 100, successful: 98, failed: 2 },
 });
 ```
 
 ## Frontend WebSocket Hooks
 
 ### Location
+
 `apps/frontend/src/hooks/useWebSocket.ts`
 
 ### Available Hooks
 
 #### 1. `useWebSocket` - General WebSocket Hook
+
 ```typescript
 import { useWebSocket } from '../hooks/useWebSocket';
 
@@ -110,6 +119,7 @@ function MyComponent() {
 ```
 
 #### 2. `useDashboardUpdates` - Dashboard Real-Time Updates
+
 ```typescript
 import { useDashboardUpdates } from '../hooks/useWebSocket';
 
@@ -134,6 +144,7 @@ function DashboardComponent() {
 ```
 
 #### 3. `useChatUpdates` - Chat Real-Time Messages
+
 ```typescript
 import { useChatUpdates } from '../hooks/useWebSocket';
 
@@ -159,6 +170,7 @@ function ChatComponent() {
 ```
 
 #### 4. `useBatchUpdates` - Batch Progress Tracking
+
 ```typescript
 import { useBatchUpdates } from '../hooks/useWebSocket';
 
@@ -191,6 +203,7 @@ function BatchTracker({ batchId }) {
 ## Dashboard WebSocket Integration
 
 ### Hook: `useDashboardWebSocket`
+
 Location: `apps/frontend/src/components/Dashboard/hooks/useDashboardWebSocket.ts`
 
 ```typescript
@@ -223,6 +236,7 @@ function Dashboard() {
 ### Environment Variables
 
 #### Backend (.env)
+
 ```bash
 # WebSocket Configuration
 FRONTEND_URL=http://localhost:5173
@@ -239,6 +253,7 @@ REDIS_ENABLED=true  # Set to enable Redis in development
 ```
 
 #### Frontend (.env)
+
 ```bash
 VITE_API_URL=http://localhost:3000
 ```
@@ -246,11 +261,13 @@ VITE_API_URL=http://localhost:3000
 ## Testing WebSocket Connection
 
 ### 1. Check Connection Status
+
 ```bash
 curl http://localhost:3000/api/ws/stats
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -265,66 +282,72 @@ Response:
 ```
 
 ### 2. Test from Browser Console
+
 ```javascript
 // Connect to WebSocket
-const socket = io('http://localhost:3000', {
-  transports: ['websocket', 'polling']
+const socket = io("http://localhost:3000", {
+  transports: ["websocket", "polling"],
 });
 
 // Listen for connection
-socket.on('connect', () => {
-  console.log('Connected:', socket.id);
+socket.on("connect", () => {
+  console.log("Connected:", socket.id);
 });
 
 // Listen for welcome message
-socket.on('welcome', (data) => {
-  console.log('Welcome:', data);
+socket.on("welcome", (data) => {
+  console.log("Welcome:", data);
 });
 
 // Join a room
-socket.emit('join-room', 'dashboard');
+socket.emit("join-room", "dashboard");
 
 // Listen for dashboard updates
-socket.on('dashboard:update', (data) => {
-  console.log('Dashboard update:', data);
+socket.on("dashboard:update", (data) => {
+  console.log("Dashboard update:", data);
 });
 ```
 
 ## Best Practices
 
 ### 1. Connection Management
+
 - Use `autoConnect: true` for components that always need WebSocket
 - Clean up listeners in `useEffect` return function
 - Handle reconnection gracefully
 
 ### 2. Authentication
+
 - Pass JWT token to `useWebSocket` for authenticated connections
 - Token is sent in auth object and authorization header
 
 ### 3. Room Management
+
 - Join specific rooms for targeted updates
 - Leave rooms when component unmounts
 - Use meaningful room names
 
 ### 4. Error Handling
+
 ```typescript
 const { socket } = useWebSocket();
 
 useEffect(() => {
   if (socket) {
-    socket.on('connect_error', (error) => {
-      console.error('Connection error:', error);
+    socket.on("connect_error", (error) => {
+      console.error("Connection error:", error);
       // Handle error (show notification, retry, etc.)
     });
 
-    socket.on('error', (error) => {
-      console.error('Socket error:', error);
+    socket.on("error", (error) => {
+      console.error("Socket error:", error);
     });
   }
 }, [socket]);
 ```
 
 ### 5. Performance
+
 - Use `useCallback` for event handlers to prevent unnecessary re-renders
 - Limit update frequency on high-frequency events
 - Clean up state appropriately
@@ -353,12 +376,15 @@ useEffect(() => {
 ## Integration Examples
 
 ### Complete Dashboard Integration
+
 See: `apps/frontend/src/components/Dashboard/Dashboard.tsx`
 
 ### Complete Batch Processing Integration
+
 See: `apps/frontend/src/components/BatchProcessing/BatchProcessingPage.tsx`
 
 ### Complete Advanced Filters
+
 See: `apps/frontend/src/components/AdvancedFilters/AdvancedFilters.tsx`
 
 ## Additional Resources

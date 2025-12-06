@@ -62,7 +62,8 @@ export const AdvancedFilters: React.FC = () => {
       const queryParams = new URLSearchParams();
 
       if (filter.query) queryParams.set("search", filter.query);
-      if (filter.kinds?.length) queryParams.set("kinds", filter.kinds.join(","));
+      if (filter.kinds?.length)
+        queryParams.set("kinds", filter.kinds.join(","));
       if (filter.tags?.length) queryParams.set("tags", filter.tags.join(","));
       if (filter.businessArea?.length)
         queryParams.set("businessArea", filter.businessArea.join(","));
@@ -126,9 +127,7 @@ export const AdvancedFilters: React.FC = () => {
     if (results.length === 0) return;
 
     // Get all unique keys from results
-    const keys = Array.from(
-      new Set(results.flatMap((r) => Object.keys(r))),
-    );
+    const keys = Array.from(new Set(results.flatMap((r) => Object.keys(r))));
 
     // Create CSV header
     const csv = [
