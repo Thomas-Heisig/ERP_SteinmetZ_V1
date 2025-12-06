@@ -6,6 +6,7 @@ import { Router } from "express";
 
 import { existsSync, readFileSync } from "fs";
 import path from "path";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 const router = Router();
 
@@ -31,59 +32,54 @@ router.get("/health", (_req, res) => {
 /* ---------------------------------------------------------
    Dashboard-Übersicht: System + AI + ERP-Daten
 --------------------------------------------------------- */
-router.get("/overview", async (_req, res) => {
-  try {
-    // Beispielhafte "ERP"-Werte (später echte Datenbank-Abfragen)
-    const erpStats = {
-      openOrders: 14,
-      pendingInvoices: 7,
-      stockItems: 1240,
-      customers: 328,
-    };
+router.get("/overview", asyncHandler(async (_req, res) => {
+  // Beispielhafte "ERP"-Werte (später echte Datenbank-Abfragen)
+  const erpStats = {
+    openOrders: 14,
+    pendingInvoices: 7,
+    stockItems: 1240,
+    customers: 328,
+  };
 
-    // AI-Komponentenstatus
-    const aiStatus = {
-      fallback_config_source: process.env.FALLBACK_CONFIG_SOURCE ?? "defaults",
-      wiki_enabled: (process.env.FALLBACK_WIKI ?? "1") !== "0",
-      modules: {
-        fallback_ai: true,
-        annotator_ai: existsSync(
-          path.join(process.cwd(), "src/routes/ai/annotator_ai.ts"),
-        ),
-        rag_ai: existsSync(path.join(process.cwd(), "src/routes/ai/rag_ai.ts")),
+  // AI-Komponentenstatus
+  const aiStatus = {
+    fallback_config_source: process.env.FALLBACK_CONFIG_SOURCE ?? "defaults",
+    wiki_enabled: (process.env.FALLBACK_WIKI ?? "1") !== "0",
+    modules: {
+      fallback_ai: true,
+      annotator_ai: existsSync(
+        path.join(process.cwd(), "src/routes/ai/annotator_ai.ts"),
+      ),
+      rag_ai: existsSync(path.join(process.cwd(), "src/routes/ai/rag_ai.ts")),
+    },
+  };
+
+  // Versionsinformationen
+  const packageJson = JSON.parse(
+    readFileSync(path.join(process.cwd(), "package.json"), "utf8"),
+  );
+  const versionInfo = {
+    name: packageJson.name,
+    version: packageJson.version,
+    description: packageJson.description,
+  };
+
+  res.json({
+    system: {
+      uptime: process.uptime(),
+      cpu: os.cpus().length,
+      loadavg: os.loadavg().map((x) => x.toFixed(2)),
+      memory: {
+        free: Math.round(os.freemem() / 1024 / 1024) + " MB",
+        total: Math.round(os.totalmem() / 1024 / 1024) + " MB",
       },
-    };
-
-    // Versionsinformationen
-    const packageJson = JSON.parse(
-      readFileSync(path.join(process.cwd(), "package.json"), "utf8"),
-    );
-    const versionInfo = {
-      name: packageJson.name,
-      version: packageJson.version,
-      description: packageJson.description,
-    };
-
-    res.json({
-      system: {
-        uptime: process.uptime(),
-        cpu: os.cpus().length,
-        loadavg: os.loadavg().map((x) => x.toFixed(2)),
-        memory: {
-          free: Math.round(os.freemem() / 1024 / 1024) + " MB",
-          total: Math.round(os.totalmem() / 1024 / 1024) + " MB",
-        },
-      },
-      ai: aiStatus,
-      erp: erpStats,
-      version: versionInfo,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (e) {
-    console.error("Dashboard-Fehler:", e);
-    res.status(500).json({ error: "Fehler beim Laden der Übersicht" });
-  }
-});
+    },
+    ai: aiStatus,
+    erp: erpStats,
+    version: versionInfo,
+    timestamp: new Date().toISOString(),
+  });
+}));
 
 /* ---------------------------------------------------------
    (optional) Letzte Logs / Chat-Kontext

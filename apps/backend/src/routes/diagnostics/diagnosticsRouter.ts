@@ -10,6 +10,7 @@ import {
   healingReport,
 } from "../../services/selfhealing/index.js";
 import { getVersionInfo } from "../../version.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 const router = Router();
 
@@ -17,151 +18,114 @@ const router = Router();
  * GET /diagnostics
  * HTML-Diagnoseseite
  */
-router.get("/", async (_req: Request, res: Response) => {
-  try {
-    const versionInfo = getVersionInfo();
-    const healthResult = await healthMonitor.runHealthChecks();
-    const dbStats = await db.getStats();
-    const schedulerStatus = scheduler.getStatus();
-    const reportStats = healingReport.getStatistics();
+router.get("/", asyncHandler(async (_req: Request, res: Response) => {
+  const versionInfo = getVersionInfo();
+  const healthResult = await healthMonitor.runHealthChecks();
+  const dbStats = await db.getStats();
+  const schedulerStatus = scheduler.getStatus();
+  const reportStats = healingReport.getStatistics();
 
-    const systemInfo = {
-      hostname: os.hostname(),
-      platform: os.platform(),
-      arch: os.arch(),
-      cpus: os.cpus().length,
-      totalMemory: formatBytes(os.totalmem()),
-      freeMemory: formatBytes(os.freemem()),
-      uptime: formatUptime(os.uptime()),
-      nodeVersion: process.version,
-      processUptime: formatUptime(process.uptime()),
-    };
+  const systemInfo = {
+    hostname: os.hostname(),
+    platform: os.platform(),
+    arch: os.arch(),
+    cpus: os.cpus().length,
+    totalMemory: formatBytes(os.totalmem()),
+    freeMemory: formatBytes(os.freemem()),
+    uptime: formatUptime(os.uptime()),
+    nodeVersion: process.version,
+    processUptime: formatUptime(process.uptime()),
+  };
 
-    const html = generateDiagnosticsHTML(
-      versionInfo,
-      healthResult,
-      dbStats,
-      schedulerStatus,
-      reportStats,
-      systemInfo,
-    );
+  const html = generateDiagnosticsHTML(
+    versionInfo,
+    healthResult,
+    dbStats,
+    schedulerStatus,
+    reportStats,
+    systemInfo,
+  );
 
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.send(html);
-  } catch (error) {
-    console.error("❌ [Diagnostics] Error:", error);
-    res.status(500).send(`
-      <html>
-        <head><title>Diagnostics Error</title></head>
-        <body>
-          <h1>Diagnostics Error</h1>
-          <pre>${error instanceof Error ? error.message : "Unknown error"}</pre>
-        </body>
-      </html>
-    `);
-  }
-});
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.send(html);
+}));
 
 /**
  * GET /diagnostics/api
  * JSON API für Diagnosedaten
  */
-router.get("/api", async (_req: Request, res: Response) => {
-  try {
-    const versionInfo = getVersionInfo();
-    const healthResult = await healthMonitor.runHealthChecks();
-    const dbStats = await db.getStats();
-    const schedulerStatus = scheduler.getStatus();
-    const reportStats = healingReport.getStatistics();
+router.get("/api", asyncHandler(async (_req: Request, res: Response) => {
+  const versionInfo = getVersionInfo();
+  const healthResult = await healthMonitor.runHealthChecks();
+  const dbStats = await db.getStats();
+  const schedulerStatus = scheduler.getStatus();
+  const reportStats = healingReport.getStatistics();
 
-    res.json({
-      success: true,
-      timestamp: new Date().toISOString(),
-      version: versionInfo,
-      health: healthResult,
-      database: dbStats,
-      scheduler: schedulerStatus,
-      reports: reportStats,
-      system: {
-        hostname: os.hostname(),
-        platform: os.platform(),
-        arch: os.arch(),
-        cpus: os.cpus().length,
-        totalMemory: os.totalmem(),
-        freeMemory: os.freemem(),
-        uptime: os.uptime(),
-        nodeVersion: process.version,
-        processUptime: process.uptime(),
-      },
-    });
-  } catch (error) {
-    console.error("❌ [Diagnostics] API Error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  res.json({
+    success: true,
+    timestamp: new Date().toISOString(),
+    version: versionInfo,
+    health: healthResult,
+    database: dbStats,
+    scheduler: schedulerStatus,
+    reports: reportStats,
+    system: {
+      hostname: os.hostname(),
+      platform: os.platform(),
+      arch: os.arch(),
+      cpus: os.cpus().length,
+      totalMemory: os.totalmem(),
+      freeMemory: os.freemem(),
+      uptime: os.uptime(),
+      nodeVersion: process.version,
+      processUptime: process.uptime(),
+    },
+  });
+}));
 
 /**
  * POST /diagnostics/health-check
  * Manuellen Health-Check triggern
  */
-router.post("/health-check", async (_req: Request, res: Response) => {
-  try {
-    const result = await scheduler.runManualCheck();
-    res.json({
-      success: true,
-      result,
-    });
-  } catch (error) {
-    console.error("❌ [Diagnostics] Health check error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+router.post("/health-check", asyncHandler(async (_req: Request, res: Response) => {
+  const result = await scheduler.runManualCheck();
+  res.json({
+    success: true,
+    result,
+  });
+}));
 
 /**
  * GET /diagnostics/logs
  * Audit-Logs abrufen
  */
-router.get("/logs", async (req: Request, res: Response) => {
-  try {
-    const { limit = "100", entity, action } = req.query;
+router.get("/logs", asyncHandler(async (req: Request, res: Response) => {
+  const { limit = "100", entity, action } = req.query;
 
-    let sql = "SELECT * FROM audit_log WHERE 1=1";
-    const params: unknown[] = [];
+  let sql = "SELECT * FROM audit_log WHERE 1=1";
+  const params: unknown[] = [];
 
-    if (entity) {
-      sql += " AND entity = ?";
-      params.push(entity);
-    }
-
-    if (action) {
-      sql += " AND action = ?";
-      params.push(action);
-    }
-
-    sql += " ORDER BY created_at DESC LIMIT ?";
-    params.push(Number(limit));
-
-    const logs = await db.all(sql, params);
-
-    res.json({
-      success: true,
-      data: logs,
-      total: logs.length,
-    });
-  } catch (error) {
-    console.error("❌ [Diagnostics] Logs error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
+  if (entity) {
+    sql += " AND entity = ?";
+    params.push(entity);
   }
-});
+
+  if (action) {
+    sql += " AND action = ?";
+    params.push(action);
+  }
+
+  sql += " ORDER BY created_at DESC LIMIT ?";
+  params.push(Number(limit));
+
+  const logs = await db.all(sql, params);
+
+  res.json({
+    success: true,
+    data: logs,
+    total: logs.length,
+  });
+}));
 
 // HTML Generator
 function generateDiagnosticsHTML(
