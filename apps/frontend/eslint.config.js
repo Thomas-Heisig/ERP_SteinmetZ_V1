@@ -62,7 +62,7 @@ export default [
     },
     settings: {
       react: {
-        version: "19.2.0",
+        version: "detect", // Automatically detect React version
       },
     },
   },

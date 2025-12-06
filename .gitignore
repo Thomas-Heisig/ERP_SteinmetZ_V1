@@ -103,6 +103,14 @@ github.txt
 *.token
 *.secret
 secrets/
+private.*
+keys/
+*.pem
+*.p12
+*.jks
+*.key
+*.crt
+*.csr
 .env.*
 !.env.example
 

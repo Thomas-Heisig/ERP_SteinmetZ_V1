@@ -360,6 +360,7 @@ Umfassende Dokumentation in SCRIPTS.md erstellt mit:
 - Quick Reference Tabelle
 
 **Zusätzlich (6. Dezember 2025)**:
+
 - ✅ ESLint-Scripts funktionieren mit ESLint v9
 - ✅ Linting-Workflow komplett eingerichtet
 - ✅ npm audit fix Script erfolgreich getestet
@@ -487,7 +488,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 **Details**:
 
-- **Sicherheit**: github.txt mit exposed PAT wurde gelöscht, .gitignore erweitert um *.token, *.secret, secrets/
+- **Sicherheit**: github.txt mit exposed PAT wurde gelöscht, .gitignore erweitert um _.token, _.secret, secrets/
 - **Linting**: ESLint v9 Migration mit @eslint/js flat config, TypeScript-Plugin, React-Plugin
 - **Dependencies**: 0 Vulnerabilities (von 3), deprecated packages dokumentiert
 - **.gitignore**: Erweitert um Caches, IDE-Patterns, Test-Coverage, Logs, Work-Summary-Patterns

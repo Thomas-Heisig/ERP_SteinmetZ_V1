@@ -51,7 +51,7 @@ export default [
     },
   },
   {
-    files: ["**/*.js"],
+    files: ["scripts/**/*.js"],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -68,9 +68,6 @@ export default [
       "dist/**",
       "node_modules/**",
       "coverage/**",
-      "scripts/**",
-      "*.js",
-      "!eslint.config.js",
     ],
   },
 ];
