@@ -13,7 +13,7 @@ Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical D
 
 ### ISSUE-005: Inkonsistente Error-Responses vom Backend 🔄
 
-**Status**: 🟡 Teilweise behoben | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2024-12-04
+**Status**: 🟡 Teilweise behoben | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2024-12-06
 
 **Beschreibung**:
 API-Fehler haben kein einheitliches Format. Auth-Middleware wurde bereits standardisiert, aber viele Router geben immer noch unterschiedliche Error-Formate zurück.
@@ -38,7 +38,10 @@ res.status(400).send("Bad request");
 3. ✅ Error-Codes definiert (BAD_REQUEST, UNAUTHORIZED, etc.)
 4. ✅ authMiddleware komplett aktualisiert
 5. ✅ rateLimitLogin Middleware aktualisiert
-6. ⚠️ **Weitere Router müssen noch aktualisiert werden** (AI, Functions, etc.)
+6. ✅ quickchatRouter komplett aktualisiert (2024-12-06)
+7. 🟡 hrRouter teilweise aktualisiert (5/12 Endpoints - 2024-12-06)
+8. 🟡 financeRouter teilweise aktualisiert (1/10 Endpoints - 2024-12-06)
+9. ⚠️ **Weitere Router müssen noch aktualisiert werden** (AI, Dashboard, etc.)
 
 **Standardformat**:
 
@@ -63,7 +66,7 @@ res.status(400).send("Bad request");
 
 ### ISSUE-006: Fehlende Input-Validierung auf Backend 🛡️
 
-**Status**: 🟠 Offen | **Priorität**: Hoch | **Erstellt**: 2024-12-03
+**Status**: 🟡 Teilweise behoben | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2024-12-06
 
 **Beschreibung**:
 Viele API-Endpunkte validieren Eingaben nicht oder nur unzureichend. Malformed Requests können zu unerwarteten Fehlern führen.
@@ -81,6 +84,14 @@ Viele API-Endpunkte validieren Eingaben nicht oder nur unzureichend. Malformed R
 2. Validation-Middleware erstellen
 3. In allen Routen einsetzen
 4. Klare Validation-Error-Messages
+
+**Fortschritt** (2024-12-06):
+
+1. ✅ quickchatRouter - Vollständige Zod-Validierung für alle Endpoints
+2. ✅ hrRouter - Zod-Validierung für Employee-Endpoints (CREATE, UPDATE, GET)
+3. ✅ financeRouter - Zod-Validierung für Invoice-Endpoints (GET)
+4. ✅ functionsCatalog - Hat bereits Zod-Validierung
+5. ⚠️ **Weitere Router benötigen noch Validierung** (AI, Dashboard, etc.)
 
 **Beispiel**:
 

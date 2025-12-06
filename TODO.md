@@ -62,15 +62,19 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 3-4 Stunden
   - **Ergebnis**: 5 Tests für Migration-System, vollständige Dokumentation
 
-- [x] **API-Error-Handling vereinheitlichen** ✅ ERLEDIGT (2024-12-04)
+- [x] **API-Error-Handling vereinheitlichen** ✅ TEILWEISE ERLEDIGT (2024-12-06)
   - [x] Zentrale Error-Handler-Middleware erweitern
   - [x] Konsistente Error-Responses definieren
   - [x] Logging für alle Errors implementieren
   - [x] Standardisierte Error-Typen (APIError, BadRequestError, NotFoundError, etc.)
   - [x] AsyncHandler für async Route-Handler
   - [x] 10 umfassende Tests
-  - **Aufwand**: 4-6 Stunden
-  - **Ergebnis**: Vollständige Error-Handling-Infrastruktur mit strukturiertem Logging
+  - [x] quickchatRouter mit standardisierten Errors + Zod-Validierung
+  - [x] hrRouter teilweise aktualisiert (5/12 Endpoints)
+  - [x] financeRouter teilweise aktualisiert (1/10 Endpoints)
+  - [ ] Verbleibende Router aktualisieren (AI, Dashboard, Diagnostics, etc.)
+  - **Aufwand**: 4-6 Stunden (teilweise abgeschlossen)
+  - **Ergebnis**: Vollständige Error-Handling-Infrastruktur, schrittweise Rollout
 
 - [x] **AI Provider Connection Tests** ✅ ERLEDIGT (2024-12-04)
   - [x] Health-Checks für alle Provider (OpenAI, Ollama, Anthropic, Fallback)

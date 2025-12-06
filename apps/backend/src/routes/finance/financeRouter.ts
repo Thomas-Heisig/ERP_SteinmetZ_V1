@@ -2,8 +2,39 @@
 // apps/backend/src/routes/finance/financeRouter.ts
 
 import { Router, Request, Response } from "express";
+import { z } from "zod";
+import {
+  BadRequestError,
+  NotFoundError,
+  ValidationError,
+} from "../../types/errors.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import pino from "pino";
 
 const router = Router();
+const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+
+// Validation schemas
+const invoiceQuerySchema = z.object({
+  status: z.enum(["draft", "sent", "paid", "overdue", "cancelled"]).optional(),
+  customerId: z.string().optional(),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+
+const createInvoiceSchema = z.object({
+  customerId: z.string().min(1),
+  customerName: z.string().min(1),
+  amount: z.number().positive(),
+  currency: z.string().length(3).default("EUR"),
+  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  items: z.array(z.object({
+    description: z.string(),
+    quantity: z.number().positive(),
+    unitPrice: z.number().positive(),
+    total: z.number().positive(),
+  })).optional(),
+});
 
 /**
  * Finance Module Router
@@ -18,9 +49,19 @@ const router = Router();
  * GET /api/finance/invoices
  * Get all invoices with optional filters
  */
-router.get("/invoices", async (req: Request, res: Response) => {
-  try {
-    const { status, customerId, startDate, endDate } = req.query;
+router.get(
+  "/invoices",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate query parameters
+    const validationResult = invoiceQuerySchema.safeParse(req.query);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid query parameters",
+        validationResult.error.issues,
+      );
+    }
+
+    const { status, customerId, startDate, endDate } = validationResult.data;
 
     // TODO: Replace with actual database query
     const mockInvoices = [
@@ -88,14 +129,8 @@ router.get("/invoices", async (req: Request, res: Response) => {
       data: filteredInvoices,
       count: filteredInvoices.length,
     });
-  } catch (error) {
-    console.error("[Finance] Error fetching invoices:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch invoices",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/finance/invoices/:id
