@@ -12,15 +12,19 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 
 ## ✅ Aktueller Status (Stand: Dezember 2025)
 
-### Frontend ✅ Vollständig Funktionsfähig
+### Frontend ✅ Vollständig Funktionsfähig & Überarbeitet ✨ NEU
 
 - ✅ React 19 + Vite Setup funktioniert
 - ✅ Dashboard lädt dynamisch 11 Funktionsbereiche vom Backend
-- ✅ Theme-System (Light, Dark, LCARS) vollständig funktionsfähig
+- ✅ **Zentralisiertes Theme-System** (Light, Dark, LCARS, Contrast) ✨ NEU
+- ✅ **Zentrale Route-Konfiguration** (routes.tsx) ✨ NEU
+- ✅ **CSS-Variablen System** für konsistentes Design ✨ NEU
 - ✅ QuickChat Assistant Komponente integriert und funktionsfähig
+- ✅ AI Annotator vollständig integriert und geroutet ✨ NEU
 - ✅ Navigation zwischen Seiten funktioniert
 - ✅ Mehrsprachige Oberfläche (7 Sprachen)
 - ✅ Responsive Design
+- ✅ **Umfassende Dokumentation** (THEME_SYSTEM.md, FRONTEND_STRUCTURE.md) ✨ NEU
 
 ### Backend ✅ Stabil & Funktionsfähig
 
@@ -108,6 +112,23 @@ npm start
 - **Health Check:** http://localhost:3000/api/health
 - **API Docs:** http://localhost:3000/api/functions
 
+### Frontend Routes ✨ NEU
+
+Alle Features sind über zentralisierte Routes erreichbar:
+
+- `/` - Dashboard (Hauptansicht)
+- `/catalog` - Funktionskatalog
+- `/ai` - AI Annotator
+- `/hr` - Personalwesen
+- `/finance` - Finanzen & Controlling
+- `/crm` - Customer Relationship Management
+- `/inventory` - Lagerverwaltung
+- `/projects` - Projektverwaltung
+- `/innovation` - Innovationsmanagement
+- `/calendar` - Kalender
+- `/communication` - Kommunikationszentrum
+- `/settings` - Einstellungen
+
 ## 📁 Projektstruktur
 
 ```
@@ -116,12 +137,22 @@ ERP_SteinmetZ_V1/
 │   ├── frontend/              # React 19 + Vite Frontend
 │   │   ├── src/
 │   │   │   ├── components/    # React Komponenten
+│   │   │   │   ├── ui/             # Basis UI-Komponenten ✨ NEU
 │   │   │   │   ├── Dashboard/      # Hauptdashboard
 │   │   │   │   ├── QuickChat/      # KI-Chat Assistant
+│   │   │   │   ├── aiAnnotatorRouter/  # AI Annotator ✨ NEU
 │   │   │   │   └── FunctionsCatalog/  # Funktionsübersicht
-│   │   │   ├── contexts/      # React Contexts (Theme, i18n)
+│   │   │   ├── features/      # Feature-Module (HR, Finance, etc.) ✨ NEU
+│   │   │   ├── contexts/      # React Contexts (Theme, Auth)
 │   │   │   ├── hooks/         # Custom React Hooks
-│   │   │   └── styles/        # CSS Themes
+│   │   │   ├── pages/         # Top-Level Pages
+│   │   │   ├── styles/        # Styling System ✨ NEU
+│   │   │   │   ├── theme/          # Theme-Variablen
+│   │   │   │   ├── components.css  # Wiederverwendbare Styles
+│   │   │   │   └── *.css           # Theme-Dateien
+│   │   │   └── routes.tsx     # Zentrale Route-Konfiguration ✨ NEU
+│   │   ├── THEME_SYSTEM.md    # Theme-Dokumentation ✨ NEU
+│   │   ├── FRONTEND_STRUCTURE.md  # Architektur-Dokumentation ✨ NEU
 │   │   └── .env.example       # Frontend Umgebungsvariablen
 │   │
 │   └── backend/               # Express 5 Backend
@@ -137,16 +168,20 @@ ERP_SteinmetZ_V1/
 └── src/                       # Shared Code (Resilience, SAGA)
 ```
 
+> 📖 Siehe auch: [Frontend-Architektur](apps/frontend/FRONTEND_STRUCTURE.md) | [Theme-System](apps/frontend/THEME_SYSTEM.md)
+
 ## 🔧 Technologie-Stack
 
 ### Frontend
 
 - **Framework:** React 19 + Vite
-- **Routing:** React Router v7
-- **Styling:** CSS Modules + Design System
+- **Routing:** React Router v7 (zentralisiert in routes.tsx) ✨ NEU
+- **Styling:** CSS-Variablen + Theme-System ✨ NEU
 - **State:** React Context + Hooks
 - **i18n:** react-i18next (7 Sprachen)
-- **Themes:** Light, Dark, LCARS
+- **Themes:** Light, Dark, LCARS, High Contrast ✨ NEU
+- **TypeScript:** Vollständig typisiert
+- **Testing:** Vitest + React Testing Library
 
 ### Backend
 
