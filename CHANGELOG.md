@@ -11,6 +11,39 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ### ✅ Hinzugefügt
 
+#### Documentation Restructuring & International Standards
+
+- **New Root Documentation Files**: Following GitHub community standards
+  - **CONTRIBUTING.md**: Comprehensive contribution guidelines with Git workflow, coding standards, and PR process
+  - **CODE_OF_CONDUCT.md**: Community standards based on Contributor Covenant v2.0
+  - **SECURITY.md**: Security policy, vulnerability reporting, and best practices
+  - **SUPPORT.md**: Getting help, FAQ, troubleshooting, and contact information
+
+- **Documentation Structure Reorganization**: Following Diátaxis Framework
+  - **docs/tutorials/**: Learning-oriented step-by-step guides
+    - getting-started.md: 5-minute quickstart tutorial
+  - **docs/how-to/**: Problem-oriented practical guides
+  - **docs/reference/**: Information-oriented technical specifications
+  - **docs/explanation/**: Understanding-oriented conceptual content
+  - **docs/archive/**: Archived work summaries and old documentation
+
+- **Enhanced Documentation Hub (docs/README.md)**:
+  - Completely restructured following ISO/IEC/IEEE 26514 standards
+  - Added Diátaxis Framework organization
+  - Comprehensive documentation index by role and topic
+  - Documentation metrics and quality indicators
+  - Clear navigation paths for developers, API users, and architects
+
+#### International Standards Compliance
+
+- **ISO/IEC/IEEE 26514:2022** - Design of user documentation
+- **ISO/IEC/IEEE 26512:2018** - Acquisition and supply of documentation
+- **Diátaxis Framework** - Four-category documentation structure
+- **OpenAPI 3.0** - API specification standard
+- **Semantic Versioning** - Version numbering
+- **Keep a Changelog** - Changelog format
+- **Conventional Commits** - Commit message standard
+
 #### Error Standardization & Input Validation
 
 - **Error Standardization Guide**: Umfassende Dokumentation für die Migration von Routern zu standardisierten Error-Responses
@@ -28,25 +61,43 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
   - Strukturiertes Logging mit Pino
   - AsyncHandler für konsistente Error-Behandlung
 
-- **hrRouter**: Teilweise standardisiert (5/12 Endpoints)
+- **hrRouter**: Vollständig standardisiert (14/14 Endpoints)
   - Employee Management Endpoints (GET, GET by ID, POST, PUT, DELETE)
   - Zod Validation für Employee-Daten
   - Standardisierte Error-Responses
 
-- **financeRouter**: Teilweise standardisiert (1/10 Endpoints)
+- **financeRouter**: Vollständig standardisiert (19/19 Endpoints)
   - Invoice GET mit Query-Validierung
   - Zod Validation Schema für Invoices
 
 ### 🔧 Geändert
 
+- **README.md**: Major documentation section update
+  - Added references to new community standards files
+  - Reorganized documentation links following Diátaxis Framework
+  - Added Getting Started Tutorial link
+  - Enhanced documentation structure with clear categories
+  
+- **docs/README.md**: Complete restructuring
+  - Reorganized following Diátaxis Framework (tutorials, how-to, reference, explanation)
+  - Added international standards compliance section
+  - Added documentation metrics and quality indicators
+  - Enhanced navigation by role (developers, API users, architects)
+  - Updated documentation structure diagram
+
+- **Documentation Organization**:
+  - Moved work summaries to docs/archive/ for cleaner root directory
+  - Consolidated temporary documentation files
+  - Created standardized directory structure
+
 - **ISSUES.md**: Aktualisiert mit Fortschritt zu ISSUE-005 und ISSUE-006
 - **TODO.md**: API Error-Handling Status aktualisiert
-- **README.md**: Version auf 0.3.0 aktualisiert, Link zum Error Standardization Guide
 
 ### 🐛 Behoben
 
 - **Build-System**: @types/node Installation Problem behoben
 - **Dependencies**: npm install --ignore-scripts für CI/CD-Kompatibilität
+- **Documentation Links**: Fixed broken cross-references in documentation
 
 ### 📚 Dokumentation
 
