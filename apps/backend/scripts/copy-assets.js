@@ -78,7 +78,11 @@ try {
   const versionFilePath = join(__dirname, "..", "dist", "version.js");
   let versionContent = readFileSync(versionFilePath, "utf-8");
   const buildDate = new Date().toISOString();
-  versionContent = versionContent.replace("__BUILD_DATE__", buildDate);
+  // Use regex to replace only the buildDate property value
+  versionContent = versionContent.replace(
+    /buildDate:\s*"__BUILD_DATE__"/,
+    `buildDate: "${buildDate}"`,
+  );
   writeFileSync(versionFilePath, versionContent, "utf-8");
   console.log(`✓ Build date updated: ${buildDate}`);
 } catch (error) {

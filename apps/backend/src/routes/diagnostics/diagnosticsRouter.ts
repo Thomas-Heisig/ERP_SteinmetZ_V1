@@ -165,7 +165,12 @@ router.get("/logs", async (req: Request, res: Response) => {
 
 // HTML Generator
 function generateDiagnosticsHTML(
-  versionInfo: any,
+  versionInfo: {
+    version: string;
+    buildDate: string;
+    name: string;
+    environment: string;
+  },
   health: any,
   dbStats: any,
   schedulerStatus: any,

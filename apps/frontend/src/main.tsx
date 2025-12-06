@@ -22,38 +22,47 @@ const FunctionsCatalog = lazy(
 const Login = lazy(() => import("./pages/Login/Login"));
 
 // Loading fallback component with improved UX
-const LoadingFallback = () => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh",
-      gap: "1rem",
-      background: "var(--bg, #f8fafc)",
-      color: "var(--text, #1e293b)",
-    }}
-  >
-    <div
-      style={{
-        fontSize: "2rem",
-        animation: "pulse 2s ease-in-out infinite",
-      }}
-    >
-      🧱
-    </div>
-    <div style={{ fontSize: "1rem", fontWeight: 500 }}>
-      ERP SteinmetZ lädt...
-    </div>
-    <style>{`
+const LoadingFallback = () => {
+  // Create animation keyframes
+  React.useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = `
       @keyframes pulse {
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.5; transform: scale(0.95); }
       }
-    `}</style>
-  </div>
-);
+      .loading-icon {
+        animation: pulse 2s ease-in-out infinite;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        gap: "1rem",
+        background: "var(--bg, #f8fafc)",
+        color: "var(--text, #1e293b)",
+      }}
+    >
+      <div className="loading-icon" style={{ fontSize: "2rem" }}>
+        🧱
+      </div>
+      <div style={{ fontSize: "1rem", fontWeight: 500 }}>
+        ERP SteinmetZ lädt...
+      </div>
+    </div>
+  );
+};
 
 // i18n MUSS zuerst geladen werden
 import "./components/i18n/i18n";
