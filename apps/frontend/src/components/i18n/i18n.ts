@@ -46,6 +46,74 @@ if (!i18n.isInitialized) {
 
     interpolation: {
       escapeValue: false, // React schützt bereits vor XSS
+
+      // Custom formatters for dates, numbers, and currency
+      format: (value, format, lng) => {
+        if (format === "uppercase") return value.toUpperCase();
+        if (format === "lowercase") return value.toLowerCase();
+
+        // Date formatting
+        if (value instanceof Date) {
+          const locale = lng || "de";
+          if (format === "short") {
+            return new Intl.DateTimeFormat(locale, {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            }).format(value);
+          }
+          if (format === "long") {
+            return new Intl.DateTimeFormat(locale, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }).format(value);
+          }
+          if (format === "time") {
+            return new Intl.DateTimeFormat(locale, {
+              hour: "2-digit",
+              minute: "2-digit",
+            }).format(value);
+          }
+          if (format === "datetime") {
+            return new Intl.DateTimeFormat(locale, {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            }).format(value);
+          }
+        }
+
+        // Number formatting
+        if (typeof value === "number") {
+          const locale = lng || "de";
+          if (format === "currency" || format?.startsWith("currency:")) {
+            const currency = format.split(":")[1] || "EUR";
+            return new Intl.NumberFormat(locale, {
+              style: "currency",
+              currency,
+            }).format(value);
+          }
+          if (format === "percent") {
+            return new Intl.NumberFormat(locale, {
+              style: "percent",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+            }).format(value / 100);
+          }
+          if (format === "decimal") {
+            return new Intl.NumberFormat(locale, {
+              style: "decimal",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(value);
+          }
+        }
+
+        return value;
+      },
     },
 
     react: {

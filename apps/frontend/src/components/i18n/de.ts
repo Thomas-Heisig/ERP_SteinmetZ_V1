@@ -16,6 +16,8 @@ export default {
     categories: {
       title: "Funktionsbereiche",
       count: "{{count}} Bereiche verfügbar",
+      count_one: "{{count}} Bereich verfügbar",
+      count_other: "{{count}} Bereiche verfügbar",
       emptyTitle: "Keine Kategorien gefunden",
       emptyDescription: "Es wurden keine passenden Funktionsbereiche gefunden.",
     },
@@ -91,6 +93,58 @@ export default {
       reload: "Neu laden",
       details: "Details",
       unknown: "Unbekannt",
+      save: "Speichern",
+      delete: "Löschen",
+      edit: "Bearbeiten",
+      add: "Hinzufügen",
+      back: "Zurück",
+      next: "Weiter",
+      previous: "Vorherige",
+      loading: "Wird geladen...",
+      error: "Fehler",
+      success: "Erfolgreich",
+      warning: "Warnung",
+      info: "Information",
+    },
+
+    // Plural forms for common items
+    items: {
+      result: "Ergebnis",
+      result_one: "{{count}} Ergebnis",
+      result_other: "{{count}} Ergebnisse",
+      file: "Datei",
+      file_one: "{{count}} Datei",
+      file_other: "{{count}} Dateien",
+      user: "Benutzer",
+      user_one: "{{count}} Benutzer",
+      user_other: "{{count}} Benutzer",
+      message: "Nachricht",
+      message_one: "{{count}} Nachricht",
+      message_other: "{{count}} Nachrichten",
+      item: "Eintrag",
+      item_one: "{{count}} Eintrag",
+      item_other: "{{count}} Einträge",
+    },
+
+    // Date and time formatting
+    datetime: {
+      today: "Heute",
+      yesterday: "Gestern",
+      tomorrow: "Morgen",
+      now: "Jetzt",
+      minutesAgo: "vor {{count}} Minuten",
+      minutesAgo_one: "vor einer Minute",
+      hoursAgo: "vor {{count}} Stunden",
+      hoursAgo_one: "vor einer Stunde",
+      daysAgo: "vor {{count}} Tagen",
+      daysAgo_one: "vor einem Tag",
+    },
+
+    // Currency and numbers
+    format: {
+      currency: "{{value, currency:EUR}}",
+      percent: "{{value, percent}}",
+      decimal: "{{value, decimal}}",
     },
   },
 };
