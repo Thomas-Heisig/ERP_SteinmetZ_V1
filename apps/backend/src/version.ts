@@ -3,12 +3,12 @@
 
 /**
  * Version information for the backend application
- * This file is automatically updated during the build process
+ * Note: buildDate will be replaced during the build process with the actual build timestamp
  */
 
 export const VERSION_INFO = {
   version: "0.3.0",
-  buildDate: new Date().toISOString(),
+  buildDate: "__BUILD_DATE__",
   name: "ERP SteinmetZ Backend",
   environment: process.env.NODE_ENV || "development",
 } as const;

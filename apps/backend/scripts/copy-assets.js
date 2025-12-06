@@ -5,9 +5,17 @@
 /**
  * Copy non-TypeScript assets (views, migrations, SQL files, etc.) from src to dist
  * This ensures the built application has all required runtime files
+ * Also updates the build date in version.js
  */
 
-import { copyFileSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import {
+  copyFileSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -63,3 +71,18 @@ for (const asset of assetsToCopy) {
 }
 
 console.log("\n✅ Asset copy complete!");
+
+// Update build date in version.js
+console.log("\n📝 Updating build date in version.js...");
+try {
+  const versionFilePath = join(__dirname, "..", "dist", "version.js");
+  let versionContent = readFileSync(versionFilePath, "utf-8");
+  const buildDate = new Date().toISOString();
+  versionContent = versionContent.replace("__BUILD_DATE__", buildDate);
+  writeFileSync(versionFilePath, versionContent, "utf-8");
+  console.log(`✓ Build date updated: ${buildDate}`);
+} catch (error) {
+  console.warn("⚠️  Could not update build date:", error.message);
+}
+
+console.log("\n✅ Build process complete!");
