@@ -446,12 +446,14 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 ### Test-Infrastruktur Verbesserungen ✅
 
 **Behobene Probleme**:
+
 1. ✅ Frontend Skeleton-Tests korrigiert (CSS Module Hashing berücksichtigt)
 2. ✅ ErrorBoundary-Test korrigiert (Reset-Verhalten korrekt getestet)
 3. ✅ Alle 50 Frontend-Tests bestehen erfolgreich
 4. ✅ Alle 42 Backend-Tests bestehen erfolgreich
 
 **Details**:
+
 - CSS Module generieren gehashte Klassennamen (z.B. `_text_6deae7`), Tests mussten aktualisiert werden, um die importierten Styles-Objekte zu verwenden
 - ErrorBoundary Reset-Test wurde vereinfacht, um das korrekte Verhalten zu testen (Reset versucht Re-Rendering, aber wenn Kind weiterhin wirft, wird Fehler erneut gefangen)
 
