@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// apps/frontend/src/components/quickchat/index.ts
+// apps/frontend/src/components/QuickChatAlt/index.ts
 
 export { QuickChatProvider, useQuickChat } from "./QuickChatContext";
 export { QuickChatInput } from "./QuickChatInput";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// apps/frontend/src/components/quickchat/QuickChatContext.tsx
+// apps/frontend/src/components/QuickChatAlt/QuickChatContext.tsx
 
 import React, {
   createContext,
