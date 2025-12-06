@@ -76,6 +76,54 @@ export default function App() {
             </NavLink>
 
             <NavLink
+              to="/batch-processing"
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <span className="nav-icon" aria-hidden="true">
+                📦
+              </span>
+              Batch
+            </NavLink>
+
+            <NavLink
+              to="/quality-dashboard"
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <span className="nav-icon" aria-hidden="true">
+                ✅
+              </span>
+              Qualität
+            </NavLink>
+
+            <NavLink
+              to="/model-management"
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <span className="nav-icon" aria-hidden="true">
+                🎯
+              </span>
+              Modelle
+            </NavLink>
+
+            <NavLink
+              to="/advanced-filters"
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <span className="nav-icon" aria-hidden="true">
+                🔍
+              </span>
+              Filter
+            </NavLink>
+
+            <NavLink
               to="/hr"
               className={({ isActive }) =>
                 `nav-link ${isActive ? "active" : ""}`
