@@ -24,13 +24,16 @@ The CI/CD pipeline consists of four main workflows:
 ### 1. Test Workflow (test.yml)
 
 **Triggers:**
+
 - Push to `main`, `develop`, or `copilot/**` branches
 - Pull requests to `main` or `develop`
 
 **Matrix Strategy:**
+
 - Node.js versions: 18.x, 20.x
 
 **Steps:**
+
 1. Checkout code
 2. Setup Node.js environment
 3. Install dependencies (`npm ci --ignore-scripts`)
@@ -40,20 +43,24 @@ The CI/CD pipeline consists of four main workflows:
 7. Upload coverage reports to Codecov (Node.js 20.x only)
 
 **Test Statistics:**
+
 - Backend: 6 test files, 42 tests
 - Frontend: 3 test files, 50 tests
 - **Total: 92 tests**
 
 **Environment Variables:**
+
 - `NODE_ENV=test` - Test environment configuration
 
 ### 2. Lint Workflow (lint.yml)
 
 **Triggers:**
+
 - Push to `main`, `develop`, or `copilot/**` branches
 - Pull requests to `main` or `develop`
 
 **Steps:**
+
 1. Checkout code
 2. Setup Node.js 20.x
 3. Install dependencies
@@ -61,16 +68,19 @@ The CI/CD pipeline consists of four main workflows:
 5. Prettier format checking
 
 **Linting Tools:**
+
 - **TypeScript Compiler** - Type safety verification
 - **Prettier** - Code formatting consistency
 
 ### 3. Build Workflow (build.yml)
 
 **Triggers:**
+
 - Push to `main`, `develop`, or `copilot/**` branches
 - Pull requests to `main` or `develop`
 
 **Steps:**
+
 1. Checkout code
 2. Setup Node.js 20.x
 3. Install dependencies
@@ -80,28 +90,34 @@ The CI/CD pipeline consists of four main workflows:
 7. Upload build artifacts (7-day retention)
 
 **Build Artifacts:**
+
 - `backend-build` - Backend compiled files (`apps/backend/dist`)
 - `frontend-build` - Frontend static files (`apps/frontend/dist`)
 
 **Environment Variables:**
+
 - `NODE_ENV=production` - Production build configuration
 
 ### 4. CodeQL Security Scan (codeql.yml)
 
 **Triggers:**
+
 - Push to `main`, `develop`
 - Pull requests to `main`, `develop`
 - Weekly schedule (Mondays at 6 AM UTC)
 
 **Languages Scanned:**
+
 - JavaScript
 - TypeScript
 
 **Analysis Type:**
+
 - Security vulnerabilities
 - Code quality issues
 
 **Permissions Required:**
+
 - `actions: read`
 - `contents: read`
 - `security-events: write`
@@ -130,12 +146,15 @@ The CI/CD pipeline consists of four main workflows:
 Local quality checks are enforced using **Husky** pre-commit hooks:
 
 ### Pre-commit Hook
+
 - **Prettier formatting** - Automatic code formatting
 
 ### Commit-msg Hook
+
 - **Commitlint** - Conventional commit message validation
 
 **Configuration Files:**
+
 - `.husky/pre-commit` - Pre-commit hook script
 - `.husky/commit-msg` - Commit message validation
 - `.commitlintrc.json` - Commitlint configuration
@@ -153,32 +172,38 @@ See [COMMIT_CONVENTIONS.md](COMMIT_CONVENTIONS.md) for commit message standards.
 ### Local Development Setup
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1.git
    cd ERP_SteinmetZ_V1
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install --ignore-scripts
    ```
 
 3. **Rebuild native modules:**
+
    ```bash
    npm rebuild better-sqlite3
    ```
 
 4. **Setup Husky hooks:**
+
    ```bash
    npm run prepare
    ```
 
 5. **Run tests locally:**
+
    ```bash
    npm test
    ```
 
 6. **Run linting locally:**
+
    ```bash
    npx prettier --check "**/*.{js,jsx,ts,tsx,json,css,md}"
    ```
@@ -194,8 +219,8 @@ See [COMMIT_CONVENTIONS.md](COMMIT_CONVENTIONS.md) for commit message standards.
 
 The following secrets need to be configured in GitHub repository settings:
 
-| Secret | Description | Required |
-|--------|-------------|----------|
+| Secret          | Description          | Required |
+| --------------- | -------------------- | -------- |
 | `CODECOV_TOKEN` | Codecov upload token | Optional |
 
 ### Repository Settings
@@ -203,6 +228,7 @@ The following secrets need to be configured in GitHub repository settings:
 **Branch Protection Rules (Recommended):**
 
 For `main` branch:
+
 - ✅ Require status checks to pass before merging
   - ✅ Tests (Node.js 18.x, 20.x)
   - ✅ Lint
@@ -219,6 +245,7 @@ For `main` branch:
 Test coverage reports are automatically uploaded to **Codecov** for Node.js 20.x builds.
 
 **Coverage Targets:**
+
 - Backend: 86% (Goal: 90%)
 - Frontend: To be measured
 
@@ -247,6 +274,7 @@ Build status badges can be added to README.md:
 **Problem:** better-sqlite3 fails to build
 
 **Solution:**
+
 ```bash
 npm rebuild better-sqlite3
 ```
@@ -256,6 +284,7 @@ npm rebuild better-sqlite3
 **Problem:** Tests pass locally but fail in CI
 
 **Solution:**
+
 - Check Node.js version compatibility
 - Verify environment variables are set
 - Review test logs in GitHub Actions
@@ -265,6 +294,7 @@ npm rebuild better-sqlite3
 **Problem:** Prettier formatting issues
 
 **Solution:**
+
 ```bash
 npm run format
 ```
@@ -274,6 +304,7 @@ npm run format
 **Problem:** TypeScript compilation errors
 
 **Solution:**
+
 ```bash
 # Check types locally
 npm run typecheck -w @erp-steinmetz/backend
@@ -300,6 +331,7 @@ act pull_request
 ### Caching Strategy
 
 The workflows use GitHub Actions cache for:
+
 - **npm cache** - Dependency caching via `actions/setup-node@v4`
 
 ### Parallelization

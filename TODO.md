@@ -270,13 +270,19 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - [ ] Dev-Tools-Extension
   - **Aufwand**: 2-3 Tage
 
-- [x] **Code Quality Tools** ✅ TEILWEISE ERLEDIGT (2025-12-06)
+- [x] **Code Quality Tools** ✅ WEITGEHEND ERLEDIGT (2025-12-06)
   - [x] Pre-commit Hooks (Husky) - Format Hook aktiv
   - [x] Conventional Commits enforcing - commitlint konfiguriert
   - [x] Umfassende Dokumentation (COMMIT_CONVENTIONS.md, SCRIPTS.md)
+  - [x] ESLint v9 flat config für Backend und Frontend ✅ NEU (6. Dez 2025)
+  - [x] TypeScript ESLint-Plugin konfiguriert ✅ NEU
+  - [x] React-spezifische ESLint-Regeln (React 19) ✅ NEU
+  - [x] Security: GitHub PAT entfernt, .gitignore erweitert ✅ NEU
+  - [x] npm audit: 0 Vulnerabilities (3 behoben) ✅ NEU
+  - [x] Dokumentations-Konsolidierung: 4 Dateien archiviert ✅ NEU
   - [ ] Code-Coverage-Reports (bereits vorhanden)
   - [ ] SonarQube Integration
-  - **Aufwand**: 1-2 Tage → 4 Stunden erledigt, 1 Tag verbleibend für SonarQube
+  - **Aufwand**: 1-2 Tage → 6 Stunden erledigt, 1 Tag verbleibend für SonarQube
 
 ### UI/UX Enhancements
 

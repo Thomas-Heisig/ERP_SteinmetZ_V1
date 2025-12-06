@@ -1,15 +1,29 @@
-# Node.js
+# Dependencies
 node_modules/
+jspm_packages/
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 .npm
+.yarn-integrity
+
+# Caches
 .eslintcache
+.cache/
+.parcel-cache/
+.vite/
 
 # Build outputs
 dist/
 build/
+out/
 *.tsbuildinfo
+*.js.map
+*.d.ts.map
 
 # Environment variables
 .env
@@ -18,11 +32,22 @@ build/
 .env.test.local
 .env.production.local
 
-# IDE
+# IDE & Editors
 .vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
 # OS
 .DS_Store
@@ -46,9 +71,13 @@ models/
 # Uploads
 apps/backend/uploads/
 
-# Logs
+# Runtime logs
 logs/
 *.log
+pids/
+*.pid
+*.seed
+*.pid.lock
 
 # Backup files
 *.backup
@@ -62,3 +91,30 @@ apps/backend/src/services/*.txt
 # Temporary files
 tmp/
 temp/
+*.tmp
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Secrets and sensitive files
+github.txt
+*.token
+*.secret
+secrets/
+private.*
+keys/
+*.pem
+*.p12
+*.jks
+*.key
+*.crt
+*.csr
+.env.*
+!.env.example
+
+# Documentation work files (keep in docs/archive/)
+*_SUMMARY*.md
+WORK_SUMMARY*.md
+MAINTENANCE_LOG*.md

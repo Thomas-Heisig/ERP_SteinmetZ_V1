@@ -43,6 +43,7 @@ curl http://localhost:3000/api/health
 ```
 
 Response:
+
 ```json
 {
   "status": "ok",
@@ -61,6 +62,7 @@ curl http://localhost:3000/api/functions/roots
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -70,7 +72,7 @@ Response:
       "name": "Dashboard",
       "icon": "📊",
       "description": "Central overview"
-    },
+    }
     // ... more functions
   ]
 }
@@ -91,6 +93,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -124,12 +127,14 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `page` (number, optional): Page number
 - `limit` (number, optional): Items per page
 - `search` (string, optional): Search term
 - `department` (string, optional): Filter by department
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -178,6 +183,7 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `status` (string): "draft", "sent", "paid", "overdue"
 - `from` (date): Start date
 - `to` (date): End date
@@ -219,6 +225,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -233,15 +240,15 @@ Content-Type: application/json
 
 ```javascript
 // Using fetch
-const API_URL = 'http://localhost:3000';
+const API_URL = "http://localhost:3000";
 let authToken = null;
 
 // Login
 async function login(username, password) {
   const response = await fetch(`${API_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password })
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
   });
   const data = await response.json();
   authToken = data.token;
@@ -252,14 +259,14 @@ async function login(username, password) {
 async function getEmployees() {
   const response = await fetch(`${API_URL}/api/hr/employees`, {
     headers: {
-      'Authorization': `Bearer ${authToken}`
-    }
+      Authorization: `Bearer ${authToken}`,
+    },
   });
   return await response.json();
 }
 
 // Usage
-await login('admin', 'password');
+await login("admin", "password");
 const employees = await getEmployees();
 console.log(employees);
 ```
@@ -326,14 +333,14 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ### Common Error Codes
 
-| Code | Status | Description |
-|------|--------|-------------|
-| `BAD_REQUEST` | 400 | Invalid request parameters |
-| `UNAUTHORIZED` | 401 | Authentication required |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `NOT_FOUND` | 404 | Resource not found |
-| `VALIDATION_ERROR` | 422 | Validation failed |
-| `INTERNAL_SERVER_ERROR` | 500 | Server error |
+| Code                    | Status | Description                |
+| ----------------------- | ------ | -------------------------- |
+| `BAD_REQUEST`           | 400    | Invalid request parameters |
+| `UNAUTHORIZED`          | 401    | Authentication required    |
+| `FORBIDDEN`             | 403    | Insufficient permissions   |
+| `NOT_FOUND`             | 404    | Resource not found         |
+| `VALIDATION_ERROR`      | 422    | Validation failed          |
+| `INTERNAL_SERVER_ERROR` | 500    | Server error               |
 
 ### Error Handling Example
 
@@ -342,14 +349,14 @@ async function handleApiCall() {
   try {
     const response = await fetch(`${API_URL}/api/hr/employees`);
     const data = await response.json();
-    
+
     if (!data.success) {
       throw new Error(data.error.message);
     }
-    
+
     return data.data;
   } catch (error) {
-    console.error('API Error:', error.message);
+    console.error("API Error:", error.message);
     // Handle error appropriately
   }
 }
@@ -378,18 +385,18 @@ X-RateLimit-Reset: 1733518800
 async function apiCallWithRetry(url, options, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     const response = await fetch(url, options);
-    
+
     if (response.status === 429) {
       // Rate limited - wait and retry
-      const resetTime = response.headers.get('X-RateLimit-Reset');
-      const waitTime = (resetTime * 1000) - Date.now();
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      const resetTime = response.headers.get("X-RateLimit-Reset");
+      const waitTime = resetTime * 1000 - Date.now();
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
       continue;
     }
-    
+
     return response;
   }
-  throw new Error('Max retries exceeded');
+  throw new Error("Max retries exceeded");
 }
 ```
 
@@ -398,6 +405,7 @@ async function apiCallWithRetry(url, options, maxRetries = 3) {
 Webhook support is planned for real-time event notifications.
 
 **Planned Events:**
+
 - Employee created/updated
 - Invoice paid
 - Task completed
@@ -409,7 +417,7 @@ Webhook support is planned for real-time event notifications.
 
 ```javascript
 // Store token securely
-localStorage.setItem('auth_token', token);
+localStorage.setItem("auth_token", token);
 
 // Refresh token before expiry
 function scheduleTokenRefresh(expiresIn) {
@@ -430,7 +438,7 @@ async function safeApiCall(endpoint) {
     }
     return await response.json();
   } catch (error) {
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     return null;
   }
 }
@@ -443,19 +451,19 @@ async function safeApiCall(endpoint) {
 async function fetchAllEmployees() {
   let allEmployees = [];
   let page = 1;
-  
+
   while (true) {
     const response = await fetch(
-      `${API_URL}/api/hr/employees?page=${page}&limit=100`
+      `${API_URL}/api/hr/employees?page=${page}&limit=100`,
     );
     const data = await response.json();
-    
+
     allEmployees = allEmployees.concat(data.data);
-    
+
     if (data.data.length < 100) break;
     page++;
   }
-  
+
   return allEmployees;
 }
 ```
@@ -471,8 +479,8 @@ async function cachedApiCall(endpoint, ttl = 60000) {
   if (cached && Date.now() - cached.timestamp < ttl) {
     return cached.data;
   }
-  
-  const data = await fetch(endpoint).then(r => r.json());
+
+  const data = await fetch(endpoint).then((r) => r.json());
   cache.set(endpoint, { data, timestamp: Date.now() });
   return data;
 }
@@ -508,6 +516,7 @@ http://localhost:3000/api-docs
 ## Support
 
 For API support:
+
 - 📖 Check the [API Documentation](../api/API_DOCUMENTATION.md)
 - 🐛 Report bugs via [GitHub Issues](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
 - 💬 Ask questions in [Discussions](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/discussions)
