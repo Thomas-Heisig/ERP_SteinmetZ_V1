@@ -6,6 +6,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createLogger } from "../utils/logger.js";
+
+const logger = createLogger("db");
 
 // -------------------------------------------------------------------
 // Typdefinitionen (nur für statische Analyse)
@@ -146,8 +149,9 @@ function attemptAdvancedCorrection(
       correctedData.kind = autoCorrectKind(originalKind);
 
       if (originalKind !== correctedData.kind) {
-        console.log(
-          `🔄 [Auto-Correct] ${fileName}:${lineIndex + 1} kind "${originalKind}" → "${correctedData.kind}"`,
+        logger.debug(
+          { fileName, line: lineIndex + 1, originalKind, correctedKind: correctedData.kind },
+          "Auto-corrected kind field",
         );
       }
     }
@@ -156,8 +160,9 @@ function attemptAdvancedCorrection(
     if (correctedData.path && !Array.isArray(correctedData.path)) {
       if (typeof correctedData.path === "string") {
         correctedData.path = [correctedData.path];
-        console.log(
-          `🔄 [Auto-Correct] ${fileName}:${lineIndex + 1} path als String → Array konvertiert`,
+        logger.debug(
+          { fileName, line: lineIndex + 1 },
+          "Auto-corrected path: converted string to array",
         );
       } else {
         correctedData.path = [];
@@ -171,9 +176,9 @@ function attemptAdvancedCorrection(
 
     return correctedData;
   } catch (error) {
-    console.error(
-      `❌ [Advanced Correction Failed] ${fileName}:${lineIndex + 1}:`,
-      error,
+    logger.error(
+      { fileName, line: lineIndex + 1, err: error },
+      "Advanced correction failed",
     );
     return rawData;
   }
@@ -439,7 +444,7 @@ function resolveDriver(): Driver {
   if (raw === "postgres" || raw === "pg") return "postgres";
   if (raw === "sqlite" || !raw) return "sqlite";
 
-  console.warn(`⚠️ Unbekannter DB_DRIVER='${raw}', nutze sqlite`);
+  logger.warn({ driver: raw }, "Unknown DB_DRIVER, using sqlite as fallback");
   return "sqlite";
 }
 
@@ -534,32 +539,32 @@ class SqliteApi implements SqlApi {
     // Schema prüfen
     await this.ensureBaseSchema();
     this.initialized = true;
-    console.log("✅ [SQLite] Database initialized:", sqliteFile);
+    logger.info({ file: sqliteFile }, "SQLite database initialized");
   }
 
   private safePragma(statement: string) {
     try {
       this.db.pragma(statement);
     } catch (err: any) {
-      console.warn(
-        `⚠️ [SQLite] PRAGMA '${statement}' fehlgeschlagen:`,
-        err.message,
+      logger.warn(
+        { statement, error: err.message },
+        "SQLite PRAGMA failed",
       );
     }
   }
 
   private async ensureBaseSchema(): Promise<void> {
-    console.log("🔍 [SQLite] Starting schema verification...");
+    logger.info("Starting SQLite schema verification...");
 
     // Tabellen erstellen
     for (const [name, ddl] of Object.entries(SCHEMAS)) {
       try {
         this.db.exec(ddl);
-        console.log(`✅ [SQLite] Table ${name} ensured`);
+        logger.debug({ table: name }, "Table ensured");
       } catch (err: any) {
-        console.warn(
-          `⚠️ [SQLite] Tabelle ${name} konnte nicht erstellt werden:`,
-          err.message,
+        logger.warn(
+          { table: name, error: err.message },
+          "Could not create table",
         );
       }
     }
@@ -570,7 +575,7 @@ class SqliteApi implements SqlApi {
     // Nur sichere Indizes erstellen
     await this.createSafeIndexes();
 
-    console.log("✅ [SQLite] Schema verification completed");
+    logger.info("SQLite schema verification completed");
   }
 
   private async addMissingColumns(): Promise<void> {
@@ -598,10 +603,10 @@ class SqliteApi implements SqlApi {
     for (const [col, def] of Object.entries(missingColumns)) {
       if (!existingColumns.has(col)) {
         try {
-          console.log(`🧩 [SQLite] Adding missing column: ${col}`);
+          logger.debug({ column: col }, "Adding missing column to functions_nodes");
           this.db.exec(`ALTER TABLE functions_nodes ADD COLUMN ${col} ${def}`);
         } catch (err: any) {
-          console.warn(`⚠️ [SQLite] Could not add column ${col}:`, err.message);
+          logger.warn({ column: col, error: err.message }, "Could not add column");
         }
       }
     }
@@ -621,8 +626,9 @@ class SqliteApi implements SqlApi {
     for (const [col, def] of Object.entries(edgesMissingCols)) {
       if (!edgesExistingCols.has(col)) {
         try {
-          console.log(
-            `🧩 [SQLite] Adding missing column to functions_edges: ${col}`,
+          logger.debug(
+            { column: col, table: "functions_edges" },
+            "Adding missing column",
           );
           this.db.exec(`ALTER TABLE functions_edges ADD COLUMN ${col} ${def}`);
 
@@ -633,9 +639,9 @@ class SqliteApi implements SqlApi {
             );
           }
         } catch (err: any) {
-          console.warn(
-            `⚠️ [SQLite] Could not add column ${col} to functions_edges:`,
-            err.message,
+          logger.warn(
+            { column: col, table: "functions_edges", error: err.message },
+            "Could not add column",
           );
         }
       }
@@ -648,11 +654,10 @@ class SqliteApi implements SqlApi {
       try {
         this.db.exec(idx);
       } catch (err: any) {
-        console.warn(
-          `⚠️ [SQLite] Could not create index (skipping):`,
-          err.message,
+        logger.warn(
+          { error: err.message, sql: idx.substring(0, 100) },
+          "Could not create index (skipping)",
         );
-        console.warn(`  SQL: ${idx.substring(0, 100)}...`);
       }
     }
   }
@@ -740,16 +745,16 @@ class PostgresApi implements SqlApi {
 
     // Connection error handling
     this.pool.on("error", (err: Error) => {
-      console.error("❌ [PostgreSQL] Unexpected pool error:", err);
+      logger.error({ err }, "PostgreSQL unexpected pool error");
     });
 
     await this.ensureBaseSchema();
     this.initialized = true;
-    console.log("✅ [PostgreSQL] Database initialized successfully");
+    logger.info("PostgreSQL database initialized successfully");
   }
 
   private async ensureBaseSchema(): Promise<void> {
-    console.log("🔍 [PostgreSQL] Starting schema verification...");
+    logger.info("Starting PostgreSQL schema verification...");
 
     // Tabellen erstellen
     for (const [tableName, schema] of Object.entries(SCHEMAS)) {
@@ -765,11 +770,11 @@ class PostgresApi implements SqlApi {
           .replace(/JSON/g, "JSONB");
 
         await this.exec(pgSchema);
-        console.log(`✅ [PostgreSQL] Table ${tableName} ensured`);
+        logger.debug({ table: tableName }, "PostgreSQL table ensured");
       } catch (err: any) {
-        console.warn(
-          `⚠️ [PostgreSQL] Fehler beim Erstellen von Tabelle ${tableName}:`,
-          err.message,
+        logger.warn(
+          { table: tableName, error: err.message },
+          "Failed to create PostgreSQL table",
         );
       }
     }
@@ -780,7 +785,7 @@ class PostgresApi implements SqlApi {
     // Nur sichere Indizes erstellen
     await this.createSafeIndexes();
 
-    console.log("✅ [PostgreSQL] Schema verification completed");
+    logger.info("PostgreSQL schema verification completed");
   }
 
   private async addMissingColumns(): Promise<void> {
@@ -813,14 +818,14 @@ class PostgresApi implements SqlApi {
     for (const [col, def] of Object.entries(expectedColumns)) {
       if (!existingCols.has(col)) {
         try {
-          console.log(`🧩 [PostgreSQL] Füge fehlende Spalte hinzu: ${col}`);
+          logger.debug({ column: col }, "Adding missing PostgreSQL column");
           await this.exec(
             `ALTER TABLE functions_nodes ADD COLUMN ${col} ${def};`,
           );
         } catch (err: any) {
-          console.warn(
-            `⚠️ [PostgreSQL] Konnte Spalte ${col} nicht hinzufügen:`,
-            err.message,
+          logger.warn(
+            { column: col, error: err.message },
+            "Could not add PostgreSQL column",
           );
         }
       }
@@ -835,11 +840,10 @@ class PostgresApi implements SqlApi {
           .replace(/JSON/g, "JSONB");
         await this.exec(pgIndex);
       } catch (err: any) {
-        console.warn(
-          `⚠️ [PostgreSQL] Konnte Index nicht erstellen (skipping):`,
-          err.message,
+        logger.warn(
+          { error: err.message, sql: indexSql.substring(0, 100) },
+          "Could not create PostgreSQL index (skipping)",
         );
-        console.warn(`  SQL: ${indexSql.substring(0, 100)}...`);
       }
     }
   }
@@ -868,9 +872,15 @@ class PostgresApi implements SqlApi {
       const r = await client.query(sql, params);
       const duration = Date.now() - startTime;
 
-      if (process.env.NODE_ENV === "development" && duration > 100) {
-        console.log(
-          `🐌 [DB] Slow query (${duration}ms): ${sql.substring(0, 100)}...`,
+      if (duration > 100) {
+        const queryType = sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
+        logger.warn(
+          { 
+            duration, 
+            queryType,
+            ...(process.env.NODE_ENV === "development" ? { sqlPreview: sql.substring(0, 60) } : {})
+          },
+          "Slow database query detected",
         );
       }
 
@@ -887,9 +897,15 @@ class PostgresApi implements SqlApi {
       const r = await client.query(sql, params);
       const duration = Date.now() - startTime;
 
-      if (process.env.NODE_ENV === "development" && duration > 100) {
-        console.log(
-          `🐌 [DB] Slow query (${duration}ms): ${sql.substring(0, 100)}...`,
+      if (duration > 100) {
+        const queryType = sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
+        logger.warn(
+          { 
+            duration, 
+            queryType,
+            ...(process.env.NODE_ENV === "development" ? { sqlPreview: sql.substring(0, 60) } : {})
+          },
+          "Slow database query detected",
         );
       }
 
@@ -906,9 +922,15 @@ class PostgresApi implements SqlApi {
       const r = await client.query(sql, params);
       const duration = Date.now() - startTime;
 
-      if (process.env.NODE_ENV === "development" && duration > 100) {
-        console.log(
-          `🐌 [DB] Slow query (${duration}ms): ${sql.substring(0, 100)}...`,
+      if (duration > 100) {
+        const queryType = sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
+        logger.warn(
+          { 
+            duration, 
+            queryType,
+            ...(process.env.NODE_ENV === "development" ? { sqlPreview: sql.substring(0, 60) } : {})
+          },
+          "Slow database query detected",
         );
       }
 
@@ -992,11 +1014,11 @@ class DatabaseService {
     try {
       await this.api.init();
       this.isInitialized = true;
-      console.log(`✅ [DB] Database ready (${this.config.driver})`);
+      logger.info({ driver: this.config.driver }, "Database ready");
     } catch (err: any) {
-      console.error(
-        `❌ [DB] Initialization failed (${this.config.driver}):`,
-        err.message,
+      logger.error(
+        { driver: this.config.driver, error: err.message },
+        "Database initialization failed",
       );
       throw err;
     }
