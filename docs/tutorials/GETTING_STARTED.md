@@ -52,6 +52,7 @@ git --version
 ```
 
 If any of these commands fail, install the missing tools:
+
 - **Node.js & npm**: Download from [nodejs.org](https://nodejs.org/)
 - **Git**: Download from [git-scm.com](https://git-scm.com/)
 
@@ -105,6 +106,7 @@ cp apps/frontend/.env.example apps/frontend/.env
 ```
 
 **Backend Configuration** (`apps/backend/.env`):
+
 ```env
 # Server
 PORT=3000
@@ -126,6 +128,7 @@ OLLAMA_BASE_URL=http://localhost:11434
 ```
 
 **Frontend Configuration** (`apps/frontend/.env`):
+
 ```env
 # API Configuration
 VITE_API_URL=http://localhost:3000
@@ -152,17 +155,20 @@ npm run dev
 ```
 
 This command starts:
+
 - **Backend** on `http://localhost:3000`
 - **Frontend** on `http://localhost:5173`
 
 ### Option 2: Run Components Separately
 
 **Terminal 1 - Backend:**
+
 ```bash
 npm run dev:backend
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 npm run dev:frontend
 ```
@@ -204,6 +210,7 @@ curl http://localhost:3000/api/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "ok",
@@ -270,6 +277,7 @@ npm run test:frontend
 ```
 
 **Expected Output:**
+
 ```
 Test Files  6 passed (6)
       Tests  42 passed (42)
@@ -294,6 +302,7 @@ npm run build:frontend
 ```
 
 Build artifacts will be in:
+
 - Backend: `apps/backend/dist/`
 - Frontend: `apps/frontend/dist/`
 
@@ -304,6 +313,7 @@ Build artifacts will be in:
 **Error:** `Port 3000 is already in use`
 
 **Solution:**
+
 ```bash
 # Find and kill the process using port 3000
 lsof -ti:3000 | xargs kill -9
@@ -317,6 +327,7 @@ PORT=3001 npm run dev:backend
 **Error:** `Database connection failed`
 
 **Solution:**
+
 ```bash
 # Remove old database and reinitialize
 rm apps/backend/data/erp.db
@@ -328,6 +339,7 @@ npm run dev:backend
 **Error:** `npm ERR! code ELIFECYCLE`
 
 **Solution:**
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -343,6 +355,7 @@ npm rebuild better-sqlite3
 **Error:** `Network Error` or `CORS error`
 
 **Solution:**
+
 1. Verify backend is running on port 3000
 2. Check `apps/frontend/.env` has correct API URL:
    ```env
@@ -355,6 +368,7 @@ npm rebuild better-sqlite3
 **Error:** `Could not locate the bindings file`
 
 **Solution:**
+
 ```bash
 # Rebuild native modules
 npm rebuild better-sqlite3
@@ -378,15 +392,15 @@ Now that you have the application running, explore these resources:
 
 ## Useful Commands Reference
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start backend + frontend |
-| `npm run dev:backend` | Start only backend |
-| `npm run dev:frontend` | Start only frontend |
-| `npm test` | Run all tests |
-| `npm run build` | Build for production |
-| `npm run lint` | Run linters |
-| `npm run format` | Format code with Prettier |
+| Command                | Description               |
+| ---------------------- | ------------------------- |
+| `npm run dev`          | Start backend + frontend  |
+| `npm run dev:backend`  | Start only backend        |
+| `npm run dev:frontend` | Start only frontend       |
+| `npm test`             | Run all tests             |
+| `npm run build`        | Build for production      |
+| `npm run lint`         | Run linters               |
+| `npm run format`       | Format code with Prettier |
 
 ---
 
