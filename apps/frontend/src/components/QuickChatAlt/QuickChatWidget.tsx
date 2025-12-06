@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// apps/frontend/src/components/quickchat/QuickChatWidget.tsx
+// apps/frontend/src/components/QuickChatAlt/QuickChatWidget.tsx
 
 import React from "react";
 import { useQuickChat } from "./QuickChatContext";

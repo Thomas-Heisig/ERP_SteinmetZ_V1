@@ -4,6 +4,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import db from "./dbService.js";
 import type {
   User,
@@ -34,10 +36,9 @@ export class AuthService {
    * Initialize authentication tables
    */
   static async init(): Promise<void> {
-    const migrationPath = new URL(
-      "../migrations/create_auth_tables.sql",
-      import.meta.url,
-    ).pathname;
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const migrationPath = path.join(__dirname, "../migrations/create_auth_tables.sql");
     const fs = await import("fs/promises");
     const sql = await fs.readFile(migrationPath, "utf-8");
 

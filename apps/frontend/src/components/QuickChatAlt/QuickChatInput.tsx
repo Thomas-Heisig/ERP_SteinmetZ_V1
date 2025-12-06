@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// apps/frontend/src/components/quickchat/QuickChatInput.tsx
+// apps/frontend/src/components/QuickChatAlt/QuickChatInput.tsx
 
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../ui";
