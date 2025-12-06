@@ -71,6 +71,7 @@ apps/frontend/
 ### 1. Komponenten-Organisation
 
 #### UI-Komponenten (`components/ui/`)
+
 - Atomare, wiederverwendbare UI-Elemente
 - Keine Business-Logik
 - Props-getrieben
@@ -78,12 +79,14 @@ apps/frontend/
 - Beispiele: Button, Modal, Card, Input, Toast
 
 #### Feature-Komponenten (`features/`)
+
 - Domain-spezifische Funktionalität
 - Enthalten Business-Logik
 - Können UI-Komponenten zusammensetzen
 - Beispiele: HR-Module, Finanz-Module, CRM
 
 #### Layout-Komponenten (`components/`)
+
 - Größere, zusammengesetzte Komponenten
 - Dashboard, FunctionsCatalog, QuickChat
 - Können State und Side-Effects haben
@@ -91,14 +94,17 @@ apps/frontend/
 ### 2. State Management
 
 #### Local State
+
 - Verwendet `useState` für Komponenten-lokalen State
 - Verwendet `useReducer` für komplexe State-Logik
 
 #### Global State
+
 - React Context für Theme und Authentication
 - Custom Hooks für Feature-spezifische Logik
 
 #### Server State
+
 - Fetch API für Backend-Kommunikation
 - Custom Hooks für Data-Fetching (z.B. `useHealth`, `useAI`)
 
@@ -122,6 +128,7 @@ export const router = createBrowserRouter([
 ```
 
 **Vorteile:**
+
 - Zentrale Übersicht aller Routes
 - Lazy Loading für bessere Performance
 - Type-Safety durch TypeScript
@@ -130,16 +137,19 @@ export const router = createBrowserRouter([
 ### 4. Styling-Strategie
 
 #### CSS-in-Files Ansatz
+
 - Komponenten-spezifische CSS-Dateien
 - Verwendung von CSS-Variablen für Theme-Support
 - BEM-ähnliche Namenskonvention (optional)
 
 #### Theme-System
+
 - CSS Custom Properties (Variablen)
 - React Context für Theme-Umschaltung
 - Automatische Theme-Erkennung basierend auf System-Präferenz
 
 #### Best Practice Beispiel:
+
 ```typescript
 // Component.tsx
 import './Component.css';
@@ -169,11 +179,13 @@ export const Component = () => (
 ### 5. TypeScript Integration
 
 #### Type-Safety
+
 - Alle Komponenten sind typisiert
 - Props-Interfaces für Komponenten
 - Type-Inference wo möglich
 
 #### Beispiel:
+
 ```typescript
 interface ComponentProps {
   title: string;
@@ -184,7 +196,7 @@ interface ComponentProps {
 export const Component: React.FC<ComponentProps> = ({
   title,
   onAction,
-  children
+  children,
 }) => {
   // Implementation
 };
@@ -193,12 +205,14 @@ export const Component: React.FC<ComponentProps> = ({
 ## Code-Konventionen
 
 ### Datei-Benennung
+
 - Komponenten: `PascalCase.tsx` (z.B. `UserProfile.tsx`)
 - Hooks: `camelCase.ts` mit `use` Präfix (z.B. `useAuth.ts`)
 - Utilities: `camelCase.ts` (z.B. `formatDate.ts`)
 - CSS: Gleicher Name wie Komponente (z.B. `UserProfile.css`)
 
 ### Komponenten-Struktur
+
 ```typescript
 // 1. Imports
 import React from 'react';
@@ -214,13 +228,13 @@ interface ComponentProps {
 export const Component: React.FC<ComponentProps> = (props) => {
   // 3.1 Hooks
   const [state, setState] = useState();
-  
+
   // 3.2 Event Handlers
   const handleClick = () => {};
-  
+
   // 3.3 Effects
   useEffect(() => {}, []);
-  
+
   // 3.4 Render
   return <div>...</div>;
 };
@@ -230,6 +244,7 @@ const SubComponent = () => {};
 ```
 
 ### Import-Reihenfolge
+
 1. React und externe Libraries
 2. Interne absolute Imports
 3. Relative Imports
@@ -237,28 +252,30 @@ const SubComponent = () => {};
 
 ```typescript
 // External
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Internal
-import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../../components/ui/Button';
+import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "../../components/ui/Button";
 
 // Relative
-import { helper } from './utils';
+import { helper } from "./utils";
 
 // Styles
-import './Component.css';
+import "./Component.css";
 ```
 
 ## Performance-Optimierung
 
 ### Lazy Loading
+
 - Alle Routes werden lazy geladen
 - Große Komponenten werden lazy geladen
 - Code-Splitting automatisch durch Vite
 
 ### Memoization
+
 ```typescript
 // React.memo für teure Komponenten
 export const ExpensiveComponent = React.memo(({ data }) => {
@@ -275,6 +292,7 @@ const handleClick = useCallback(() => {
 ```
 
 ### Bundle-Optimierung
+
 - Vite optimiert automatisch
 - Tree-Shaking für unused Code
 - Code-Splitting per Route
@@ -282,11 +300,13 @@ const handleClick = useCallback(() => {
 ## Testing-Strategie
 
 ### Unit Tests
+
 - Komponenten-Tests mit React Testing Library
 - Hook-Tests mit @testing-library/react-hooks
 - Utility-Funktionen mit Vitest
 
 ### Test-Struktur
+
 ```typescript
 // Component.test.tsx
 import { render, screen } from '@testing-library/react';
@@ -303,6 +323,7 @@ describe('Component', () => {
 ## Neue Features hinzufügen
 
 ### 1. Neues Feature-Modul erstellen
+
 ```bash
 mkdir -p src/features/myfeature
 touch src/features/myfeature/index.ts
@@ -311,7 +332,9 @@ touch src/features/myfeature/MyFeature.css
 ```
 
 ### 2. Route hinzufügen
+
 In `src/routes.tsx`:
+
 ```typescript
 const MyFeature = lazy(() => import('./features/myfeature/MyFeature'));
 
@@ -323,7 +346,9 @@ const MyFeature = lazy(() => import('./features/myfeature/MyFeature'));
 ```
 
 ### 3. Navigation hinzufügen
+
 In `src/App.tsx`:
+
 ```typescript
 <NavLink to="/myfeature" className="nav-link">
   <span className="nav-icon">🎯</span>
@@ -332,6 +357,7 @@ In `src/App.tsx`:
 ```
 
 ### 4. Feature implementieren
+
 ```typescript
 // MyFeature.tsx
 import React from 'react';
@@ -350,12 +376,14 @@ export const MyFeature: React.FC = () => {
 ## Build & Deployment
 
 ### Development
+
 ```bash
 npm run dev               # Start dev server
 npm run dev:frontend      # Frontend only
 ```
 
 ### Production
+
 ```bash
 npm run build            # Build all
 npm run build:frontend   # Build frontend only
@@ -363,6 +391,7 @@ npm run preview          # Preview production build
 ```
 
 ### Build-Output
+
 - Optimierte Bundles in `dist/`
 - Automatisches Code-Splitting
 - Minifizierte Assets
@@ -378,6 +407,7 @@ VITE_API_TIMEOUT=30000
 ```
 
 Zugriff im Code:
+
 ```typescript
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 ```
@@ -385,11 +415,13 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 ## Troubleshooting
 
 ### Build-Fehler
+
 1. Dependencies aktualisieren: `npm install`
 2. Cache löschen: `npm run clean`
 3. TypeScript prüfen: `tsc --noEmit`
 
 ### Runtime-Fehler
+
 1. Console-Logs prüfen
 2. React DevTools verwenden
 3. Network-Tab für API-Calls prüfen
