@@ -314,6 +314,7 @@ Siehe LICENSE file für Details.
 ### ✅ Produktionsreif & Abgeschlossen
 
 #### Infrastruktur
+
 - React 19 + Vite Frontend (Lazy Loading, Code-Splitting)
 - Express 5 Backend (API, WebSocket, Caching)
 - SQLite (Development) / PostgreSQL (Production Ready)
@@ -324,6 +325,7 @@ Siehe LICENSE file für Details.
 - Health-Check-System
 
 #### Frontend-Komponenten
+
 - Dashboard mit 11 Funktionsbereichen
 - QuickChat KI-Assistent
 - Theme-System (Light, Dark, LCARS)
@@ -333,6 +335,7 @@ Siehe LICENSE file für Details.
 - Responsive Design (Mobile-First)
 
 #### Backend-Module
+
 - Functions Catalog API (15.472 Funktionsknoten)
 - AI-Integration (OpenAI, Ollama, Anthropic, Fallback-System)
 - HR-Modul (Basis-APIs)
@@ -342,6 +345,7 @@ Siehe LICENSE file für Details.
 ### 🔄 In Entwicklung
 
 #### AI-Annotator-System
+
 - **Status**: Architektur definiert, Core-Komponenten implementiert
 - **Ziel**: Automatische Analyse und Anreicherung von Funktionsknoten
 - **Datenverarbeitung**:
@@ -355,6 +359,7 @@ Siehe LICENSE file für Details.
   - Automatische Metadaten-Generierung
 
 #### Function-Node-Transformation
+
 - **Status**: Konzeptphase
 - **Ziel**: Konvertierung von Funktionsknoten zu ausführbaren Funktionen
 - **Prozess**:
@@ -372,24 +377,28 @@ Siehe LICENSE file für Details.
 ### 📋 Roadmap 2025-2026
 
 #### Q1 2025: Core-Module vervollständigen
+
 - [ ] HR-Modul: Vollständige CRUD-Operationen
 - [ ] Finance-Modul: Buchhaltungsintegration
 - [ ] AI-Annotator: Production-Ready
 - [ ] Function-Node-Transformation: MVP
 
 #### Q2 2025: Enterprise-Features
+
 - [ ] Workflow-Engine (BPMN 2.0)
 - [ ] Document-Management (OCR, AI-Tagging)
 - [ ] Advanced Analytics (BI-Dashboard)
 - [ ] Multi-Tenant-Support
 
 #### Q3 2025: Compliance & Security
+
 - [ ] GoBD-Zertifizierung
 - [ ] DSGVO-Audit-Toolkit
 - [ ] Pen-Test & Security-Hardening
 - [ ] ISO 27001-Vorbereitung
 
 #### Q4 2025: AI & Automation
+
 - [ ] RAG-System für Dokumentensuche
 - [ ] Process-Mining & Optimization
 - [ ] Natural-Language-Querying (NLQ)

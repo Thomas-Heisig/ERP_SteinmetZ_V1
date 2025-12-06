@@ -12,6 +12,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 ### ✅ Hinzugefügt
 
 #### Dokumentation & Standards
+
 - **Internationale Standards**: Integration von ISO/IEC 25010, OpenAPI 3.0, JSON Schema Draft-07
 - **AI-Annotator-Dokumentation**: Umfassende Beschreibung des Datenverarbeitungs-Workflows
 - **Function-Node-Transformation**: Dokumentation des Konvertierungsprozesses von Funktionsknoten zu ausführbarem Code
@@ -19,6 +20,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 - **Status-Übersicht**: Klare Kennzeichnung von produktionsreifen vs. in Entwicklung befindlichen Features
 
 #### AI-Annotator-System (Erweitert)
+
 - **Datenverarbeitungs-Workflow**:
   - Batch-Processing mit konfigurierbarer Parallelisierung
   - Quality-Assurance mit Scoring-Metriken
@@ -31,6 +33,7 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
   - `/api/ai-annotator/system/monitoring` - System-Health-Checks
 
 #### Function-Node-Transformation (Neu)
+
 - **Konzept**: Automatische Konvertierung von Markdown-basierten Funktionsknoten zu TypeScript-Code
 - **Pipeline**:
   1. Markdown-Parsing (15.472 Funktionsknoten)
