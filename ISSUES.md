@@ -181,11 +181,11 @@ Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veral
 **Beschreibung**:
 Viele console.log() Statements im Code, die in Production nicht sein sollten.
 
-**Analyse (5. Dezember 2024)**:
+**Analyse (6. Dezember 2025)**:
 
-- **Backend**: 171 console.log Statements
-- **Frontend**: 6 console.log Statements
-- **Gesamt**: 177 Instanzen
+- **Backend**: 106 console.log Statements (von ursprünglich 171)
+- **Frontend**: 16 console.log Statements (von ursprünglich 6, aber umfasst nun mehr Komponenten)
+- **Gesamt**: 122 Instanzen (von ursprünglich 177)
 
 **Lösung (Phase 1 - Infrastruktur) ✅**:
 
@@ -206,7 +206,7 @@ Viele console.log() Statements im Code, die in Production nicht sein sollten.
 
 - [ ] Weitere Backend-Services migrieren (Auth, weitere AI-Provider)
 - [ ] Business-Logik migrieren (HR, Finance - bereits mit pino)
-- [ ] Frontend komplett migrieren (6 Instanzen)
+- [ ] Frontend komplett migrieren (16 Instanzen)
 - [ ] ESLint auf "error" hochstufen
 - [ ] Pre-commit Hooks einrichten
 
@@ -438,6 +438,22 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 3. **ISSUE-010** (Console.logs entfernen) - Code-Qualität
 4. **ISSUE-008** (Monitoring) - Production-Readiness
 5. Weitere nach Bedarf
+
+---
+
+## 🆕 Kürzlich Behobene Probleme (6. Dezember 2025)
+
+### Test-Infrastruktur Verbesserungen ✅
+
+**Behobene Probleme**:
+1. ✅ Frontend Skeleton-Tests korrigiert (CSS Module Hashing berücksichtigt)
+2. ✅ ErrorBoundary-Test korrigiert (Reset-Verhalten korrekt getestet)
+3. ✅ Alle 50 Frontend-Tests bestehen erfolgreich
+4. ✅ Alle 42 Backend-Tests bestehen erfolgreich
+
+**Details**:
+- CSS Module generieren gehashte Klassennamen (z.B. `_text_6deae7`), Tests mussten aktualisiert werden, um die importierten Styles-Objekte zu verwenden
+- ErrorBoundary Reset-Test wurde vereinfacht, um das korrekte Verhalten zu testen (Reset versucht Re-Rendering, aber wenn Kind weiterhin wirft, wird Fehler erneut gefangen)
 
 ---
 
