@@ -71,7 +71,7 @@ Authenticate a user and create a session.
 {
   success: true;
   data: {
-    token: string;         // JWT token
+    token: string; // JWT token
     user: {
       id: string;
       username: string;
@@ -95,7 +95,7 @@ End the current user session.
 ```typescript
 {
   success: true;
-  message: "Logged out successfully"
+  message: "Logged out successfully";
 }
 ```
 
@@ -167,7 +167,7 @@ Verifies JWT token from header or cookie.
 **Usage:**
 
 ```typescript
-router.get('/protected', authenticate(), (req, res) => {
+router.get("/protected", authenticate(), (req, res) => {
   // req.user is populated
   res.json({ user: req.user });
 });
@@ -180,10 +180,11 @@ Restricts access to specific user roles.
 **Usage:**
 
 ```typescript
-router.delete('/admin/users/:id',
+router.delete(
+  "/admin/users/:id",
   authenticate(),
-  requireRole(['admin', 'superadmin']),
-  deleteUserHandler
+  requireRole(["admin", "superadmin"]),
+  deleteUserHandler,
 );
 ```
 
@@ -192,6 +193,7 @@ router.delete('/admin/users/:id',
 Rate limits login attempts to prevent brute force attacks.
 
 **Configuration:**
+
 - **Max Attempts:** 5 per window
 - **Window:** 15 minutes
 - **Type:** Per IP address
@@ -217,6 +219,7 @@ Rate limits login attempts to prevent brute force attacks.
 ### RBAC Roles
 
 Default roles in the system:
+
 - `user` - Standard user access
 - `manager` - Manager-level permissions
 - `admin` - Administrative access
@@ -249,6 +252,7 @@ Default roles in the system:
 ## Error Handling
 
 Uses standardized APIError classes:
+
 - `ValidationError`: Invalid credentials format
 - `UnauthorizedError`: Invalid credentials or token
 - `ForbiddenError`: Insufficient permissions

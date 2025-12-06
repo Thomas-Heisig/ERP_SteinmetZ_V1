@@ -26,36 +26,36 @@ The Innovation Router provides a comprehensive idea management system for tracki
 
 ```typescript
 interface Idea {
-  id: string;                    // UUID
-  title: string;                 // Idea title
-  description: string;           // Detailed description
-  phase: IdeaPhase;             // Current phase
-  priority: number;             // Priority (0-100)
-  author: string;               // Creator ID
-  assignee?: string;            // Assigned team member
-  tags: string[];               // Categorization tags
-  attachments: string[];        // File URLs/paths
-  relatedTasks: string[];       // Related task IDs
-  createdAt: string;            // Creation timestamp
-  updatedAt: string;            // Last update timestamp
-  phaseHistory: PhaseChange[];  // Phase transition log
-  milestone?: string;           // Associated milestone
-  estimatedEffort?: number;     // Hours (estimated)
-  actualEffort?: number;        // Hours (actual)
-  dueDate?: string;             // Target completion date
+  id: string; // UUID
+  title: string; // Idea title
+  description: string; // Detailed description
+  phase: IdeaPhase; // Current phase
+  priority: number; // Priority (0-100)
+  author: string; // Creator ID
+  assignee?: string; // Assigned team member
+  tags: string[]; // Categorization tags
+  attachments: string[]; // File URLs/paths
+  relatedTasks: string[]; // Related task IDs
+  createdAt: string; // Creation timestamp
+  updatedAt: string; // Last update timestamp
+  phaseHistory: PhaseChange[]; // Phase transition log
+  milestone?: string; // Associated milestone
+  estimatedEffort?: number; // Hours (estimated)
+  actualEffort?: number; // Hours (actual)
+  dueDate?: string; // Target completion date
 }
 ```
 
 ### Idea Phases
 
 ```typescript
-type IdeaPhase = 
-  | "parked"      // 🅿️ Idea parked for future consideration
-  | "analysis"    // 🔍 Under analysis/evaluation
+type IdeaPhase =
+  | "parked" // 🅿️ Idea parked for future consideration
+  | "analysis" // 🔍 Under analysis/evaluation
   | "development" // 🛠️ Actively being developed
-  | "testing"     // 🧪 In testing phase
-  | "completed"   // ✅ Implementation complete
-  | "archived";   // 📦 Archived/rejected
+  | "testing" // 🧪 In testing phase
+  | "completed" // ✅ Implementation complete
+  | "archived"; // 📦 Archived/rejected
 ```
 
 ### Phase Change
@@ -126,7 +126,7 @@ Get a specific idea by ID.
 ```typescript
 {
   success: true;
-  data: Idea
+  data: Idea;
 }
 ```
 
@@ -176,7 +176,7 @@ Update an existing idea.
 ```typescript
 {
   success: true;
-  data: Idea
+  data: Idea;
 }
 ```
 
@@ -213,7 +213,7 @@ Delete an idea permanently.
 ```typescript
 {
   success: true;
-  message: "Idea deleted successfully"
+  message: "Idea deleted successfully";
 }
 ```
 
@@ -298,6 +298,7 @@ CREATE INDEX idx_ideas_author ON ideas(author);
 ### Phase Transitions
 
 Track all transitions with:
+
 - Timestamp
 - User who made the change
 - Optional comment/reason
@@ -392,6 +393,7 @@ curl "http://localhost:3000/api/innovation/ideas?search=automation"
 ### Archiving
 
 Archive ideas when:
+
 - No longer relevant
 - Superseded by another solution
 - Not feasible with current resources
@@ -402,6 +404,7 @@ Archive ideas when:
 ### Task Management
 
 Link ideas to:
+
 - Implementation tasks
 - Research tasks
 - Testing tasks
@@ -409,6 +412,7 @@ Link ideas to:
 ### Project Milestones
 
 Associate ideas with:
+
 - Sprint goals
 - Release targets
 - Strategic initiatives
@@ -416,6 +420,7 @@ Associate ideas with:
 ### Document Management
 
 Attach:
+
 - Design documents
 - Feasibility studies
 - Mockups and prototypes
@@ -424,6 +429,7 @@ Attach:
 ## Error Handling
 
 Common errors:
+
 - `400`: Invalid phase transition or missing required fields
 - `404`: Idea not found
 - `500`: Database error

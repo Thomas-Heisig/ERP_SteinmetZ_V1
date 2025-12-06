@@ -24,35 +24,35 @@ The Calendar Router provides comprehensive event management functionality for th
 
 ```typescript
 interface CalendarEvent {
-  id: string;                    // UUID
-  title: string;                 // Event title
-  description: string;           // Event description
-  location?: string;             // Event location
-  start: string;                 // ISO datetime
-  end: string;                   // ISO datetime
-  allDay: boolean;              // All-day event flag
-  color?: string;               // Event color (hex)
-  category?: string;            // Event category
-  recurrence: RecurrenceType;   // Recurrence pattern
-  recurrenceEndDate?: string;   // When recurrence ends
-  reminders: number[];          // Minutes before event
-  attendees: string[];          // Attendee IDs/emails
-  createdBy: string;            // Creator ID
-  createdAt: string;            // Creation timestamp
-  updatedAt: string;            // Last update timestamp
+  id: string; // UUID
+  title: string; // Event title
+  description: string; // Event description
+  location?: string; // Event location
+  start: string; // ISO datetime
+  end: string; // ISO datetime
+  allDay: boolean; // All-day event flag
+  color?: string; // Event color (hex)
+  category?: string; // Event category
+  recurrence: RecurrenceType; // Recurrence pattern
+  recurrenceEndDate?: string; // When recurrence ends
+  reminders: number[]; // Minutes before event
+  attendees: string[]; // Attendee IDs/emails
+  createdBy: string; // Creator ID
+  createdAt: string; // Creation timestamp
+  updatedAt: string; // Last update timestamp
 }
 ```
 
 ### Recurrence Types
 
 ```typescript
-type RecurrenceType = 
-  | "none"      // Single event
-  | "daily"     // Every day
-  | "weekly"    // Every week
-  | "biweekly"  // Every 2 weeks
-  | "monthly"   // Every month
-  | "yearly";   // Every year
+type RecurrenceType =
+  | "none" // Single event
+  | "daily" // Every day
+  | "weekly" // Every week
+  | "biweekly" // Every 2 weeks
+  | "monthly" // Every month
+  | "yearly"; // Every year
 ```
 
 ## API Endpoints
@@ -109,7 +109,7 @@ Get a specific event by ID.
 ```typescript
 {
   success: true;
-  data: CalendarEvent
+  data: CalendarEvent;
 }
 ```
 
@@ -160,7 +160,7 @@ Update an existing event.
 ```typescript
 {
   success: true;
-  data: CalendarEvent
+  data: CalendarEvent;
 }
 ```
 
@@ -173,7 +173,7 @@ Delete an event.
 ```typescript
 {
   success: true;
-  message: "Event deleted successfully"
+  message: "Event deleted successfully";
 }
 ```
 
@@ -306,6 +306,7 @@ curl -X PUT http://localhost:3000/api/calendar/events/event-uuid \
 ## Error Handling
 
 Common errors:
+
 - `400`: Invalid date format or missing required fields
 - `404`: Event not found
 - `500`: Database error
