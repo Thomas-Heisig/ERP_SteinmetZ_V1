@@ -7,6 +7,50 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [Unreleased] - 2025-12-06
+
+### ✅ Hinzugefügt
+
+#### Error Standardization & Input Validation
+- **Error Standardization Guide**: Umfassende Dokumentation für die Migration von Routern zu standardisierten Error-Responses
+  - Migration Patterns und Best Practices
+  - Vollständige Code-Beispiele für alle HTTP-Methoden
+  - Zod Validation Schema Patterns
+  - Testing Guidelines
+  - Migration Checklist
+
+#### Router Improvements
+- **quickchatRouter**: Vollständig standardisiert (3/3 Endpoints)
+  - APIError-Klassen Integration
+  - Zod Input-Validierung für alle Endpoints
+  - Strukturiertes Logging mit Pino
+  - AsyncHandler für konsistente Error-Behandlung
+
+- **hrRouter**: Teilweise standardisiert (5/12 Endpoints)
+  - Employee Management Endpoints (GET, GET by ID, POST, PUT, DELETE)
+  - Zod Validation für Employee-Daten
+  - Standardisierte Error-Responses
+
+- **financeRouter**: Teilweise standardisiert (1/10 Endpoints)
+  - Invoice GET mit Query-Validierung
+  - Zod Validation Schema für Invoices
+
+### 🔧 Geändert
+- **ISSUES.md**: Aktualisiert mit Fortschritt zu ISSUE-005 und ISSUE-006
+- **TODO.md**: API Error-Handling Status aktualisiert
+- **README.md**: Version auf 0.3.0 aktualisiert, Link zum Error Standardization Guide
+
+### 🐛 Behoben
+- **Build-System**: @types/node Installation Problem behoben
+- **Dependencies**: npm install --ignore-scripts für CI/CD-Kompatibilität
+
+### 📚 Dokumentation
+- Neue Datei: `docs/ERROR_STANDARDIZATION_GUIDE.md` - Vollständige Migration-Dokumentation
+- Aktualisierung von ISSUES.md mit detaillierten Fortschritts-Tracking
+- TODO.md mit präzisem Status für Error-Handling
+
+---
+
 ## [0.3.0] - 2025-12-05
 
 ### ✅ Hinzugefügt
