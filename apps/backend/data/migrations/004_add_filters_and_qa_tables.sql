@@ -1,0 +1,78 @@
+-- SPDX-License-Identifier: MIT
+-- Migration 003: Advanced Filters, Quality Assurance, and Enhanced Batch Support
+
+-- Saved Filters for Search and AI Annotator
+CREATE TABLE IF NOT EXISTS saved_filters (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  filter_type TEXT NOT NULL, -- 'search', 'annotator', 'batch'
+  filter_config TEXT NOT NULL, -- JSON configuration
+  is_preset BOOLEAN DEFAULT false,
+  is_public BOOLEAN DEFAULT false,
+  created_by TEXT,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  usage_count INTEGER DEFAULT 0
+);
+
+-- Quality Assurance Reviews
+CREATE TABLE IF NOT EXISTS qa_reviews (
+  id TEXT PRIMARY KEY,
+  node_id TEXT NOT NULL,
+  reviewer TEXT,
+  review_status TEXT DEFAULT 'pending', -- 'pending', 'approved', 'rejected', 'needs_revision'
+  quality_score REAL,
+  review_comments TEXT,
+  metrics TEXT, -- JSON with quality metrics
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  reviewed_at TEXT
+);
+
+-- Batch Results Storage (enhanced)
+CREATE TABLE IF NOT EXISTS batch_results (
+  id TEXT PRIMARY KEY,
+  batch_id TEXT NOT NULL,
+  node_id TEXT NOT NULL,
+  success BOOLEAN DEFAULT false,
+  result TEXT, -- JSON result data
+  error TEXT,
+  retries INTEGER DEFAULT 0,
+  duration_ms INTEGER,
+  quality_score REAL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Model Usage Statistics
+CREATE TABLE IF NOT EXISTS model_usage_stats (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  model_name TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  operation_type TEXT,
+  tokens_used INTEGER,
+  cost REAL,
+  duration_ms INTEGER,
+  success BOOLEAN,
+  timestamp TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Quality Metrics History
+CREATE TABLE IF NOT EXISTS quality_metrics_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  metric_type TEXT NOT NULL, -- 'accuracy', 'confidence', 'completeness', etc.
+  metric_value REAL NOT NULL,
+  node_count INTEGER,
+  batch_id TEXT,
+  timestamp TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_saved_filters_type ON saved_filters(filter_type);
+CREATE INDEX IF NOT EXISTS idx_saved_filters_public ON saved_filters(is_public);
+CREATE INDEX IF NOT EXISTS idx_qa_reviews_node ON qa_reviews(node_id);
+CREATE INDEX IF NOT EXISTS idx_qa_reviews_status ON qa_reviews(review_status);
+CREATE INDEX IF NOT EXISTS idx_batch_results_batch ON batch_results(batch_id);
+CREATE INDEX IF NOT EXISTS idx_batch_results_node ON batch_results(node_id);
+CREATE INDEX IF NOT EXISTS idx_model_usage_timestamp ON model_usage_stats(timestamp);
+CREATE INDEX IF NOT EXISTS idx_quality_metrics_type ON quality_metrics_history(metric_type);
+CREATE INDEX IF NOT EXISTS idx_quality_metrics_timestamp ON quality_metrics_history(timestamp);
