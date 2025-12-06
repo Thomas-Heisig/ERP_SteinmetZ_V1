@@ -21,6 +21,57 @@ Alle Endpoints erfordern Authentifizierung. Verwenden Sie einen JWT-Token im Aut
 Authorization: Bearer <your-token>
 ```
 
+## ⚠️ Error Handling
+
+Alle Endpoints verwenden standardisierte Error-Responses nach folgendem Format:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message",
+    "details": {},
+    "timestamp": "2024-12-06T15:30:00Z",
+    "path": "/api/finance/invoices"
+  }
+}
+```
+
+### Error Codes
+
+- `BAD_REQUEST` (400): Ungültige Anfrage oder Parameter
+- `UNAUTHORIZED` (401): Fehlende oder ungültige Authentifizierung
+- `FORBIDDEN` (403): Keine Berechtigung für diese Ressource
+- `NOT_FOUND` (404): Ressource nicht gefunden
+- `VALIDATION_ERROR` (422): Eingabedaten nicht valide
+- `INTERNAL_ERROR` (500): Interner Serverfehler
+- `DATABASE_ERROR` (500): Datenbankfehler
+
+### Input-Validierung
+
+Alle Endpoints verwenden Zod-Schemas für die Validierung von Eingabedaten. Bei Validierungsfehlern wird ein `VALIDATION_ERROR` zurückgegeben mit Details zu den fehlerhaften Feldern:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed",
+    "details": {
+      "issues": [
+        {
+          "path": ["amount"],
+          "message": "Amount must be a positive number"
+        }
+      ]
+    },
+    "timestamp": "2024-12-06T15:30:00Z",
+    "path": "/api/finance/invoices"
+  }
+}
+```
+
 ## 💰 Rechnungsmanagement
 
 ### GET /api/finance/invoices
