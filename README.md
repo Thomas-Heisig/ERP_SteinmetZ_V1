@@ -264,9 +264,26 @@ npm test:coverage     # Mit Coverage-Report
 
 ## 📚 Dokumentation
 
+### 🚀 Schnellstart
+
+- **[Getting Started Tutorial](docs/tutorials/getting-started.md)** ⭐ NEU - 5-Minuten-Setup
+- **[README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)** - Vollständige Projekt-Dokumentation
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** ⭐ NEU - Contribution Guidelines
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** ⭐ NEU - Community Standards
+- **[SECURITY.md](SECURITY.md)** ⭐ NEU - Security Policy
+- **[SUPPORT.md](SUPPORT.md)** ⭐ NEU - Getting Help & FAQ
+
+### 📖 Dokumentations-Hub
+
+- **[Documentation Hub](docs/README.md)** ⭐ NEU - Zentraler Dokumentations-Index
+  - Folgt **Diátaxis Framework** und **ISO/IEC/IEEE 26514** Standards
+  - 📚 **Tutorials** - Schritt-für-Schritt Anleitungen
+  - 🔧 **How-To Guides** - Lösungen für spezifische Probleme
+  - 📖 **Reference** - Technische Referenz-Dokumentation
+  - 💡 **Explanation** - Konzeptionelle Erklärungen
+
 ### Haupt-Dokumentation
 
-- **[README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)** - Vollständige Projekt-Dokumentation
 - **[TODO.md](TODO.md)** - Priorisierte Aufgabenliste
 - **[ISSUES.md](ISSUES.md)** - Aktive Issues & Technical Debt
 - **[CHANGELOG.md](CHANGELOG.md)** - Projekt-Changelog mit allen Versionen
@@ -275,20 +292,36 @@ npm test:coverage     # Mit Coverage-Report
 ### Architektur & Konzept
 
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System-Architektur & Production-Readiness
+- **[Architecture Decision Records](docs/adr/README.md)** - Architektur-Entscheidungen
 - **[AUTHENTICATION.md](docs/AUTHENTICATION.md)** - Authentifizierungs-System
 - **[COMPLIANCE.md](docs/COMPLIANCE.md)** - Sicherheit, Datenschutz & GoBD
 - **[Konzept](docs/concept/_0_KONZEPT.md)** - Vollständiges Projektkonzept
 - **[Roadmap](docs/concept/_ROADMAP.md)** - Detaillierte Projektphasen
 
+### Entwickler-Dokumentation
+
+- **[Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)** - Komplette Setup-Anleitung
+- **[Code Conventions](docs/CODE_CONVENTIONS.md)** - Coding Standards & Best Practices
+- **[Error Standardization Guide](docs/ERROR_STANDARDIZATION_GUIDE.md)** - Error-Handling Guide
+- **[Environment Variables](docs/ENVIRONMENT_VARIABLES.md)** - Konfigurationsreferenz
+- **[Database Migrations](docs/DATABASE_MIGRATIONS.md)** - Datenbank-Migrationen
+
 ### API-Dokumentation
 
-- **[AI Router](apps/backend/src/routes/ai/docs/)** - Vollständige AI-API-Dokumentation
+- **[API Documentation Hub](docs/api/README.md)** - Vollständige API-Referenz
+- **[AI Router](apps/backend/src/routes/ai/docs/)** - AI-API-Dokumentation
 - **[AI Annotator](apps/backend/src/routes/aiAnnotatorRouter/docs/)** - AI Annotator API
 - **[Dashboard](apps/backend/src/routes/dashboard/docs/)** - Dashboard-API
 - **[Functions Catalog](apps/backend/src/routes/functionsCatalog/docs/)** - Funktionskatalog-API
-- **[HR Module](apps/backend/src/routes/hr/docs/)** ✨ NEU - Personal & HR Management API
-- **[Finance Module](apps/backend/src/routes/finance/docs/)** ✨ NEU - Finanzen & Controlling API
-- **[Error Standardization Guide](docs/ERROR_STANDARDIZATION_GUIDE.md)** ✨ NEU - Migration Guide für Error-Handling
+- **[HR Module](apps/backend/src/routes/hr/docs/)** - Personal & HR Management API
+- **[Finance Module](apps/backend/src/routes/finance/docs/)** - Finanzen & Controlling API
+
+### Erweiterte Themen
+
+- **[AI Annotator Workflow](docs/AI_ANNOTATOR_WORKFLOW.md)** - KI-gestützte Annotation
+- **[Function Node Transformation](docs/FUNCTION_NODE_TRANSFORMATION.md)** - Code-Generierung
+- **[Performance Features](docs/PERFORMANCE_FEATURES.md)** - Optimierung & Caching
+- **[Advanced Features](docs/ADVANCED_FEATURES.md)** - Fortgeschrittene Features
 
 ## 🤝 Beitragen
 
