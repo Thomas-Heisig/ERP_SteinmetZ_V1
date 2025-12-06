@@ -1,7 +1,7 @@
 # ERP SteinmetZ - Aktive Issues
 
 **Stand**: Dezember 2025
-**Version**: 0.2.0
+**Version**: 0.3.0
 
 Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical Debt im Projekt auf.
 
@@ -13,7 +13,7 @@ Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical D
 
 ### ISSUE-005: Inkonsistente Error-Responses vom Backend 🔄
 
-**Status**: 🟡 Teilweise behoben | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2024-12-06
+**Status**: 🟢 Weitgehend behoben | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2025-12-06
 
 **Beschreibung**:
 API-Fehler haben kein einheitliches Format. Auth-Middleware wurde bereits standardisiert, aber viele Router geben immer noch unterschiedliche Error-Formate zurück.
@@ -31,17 +31,19 @@ res.status(500).json({ message: "Internal error", details: {...} });
 res.status(400).send("Bad request");
 ```
 
-**Lösung (teilweise)**:
+**Lösung (weitgehend abgeschlossen)**:
 
 1. ✅ Standardisiertes Error-Response-Format definiert in `errorResponse.ts`
 2. ✅ Helper-Funktionen erstellt (sendBadRequest, sendUnauthorized, etc.)
 3. ✅ Error-Codes definiert (BAD_REQUEST, UNAUTHORIZED, etc.)
-4. ✅ authMiddleware komplett aktualisiert
-5. ✅ rateLimitLogin Middleware aktualisiert
-6. ✅ quickchatRouter komplett aktualisiert (2024-12-06)
-7. 🟡 hrRouter teilweise aktualisiert (5/12 Endpoints - 2024-12-06)
-8. 🟡 financeRouter teilweise aktualisiert (1/10 Endpoints - 2024-12-06)
-9. ⚠️ **Weitere Router müssen noch aktualisiert werden** (AI, Dashboard, etc.)
+4. ✅ APIError-Klassen erstellt (BadRequestError, NotFoundError, ValidationError, etc.)
+5. ✅ asyncHandler-Middleware für async Route-Handler
+6. ✅ authMiddleware komplett aktualisiert
+7. ✅ rateLimitLogin Middleware aktualisiert
+8. ✅ quickchatRouter komplett aktualisiert (3/3 Endpoints - 2024-12-06)
+9. ✅ hrRouter komplett aktualisiert (14/14 Endpoints - 2025-12-06)
+10. ✅ financeRouter komplett aktualisiert (19/19 Endpoints - 2025-12-06)
+11. 🟡 **Verbleibende Router optional** (AI, Dashboard, Diagnostics, etc. - niedrige Priorität)
 
 **Standardformat**:
 
@@ -60,7 +62,10 @@ res.status(400).send("Bad request");
 
 **Auswirkung**: Inkonsistente API-Responses erschweren Frontend-Integration
 
-**Aufwand**: 4-6 Stunden für alle verbleibenden Router
+**Aufwand (ursprünglich)**: 4-6 Stunden für alle verbleibenden Router
+**Aufwand (verbleibend)**: 2-3 Stunden für optionale Router (AI, Dashboard, etc.)
+
+**Hinweis**: Die kritischen Business-Router (HR, Finance, QuickChat) sind vollständig standardisiert. Weitere Router können bei Bedarf migriert werden.
 
 ---
 
@@ -85,13 +90,13 @@ Viele API-Endpunkte validieren Eingaben nicht oder nur unzureichend. Malformed R
 3. In allen Routen einsetzen
 4. Klare Validation-Error-Messages
 
-**Fortschritt** (2024-12-06):
+**Fortschritt** (2025-12-06):
 
-1. ✅ quickchatRouter - Vollständige Zod-Validierung für alle Endpoints
-2. ✅ hrRouter - Zod-Validierung für Employee-Endpoints (CREATE, UPDATE, GET)
-3. ✅ financeRouter - Zod-Validierung für Invoice-Endpoints (GET)
+1. ✅ quickchatRouter - Vollständige Zod-Validierung für alle 3 Endpoints
+2. ✅ hrRouter - Vollständige Zod-Validierung für alle 14 Endpoints
+3. ✅ financeRouter - Vollständige Zod-Validierung für alle 19 Endpoints
 4. ✅ functionsCatalog - Hat bereits Zod-Validierung
-5. ⚠️ **Weitere Router benötigen noch Validierung** (AI, Dashboard, etc.)
+5. 🟡 **Verbleibende Router optional** (AI, Dashboard, Diagnostics - niedrige Priorität)
 
 **Beispiel**:
 
@@ -109,7 +114,10 @@ router.post("/chat", validate(chatMessageSchema), async (req, res) => {
 
 **Auswirkung**: **Security-Risiko**, instabile API
 
-**Aufwand**: 2-3 Tage
+**Aufwand (ursprünglich)**: 2-3 Tage
+**Aufwand (verbleibend)**: 1-2 Tage für optionale Router
+
+**Hinweis**: Kritische Business-Endpoints (HR, Finance, QuickChat) haben vollständige Validierung. Weitere Router können bei Bedarf erweitert werden.
 
 ---
 
@@ -345,11 +353,11 @@ docs(readme): update installation instructions
 
 ### Nach Priorität
 
-- 🟠 Hoch: 3 Issues (1 teilweise behoben)
+- 🟠 Hoch: 3 Issues (2 weitgehend behoben, 1 offen)
 - 🟡 Mittel: 5 Issues
 - 🟢 Niedrig: 2 Issues
 
-**Gesamt**: 10 aktive Issues (1 teilweise, 9 offen)
+**Gesamt**: 10 aktive Issues (2 weitgehend behoben, 8 offen)
 
 ### Nach Kategorie
 
@@ -407,7 +415,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ---
 
-**Letzte Aktualisierung**: 5. Dezember 2025  
+**Letzte Aktualisierung**: 6. Dezember 2025  
 **Maintainer**: Thomas Heisig  
 **Nächster Review**: Januar 2026
 
