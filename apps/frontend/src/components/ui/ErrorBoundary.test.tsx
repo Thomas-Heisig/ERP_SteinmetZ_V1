@@ -83,7 +83,7 @@ describe("ErrorBoundary", () => {
     expect(screen.getByText(/Etwas ist schiefgelaufen/i)).toBeInTheDocument();
 
     const resetButton = screen.getByText(/Erneut versuchen/i);
-    
+
     // Clicking reset should clear the error state and attempt to re-render children
     // Since the child component still throws, it will catch the error again
     // This test verifies the reset button triggers the reset method

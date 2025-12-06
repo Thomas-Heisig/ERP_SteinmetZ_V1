@@ -338,32 +338,44 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 
 ### ISSUE-015: Package.json Scripts fehlen Beschreibungen 📋
 
-**Status**: 🟢 Offen | **Priorität**: Sehr niedrig | **Erstellt**: 2024-12-03
+**Status**: 🟢 ERLEDIGT | **Priorität**: Sehr niedrig | **Erstellt**: 2024-12-03 | **Gelöst**: 2025-12-06
 
 **Beschreibung**:
 Die npm-scripts haben keine Beschreibungen. `npm run` zeigt eine unleserliche Liste.
 
-**Lösungsansatz**:
-Namenskonventionen verwenden oder `package.json` "description" nutzen.
+**Lösung**:
+Umfassende Dokumentation in SCRIPTS.md erstellt mit:
 
-**Aufwand**: 30 Minuten
+- Detaillierte Beschreibung aller npm-Scripts
+- Verwendungsbeispiele und Workflows
+- Troubleshooting-Tipps
+- Quick Reference Tabelle
+
+**Aufwand**: 30 Minuten → 45 Minuten (umfassendere Lösung)
 
 ---
 
 ### ISSUE-016: Fehlende Commit-Conventions 🔖
 
-**Status**: 🟢 Offen | **Priorität**: Sehr niedrig | **Erstellt**: 2024-12-03
+**Status**: 🟢 ERLEDIGT | **Priorität**: Sehr niedrig | **Erstellt**: 2024-12-03 | **Gelöst**: 2025-12-06
 
 **Beschreibung**:
 Keine enforzierten Commit-Message-Conventions. Commits sind unstrukturiert.
 
-**Lösungsansatz**:
+**Lösung implementiert**:
 
-1. Conventional Commits einführen
-2. Commitlint installieren
-3. Husky pre-commit hooks
+1. ✅ Conventional Commits Standard eingeführt
+2. ✅ Commitlint installiert und konfiguriert (.commitlintrc.json)
+3. ✅ Husky Hooks eingerichtet:
+   - pre-commit: Format-Check mit Prettier
+   - commit-msg: Commit-Message-Validierung mit commitlint
+4. ✅ Umfassende Dokumentation in COMMIT_CONVENTIONS.md:
+   - Format-Spezifikation und Beispiele
+   - Type/Scope-Definitionen
+   - Validierungs-Fehler und Lösungen
+   - IDE-Integration-Tipps
 
-**Beispiel**:
+**Beispiel** (nun enforced):
 
 ```
 feat(backend): add rate limiting to AI endpoints
@@ -371,7 +383,7 @@ fix(frontend): resolve theme toggle bug
 docs(readme): update installation instructions
 ```
 
-**Aufwand**: 1-2 Stunden
+**Aufwand**: 1-2 Stunden → 2 Stunden (inklusive Dokumentation)
 
 ---
 
@@ -381,9 +393,9 @@ docs(readme): update installation instructions
 
 - 🟠 Hoch: 3 Issues (2 weitgehend behoben, 1 offen)
 - 🟡 Mittel: 5 Issues
-- 🟢 Niedrig: 2 Issues
+- 🟢 Niedrig: 2 Issues (beide erledigt)
 
-**Gesamt**: 10 aktive Issues (2 weitgehend behoben, 8 offen)
+**Gesamt**: 10 Issues (2 weitgehend behoben, 2 komplett erledigt, 6 offen)
 
 ### Nach Kategorie
 
@@ -392,15 +404,20 @@ docs(readme): update installation instructions
 - **Monitoring**: 1 (ISSUE-008)
 - **Dependencies**: 1 (ISSUE-009)
 - **Accessibility**: 1 (ISSUE-012)
-- **Developer Experience**: 2 (ISSUE-015, 016)
+- **Developer Experience**: 2 (ISSUE-015 ✅, ISSUE-016 ✅)
 
 ### Geschätzter Gesamtaufwand
 
 - **Hohe Priorität**: 1-2 Wochen
 - **Mittlere Priorität**: 1-2 Wochen
-- **Niedrige Priorität**: 3-4 Tage
+- **Niedrige Priorität**: ~3 Stunden verbleibend (2 Issues abgeschlossen)
 
-**Gesamt**: ~3-5 Wochen für alle offenen Issues
+**Gesamt**: ~2.5-4 Wochen für verbleibende offene Issues
+
+**Erledigt (2025-12-06)**:
+
+- ISSUE-015: Package.json Scripts (45 min)
+- ISSUE-016: Commit Conventions (2 Std.)
 
 ---
 
@@ -446,12 +463,14 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 ### Test-Infrastruktur Verbesserungen ✅
 
 **Behobene Probleme**:
+
 1. ✅ Frontend Skeleton-Tests korrigiert (CSS Module Hashing berücksichtigt)
 2. ✅ ErrorBoundary-Test korrigiert (Reset-Verhalten korrekt getestet)
 3. ✅ Alle 50 Frontend-Tests bestehen erfolgreich
 4. ✅ Alle 42 Backend-Tests bestehen erfolgreich
 
 **Details**:
+
 - CSS Module generieren gehashte Klassennamen (z.B. `_text_6deae7`), Tests mussten aktualisiert werden, um die importierten Styles-Objekte zu verwenden
 - ErrorBoundary Reset-Test wurde vereinfacht, um das korrekte Verhalten zu testen (Reset versucht Re-Rendering, aber wenn Kind weiterhin wirft, wird Fehler erneut gefangen)
 

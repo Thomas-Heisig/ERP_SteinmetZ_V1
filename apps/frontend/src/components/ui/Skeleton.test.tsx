@@ -192,13 +192,17 @@ describe("SkeletonList", () => {
 describe("SkeletonDashboard", () => {
   it("should render default number of cards", () => {
     const { container } = render(<SkeletonDashboard />);
-    const cards = container.querySelectorAll(`.${styles.skeletonDashboardCard}`);
+    const cards = container.querySelectorAll(
+      `.${styles.skeletonDashboardCard}`,
+    );
     expect(cards).toHaveLength(6);
   });
 
   it("should render specified number of cards", () => {
     const { container } = render(<SkeletonDashboard cards={9} />);
-    const cards = container.querySelectorAll(`.${styles.skeletonDashboardCard}`);
+    const cards = container.querySelectorAll(
+      `.${styles.skeletonDashboardCard}`,
+    );
     expect(cards).toHaveLength(9);
   });
 

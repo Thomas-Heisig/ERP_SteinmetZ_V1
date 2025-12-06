@@ -13,6 +13,7 @@
     "start": "node dist/index.js",
     "migrate": "tsx src/utils/migrateSchema.ts",
     "migrate:prod": "node dist/utils/migrateSchema.js",
+    "analyze:indexes": "tsx scripts/analyzeIndexes.ts",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",

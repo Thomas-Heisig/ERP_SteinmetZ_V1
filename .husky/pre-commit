@@ -1,0 +1,3 @@
+# TODO: Re-enable after ESLint v9 migration (see https://eslint.org/docs/latest/use/configure/migration-guide)
+# npm run lint
+npm run format
