@@ -42,6 +42,7 @@ The scope provides additional contextual information and is contained within par
 - **config**: Configuration changes
 
 Examples:
+
 ```
 feat(backend): add user authentication
 fix(frontend): resolve navigation bug
@@ -76,11 +77,13 @@ The footer should contain any information about Breaking Changes and reference G
 ## Examples
 
 ### Simple feature
+
 ```
 feat(backend): add rate limiting to API endpoints
 ```
 
 ### Bug fix with scope
+
 ```
 fix(frontend): correct theme toggle persistence
 
@@ -91,6 +94,7 @@ Fixes #234
 ```
 
 ### Breaking change
+
 ```
 feat(api): redesign authentication flow
 
@@ -104,6 +108,7 @@ Closes #456
 ```
 
 ### Documentation update
+
 ```
 docs: update developer onboarding guide
 
@@ -111,6 +116,7 @@ Add instructions for setting up the development environment on Windows.
 ```
 
 ### Dependency update
+
 ```
 chore(deps): upgrade react to v19.2.0
 
@@ -118,6 +124,7 @@ Update React and React DOM to latest stable version.
 ```
 
 ### Performance improvement
+
 ```
 perf(backend): optimize database queries
 
@@ -141,6 +148,7 @@ The `commit-msg` hook validates your commit message format using commitlint.
 ### Common Validation Errors
 
 #### Error: "type may not be empty"
+
 ```
 # ❌ Bad
 update documentation
@@ -150,6 +158,7 @@ docs: update documentation
 ```
 
 #### Error: "subject may not be empty"
+
 ```
 # ❌ Bad
 feat:
@@ -159,6 +168,7 @@ feat: add new feature
 ```
 
 #### Error: "type must be one of [feat, fix, docs, ...]"
+
 ```
 # ❌ Bad
 feature: add login
@@ -168,6 +178,7 @@ feat: add login
 ```
 
 #### Error: "header must not be longer than 100 characters"
+
 ```
 # ❌ Bad
 feat: add a very long description that exceeds the maximum allowed length for commit message headers
@@ -192,9 +203,11 @@ git commit --no-verify
 ## Tools and IDE Integration
 
 ### VSCode Extension
+
 Install [Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits) extension for guided commit message creation.
 
 ### Git Commit Template
+
 Set up a commit message template:
 
 ```bash
@@ -202,6 +215,7 @@ git config --local commit.template .gitmessage
 ```
 
 Create `.gitmessage` file:
+
 ```
 # <type>(<scope>): <subject>
 # |<----  Using a Maximum Of 100 Characters  ---->|
@@ -239,5 +253,6 @@ Future implementation planned for automatic CHANGELOG.md updates.
 ## Questions?
 
 If you have questions about commit conventions, see:
+
 - [CODE_CONVENTIONS.md](docs/CODE_CONVENTIONS.md) - Project code style guide
 - [CONTRIBUTING.md](CONTRIBUTING.md) - General contribution guidelines
