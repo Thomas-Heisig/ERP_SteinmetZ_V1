@@ -2,8 +2,34 @@
 // apps/backend/src/routes/hr/hrRouter.ts
 
 import { Router, Request, Response } from "express";
+import { z } from "zod";
+import {
+  BadRequestError,
+  NotFoundError,
+  ValidationError,
+} from "../../types/errors.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import pino from "pino";
 
 const router = Router();
+const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+
+// Validation schemas
+const employeeQuerySchema = z.object({
+  department: z.string().optional(),
+  status: z.enum(["active", "on_leave", "terminated"]).optional(),
+  search: z.string().optional(),
+});
+
+const createEmployeeSchema = z.object({
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
+  email: z.string().email(),
+  department: z.string().min(1),
+  position: z.string().min(1),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  employeeNumber: z.string().optional(),
+});
 
 /**
  * HR Module Router
@@ -18,9 +44,19 @@ const router = Router();
  * GET /api/hr/employees
  * Get all employees with optional filters
  */
-router.get("/employees", async (req: Request, res: Response) => {
-  try {
-    const { department, status, search } = req.query;
+router.get(
+  "/employees",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate query parameters
+    const validationResult = employeeQuerySchema.safeParse(req.query);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid query parameters",
+        validationResult.error.issues,
+      );
+    }
+
+    const { department, status, search } = validationResult.data;
 
     // TODO: Replace with actual database query
     const mockEmployees = [
@@ -86,21 +122,16 @@ router.get("/employees", async (req: Request, res: Response) => {
       data: filteredEmployees,
       count: filteredEmployees.length,
     });
-  } catch (error) {
-    console.error("[HR] Error fetching employees:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch employees",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/hr/employees/:id
  * Get a single employee by ID
  */
-router.get("/employees/:id", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/employees/:id",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
 
     // TODO: Replace with actual database query
@@ -135,35 +166,36 @@ router.get("/employees/:id", async (req: Request, res: Response) => {
     // Note: This check is for demonstration purposes only
     // Will be replaced with actual DB query in Phase 2
     if (!mockEmployee) {
-      return res.status(404).json({
-        success: false,
-        error: "Employee not found",
-      });
+      throw new NotFoundError("Employee not found", { employeeId: id });
     }
 
     res.json({
       success: true,
       data: mockEmployee,
     });
-  } catch (error) {
-    console.error("[HR] Error fetching employee:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch employee",
-    });
-  }
-});
+  }),
+);
 
 /**
  * POST /api/hr/employees
  * Create a new employee
  */
-router.post("/employees", async (req: Request, res: Response) => {
-  try {
-    const employeeData = req.body;
+router.post(
+  "/employees",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate input
+    const validationResult = createEmployeeSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid employee data",
+        validationResult.error.issues,
+      );
+    }
 
-    // TODO: Validate data with Zod schema
+    const employeeData = validationResult.data;
+
     // TODO: Save to database
+    // In production: const employee = await employeeService.create(employeeData);
 
     const newEmployee = {
       id: Date.now().toString(),
@@ -177,63 +209,60 @@ router.post("/employees", async (req: Request, res: Response) => {
       data: newEmployee,
       message: "Employee created successfully",
     });
-  } catch (error) {
-    console.error("[HR] Error creating employee:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to create employee",
-    });
-  }
-});
+  }),
+);
 
 /**
  * PUT /api/hr/employees/:id
  * Update an employee
  */
-router.put("/employees/:id", async (req: Request, res: Response) => {
-  try {
+router.put(
+  "/employees/:id",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const updateData = req.body;
+    
+    // Validate input (using partial schema for updates)
+    const validationResult = createEmployeeSchema.partial().safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid employee update data",
+        validationResult.error.issues,
+      );
+    }
+    
+    const updateData = validationResult.data;
 
-    // TODO: Validate data
     // TODO: Update in database
+    // In production: const employee = await employeeService.update(id, updateData);
+    // if (!employee) throw new NotFoundError("Employee not found");
 
     res.json({
       success: true,
       data: { id, ...updateData },
       message: "Employee updated successfully",
     });
-  } catch (error) {
-    console.error("[HR] Error updating employee:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to update employee",
-    });
-  }
-});
+  }),
+);
 
 /**
  * DELETE /api/hr/employees/:id
  * Delete (deactivate) an employee
  */
-router.delete("/employees/:id", async (req: Request, res: Response) => {
-  try {
+router.delete(
+  "/employees/:id",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
 
     // TODO: Soft delete in database (set status to inactive)
+    // In production: const result = await employeeService.deactivate(id);
+    // if (!result) throw new NotFoundError("Employee not found");
 
     res.json({
       success: true,
       message: "Employee deactivated successfully",
     });
-  } catch (error) {
-    console.error("[HR] Error deleting employee:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to delete employee",
-    });
-  }
-});
+  }),
+);
 
 // ============================================================================
 // TIME TRACKING

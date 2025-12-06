@@ -2,8 +2,30 @@
 // apps/backend/src/routes/quickchat/quickchatRouter.ts
 
 import { Router, Request, Response } from "express";
+import { z } from "zod";
+import {
+  BadRequestError,
+  NotFoundError,
+  ValidationError,
+} from "../../types/errors.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import pino from "pino";
 
 const router = Router();
+const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+
+// Validation schemas
+const messageSchema = z.object({
+  sessionId: z.string().uuid().optional(),
+  message: z.string().min(1).max(5000),
+  context: z.record(z.string(), z.unknown()).optional(),
+});
+
+const commandSchema = z.object({
+  command: z.string().min(1),
+  args: z.string().optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
+});
 
 // Command definitions
 export const COMMANDS = {
@@ -69,17 +91,19 @@ const sessions = new Map<string, QuickChatSession>();
  * POST /api/quickchat/message
  * Nachricht an QuickChat senden
  */
-router.post("/message", async (req: Request, res: Response) => {
-  try {
-    const { sessionId, message, context } = req.body;
-
-    if (!message || typeof message !== "string") {
-      res.status(400).json({
-        success: false,
-        error: "Message is required",
-      });
-      return;
+router.post(
+  "/message",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate input
+    const validationResult = messageSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid request body",
+        validationResult.error.issues,
+      );
     }
+
+    const { sessionId, message, context } = validationResult.data;
 
     // Session holen oder erstellen
     let session = sessions.get(sessionId);
@@ -147,40 +171,32 @@ router.post("/message", async (req: Request, res: Response) => {
       message: assistantMessage,
       commandResult,
     });
-  } catch (error) {
-    console.error("❌ [QuickChat] POST /message error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * POST /api/quickchat/command
  * Direkter Command-Aufruf
  */
-router.post("/command", async (req: Request, res: Response) => {
-  try {
-    const { command, args, context } = req.body;
-
-    if (!command || typeof command !== "string") {
-      res.status(400).json({
-        success: false,
-        error: "Command is required",
-      });
-      return;
+router.post(
+  "/command",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate input
+    const validationResult = commandSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid request body",
+        validationResult.error.issues,
+      );
     }
 
+    const { command, args, context } = validationResult.data;
     const cmd = command.startsWith("/") ? command : `/${command}`;
 
     if (!(cmd in COMMANDS)) {
-      res.status(400).json({
-        success: false,
-        error: `Unknown command: ${cmd}`,
+      throw new BadRequestError(`Unknown command: ${cmd}`, {
         availableCommands: Object.keys(COMMANDS),
       });
-      return;
     }
 
     const result = await executeCommand(cmd as CommandKey, args || "", context);
@@ -190,65 +206,64 @@ router.post("/command", async (req: Request, res: Response) => {
       command: cmd,
       result,
     });
-  } catch (error) {
-    console.error("❌ [QuickChat] POST /command error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/quickchat/commands
  * Liste verfügbarer Commands
  */
-router.get("/commands", (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    commands: Object.entries(COMMANDS).map(([key, value]) => ({
-      command: key,
-      name: value.name,
-      description: value.description,
-    })),
-  });
-});
+router.get(
+  "/commands",
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.json({
+      success: true,
+      commands: Object.entries(COMMANDS).map(([key, value]) => ({
+        command: key,
+        name: value.name,
+        description: value.description,
+      })),
+    });
+  }),
+);
 
 /**
  * GET /api/quickchat/sessions/:id
  * Session-Historie abrufen
  */
-router.get("/sessions/:id", (req: Request, res: Response) => {
-  const { id } = req.params;
-  const session = sessions.get(id);
+router.get(
+  "/sessions/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const session = sessions.get(id);
 
-  if (!session) {
-    res.status(404).json({
-      success: false,
-      error: "Session not found",
+    if (!session) {
+      throw new NotFoundError("Session not found", { sessionId: id });
+    }
+
+    res.json({
+      success: true,
+      session,
     });
-    return;
-  }
-
-  res.json({
-    success: true,
-    session,
-  });
-});
+  }),
+);
 
 /**
  * DELETE /api/quickchat/sessions/:id
  * Session löschen
  */
-router.delete("/sessions/:id", (req: Request, res: Response) => {
-  const { id } = req.params;
-  const deleted = sessions.delete(id);
+router.delete(
+  "/sessions/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const deleted = sessions.delete(id);
 
-  res.json({
-    success: true,
-    deleted,
-  });
-});
+    res.json({
+      success: true,
+      deleted,
+    });
+  }),
+);
 
 // Command-Execution
 async function executeCommand(

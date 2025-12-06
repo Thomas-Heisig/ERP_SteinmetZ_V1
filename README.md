@@ -1,6 +1,6 @@
 # ERP SteinmetZ – Enterprise ERP mit KI-gestütztem AI Annotator
 
-[![Version](https://img.shields.io/badge/Version-0.2.0-blue.svg)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1)
+[![Version](https://img.shields.io/badge/Version-0.3.0-blue.svg)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1)
 [![Node](https://img.shields.io/badge/Node-%3E%3D18.18.0-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -281,6 +281,7 @@ npm test:coverage     # Mit Coverage-Report
 - **[Functions Catalog](apps/backend/src/routes/functionsCatalog/docs/)** - Funktionskatalog-API
 - **[HR Module](apps/backend/src/routes/hr/docs/)** ✨ NEU - Personal & HR Management API
 - **[Finance Module](apps/backend/src/routes/finance/docs/)** ✨ NEU - Finanzen & Controlling API
+- **[Error Standardization Guide](docs/ERROR_STANDARDIZATION_GUIDE.md)** ✨ NEU - Migration Guide für Error-Handling
 
 ## 🤝 Beitragen
 
