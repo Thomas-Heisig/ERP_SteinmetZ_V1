@@ -24,6 +24,7 @@ The Diagnostics Router provides comprehensive system monitoring and health check
 Returns an HTML diagnostic dashboard for human viewing.
 
 **Response:** HTML page with:
+
 - System information (OS, CPU, memory, uptime)
 - Application version and build date
 - Health check results for all services
@@ -118,12 +119,14 @@ curl http://localhost:3000/diagnostics/api | jq .
 ### Health Checks
 
 Monitors critical system components:
+
 - **Database**: Connection and query capability
 - **AI Providers**: OpenAI, Ollama, Anthropic availability
 - **File System**: Write/read permissions
 - **External APIs**: Third-party service connectivity
 
 **Status Levels:**
+
 - `healthy`: All checks passed
 - `degraded`: Some non-critical checks failed
 - `unhealthy`: Critical checks failed
@@ -131,6 +134,7 @@ Monitors critical system components:
 ### Database Statistics
 
 Provides insights into database performance:
+
 - **Connection Pool**: Active/idle connections
 - **Query Performance**: Total queries, slow queries, average time
 - **Table Statistics**: Row counts, sizes
@@ -139,6 +143,7 @@ Provides insights into database performance:
 ### Self-Healing System
 
 Monitors automated issue resolution:
+
 - **Issue Detection**: Automatic problem identification
 - **Healing Actions**: Corrective measures taken
 - **Success Rate**: Percentage of successfully resolved issues
@@ -147,6 +152,7 @@ Monitors automated issue resolution:
 ### Scheduler Status
 
 Tracks background job execution:
+
 - **Queue Status**: Pending jobs
 - **Completion Stats**: Successful/failed jobs
 - **Last Execution**: Timestamp of last run
@@ -155,6 +161,7 @@ Tracks background job execution:
 ### System Information
 
 OS and runtime metrics:
+
 - **CPU**: Core count, architecture
 - **Memory**: Total, free, used (formatted)
 - **Uptime**: System and process uptime
@@ -213,6 +220,7 @@ db_queries_total 1234
 ### Grafana
 
 Create dashboards using `/diagnostics/api` data:
+
 - Health status over time
 - Query performance graphs
 - Memory usage trends
@@ -221,6 +229,7 @@ Create dashboards using `/diagnostics/api` data:
 ### Alerting
 
 Set up alerts based on diagnostic data:
+
 - Unhealthy health checks
 - High slow query count
 - Low memory availability
@@ -263,8 +272,8 @@ curl http://localhost:3000/diagnostics/api | jq '.system'
 Converts bytes to human-readable format (KB, MB, GB).
 
 ```typescript
-formatBytes(1024) // "1.00 KB"
-formatBytes(1048576) // "1.00 MB"
+formatBytes(1024); // "1.00 KB"
+formatBytes(1048576); // "1.00 MB"
 ```
 
 ### formatUptime(seconds: number): string
@@ -272,8 +281,8 @@ formatBytes(1048576) // "1.00 MB"
 Converts seconds to "Xd Xh Xm Xs" format.
 
 ```typescript
-formatUptime(3665) // "1h 1m 5s"
-formatUptime(90000) // "1d 1h 0m 0s"
+formatUptime(3665); // "1h 1m 5s"
+formatUptime(90000); // "1d 1h 0m 0s"
 ```
 
 ## Error Handling
@@ -281,6 +290,7 @@ formatUptime(90000) // "1d 1h 0m 0s"
 ### HTML Errors
 
 Returns an error page with:
+
 - Error message
 - Stack trace (if available)
 - Link to retry
@@ -335,12 +345,13 @@ console.error("❌ [Diagnostics] Error:", error);
 ⚠️ **Important:** The diagnostics endpoint currently has no authentication. Consider adding:
 
 ```typescript
-router.get('/', authenticate(), requireRole(['admin']), diagnosticsHandler);
+router.get("/", authenticate(), requireRole(["admin"]), diagnosticsHandler);
 ```
 
 ### Information Disclosure
 
 Be cautious about exposing:
+
 - Internal IP addresses
 - Database credentials
 - System vulnerabilities
@@ -349,6 +360,7 @@ Be cautious about exposing:
 ### Production Deployment
 
 In production:
+
 - Restrict access by IP address
 - Require authentication
 - Rate limit requests

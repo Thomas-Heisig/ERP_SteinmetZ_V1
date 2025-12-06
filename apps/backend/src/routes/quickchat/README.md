@@ -96,12 +96,12 @@ Lists all available commands.
 
 ## Available Commands
 
-| Command | Description | Handler |
-|---------|-------------|---------|
-| `/rechnung` | Create a new invoice | `createInvoice` |
-| `/angebot` | Create a new quote | `createQuote` |
-| `/bericht` | Generate a report | `generateReport` |
-| `/idee` | Park a new idea | `parkIdea` |
+| Command     | Description          | Handler          |
+| ----------- | -------------------- | ---------------- |
+| `/rechnung` | Create a new invoice | `createInvoice`  |
+| `/angebot`  | Create a new quote   | `createQuote`    |
+| `/bericht`  | Generate a report    | `generateReport` |
+| `/idee`     | Park a new idea      | `parkIdea`       |
 
 ## Validation
 
@@ -120,6 +120,7 @@ All endpoints use **Zod schemas** for input validation:
 ## Error Handling
 
 Uses standardized APIError classes:
+
 - `ValidationError`: Invalid input data
 - `BadRequestError`: Malformed requests
 - `NotFoundError`: Command not found

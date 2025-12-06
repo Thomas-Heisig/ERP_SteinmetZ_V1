@@ -297,13 +297,19 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 2. ✅ HR-Modul vollständig dokumentiert mit Error-Handling-Beispielen
 3. ✅ Finance-Modul vollständig dokumentiert mit Error-Handling-Beispielen
 4. ✅ API-Dokumentation mit OpenAPI 3.0 Spec
-5. ⏳ JSDoc für Services (laufend)
-6. ⏳ Inline-Comments für komplexe Logik (laufend)
+5. ✅ Router-Dokumentation vervollständigt:
+   - ✅ Auth Router (README.md) - Authentication & Authorization
+   - ✅ Calendar Router (README.md) - Calendar & Event Management
+   - ✅ Diagnostics Router (README.md) - System Diagnostics
+   - ✅ Innovation Router (README.md) - Innovation Management
+   - ✅ QuickChat Router (README.md) - AI Chat Assistant
+6. ⏳ JSDoc für Services (laufend)
+7. ⏳ Inline-Comments für komplexe Logik (laufend)
 
 **Betroffen** (verbleibend):
 
 - Komplexe Utilities (teilweise)
-- AI-Provider-Implementierungen (hat bereits README-Docs)
+- Weitere Router-Module (systemInfo - hat bereits docs/README.md)
 - Resilience-Patterns (dokumentiert in ARCHITECTURE.md)
 
 **Lösungsansatz**:
