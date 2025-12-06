@@ -84,7 +84,9 @@ console.log(`📌 Version:           ${versionInfo.version}`);
 console.log(`🕒 Build:             ${versionInfo.buildDate}`);
 console.log(`🔧 Environment:       ${versionInfo.environment}`);
 console.log(`📦 Node:              ${versionInfo.nodeVersion}`);
-console.log(`💻 Platform:          ${versionInfo.platform} (${versionInfo.arch})`);
+console.log(
+  `💻 Platform:          ${versionInfo.platform} (${versionInfo.arch})`,
+);
 console.log("--------------------------------------------------------");
 console.log(`📁 Views:             ${VIEWS_DIR}`);
 console.log(`📂 Repo Root:         ${REPO_ROOT}`);
