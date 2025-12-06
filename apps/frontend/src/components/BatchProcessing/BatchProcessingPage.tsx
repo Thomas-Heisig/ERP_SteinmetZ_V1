@@ -50,12 +50,17 @@ export const BatchProcessingPage: React.FC = () => {
     loadBatchHistory();
   }, []);
 
-  // Poll for batch updates when tracking
+  // Use WebSocket for real-time batch updates when tracking
   useEffect(() => {
     if (view === "tracking" && selectedBatch) {
+      // Load initial details
+      loadBatchDetails(selectedBatch.id);
+      
+      // WebSocket updates will be handled by useBatchUpdates hook if integrated
+      // For now, use longer polling interval as fallback (30 seconds instead of 2)
       const interval = setInterval(() => {
         loadBatchDetails(selectedBatch.id);
-      }, 2000);
+      }, 30000);
       return () => clearInterval(interval);
     }
   }, [view, selectedBatch]);
