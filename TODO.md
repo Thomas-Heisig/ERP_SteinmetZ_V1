@@ -609,7 +609,18 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 - 🟡 **In Arbeit**: 14% (AI-Annotator, Function-Transformation)
 - 🔴 **Offen**: 4% (Enterprise-Features, Advanced-AI)
 
-**Neue Erledigt (6. Dezember 2025)**:
+**Neu Erledigt (6. Dezember 2025 - Abend-Session)**:
+
+- ✅ Router Error-Handling-Standardisierung (5 Router)
+  - ✅ dashboard.ts - asyncHandler implementiert
+  - ✅ diagnosticsRouter.ts - asyncHandler implementiert  
+  - ✅ systemInfoRouter.ts - asyncHandler implementiert
+  - ✅ authRouter.ts - asyncHandler + APIError-Klassen
+  - ✅ calendarRouter.ts - asyncHandler + APIError-Klassen
+- ✅ Backend Build erfolgreich (0 TypeScript-Fehler)
+- ✅ Backend Tests: 42/42 passing
+
+**Früher am 6. Dezember 2025**:
 
 - ✅ i18n mit Date/Time/Currency-Formatierung
 - ✅ Accessibility (ARIA-Labels, Keyboard-Navigation, Screen-Reader)

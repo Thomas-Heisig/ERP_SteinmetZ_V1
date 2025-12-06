@@ -80,108 +80,126 @@ const changePasswordSchema = z.object({
  * POST /api/auth/register
  * Register a new user
  */
-router.post("/register", asyncHandler(async (req: Request, res: Response) => {
-  const data = registerSchema.parse(req.body);
-  const user = await AuthService.register(data);
+router.post(
+  "/register",
+  asyncHandler(async (req: Request, res: Response) => {
+    const data = registerSchema.parse(req.body);
+    const user = await AuthService.register(data);
 
-  res.status(201).json({
-    success: true,
-    user,
-    message: "User registered successfully",
-  });
-}));
+    res.status(201).json({
+      success: true,
+      user,
+      message: "User registered successfully",
+    });
+  }),
+);
 
 /**
  * POST /api/auth/login
  * Login with username/email and password
  */
-router.post("/login", rateLimitLogin, asyncHandler(async (req: Request, res: Response) => {
-  const credentials = loginSchema.parse(req.body);
-  const ipAddress = req.ip || req.socket.remoteAddress;
-  const userAgent = req.headers["user-agent"];
+router.post(
+  "/login",
+  rateLimitLogin,
+  asyncHandler(async (req: Request, res: Response) => {
+    const credentials = loginSchema.parse(req.body);
+    const ipAddress = req.ip || req.socket.remoteAddress;
+    const userAgent = req.headers["user-agent"];
 
-  const result = await AuthService.login(credentials, ipAddress, userAgent);
+    const result = await AuthService.login(credentials, ipAddress, userAgent);
 
-  if (!result.success) {
-    throw new UnauthorizedError(result.error || "Login failed");
-  }
+    if (!result.success) {
+      throw new UnauthorizedError(result.error || "Login failed");
+    }
 
-  // Set secure cookie with token
-  if (result.token) {
+    // Set secure cookie with token
+    if (result.token) {
+      res.cookie("token", result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: COOKIE_MAX_AGE,
+      });
+    }
+
+    res.json(result);
+  }),
+);
+
+/**
+ * POST /api/auth/logout
+ * Logout current user
+ */
+router.post(
+  "/logout",
+  authenticate,
+  asyncHandler(async (req: Request, res: Response) => {
+    const token = req.headers.authorization?.substring(7) || req.cookies?.token;
+
+    if (token) {
+      await AuthService.logout(token);
+    }
+
+    res.clearCookie("token");
+    res.json({ success: true, message: "Logged out successfully" });
+  }),
+);
+
+/**
+ * POST /api/auth/refresh
+ * Refresh access token using refresh token
+ */
+router.post(
+  "/refresh",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      throw new BadRequestError("Refresh token is required");
+    }
+
+    const result = await AuthService.refreshToken(refreshToken);
+
+    if (!result) {
+      throw new UnauthorizedError("Invalid or expired refresh token");
+    }
+
+    // Update cookie with new token
     res.cookie("token", result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: COOKIE_MAX_AGE,
     });
-  }
 
-  res.json(result);
-}));
-
-/**
- * POST /api/auth/logout
- * Logout current user
- */
-router.post("/logout", authenticate, asyncHandler(async (req: Request, res: Response) => {
-  const token = req.headers.authorization?.substring(7) || req.cookies?.token;
-
-  if (token) {
-    await AuthService.logout(token);
-  }
-
-  res.clearCookie("token");
-  res.json({ success: true, message: "Logged out successfully" });
-}));
-
-/**
- * POST /api/auth/refresh
- * Refresh access token using refresh token
- */
-router.post("/refresh", asyncHandler(async (req: Request, res: Response) => {
-  const { refreshToken } = req.body;
-
-  if (!refreshToken) {
-    throw new BadRequestError("Refresh token is required");
-  }
-
-  const result = await AuthService.refreshToken(refreshToken);
-
-  if (!result) {
-    throw new UnauthorizedError("Invalid or expired refresh token");
-  }
-
-  // Update cookie with new token
-  res.cookie("token", result.token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: COOKIE_MAX_AGE,
-  });
-
-  res.json({
-    success: true,
-    token: result.token,
-    expiresAt: result.expiresAt,
-  });
-}));
+    res.json({
+      success: true,
+      token: result.token,
+      expiresAt: result.expiresAt,
+    });
+  }),
+);
 
 /**
  * GET /api/auth/me
  * Get current user information
  */
-router.get("/me", authenticate, asyncHandler(async (req: Request, res: Response) => {
-  if (!req.auth) {
-    throw new UnauthorizedError("Not authenticated");
-  }
+router.get(
+  "/me",
+  authenticate,
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!req.auth) {
+      throw new UnauthorizedError("Not authenticated");
+    }
 
-  res.json({
-    success: true,
-    user: req.auth.user,
-    roles: req.auth.roles,
-    permissions: req.auth.permissions,
-  });
-}));
+    res.json({
+      success: true,
+      user: req.auth.user,
+      roles: req.auth.roles,
+      permissions: req.auth.permissions,
+    });
+  }),
+);
 
 /**
  * POST /api/auth/change-password
@@ -228,10 +246,14 @@ router.get(
  * GET /api/auth/roles
  * List all roles
  */
-router.get("/roles", authenticate, asyncHandler(async (_req: Request, res: Response) => {
-  const roles = await AuthService.listRoles();
-  res.json({ success: true, roles });
-}));
+router.get(
+  "/roles",
+  authenticate,
+  asyncHandler(async (_req: Request, res: Response) => {
+    const roles = await AuthService.listRoles();
+    res.json({ success: true, roles });
+  }),
+);
 
 /**
  * POST /api/auth/users/:userId/roles

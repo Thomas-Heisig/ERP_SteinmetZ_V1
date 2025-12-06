@@ -18,114 +18,126 @@ const router = Router();
  * GET /diagnostics
  * HTML-Diagnoseseite
  */
-router.get("/", asyncHandler(async (_req: Request, res: Response) => {
-  const versionInfo = getVersionInfo();
-  const healthResult = await healthMonitor.runHealthChecks();
-  const dbStats = await db.getStats();
-  const schedulerStatus = scheduler.getStatus();
-  const reportStats = healingReport.getStatistics();
+router.get(
+  "/",
+  asyncHandler(async (_req: Request, res: Response) => {
+    const versionInfo = getVersionInfo();
+    const healthResult = await healthMonitor.runHealthChecks();
+    const dbStats = await db.getStats();
+    const schedulerStatus = scheduler.getStatus();
+    const reportStats = healingReport.getStatistics();
 
-  const systemInfo = {
-    hostname: os.hostname(),
-    platform: os.platform(),
-    arch: os.arch(),
-    cpus: os.cpus().length,
-    totalMemory: formatBytes(os.totalmem()),
-    freeMemory: formatBytes(os.freemem()),
-    uptime: formatUptime(os.uptime()),
-    nodeVersion: process.version,
-    processUptime: formatUptime(process.uptime()),
-  };
+    const systemInfo = {
+      hostname: os.hostname(),
+      platform: os.platform(),
+      arch: os.arch(),
+      cpus: os.cpus().length,
+      totalMemory: formatBytes(os.totalmem()),
+      freeMemory: formatBytes(os.freemem()),
+      uptime: formatUptime(os.uptime()),
+      nodeVersion: process.version,
+      processUptime: formatUptime(process.uptime()),
+    };
 
-  const html = generateDiagnosticsHTML(
-    versionInfo,
-    healthResult,
-    dbStats,
-    schedulerStatus,
-    reportStats,
-    systemInfo,
-  );
+    const html = generateDiagnosticsHTML(
+      versionInfo,
+      healthResult,
+      dbStats,
+      schedulerStatus,
+      reportStats,
+      systemInfo,
+    );
 
-  res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.send(html);
-}));
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(html);
+  }),
+);
 
 /**
  * GET /diagnostics/api
  * JSON API für Diagnosedaten
  */
-router.get("/api", asyncHandler(async (_req: Request, res: Response) => {
-  const versionInfo = getVersionInfo();
-  const healthResult = await healthMonitor.runHealthChecks();
-  const dbStats = await db.getStats();
-  const schedulerStatus = scheduler.getStatus();
-  const reportStats = healingReport.getStatistics();
+router.get(
+  "/api",
+  asyncHandler(async (_req: Request, res: Response) => {
+    const versionInfo = getVersionInfo();
+    const healthResult = await healthMonitor.runHealthChecks();
+    const dbStats = await db.getStats();
+    const schedulerStatus = scheduler.getStatus();
+    const reportStats = healingReport.getStatistics();
 
-  res.json({
-    success: true,
-    timestamp: new Date().toISOString(),
-    version: versionInfo,
-    health: healthResult,
-    database: dbStats,
-    scheduler: schedulerStatus,
-    reports: reportStats,
-    system: {
-      hostname: os.hostname(),
-      platform: os.platform(),
-      arch: os.arch(),
-      cpus: os.cpus().length,
-      totalMemory: os.totalmem(),
-      freeMemory: os.freemem(),
-      uptime: os.uptime(),
-      nodeVersion: process.version,
-      processUptime: process.uptime(),
-    },
-  });
-}));
+    res.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      version: versionInfo,
+      health: healthResult,
+      database: dbStats,
+      scheduler: schedulerStatus,
+      reports: reportStats,
+      system: {
+        hostname: os.hostname(),
+        platform: os.platform(),
+        arch: os.arch(),
+        cpus: os.cpus().length,
+        totalMemory: os.totalmem(),
+        freeMemory: os.freemem(),
+        uptime: os.uptime(),
+        nodeVersion: process.version,
+        processUptime: process.uptime(),
+      },
+    });
+  }),
+);
 
 /**
  * POST /diagnostics/health-check
  * Manuellen Health-Check triggern
  */
-router.post("/health-check", asyncHandler(async (_req: Request, res: Response) => {
-  const result = await scheduler.runManualCheck();
-  res.json({
-    success: true,
-    result,
-  });
-}));
+router.post(
+  "/health-check",
+  asyncHandler(async (_req: Request, res: Response) => {
+    const result = await scheduler.runManualCheck();
+    res.json({
+      success: true,
+      result,
+    });
+  }),
+);
 
 /**
  * GET /diagnostics/logs
  * Audit-Logs abrufen
  */
-router.get("/logs", asyncHandler(async (req: Request, res: Response) => {
-  const { limit = "100", entity, action } = req.query;
+router.get(
+  "/logs",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { limit = "100", entity, action } = req.query;
 
-  let sql = "SELECT * FROM audit_log WHERE 1=1";
-  const params: unknown[] = [];
+    let sql = "SELECT * FROM audit_log WHERE 1=1";
+    const params: unknown[] = [];
 
-  if (entity) {
-    sql += " AND entity = ?";
-    params.push(entity);
-  }
+    if (entity) {
+      sql += " AND entity = ?";
+      params.push(entity);
+    }
 
-  if (action) {
-    sql += " AND action = ?";
-    params.push(action);
-  }
+    if (action) {
+      sql += " AND action = ?";
+      params.push(action);
+    }
 
-  sql += " ORDER BY created_at DESC LIMIT ?";
-  params.push(Number(limit));
+    sql += " ORDER BY created_at DESC LIMIT ?";
+    params.push(Number(limit));
 
-  const logs = await db.all(sql, params);
+    const logs = await db.all(sql, params);
 
-  res.json({
-    success: true,
-    data: logs,
-    total: logs.length,
-  });
-}));
+    res.json({
+      success: true,
+      data: logs,
+      total: logs.length,
+    });
+  }),
+);
 
 // HTML Generator
 function generateDiagnosticsHTML(
