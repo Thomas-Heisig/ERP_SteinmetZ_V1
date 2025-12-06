@@ -1,0 +1,332 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/styles/animations.css */
+/* Animation and transition utilities */
+
+:root {
+  /* Timing functions */
+  --ease-in-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-out-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Durations */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --duration-slower: 500ms;
+}
+
+/* Page Transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* Micro-interactions */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+/* Success/Error feedback animations */
+@keyframes successPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+@keyframes errorPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+@keyframes warningPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(251, 191, 36, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
+  }
+}
+
+/* Utility classes */
+.fade-in {
+  animation: fadeIn var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.fade-out {
+  animation: fadeOut var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.slide-in-right {
+  animation: slideInFromRight var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.slide-in-left {
+  animation: slideInFromLeft var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.slide-in-top {
+  animation: slideInFromTop var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.slide-in-bottom {
+  animation: slideInFromBottom var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.scale-in {
+  animation: scaleIn var(--duration-fast) var(--ease-out-back);
+}
+
+.scale-out {
+  animation: scaleOut var(--duration-fast) var(--ease-in-out-smooth);
+}
+
+.pulse {
+  animation: pulse 2s var(--ease-in-out-smooth) infinite;
+}
+
+.bounce {
+  animation: bounce 1s var(--ease-in-out-smooth) infinite;
+}
+
+.shake {
+  animation: shake 0.5s var(--ease-in-out-smooth);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.wiggle {
+  animation: wiggle 0.5s var(--ease-in-out-smooth);
+}
+
+.success-pulse {
+  animation: successPulse 1s var(--ease-in-out-smooth);
+}
+
+.error-pulse {
+  animation: errorPulse 1s var(--ease-in-out-smooth);
+}
+
+.warning-pulse {
+  animation: warningPulse 1s var(--ease-in-out-smooth);
+}
+
+/* Hover and interaction transitions */
+.transition-all {
+  transition: all var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.transition-colors {
+  transition: background-color var(--duration-normal) var(--ease-in-out-smooth),
+              color var(--duration-normal) var(--ease-in-out-smooth),
+              border-color var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.transition-transform {
+  transition: transform var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+.transition-opacity {
+  transition: opacity var(--duration-normal) var(--ease-in-out-smooth);
+}
+
+/* Hover effects */
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+/* Focus effects for accessibility */
+.focus-ring:focus {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.focus-ring-inset:focus {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: -2px;
+}
+
+/* Loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -10,6 +10,8 @@ export interface ButtonProps
   loading?: boolean;
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
+  ariaLabel?: string;
+  ariaDescribedBy?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -21,6 +23,8 @@ export const Button: React.FC<ButtonProps> = ({
   iconPosition = "left",
   disabled,
   className = "",
+  ariaLabel,
+  ariaDescribedBy,
   ...props
 }) => {
   const baseStyles = `
@@ -50,6 +54,10 @@ export const Button: React.FC<ButtonProps> = ({
     <button
       className={`ui-button ui-button--${variant} ui-button--${size} ${className}`}
       disabled={disabled || loading}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
+      aria-busy={loading}
+      aria-disabled={disabled || loading}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -87,6 +95,8 @@ export const Button: React.FC<ButtonProps> = ({
       {loading && (
         <span
           className="ui-button__spinner"
+          role="status"
+          aria-label="Loading"
           style={{
             width: "1em",
             height: "1em",

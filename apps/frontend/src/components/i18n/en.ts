@@ -16,6 +16,8 @@ export default {
     categories: {
       title: "Functional Areas",
       count: "{{count}} areas available",
+      count_one: "{{count}} area available",
+      count_other: "{{count}} areas available",
       emptyTitle: "No categories found",
       emptyDescription: "No matching categories could be displayed.",
     },
@@ -111,6 +113,58 @@ export default {
       reload: "Reload",
       details: "Details",
       unknown: "Unknown",
+      save: "Save",
+      delete: "Delete",
+      edit: "Edit",
+      add: "Add",
+      back: "Back",
+      next: "Next",
+      previous: "Previous",
+      loading: "Loading...",
+      error: "Error",
+      success: "Success",
+      warning: "Warning",
+      info: "Information",
+    },
+    
+    // Plural forms for common items
+    items: {
+      result: "Result",
+      result_one: "{{count}} result",
+      result_other: "{{count}} results",
+      file: "File",
+      file_one: "{{count}} file",
+      file_other: "{{count}} files",
+      user: "User",
+      user_one: "{{count}} user",
+      user_other: "{{count}} users",
+      message: "Message",
+      message_one: "{{count}} message",
+      message_other: "{{count}} messages",
+      item: "Item",
+      item_one: "{{count}} item",
+      item_other: "{{count}} items",
+    },
+    
+    // Date and time formatting
+    datetime: {
+      today: "Today",
+      yesterday: "Yesterday",
+      tomorrow: "Tomorrow",
+      now: "Now",
+      minutesAgo: "{{count}} minutes ago",
+      minutesAgo_one: "1 minute ago",
+      hoursAgo: "{{count}} hours ago",
+      hoursAgo_one: "1 hour ago",
+      daysAgo: "{{count}} days ago",
+      daysAgo_one: "1 day ago",
+    },
+    
+    // Currency and numbers
+    format: {
+      currency: "{{value, currency:USD}}",
+      percent: "{{value, percent}}",
+      decimal: "{{value, decimal}}",
     },
   },
 };
