@@ -9,6 +9,7 @@ import {
   scheduler,
   healingReport,
 } from "../../services/selfhealing/index.js";
+import { getVersionInfo } from "../../version.js";
 
 const router = Router();
 
@@ -18,6 +19,7 @@ const router = Router();
  */
 router.get("/", async (_req: Request, res: Response) => {
   try {
+    const versionInfo = getVersionInfo();
     const healthResult = await healthMonitor.runHealthChecks();
     const dbStats = await db.getStats();
     const schedulerStatus = scheduler.getStatus();
@@ -36,6 +38,7 @@ router.get("/", async (_req: Request, res: Response) => {
     };
 
     const html = generateDiagnosticsHTML(
+      versionInfo,
       healthResult,
       dbStats,
       schedulerStatus,
@@ -65,6 +68,7 @@ router.get("/", async (_req: Request, res: Response) => {
  */
 router.get("/api", async (_req: Request, res: Response) => {
   try {
+    const versionInfo = getVersionInfo();
     const healthResult = await healthMonitor.runHealthChecks();
     const dbStats = await db.getStats();
     const schedulerStatus = scheduler.getStatus();
@@ -73,6 +77,7 @@ router.get("/api", async (_req: Request, res: Response) => {
     res.json({
       success: true,
       timestamp: new Date().toISOString(),
+      version: versionInfo,
       health: healthResult,
       database: dbStats,
       scheduler: schedulerStatus,
@@ -160,6 +165,7 @@ router.get("/logs", async (req: Request, res: Response) => {
 
 // HTML Generator
 function generateDiagnosticsHTML(
+  versionInfo: any,
   health: any,
   dbStats: any,
   schedulerStatus: any,
@@ -384,9 +390,14 @@ function generateDiagnosticsHTML(
 <body>
   <div class="container">
     <header>
-      <h1>
-        🧱 ERP SteinmetZ Diagnostics
-      </h1>
+      <div>
+        <h1>
+          🧱 ERP SteinmetZ Diagnostics
+        </h1>
+        <p class="timestamp" style="margin-top: 0.5rem;">
+          Version ${versionInfo.version} | Build: ${new Date(versionInfo.buildDate).toLocaleDateString("de-DE")} | ${versionInfo.environment}
+        </p>
+      </div>
       <div style="display: flex; align-items: center; gap: 1rem;">
         <span class="status-badge" style="background: ${statusColors[health.status]}20; color: ${statusColors[health.status]}">
           <span class="status-dot" style="background: ${statusColors[health.status]}"></span>

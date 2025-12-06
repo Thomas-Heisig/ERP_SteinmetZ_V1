@@ -1,5 +1,6 @@
 // src/routes/health.ts
 import { Router, Request, Response } from "express";
+import { getVersionInfo } from "../../version.js";
 
 const router = Router();
 
@@ -13,11 +14,16 @@ function computeStatus(details: Record<string, boolean>): LogicalStatus {
 }
 
 function basePayload(status: LogicalStatus, details: Record<string, boolean>) {
+  const versionInfo = getVersionInfo();
   return {
     status,
     timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version ?? "unknown",
-    environment: process.env.NODE_ENV ?? "development",
+    version: versionInfo.version,
+    buildDate: versionInfo.buildDate,
+    environment: versionInfo.environment,
+    nodeVersion: versionInfo.nodeVersion,
+    platform: versionInfo.platform,
+    arch: versionInfo.arch,
     uptime: process.uptime(),
     memory: process.memoryUsage(),
     details, // z. B. { hasOpenAIKey: false, hasOllamaUrl: true, … }
@@ -75,6 +81,19 @@ router.get("/readiness", async (_req: Request, res: Response) => {
 router.head("/", (_req: Request, res: Response) => {
   res.setHeader("Cache-Control", "no-store");
   res.status(204).end();
+});
+
+/**
+ * Version Info: Returns version and build information
+ * -> GET /api/health/version
+ */
+router.get("/version", (_req: Request, res: Response) => {
+  const versionInfo = getVersionInfo();
+  res.setHeader("Cache-Control", "no-store");
+  res.status(200).json({
+    success: true,
+    ...versionInfo,
+  });
 });
 
 export default router;

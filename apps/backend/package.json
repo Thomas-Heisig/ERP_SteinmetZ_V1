@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -p .",
+    "build": "npm run clean && tsc -p . && npm run copy:assets",
+    "copy:assets": "node scripts/copy-assets.js",
     "copy:views": "powershell Copy-Item -Recurse -Force src/views dist/views",
     "clean": "rimraf dist",
     "preview": "node dist/index.js",

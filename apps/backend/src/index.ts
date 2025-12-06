@@ -23,6 +23,7 @@ import path from "node:path";
 import chokidar from "chokidar";
 import fs from "fs/promises";
 import { GlobalApp } from "./utils/globalApp.js";
+import { getVersionInfo, getVersionString } from "./version.js";
 
 /* ---------------------- Router ---------------------- */
 import authRouter from "./routes/auth/authRouter.js";
@@ -75,13 +76,21 @@ const app: Application = express();
 GlobalApp.set(app);
 
 /* ---------------------- Initiale Log-Ausgabe ---------------------- */
+const versionInfo = getVersionInfo();
+console.log("========================================================");
+console.log("🧱 ERP-SteinmetZ Backend");
+console.log("========================================================");
+console.log(`📌 Version:           ${versionInfo.version}`);
+console.log(`🕒 Build:             ${versionInfo.buildDate}`);
+console.log(`🔧 Environment:       ${versionInfo.environment}`);
+console.log(`📦 Node:              ${versionInfo.nodeVersion}`);
+console.log(`💻 Platform:          ${versionInfo.platform} (${versionInfo.arch})`);
 console.log("--------------------------------------------------------");
-console.log("[INIT] ERP-SteinmetZ Backend wird initialisiert...");
-console.log(`[INIT] Views-Verzeichnis: ${VIEWS_DIR}`);
-console.log(`[INIT] Repo Root:         ${REPO_ROOT}`);
-console.log(`[INIT] CORS Origin:       ${ORIGIN}`);
-console.log(`[INIT] Port:              ${PORT}`);
-console.log("--------------------------------------------------------");
+console.log(`📁 Views:             ${VIEWS_DIR}`);
+console.log(`📂 Repo Root:         ${REPO_ROOT}`);
+console.log(`🌐 CORS Origin:       ${ORIGIN}`);
+console.log(`🔌 Port:              ${PORT}`);
+console.log("========================================================");
 
 /* ---------------------- Middleware ---------------------- */
 app.use(
