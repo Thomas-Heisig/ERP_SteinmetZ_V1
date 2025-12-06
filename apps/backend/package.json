@@ -21,6 +21,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0",
     "bcrypt": "^6.0.0",
+    "connect-redis": "^9.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -33,11 +34,13 @@
     "node-fetch": "^3.3.2",
     "node-llama-cpp": "^3.14.2",
     "openai": "^6.7.0",
+    "redis": "^5.10.0",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@types/async-retry": "^1.4.9",
     "@types/bcrypt": "^6.0.0",
+    "@types/connect-redis": "^0.0.23",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "latest",
     "@types/express": "latest",

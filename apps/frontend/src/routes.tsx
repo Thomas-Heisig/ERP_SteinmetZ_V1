@@ -36,10 +36,10 @@ const BatchProcessingPage = lazy(
   () => import("./components/BatchProcessing/BatchProcessingPage"),
 );
 const QualityDashboard = lazy(
-  () => import("./components/QualityDashboard/QADashboard"),
+  () => import("./components/QualityDashboard"),
 );
 const ModelManagement = lazy(
-  () => import("./components/ModelManagement/ModelComparison"),
+  () => import("./components/ModelManagement"),
 );
 const AdvancedFiltersUI = lazy(
   () => import("./components/AdvancedFilters/AdvancedFilters"),

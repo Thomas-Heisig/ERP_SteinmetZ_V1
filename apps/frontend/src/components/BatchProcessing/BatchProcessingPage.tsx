@@ -157,11 +157,12 @@ export const BatchProcessingPage: React.FC = () => {
         </div>
 
         <ProgressTracker
-          batchId={selectedBatch.id}
-          operation={selectedBatch.operation}
-          status={selectedBatch.status}
-          progress={selectedBatch.progress}
-          createdAt={selectedBatch.created_at}
+          batch={{
+            batchId: selectedBatch.id,
+            status: selectedBatch.status as any,
+            progress: selectedBatch.progress,
+          }}
+          onCancel={(batchId) => handleCancelBatch(batchId)}
         />
 
         {selectedBatch.status === "processing" && (
