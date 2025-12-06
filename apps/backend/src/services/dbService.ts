@@ -150,7 +150,12 @@ function attemptAdvancedCorrection(
 
       if (originalKind !== correctedData.kind) {
         logger.debug(
-          { fileName, line: lineIndex + 1, originalKind, correctedKind: correctedData.kind },
+          {
+            fileName,
+            line: lineIndex + 1,
+            originalKind,
+            correctedKind: correctedData.kind,
+          },
           "Auto-corrected kind field",
         );
       }
@@ -546,10 +551,7 @@ class SqliteApi implements SqlApi {
     try {
       this.db.pragma(statement);
     } catch (err: any) {
-      logger.warn(
-        { statement, error: err.message },
-        "SQLite PRAGMA failed",
-      );
+      logger.warn({ statement, error: err.message }, "SQLite PRAGMA failed");
     }
   }
 
@@ -603,10 +605,16 @@ class SqliteApi implements SqlApi {
     for (const [col, def] of Object.entries(missingColumns)) {
       if (!existingColumns.has(col)) {
         try {
-          logger.debug({ column: col }, "Adding missing column to functions_nodes");
+          logger.debug(
+            { column: col },
+            "Adding missing column to functions_nodes",
+          );
           this.db.exec(`ALTER TABLE functions_nodes ADD COLUMN ${col} ${def}`);
         } catch (err: any) {
-          logger.warn({ column: col, error: err.message }, "Could not add column");
+          logger.warn(
+            { column: col, error: err.message },
+            "Could not add column",
+          );
         }
       }
     }
@@ -873,12 +881,15 @@ class PostgresApi implements SqlApi {
       const duration = Date.now() - startTime;
 
       if (duration > 100) {
-        const queryType = sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
+        const queryType =
+          sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
         logger.warn(
-          { 
-            duration, 
+          {
+            duration,
             queryType,
-            ...(process.env.NODE_ENV === "development" ? { sqlPreview: sql.substring(0, 60) } : {})
+            ...(process.env.NODE_ENV === "development"
+              ? { sqlPreview: sql.substring(0, 60) }
+              : {}),
           },
           "Slow database query detected",
         );
@@ -898,12 +909,15 @@ class PostgresApi implements SqlApi {
       const duration = Date.now() - startTime;
 
       if (duration > 100) {
-        const queryType = sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
+        const queryType =
+          sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
         logger.warn(
-          { 
-            duration, 
+          {
+            duration,
             queryType,
-            ...(process.env.NODE_ENV === "development" ? { sqlPreview: sql.substring(0, 60) } : {})
+            ...(process.env.NODE_ENV === "development"
+              ? { sqlPreview: sql.substring(0, 60) }
+              : {}),
           },
           "Slow database query detected",
         );
@@ -923,12 +937,15 @@ class PostgresApi implements SqlApi {
       const duration = Date.now() - startTime;
 
       if (duration > 100) {
-        const queryType = sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
+        const queryType =
+          sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
         logger.warn(
-          { 
-            duration, 
+          {
+            duration,
             queryType,
-            ...(process.env.NODE_ENV === "development" ? { sqlPreview: sql.substring(0, 60) } : {})
+            ...(process.env.NODE_ENV === "development"
+              ? { sqlPreview: sql.substring(0, 60) }
+              : {}),
           },
           "Slow database query detected",
         );

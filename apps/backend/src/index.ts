@@ -255,10 +255,7 @@ async function bootstrapFunctionsCatalog() {
       startFunctionsWatcher(service, DEFAULT_FUNCTIONS_DIR);
     }
   } catch (err) {
-    logger.error(
-      { err },
-      "Failed to initialize Functions Catalog",
-    );
+    logger.error({ err }, "Failed to initialize Functions Catalog");
   }
 }
 
@@ -303,14 +300,13 @@ export async function start() {
 
     const server = app.listen(PORT, () => {
       logger.info("--------------------------------------------------------");
-      logger.info({ port: PORT }, `Backend listening on: http://localhost:${PORT}`);
+      logger.info(
+        { port: PORT },
+        `Backend listening on: http://localhost:${PORT}`,
+      );
       logger.info(`Dashboard available:  http://localhost:${PORT}/`);
-      logger.info(
-        `System API:           http://localhost:${PORT}/api/system`,
-      );
-      logger.info(
-        `Health API:           http://localhost:${PORT}/api/health`,
-      );
+      logger.info(`System API:           http://localhost:${PORT}/api/system`);
+      logger.info(`Health API:           http://localhost:${PORT}/api/health`);
       logger.info(
         `Functions API:        http://localhost:${PORT}/api/functions`,
       );
@@ -321,7 +317,10 @@ export async function start() {
 
       // Initialize WebSocket server
       websocketService.initialize(server);
-      logger.info({ port: PORT }, `WebSocket initialized: ws://localhost:${PORT}`);
+      logger.info(
+        { port: PORT },
+        `WebSocket initialized: ws://localhost:${PORT}`,
+      );
     });
 
     return server;

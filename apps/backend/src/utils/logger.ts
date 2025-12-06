@@ -6,7 +6,7 @@ import pino from "pino";
 /**
  * Centralized logger configuration for the entire backend.
  * Uses Pino for structured logging with configurable log levels.
- * 
+ *
  * Usage:
  * ```typescript
  * import { logger } from './utils/logger.js';
@@ -21,7 +21,7 @@ export const logger = pino({
 /**
  * Creates a child logger with a specific name/context.
  * Useful for adding context to all logs from a specific module.
- * 
+ *
  * @param name - Name/context for the child logger (e.g., 'auth', 'db', 'api')
  * @returns Child logger instance
  */
