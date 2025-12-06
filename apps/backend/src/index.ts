@@ -106,6 +106,11 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Session middleware with Redis support
+import { createSessionMiddleware } from "./middleware/sessionMiddleware.js";
+app.use(createSessionMiddleware());
+console.log("[middleware] Session middleware configured with Redis support");
+
 /* ---------------------- Optionale Admin-Auth ---------------------- */
 app.use((req, res, next) => {
   if (process.env.ADMIN_TOKEN && req.path.startsWith("/api/system")) {
@@ -155,6 +160,16 @@ app.get("/api/ws/stats", (_req: Request, res: Response) => {
   res.json({
     success: true,
     ...websocketService.getStats(),
+  });
+});
+
+// Session statistics endpoint
+import { getSessionStats } from "./middleware/sessionMiddleware.js";
+app.get("/api/session/stats", async (_req: Request, res: Response) => {
+  const stats = await getSessionStats();
+  res.json({
+    success: true,
+    ...stats,
   });
 });
 

@@ -31,6 +31,20 @@ const InventoryList = lazy(() => import("./features/inventory/InventoryList"));
 const ProjectList = lazy(() => import("./features/projects/ProjectList"));
 const IdeaBoard = lazy(() => import("./features/innovation/IdeaBoard"));
 
+// AI Annotator features - lazy loaded
+const BatchProcessingPage = lazy(
+  () => import("./components/BatchProcessing/BatchProcessingPage"),
+);
+const QualityDashboard = lazy(
+  () => import("./components/QualityDashboard"),
+);
+const ModelManagement = lazy(
+  () => import("./components/ModelManagement"),
+);
+const AdvancedFiltersUI = lazy(
+  () => import("./components/AdvancedFilters/AdvancedFilters"),
+);
+
 // Loading fallback component - uses CSS from components.css
 const LoadingFallback = () => (
   <div className="loading-state" style={{ height: "100vh" }}>
@@ -169,6 +183,38 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedPage>
             <IdeaBoard />
+          </ProtectedPage>
+        ),
+      },
+      {
+        path: "batch-processing",
+        element: (
+          <ProtectedPage>
+            <BatchProcessingPage />
+          </ProtectedPage>
+        ),
+      },
+      {
+        path: "quality-dashboard",
+        element: (
+          <ProtectedPage>
+            <QualityDashboard />
+          </ProtectedPage>
+        ),
+      },
+      {
+        path: "model-management",
+        element: (
+          <ProtectedPage>
+            <ModelManagement />
+          </ProtectedPage>
+        ),
+      },
+      {
+        path: "advanced-filters",
+        element: (
+          <ProtectedPage>
+            <AdvancedFiltersUI />
           </ProtectedPage>
         ),
       },

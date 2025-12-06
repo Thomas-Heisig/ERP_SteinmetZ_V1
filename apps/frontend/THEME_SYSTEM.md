@@ -50,8 +50,8 @@ Das Theme kann auf drei Arten gewechselt werden:
 2. **Programmatisch** - Über den `useTheme()` Hook:
    ```typescript
    const { theme, setTheme, toggleTheme } = useTheme();
-   setTheme('dark'); // Setzt spezifisches Theme
-   toggleTheme();    // Wechselt zum nächsten Theme
+   setTheme("dark"); // Setzt spezifisches Theme
+   toggleTheme(); // Wechselt zum nächsten Theme
    ```
 3. **Automatisch** - Erkennt System-Präferenz beim ersten Laden
 
@@ -60,17 +60,19 @@ Das Theme kann auf drei Arten gewechselt werden:
 Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 
 #### Spacing (in `theme/variables.css`)
+
 ```css
---space-xs: 0.25rem;   /* 4px */
---space-sm: 0.5rem;    /* 8px */
---space-md: 1rem;      /* 16px */
---space-lg: 1.5rem;    /* 24px */
---space-xl: 2rem;      /* 32px */
---space-2xl: 3rem;     /* 48px */
---space-3xl: 4rem;     /* 64px */
+--space-xs: 0.25rem; /* 4px */
+--space-sm: 0.5rem; /* 8px */
+--space-md: 1rem; /* 16px */
+--space-lg: 1.5rem; /* 24px */
+--space-xl: 2rem; /* 32px */
+--space-2xl: 3rem; /* 48px */
+--space-3xl: 4rem; /* 64px */
 ```
 
 #### Farben (Theme-spezifisch)
+
 ```css
 --primary-600: #0284c7;
 --text-primary: #1e293b;
@@ -81,16 +83,18 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ```
 
 #### Typographie
+
 ```css
---text-xs: 0.75rem;    /* 12px */
---text-sm: 0.875rem;   /* 14px */
---text-base: 1rem;     /* 16px */
---text-lg: 1.125rem;   /* 18px */
---text-xl: 1.25rem;    /* 20px */
---text-2xl: 1.5rem;    /* 24px */
+--text-xs: 0.75rem; /* 12px */
+--text-sm: 0.875rem; /* 14px */
+--text-base: 1rem; /* 16px */
+--text-lg: 1.125rem; /* 18px */
+--text-xl: 1.25rem; /* 20px */
+--text-2xl: 1.5rem; /* 24px */
 ```
 
 #### Border Radius
+
 ```css
 --radius-sm: 0.25rem;
 --radius-md: 0.5rem;
@@ -100,6 +104,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ```
 
 #### Shadows
+
 ```css
 --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
@@ -108,6 +113,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ```
 
 #### Transitions
+
 ```css
 --transition-fast: 150ms ease-in-out;
 --transition-base: 200ms ease-in-out;
@@ -119,6 +125,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ### Wiederverwendbare Komponenten (components.css)
 
 #### Buttons
+
 ```css
 .btn                /* Basis-Button */
 .btn-primary        /* Primärer Button */
@@ -129,6 +136,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ```
 
 #### Cards
+
 ```css
 .card               /* Basis-Card */
 .card-header        /* Card-Kopfbereich */
@@ -138,6 +146,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ```
 
 #### Badges
+
 ```css
 .badge              /* Basis-Badge */
 .badge-primary      /* Primäres Badge */
@@ -147,6 +156,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ```
 
 #### Forms
+
 ```css
 .form-group         /* Form-Gruppe Container */
 .form-label         /* Form-Label */
@@ -158,6 +168,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ```
 
 #### Layout
+
 ```css
 .grid               /* Grid Container */
 .grid-cols-2        /* 2-Spalten Grid */
@@ -170,6 +181,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ### 1. Verwende CSS-Variablen statt Hart-codierter Werte
 
 ❌ **Schlecht:**
+
 ```css
 .my-component {
   color: #1e293b;
@@ -179,6 +191,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ```
 
 ✅ **Gut:**
+
 ```css
 .my-component {
   color: var(--text-primary);
@@ -190,17 +203,17 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 ### 2. Nutze vorhandene Komponenten-Klassen
 
 ❌ **Schlecht:**
+
 ```jsx
-<button style={{ padding: '10px 16px', backgroundColor: '#0284c7' }}>
+<button style={{ padding: "10px 16px", backgroundColor: "#0284c7" }}>
   Click me
 </button>
 ```
 
 ✅ **Gut:**
+
 ```jsx
-<button className="btn btn-primary">
-  Click me
-</button>
+<button className="btn btn-primary">Click me</button>
 ```
 
 ### 3. Erstelle komponentenspezifische CSS-Dateien

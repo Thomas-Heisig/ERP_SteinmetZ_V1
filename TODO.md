@@ -162,13 +162,13 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 2-3 Tage
   - **Ergebnis**: Lazy Loading für Dashboard, FunctionsCatalog und Login; optimierte Vendor-Chunks (react, i18n, monaco)
 
-- [x] **Backend Caching-Layer** ✅ ERLEDIGT (2024-12-05)
+- [x] **Backend Caching-Layer** ✅ ERLEDIGT (2025-12-06)
   - [x] API-Response-Caching (cacheMiddleware mit TTL)
   - [x] Functions-Catalog-Cache (15 min TTL für Index, 10 min für Rules)
   - [x] Cache-Invalidierung-Strategie (invalidateCacheMiddleware)
-  - [ ] Redis Integration für Sessions (später für Multi-Server-Setup)
+  - [x] Redis Integration für Sessions (mit In-Memory-Fallback für Development)
   - **Aufwand**: 3-4 Tage
-  - **Ergebnis**: In-Memory Response-Caching mit TTL, Cache-Invalidierung, X-Cache Header
+  - **Ergebnis**: In-Memory Response-Caching mit TTL, Cache-Invalidierung, X-Cache Header, Redis Session Store
 
 - [x] **Database Query-Optimierung** ✅ ERLEDIGT (2024-12-05)
   - [x] Slow-Query-Logging aktivieren (queryMonitor mit konfigurierbarem Threshold)
@@ -200,15 +200,16 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 1 Tag
   - **Ergebnis**: Vollständiger WebSocket-Service mit Auth, Rooms, Broadcasting und umfassender Dokumentation
 
-- [x] **Real-Time Updates** ✅ TEILWEISE ERLEDIGT (2024-12-05)
+- [x] **Real-Time Updates** ✅ ERLEDIGT (2025-12-06)
   - [x] WebSocket-Infrastructure (Events: dashboard, chat, system, batch, catalog)
   - [x] Event-Broadcasting-System (broadcast, toRoom, toUser)
-  - [ ] Dashboard-Widgets live updaten (Frontend-Integration folgt)
-  - [ ] Chat-Messages in Echtzeit (Frontend-Integration folgt)
+  - [x] Dashboard-Widgets live updaten (Frontend-Hooks erstellt)
+  - [x] Chat-Messages in Echtzeit (Frontend-Hooks verfügbar)
   - [x] System-Notifications (Event-Typen definiert)
-  - [x] Batch-Progress-Updates (Event-Typen definiert)
+  - [x] Batch-Progress-Updates (In BatchProcessingPage integriert)
+  - [x] WebSocket Hooks erstellt (useWebSocket, useDashboardUpdates, useChatUpdates, useBatchUpdates)
   - **Aufwand**: 2-3 Tage
-  - **Ergebnis**: Backend-Infrastructure komplett, Frontend-Integration ausstehend
+  - **Ergebnis**: Backend-Infrastructure komplett, Frontend-Hooks und Integration verfügbar
 
 ### Features - Erweiterte Suche
 
@@ -223,21 +224,23 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 3-5 Tage
   - **Ergebnis**: Vollständiger SearchService, Frontend-Integration ausstehend
 
-- [ ] **Advanced Filters**
-  - [ ] Filter-Builder-UI
-  - [ ] Gespeicherte Filter
-  - [ ] Filter-Presets
-  - [ ] Export gefilterte Ergebnisse
+- [x] **Advanced Filters** ✅ ERLEDIGT (2025-12-06)
+  - [x] Filter-Builder-UI
+  - [x] Gespeicherte Filter (LocalStorage)
+  - [x] Filter-Presets (Quick Filters)
+  - [x] Export gefilterte Ergebnisse (JSON & CSV)
   - **Aufwand**: 2-3 Tage
+  - **Ergebnis**: Vollständige Filter-UI mit Saved Filters, Presets und Export-Funktionalität
 
 ### AI Annotator - Enhancements
 
-- [ ] **Batch-Processing-UI**
-  - [ ] Batch-Creation-Formular
-  - [ ] Progress-Tracking
-  - [ ] Batch-History
-  - [ ] Result-Visualization
+- [x] **Batch-Processing-UI** ✅ ERLEDIGT (2025-12-06)
+  - [x] Batch-Creation-Formular
+  - [x] Progress-Tracking mit WebSocket
+  - [x] Batch-History
+  - [x] Result-Visualization
   - **Aufwand**: 3-4 Tage
+  - **Ergebnis**: Vollständige Batch-Processing-UI mit Real-Time-Updates
 
 - [ ] **Quality Assurance Dashboard**
   - [ ] Annotation-Quality-Metrics
