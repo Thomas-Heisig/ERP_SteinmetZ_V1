@@ -153,7 +153,10 @@ function loadElizaConfig(): ElizaConfig {
               );
               combined.eliza_rules.push(...validRules);
               logger.debug(
-                { validRules: validRules.length, totalRules: part.eliza_rules.length },
+                {
+                  validRules: validRules.length,
+                  totalRules: part.eliza_rules.length,
+                },
                 "Rules added from configuration",
               );
             }
@@ -185,10 +188,7 @@ function loadElizaConfig(): ElizaConfig {
 
     // 2) Fallback: context.json
     if (!configFound && fs.existsSync(CONFIG_PATH)) {
-      logger.info(
-        { path: CONFIG_PATH },
-        "Fallback - Loading context.json",
-      );
+      logger.info({ path: CONFIG_PATH }, "Fallback - Loading context.json");
       try {
         const raw = fs.readFileSync(CONFIG_PATH, "utf8");
         const cfg = JSON.parse(raw) as ElizaConfig;
@@ -215,10 +215,7 @@ function loadElizaConfig(): ElizaConfig {
           );
         }
       } catch (err: any) {
-        logger.warn(
-          { error: err.message },
-          "Failed to load context.json",
-        );
+        logger.warn({ error: err.message }, "Failed to load context.json");
       }
     }
 
@@ -227,12 +224,15 @@ function loadElizaConfig(): ElizaConfig {
     const totalReflections = Object.keys(combined.reflections).length;
     const totalPools = Object.keys(combined.pools).length;
 
-    logger.info({
-      source: CONFIG_SOURCE,
-      rules: totalRules,
-      reflections: totalReflections,
-      pools: totalPools,
-    }, "Configuration loading completed");
+    logger.info(
+      {
+        source: CONFIG_SOURCE,
+        rules: totalRules,
+        reflections: totalReflections,
+        pools: totalPools,
+      },
+      "Configuration loading completed",
+    );
 
     if (!configFound) {
       logger.warn("No valid configuration found - using default configuration");
@@ -241,10 +241,7 @@ function loadElizaConfig(): ElizaConfig {
 
     return combined; // <- regulärer Rückgabepfad
   } catch (err: any) {
-    logger.error(
-      { err },
-      "Critical error loading configuration",
-    );
+    logger.error({ err }, "Critical error loading configuration");
     return defaultConfig; // <- Fallback bei Exceptions
   }
 }
@@ -252,10 +249,7 @@ function loadElizaConfig(): ElizaConfig {
 // Konfigurations-Validierung
 function validateConfigPart(part: any, filename: string): boolean {
   if (typeof part !== "object" || part === null) {
-    logger.warn(
-      { filename },
-      "Invalid configuration: Not an object",
-    );
+    logger.warn({ filename }, "Invalid configuration: Not an object");
     return false;
   }
 
@@ -267,7 +261,10 @@ function validateConfigPart(part: any, filename: string): boolean {
 
   // Validiere Regeln
   if (part.eliza_rules && !Array.isArray(part.eliza_rules)) {
-    logger.warn({ filename }, "Invalid eliza_rules in configuration: Not an array");
+    logger.warn(
+      { filename },
+      "Invalid eliza_rules in configuration: Not an array",
+    );
     return false;
   }
 
