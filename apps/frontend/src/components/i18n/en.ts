@@ -126,7 +126,7 @@ export default {
       warning: "Warning",
       info: "Information",
     },
-    
+
     // Plural forms for common items
     items: {
       result: "Result",
@@ -145,7 +145,7 @@ export default {
       item_one: "{{count}} item",
       item_other: "{{count}} items",
     },
-    
+
     // Date and time formatting
     datetime: {
       today: "Today",
@@ -159,7 +159,7 @@ export default {
       daysAgo: "{{count}} days ago",
       daysAgo_one: "1 day ago",
     },
-    
+
     // Currency and numbers
     format: {
       currency: "{{value, currency:USD}}",

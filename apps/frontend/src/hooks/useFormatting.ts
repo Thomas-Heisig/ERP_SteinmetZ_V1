@@ -18,8 +18,11 @@ export function useFormatting() {
     date: Date | string | number,
     style: "short" | "long" | "full" = "short",
   ): string => {
-    const d = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
-    
+    const d =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
+
     if (style === "short") {
       return new Intl.DateTimeFormat(locale, {
         year: "numeric",
@@ -27,7 +30,7 @@ export function useFormatting() {
         day: "2-digit",
       }).format(d);
     }
-    
+
     if (style === "long") {
       return new Intl.DateTimeFormat(locale, {
         year: "numeric",
@@ -35,7 +38,7 @@ export function useFormatting() {
         day: "numeric",
       }).format(d);
     }
-    
+
     // full
     return new Intl.DateTimeFormat(locale, {
       weekday: "long",
@@ -49,8 +52,11 @@ export function useFormatting() {
    * Format a time according to current locale
    */
   const formatTime = (date: Date | string | number): string => {
-    const d = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
-    
+    const d =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
+
     return new Intl.DateTimeFormat(locale, {
       hour: "2-digit",
       minute: "2-digit",
@@ -61,8 +67,11 @@ export function useFormatting() {
    * Format a datetime according to current locale
    */
   const formatDateTime = (date: Date | string | number): string => {
-    const d = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
-    
+    const d =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
+
     return new Intl.DateTimeFormat(locale, {
       year: "numeric",
       month: "short",
@@ -115,7 +124,10 @@ export function useFormatting() {
    * Format relative time (e.g., "2 hours ago")
    */
   const formatRelativeTime = (date: Date | string | number): string => {
-    const d = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
+    const d =
+      typeof date === "string" || typeof date === "number"
+        ? new Date(date)
+        : date;
     const now = new Date();
     const diffMs = now.getTime() - d.getTime();
     const diffMins = Math.floor(diffMs / 60000);
@@ -140,7 +152,7 @@ export function useFormatting() {
         ? `vor ${diffDays} Tag${diffDays === 1 ? "" : "en"}`
         : `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
     }
-    
+
     return formatDate(d);
   };
 
@@ -149,11 +161,11 @@ export function useFormatting() {
    */
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return "0 B";
-    
+
     const k = 1024;
     const sizes = ["B", "KB", "MB", "GB", "TB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 

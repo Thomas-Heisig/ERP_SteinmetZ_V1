@@ -53,8 +53,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     if (typeof document === "undefined") return;
 
     // Add transition class for smooth theme changes
-    document.documentElement.style.transition = "background-color 250ms ease-in-out, color 250ms ease-in-out";
-    document.body.style.transition = "background-color 250ms ease-in-out, color 250ms ease-in-out";
+    document.documentElement.style.transition =
+      "background-color 250ms ease-in-out, color 250ms ease-in-out";
+    document.body.style.transition =
+      "background-color 250ms ease-in-out, color 250ms ease-in-out";
 
     document.documentElement.setAttribute("data-theme", theme);
 

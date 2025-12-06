@@ -72,29 +72,45 @@ export const logHelpers = {
   /**
    * Log HTTP request
    */
-  request: (method: string, path: string, statusCode: number, duration: number) => {
-    logger.info({
-      type: "http_request",
-      method,
-      path,
-      statusCode,
-      duration,
-      durationUnit: "ms",
-    }, `${method} ${path} ${statusCode} - ${duration}ms`);
+  request: (
+    method: string,
+    path: string,
+    statusCode: number,
+    duration: number,
+  ) => {
+    logger.info(
+      {
+        type: "http_request",
+        method,
+        path,
+        statusCode,
+        duration,
+        durationUnit: "ms",
+      },
+      `${method} ${path} ${statusCode} - ${duration}ms`,
+    );
   },
 
   /**
    * Log database query
    */
-  query: (operation: string, table: string, duration: number, rows?: number) => {
-    logger.debug({
-      type: "db_query",
-      operation,
-      table,
-      duration,
-      durationUnit: "ms",
-      rows,
-    }, `DB ${operation} on ${table} - ${duration}ms${rows !== undefined ? ` (${rows} rows)` : ""}`);
+  query: (
+    operation: string,
+    table: string,
+    duration: number,
+    rows?: number,
+  ) => {
+    logger.debug(
+      {
+        type: "db_query",
+        operation,
+        table,
+        duration,
+        durationUnit: "ms",
+        rows,
+      },
+      `DB ${operation} on ${table} - ${duration}ms${rows !== undefined ? ` (${rows} rows)` : ""}`,
+    );
   },
 
   /**
@@ -102,48 +118,65 @@ export const logHelpers = {
    */
   auth: (event: string, userId?: string, success: boolean = true) => {
     const level = success ? "info" : "warn";
-    logger[level]({
-      type: "auth_event",
-      event,
-      userId,
-      success,
-    }, `Auth: ${event}${userId ? ` for user ${userId}` : ""}`);
+    logger[level](
+      {
+        type: "auth_event",
+        event,
+        userId,
+        success,
+      },
+      `Auth: ${event}${userId ? ` for user ${userId}` : ""}`,
+    );
   },
 
   /**
    * Log performance metric
    */
   performance: (metric: string, value: number, unit: string = "ms") => {
-    logger.info({
-      type: "performance",
-      metric,
-      value,
-      unit,
-    }, `Performance: ${metric} = ${value}${unit}`);
+    logger.info(
+      {
+        type: "performance",
+        metric,
+        value,
+        unit,
+      },
+      `Performance: ${metric} = ${value}${unit}`,
+    );
   },
 
   /**
    * Log business event
    */
   business: (event: string, data?: Record<string, any>) => {
-    logger.info({
-      type: "business_event",
-      event,
-      ...data,
-    }, `Business: ${event}`);
+    logger.info(
+      {
+        type: "business_event",
+        event,
+        ...data,
+      },
+      `Business: ${event}`,
+    );
   },
 
   /**
    * Log security event
    */
-  security: (event: string, severity: "low" | "medium" | "high" | "critical", data?: Record<string, any>) => {
-    const level = severity === "critical" || severity === "high" ? "error" : "warn";
-    logger[level]({
-      type: "security_event",
-      event,
-      severity,
-      ...data,
-    }, `Security: ${event} (${severity})`);
+  security: (
+    event: string,
+    severity: "low" | "medium" | "high" | "critical",
+    data?: Record<string, any>,
+  ) => {
+    const level =
+      severity === "critical" || severity === "high" ? "error" : "warn";
+    logger[level](
+      {
+        type: "security_event",
+        event,
+        severity,
+        ...data,
+      },
+      `Security: ${event} (${severity})`,
+    );
   },
 };
 

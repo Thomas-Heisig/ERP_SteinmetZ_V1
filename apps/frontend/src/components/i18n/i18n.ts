@@ -46,12 +46,12 @@ if (!i18n.isInitialized) {
 
     interpolation: {
       escapeValue: false, // React schützt bereits vor XSS
-      
+
       // Custom formatters for dates, numbers, and currency
       format: (value, format, lng) => {
         if (format === "uppercase") return value.toUpperCase();
         if (format === "lowercase") return value.toLowerCase();
-        
+
         // Date formatting
         if (value instanceof Date) {
           const locale = lng || "de";
@@ -85,7 +85,7 @@ if (!i18n.isInitialized) {
             }).format(value);
           }
         }
-        
+
         // Number formatting
         if (typeof value === "number") {
           const locale = lng || "de";
@@ -111,7 +111,7 @@ if (!i18n.isInitialized) {
             }).format(value);
           }
         }
-        
+
         return value;
       },
     },
