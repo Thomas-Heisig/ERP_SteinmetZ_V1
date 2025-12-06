@@ -7,7 +7,7 @@
  */
 export function trapFocus(container: HTMLElement): () => void {
   const focusableElements = container.querySelectorAll<HTMLElement>(
-    'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
   );
 
   const firstElement = focusableElements[0];
@@ -42,7 +42,7 @@ export function trapFocus(container: HTMLElement): () => void {
  */
 export function announceToScreenReader(
   message: string,
-  politeness: "polite" | "assertive" = "polite"
+  politeness: "polite" | "assertive" = "polite",
 ): void {
   const announcement = document.createElement("div");
   announcement.setAttribute("role", "status");
@@ -54,7 +54,7 @@ export function announceToScreenReader(
   document.body.appendChild(announcement);
 
   setTimeout(() => {
-    document.body.removeChild(announcement);
+    announcement.remove();
   }, 1000);
 }
 

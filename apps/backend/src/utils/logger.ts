@@ -21,7 +21,7 @@ export const logger = pino({
       return { level: label.toUpperCase() };
     },
   },
-  timestamp: () => `,"ts":"${new Date().toISOString()}"`,
+  timestamp: pino.stdTimeFunctions.isoTime,
   base: {
     pid: process.pid,
     hostname: process.env.HOSTNAME || "unknown",

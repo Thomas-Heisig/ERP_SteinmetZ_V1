@@ -603,6 +603,7 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 - 🔴 **Offen**: 4% (Enterprise-Features, Advanced-AI)
 
 **Neue Erledigt (6. Dezember 2025)**:
+
 - ✅ i18n mit Date/Time/Currency-Formatierung
 - ✅ Accessibility (ARIA-Labels, Keyboard-Navigation, Screen-Reader)
 - ✅ Animations & Transitions (20+ Animationen)

@@ -111,6 +111,9 @@ export function useFormatting() {
 
   /**
    * Format percentage
+   * @param value - The value to format (0-100 range, will be divided by 100)
+   * @param decimals - Number of decimal places (default: 0)
+   * @example formatPercent(75.5, 1) => "75.5%" or "75,5%" depending on locale
    */
   const formatPercent = (value: number, decimals: number = 0): string => {
     return new Intl.NumberFormat(locale, {
