@@ -2,8 +2,34 @@
 // apps/backend/src/routes/hr/hrRouter.ts
 
 import { Router, Request, Response } from "express";
+import { z } from "zod";
+import {
+  BadRequestError,
+  NotFoundError,
+  ValidationError,
+} from "../../types/errors.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import pino from "pino";
 
 const router = Router();
+const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+
+// Validation schemas
+const employeeQuerySchema = z.object({
+  department: z.string().optional(),
+  status: z.enum(["active", "on_leave", "terminated"]).optional(),
+  search: z.string().optional(),
+});
+
+const createEmployeeSchema = z.object({
+  firstName: z.string().min(1).max(100),
+  lastName: z.string().min(1).max(100),
+  email: z.string().email(),
+  department: z.string().min(1),
+  position: z.string().min(1),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  employeeNumber: z.string().optional(),
+});
 
 /**
  * HR Module Router
@@ -18,9 +44,19 @@ const router = Router();
  * GET /api/hr/employees
  * Get all employees with optional filters
  */
-router.get("/employees", async (req: Request, res: Response) => {
-  try {
-    const { department, status, search } = req.query;
+router.get(
+  "/employees",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Validate query parameters
+    const validationResult = employeeQuerySchema.safeParse(req.query);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid query parameters",
+        validationResult.error.issues,
+      );
+    }
+
+    const { department, status, search } = validationResult.data;
 
     // TODO: Replace with actual database query
     const mockEmployees = [
@@ -86,14 +122,8 @@ router.get("/employees", async (req: Request, res: Response) => {
       data: filteredEmployees,
       count: filteredEmployees.length,
     });
-  } catch (error) {
-    console.error("[HR] Error fetching employees:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch employees",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/hr/employees/:id
