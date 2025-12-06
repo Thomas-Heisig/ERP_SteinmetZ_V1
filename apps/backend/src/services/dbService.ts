@@ -872,9 +872,14 @@ class PostgresApi implements SqlApi {
       const r = await client.query(sql, params);
       const duration = Date.now() - startTime;
 
-      if (process.env.NODE_ENV === "development" && duration > 100) {
+      if (duration > 100) {
+        const queryType = sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
         logger.warn(
-          { duration, sql: sql.substring(0, 100) },
+          { 
+            duration, 
+            queryType,
+            ...(process.env.NODE_ENV === "development" ? { sqlPreview: sql.substring(0, 60) } : {})
+          },
           "Slow database query detected",
         );
       }
@@ -892,9 +897,14 @@ class PostgresApi implements SqlApi {
       const r = await client.query(sql, params);
       const duration = Date.now() - startTime;
 
-      if (process.env.NODE_ENV === "development" && duration > 100) {
+      if (duration > 100) {
+        const queryType = sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
         logger.warn(
-          { duration, sql: sql.substring(0, 100) },
+          { 
+            duration, 
+            queryType,
+            ...(process.env.NODE_ENV === "development" ? { sqlPreview: sql.substring(0, 60) } : {})
+          },
           "Slow database query detected",
         );
       }
@@ -912,9 +922,14 @@ class PostgresApi implements SqlApi {
       const r = await client.query(sql, params);
       const duration = Date.now() - startTime;
 
-      if (process.env.NODE_ENV === "development" && duration > 100) {
+      if (duration > 100) {
+        const queryType = sql.trim().split(/\s+/)[0]?.toUpperCase() || "UNKNOWN";
         logger.warn(
-          { duration, sql: sql.substring(0, 100) },
+          { 
+            duration, 
+            queryType,
+            ...(process.env.NODE_ENV === "development" ? { sqlPreview: sql.substring(0, 60) } : {})
+          },
           "Slow database query detected",
         );
       }
