@@ -49,7 +49,7 @@ export class FilterService {
   private filters: Map<string, SavedFilter> = new Map();
 
   createFilter(
-    filter: Omit<SavedFilter, "id" | "createdAt" | "updatedAt" | "usageCount">
+    filter: Omit<SavedFilter, "id" | "createdAt" | "updatedAt" | "usageCount">,
   ): SavedFilter {
     const id = `filter_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     const now = new Date().toISOString();
@@ -72,31 +72,31 @@ export class FilterService {
 
   getFilters(filterType?: string, includePublicOnly = false): SavedFilter[] {
     let results = Array.from(this.filters.values());
-    
+
     if (filterType) {
-      results = results.filter(f => f.filterType === filterType);
+      results = results.filter((f) => f.filterType === filterType);
     }
-    
+
     if (includePublicOnly) {
-      results = results.filter(f => f.isPublic);
+      results = results.filter((f) => f.isPublic);
     }
-    
+
     return results.sort((a, b) => b.usageCount - a.usageCount);
   }
 
   getPresets(filterType?: string): SavedFilter[] {
-    let results = Array.from(this.filters.values()).filter(f => f.isPreset);
-    
+    let results = Array.from(this.filters.values()).filter((f) => f.isPreset);
+
     if (filterType) {
-      results = results.filter(f => f.filterType === filterType);
+      results = results.filter((f) => f.filterType === filterType);
     }
-    
+
     return results;
   }
 
   updateFilter(
     id: string,
-    updates: Partial<Omit<SavedFilter, "id" | "createdAt" | "usageCount">>
+    updates: Partial<Omit<SavedFilter, "id" | "createdAt" | "usageCount">>,
   ): SavedFilter | null {
     const existing = this.filters.get(id);
     if (!existing) return null;
@@ -131,22 +131,23 @@ export class FilterService {
 
     if (filterConfig.query) {
       const query = filterConfig.query.toLowerCase();
-      filtered = filtered.filter(node => 
-        node.title?.toLowerCase().includes(query) ||
-        node.id?.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (node) =>
+          node.title?.toLowerCase().includes(query) ||
+          node.id?.toLowerCase().includes(query),
       );
     }
 
     if (filterConfig.kinds && filterConfig.kinds.length > 0) {
-      filtered = filtered.filter(node => 
-        filterConfig.kinds!.includes(node.kind)
+      filtered = filtered.filter((node) =>
+        filterConfig.kinds!.includes(node.kind),
       );
     }
 
     if (filterConfig.tags && filterConfig.tags.length > 0) {
-      filtered = filtered.filter(node => {
+      filtered = filtered.filter((node) => {
         const nodeTags = node.meta_json?.tags || [];
-        return filterConfig.tags!.some(tag => nodeTags.includes(tag));
+        return filterConfig.tags!.some((tag) => nodeTags.includes(tag));
       });
     }
 
@@ -155,7 +156,7 @@ export class FilterService {
 
   async exportFilteredResults(
     nodes: any[],
-    format: "json" | "csv" | "excel" = "json"
+    format: "json" | "csv" | "excel" = "json",
   ): Promise<string | Buffer> {
     if (format === "json") {
       return JSON.stringify(nodes, null, 2);
@@ -164,8 +165,8 @@ export class FilterService {
     if (format === "csv") {
       if (nodes.length === 0) return "";
       const keys = Object.keys(nodes[0]);
-      const rows = nodes.map(node => 
-        keys.map(key => JSON.stringify(node[key] || "")).join(",")
+      const rows = nodes.map((node) =>
+        keys.map((key) => JSON.stringify(node[key] || "")).join(","),
       );
       return [keys.join(","), ...rows].join("\n");
     }

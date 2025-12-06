@@ -119,13 +119,13 @@ export class BatchProcessingService {
   updateBatchProgress(
     id: string,
     progress: number,
-    status?: BatchOperation["status"]
+    status?: BatchOperation["status"],
   ): void {
     const batch = this.batches.get(id);
     if (!batch) return;
 
     batch.progress = progress;
-    
+
     if (status) {
       batch.status = status;
 
@@ -133,7 +133,11 @@ export class BatchProcessingService {
         batch.started_at = new Date().toISOString();
       }
 
-      if (status === "completed" || status === "failed" || status === "cancelled") {
+      if (
+        status === "completed" ||
+        status === "failed" ||
+        status === "cancelled"
+      ) {
         batch.completed_at = new Date().toISOString();
       }
     }
@@ -156,10 +160,10 @@ export class BatchProcessingService {
     error?: string,
     retries = 0,
     durationMs?: number,
-    qualityScore?: number
+    qualityScore?: number,
   ): void {
     const results = this.results.get(batchId) || [];
-    
+
     results.push({
       nodeId,
       success,
@@ -178,26 +182,26 @@ export class BatchProcessingService {
     let batches = Array.from(this.batches.values());
 
     if (filter.operation) {
-      batches = batches.filter(b => b.operation === filter.operation);
+      batches = batches.filter((b) => b.operation === filter.operation);
     }
 
     if (filter.status) {
-      batches = batches.filter(b => b.status === filter.status);
+      batches = batches.filter((b) => b.status === filter.status);
     }
 
     if (filter.createdAfter) {
-      batches = batches.filter(b => b.created_at >= filter.createdAfter!);
+      batches = batches.filter((b) => b.created_at >= filter.createdAfter!);
     }
 
     if (filter.createdBefore) {
-      batches = batches.filter(b => b.created_at <= filter.createdBefore!);
+      batches = batches.filter((b) => b.created_at <= filter.createdBefore!);
     }
 
     batches.sort((a, b) => b.created_at.localeCompare(a.created_at));
 
     const limit = filter.limit || 50;
     const offset = filter.offset || 0;
-    
+
     return batches.slice(offset, offset + limit);
   }
 
@@ -206,8 +210,8 @@ export class BatchProcessingService {
     if (!batch) return null;
 
     const results = this.results.get(batchId) || [];
-    const successful = results.filter(r => r.success).length;
-    const failed = results.filter(r => !r.success).length;
+    const successful = results.filter((r) => r.success).length;
+    const failed = results.filter((r) => !r.success).length;
 
     return {
       batchId,
@@ -248,7 +252,9 @@ export class BatchProcessingService {
   }
 
   cleanupOldBatches(daysToKeep = 30): number {
-    const cutoffDate = new Date(Date.now() - daysToKeep * 24 * 60 * 60 * 1000).toISOString();
+    const cutoffDate = new Date(
+      Date.now() - daysToKeep * 24 * 60 * 60 * 1000,
+    ).toISOString();
     let deleted = 0;
 
     for (const [id, batch] of this.batches.entries()) {

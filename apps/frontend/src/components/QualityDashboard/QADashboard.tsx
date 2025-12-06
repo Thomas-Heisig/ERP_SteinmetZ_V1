@@ -40,7 +40,9 @@ export const QADashboard: React.FC<QADashboardProps> = ({
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${apiBaseUrl}/api/ai-annotator/qa/dashboard`);
+      const response = await fetch(
+        `${apiBaseUrl}/api/ai-annotator/qa/dashboard`,
+      );
       const data = await response.json();
 
       if (data.success) {
@@ -130,7 +132,9 @@ export const QADashboard: React.FC<QADashboardProps> = ({
                   </span>
                 </div>
                 <div style={styles.tableCell}>
-                  {review.qualityScore ? `${review.qualityScore.toFixed(1)}%` : "-"}
+                  {review.qualityScore
+                    ? `${review.qualityScore.toFixed(1)}%`
+                    : "-"}
                 </div>
                 <div style={styles.tableCell}>
                   {new Date(review.createdAt).toLocaleDateString()}

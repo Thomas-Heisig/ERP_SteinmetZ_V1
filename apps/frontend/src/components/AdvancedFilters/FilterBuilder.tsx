@@ -68,7 +68,10 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
           multiple
           value={filter.kinds || []}
           onChange={(e) => {
-            const selected = Array.from(e.target.selectedOptions, (o) => o.value);
+            const selected = Array.from(
+              e.target.selectedOptions,
+              (o) => o.value,
+            );
             updateFilter("kinds", selected);
           }}
           style={{ ...styles.input, height: "100px" }}
@@ -90,7 +93,10 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
           multiple
           value={filter.annotationStatus || []}
           onChange={(e) => {
-            const selected = Array.from(e.target.selectedOptions, (o) => o.value);
+            const selected = Array.from(
+              e.target.selectedOptions,
+              (o) => o.value,
+            );
             updateFilter("annotationStatus", selected);
           }}
           style={{ ...styles.input, height: "80px" }}
@@ -145,7 +151,9 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
         <div style={styles.rangeContainer}>
           <select
             value={filter.sortBy || ""}
-            onChange={(e) => updateFilter("sortBy", e.target.value || undefined)}
+            onChange={(e) =>
+              updateFilter("sortBy", e.target.value || undefined)
+            }
             style={{ ...styles.input, flex: 1 }}
           >
             <option value="">-- No sorting --</option>
@@ -156,7 +164,9 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
           </select>
           <select
             value={filter.sortOrder || "asc"}
-            onChange={(e) => updateFilter("sortOrder", e.target.value as "asc" | "desc")}
+            onChange={(e) =>
+              updateFilter("sortOrder", e.target.value as "asc" | "desc")
+            }
             style={{ ...styles.input, width: "120px", marginLeft: "10px" }}
             disabled={!filter.sortBy}
           >
@@ -168,7 +178,10 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
 
       {/* Actions */}
       <div style={styles.actions}>
-        <button onClick={handleApply} style={{ ...styles.button, ...styles.primaryButton }}>
+        <button
+          onClick={handleApply}
+          style={{ ...styles.button, ...styles.primaryButton }}
+        >
           Apply Filter
         </button>
         {onSave && (
@@ -201,7 +214,10 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
               autoFocus
             />
             <div style={styles.modalActions}>
-              <button onClick={handleSave} style={{ ...styles.button, ...styles.primaryButton }}>
+              <button
+                onClick={handleSave}
+                style={{ ...styles.button, ...styles.primaryButton }}
+              >
                 Save
               </button>
               <button

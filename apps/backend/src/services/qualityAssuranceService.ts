@@ -81,21 +81,21 @@ export class QualityAssuranceService {
 
   getReviewsByNode(nodeId: string): QAReview[] {
     return Array.from(this.reviews.values())
-      .filter(r => r.nodeId === nodeId)
+      .filter((r) => r.nodeId === nodeId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 
   getReviewsByStatus(status: string, limit = 50, offset = 0): QAReview[] {
     const filtered = Array.from(this.reviews.values())
-      .filter(r => r.reviewStatus === status)
+      .filter((r) => r.reviewStatus === status)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-    
+
     return filtered.slice(offset, offset + limit);
   }
 
   updateReview(
     id: string,
-    updates: Partial<Omit<QAReview, "id" | "nodeId" | "createdAt">>
+    updates: Partial<Omit<QAReview, "id" | "nodeId" | "createdAt">>,
   ): QAReview | null {
     const existing = this.reviews.get(id);
     if (!existing) return null;
@@ -108,7 +108,10 @@ export class QualityAssuranceService {
       createdAt: existing.createdAt,
     };
 
-    if (existing.reviewStatus === "pending" && updates.reviewStatus !== "pending") {
+    if (
+      existing.reviewStatus === "pending" &&
+      updates.reviewStatus !== "pending"
+    ) {
       updated.reviewedAt = new Date().toISOString();
     }
 
@@ -138,17 +141,18 @@ export class QualityAssuranceService {
     const schemaQuality = {
       hasSchema,
       fieldCount: schema.fields?.length || 0,
-      requiredFields: schema.fields?.filter((f: any) => f.required)?.length || 0,
-      validationRules: schema.fields?.filter((f: any) => f.validation)?.length || 0,
+      requiredFields:
+        schema.fields?.filter((f: any) => f.required)?.length || 0,
+      validationRules:
+        schema.fields?.filter((f: any) => f.validation)?.length || 0,
     };
 
-    const completeness = (
+    const completeness =
       (hasDescription ? 0.3 : 0) +
       (tagCount > 0 ? 0.2 : 0) +
       (hasBusinessArea ? 0.2 : 0) +
       (hasPiiClass ? 0.15 : 0) +
-      (hasSchema ? 0.15 : 0)
-    );
+      (hasSchema ? 0.15 : 0);
 
     return {
       completeness,
@@ -163,13 +167,16 @@ export class QualityAssuranceService {
 
   getDashboardData(): QualityDashboardData {
     const allReviews = Array.from(this.reviews.values());
-    
+
     return {
       summary: {
         totalReviews: allReviews.length,
-        pendingReviews: allReviews.filter(r => r.reviewStatus === "pending").length,
-        approvedReviews: allReviews.filter(r => r.reviewStatus === "approved").length,
-        rejectedReviews: allReviews.filter(r => r.reviewStatus === "rejected").length,
+        pendingReviews: allReviews.filter((r) => r.reviewStatus === "pending")
+          .length,
+        approvedReviews: allReviews.filter((r) => r.reviewStatus === "approved")
+          .length,
+        rejectedReviews: allReviews.filter((r) => r.reviewStatus === "rejected")
+          .length,
         averageQualityScore: 0,
         averageReviewTime: 0,
       },
@@ -183,10 +190,12 @@ export class QualityAssuranceService {
     metricType: string,
     metricValue: number,
     nodeCount: number,
-    batchId?: string
+    batchId?: string,
   ): void {
     // Stub implementation
-    console.log(`Recording metric: ${metricType} = ${metricValue} (${nodeCount} nodes)`);
+    console.log(
+      `Recording metric: ${metricType} = ${metricValue} (${nodeCount} nodes)`,
+    );
   }
 
   getQualityTrends(metricType?: string, days = 30): QualityTrend[] {
