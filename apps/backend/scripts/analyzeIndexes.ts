@@ -224,29 +224,31 @@ class IndexAnalyzer {
  * Main execution
  */
 function main() {
-  const dbPath = process.env.SQLITE_FILE || join(__dirname, "../../../data/dev.sqlite3");
+  const dbPath =
+    process.env.SQLITE_FILE || join(__dirname, "../../../data/dev.sqlite3");
 
   console.log("🔍 Database Index Analyzer\n");
   console.log(`Database: ${dbPath}\n`);
 
-  // Check if database file exists
+  // Try to open database with proper error handling
+  let analyzer: IndexAnalyzer;
   try {
-    const fs = await import("fs");
-    if (!fs.existsSync(dbPath)) {
+    analyzer = new IndexAnalyzer(dbPath);
+  } catch (error: any) {
+    if (error.code === "SQLITE_CANTOPEN") {
       console.error("❌ Database file not found!");
       console.error(`   Expected location: ${dbPath}`);
       console.error("\n💡 To use this tool:");
       console.error("   1. Ensure the database exists");
       console.error("   2. Run migrations: npm run migrate");
-      console.error("   3. Or set SQLITE_FILE env variable to point to your database");
+      console.error(
+        "   3. Or set SQLITE_FILE env variable to point to your database",
+      );
       process.exit(1);
     }
-  } catch (error) {
-    console.error("❌ Error checking database file:", error);
+    console.error("❌ Error opening database:", error.message || error);
     process.exit(1);
   }
-
-  const analyzer = new IndexAnalyzer(dbPath);
 
   try {
     // Get statistics
@@ -341,7 +343,10 @@ function main() {
 
 // Run if called directly
 import { fileURLToPath } from "url";
-if (import.meta.url === `file://${process.argv[1]}` || fileURLToPath(import.meta.url) === process.argv[1]) {
+if (
+  import.meta.url === `file://${process.argv[1]}` ||
+  fileURLToPath(import.meta.url) === process.argv[1]
+) {
   main();
 }
 

@@ -17,6 +17,7 @@
     "start:frontend": "npm run start -w @erp-steinmetz/frontend",
     "start:backend": "npm run start -w @erp-steinmetz/backend",
     "test": "npm run test:backend && npm run test:frontend",
+    "test:parallel": "run-p test:backend test:frontend",
     "test:ui": "vitest --ui",
     "test:coverage": "npm run test:backend -- --coverage && npm run test:frontend -- --coverage",
     "test:backend": "npm run test -w @erp-steinmetz/backend",

@@ -170,19 +170,20 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 3-4 Tage
   - **Ergebnis**: In-Memory Response-Caching mit TTL, Cache-Invalidierung, X-Cache Header, Redis Session Store
 
-- [x] **Database Query-Optimierung** ✅ ERLEDIGT (2024-12-05)
+- [x] **Database Query-Optimierung** ✅ ERLEDIGT (2024-12-05, erweitert 2025-12-06)
   - [x] Slow-Query-Logging aktivieren (queryMonitor mit konfigurierbarem Threshold)
   - [x] Query-Performance-Monitoring (QueryMetrics-Tracking, Stats-Endpoint)
+  - [x] Index-Analyzer-Tool erstellt (analyzeIndexes.ts - 2025-12-06)
   - [x] Dokumentation erstellt (DATABASE_OPTIMIZATION.md - 2025-12-06)
     - [x] Index-Optimierungsstrategien
     - [x] N+1-Query-Lösungsansätze
     - [x] Caching-Strategien
     - [x] Connection-Pooling
     - [x] Best Practices
-  - [ ] Indizes analysieren und optimieren (manuell nach Query-Monitoring)
+  - [ ] Indizes analysieren und optimieren (Tool verfügbar: npm run analyze:indexes)
   - [ ] N+1-Queries vermeiden (Code-Review basierend auf Monitoring)
   - **Aufwand**: 2-3 Tage
-  - **Ergebnis**: QueryMonitor-Service mit Slow-Query-Detection, Performance-Tracking, Stats-API und umfassender Dokumentation
+  - **Ergebnis**: QueryMonitor-Service, Index-Analyzer-Tool, umfassende Dokumentation mit praktischen Beispielen
 
 ### Features - WebSocket Integration
 
@@ -269,12 +270,13 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - [ ] Dev-Tools-Extension
   - **Aufwand**: 2-3 Tage
 
-- [ ] **Code Quality Tools**
-  - [ ] Pre-commit Hooks (Husky)
-  - [ ] Conventional Commits enforcing
-  - [ ] Code-Coverage-Reports
+- [x] **Code Quality Tools** ✅ TEILWEISE ERLEDIGT (2025-12-06)
+  - [x] Pre-commit Hooks (Husky) - Format Hook aktiv
+  - [x] Conventional Commits enforcing - commitlint konfiguriert
+  - [x] Umfassende Dokumentation (COMMIT_CONVENTIONS.md, SCRIPTS.md)
+  - [ ] Code-Coverage-Reports (bereits vorhanden)
   - [ ] SonarQube Integration
-  - **Aufwand**: 1-2 Tage
+  - **Aufwand**: 1-2 Tage → 4 Stunden erledigt, 1 Tag verbleibend für SonarQube
 
 ### UI/UX Enhancements
 
