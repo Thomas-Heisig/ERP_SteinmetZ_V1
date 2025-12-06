@@ -15,7 +15,9 @@ import "./components/i18n/i18n";
 // Themes & Styles
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import "./styles/theme/variables.css";
 import "./styles/base.css";
+import "./styles/components.css";
 import "./styles/light.css";
 import "./styles/dark.css";
 import "./styles/lcars.css";
