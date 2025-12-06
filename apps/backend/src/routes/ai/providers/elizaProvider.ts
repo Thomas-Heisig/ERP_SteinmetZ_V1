@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createLogger } from "../../../utils/logger.js";
 import type {
   ChatMessage,
   AIResponse,
@@ -21,6 +22,8 @@ import type {
 import { toolRegistry } from "../tools/registry.js";
 import { workflowEngine } from "../workflows/workflowEngine.js";
 import { ConversationContext } from "../context/conversationContext.js";
+
+const logger = createLogger("eliza");
 
 /* ========================================================================== */
 /* 🧱 Hilfsfunktionen - VERBESSERT */
@@ -102,7 +105,7 @@ function loadElizaConfig(): ElizaConfig {
   };
 
   try {
-    console.log("📦 [ELIZA] Starte Konfigurationsladen...");
+    logger.info("Starting configuration loading...");
 
     const combined: ElizaConfig = {
       pools: { ...defaultConfig.pools },
@@ -115,7 +118,7 @@ function loadElizaConfig(): ElizaConfig {
 
     // 1) Multi-File-Directory laden (DATA_DIR)
     if (fs.existsSync(DATA_DIR)) {
-      console.log(`✅ [ELIZA] Verzeichnis gefunden: ${DATA_DIR}`);
+      logger.info({ directory: DATA_DIR }, "Configuration directory found");
 
       const files = fs
         .readdirSync(DATA_DIR)
@@ -126,11 +129,11 @@ function loadElizaConfig(): ElizaConfig {
           return numA - numB;
         });
 
-      console.log(`📚 [ELIZA] Gefundene JSON-Dateien: ${files.length}`);
+      logger.info({ count: files.length }, "Found JSON configuration files");
 
       for (const file of files) {
         const fullPath = path.join(DATA_DIR, file);
-        console.log(`🧾 [ELIZA] Lade Datei: ${file}`);
+        logger.debug({ file }, "Loading configuration file");
 
         try {
           const raw = fs.readFileSync(fullPath, "utf8");
@@ -139,8 +142,9 @@ function loadElizaConfig(): ElizaConfig {
           if (validateConfigPart(part, file)) {
             if (part.pools && typeof part.pools === "object") {
               Object.assign(combined.pools, part.pools);
-              console.log(
-                `  ➕ Pools hinzugefügt: ${Object.keys(part.pools).length}`,
+              logger.debug(
+                { poolsAdded: Object.keys(part.pools).length },
+                "Pools added from configuration",
               );
             }
             if (part.eliza_rules && Array.isArray(part.eliza_rules)) {
@@ -148,14 +152,16 @@ function loadElizaConfig(): ElizaConfig {
                 (r) => r?.pattern && Array.isArray(r?.replies),
               );
               combined.eliza_rules.push(...validRules);
-              console.log(
-                `  ➕ Regeln hinzugefügt: ${validRules.length}/${part.eliza_rules.length}`,
+              logger.debug(
+                { validRules: validRules.length, totalRules: part.eliza_rules.length },
+                "Rules added from configuration",
               );
             }
             if (part.reflections && typeof part.reflections === "object") {
               Object.assign(combined.reflections, part.reflections);
-              console.log(
-                `  ➕ Reflexionen hinzugefügt: ${Object.keys(part.reflections).length}`,
+              logger.debug(
+                { reflectionsAdded: Object.keys(part.reflections).length },
+                "Reflections added from configuration",
               );
             }
             if (part.metadata && typeof part.metadata === "object") {
@@ -165,8 +171,9 @@ function loadElizaConfig(): ElizaConfig {
             configFound = true;
           }
         } catch (err: any) {
-          console.warn(
-            `⚠️ [ELIZA] Fehler beim Lesen/Parsen von ${file}: ${err.message}`,
+          logger.warn(
+            { file, error: err.message },
+            "Failed to read/parse configuration file",
           );
         }
       }
@@ -178,8 +185,9 @@ function loadElizaConfig(): ElizaConfig {
 
     // 2) Fallback: context.json
     if (!configFound && fs.existsSync(CONFIG_PATH)) {
-      console.log(
-        `📘 [ELIZA] Fallback – context.json gefunden unter: ${CONFIG_PATH}`,
+      logger.info(
+        { path: CONFIG_PATH },
+        "Fallback - Loading context.json",
       );
       try {
         const raw = fs.readFileSync(CONFIG_PATH, "utf8");
@@ -201,13 +209,15 @@ function loadElizaConfig(): ElizaConfig {
 
           CONFIG_SOURCE = "json";
           configFound = true;
-          console.log(
-            `📄 [ELIZA] context.json geladen (${cfg.eliza_rules?.length ?? 0} Regeln)`,
+          logger.info(
+            { rules: cfg.eliza_rules?.length ?? 0 },
+            "context.json loaded",
           );
         }
       } catch (err: any) {
-        console.warn(
-          `⚠️ [ELIZA] Fehler beim Laden von context.json: ${err.message}`,
+        logger.warn(
+          { error: err.message },
+          "Failed to load context.json",
         );
       }
     }
@@ -217,23 +227,23 @@ function loadElizaConfig(): ElizaConfig {
     const totalReflections = Object.keys(combined.reflections).length;
     const totalPools = Object.keys(combined.pools).length;
 
-    console.log("📊 [ELIZA] Ladeergebnis:");
-    console.log(`  • Quelle: ${CONFIG_SOURCE}`);
-    console.log(`  • Regeln: ${totalRules}`);
-    console.log(`  • Reflexionen: ${totalReflections}`);
-    console.log(`  • Pools: ${totalPools}`);
+    logger.info({
+      source: CONFIG_SOURCE,
+      rules: totalRules,
+      reflections: totalReflections,
+      pools: totalPools,
+    }, "Configuration loading completed");
 
     if (!configFound) {
-      console.warn(
-        "⚠️ [ELIZA] Keine gültige Konfiguration gefunden – verwende Default-Konfiguration.",
-      );
+      logger.warn("No valid configuration found - using default configuration");
       return defaultConfig; // <- garantierter Rückgabepfad
     }
 
     return combined; // <- regulärer Rückgabepfad
   } catch (err: any) {
-    console.error(
-      `❌ [ELIZA] Kritischer Fehler beim Laden der Konfiguration: ${err.message}`,
+    logger.error(
+      { err },
+      "Critical error loading configuration",
     );
     return defaultConfig; // <- Fallback bei Exceptions
   }
@@ -242,27 +252,28 @@ function loadElizaConfig(): ElizaConfig {
 // Konfigurations-Validierung
 function validateConfigPart(part: any, filename: string): boolean {
   if (typeof part !== "object" || part === null) {
-    console.warn(
-      `⚠️ [ELIZA] Ungültige Konfiguration in ${filename}: Kein Objekt`,
+    logger.warn(
+      { filename },
+      "Invalid configuration: Not an object",
     );
     return false;
   }
 
   // Validiere Pools
   if (part.pools && typeof part.pools !== "object") {
-    console.warn(`⚠️ [ELIZA] Ungültige pools in ${filename}`);
+    logger.warn({ filename }, "Invalid pools in configuration");
     return false;
   }
 
   // Validiere Regeln
   if (part.eliza_rules && !Array.isArray(part.eliza_rules)) {
-    console.warn(`⚠️ [ELIZA] Ungültige eliza_rules in ${filename}: Kein Array`);
+    logger.warn({ filename }, "Invalid eliza_rules in configuration: Not an array");
     return false;
   }
 
   // Validiere Reflections
   if (part.reflections && typeof part.reflections !== "object") {
-    console.warn(`⚠️ [ELIZA] Ungültige reflections in ${filename}`);
+    logger.warn({ filename }, "Invalid reflections in configuration");
     return false;
   }
 
@@ -303,7 +314,7 @@ class ElizaEngine {
           !Array.isArray(rule.replies) ||
           rule.replies.length === 0
         ) {
-          console.warn(`⚠️ [ELIZA] Ungültige Regel ignoriert:`, rule.pattern);
+          logger.warn({ pattern: rule.pattern }, "Invalid rule ignored");
           return false;
         }
         return true;
@@ -317,9 +328,9 @@ class ElizaEngine {
             enabled: rule.enabled !== false,
           };
         } catch (err: any) {
-          console.warn(
-            `⚠️ [ELIZA] Fehler beim Kompilieren der Regel "${rule.pattern}":`,
-            err.message,
+          logger.warn(
+            { pattern: rule.pattern, error: err.message },
+            "Failed to compile rule",
           );
           return null;
         }
@@ -329,9 +340,7 @@ class ElizaEngine {
     // Sortiere nach Priorität (höhere zuerst)
     this.rules.sort((a, b) => b.priority - a.priority);
 
-    console.log(
-      `✅ [ELIZA] ${this.rules.length} Regeln kompiliert und sortiert`,
-    );
+    logger.info({ rulesCount: this.rules.length }, "Rules compiled and sorted");
   }
 
   /** Wendet Reflexionsregeln auf den Text an */
@@ -393,9 +402,9 @@ class ElizaEngine {
         const response = await this.generateResponse(rule, match, context);
         return response;
       } catch (err: any) {
-        console.warn(
-          `⚠️ [ELIZA] Fehler bei Regel-Auswertung "${rule.pattern}":`,
-          err.message,
+        logger.warn(
+          { pattern: rule.pattern, error: err.message },
+          "Error evaluating rule",
         );
       }
     }
@@ -546,9 +555,9 @@ class ElizaEngine {
 
       this.rules.push(compiledRule);
       this.rules.sort((a, b) => b.priority - a.priority);
-      console.log(`✅ [ELIZA] Neue Regel hinzugefügt: ${rule.pattern}`);
+      logger.info({ pattern: rule.pattern }, "New rule added");
     } catch (err: any) {
-      console.warn(`⚠️ [ELIZA] Fehler beim Hinzufügen der Regel:`, err.message);
+      logger.warn({ error: err.message }, "Failed to add rule");
     }
   }
 }
@@ -579,9 +588,7 @@ export class ElizaProvider {
       ...config,
     };
 
-    console.log(
-      `✅ [ELIZA] Provider initialisiert (Session: ${this.sessionId})`,
-    );
+    logger.info({ sessionId: this.sessionId }, "ELIZA provider initialized");
   }
 
   /** Hauptantwort-Handler mit erweiterter Funktionalität */
@@ -638,7 +645,7 @@ export class ElizaProvider {
       // 3️⃣ Kategorie-Fallback
       return this.createFallbackResponse();
     } catch (error: any) {
-      console.error(`❌ [ELIZA] Fehler in respond:`, error);
+      logger.error({ err: error }, "Error in respond method");
       return this.createErrorResponse(`Interner Fehler: ${error.message}`);
     }
   }
@@ -904,7 +911,7 @@ ${Object.entries(stats.rules_by_priority)
 
   updateConfig(newConfig: Partial<ElizaProviderConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    console.log(`✅ [ELIZA] Konfiguration aktualisiert`);
+    logger.info("Configuration updated");
   }
 
   getConfig(): ElizaProviderConfig {
@@ -916,9 +923,7 @@ ${Object.entries(stats.rules_by_priority)
     this.context.clear();
     this.sessionId = `eliza_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     this.startTime = new Date().toISOString();
-    console.log(
-      `✅ [ELIZA] Session zurückgesetzt (neue ID: ${this.sessionId})`,
-    );
+    logger.info({ sessionId: this.sessionId }, "Session reset");
   }
 }
 
