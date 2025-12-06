@@ -39,25 +39,25 @@ The WebSocket server provides real-time bidirectional communication between the 
 
 ```typescript
 // Dashboard Updates
-'dashboard:update'           // Dashboard data changed
-'dashboard:widget:update'    // Specific widget update
+"dashboard:update"; // Dashboard data changed
+"dashboard:widget:update"; // Specific widget update
 
 // Chat & Messaging
-'chat:message'              // New chat message
-'chat:typing'               // User typing indicator
+"chat:message"; // New chat message
+"chat:typing"; // User typing indicator
 
 // System Events
-'system:notification'       // System-wide notification
-'system:maintenance'        // Maintenance mode toggle
+"system:notification"; // System-wide notification
+"system:maintenance"; // Maintenance mode toggle
 
 // Batch Processing
-'batch:progress'            // Batch processing progress
-'batch:complete'            // Batch processing complete
-'batch:error'               // Batch processing error
+"batch:progress"; // Batch processing progress
+"batch:complete"; // Batch processing complete
+"batch:error"; // Batch processing error
 
 // Function Catalog
-'catalog:update'            // Function catalog updated
-'catalog:reload'            // Catalog reload required
+"catalog:update"; // Function catalog updated
+"catalog:reload"; // Catalog reload required
 ```
 
 ### Connection Setup
@@ -65,32 +65,32 @@ The WebSocket server provides real-time bidirectional communication between the 
 **Backend Initialization**:
 
 ```typescript
-import { initWebSocketServer } from './services/websocketService.js';
+import { initWebSocketServer } from "./services/websocketService.js";
 
 const server = createServer(app);
 const io = initWebSocketServer(server);
 
 server.listen(3000, () => {
-  console.log('Server with WebSocket running on port 3000');
+  console.log("Server with WebSocket running on port 3000");
 });
 ```
 
 **Client Connection**:
 
 ```typescript
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 
-const socket = io('http://localhost:3000', {
+const socket = io("http://localhost:3000", {
   auth: {
-    token: 'your-jwt-token'
-  }
+    token: "your-jwt-token",
+  },
 });
 
-socket.on('connect', () => {
-  console.log('Connected to WebSocket server');
+socket.on("connect", () => {
+  console.log("Connected to WebSocket server");
 });
 
-socket.on('dashboard:update', (data) => {
+socket.on("dashboard:update", (data) => {
   // Handle dashboard update
   updateDashboard(data);
 });
@@ -105,9 +105,9 @@ WebSocket connections are authenticated using JWT tokens:
 io.use(async (socket, next) => {
   const token = socket.handshake.auth.token;
   if (!token) {
-    return next(new Error('Authentication required'));
+    return next(new Error("Authentication required"));
   }
-  
+
   // Verify JWT token
   const user = await verifyToken(token);
   socket.data.user = user;
@@ -121,13 +121,13 @@ Rooms allow targeted broadcasting to specific user groups:
 
 ```typescript
 // Join a room
-socket.join('dashboard-room');
+socket.join("dashboard-room");
 
 // Broadcast to room
-io.to('dashboard-room').emit('dashboard:update', data);
+io.to("dashboard-room").emit("dashboard:update", data);
 
 // Leave room
-socket.leave('dashboard-room');
+socket.leave("dashboard-room");
 ```
 
 ### API Endpoints
@@ -158,14 +158,14 @@ GET /api/ws/stats
 ### Error Handling
 
 ```typescript
-socket.on('error', (error) => {
-  console.error('WebSocket error:', error);
+socket.on("error", (error) => {
+  console.error("WebSocket error:", error);
   // Implement reconnection logic
 });
 
-socket.on('disconnect', (reason) => {
-  console.log('Disconnected:', reason);
-  if (reason === 'io server disconnect') {
+socket.on("disconnect", (reason) => {
+  console.log("Disconnected:", reason);
+  if (reason === "io server disconnect") {
     // Server initiated disconnect, attempt reconnection
     socket.connect();
   }
@@ -205,10 +205,10 @@ In-memory response caching with configurable TTL (Time To Live) to reduce databa
 #### Enable Caching for Endpoint
 
 ```typescript
-import { cacheMiddleware } from '../middleware/cacheMiddleware.js';
+import { cacheMiddleware } from "../middleware/cacheMiddleware.js";
 
 // Cache for 10 minutes (600 seconds)
-router.get('/functions', cacheMiddleware(600), async (req, res) => {
+router.get("/functions", cacheMiddleware(600), async (req, res) => {
   const functions = await getFunctions();
   res.json({ success: true, data: functions });
 });
@@ -217,13 +217,17 @@ router.get('/functions', cacheMiddleware(600), async (req, res) => {
 #### Cache Invalidation
 
 ```typescript
-import { invalidateCacheMiddleware } from '../middleware/cacheMiddleware.js';
+import { invalidateCacheMiddleware } from "../middleware/cacheMiddleware.js";
 
 // Automatically invalidate cache after POST/PUT/DELETE
-router.post('/functions', invalidateCacheMiddleware('/api/functions'), async (req, res) => {
-  const newFunction = await createFunction(req.body);
-  res.json({ success: true, data: newFunction });
-});
+router.post(
+  "/functions",
+  invalidateCacheMiddleware("/api/functions"),
+  async (req, res) => {
+    const newFunction = await createFunction(req.body);
+    res.json({ success: true, data: newFunction });
+  },
+);
 ```
 
 ### Configuration
@@ -231,16 +235,17 @@ router.post('/functions', invalidateCacheMiddleware('/api/functions'), async (re
 ```typescript
 // Default cache options
 const defaultOptions = {
-  ttl: 300,        // 5 minutes
-  prefix: 'cache:', // Cache key prefix
+  ttl: 300, // 5 minutes
+  prefix: "cache:", // Cache key prefix
   serialize: JSON.stringify,
-  deserialize: JSON.parse
+  deserialize: JSON.parse,
 };
 ```
 
 ### Cache Key Generation
 
 Cache keys are generated based on:
+
 - Request URL
 - Query parameters (sorted for consistency)
 - Optional custom key function
@@ -250,8 +255,8 @@ function generateCacheKey(req: Request): string {
   const { path, query } = req;
   const sortedQuery = Object.keys(query)
     .sort()
-    .map(key => `${key}=${query[key]}`)
-    .join('&');
+    .map((key) => `${key}=${query[key]}`)
+    .join("&");
   return `${path}?${sortedQuery}`;
 }
 ```
@@ -272,12 +277,12 @@ X-Cache: MISS
 
 ### Current Cached Endpoints
 
-| Endpoint | TTL | Purpose |
-|----------|-----|---------|
-| GET /api/functions | 15 min | Function catalog index |
-| GET /api/functions/rules | 10 min | Function rules |
-| GET /api/functions/nodes/:id | 5 min | Individual function nodes |
-| GET /api/dashboard/overview | 5 min | Dashboard statistics |
+| Endpoint                     | TTL    | Purpose                   |
+| ---------------------------- | ------ | ------------------------- |
+| GET /api/functions           | 15 min | Function catalog index    |
+| GET /api/functions/rules     | 10 min | Function rules            |
+| GET /api/functions/nodes/:id | 5 min  | Individual function nodes |
+| GET /api/dashboard/overview  | 5 min  | Dashboard statistics      |
 
 ### Best Practices
 
@@ -320,15 +325,12 @@ Real-time database query performance monitoring with slow query detection and st
 #### Wrap Database Queries
 
 ```typescript
-import { queryMonitor } from '../services/queryMonitor.js';
+import { queryMonitor } from "../services/queryMonitor.js";
 
 async function getUserById(id: string) {
-  return queryMonitor.track(
-    'getUserById',
-    async () => {
-      return db.query('SELECT * FROM users WHERE id = ?', [id]);
-    }
-  );
+  return queryMonitor.track("getUserById", async () => {
+    return db.query("SELECT * FROM users WHERE id = ?", [id]);
+  });
 }
 ```
 
@@ -336,7 +338,7 @@ async function getUserById(id: string) {
 
 ```typescript
 // In environment configuration
-SLOW_QUERY_THRESHOLD_MS=100  // Log queries taking > 100ms
+SLOW_QUERY_THRESHOLD_MS = 100; // Log queries taking > 100ms
 ```
 
 ### Monitoring Endpoints
@@ -426,10 +428,10 @@ Slow queries automatically log warnings:
 ```typescript
 if (executionTime > SLOW_QUERY_THRESHOLD) {
   logger.warn({
-    msg: 'Slow query detected',
+    msg: "Slow query detected",
     queryName,
     executionTime,
-    threshold: SLOW_QUERY_THRESHOLD
+    threshold: SLOW_QUERY_THRESHOLD,
   });
 }
 ```
@@ -473,34 +475,41 @@ CREATE INDEX idx_transactions_account_date ON transactions(account_id, date);
 
 ```typescript
 // Backend: app.ts
-import express from 'express';
-import { createServer } from 'http';
-import { initWebSocketServer } from './services/websocketService.js';
-import { cacheMiddleware, invalidateCacheMiddleware } from './middleware/cacheMiddleware.js';
-import { queryMonitor } from './services/queryMonitor.js';
+import express from "express";
+import { createServer } from "http";
+import { initWebSocketServer } from "./services/websocketService.js";
+import {
+  cacheMiddleware,
+  invalidateCacheMiddleware,
+} from "./middleware/cacheMiddleware.js";
+import { queryMonitor } from "./services/queryMonitor.js";
 
 const app = express();
 const server = createServer(app);
 const io = initWebSocketServer(server);
 
 // Enable caching for read-heavy endpoint
-app.get('/api/dashboard', cacheMiddleware(300), async (req, res) => {
-  const stats = await queryMonitor.track('getDashboardStats', async () => {
+app.get("/api/dashboard", cacheMiddleware(300), async (req, res) => {
+  const stats = await queryMonitor.track("getDashboardStats", async () => {
     return getDashboardStats();
   });
-  
+
   res.json({ success: true, data: stats });
 });
 
 // Invalidate cache and broadcast update via WebSocket
-app.post('/api/functions', invalidateCacheMiddleware('/api/functions'), async (req, res) => {
-  const newFunction = await createFunction(req.body);
-  
-  // Broadcast update to all connected clients
-  io.emit('catalog:update', { function: newFunction });
-  
-  res.json({ success: true, data: newFunction });
-});
+app.post(
+  "/api/functions",
+  invalidateCacheMiddleware("/api/functions"),
+  async (req, res) => {
+    const newFunction = await createFunction(req.body);
+
+    // Broadcast update to all connected clients
+    io.emit("catalog:update", { function: newFunction });
+
+    res.json({ success: true, data: newFunction });
+  },
+);
 
 server.listen(3000);
 ```
@@ -514,25 +523,25 @@ import { io } from 'socket.io-client';
 
 function Dashboard() {
   const [stats, setStats] = useState(null);
-  
+
   useEffect(() => {
     // Initial load (may hit cache)
     fetch('/api/dashboard')
       .then(res => res.json())
       .then(data => setStats(data));
-    
+
     // Connect to WebSocket for real-time updates
     const socket = io('http://localhost:3000', {
       auth: { token: localStorage.getItem('token') }
     });
-    
+
     socket.on('dashboard:update', (data) => {
       setStats(data);
     });
-    
+
     return () => socket.disconnect();
   }, []);
-  
+
   return (
     <div>
       <h1>Dashboard</h1>
@@ -568,6 +577,7 @@ function Dashboard() {
 **Problem**: Client cannot connect to WebSocket server
 
 **Solution**:
+
 1. Verify CORS configuration
 2. Check JWT token validity
 3. Ensure Socket.IO client version matches server
@@ -578,6 +588,7 @@ function Dashboard() {
 **Problem**: Stale data served from cache
 
 **Solution**:
+
 1. Verify cache invalidation on data mutations
 2. Reduce TTL for frequently changing data
 3. Implement cache warming on startup
@@ -588,6 +599,7 @@ function Dashboard() {
 **Problem**: Slow queries not being logged
 
 **Solution**:
+
 1. Check `SLOW_QUERY_THRESHOLD_MS` environment variable
 2. Verify query monitor is properly initialized
 3. Ensure queries are wrapped with `queryMonitor.track()`
