@@ -10,6 +10,7 @@ import {
   SkeletonList,
   SkeletonDashboard,
 } from "./Skeleton";
+import styles from "./Skeleton.module.css";
 
 describe("Skeleton", () => {
   it("should render with default variant", () => {
@@ -21,25 +22,25 @@ describe("Skeleton", () => {
   it("should render with text variant", () => {
     const { container } = render(<Skeleton variant="text" />);
     const skeleton = container.querySelector('[aria-busy="true"]');
-    expect(skeleton).toHaveClass("text");
+    expect(skeleton).toHaveClass(styles.text);
   });
 
   it("should render with circular variant", () => {
     const { container } = render(<Skeleton variant="circular" />);
     const skeleton = container.querySelector('[aria-busy="true"]');
-    expect(skeleton).toHaveClass("circular");
+    expect(skeleton).toHaveClass(styles.circular);
   });
 
   it("should render with rectangular variant", () => {
     const { container } = render(<Skeleton variant="rectangular" />);
     const skeleton = container.querySelector('[aria-busy="true"]');
-    expect(skeleton).toHaveClass("rectangular");
+    expect(skeleton).toHaveClass(styles.rectangular);
   });
 
   it("should render with rounded variant", () => {
     const { container } = render(<Skeleton variant="rounded" />);
     const skeleton = container.querySelector('[aria-busy="true"]');
-    expect(skeleton).toHaveClass("rounded");
+    expect(skeleton).toHaveClass(styles.rounded);
   });
 
   it("should apply width as string", () => {
@@ -69,19 +70,19 @@ describe("Skeleton", () => {
   it("should apply pulse animation by default", () => {
     const { container } = render(<Skeleton />);
     const skeleton = container.querySelector('[aria-busy="true"]');
-    expect(skeleton).toHaveClass("pulse");
+    expect(skeleton).toHaveClass(styles.pulse);
   });
 
   it("should apply wave animation when specified", () => {
     const { container } = render(<Skeleton animation="wave" />);
     const skeleton = container.querySelector('[aria-busy="true"]');
-    expect(skeleton).toHaveClass("wave");
+    expect(skeleton).toHaveClass(styles.wave);
   });
 
   it("should apply no animation when specified", () => {
     const { container } = render(<Skeleton animation="none" />);
     const skeleton = container.querySelector('[aria-busy="true"]');
-    expect(skeleton).toHaveClass("none");
+    expect(skeleton).toHaveClass(styles.none);
   });
 
   it("should apply custom className", () => {
@@ -127,7 +128,7 @@ describe("SkeletonAvatar", () => {
   it("should render as circular", () => {
     const { container } = render(<SkeletonAvatar />);
     const skeleton = container.querySelector('[aria-busy="true"]');
-    expect(skeleton).toHaveClass("circular");
+    expect(skeleton).toHaveClass(styles.circular);
   });
 });
 
@@ -163,13 +164,13 @@ describe("SkeletonTable", () => {
 describe("SkeletonList", () => {
   it("should render default number of items", () => {
     const { container } = render(<SkeletonList />);
-    const items = container.querySelectorAll(".skeletonListItem");
+    const items = container.querySelectorAll(`.${styles.skeletonListItem}`);
     expect(items).toHaveLength(5);
   });
 
   it("should render specified number of items", () => {
     const { container } = render(<SkeletonList items={3} />);
-    const items = container.querySelectorAll(".skeletonListItem");
+    const items = container.querySelectorAll(`.${styles.skeletonListItem}`);
     expect(items).toHaveLength(3);
   });
 
@@ -191,13 +192,13 @@ describe("SkeletonList", () => {
 describe("SkeletonDashboard", () => {
   it("should render default number of cards", () => {
     const { container } = render(<SkeletonDashboard />);
-    const cards = container.querySelectorAll(".skeletonDashboardCard");
+    const cards = container.querySelectorAll(`.${styles.skeletonDashboardCard}`);
     expect(cards).toHaveLength(6);
   });
 
   it("should render specified number of cards", () => {
     const { container } = render(<SkeletonDashboard cards={9} />);
-    const cards = container.querySelectorAll(".skeletonDashboardCard");
+    const cards = container.querySelectorAll(`.${styles.skeletonDashboardCard}`);
     expect(cards).toHaveLength(9);
   });
 
