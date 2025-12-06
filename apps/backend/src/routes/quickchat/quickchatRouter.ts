@@ -213,16 +213,19 @@ router.post(
  * GET /api/quickchat/commands
  * Liste verfügbarer Commands
  */
-router.get("/commands", (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    commands: Object.entries(COMMANDS).map(([key, value]) => ({
-      command: key,
-      name: value.name,
-      description: value.description,
-    })),
-  });
-});
+router.get(
+  "/commands",
+  asyncHandler(async (_req: Request, res: Response) => {
+    res.json({
+      success: true,
+      commands: Object.entries(COMMANDS).map(([key, value]) => ({
+        command: key,
+        name: value.name,
+        description: value.description,
+      })),
+    });
+  }),
+);
 
 /**
  * GET /api/quickchat/sessions/:id
@@ -249,15 +252,18 @@ router.get(
  * DELETE /api/quickchat/sessions/:id
  * Session löschen
  */
-router.delete("/sessions/:id", (req: Request, res: Response) => {
-  const { id } = req.params;
-  const deleted = sessions.delete(id);
+router.delete(
+  "/sessions/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const deleted = sessions.delete(id);
 
-  res.json({
-    success: true,
-    deleted,
-  });
-});
+    res.json({
+      success: true,
+      deleted,
+    });
+  }),
+);
 
 // Command-Execution
 async function executeCommand(

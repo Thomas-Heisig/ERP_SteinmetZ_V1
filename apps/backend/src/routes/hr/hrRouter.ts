@@ -194,8 +194,8 @@ router.post(
 
     const employeeData = validationResult.data;
 
-    // TODO: Validate data with Zod schema
     // TODO: Save to database
+    // In production: const employee = await employeeService.create(employeeData);
 
     const newEmployee = {
       id: Date.now().toString(),
