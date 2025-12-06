@@ -9,6 +9,8 @@ import {
   rateLimitLogin,
   requireRole,
 } from "../../middleware/authMiddleware.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { BadRequestError, UnauthorizedError } from "../../types/errors.js";
 
 const router = Router();
 
@@ -78,176 +80,108 @@ const changePasswordSchema = z.object({
  * POST /api/auth/register
  * Register a new user
  */
-router.post("/register", async (req: Request, res: Response) => {
-  try {
-    const data = registerSchema.parse(req.body);
-    const user = await AuthService.register(data);
+router.post("/register", asyncHandler(async (req: Request, res: Response) => {
+  const data = registerSchema.parse(req.body);
+  const user = await AuthService.register(data);
 
-    res.status(201).json({
-      success: true,
-      user,
-      message: "User registered successfully",
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        success: false,
-        error: "Validation error",
-        details: error.issues,
-      });
-      return;
-    }
-
-    console.error("[auth] Registration error:", error);
-    res.status(400).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Registration failed",
-    });
-  }
-});
+  res.status(201).json({
+    success: true,
+    user,
+    message: "User registered successfully",
+  });
+}));
 
 /**
  * POST /api/auth/login
  * Login with username/email and password
  */
-router.post("/login", rateLimitLogin, async (req: Request, res: Response) => {
-  try {
-    const credentials = loginSchema.parse(req.body);
-    const ipAddress = req.ip || req.socket.remoteAddress;
-    const userAgent = req.headers["user-agent"];
+router.post("/login", rateLimitLogin, asyncHandler(async (req: Request, res: Response) => {
+  const credentials = loginSchema.parse(req.body);
+  const ipAddress = req.ip || req.socket.remoteAddress;
+  const userAgent = req.headers["user-agent"];
 
-    const result = await AuthService.login(credentials, ipAddress, userAgent);
+  const result = await AuthService.login(credentials, ipAddress, userAgent);
 
-    if (!result.success) {
-      res.status(401).json(result);
-      return;
-    }
-
-    // Set secure cookie with token
-    if (result.token) {
-      res.cookie("token", result.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: COOKIE_MAX_AGE,
-      });
-    }
-
-    res.json(result);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({
-        success: false,
-        error: "Validation error",
-        details: error.issues,
-      });
-      return;
-    }
-
-    console.error("[auth] Login error:", error);
-    res.status(500).json({
-      success: false,
-      error: "Login failed",
-    });
+  if (!result.success) {
+    throw new UnauthorizedError(result.error || "Login failed");
   }
-});
 
-/**
- * POST /api/auth/logout
- * Logout current user
- */
-router.post("/logout", authenticate, async (req: Request, res: Response) => {
-  try {
-    const token = req.headers.authorization?.substring(7) || req.cookies?.token;
-
-    if (token) {
-      await AuthService.logout(token);
-    }
-
-    res.clearCookie("token");
-    res.json({ success: true, message: "Logged out successfully" });
-  } catch (error) {
-    console.error("[auth] Logout error:", error);
-    res.status(500).json({
-      success: false,
-      error: "Logout failed",
-    });
-  }
-});
-
-/**
- * POST /api/auth/refresh
- * Refresh access token using refresh token
- */
-router.post("/refresh", async (req: Request, res: Response) => {
-  try {
-    const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      res.status(400).json({
-        success: false,
-        error: "Refresh token is required",
-      });
-      return;
-    }
-
-    const result = await AuthService.refreshToken(refreshToken);
-
-    if (!result) {
-      res.status(401).json({
-        success: false,
-        error: "Invalid or expired refresh token",
-      });
-      return;
-    }
-
-    // Update cookie with new token
+  // Set secure cookie with token
+  if (result.token) {
     res.cookie("token", result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: COOKIE_MAX_AGE,
     });
-
-    res.json({
-      success: true,
-      token: result.token,
-      expiresAt: result.expiresAt,
-    });
-  } catch (error) {
-    console.error("[auth] Refresh token error:", error);
-    res.status(500).json({
-      success: false,
-      error: "Token refresh failed",
-    });
   }
-});
+
+  res.json(result);
+}));
+
+/**
+ * POST /api/auth/logout
+ * Logout current user
+ */
+router.post("/logout", authenticate, asyncHandler(async (req: Request, res: Response) => {
+  const token = req.headers.authorization?.substring(7) || req.cookies?.token;
+
+  if (token) {
+    await AuthService.logout(token);
+  }
+
+  res.clearCookie("token");
+  res.json({ success: true, message: "Logged out successfully" });
+}));
+
+/**
+ * POST /api/auth/refresh
+ * Refresh access token using refresh token
+ */
+router.post("/refresh", asyncHandler(async (req: Request, res: Response) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    throw new BadRequestError("Refresh token is required");
+  }
+
+  const result = await AuthService.refreshToken(refreshToken);
+
+  if (!result) {
+    throw new UnauthorizedError("Invalid or expired refresh token");
+  }
+
+  // Update cookie with new token
+  res.cookie("token", result.token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: COOKIE_MAX_AGE,
+  });
+
+  res.json({
+    success: true,
+    token: result.token,
+    expiresAt: result.expiresAt,
+  });
+}));
 
 /**
  * GET /api/auth/me
  * Get current user information
  */
-router.get("/me", authenticate, async (req: Request, res: Response) => {
-  try {
-    if (!req.auth) {
-      res.status(401).json({ error: "Not authenticated" });
-      return;
-    }
-
-    res.json({
-      success: true,
-      user: req.auth.user,
-      roles: req.auth.roles,
-      permissions: req.auth.permissions,
-    });
-  } catch (error) {
-    console.error("[auth] Get current user error:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to get user information",
-    });
+router.get("/me", authenticate, asyncHandler(async (req: Request, res: Response) => {
+  if (!req.auth) {
+    throw new UnauthorizedError("Not authenticated");
   }
-});
+
+  res.json({
+    success: true,
+    user: req.auth.user,
+    roles: req.auth.roles,
+    permissions: req.auth.permissions,
+  });
+}));
 
 /**
  * POST /api/auth/change-password
@@ -256,43 +190,24 @@ router.get("/me", authenticate, async (req: Request, res: Response) => {
 router.post(
   "/change-password",
   authenticate,
-  async (req: Request, res: Response) => {
-    try {
-      if (!req.auth) {
-        res.status(401).json({ error: "Not authenticated" });
-        return;
-      }
-
-      const data = changePasswordSchema.parse(req.body);
-
-      await AuthService.changePassword(
-        req.auth.user.id,
-        data.oldPassword,
-        data.newPassword,
-      );
-
-      res.json({
-        success: true,
-        message: "Password changed successfully",
-      });
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        res.status(400).json({
-          success: false,
-          error: "Validation error",
-          details: error.issues,
-        });
-        return;
-      }
-
-      console.error("[auth] Change password error:", error);
-      res.status(400).json({
-        success: false,
-        error:
-          error instanceof Error ? error.message : "Password change failed",
-      });
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!req.auth) {
+      throw new UnauthorizedError("Not authenticated");
     }
-  },
+
+    const data = changePasswordSchema.parse(req.body);
+
+    await AuthService.changePassword(
+      req.auth.user.id,
+      data.oldPassword,
+      data.newPassword,
+    );
+
+    res.json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  }),
 );
 
 /**
@@ -303,36 +218,20 @@ router.get(
   "/users",
   authenticate,
   requireRole("Admin"),
-  async (_req: Request, res: Response) => {
-    try {
-      const users = await AuthService.listUsers();
-      res.json({ success: true, users });
-    } catch (error) {
-      console.error("[auth] List users error:", error);
-      res.status(500).json({
-        success: false,
-        error: "Failed to list users",
-      });
-    }
-  },
+  asyncHandler(async (_req: Request, res: Response) => {
+    const users = await AuthService.listUsers();
+    res.json({ success: true, users });
+  }),
 );
 
 /**
  * GET /api/auth/roles
  * List all roles
  */
-router.get("/roles", authenticate, async (_req: Request, res: Response) => {
-  try {
-    const roles = await AuthService.listRoles();
-    res.json({ success: true, roles });
-  } catch (error) {
-    console.error("[auth] List roles error:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to list roles",
-    });
-  }
-});
+router.get("/roles", authenticate, asyncHandler(async (_req: Request, res: Response) => {
+  const roles = await AuthService.listRoles();
+  res.json({ success: true, roles });
+}));
 
 /**
  * POST /api/auth/users/:userId/roles
@@ -342,35 +241,25 @@ router.post(
   "/users/:userId/roles",
   authenticate,
   requireRole("Admin"),
-  async (req: Request, res: Response) => {
-    try {
-      if (!req.auth) {
-        res.status(401).json({ error: "Not authenticated" });
-        return;
-      }
-
-      const { userId } = req.params;
-      const { roleId } = req.body;
-
-      if (!roleId) {
-        res.status(400).json({ error: "Role ID is required" });
-        return;
-      }
-
-      await AuthService.assignRole(userId, roleId, req.auth.user.id);
-
-      res.json({
-        success: true,
-        message: "Role assigned successfully",
-      });
-    } catch (error) {
-      console.error("[auth] Assign role error:", error);
-      res.status(500).json({
-        success: false,
-        error: "Failed to assign role",
-      });
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!req.auth) {
+      throw new UnauthorizedError("Not authenticated");
     }
-  },
+
+    const { userId } = req.params;
+    const { roleId } = req.body;
+
+    if (!roleId) {
+      throw new BadRequestError("Role ID is required");
+    }
+
+    await AuthService.assignRole(userId, roleId, req.auth.user.id);
+
+    res.json({
+      success: true,
+      message: "Role assigned successfully",
+    });
+  }),
 );
 
 /**
@@ -381,24 +270,16 @@ router.delete(
   "/users/:userId/roles/:roleId",
   authenticate,
   requireRole("Admin"),
-  async (req: Request, res: Response) => {
-    try {
-      const { userId, roleId } = req.params;
+  asyncHandler(async (req: Request, res: Response) => {
+    const { userId, roleId } = req.params;
 
-      await AuthService.removeRole(userId, roleId);
+    await AuthService.removeRole(userId, roleId);
 
-      res.json({
-        success: true,
-        message: "Role removed successfully",
-      });
-    } catch (error) {
-      console.error("[auth] Remove role error:", error);
-      res.status(500).json({
-        success: false,
-        error: "Failed to remove role",
-      });
-    }
-  },
+    res.json({
+      success: true,
+      message: "Role removed successfully",
+    });
+  }),
 );
 
 /**
@@ -409,35 +290,25 @@ router.delete(
   "/users/:userId",
   authenticate,
   requireRole("Admin"),
-  async (req: Request, res: Response) => {
-    try {
-      if (!req.auth) {
-        res.status(401).json({ error: "Not authenticated" });
-        return;
-      }
-
-      const { userId } = req.params;
-
-      // Prevent self-deletion
-      if (userId === req.auth.user.id) {
-        res.status(400).json({ error: "Cannot delete your own account" });
-        return;
-      }
-
-      await AuthService.deleteUser(userId);
-
-      res.json({
-        success: true,
-        message: "User deleted successfully",
-      });
-    } catch (error) {
-      console.error("[auth] Delete user error:", error);
-      res.status(500).json({
-        success: false,
-        error: "Failed to delete user",
-      });
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!req.auth) {
+      throw new UnauthorizedError("Not authenticated");
     }
-  },
+
+    const { userId } = req.params;
+
+    // Prevent self-deletion
+    if (userId === req.auth.user.id) {
+      throw new BadRequestError("Cannot delete your own account");
+    }
+
+    await AuthService.deleteUser(userId);
+
+    res.json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  }),
 );
 
 export default router;
