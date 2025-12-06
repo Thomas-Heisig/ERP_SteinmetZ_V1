@@ -98,6 +98,11 @@ Practical guides for specific tasks:
 - **[How to Migrate Database](./DATABASE_MIGRATIONS.md)**
 
 **Features:**
+- **[How to Implement Error Handling](./ERROR_HANDLING.md)** ⭐ NEW
+- **[How to Optimize Database Queries](./DATABASE_OPTIMIZATION.md)** ⭐ NEW
+- **[How to Integrate WebSocket](./WEBSOCKET_REALTIME.md)** ⭐ NEW
+- **[How to Build Advanced Filters](./ADVANCED_FILTERS_GUIDE.md)** ⭐ NEW
+- **[How to Create AI Annotator UI](./AI_ANNOTATOR_UI_GUIDE.md)** ⭐ NEW
 - **[How to Use AI Features](./how-to/ai-features.md)**
 - **[How to Implement WebSockets](./how-to/websockets.md)**
 - **[How to Optimize Performance](./PERFORMANCE_FEATURES.md)**
@@ -139,6 +144,7 @@ Deep dives into concepts and decisions:
 **Concepts:**
 - **[Project Vision](./concept/_0_KONZEPT.md)** - Original concept
 - **[Roadmap](./concept/_ROADMAP.md)** - Future plans
+- **[Implementation Roadmap 2025](./IMPLEMENTATION_ROADMAP_2025.md)** ⭐ NEW - Current status & next steps
 - **[Advanced Features](./ADVANCED_FEATURES.md)** - Cutting-edge features
 
 ---
@@ -166,6 +172,7 @@ Deep dives into concepts and decisions:
 - [Module Documentation](../apps/backend/src/routes/) - Module-specific docs
 
 ### Project Management
+- [Implementation Roadmap 2025](./IMPLEMENTATION_ROADMAP_2025.md) ⭐ NEW - Structured roadmap
 - [TODO List](../TODO.md) - Planned features and tasks
 - [Issues](../ISSUES.md) - Known problems and technical debt  
 - [Changelog](../CHANGELOG.md) - Version history
