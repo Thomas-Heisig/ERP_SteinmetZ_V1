@@ -1,0 +1,112 @@
+/* ==================== MODERN DASHBOARD STYLES ==================== */
+/* apps/frontend/src/components/Dashboard/styles/dashboard-modern.css */
+
+/* Dashboard Sections */
+.dashboard-widgets-section,
+.dashboard-main-section {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.section-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+/* Enhanced Category Grid */
+.category-widget {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-widget::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.category-widget:hover::before {
+  opacity: 1;
+}
+
+/* Dashboard Content Animations */
+.dashboard-content {
+  animation: fade-in-scale 0.6s ease-out;
+}
+
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Modern Dashboard Header */
+.dashboard-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--border-light);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(102, 126, 234, 0.05) 50%,
+    transparent 100%
+  );
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+}
+
+/* Responsive Dashboard Layout */
+@media (max-width: 1024px) {
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-widgets-section,
+  .dashboard-main-section {
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .dashboard-widgets-section,
+  .dashboard-main-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .dashboard-header {
+    padding: 1rem;
+  }
+}
