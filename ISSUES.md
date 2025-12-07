@@ -91,10 +91,13 @@ const chatMessageSchema = z.object({
   model: z.string().optional(),
 });
 
-router.post("/chat", asyncHandler(async (req, res) => {
-  const validated = chatMessageSchema.parse(req.body); // Automatic validation
-  // req.body ist garantiert valide
-}));
+router.post(
+  "/chat",
+  asyncHandler(async (req, res) => {
+    const validated = chatMessageSchema.parse(req.body); // Automatic validation
+    // req.body ist garantiert valide
+  }),
+);
 ```
 
 **Ergebnis**: Alle kritischen Router haben jetzt vollständige Zod-Validierung. Security-Risiko behoben.
