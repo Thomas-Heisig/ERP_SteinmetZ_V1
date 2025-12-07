@@ -22,9 +22,6 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const srcDir = join(__dirname, "..", "src");
-const distDir = join(__dirname, "..", "dist");
-
 // Directories and file patterns to copy
 const assetsToCopy = [
   { from: "src/views", to: "dist/views", pattern: /\.(html|css|js)$/ },

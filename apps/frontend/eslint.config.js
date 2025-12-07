@@ -10,7 +10,7 @@ import globals from "globals";
 export default [
   js.configs.recommended,
   {
-    files: ["**/*.ts", "**/*.tsx"],
+    files: ["src/**/*.ts", "src/**/*.tsx"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -24,6 +24,7 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.es2021,
+        __BUILD_DATE__: "readonly",
       },
     },
     plugins: {
@@ -67,7 +68,7 @@ export default [
     },
   },
   {
-    files: ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"],
+    files: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx"],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "no-console": "off",
