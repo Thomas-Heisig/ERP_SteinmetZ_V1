@@ -90,13 +90,17 @@ const updateSettingSchema = z.object({
   value: z.any(),
 });
 
-const toolRunSchema = z.object({
-  // Generic schema - tool-specific validation happens in toolRegistry
-}).passthrough();
+const toolRunSchema = z
+  .object({
+    // Generic schema - tool-specific validation happens in toolRegistry
+  })
+  .passthrough();
 
-const workflowRunSchema = z.object({
-  // Generic schema - workflow-specific validation happens in workflowEngine
-}).passthrough();
+const workflowRunSchema = z
+  .object({
+    // Generic schema - workflow-specific validation happens in workflowEngine
+  })
+  .passthrough();
 
 /* ========================================================================== */
 /* ⚙️ Modelle                                                                 */
