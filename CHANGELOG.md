@@ -7,7 +7,19 @@ und dieses Projekt folgt [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
-## [Unreleased] - 2025-12-06
+## [Unreleased] - 2025-12-07
+
+### 📚 Documentation
+
+#### Issue Management Cleanup (2025-12-07)
+
+- **ISSUES.md Cleanup**: Moved all completed issues to ARCHIVE.md
+  - ISSUE-005 (Error-Responses standardisieren) → Archiviert
+  - ISSUE-006 (Input-Validierung) → Archiviert
+  - ISSUE-015 (Package.json Scripts) → Archiviert
+  - ISSUE-016 (Commit-Conventions) → Archiviert
+- **Updated Issue Statistics**: 6 aktive Issues (von 10), 10 archivierte Issues
+- **ARCHIVE.md Enhanced**: Alle behobenen Issues mit vollständiger Dokumentation
 
 ### ✅ Hinzugefügt
 
