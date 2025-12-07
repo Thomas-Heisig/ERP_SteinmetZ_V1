@@ -219,9 +219,11 @@ See [COMMIT_CONVENTIONS.md](COMMIT_CONVENTIONS.md) for commit message standards.
 
 The following secrets need to be configured in GitHub repository settings:
 
-| Secret          | Description          | Required |
-| --------------- | -------------------- | -------- |
-| `CODECOV_TOKEN` | Codecov upload token | Optional |
+| Secret            | Description                    | Required                  |
+| ----------------- | ------------------------------ | ------------------------- |
+| `CODECOV_TOKEN`   | Codecov upload token           | Optional (for trends)     |
+| `SONAR_TOKEN`     | SonarQube authentication token | Required (for quality)    |
+| `SONAR_HOST_URL`  | SonarQube server URL           | Required (SonarCloud URL) |
 
 ### Repository Settings
 
@@ -246,8 +248,9 @@ Test coverage reports are automatically uploaded to **Codecov** for Node.js 20.x
 
 **Coverage Targets:**
 
-- Backend: 86% (Goal: 90%)
-- Frontend: To be measured
+- Backend: 47% (Goal: 80%+)
+- Frontend: 96% (Goal: 80%+)
+- Overall: 80%+ required by SonarQube quality gate
 
 ### Build Status
 
@@ -367,6 +370,57 @@ The workflows use GitHub Actions cache for:
 - `npm audit` for vulnerability scanning
 - Automated security patches
 
+## Code Quality & Coverage
+
+### SonarQube Integration ✅ IMPLEMENTED
+
+**Status**: Fully configured and operational
+
+SonarQube provides continuous code quality inspection and analysis:
+
+- **Code Coverage**: Tracks test coverage trends (Target: 80%+)
+- **Quality Gates**: Enforces quality standards before merge
+- **Security Analysis**: Identifies vulnerabilities (OWASP Top 10)
+- **Technical Debt**: Measures maintainability and code smells
+- **Duplication Detection**: Identifies duplicate code blocks
+
+**Configuration Files:**
+- `sonar-project.properties` - Project configuration
+- `.github/workflows/test.yml` - CI integration
+- Coverage reports: LCOV format from Vitest
+
+**Documentation**: See [docs/SONARQUBE.md](docs/SONARQUBE.md) for detailed setup and usage.
+
+### Coverage Reports ✅ IMPLEMENTED
+
+Test coverage is generated using Vitest with v8 provider:
+
+**Configuration:**
+- **Format**: Text, JSON, HTML, LCOV
+- **Location**: `apps/backend/coverage/`, `apps/frontend/coverage/`
+- **Upload**: Codecov (for trends) + SonarQube (for quality gates)
+
+**Coverage Targets:**
+- **Backend**: 47% (Goal: 80%+)
+- **Frontend**: 96% (Goal: 80%+)
+- **Overall**: 80%+ required by quality gate
+
+**Run Coverage Locally:**
+```bash
+# All coverage reports
+npm run test:coverage
+
+# Backend only
+npm run test:coverage -w @erp-steinmetz/backend
+
+# Frontend only
+npm run test:coverage -w @erp-steinmetz/frontend
+
+# View HTML reports
+open apps/backend/coverage/index.html
+open apps/frontend/coverage/index.html
+```
+
 ## Future Enhancements
 
 ### Planned Improvements
@@ -377,7 +431,7 @@ The workflows use GitHub Actions cache for:
 - [ ] **Docker Builds** - Container image creation
 - [ ] **Release Automation** - Semantic versioning and changelog generation
 - [ ] **Dependency Updates** - Dependabot configuration
-- [ ] **Code Quality Metrics** - SonarQube integration
+- [ ] **Pull Request Decoration** - SonarQube comments on PRs
 
 ### Deployment Pipeline (Planned)
 
@@ -406,12 +460,20 @@ The workflows use GitHub Actions cache for:
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [CodeQL Documentation](https://codeql.github.com/docs/)
+- [SonarQube Documentation](https://docs.sonarqube.org/)
+- [SonarCloud](https://sonarcloud.io/)
+- [Vitest Coverage](https://vitest.dev/guide/coverage.html)
+- [Codecov](https://about.codecov.io/)
 - [Husky Documentation](https://typicode.github.io/husky/)
 - [Commitlint Documentation](https://commitlint.js.org/)
 - [Prettier Documentation](https://prettier.io/docs/en/)
 
 ---
 
-**Document Version:** 1.0.0  
-**Last Review:** December 6, 2025  
+**Document Version:** 2.0.0  
+**Last Review:** December 7, 2025  
 **Next Review:** March 2026
+
+**Changelog:**
+- **v2.0.0** (Dec 7, 2025): Added SonarQube integration and coverage reporting
+- **v1.0.0** (Dec 6, 2025): Initial CI/CD documentation

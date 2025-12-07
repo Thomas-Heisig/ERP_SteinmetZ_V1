@@ -99,9 +99,10 @@ git checkout -b bugfix/issue-description
 4. **Update documentation** as needed
 5. **Test your changes**:
    ```bash
-   npm run lint
-   npm run build
-   npm test
+   npm run lint           # Linting and formatting
+   npm run build          # TypeScript compilation
+   npm test               # Run all tests
+   npm run test:coverage  # Generate coverage reports
    ```
 
 ### Commit Messages
@@ -168,6 +169,8 @@ test(backend): add tests for AI provider service
    - [ ] Documentation is updated
    - [ ] Commit messages follow conventions
    - [ ] No merge conflicts
+   - [ ] SonarQube quality gate passes
+   - [ ] Code coverage maintained or improved
    - [ ] Changes are reviewed by at least one maintainer
 
 ### Pull Request Template
@@ -322,6 +325,10 @@ npm run test:coverage
 
 # Run in watch mode
 npm test -- --watch
+
+# View coverage reports
+open apps/backend/coverage/index.html
+open apps/frontend/coverage/index.html
 ```
 
 ### Test Coverage
@@ -331,6 +338,13 @@ We aim for:
 - Overall coverage: > 80%
 - Critical paths: > 95%
 - New code: > 90%
+
+**Coverage Monitoring:**
+
+- Coverage reports are generated in LCOV, JSON, and HTML formats
+- CI/CD automatically uploads coverage to Codecov and SonarQube
+- Pull requests show coverage changes and quality gate status
+- See [SonarQube Integration Guide](docs/SONARQUBE.md) for details
 
 ## Documentation
 

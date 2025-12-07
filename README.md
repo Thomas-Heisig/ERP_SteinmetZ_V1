@@ -4,6 +4,11 @@
 [![Node](https://img.shields.io/badge/Node-%3E%3D18.18.0-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+[![Tests](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/workflows/Tests/badge.svg)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/actions)
+[![Build](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/workflows/Build/badge.svg)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/actions)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Thomas-Heisig_ERP_SteinmetZ_V1&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Thomas-Heisig_ERP_SteinmetZ_V1)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Thomas-Heisig_ERP_SteinmetZ_V1&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Thomas-Heisig_ERP_SteinmetZ_V1)
+
 > 📘 **Dokumentation**: Vollständige technische Referenz im [Documentation Hub](docs/README.md)
 
 ## 🎯 Projektvision
@@ -291,15 +296,24 @@ npm run build
 npm test              # Alle Tests
 npm test:backend      # Nur Backend (42 Tests)
 npm test:frontend     # Nur Frontend (50 Tests)
-npm test:coverage     # Mit Coverage-Report
+npm test:coverage     # Mit Coverage-Report (LCOV, HTML, JSON)
 ```
 
 **Aktueller Test-Status:**
 
 - ✅ Backend: 42/42 Tests passing (100%)
-- ✅ Frontend: 37/50 Tests passing (74%, 13 pre-existing issues unrelated to recent changes)
+- ✅ Frontend: 50/50 Tests passing (100%)
 - ✅ Build: Vollständig erfolgreich
-- ✅ Code Coverage: 86% (Ziel: 90%)
+- ✅ Code Coverage: Backend 47%, Frontend 96% (Ziel: Gesamt 80%+)
+
+**Code-Qualität & Coverage:**
+
+- ✅ **SonarQube Integration** - Kontinuierliche Code-Qualitätsüberwachung
+- ✅ **Coverage Reports** - LCOV, HTML, JSON Formate
+- ✅ **Quality Gates** - Automatische Qualitätsprüfung in CI/CD
+- ✅ **Security Scanning** - CodeQL + SonarQube Sicherheitsanalyse
+
+Siehe [SonarQube Guide](docs/SONARQUBE.md) und [CI/CD Setup](CI_CD_SETUP.md) für Details.
 
 ## 📚 Dokumentation
 

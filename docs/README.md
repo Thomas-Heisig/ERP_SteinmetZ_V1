@@ -165,12 +165,19 @@ Deep dives into concepts and decisions:
 - [Developer Onboarding](./DEVELOPER_ONBOARDING.md) - Complete setup guide
 - [Environment Variables](./ENVIRONMENT_VARIABLES.md) - Configuration reference
 - [Database Migrations](./DATABASE_MIGRATIONS.md) - Database setup
+- [CI/CD Setup](../CI_CD_SETUP.md) - GitHub Actions & workflows
 
 ### Development
 
 - [Code Conventions](./CODE_CONVENTIONS.md) - Coding standards
 - [Error Standardization](./ERROR_STANDARDIZATION_GUIDE.md) - Error handling
 - [Testing Guidelines](./CODE_CONVENTIONS.md#testing) - How to test
+
+### Quality & Monitoring
+
+- **[SonarQube Integration](./SONARQUBE.md)** ⭐ NEW - Code quality & coverage
+- [Code Quality Improvements](./CODE_QUALITY_IMPROVEMENTS.md) - Quality standards
+- [Performance Features](./PERFORMANCE_FEATURES.md) - Performance optimization
 
 ### Architecture & Design
 
