@@ -50,6 +50,14 @@ export function metricsMiddleware(
 }
 
 /**
+ * Pre-compiled regex patterns for route normalization
+ */
+const UUID_PATTERN =
+  /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+const NUMERIC_ID_PATTERN = /\/\d+/g;
+const FILE_EXTENSION_PATTERN = /\.[a-zA-Z0-9]+$/;
+
+/**
  * Normalize routes to avoid high cardinality in metrics.
  * Replaces IDs and other dynamic segments with placeholders.
  *
@@ -62,14 +70,11 @@ function normalizeRoute(path: string): string {
   return (
     path
       // Replace UUIDs
-      .replace(
-        /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi,
-        ":id",
-      )
+      .replace(UUID_PATTERN, ":id")
       // Replace numeric IDs
-      .replace(/\/\d+/g, "/:id")
+      .replace(NUMERIC_ID_PATTERN, "/:id")
       // Replace file extensions
-      .replace(/\.[a-zA-Z0-9]+$/, ".ext")
+      .replace(FILE_EXTENSION_PATTERN, ".ext")
       // Limit path depth to avoid explosion
       .split("/")
       .slice(0, 5)

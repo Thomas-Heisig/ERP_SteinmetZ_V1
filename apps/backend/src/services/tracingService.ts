@@ -101,9 +101,24 @@ export const tracingService = {
         },
         "OpenTelemetry tracing initialized",
       );
-    } catch (error) {
-      logger.error({ error }, "Failed to initialize OpenTelemetry tracing");
-      throw error;
+    } catch (error: any) {
+      const errorMessage = error?.message || String(error);
+      let specificError = "Failed to initialize OpenTelemetry tracing";
+
+      // Provide specific error messages for common issues
+      if (errorMessage.includes("ECONNREFUSED")) {
+        specificError =
+          "Cannot connect to OTLP endpoint. Ensure the collector is running and accessible.";
+      } else if (errorMessage.includes("ENOTFOUND")) {
+        specificError =
+          "OTLP endpoint hostname not found. Check your OTEL_EXPORTER_OTLP_ENDPOINT configuration.";
+      } else if (errorMessage.includes("parse")) {
+        specificError =
+          "Invalid OTLP endpoint URL. Check your OTEL_EXPORTER_OTLP_ENDPOINT format.";
+      }
+
+      logger.error({ error, specificError }, specificError);
+      throw new Error(specificError);
     }
   },
 
