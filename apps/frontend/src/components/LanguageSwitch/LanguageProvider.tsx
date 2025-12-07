@@ -8,7 +8,17 @@ import i18n from "i18next";
  * Verfügbare Locale-Codes.
  * Muss exakt zu den definierten Sprachen im i18n-System passen.
  */
-export type Locale = "de" | "en" | "ar" | "zh" | "ru" | "nds" | "fr";
+export type Locale =
+  | "de"
+  | "en"
+  | "ar"
+  | "zh"
+  | "ru"
+  | "nds"
+  | "fr"
+  | "it"
+  | "pl"
+  | "tr";
 
 /**
  * Kontextdefinition

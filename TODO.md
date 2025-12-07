@@ -379,12 +379,13 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 2-3 Tage → 2 Stunden erledigt
   - **Ergebnis**: Vollständiges i18n-System mit Formattern und Pluralisierung
 
-- [ ] **Neue Sprachen hinzufügen**
-  - [ ] Französisch
-  - [ ] Italienisch
-  - [ ] Polnisch
-  - [ ] Türkisch
-  - **Aufwand**: 1-2 Tage pro Sprache
+- [x] **Neue Sprachen hinzufügen** ✅ ERLEDIGT (2025-12-07)
+  - [x] Französisch (Vervollständigung)
+  - [x] Italienisch
+  - [x] Polnisch
+  - [x] Türkisch
+  - **Aufwand**: 1-2 Tage pro Sprache → 2 Stunden erledigt
+  - **Ergebnis**: 4 neue/vervollständigte Sprachen mit vollständiger i18n-Integration
 
 ### Monitoring & Observability
 

@@ -21,6 +21,9 @@ export const LanguageSwitcher: React.FC = () => {
     { code: "ru", label: "Русский", flag: "🇷🇺" },
     { code: "nds", label: "Plattdüütsch", flag: "🧱" },
     { code: "fr", label: "Français", flag: "🇫🇷" },
+    { code: "it", label: "Italiano", flag: "🇮🇹" },
+    { code: "pl", label: "Polski", flag: "🇵🇱" },
+    { code: "tr", label: "Türkçe", flag: "🇹🇷" },
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
