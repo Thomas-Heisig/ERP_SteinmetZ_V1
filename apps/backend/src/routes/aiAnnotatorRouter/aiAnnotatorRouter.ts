@@ -130,11 +130,16 @@ const validateBatchSchema = z.object({
   rules: z.array(z.any()).optional().default([]),
 });
 
+// TODO: Define specific validation rules for error correction config parameters
+// This should validate the specific configuration options available in the error correction system
 const errorCorrectionConfigSchema = z.record(z.string(), z.any());
 
 const debugPromptSchema = z.object({
   nodeId: z.string().min(1),
-  promptType: z.enum(["meta", "rule", "form", "simple", "correction"]).optional().default("meta"),
+  promptType: z
+    .enum(["meta", "rule", "form", "simple", "correction"])
+    .optional()
+    .default("meta"),
   options: z.record(z.string(), z.any()).optional().default({}),
 });
 
@@ -146,7 +151,10 @@ const debugAiTestSchema = z.object({
 
 const bulkEnhanceSchema = z.object({
   nodeIds: z.array(z.string()).min(1),
-  operations: z.array(z.enum(["meta", "rule", "form"])).optional().default(["meta", "rule", "form"]),
+  operations: z
+    .array(z.enum(["meta", "rule", "form"]))
+    .optional()
+    .default(["meta", "rule", "form"]),
 });
 
 const modelSelectionTestSchema = z.object({
@@ -154,16 +162,21 @@ const modelSelectionTestSchema = z.object({
   priority: z.string().optional().default("balanced"),
 });
 
-const createFilterSchema = z.any(); // Passthrough validation
-const updateFilterSchema = z.any(); // Passthrough validation
+// TODO: Define proper validation schemas based on service interfaces
+// Currently using passthrough validation to maintain backward compatibility
+// These should be updated to match SavedFilter interface from filterService
+const createFilterSchema = z.any();
+const updateFilterSchema = z.any();
 
 const exportFilterSchema = z.object({
   nodes: z.array(z.any()).min(1),
   format: z.enum(["json", "csv"]).optional().default("json"),
 });
 
-const createReviewSchema = z.any(); // Passthrough validation
-const updateReviewSchema = z.any(); // Passthrough validation
+// TODO: Define proper validation schemas based on QAReview interface
+// These should be updated to match QAReview from qualityAssuranceService
+const createReviewSchema = z.any();
+const updateReviewSchema = z.any();
 
 const approveRejectReviewSchema = z.object({
   reviewer: z.string().min(1),
@@ -175,37 +188,51 @@ const compareModelsSchema = z.object({
   days: z.number().int().positive().optional().default(30),
 });
 
-const createBatchSchema = z.any(); // Passthrough validation
+// TODO: Define proper validation schema based on BatchCreationRequest interface
+// This should be updated to match BatchCreationRequest from batchProcessingService
+const createBatchSchema = z.any();
 
 // ============ SYSTEM STATUS & HEALTH ============
 
-router.get("/status", asyncHandler(async (_req, res, next) => {
-  const status = await aiAnnotatorService.getStatus();
-  res.json({ success: true, data: status });
-}));
+router.get(
+  "/status",
+  asyncHandler(async (_req, res, next) => {
+    const status = await aiAnnotatorService.getStatus();
+    res.json({ success: true, data: status });
+  }),
+);
 
-router.get("/health", asyncHandler(async (_req, res, next) => {
-  const health = await aiAnnotatorService.getHealthStatus();
-  res.json({ success: true, data: health });
-}));
+router.get(
+  "/health",
+  asyncHandler(async (_req, res, next) => {
+    const health = await aiAnnotatorService.getHealthStatus();
+    res.json({ success: true, data: health });
+  }),
+);
 
 // ============ DATABASE TOOL ENDPOINTS ============
 
-router.get("/database/stats", asyncHandler(async (_req, res, next) => {
-  const stats = await databaseTool.getNodeStatistics();
-  res.json({ success: true, data: stats });
-}));
+router.get(
+  "/database/stats",
+  asyncHandler(async (_req, res, next) => {
+    const stats = await databaseTool.getNodeStatistics();
+    res.json({ success: true, data: stats });
+  }),
+);
 
-router.get("/database/batches", asyncHandler(async (req, res, next) => {
-  const limit = toInt(req.query.limit, 50);
-  const batches = await databaseTool.getBatchOperations(limit);
+router.get(
+  "/database/batches",
+  asyncHandler(async (req, res, next) => {
+    const limit = toInt(req.query.limit, 50);
+    const batches = await databaseTool.getBatchOperations(limit);
 
-  res.json({
-    success: true,
-    data: batches,
-    pagination: { limit, total: batches.length },
-  });
-}));
+    res.json({
+      success: true,
+      data: batches,
+      pagination: { limit, total: batches.length },
+    });
+  }),
+);
 
 router.delete(
   "/database/batches/cleanup",
@@ -259,23 +286,29 @@ router.get(
   }),
 );
 
-router.get("/nodes/:id", asyncHandler(async (req, res, next) => {
-  const node = await findNodeById(req.params.id);
-  res.json({
-    success: true,
-    data: { node },
-  });
-}));
+router.get(
+  "/nodes/:id",
+  asyncHandler(async (req, res, next) => {
+    const node = await findNodeById(req.params.id);
+    res.json({
+      success: true,
+      data: { node },
+    });
+  }),
+);
 
-router.post("/nodes/:id/validate", asyncHandler(async (req, res, next) => {
-  const node = await findNodeById(req.params.id);
-  const validation = await aiAnnotatorService.validateNode(node);
+router.post(
+  "/nodes/:id/validate",
+  asyncHandler(async (req, res, next) => {
+    const node = await findNodeById(req.params.id);
+    const validation = await aiAnnotatorService.validateNode(node);
 
-  res.json({
-    success: true,
-    data: { node, validation },
-  });
-}));
+    res.json({
+      success: true,
+      data: { node, validation },
+    });
+  }),
+);
 
 // ============ SINGLE OPERATIONS MIT ERROR CORRECTION ============
 
@@ -348,7 +381,10 @@ router.post(
     const { includeValidation, parallel } = validated;
     const node = await findNodeById(req.params.id);
 
-    let meta: any, rule: any, form: any, validation: any = null;
+    let meta: any,
+      rule: any,
+      form: any,
+      validation: any = null;
 
     if (parallel) {
       [meta, rule, form, validation] = await Promise.all([
@@ -368,7 +404,8 @@ router.post(
         : null;
     }
 
-    if (meta) await aiAnnotatorService.saveMeta(req.params.id, { ...meta, rule });
+    if (meta)
+      await aiAnnotatorService.saveMeta(req.params.id, { ...meta, rule });
     if (form) await aiAnnotatorService.saveFormSpec(req.params.id, form);
 
     res.json({
@@ -407,833 +444,1006 @@ router.post(
   }),
 );
 
-router.get("/batch/:id", asyncHandler(async (req, res, next) => {
-  const batches = await databaseTool.getBatchOperations(100);
-  const batch = batches.find((b) => b.id === req.params.id);
+router.get(
+  "/batch/:id",
+  asyncHandler(async (req, res, next) => {
+    const batches = await databaseTool.getBatchOperations(100);
+    const batch = batches.find((b) => b.id === req.params.id);
 
-  if (!batch) {
-    throw new NotFoundError(`Batch ${req.params.id} nicht gefunden`);
-  }
+    if (!batch) {
+      throw new NotFoundError(`Batch ${req.params.id} nicht gefunden`);
+    }
 
-  res.json({
-    success: true,
-    data: batch,
-  });
-}));
+    res.json({
+      success: true,
+      data: batch,
+    });
+  }),
+);
 
-router.post("/batch/:id/cancel", asyncHandler(async (req, res, next) => {
-  await databaseTool.updateBatchProgress(req.params.id, 0, "cancelled");
+router.post(
+  "/batch/:id/cancel",
+  asyncHandler(async (req, res, next) => {
+    await databaseTool.updateBatchProgress(req.params.id, 0, "cancelled");
 
-  res.json({
-    success: true,
-    message: `Batch ${req.params.id} wurde abgebrochen`,
-  });
-}));
+    res.json({
+      success: true,
+      message: `Batch ${req.params.id} wurde abgebrochen`,
+    });
+  }),
+);
 
-router.post("/classify-pii", asyncHandler(async (req, res, next) => {
-  const validated = classifyPiiSchema.parse(req.body);
-  const { nodeIds } = validated;
+router.post(
+  "/classify-pii",
+  asyncHandler(async (req, res, next) => {
+    const validated = classifyPiiSchema.parse(req.body);
+    const { nodeIds } = validated;
 
-  const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
-  const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
+    const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
+    const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
 
-  if (nodes.length === 0) {
-    throw new NotFoundError("Keine Knoten gefunden");
-  }
+    if (nodes.length === 0) {
+      throw new NotFoundError("Keine Knoten gefunden");
+    }
 
-  const piiResults = await aiAnnotatorService.classifyPii(nodes);
+    const piiResults = await aiAnnotatorService.classifyPii(nodes);
 
-  res.json({
-    success: true,
-    data: piiResults,
-  });
-}));
+    res.json({
+      success: true,
+      data: piiResults,
+    });
+  }),
+);
 
 // ============ VALIDATION & QUALITY ENDPOINTS ============
 
-router.post("/validate-batch", asyncHandler(async (req, res, next) => {
-  const validated = validateBatchSchema.parse(req.body);
-  const { nodeIds } = validated;
+router.post(
+  "/validate-batch",
+  asyncHandler(async (req, res, next) => {
+    const validated = validateBatchSchema.parse(req.body);
+    const { nodeIds } = validated;
 
-  const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
-  const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
+    const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
+    const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
 
-  if (nodes.length === 0) {
-    throw new NotFoundError("Keine Knoten gefunden");
-  }
+    if (nodes.length === 0) {
+      throw new NotFoundError("Keine Knoten gefunden");
+    }
 
-  const validationResults = await Promise.all(
-    nodes.map((node) => aiAnnotatorService.validateNode(node)),
-  );
+    const validationResults = await Promise.all(
+      nodes.map((node) => aiAnnotatorService.validateNode(node)),
+    );
 
-  const summary = {
-    total: validationResults.length,
-    valid: validationResults.filter((r) => r.valid).length,
-    withErrors: validationResults.filter((r) => r.errors.length > 0).length,
-    withWarnings: validationResults.filter((r) => r.warnings.length > 0)
-      .length,
-    averageSuggestions:
-      validationResults.reduce((sum, r) => sum + r.suggestions.length, 0) /
-      validationResults.length,
-  };
+    const summary = {
+      total: validationResults.length,
+      valid: validationResults.filter((r) => r.valid).length,
+      withErrors: validationResults.filter((r) => r.errors.length > 0).length,
+      withWarnings: validationResults.filter((r) => r.warnings.length > 0)
+        .length,
+      averageSuggestions:
+        validationResults.reduce((sum, r) => sum + r.suggestions.length, 0) /
+        validationResults.length,
+    };
 
-  res.json({
-    success: true,
-    data: {
-      summary,
-      results: validationResults.map((result, index) => ({
-        node: nodes[index],
-        validation: result,
-      })),
-    },
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        summary,
+        results: validationResults.map((result, index) => ({
+          node: nodes[index],
+          validation: result,
+        })),
+      },
+    });
+  }),
+);
 
-router.get("/quality/report", asyncHandler(async (_req, res, next) => {
-  const stats = await databaseTool.getNodeStatistics();
-  const batches = await databaseTool.getBatchOperations(50);
+router.get(
+  "/quality/report",
+  asyncHandler(async (_req, res, next) => {
+    const stats = await databaseTool.getNodeStatistics();
+    const batches = await databaseTool.getBatchOperations(50);
 
-  const qualityReport = {
-    annotation: {
-      progress: stats.annotationProgress,
-      averageConfidence: stats.averageConfidence,
-      distribution: stats.byStatus,
-    },
-    batches: {
-      total: batches.length,
-      completed: batches.filter((b) => b.status === "completed").length,
-      failed: batches.filter((b) => b.status === "failed").length,
-      recentSuccessRate:
-        batches.slice(0, 10).filter((b) => b.status === "completed").length /
-        10,
-    },
-    recommendations: [
-      stats.annotationProgress < 50
-        ? "Batch-Annotation für unvollständige Knoten ausführen"
-        : null,
-      stats.averageConfidence < 0.7
-        ? "KI-Modell für bessere Konfidenz optimieren"
-        : null,
-      batches.filter((b) => b.status === "failed").length > 5
-        ? "Fehlerhafte Batches analysieren und wiederholen"
-        : null,
-    ].filter(Boolean),
-  };
+    const qualityReport = {
+      annotation: {
+        progress: stats.annotationProgress,
+        averageConfidence: stats.averageConfidence,
+        distribution: stats.byStatus,
+      },
+      batches: {
+        total: batches.length,
+        completed: batches.filter((b) => b.status === "completed").length,
+        failed: batches.filter((b) => b.status === "failed").length,
+        recentSuccessRate:
+          batches.slice(0, 10).filter((b) => b.status === "completed").length /
+          10,
+      },
+      recommendations: [
+        stats.annotationProgress < 50
+          ? "Batch-Annotation für unvollständige Knoten ausführen"
+          : null,
+        stats.averageConfidence < 0.7
+          ? "KI-Modell für bessere Konfidenz optimieren"
+          : null,
+        batches.filter((b) => b.status === "failed").length > 5
+          ? "Fehlerhafte Batches analysieren und wiederholen"
+          : null,
+      ].filter(Boolean),
+    };
 
-  res.json({
-    success: true,
-    data: qualityReport,
-  });
-}));
+    res.json({
+      success: true,
+      data: qualityReport,
+    });
+  }),
+);
 
 // ============ DASHBOARD REGELN ============
 
-router.get("/rules", asyncHandler(async (req, res, next) => {
-  const { type, widget, includeNodes = true } = req.query;
+router.get(
+  "/rules",
+  asyncHandler(async (req, res, next) => {
+    const { type, widget, includeNodes = true } = req.query;
 
-  const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
-  const nodesWithRules = allNodes.filter((node) => node.meta_json?.rule);
+    const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
+    const nodesWithRules = allNodes.filter((node) => node.meta_json?.rule);
 
-  // Filterung nach Typ/Widget
-  let filteredNodes = nodesWithRules;
-  if (type) {
-    filteredNodes = filteredNodes.filter(
-      (node) => node.meta_json.rule.type === type,
-    );
-  }
-  if (widget) {
-    filteredNodes = filteredNodes.filter(
-      (node) => node.meta_json.rule.widget === widget,
-    );
-  }
-
-  // Gruppierung
-  const rulesByType: Record<string, NodeForAnnotation[]> = {};
-  const widgetsByType: Record<string, string[]> = {};
-
-  filteredNodes.forEach((node) => {
-    const ruleType = node.meta_json.rule.type;
-    const widget = node.meta_json.rule.widget;
-
-    if (!rulesByType[ruleType]) {
-      rulesByType[ruleType] = [];
+    // Filterung nach Typ/Widget
+    let filteredNodes = nodesWithRules;
+    if (type) {
+      filteredNodes = filteredNodes.filter(
+        (node) => node.meta_json.rule.type === type,
+      );
     }
-    rulesByType[ruleType].push(node);
-
     if (widget) {
-      if (!widgetsByType[ruleType]) {
-        widgetsByType[ruleType] = [];
-      }
-      if (!widgetsByType[ruleType].includes(widget)) {
-        widgetsByType[ruleType].push(widget);
-      }
+      filteredNodes = filteredNodes.filter(
+        (node) => node.meta_json.rule.widget === widget,
+      );
     }
-  });
 
-  res.json({
-    success: true,
-    data: {
-      total: filteredNodes.length,
-      byType: rulesByType,
-      widgets: widgetsByType,
-      nodes: includeNodes ? filteredNodes : undefined,
-    },
-  });
-}));
+    // Gruppierung
+    const rulesByType: Record<string, NodeForAnnotation[]> = {};
+    const widgetsByType: Record<string, string[]> = {};
+
+    filteredNodes.forEach((node) => {
+      const ruleType = node.meta_json.rule.type;
+      const widget = node.meta_json.rule.widget;
+
+      if (!rulesByType[ruleType]) {
+        rulesByType[ruleType] = [];
+      }
+      rulesByType[ruleType].push(node);
+
+      if (widget) {
+        if (!widgetsByType[ruleType]) {
+          widgetsByType[ruleType] = [];
+        }
+        if (!widgetsByType[ruleType].includes(widget)) {
+          widgetsByType[ruleType].push(widget);
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      data: {
+        total: filteredNodes.length,
+        byType: rulesByType,
+        widgets: widgetsByType,
+        nodes: includeNodes ? filteredNodes : undefined,
+      },
+    });
+  }),
+);
 
 // ============ AI MODEL MANAGEMENT ============
 
-router.get("/ai/models", asyncHandler(async (_req, res, next) => {
-  const modelStats = await aiAnnotatorService.getModelStatistics();
-  res.json({
-    success: true,
-    data: modelStats,
-  });
-}));
+router.get(
+  "/ai/models",
+  asyncHandler(async (_req, res, next) => {
+    const modelStats = await aiAnnotatorService.getModelStatistics();
+    res.json({
+      success: true,
+      data: modelStats,
+    });
+  }),
+);
 
-router.post("/ai/optimize", asyncHandler(async (_req, res, next) => {
-  const optimization = await aiAnnotatorService.optimizeConfiguration();
-  res.json({
-    success: true,
-    data: optimization,
-  });
-}));
+router.post(
+  "/ai/optimize",
+  asyncHandler(async (_req, res, next) => {
+    const optimization = await aiAnnotatorService.optimizeConfiguration();
+    res.json({
+      success: true,
+      data: optimization,
+    });
+  }),
+);
 
 // ============ ERROR CORRECTION CONFIG ============
 
-router.get("/error-correction/config", asyncHandler(async (_req, res, next) => {
-  const status = await aiAnnotatorService.getStatus();
-  res.json({
-    success: true,
-    data: status.errorCorrection,
-  });
-}));
+router.get(
+  "/error-correction/config",
+  asyncHandler(async (_req, res, next) => {
+    const status = await aiAnnotatorService.getStatus();
+    res.json({
+      success: true,
+      data: status.errorCorrection,
+    });
+  }),
+);
 
-router.put("/error-correction/config", asyncHandler(async (req, res, next) => {
-  if (process.env.NODE_ENV === "production") {
-    throw new ForbiddenError("Konfigurationsänderungen nicht in Production verfügbar");
-  }
+router.put(
+  "/error-correction/config",
+  asyncHandler(async (req, res, next) => {
+    if (process.env.NODE_ENV === "production") {
+      throw new ForbiddenError(
+        "Konfigurationsänderungen nicht in Production verfügbar",
+      );
+    }
 
-  const config = errorCorrectionConfigSchema.parse(req.body);
-  // In einer realen Implementierung würde hier die Konfiguration aktualisiert
+    const config = errorCorrectionConfigSchema.parse(req.body);
+    
+    // TODO: Implement actual configuration persistence to database or configuration file
+    // Currently returns simulated success response for development/testing purposes
+    // Real implementation should:
+    // 1. Validate config against aiAnnotatorService configuration schema
+    // 2. Persist to database or configuration file
+    // 3. Notify aiAnnotatorService to reload configuration
 
-  res.json({
-    success: true,
-    message: "Konfiguration wurde aktualisiert (simuliert)",
-    data: config,
-  });
-}));
+    res.json({
+      success: true,
+      message: "Konfiguration wurde aktualisiert (simuliert)",
+      data: config,
+    });
+  }),
+);
 
 // ============ TEST & DEBUG ============
 
-router.post("/debug/prompt", asyncHandler(async (req, res, next) => {
-  if (process.env.NODE_ENV === "production") {
-    throw new ForbiddenError("Debug endpoints nicht in Production verfügbar");
-  }
+router.post(
+  "/debug/prompt",
+  asyncHandler(async (req, res, next) => {
+    if (process.env.NODE_ENV === "production") {
+      throw new ForbiddenError("Debug endpoints nicht in Production verfügbar");
+    }
 
-  const validated = debugPromptSchema.parse(req.body);
-  const { nodeId, promptType, options } = validated;
+    const validated = debugPromptSchema.parse(req.body);
+    const { nodeId, promptType, options } = validated;
 
-  const node = await findNodeById(nodeId);
+    const node = await findNodeById(nodeId);
 
-  let prompt: string;
-  switch (promptType) {
-    case "meta":
-      prompt = (aiAnnotatorService as any).buildEnhancedMetaPrompt(node);
-      break;
-    case "rule":
-      prompt = (aiAnnotatorService as any).buildRulePrompt(node);
-      break;
-    case "form":
-      prompt = (aiAnnotatorService as any).buildFormPrompt(node);
-      break;
-    case "simple":
-      prompt = (aiAnnotatorService as any).buildSimpleMetaPrompt(node);
-      break;
-    case "correction":
-      const mockMeta = { description: "Test", tags: [] };
-      const mockErrors = ["Description too short", "No tags provided"];
-      prompt = (aiAnnotatorService as any).buildCorrectionPrompt(
-        node,
-        mockMeta,
-        mockErrors,
+    let prompt: string;
+    switch (promptType) {
+      case "meta":
+        prompt = (aiAnnotatorService as any).buildEnhancedMetaPrompt(node);
+        break;
+      case "rule":
+        prompt = (aiAnnotatorService as any).buildRulePrompt(node);
+        break;
+      case "form":
+        prompt = (aiAnnotatorService as any).buildFormPrompt(node);
+        break;
+      case "simple":
+        prompt = (aiAnnotatorService as any).buildSimpleMetaPrompt(node);
+        break;
+      case "correction":
+        const mockMeta = { description: "Test", tags: [] };
+        const mockErrors = ["Description too short", "No tags provided"];
+        prompt = (aiAnnotatorService as any).buildCorrectionPrompt(
+          node,
+          mockMeta,
+          mockErrors,
+        );
+        break;
+      default:
+        throw new BadRequestError("Unbekannter Prompt-Typ");
+    }
+
+    res.json({
+      success: true,
+      data: { node, prompt, length: prompt.length },
+    });
+  }),
+);
+
+router.post(
+  "/debug/ai-test",
+  asyncHandler(async (req, res, next) => {
+    if (process.env.NODE_ENV === "production") {
+      throw new ForbiddenError(
+        "Debug endpoints sind in Production deaktiviert",
       );
-      break;
-    default:
-      throw new BadRequestError("Unbekannter Prompt-Typ");
-  }
+    }
 
-  res.json({
-    success: true,
-    data: { node, prompt, length: prompt.length },
-  });
-}));
+    const validated = debugAiTestSchema.parse(req.body);
+    const { prompt, model, provider } = validated;
 
-router.post("/debug/ai-test", asyncHandler(async (req, res, next) => {
-  if (process.env.NODE_ENV === "production") {
-    throw new ForbiddenError("Debug endpoints sind in Production deaktiviert");
-  }
-
-  const validated = debugAiTestSchema.parse(req.body);
-  const { prompt, model, provider } = validated;
-
-  const testPrompt =
-    prompt ||
-    `Teste die AI-Verbindung. Antworte mit folgendem JSON:
+    const testPrompt =
+      prompt ||
+      `Teste die AI-Verbindung. Antworte mit folgendem JSON:
 {
   "status": "success",
   "message": "Verbindung erfolgreich"
 }`;
 
-  const response = await (aiAnnotatorService as any).callAI(
-    testPrompt,
-    "debug",
-  );
+    const response = await (aiAnnotatorService as any).callAI(
+      testPrompt,
+      "debug",
+    );
 
-  let parsed: any = null;
-  try {
-    parsed = JSON.parse(response);
-  } catch {
-    parsed = { raw: response };
-  }
+    let parsed: any = null;
+    try {
+      parsed = JSON.parse(response);
+    } catch {
+      parsed = { raw: response };
+    }
 
-  res.json({
-    success: true,
-    data: {
-      prompt: testPrompt,
-      response,
-      parsed,
-    },
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        prompt: testPrompt,
+        response,
+        parsed,
+      },
+    });
+  }),
+);
 
 // ============ BATCH TEMPLATES ============
 
-router.get("/batch-templates", asyncHandler(async (_req, res, next) => {
-  const templates = {
-    quick_annotation: {
-      name: "Schnelle Annotation",
-      description:
-        "Schnelle Metadaten-Generierung für alle unannotierten Knoten",
-      operation: "generate_meta",
-      filters: { missingOnly: true },
-      options: {
-        chunkSize: 20,
-        parallelRequests: 3,
-        modelPreference: "fast",
+router.get(
+  "/batch-templates",
+  asyncHandler(async (_req, res, next) => {
+    const templates = {
+      quick_annotation: {
+        name: "Schnelle Annotation",
+        description:
+          "Schnelle Metadaten-Generierung für alle unannotierten Knoten",
+        operation: "generate_meta",
+        filters: { missingOnly: true },
+        options: {
+          chunkSize: 20,
+          parallelRequests: 3,
+          modelPreference: "fast",
+        },
       },
-    },
-    full_annotation: {
-      name: "Vollständige Annotation",
-      description: "Umfassende Annotation mit Metadaten, Regeln und Formularen",
-      operation: "full_annotation",
-      filters: { missingOnly: true },
-      options: {
-        chunkSize: 5,
-        parallelRequests: 2,
-        modelPreference: "accurate",
+      full_annotation: {
+        name: "Vollständige Annotation",
+        description:
+          "Umfassende Annotation mit Metadaten, Regeln und Formularen",
+        operation: "full_annotation",
+        filters: { missingOnly: true },
+        options: {
+          chunkSize: 5,
+          parallelRequests: 2,
+          modelPreference: "accurate",
+        },
       },
-    },
-    pii_scan: {
-      name: "PII Scan",
-      description: "PII-Klassifizierung für alle Knoten",
-      operation: "classify_pii",
-      filters: {},
-      options: {
-        chunkSize: 50,
-        parallelRequests: 5,
-        modelPreference: "balanced",
+      pii_scan: {
+        name: "PII Scan",
+        description: "PII-Klassifizierung für alle Knoten",
+        operation: "classify_pii",
+        filters: {},
+        options: {
+          chunkSize: 50,
+          parallelRequests: 5,
+          modelPreference: "balanced",
+        },
       },
-    },
-    quality_check: {
-      name: "Qualitätsprüfung",
-      description: "Validierung aller annotierten Knoten",
-      operation: "validate_nodes",
-      filters: {},
-      options: {
-        chunkSize: 25,
-        parallelRequests: 4,
+      quality_check: {
+        name: "Qualitätsprüfung",
+        description: "Validierung aller annotierten Knoten",
+        operation: "validate_nodes",
+        filters: {},
+        options: {
+          chunkSize: 25,
+          parallelRequests: 4,
+        },
       },
-    },
-  };
+    };
 
-  res.json({
-    success: true,
-    data: templates,
-  });
-}));
+    res.json({
+      success: true,
+      data: templates,
+    });
+  }),
+);
 
 // ============ NODE META ============
 
-router.get("/nodes/:id/meta", asyncHandler(async (req, res, next) => {
-  const node = await findNodeById(req.params.id);
-  res.json({
-    success: true,
-    data: node.meta_json || {},
-  });
-}));
+router.get(
+  "/nodes/:id/meta",
+  asyncHandler(async (req, res, next) => {
+    const node = await findNodeById(req.params.id);
+    res.json({
+      success: true,
+      data: node.meta_json || {},
+    });
+  }),
+);
 
 // ============ NODE RULE ============
 
-router.get("/nodes/:id/rule", asyncHandler(async (req, res, next) => {
-  const node = await findNodeById(req.params.id);
-  const rule = node.meta_json?.rule;
-  res.json({
-    success: true,
-    data: rule || null,
-  });
-}));
+router.get(
+  "/nodes/:id/rule",
+  asyncHandler(async (req, res, next) => {
+    const node = await findNodeById(req.params.id);
+    const rule = node.meta_json?.rule;
+    res.json({
+      success: true,
+      data: rule || null,
+    });
+  }),
+);
 
 // ============ NODE FORM ============
 
-router.get("/nodes/:id/form", asyncHandler(async (req, res, next) => {
-  const node = await findNodeById(req.params.id);
-  const form = node.meta_json?.formSpec;
-  res.json({
-    success: true,
-    data: form || null,
-  });
-}));
+router.get(
+  "/nodes/:id/form",
+  asyncHandler(async (req, res, next) => {
+    const node = await findNodeById(req.params.id);
+    const form = node.meta_json?.formSpec;
+    res.json({
+      success: true,
+      data: form || null,
+    });
+  }),
+);
 
 // ============ NODE SCHEMA ============
 
-router.get("/nodes/:id/schema", asyncHandler(async (req, res, next) => {
-  const node = await findNodeById(req.params.id);
-  res.json({
-    success: true,
-    data: node.schema_json || null,
-  });
-}));
+router.get(
+  "/nodes/:id/schema",
+  asyncHandler(async (req, res, next) => {
+    const node = await findNodeById(req.params.id);
+    res.json({
+      success: true,
+      data: node.schema_json || null,
+    });
+  }),
+);
 
 // ============ NODE ANALYTICS ============
 
-router.get("/nodes/:id/analysis", asyncHandler(async (req, res, next) => {
-  const node = await findNodeById(req.params.id);
+router.get(
+  "/nodes/:id/analysis",
+  asyncHandler(async (req, res, next) => {
+    const node = await findNodeById(req.params.id);
 
-  const analysis = {
-    technical: (aiAnnotatorService as any).analyzeTechnicalComplexity(node),
-    integrationPoints: (aiAnnotatorService as any).extractIntegrationPoints(
-      node,
-    ),
-    businessArea: (aiAnnotatorService as any).guessBusinessArea(node),
-    piiClass: (aiAnnotatorService as any).guessPiiClass(node),
-  };
+    const analysis = {
+      technical: (aiAnnotatorService as any).analyzeTechnicalComplexity(node),
+      integrationPoints: (aiAnnotatorService as any).extractIntegrationPoints(
+        node,
+      ),
+      businessArea: (aiAnnotatorService as any).guessBusinessArea(node),
+      piiClass: (aiAnnotatorService as any).guessPiiClass(node),
+    };
 
-  res.json({
-    success: true,
-    data: analysis,
-  });
-}));
+    res.json({
+      success: true,
+      data: analysis,
+    });
+  }),
+);
 
 // ============ NODE QUALITY INFO ============
 
-router.get("/nodes/:id/quality", asyncHandler(async (req, res, next) => {
-  const node = await findNodeById(req.params.id);
-  const quality = node.meta_json?.quality;
-  res.json({
-    success: true,
-    data: quality || null,
-  });
-}));
+router.get(
+  "/nodes/:id/quality",
+  asyncHandler(async (req, res, next) => {
+    const node = await findNodeById(req.params.id);
+    const quality = node.meta_json?.quality;
+    res.json({
+      success: true,
+      data: quality || null,
+    });
+  }),
+);
 
 // ============ NEUE ENDPOINTS FÜR ERWEITERTE FUNKTIONALITÄT ============
 
-router.post("/system/optimize", asyncHandler(async (_req, res, next) => {
-  const result = await aiAnnotatorService.optimizeConfiguration();
-  res.json({
-    success: true,
-    data: result,
-  });
-}));
+router.post(
+  "/system/optimize",
+  asyncHandler(async (_req, res, next) => {
+    const result = await aiAnnotatorService.optimizeConfiguration();
+    res.json({
+      success: true,
+      data: result,
+    });
+  }),
+);
 
-router.get("/ai/model-stats", asyncHandler(async (_req, res, next) => {
-  const stats = await aiAnnotatorService.getModelStatistics();
-  res.json({
-    success: true,
-    data: stats,
-  });
-}));
+router.get(
+  "/ai/model-stats",
+  asyncHandler(async (_req, res, next) => {
+    const stats = await aiAnnotatorService.getModelStatistics();
+    res.json({
+      success: true,
+      data: stats,
+    });
+  }),
+);
 
-router.post("/bulk-enhance", asyncHandler(async (req, res, next) => {
-  const validated = bulkEnhanceSchema.parse(req.body);
-  const { nodeIds, operations } = validated;
+router.post(
+  "/bulk-enhance",
+  asyncHandler(async (req, res, next) => {
+    const validated = bulkEnhanceSchema.parse(req.body);
+    const { nodeIds, operations } = validated;
 
-  const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
-  const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
+    const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
+    const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
 
-  if (nodes.length === 0) {
-    throw new NotFoundError("Keine Knoten gefunden");
-  }
+    if (nodes.length === 0) {
+      throw new NotFoundError("Keine Knoten gefunden");
+    }
 
-  const batchOp: BatchOperation = {
-    operation: "bulk_enhance",
-    filters: { nodeIds },
-    options: {
-      chunkSize: 5,
-      parallelRequests: 2,
-      modelPreference: "balanced",
-    },
-  };
+    const batchOp: BatchOperation = {
+      operation: "bulk_enhance",
+      filters: { nodeIds },
+      options: {
+        chunkSize: 5,
+        parallelRequests: 2,
+        modelPreference: "balanced",
+      },
+    };
 
-  const result = await aiAnnotatorService.executeBatchOperation(batchOp);
+    const result = await aiAnnotatorService.executeBatchOperation(batchOp);
 
-  res.json({
-    success: true,
-    data: result,
-  });
-}));
+    res.json({
+      success: true,
+      data: result,
+    });
+  }),
+);
 
-router.get("/system/monitoring", asyncHandler(async (_req, res, next) => {
-  const health = await aiAnnotatorService.getHealthStatus();
-  const modelStats = await aiAnnotatorService.getModelStatistics();
-  const dbStats = await databaseTool.getNodeStatistics();
+router.get(
+  "/system/monitoring",
+  asyncHandler(async (_req, res, next) => {
+    const health = await aiAnnotatorService.getHealthStatus();
+    const modelStats = await aiAnnotatorService.getModelStatistics();
+    const dbStats = await databaseTool.getNodeStatistics();
 
-  res.json({
-    success: true,
-    data: {
-      health,
-      models: modelStats,
-      database: dbStats,
-      timestamp: new Date().toISOString(),
-    },
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        health,
+        models: modelStats,
+        database: dbStats,
+        timestamp: new Date().toISOString(),
+      },
+    });
+  }),
+);
 
-router.post("/ai/model-selection-test", asyncHandler(async (req, res, next) => {
-  if (process.env.NODE_ENV === "production") {
-    throw new ForbiddenError("Test endpoints sind in Production deaktiviert");
-  }
+router.post(
+  "/ai/model-selection-test",
+  asyncHandler(async (req, res, next) => {
+    if (process.env.NODE_ENV === "production") {
+      throw new ForbiddenError("Test endpoints sind in Production deaktiviert");
+    }
 
-  const validated = modelSelectionTestSchema.parse(req.body);
-  const { operation, priority } = validated;
+    const validated = modelSelectionTestSchema.parse(req.body);
+    const { operation, priority } = validated;
 
-  const model = await (
-    aiAnnotatorService as any
-  ).modelSelector.selectBestModel(operation, priority);
+    const model = await (
+      aiAnnotatorService as any
+    ).modelSelector.selectBestModel(operation, priority);
 
-  res.json({
-    success: true,
-    data: {
-      operation,
-      priority,
-      selectedModel: model,
-      availableModels: (aiAnnotatorService as any).availableModels,
-    },
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        operation,
+        priority,
+        selectedModel: model,
+        availableModels: (aiAnnotatorService as any).availableModels,
+      },
+    });
+  }),
+);
 
 // ============ ADVANCED FILTERS ============
 
-router.get("/filters", asyncHandler(async (req, res, next) => {
-  const { type, publicOnly } = req.query;
-  const filters = await filterService.getFilters(
-    type as string | undefined,
-    publicOnly === "true",
-  );
-  res.json({ success: true, data: filters });
-}));
+router.get(
+  "/filters",
+  asyncHandler(async (req, res, next) => {
+    const { type, publicOnly } = req.query;
+    const filters = await filterService.getFilters(
+      type as string | undefined,
+      publicOnly === "true",
+    );
+    res.json({ success: true, data: filters });
+  }),
+);
 
-router.get("/filters/presets", asyncHandler(async (req, res, next) => {
-  const { type } = req.query;
-  const presets = await filterService.getPresets(type as string | undefined);
-  const defaultPresets = filterService.getDefaultPresets();
+router.get(
+  "/filters/presets",
+  asyncHandler(async (req, res, next) => {
+    const { type } = req.query;
+    const presets = await filterService.getPresets(type as string | undefined);
+    const defaultPresets = filterService.getDefaultPresets();
 
-  res.json({
-    success: true,
-    data: {
-      saved: presets,
-      defaults: defaultPresets,
-    },
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        saved: presets,
+        defaults: defaultPresets,
+      },
+    });
+  }),
+);
 
-router.post("/filters", asyncHandler(async (req, res, next) => {
-  const filter = await filterService.createFilter(req.body);
-  res.json({ success: true, data: filter });
-}));
+router.post(
+  "/filters",
+  asyncHandler(async (req, res, next) => {
+    const filter = await filterService.createFilter(req.body);
+    res.json({ success: true, data: filter });
+  }),
+);
 
-router.get("/filters/:id", asyncHandler(async (req, res, next) => {
-  const filter = await filterService.getFilter(req.params.id);
-  if (!filter) {
-    throw new NotFoundError("Filter nicht gefunden");
-  }
-  res.json({ success: true, data: filter });
-}));
+router.get(
+  "/filters/:id",
+  asyncHandler(async (req, res, next) => {
+    const filter = await filterService.getFilter(req.params.id);
+    if (!filter) {
+      throw new NotFoundError("Filter nicht gefunden");
+    }
+    res.json({ success: true, data: filter });
+  }),
+);
 
-router.put("/filters/:id", asyncHandler(async (req, res, next) => {
-  const filter = await filterService.updateFilter(req.params.id, req.body);
-  if (!filter) {
-    throw new NotFoundError("Filter nicht gefunden");
-  }
-  res.json({ success: true, data: filter });
-}));
+router.put(
+  "/filters/:id",
+  asyncHandler(async (req, res, next) => {
+    const filter = await filterService.updateFilter(req.params.id, req.body);
+    if (!filter) {
+      throw new NotFoundError("Filter nicht gefunden");
+    }
+    res.json({ success: true, data: filter });
+  }),
+);
 
-router.delete("/filters/:id", asyncHandler(async (req, res, next) => {
-  const deleted = await filterService.deleteFilter(req.params.id);
-  if (!deleted) {
-    throw new NotFoundError("Filter nicht gefunden");
-  }
-  res.json({ success: true, message: "Filter gelöscht" });
-}));
+router.delete(
+  "/filters/:id",
+  asyncHandler(async (req, res, next) => {
+    const deleted = await filterService.deleteFilter(req.params.id);
+    if (!deleted) {
+      throw new NotFoundError("Filter nicht gefunden");
+    }
+    res.json({ success: true, message: "Filter gelöscht" });
+  }),
+);
 
-router.post("/filters/:id/apply", asyncHandler(async (req, res, next) => {
-  const filter = await filterService.getFilter(req.params.id);
-  if (!filter) {
-    throw new NotFoundError("Filter nicht gefunden");
-  }
+router.post(
+  "/filters/:id/apply",
+  asyncHandler(async (req, res, next) => {
+    const filter = await filterService.getFilter(req.params.id);
+    if (!filter) {
+      throw new NotFoundError("Filter nicht gefunden");
+    }
 
-  await filterService.incrementUsageCount(req.params.id);
+    await filterService.incrementUsageCount(req.params.id);
 
-  const allNodes = await aiAnnotatorService.listCandidates({ limit: 10000 });
-  const filtered = filterService.applyFilter(allNodes, filter.filterConfig);
+    const allNodes = await aiAnnotatorService.listCandidates({ limit: 10000 });
+    const filtered = filterService.applyFilter(allNodes, filter.filterConfig);
 
-  res.json({
-    success: true,
-    data: {
-      filter,
-      results: filtered,
-      total: filtered.length,
-    },
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        filter,
+        results: filtered,
+        total: filtered.length,
+      },
+    });
+  }),
+);
 
-router.post("/filters/export", asyncHandler(async (req, res, next) => {
-  const validated = exportFilterSchema.parse(req.body);
-  const { nodes, format } = validated;
+router.post(
+  "/filters/export",
+  asyncHandler(async (req, res, next) => {
+    const validated = exportFilterSchema.parse(req.body);
+    const { nodes, format } = validated;
 
-  const exported = await filterService.exportFilteredResults(nodes, format);
+    const exported = await filterService.exportFilteredResults(nodes, format);
 
-  if (format === "csv") {
-    res.setHeader("Content-Type", "text/csv");
-    res.setHeader("Content-Disposition", "attachment; filename=export.csv");
-  } else {
-    res.setHeader("Content-Type", "application/json");
-    res.setHeader("Content-Disposition", "attachment; filename=export.json");
-  }
+    if (format === "csv") {
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", "attachment; filename=export.csv");
+    } else {
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Content-Disposition", "attachment; filename=export.json");
+    }
 
-  res.send(exported);
-}));
+    res.send(exported);
+  }),
+);
 
 // ============ QUALITY ASSURANCE ============
 
-router.get("/qa/dashboard", asyncHandler(async (_req, res, next) => {
-  const data = await qualityAssuranceService.getDashboardData();
-  res.json({ success: true, data });
-}));
+router.get(
+  "/qa/dashboard",
+  asyncHandler(async (_req, res, next) => {
+    const data = await qualityAssuranceService.getDashboardData();
+    res.json({ success: true, data });
+  }),
+);
 
-router.get("/qa/reviews", asyncHandler(async (req, res, next) => {
-  const { status, limit = "50", offset = "0" } = req.query;
-  const reviews = await qualityAssuranceService.getReviewsByStatus(
-    (status as string) || "pending",
-    parseInt(limit as string),
-    parseInt(offset as string),
-  );
-  res.json({ success: true, data: reviews });
-}));
+router.get(
+  "/qa/reviews",
+  asyncHandler(async (req, res, next) => {
+    const { status, limit = "50", offset = "0" } = req.query;
+    const reviews = await qualityAssuranceService.getReviewsByStatus(
+      (status as string) || "pending",
+      parseInt(limit as string),
+      parseInt(offset as string),
+    );
+    res.json({ success: true, data: reviews });
+  }),
+);
 
-router.get("/qa/reviews/node/:nodeId", asyncHandler(async (req, res, next) => {
-  const reviews = await qualityAssuranceService.getReviewsByNode(
-    req.params.nodeId,
-  );
-  res.json({ success: true, data: reviews });
-}));
+router.get(
+  "/qa/reviews/node/:nodeId",
+  asyncHandler(async (req, res, next) => {
+    const reviews = await qualityAssuranceService.getReviewsByNode(
+      req.params.nodeId,
+    );
+    res.json({ success: true, data: reviews });
+  }),
+);
 
-router.post("/qa/reviews", asyncHandler(async (req, res, next) => {
-  const review = await qualityAssuranceService.createReview(req.body);
-  res.json({ success: true, data: review });
-}));
+router.post(
+  "/qa/reviews",
+  asyncHandler(async (req, res, next) => {
+    const review = await qualityAssuranceService.createReview(req.body);
+    res.json({ success: true, data: review });
+  }),
+);
 
-router.put("/qa/reviews/:id", asyncHandler(async (req, res, next) => {
-  const review = await qualityAssuranceService.updateReview(
-    req.params.id,
-    req.body,
-  );
-  if (!review) {
-    throw new NotFoundError("Review nicht gefunden");
-  }
-  res.json({ success: true, data: review });
-}));
+router.put(
+  "/qa/reviews/:id",
+  asyncHandler(async (req, res, next) => {
+    const review = await qualityAssuranceService.updateReview(
+      req.params.id,
+      req.body,
+    );
+    if (!review) {
+      throw new NotFoundError("Review nicht gefunden");
+    }
+    res.json({ success: true, data: review });
+  }),
+);
 
-router.post("/qa/reviews/:id/approve", asyncHandler(async (req, res, next) => {
-  const validated = approveRejectReviewSchema.parse(req.body);
-  const { reviewer, comments } = validated;
-  const review = await qualityAssuranceService.updateReview(req.params.id, {
-    reviewStatus: "approved",
-    reviewer,
-    reviewComments: comments,
-  });
+router.post(
+  "/qa/reviews/:id/approve",
+  asyncHandler(async (req, res, next) => {
+    const validated = approveRejectReviewSchema.parse(req.body);
+    const { reviewer, comments } = validated;
+    const review = await qualityAssuranceService.updateReview(req.params.id, {
+      reviewStatus: "approved",
+      reviewer,
+      reviewComments: comments,
+    });
 
-  if (!review) {
-    throw new NotFoundError("Review nicht gefunden");
-  }
+    if (!review) {
+      throw new NotFoundError("Review nicht gefunden");
+    }
 
-  res.json({ success: true, data: review });
-}));
+    res.json({ success: true, data: review });
+  }),
+);
 
-router.post("/qa/reviews/:id/reject", asyncHandler(async (req, res, next) => {
-  const validated = approveRejectReviewSchema.parse(req.body);
-  const { reviewer, comments } = validated;
-  const review = await qualityAssuranceService.updateReview(req.params.id, {
-    reviewStatus: "rejected",
-    reviewer,
-    reviewComments: comments,
-  });
+router.post(
+  "/qa/reviews/:id/reject",
+  asyncHandler(async (req, res, next) => {
+    const validated = approveRejectReviewSchema.parse(req.body);
+    const { reviewer, comments } = validated;
+    const review = await qualityAssuranceService.updateReview(req.params.id, {
+      reviewStatus: "rejected",
+      reviewer,
+      reviewComments: comments,
+    });
 
-  if (!review) {
-    throw new NotFoundError("Review nicht gefunden");
-  }
+    if (!review) {
+      throw new NotFoundError("Review nicht gefunden");
+    }
 
-  res.json({ success: true, data: review });
-}));
+    res.json({ success: true, data: review });
+  }),
+);
 
-router.get("/qa/trends", asyncHandler(async (req, res, next) => {
-  const { metricType, days = "30" } = req.query;
-  const trends = await qualityAssuranceService.getQualityTrends(
-    metricType as string | undefined,
-    parseInt(days as string),
-  );
-  res.json({ success: true, data: trends });
-}));
+router.get(
+  "/qa/trends",
+  asyncHandler(async (req, res, next) => {
+    const { metricType, days = "30" } = req.query;
+    const trends = await qualityAssuranceService.getQualityTrends(
+      metricType as string | undefined,
+      parseInt(days as string),
+    );
+    res.json({ success: true, data: trends });
+  }),
+);
 
-router.post("/qa/metrics/node/:nodeId", asyncHandler(async (req, res, next) => {
-  const allNodes = await aiAnnotatorService.listCandidates({ limit: 10000 });
-  const node = allNodes.find((n) => n.id === req.params.nodeId);
+router.post(
+  "/qa/metrics/node/:nodeId",
+  asyncHandler(async (req, res, next) => {
+    const allNodes = await aiAnnotatorService.listCandidates({ limit: 10000 });
+    const node = allNodes.find((n) => n.id === req.params.nodeId);
 
-  if (!node) {
-    throw new NotFoundError("Node nicht gefunden");
-  }
+    if (!node) {
+      throw new NotFoundError("Node nicht gefunden");
+    }
 
-  const metrics = qualityAssuranceService.calculateQualityMetrics(node);
-  res.json({ success: true, data: metrics });
-}));
+    const metrics = qualityAssuranceService.calculateQualityMetrics(node);
+    res.json({ success: true, data: metrics });
+  }),
+);
 
 // ============ MODEL MANAGEMENT ============
 
-router.get("/models/stats", asyncHandler(async (req, res, next) => {
-  const { days = "30" } = req.query;
-  const stats = await modelManagementService.getAllModelsStats(
-    parseInt(days as string),
-  );
-  res.json({ success: true, data: stats });
-}));
+router.get(
+  "/models/stats",
+  asyncHandler(async (req, res, next) => {
+    const { days = "30" } = req.query;
+    const stats = await modelManagementService.getAllModelsStats(
+      parseInt(days as string),
+    );
+    res.json({ success: true, data: stats });
+  }),
+);
 
-router.get("/models/stats/:modelName", asyncHandler(async (req, res, next) => {
-  const { days = "30" } = req.query;
-  const stats = await modelManagementService.getModelStats(
-    req.params.modelName,
-    parseInt(days as string),
-  );
+router.get(
+  "/models/stats/:modelName",
+  asyncHandler(async (req, res, next) => {
+    const { days = "30" } = req.query;
+    const stats = await modelManagementService.getModelStats(
+      req.params.modelName,
+      parseInt(days as string),
+    );
 
-  if (!stats) {
-    throw new NotFoundError("Keine Statistiken für dieses Model gefunden");
-  }
+    if (!stats) {
+      throw new NotFoundError("Keine Statistiken für dieses Model gefunden");
+    }
 
-  res.json({ success: true, data: stats });
-}));
+    res.json({ success: true, data: stats });
+  }),
+);
 
-router.post("/models/compare", asyncHandler(async (req, res, next) => {
-  const validated = compareModelsSchema.parse(req.body);
-  const { models, days } = validated;
+router.post(
+  "/models/compare",
+  asyncHandler(async (req, res, next) => {
+    const validated = compareModelsSchema.parse(req.body);
+    const { models, days } = validated;
 
-  const comparison = await modelManagementService.compareModels(models, days);
-  res.json({ success: true, data: comparison });
-}));
+    const comparison = await modelManagementService.compareModels(models, days);
+    res.json({ success: true, data: comparison });
+  }),
+);
 
-router.get("/models/costs", asyncHandler(async (req, res, next) => {
-  const { period = "month" } = req.query;
-  const breakdown = await modelManagementService.getCostBreakdown(
-    period as "day" | "week" | "month",
-  );
-  res.json({ success: true, data: breakdown });
-}));
+router.get(
+  "/models/costs",
+  asyncHandler(async (req, res, next) => {
+    const { period = "month" } = req.query;
+    const breakdown = await modelManagementService.getCostBreakdown(
+      period as "day" | "week" | "month",
+    );
+    res.json({ success: true, data: breakdown });
+  }),
+);
 
-router.get("/models/usage-timeline", asyncHandler(async (req, res, next) => {
-  const { days = "30", granularity = "day" } = req.query;
-  const timeline = await modelManagementService.getUsageOverTime(
-    parseInt(days as string),
-    granularity as "hour" | "day",
-  );
-  res.json({ success: true, data: timeline });
-}));
+router.get(
+  "/models/usage-timeline",
+  asyncHandler(async (req, res, next) => {
+    const { days = "30", granularity = "day" } = req.query;
+    const timeline = await modelManagementService.getUsageOverTime(
+      parseInt(days as string),
+      granularity as "hour" | "day",
+    );
+    res.json({ success: true, data: timeline });
+  }),
+);
 
-router.get("/models/availability", asyncHandler(async (_req, res, next) => {
-  const availability = await modelManagementService.getModelAvailability();
-  res.json({ success: true, data: availability });
-}));
+router.get(
+  "/models/availability",
+  asyncHandler(async (_req, res, next) => {
+    const availability = await modelManagementService.getModelAvailability();
+    res.json({ success: true, data: availability });
+  }),
+);
 
-router.get("/models/recommendations", asyncHandler(async (req, res, next) => {
-  const { prioritize, maxCost, minAccuracy } = req.query;
+router.get(
+  "/models/recommendations",
+  asyncHandler(async (req, res, next) => {
+    const { prioritize, maxCost, minAccuracy } = req.query;
 
-  const criteria: any = {};
-  if (prioritize) criteria.prioritize = prioritize;
-  if (maxCost) criteria.maxCost = parseFloat(maxCost as string);
-  if (minAccuracy) criteria.minAccuracy = parseFloat(minAccuracy as string);
+    const criteria: any = {};
+    if (prioritize) criteria.prioritize = prioritize;
+    if (maxCost) criteria.maxCost = parseFloat(maxCost as string);
+    if (minAccuracy) criteria.minAccuracy = parseFloat(minAccuracy as string);
 
-  const recommendations =
-    await modelManagementService.getModelRecommendations(criteria);
-  res.json({ success: true, data: recommendations });
-}));
+    const recommendations =
+      await modelManagementService.getModelRecommendations(criteria);
+    res.json({ success: true, data: recommendations });
+  }),
+);
 
-router.get("/models/registered", asyncHandler(async (_req, res, next) => {
-  const models = await modelManagementService.getRegisteredModels();
-  res.json({ success: true, data: models });
-}));
+router.get(
+  "/models/registered",
+  asyncHandler(async (_req, res, next) => {
+    const models = await modelManagementService.getRegisteredModels();
+    res.json({ success: true, data: models });
+  }),
+);
 
 // ============ ENHANCED BATCH PROCESSING ============
 
-router.post("/batch/create", asyncHandler(async (req, res, next) => {
-  const batch = await batchProcessingService.createBatch(req.body);
-  res.json({ success: true, data: batch });
-}));
+router.post(
+  "/batch/create",
+  asyncHandler(async (req, res, next) => {
+    const batch = await batchProcessingService.createBatch(req.body);
+    res.json({ success: true, data: batch });
+  }),
+);
 
-router.get("/batch/history", asyncHandler(async (req, res, next) => {
-  const {
-    operation,
-    status,
-    createdAfter,
-    createdBefore,
-    limit = "50",
-    offset = "0",
-  } = req.query;
+router.get(
+  "/batch/history",
+  asyncHandler(async (req, res, next) => {
+    const {
+      operation,
+      status,
+      createdAfter,
+      createdBefore,
+      limit = "50",
+      offset = "0",
+    } = req.query;
 
-  const filter: any = {};
-  if (operation) filter.operation = operation;
-  if (status) filter.status = status;
-  if (createdAfter) filter.createdAfter = createdAfter;
-  if (createdBefore) filter.createdBefore = createdBefore;
-  filter.limit = parseInt(limit as string);
-  filter.offset = parseInt(offset as string);
+    const filter: any = {};
+    if (operation) filter.operation = operation;
+    if (status) filter.status = status;
+    if (createdAfter) filter.createdAfter = createdAfter;
+    if (createdBefore) filter.createdBefore = createdBefore;
+    filter.limit = parseInt(limit as string);
+    filter.offset = parseInt(offset as string);
 
-  const history = await batchProcessingService.getBatchHistory(filter);
-  res.json({ success: true, data: history });
-}));
+    const history = await batchProcessingService.getBatchHistory(filter);
+    res.json({ success: true, data: history });
+  }),
+);
 
-router.get("/batch/:id/details", asyncHandler(async (req, res, next) => {
-  const batch = await batchProcessingService.getBatchWithResults(
-    req.params.id,
-  );
-  if (!batch) {
-    throw new NotFoundError("Batch nicht gefunden");
-  }
-  res.json({ success: true, data: batch });
-}));
+router.get(
+  "/batch/:id/details",
+  asyncHandler(async (req, res, next) => {
+    const batch = await batchProcessingService.getBatchWithResults(
+      req.params.id,
+    );
+    if (!batch) {
+      throw new NotFoundError("Batch nicht gefunden");
+    }
+    res.json({ success: true, data: batch });
+  }),
+);
 
-router.get("/batch/:id/visualization", asyncHandler(async (req, res, next) => {
-  const visualization = await batchProcessingService.getBatchVisualization(
-    req.params.id,
-  );
-  if (!visualization) {
-    throw new NotFoundError("Batch nicht gefunden");
-  }
-  res.json({ success: true, data: visualization });
-}));
+router.get(
+  "/batch/:id/visualization",
+  asyncHandler(async (req, res, next) => {
+    const visualization = await batchProcessingService.getBatchVisualization(
+      req.params.id,
+    );
+    if (!visualization) {
+      throw new NotFoundError("Batch nicht gefunden");
+    }
+    res.json({ success: true, data: visualization });
+  }),
+);
 
-router.post("/batch/:id/cancel-v2", asyncHandler(async (req, res, next) => {
-  const cancelled = await batchProcessingService.cancelBatch(req.params.id);
-  if (!cancelled) {
-    throw new BadRequestError("Batch konnte nicht abgebrochen werden");
-  }
-  res.json({ success: true, message: "Batch wurde abgebrochen" });
-}));
+router.post(
+  "/batch/:id/cancel-v2",
+  asyncHandler(async (req, res, next) => {
+    const cancelled = await batchProcessingService.cancelBatch(req.params.id);
+    if (!cancelled) {
+      throw new BadRequestError("Batch konnte nicht abgebrochen werden");
+    }
+    res.json({ success: true, message: "Batch wurde abgebrochen" });
+  }),
+);
 
 export default router;
