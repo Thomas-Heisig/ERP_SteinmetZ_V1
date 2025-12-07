@@ -265,12 +265,12 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](ARCHIVE.md) verschob
 
 **Gesamt**: ~1-2 Wochen für verbleibende 6 aktive Issues
 
-**Kürzlich archiviert (2025-12-07)**:
+**Kürzlich archiviert**:
 
-- ✅ **ISSUE-005**: Inkonsistente Error-Responses - vollständig behoben
-- ✅ **ISSUE-006**: Fehlende Input-Validierung - vollständig behoben
-- ✅ **ISSUE-015**: Package.json Scripts - vollständig behoben
-- ✅ **ISSUE-016**: Commit-Conventions - vollständig behoben
+- ✅ **ISSUE-005**: Inkonsistente Error-Responses - vollständig behoben (2025-12-07)
+- ✅ **ISSUE-006**: Fehlende Input-Validierung - vollständig behoben (2025-12-07)
+- ✅ **ISSUE-015**: Package.json Scripts - vollständig behoben (2025-12-06)
+- ✅ **ISSUE-016**: Commit-Conventions - vollständig behoben (2025-12-06)
 
 **Details siehe**: [ARCHIVE.md](ARCHIVE.md)
 
