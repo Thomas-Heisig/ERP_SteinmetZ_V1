@@ -68,7 +68,12 @@ export default [
     },
   },
   {
-    files: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx"],
+    files: [
+      "src/**/*.test.ts",
+      "src/**/*.test.tsx",
+      "src/**/*.spec.ts",
+      "src/**/*.spec.tsx",
+    ],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "no-console": "off",
