@@ -629,7 +629,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
         </header>
 
         {/* Tab Navigation - Enhanced with ARIA */}
-        <nav className="quick-chat-tabs" role="tablist" aria-label="Chat Funktionen">
+        <nav className="quick-chat-tabs" role="tablist" aria-label="Chat Functions">
           {(["chat", "models", "settings", "info"] as const).map((tab) => {
             const tabLabels: Record<typeof tab, string> = {
               chat: "💬 Chat",

@@ -165,7 +165,7 @@
   background: rgba(0, 0, 0, 0.05);
   padding: 0.125rem 0.375rem;
   border-radius: 4px;
-  font-family: 'Monaco', 'Courier New', monospace;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New', monospace;
   font-size: 0.875em;
 }
 
@@ -296,7 +296,7 @@
   font-size: 0.8125rem;
   font-weight: 600;
   color: #d97706;
-  font-family: 'Monaco', 'Courier New', monospace;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 .tool-parameters,
