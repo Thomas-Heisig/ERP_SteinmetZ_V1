@@ -1,5 +1,15 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/quickchat/quickchatRouter.ts
+/**
+ * QuickChat Router - Redesigned
+ * 
+ * Improvements:
+ * - Enhanced command system
+ * - Better validation
+ * - Improved error handling
+ * - Session management
+ * - Rate limiting ready
+ */
 
 import { Router, Request, Response } from "express";
 import { z } from "zod";
@@ -9,22 +19,31 @@ import {
   ValidationError,
 } from "../../types/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import pino from "pino";
+import { createLogger } from "../../utils/logger.js";
 
 const router = Router();
-const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+const logger = createLogger("quickchat");
 
-// Validation schemas
+// ✅ IMPROVED: Enhanced validation schemas with better error messages
 const messageSchema = z.object({
-  sessionId: z.string().uuid().optional(),
-  message: z.string().min(1).max(5000),
+  sessionId: z.string().uuid("Invalid session ID format").optional(),
+  message: z.string().trim().min(1, "Message cannot be empty").max(5000, "Message too long (max 5000 characters)"),
   context: z.record(z.string(), z.unknown()).optional(),
+  metadata: z.object({
+    source: z.string().optional(),
+    priority: z.enum(["low", "normal", "high"]).optional(),
+    tags: z.array(z.string()).optional(),
+  }).optional(),
 });
 
 const commandSchema = z.object({
-  command: z.string().min(1),
-  args: z.string().optional(),
+  command: z.string().trim().min(1, "Command cannot be empty"),
+  args: z.string().trim().optional(),
   context: z.record(z.string(), z.unknown()).optional(),
+  options: z.object({
+    silent: z.boolean().optional(),
+    async: z.boolean().optional(),
+  }).optional(),
 });
 
 // Command definitions

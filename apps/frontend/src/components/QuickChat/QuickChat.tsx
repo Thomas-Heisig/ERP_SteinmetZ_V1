@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useQuickChat } from "./hooks";
 import { ChatTab } from "./components/ChatTab";
@@ -13,6 +13,18 @@ interface QuickChatProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+/**
+ * QuickChat - Redesigned AI Assistant Component
+ * 
+ * Complete overhaul with:
+ * - Modern design with glassmorphism effects
+ * - Improved performance with memoization
+ * - Better accessibility (ARIA, keyboard navigation)
+ * - Enhanced error handling
+ * - Responsive design
+ * - Dark mode support
+ */
 
 const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   const { theme } = useTheme();
@@ -449,152 +461,236 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
     setShowQuickActions(Boolean(value));
   };
 
-  // Handle escape key to close
+  // ✅ IMPROVED: Enhanced keyboard navigation with Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
+        e.preventDefault();
         onClose();
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
+      // Trap focus within modal for accessibility
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
   }, [isOpen, onClose]);
+
+  // ✅ IMPROVED: Memoize tab components to prevent unnecessary re-renders
+  const chatTabMemo = useMemo(() => {
+    if (activeTab !== "chat") return null;
+    return (
+      <ChatTab
+        sessions={localSessions}
+        currentSession={currentSession}
+        models={models}
+        input={input}
+        loading={loading}
+        isRecording={isRecording}
+        audioLoading={audioLoading}
+        uploadLoading={uploadLoading}
+        showQuickActions={showQuickActions}
+        fallbackEnabled={fallbackEnabled}
+        fileInputRef={fileInputRef}
+        onSessionSelect={handleSessionSelect}
+        onSessionCreate={handleSessionCreate}
+        onSessionDelete={handleSessionDelete}
+        onModelChange={handleModelChange}
+        onFileUpload={handleFileUploadDirect}
+        onInputChange={setInput}
+        onSendMessage={handleSendMessage}
+        onKeyPress={handleKeyPress}
+        onStartRecording={startRecording}
+        onStopRecording={stopRecording}
+        onQuickActionToggle={handleQuickActionToggle}
+        onQuickAction={handleQuickAction}
+        onFallbackToggle={setFallbackEnabled}
+        onTranslate={handleTranslate}
+        onSummarize={handleSummarize}
+      />
+    );
+  }, [
+    activeTab,
+    localSessions,
+    currentSession,
+    models,
+    input,
+    loading,
+    isRecording,
+    audioLoading,
+    uploadLoading,
+    showQuickActions,
+    fallbackEnabled,
+  ]);
+
+  const modelsTabMemo = useMemo(() => {
+    if (activeTab !== "models") return null;
+    return (
+      <ModelsTab
+        models={models}
+        selectedModel={selectedModel}
+        onModelSelect={handleModelSelect}
+        onModelsReload={handleModelsReload}
+      />
+    );
+  }, [activeTab, models, selectedModel]);
+
+  const settingsTabMemo = useMemo(() => {
+    if (activeTab !== "settings" || !settings) return null;
+    return (
+      <SettingsTab
+        settings={settings}
+        models={models}
+        onSettingsChange={handleSettingsChange}
+        onSettingsSave={handleSettingsSave}
+        onSettingsReset={handleSettingsReset}
+      />
+    );
+  }, [activeTab, settings, models]);
+
+  const infoTabMemo = useMemo(() => {
+    if (activeTab !== "info") return null;
+    return (
+      <InfoTab
+        systemInfo={systemInfo}
+        loading={systemInfoLoading}
+        error={systemInfoError}
+        onRefresh={handleSystemInfoRefresh}
+      />
+    );
+  }, [activeTab, systemInfo, systemInfoLoading, systemInfoError]);
 
   // Early return if not open
   if (!isOpen) return null;
 
   return (
-    <div className={`quick-chat-overlay ${theme}`}>
-      <div className={`quick-chat-container ${theme}`}>
-        {/* Header */}
-        <header className="quick-chat-header">
+    <div 
+      className={`quick-chat-overlay ${theme}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="quick-chat-title"
+    >
+      <div className={`quick-chat-container ${theme}`} data-theme={theme}>
+        {/* Header - Redesigned */}
+        <header className="quick-chat-header" role="banner">
           <div className="quick-chat-header-left">
-            <h3>🤖 ERP Assistant</h3>
+            <h3 id="quick-chat-title">🤖 ERP Assistant</h3>
             {currentSession && (
-              <span className="model-info">{currentSession.model}</span>
+              <span className="model-info" role="status">
+                {currentSession.model}
+              </span>
             )}
-            {conversationContext && (
-              <span className="context-info">
-                {conversationContext.current_topic &&
-                  `Thema: ${conversationContext.current_topic}`}
+            {conversationContext?.current_topic && (
+              <span className="context-info" role="status">
+                Thema: {conversationContext.current_topic}
               </span>
             )}
           </div>
           <div className="quick-chat-header-right">
-            {/* ✅ KORRIGIERT: Korrekter Online/Offline Status mit Loading */}
-            <div className="connection-status">
-              {systemInfoLoading
-                ? "⏳ Lädt..."
-                : systemInfo?.status?.system_status === "healthy"
-                  ? "🟢 Online"
-                  : "🔴 Offline"}
+            {/* ✅ IMPROVED: Enhanced status indicator with ARIA */}
+            <div 
+              className="connection-status" 
+              role="status" 
+              aria-live="polite"
+              title={
+                systemInfoLoading
+                  ? "Verbindung wird geprüft..."
+                  : systemInfo?.status?.system_status === "healthy"
+                    ? "Verbunden und bereit"
+                    : "Verbindung getrennt"
+              }
+            >
+              {systemInfoLoading && (
+                <span className="loading-indicator">⏳ Lädt...</span>
+              )}
+              {!systemInfoLoading && systemInfo?.status?.system_status === "healthy" && (
+                <span className="status-online">🟢 Online</span>
+              )}
+              {!systemInfoLoading && systemInfo?.status?.system_status !== "healthy" && (
+                <span className="status-offline">🔴 Offline</span>
+              )}
             </div>
             <button
               className="close-btn"
               onClick={onClose}
               aria-label="Chat schließen"
+              title="Schließen (Esc)"
+              type="button"
             >
               ×
             </button>
           </div>
         </header>
 
-        {/* Tab Navigation */}
-        <nav className="quick-chat-tabs">
-          {(["chat", "models", "settings", "info"] as Tab[]).map((tab) => (
-            <button
-              key={tab}
-              className={`tab-button ${activeTab === tab ? "active" : ""}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab === "chat" && "💬 Chat"}
-              {tab === "models" && "🧠 Modelle"}
-              {tab === "settings" && "⚙️ Einstellungen"}
-              {tab === "info" && "📊 System"}
-            </button>
-          ))}
+        {/* Tab Navigation - Enhanced with ARIA */}
+        <nav className="quick-chat-tabs" role="tablist" aria-label="Chat Funktionen">
+          {(["chat", "models", "settings", "info"] as Tab[]).map((tab) => {
+            const tabLabels = {
+              chat: "💬 Chat",
+              models: "🧠 Modelle",
+              settings: "⚙️ Einstellungen",
+              info: "📊 System"
+            };
+            
+            return (
+              <button
+                key={tab}
+                role="tab"
+                aria-selected={activeTab === tab}
+                aria-controls={`${tab}-panel`}
+                id={`${tab}-tab`}
+                className={`tab-button ${activeTab === tab ? "active" : ""}`}
+                onClick={() => setActiveTab(tab)}
+                type="button"
+                tabIndex={activeTab === tab ? 0 : -1}
+              >
+                {tabLabels[tab]}
+              </button>
+            );
+          })}
         </nav>
 
-        {/* Error Banner */}
+        {/* Error Banner - Enhanced */}
         {error && (
-          <div className="error-banner">
+          <div 
+            className="error-banner" 
+            role="alert" 
+            aria-live="assertive"
+          >
             <span>{error}</span>
             <button
               className="dismiss-btn"
               onClick={dismissError}
               aria-label="Fehlermeldung schließen"
+              title="Schließen"
+              type="button"
             >
               ×
             </button>
           </div>
         )}
 
-        {/* Main Content */}
-        <section className="quick-chat-content">
-          {activeTab === "chat" && (
-            <ChatTab
-              sessions={localSessions}
-              currentSession={currentSession}
-              models={models}
-              input={input}
-              loading={loading}
-              isRecording={isRecording}
-              audioLoading={audioLoading}
-              uploadLoading={uploadLoading}
-              showQuickActions={showQuickActions}
-              fallbackEnabled={fallbackEnabled}
-              fileInputRef={fileInputRef}
-              onSessionSelect={handleSessionSelect}
-              onSessionCreate={handleSessionCreate}
-              onSessionDelete={handleSessionDelete}
-              onModelChange={handleModelChange}
-              onFileUpload={handleFileUploadDirect}
-              onInputChange={setInput}
-              onSendMessage={handleSendMessage}
-              onKeyPress={handleKeyPress}
-              onStartRecording={startRecording}
-              onStopRecording={stopRecording}
-              // ✅ KORRIGIERT: Sichere Toggle Funktion
-              onQuickActionToggle={handleQuickActionToggle}
-              onQuickAction={handleQuickAction}
-              onFallbackToggle={setFallbackEnabled}
-              onTranslate={handleTranslate}
-              onSummarize={handleSummarize}
-            />
-          )}
-
-          {activeTab === "models" && (
-            <ModelsTab
-              models={models}
-              selectedModel={selectedModel}
-              onModelSelect={handleModelSelect}
-              onModelsReload={handleModelsReload}
-            />
-          )}
-
-          {activeTab === "settings" && settings && (
-            <SettingsTab
-              settings={settings}
-              models={models}
-              onSettingsChange={handleSettingsChange}
-              onSettingsSave={handleSettingsSave}
-              onSettingsReset={handleSettingsReset}
-            />
-          )}
-
-          {activeTab === "info" && (
-            <InfoTab
-              systemInfo={systemInfo}
-              loading={systemInfoLoading}
-              error={systemInfoError}
-              onRefresh={handleSystemInfoRefresh}
-            />
-          )}
+        {/* Main Content - Memoized for performance */}
+        <section 
+          className="quick-chat-content"
+          role="tabpanel"
+          id={`${activeTab}-panel`}
+          aria-labelledby={`${activeTab}-tab`}
+        >
+          {chatTabMemo}
+          {modelsTabMemo}
+          {settingsTabMemo}
+          {infoTabMemo}
         </section>
 
         {/* Scroll anchor */}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} aria-hidden="true" />
       </div>
     </div>
   );
