@@ -10,8 +10,8 @@ Before seeking support, please check our comprehensive documentation:
 
 ### Getting Started
 
-- **[README.md](README.md)** - Project overview and quick start
-- **[README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)** - Complete documentation
+- **[README.md](README.md)** - Project overview and complete documentation
+- **[Documentation Hub](docs/README.md)** - Central documentation index
 - **[Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)** - Setup and development guide
 
 ### Technical Documentation

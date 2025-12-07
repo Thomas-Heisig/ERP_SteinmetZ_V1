@@ -1,6 +1,6 @@
 # ERP SteinmetZ - Aktive Issues
 
-**Stand**: Dezember 2025
+**Stand**: 7. Dezember 2025
 **Version**: 0.3.0
 
 Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical Debt im Projekt auf.
@@ -510,7 +510,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ---
 
-**Letzte Aktualisierung**: 6. Dezember 2025  
+**Letzte Aktualisierung**: 7. Dezember 2025  
 **Maintainer**: Thomas Heisig  
 **Nächster Review**: Januar 2026
 

@@ -1,6 +1,6 @@
 # ERP SteinmetZ - TODO Liste
 
-**Stand**: Dezember 2025  
+**Stand**: 7. Dezember 2025  
 **Version**: 0.3.0
 
 Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und Phase.
@@ -141,7 +141,7 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 1-2 Tage
   - **Ergebnis**: Umfassende Onboarding-Dokumentation, Code-Style-Guide, ADR-Template und 5 initiale ADRs
 
-- [x] **Dokumentations-Konsolidierung** ✅ ERLEDIGT (2024-12-05)
+- [x] **Dokumentations-Konsolidierung** ✅ VOLLSTÄNDIG ERLEDIGT (2025-12-07)
   - [x] Changelogs zusammenführen (CHANGELOG.md)
   - [x] Issues aufräumen (nur aktive in ISSUES.md)
   - [x] Archiv erstellen (ARCHIVE.md) für behobene Issues
@@ -151,8 +151,14 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
     - [x] ERROR_HANDLING.md - Standardisiertes Error-Handling-System
     - [x] DATABASE_OPTIMIZATION.md - DB-Performance und Optimierung
     - [x] WEBSOCKET_REALTIME.md - WebSocket und Real-Time Features
-  - **Aufwand**: 1-2 Stunden
-  - **Ergebnis**: Klare, wartbare Dokumentationsstruktur mit umfassenden Guides
+  - [x] README_COMPREHENSIVE.md konsolidiert (2025-12-07):
+    - [x] Beste Inhalte beider READMEs zusammengeführt
+    - [x] Doppelte Informationen entfernt
+    - [x] README_COMPREHENSIVE.md archiviert
+    - [x] Kernphilosophie-Sektion hinzugefügt
+    - [x] Aktualisierungsdaten auf 7. Dezember 2025 gesetzt
+  - **Aufwand**: 1-2 Stunden → 2 Stunden (inkl. finale Konsolidierung)
+  - **Ergebnis**: Klare, wartbare Dokumentationsstruktur mit konsolidiertem README
 
 ---
 
@@ -603,13 +609,28 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 ## 📊 Fortschrittstracking
 
-### Completion Rate (Stand 6. Dezember 2025)
+### Completion Rate (Stand 7. Dezember 2025)
 
-- 🟢 **Abgeschlossen**: 82% (Infrastructure, Core-Features, Error-Handling, i18n, Accessibility, Animations)
-- 🟡 **In Arbeit**: 14% (AI-Annotator, Function-Transformation)
+- 🟢 **Abgeschlossen**: 83% (Infrastructure, Core-Features, Error-Handling, i18n, Accessibility, Animations, Dokumentation)
+- 🟡 **In Arbeit**: 13% (AI-Annotator, Function-Transformation)
 - 🔴 **Offen**: 4% (Enterprise-Features, Advanced-AI)
 
-**Neu Erledigt (6. Dezember 2025 - Abend-Session)**:
+**Neu Erledigt (7. Dezember 2025)**:
+
+- ✅ **Dokumentations-Konsolidierung**:
+  - ✅ README_COMPREHENSIVE.md → README.md zusammengeführt
+  - ✅ Doppelte Informationen entfernt (~ 100 Zeilen Duplikate)
+  - ✅ README_COMPREHENSIVE.md nach docs/archive/ verschoben
+  - ✅ Alle Dokumentations-Links aktualisiert (README.md, SUPPORT.md)
+  - ✅ Kernphilosophie-Sektion hinzugefügt
+  - ✅ Status auf 7. Dezember 2025 aktualisiert
+- ✅ **Repository-Verifikation**:
+  - ✅ Build-Test erfolgreich (Backend + Frontend komplett)
+  - ✅ Backend-Routes verifiziert: 12 APIs korrekt registriert
+  - ✅ Frontend-Routes verifiziert: 18 Routes korrekt konfiguriert
+  - ✅ Alle Dokumentations-Cross-Links funktionieren
+
+**Erledigt (6. Dezember 2025 - Abend-Session)**:
 
 - ✅ Router Error-Handling-Standardisierung (5 Router)
   - ✅ dashboard.ts - asyncHandler implementiert
@@ -620,7 +641,7 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 - ✅ Backend Build erfolgreich (0 TypeScript-Fehler)
 - ✅ Backend Tests: 42/42 passing
 
-**Früher am 6. Dezember 2025**:
+**Erledigt (6. Dezember 2025 - Vormittag/Nachmittag)**:
 
 - ✅ i18n mit Date/Time/Currency-Formatierung
 - ✅ Accessibility (ARIA-Labels, Keyboard-Navigation, Screen-Reader)
@@ -638,6 +659,6 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 ---
 
-**Letzte Aktualisierung**: 6. Dezember 2025  
+**Letzte Aktualisierung**: 7. Dezember 2025  
 **Maintainer**: Thomas Heisig  
 **Nächster Review**: Januar 2026
