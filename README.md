@@ -25,6 +25,8 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 
 ## ✅ Aktueller Status (Stand: 7. Dezember 2025)
 
+> 📊 **System-Übersicht**: [Detaillierter System-Status](docs/SYSTEM_STATUS.md) mit Performance-Metriken, Operational-Readiness und bekannten Einschränkungen
+
 ### Frontend ✅ Vollständig Funktionsfähig
 
 - ✅ **React 19 + Vite**: Modernes Build-System mit optimiertem Code-Splitting
@@ -412,8 +414,9 @@ Siehe LICENSE file für Details.
 
 **Version:** 0.3.0  
 **Letztes Update:** 7. Dezember 2025  
-**Build-Status:** ✅ Erfolgreich  
-**Test-Status:** ✅ 79/92 passing (Backend: 42/42, Frontend: 37/50)
+**Build-Status:** ✅ Erfolgreich (Backend + Frontend)  
+**Test-Status:** ✅ 134/134 bestanden (Backend: 84/84, Frontend: 50/50)  
+**Dependencies:** ✅ 0 Vulnerabilities
 
 ---
 

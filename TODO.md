@@ -6,40 +6,13 @@
 Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und Phase.
 Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requirements), OpenAPI 3.0 (APIs).
 
+> 📊 **System-Status**: Siehe [SYSTEM_STATUS.md](docs/SYSTEM_STATUS.md) für detaillierte Übersicht
+
 ---
 
 ## 🔴 Kritische Aufgaben (Höchste Priorität)
 
-### Build & Infrastruktur
-
-- [x] **TypeScript Build-Fehler beheben** ✅ ERLEDIGT (2024-12-03)
-  - [x] @types/node in Backend korrekt einbinden
-  - [x] Implizite 'any' Types in allen Routern beheben
-  - [x] Module-Resolution-Probleme für 'express', 'multer', etc. lösen
-  - [x] Process-Type-Definitionen ergänzen
-  - [x] NodeJS-Namespace-Fehler beheben
-  - **Priorität**: 🔴 Kritisch - Build schlägt aktuell fehl
-  - **Aufwand**: 2-4 Stunden (bereits erledigt)
-  - **Betroffen**: apps/backend/src/
-
-- [x] **npm install Fehler beheben** ✅ ERLEDIGT (2024-12-03)
-  - [x] Peer-Dependency-Warnings analysieren
-  - [x] Package-Versionen kompatibel machen
-  - [x] Lock-File aktualisieren
-  - **Priorität**: 🔴 Kritisch
-  - **Aufwand**: 1-2 Stunden
-  - **Ergebnis**: Nur Deprecation-Warnings, keine kritischen Fehler
-
-### Testing
-
-- [x] **Test-Infrastruktur aufsetzen** ✅ ERLEDIGT (2024-12-03)
-  - [x] Vitest konfigurieren
-  - [x] Test-Scripts in package.json ergänzen
-  - [x] Erste Unit-Tests für kritische Services schreiben
-  - [x] Test-Coverage-Reporting einrichten
-  - **Priorität**: 🔴 Kritisch für Production-Readiness
-  - **Aufwand**: 1 Tag
-  - **Ergebnis**: 30 Tests (22 Backend, 8 Frontend) - alle passing
+**Status**: ✅ Alle kritischen Aufgaben erledigt! Siehe [ARCHIVE.md](ARCHIVE.md)
 
 ---
 

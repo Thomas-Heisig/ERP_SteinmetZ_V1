@@ -5,7 +5,8 @@
 
 Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical Debt im Projekt auf.
 
-> **Hinweis**: Behobene Issues wurden nach [ARCHIVE.md](ARCHIVE.md) verschoben.
+> **Hinweis**: Behobene Issues wurden nach [ARCHIVE.md](ARCHIVE.md) verschoben.  
+> 📊 **System-Status**: Siehe [docs/SYSTEM_STATUS.md](docs/SYSTEM_STATUS.md) für Gesamtübersicht
 
 ---
 
@@ -242,11 +243,17 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](ARCHIVE.md) verschob
 
 ### Nach Priorität
 
-- 🟠 Hoch: 1 Issue (1 offen)
+- 🟠 Hoch: 1 Issue (ISSUE-008: Monitoring)
 - 🟡 Mittel: 5 Issues (2 weitgehend behoben, 3 offen)
 - 🟢 Niedrig: 0 Issues (✅ alle erledigt und archiviert)
 
-**Gesamt**: 6 aktive Issues (2 weitgehend behoben, 4 offen) | **Archiviert**: 10 Issues (siehe [ARCHIVE.md](ARCHIVE.md))
+**Gesamt**: 6 aktive Issues | **Status**: 2 weitgehend behoben, 4 offen | **Archiviert**: 10 Issues (siehe [ARCHIVE.md](ARCHIVE.md))
+
+### System-Status Übersicht
+- ✅ **Build & Tests**: 100% erfolgreich (134/134 Tests bestanden)
+- ✅ **Dependencies**: 0 Vulnerabilities
+- ✅ **Operational**: System läuft stabil und fehlertolerant
+- 🟡 **Verbesserungspotential**: Monitoring, TypeScript Strict Mode, Code-Dokumentation
 
 ### Nach Kategorie
 

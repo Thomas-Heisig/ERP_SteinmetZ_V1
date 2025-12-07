@@ -2,6 +2,17 @@
 
 Welcome to the ERP SteinmetZ documentation! This directory contains comprehensive documentation following international standards.
 
+## 🎯 System Status
+
+**➡️ [SYSTEM STATUS & OVERVIEW](SYSTEM_STATUS.md)** ⭐ **NEU**
+- Aktueller Betriebszustand des Systems
+- Performance-Metriken und Tests
+- Bekannte Einschränkungen
+- Production-Readiness-Status
+- Nächste Schritte
+
+---
+
 ## 📘 Documentation Framework
 
 This documentation follows the **[Diátaxis Framework](https://diataxis.fr/)**, organizing content into four distinct categories:
