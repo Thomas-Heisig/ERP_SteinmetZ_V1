@@ -31,20 +31,27 @@ jobs:
       - name: Rebuild native modules
         run: npm rebuild better-sqlite3
 
-      - name: Run backend tests
-        run: npm run test:backend
+      - name: Run backend tests with coverage
+        run: npm run test:coverage -w @erp-steinmetz/backend
         env:
           NODE_ENV: test
 
-      - name: Run frontend tests
-        run: npm run test:frontend
+      - name: Run frontend tests with coverage
+        run: npm run test:coverage -w @erp-steinmetz/frontend
         env:
           NODE_ENV: test
 
-      - name: Upload coverage reports
+      - name: Upload coverage to Codecov
         if: matrix.node-version == '20.x'
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: unittests
           fail_ci_if_error: false
+
+      - name: SonarQube Scan
+        if: matrix.node-version == '20.x'
+        uses: SonarSource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
