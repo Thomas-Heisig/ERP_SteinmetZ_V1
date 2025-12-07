@@ -630,8 +630,8 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
 
         {/* Tab Navigation - Enhanced with ARIA */}
         <nav className="quick-chat-tabs" role="tablist" aria-label="Chat Funktionen">
-          {(["chat", "models", "settings", "info"] as Tab[]).map((tab) => {
-            const tabLabels = {
+          {(["chat", "models", "settings", "info"] as const).map((tab) => {
+            const tabLabels: Record<typeof tab, string> = {
               chat: "💬 Chat",
               models: "🧠 Modelle",
               settings: "⚙️ Einstellungen",
@@ -646,7 +646,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
                 aria-controls={`${tab}-panel`}
                 id={`${tab}-tab`}
                 className={`tab-button ${activeTab === tab ? "active" : ""}`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setActiveTab(tab as Tab)}
                 type="button"
                 tabIndex={activeTab === tab ? 0 : -1}
               >

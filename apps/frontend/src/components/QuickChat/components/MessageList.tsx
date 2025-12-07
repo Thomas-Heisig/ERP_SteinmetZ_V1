@@ -1,6 +1,7 @@
 // ERP_SteinmetZ_V1/apps/frontend/src/components/QuickChat/components/MessageList.tsx
 import React, { useEffect, useRef } from "react";
 import { ChatMessage, AIModel, ConversationState, Provider } from "../types";
+import "./MessageList.css";
 
 interface MessageListProps {
   messages: ChatMessage[];
