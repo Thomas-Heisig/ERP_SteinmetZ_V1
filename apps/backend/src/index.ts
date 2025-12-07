@@ -40,6 +40,7 @@ import quickchatRouter from "./routes/quickchat/quickchatRouter.js";
 import diagnosticsRouter from "./routes/diagnostics/diagnosticsRouter.js";
 import hrRouter from "./routes/hr/hrRouter.js";
 import financeRouter from "./routes/finance/financeRouter.js";
+import searchAnalyticsRouter from "./routes/searchAnalytics/searchAnalyticsRouter.js";
 
 import { toolRegistry } from "./tools/registry.js";
 import { listRoutesTool } from "./tools/listRoutesTool.js";
@@ -156,6 +157,7 @@ app.use("/api/quickchat", quickchatRouter);
 app.use("/diagnostics", diagnosticsRouter);
 app.use("/api/hr", hrRouter);
 app.use("/api/finance", financeRouter);
+app.use("/api/search", searchAnalyticsRouter);
 
 // WebSocket statistics endpoint
 app.get("/api/ws/stats", (_req: Request, res: Response) => {
