@@ -230,7 +230,8 @@ To create custom quality gates:
 
 - **Source**: Vitest coverage reports (LCOV format)
 - **Target**: ≥ 80% overall coverage
-- **Current Status**: Backend 86%, Frontend TBD
+- **Current Status**: Backend 47%, Frontend 96%
+- **Note**: Backend coverage lower due to pending integration tests; Frontend has excellent UI component coverage
 
 ### Code Quality Metrics
 

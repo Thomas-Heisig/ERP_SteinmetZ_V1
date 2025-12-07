@@ -248,8 +248,9 @@ Test coverage reports are automatically uploaded to **Codecov** for Node.js 20.x
 
 **Coverage Targets:**
 
-- Backend: 86% (Goal: 90%)
-- Frontend: To be measured
+- Backend: 47% (Goal: 80%+)
+- Frontend: 96% (Goal: 80%+)
+- Overall: 80%+ required by SonarQube quality gate
 
 ### Build Status
 
@@ -400,8 +401,8 @@ Test coverage is generated using Vitest with v8 provider:
 - **Upload**: Codecov (for trends) + SonarQube (for quality gates)
 
 **Coverage Targets:**
-- **Backend**: 86% (Goal: 90%)
-- **Frontend**: TBD (Goal: 80%)
+- **Backend**: 47% (Goal: 80%+)
+- **Frontend**: 96% (Goal: 80%+)
 - **Overall**: 80%+ required by quality gate
 
 **Run Coverage Locally:**

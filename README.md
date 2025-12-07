@@ -302,9 +302,9 @@ npm test:coverage     # Mit Coverage-Report (LCOV, HTML, JSON)
 **Aktueller Test-Status:**
 
 - ✅ Backend: 42/42 Tests passing (100%)
-- ✅ Frontend: 37/50 Tests passing (74%, 13 pre-existing issues unrelated to recent changes)
+- ✅ Frontend: 50/50 Tests passing (100%)
 - ✅ Build: Vollständig erfolgreich
-- ✅ Code Coverage: Backend 86% (Ziel: 90%)
+- ✅ Code Coverage: Backend 47%, Frontend 96% (Ziel: Gesamt 80%+)
 
 **Code-Qualität & Coverage:**
 
