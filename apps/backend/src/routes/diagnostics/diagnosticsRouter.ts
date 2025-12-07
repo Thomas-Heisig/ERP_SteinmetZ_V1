@@ -18,7 +18,7 @@ import { asyncHandler } from "../../middleware/asyncHandler.js";
 /* ========================================================================== */
 
 const logsQuerySchema = z.object({
-  limit: z.string().regex(/^\d+$/).optional().default("100"),
+  limit: z.coerce.number().int().positive().optional().default(100),
   entity: z.string().min(1).max(100).optional(),
   action: z.string().min(1).max(100).optional(),
 });
@@ -139,7 +139,7 @@ router.get(
     }
 
     sql += " ORDER BY created_at DESC LIMIT ?";
-    params.push(Number(limit));
+    params.push(limit);
 
     const logs = await db.all(sql, params);
 

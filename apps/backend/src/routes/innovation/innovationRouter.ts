@@ -107,11 +107,11 @@ const ideaPhaseSchema = z.enum([
 
 const getIdeasQuerySchema = z.object({
   phase: ideaPhaseSchema.optional(),
-  priority: z.string().regex(/^\d+$/).optional(),
+  priority: z.coerce.number().int().min(0).optional(),
   author: z.string().min(1).max(100).optional(),
   search: z.string().min(1).max(200).optional(),
-  limit: z.string().regex(/^\d+$/).optional(),
-  offset: z.string().regex(/^\d+$/).optional(),
+  limit: z.coerce.number().int().positive().optional().default(100),
+  offset: z.coerce.number().int().min(0).optional().default(0),
 });
 
 const createIdeaSchema = z.object({
@@ -162,14 +162,7 @@ router.get(
   "/ideas",
   asyncHandler(async (req: Request, res: Response) => {
     const validated = getIdeasQuerySchema.parse(req.query);
-    const {
-      phase,
-      priority,
-      author,
-      search,
-      limit = "100",
-      offset = "0",
-    } = validated;
+    const { phase, priority, author, search, limit, offset } = validated;
 
     let sql = "SELECT * FROM ideas WHERE 1=1";
     const params: unknown[] = [];
@@ -179,9 +172,9 @@ router.get(
       params.push(phase);
     }
 
-    if (priority) {
+    if (priority !== undefined) {
       sql += " AND priority >= ?";
-      params.push(Number(priority));
+      params.push(priority);
     }
 
     if (author) {
@@ -197,7 +190,7 @@ router.get(
 
     sql += " ORDER BY priority DESC, created_at DESC";
     sql += ` LIMIT ? OFFSET ?`;
-    params.push(Number(limit), Number(offset));
+    params.push(limit, offset);
 
     const rows = await db.all<Record<string, unknown>>(sql, params);
     const ideas = rows.map(rowToIdea);
@@ -260,8 +253,8 @@ router.post(
 
     const phaseHistory: PhaseChange[] = [
       {
-        from: "parked" as IdeaPhase,
-        to: phase as IdeaPhase,
+        from: "parked",
+        to: phase,
         timestamp: now,
         comment: "Idee erstellt",
         changedBy: author,
@@ -298,7 +291,7 @@ router.post(
       id,
       title: title.trim(),
       description,
-      phase: phase as IdeaPhase,
+      phase,
       priority,
       author,
       assignee,
@@ -366,7 +359,7 @@ router.put(
         ...phaseHistory,
         {
           from: existing.phase,
-          to: phase as IdeaPhase,
+          to: phase,
           timestamp: now,
           comment: phaseComment,
           changedBy,
@@ -405,7 +398,7 @@ router.put(
       id,
       title,
       description,
-      phase: phase as IdeaPhase,
+      phase,
       priority,
       author: existing.author,
       assignee,
@@ -455,7 +448,7 @@ router.patch(
       ...existing.phaseHistory,
       {
         from: existing.phase,
-        to: phase as IdeaPhase,
+        to: phase,
         timestamp: now,
         comment,
         changedBy,
