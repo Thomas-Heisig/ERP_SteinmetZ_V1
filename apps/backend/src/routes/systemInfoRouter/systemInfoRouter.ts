@@ -3,22 +3,9 @@
 
 import { Router, Request, Response } from "express";
 import systemInfoService from "../../services/systemInfoService.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 const router = Router();
-
-/* -----------------------------------------------------------
-   Error-Handler (einheitlich)
------------------------------------------------------------ */
-function handleError(
-  res: Response,
-  label: string,
-  error: unknown,
-  status = 500,
-) {
-  const message = error instanceof Error ? error.message : String(error);
-  console.error(`[systemInfoRouter] ${label} error:`, message);
-  res.status(status).json({ success: false, error: message });
-}
 
 /* -----------------------------------------------------------
    Utility: Express-App zuverlässig bestimmen
@@ -30,21 +17,21 @@ function resolveApp(req: Request): import("express").Application {
 /* -----------------------------------------------------------
    Haupt-Systemübersicht
 ----------------------------------------------------------- */
-router.get("/", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/",
+  asyncHandler(async (req: Request, res: Response) => {
     const app = resolveApp(req);
     const overview = await systemInfoService.getCompleteSystemOverview(app);
     res.json({ success: true, data: overview });
-  } catch (error) {
-    handleError(res, "System overview", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Alle registrierten Routen
 ----------------------------------------------------------- */
-router.get("/routes", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/routes",
+  asyncHandler(async (_req: Request, res: Response) => {
     const app = (globalThis as any).expressApp;
 
     if (!app) {
@@ -70,52 +57,48 @@ router.get("/routes", async (_req: Request, res: Response) => {
       success: true,
       data: { count: routes.length, endpoints: routes },
     });
-  } catch (err) {
-    handleError(res, "Routes", err);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Datenbankinformationen
 ----------------------------------------------------------- */
-router.get("/database", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/database",
+  asyncHandler(async (_req: Request, res: Response) => {
     const dbInfo = await systemInfoService.getDatabaseInfo();
     res.json({ success: true, data: dbInfo });
-  } catch (error) {
-    handleError(res, "Database info", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Systeminformationen
 ----------------------------------------------------------- */
-router.get("/system", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/system",
+  asyncHandler(async (_req: Request, res: Response) => {
     const systemInfo = systemInfoService.getSystemInfo();
     res.json({ success: true, data: systemInfo });
-  } catch (error) {
-    handleError(res, "System info", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Service-Status
 ----------------------------------------------------------- */
-router.get("/status", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/status",
+  asyncHandler(async (_req: Request, res: Response) => {
     const status = await systemInfoService.getServiceStatus();
     res.json({ success: true, data: status });
-  } catch (error) {
-    handleError(res, "Service status", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Health-Check
 ----------------------------------------------------------- */
-router.get("/health", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/health",
+  asyncHandler(async (_req: Request, res: Response) => {
     const status = await systemInfoService.getServiceStatus();
     const healthy = status.database.connected;
 
@@ -129,81 +112,73 @@ router.get("/health", async (_req: Request, res: Response) => {
         ai: status.ai.available,
       },
     });
-  } catch (error) {
-    handleError(res, "Health check", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Environment (sicher)
 ----------------------------------------------------------- */
-router.get("/environment", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/environment",
+  asyncHandler(async (_req: Request, res: Response) => {
     const env = systemInfoService.getSanitizedEnvironment();
     res.json({ success: true, data: env });
-  } catch (error) {
-    handleError(res, "Environment", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Dependencies
 ----------------------------------------------------------- */
-router.get("/dependencies", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/dependencies",
+  asyncHandler(async (_req: Request, res: Response) => {
     const deps = systemInfoService.getDependenciesSummary();
     res.json({ success: true, data: deps });
-  } catch (error) {
-    handleError(res, "Dependencies", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Diagnostics
 ----------------------------------------------------------- */
-router.get("/diagnostics", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/diagnostics",
+  asyncHandler(async (_req: Request, res: Response) => {
     const diag = await systemInfoService.runSystemDiagnostics();
     res.json({ success: true, data: diag });
-  } catch (error) {
-    handleError(res, "Diagnostics", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Feature Flags
 ----------------------------------------------------------- */
-router.get("/features", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/features",
+  asyncHandler(async (_req: Request, res: Response) => {
     const flags = systemInfoService.getBackendFeatureFlags();
     res.json({ success: true, data: flags });
-  } catch (error) {
-    handleError(res, "Feature flags", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Ressourcenauslastung
 ----------------------------------------------------------- */
-router.get("/resources", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/resources",
+  asyncHandler(async (_req: Request, res: Response) => {
     const usage = systemInfoService.getResourceUsage();
     res.json({ success: true, data: usage });
-  } catch (error) {
-    handleError(res, "Resource usage", error);
-  }
-});
+  }),
+);
 
 /* -----------------------------------------------------------
    Funktionskatalog (Kurzform)
 ----------------------------------------------------------- */
-router.get("/functions", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/functions",
+  asyncHandler(async (_req: Request, res: Response) => {
     const summary = await systemInfoService.getFunctionsSummary();
     res.json({ success: true, data: summary });
-  } catch (error) {
-    handleError(res, "Functions summary", error);
-  }
-});
+  }),
+);
 
 export default router;

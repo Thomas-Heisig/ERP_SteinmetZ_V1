@@ -3,6 +3,8 @@
 
 import { Router, Request, Response } from "express";
 import db from "../../services/dbService.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { BadRequestError, NotFoundError } from "../../types/errors.js";
 
 const router = Router();
 
@@ -82,8 +84,9 @@ ensureEventsTable();
  * GET /api/calendar/events
  * Liste aller Events mit optionalen Filtern
  */
-router.get("/events", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/events",
+  asyncHandler(async (req: Request, res: Response) => {
     const {
       start,
       end,
@@ -139,21 +142,16 @@ router.get("/events", async (req: Request, res: Response) => {
       data: events,
       total: events.length,
     });
-  } catch (error) {
-    console.error("❌ [Calendar] GET /events error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/calendar/events/:id
  * Einzelnes Event abrufen
  */
-router.get("/events/:id", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/events/:id",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const row = await db.get<Record<string, unknown>>(
       "SELECT * FROM calendar_events WHERE id = ?",
@@ -161,32 +159,23 @@ router.get("/events/:id", async (req: Request, res: Response) => {
     );
 
     if (!row) {
-      res.status(404).json({
-        success: false,
-        error: "Event not found",
-      });
-      return;
+      throw new NotFoundError("Event not found");
     }
 
     res.json({
       success: true,
       data: rowToEvent(row),
     });
-  } catch (error) {
-    console.error("❌ [Calendar] GET /events/:id error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * POST /api/calendar/events
  * Neues Event erstellen
  */
-router.post("/events", async (req: Request, res: Response) => {
-  try {
+router.post(
+  "/events",
+  asyncHandler(async (req: Request, res: Response) => {
     const {
       title,
       description = "",
@@ -204,19 +193,11 @@ router.post("/events", async (req: Request, res: Response) => {
     } = req.body;
 
     if (!title || title.trim() === "") {
-      res.status(400).json({
-        success: false,
-        error: "Title is required",
-      });
-      return;
+      throw new BadRequestError("Title is required");
     }
 
     if (!start || !end) {
-      res.status(400).json({
-        success: false,
-        error: "Start and end times are required",
-      });
-      return;
+      throw new BadRequestError("Start and end times are required");
     }
 
     const id = crypto.randomUUID();
@@ -224,10 +205,10 @@ router.post("/events", async (req: Request, res: Response) => {
 
     await db.run(
       `INSERT INTO calendar_events (
-        id, title, description, location, start_time, end_time,
-        all_day, color, category, recurrence, recurrence_end_date,
-        reminders_json, attendees_json, created_by, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id, title, description, location, start_time, end_time,
+      all_day, color, category, recurrence, recurrence_end_date,
+      reminders_json, attendees_json, created_by, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         title.trim(),
@@ -271,21 +252,16 @@ router.post("/events", async (req: Request, res: Response) => {
       success: true,
       data: newEvent,
     });
-  } catch (error) {
-    console.error("❌ [Calendar] POST /events error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * PUT /api/calendar/events/:id
  * Event aktualisieren
  */
-router.put("/events/:id", async (req: Request, res: Response) => {
-  try {
+router.put(
+  "/events/:id",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const existingRow = await db.get<Record<string, unknown>>(
       "SELECT * FROM calendar_events WHERE id = ?",
@@ -293,11 +269,7 @@ router.put("/events/:id", async (req: Request, res: Response) => {
     );
 
     if (!existingRow) {
-      res.status(404).json({
-        success: false,
-        error: "Event not found",
-      });
-      return;
+      throw new NotFoundError("Event not found");
     }
 
     const existing = rowToEvent(existingRow);
@@ -320,11 +292,11 @@ router.put("/events/:id", async (req: Request, res: Response) => {
 
     await db.run(
       `UPDATE calendar_events SET
-        title = ?, description = ?, location = ?, start_time = ?,
-        end_time = ?, all_day = ?, color = ?, category = ?,
-        recurrence = ?, recurrence_end_date = ?, reminders_json = ?,
-        attendees_json = ?, updated_at = ?
-      WHERE id = ?`,
+      title = ?, description = ?, location = ?, start_time = ?,
+      end_time = ?, all_day = ?, color = ?, category = ?,
+      recurrence = ?, recurrence_end_date = ?, reminders_json = ?,
+      attendees_json = ?, updated_at = ?
+    WHERE id = ?`,
       [
         title,
         description,
@@ -366,88 +338,69 @@ router.put("/events/:id", async (req: Request, res: Response) => {
       success: true,
       data: updatedEvent,
     });
-  } catch (error) {
-    console.error("❌ [Calendar] PUT /events/:id error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * DELETE /api/calendar/events/:id
  * Event löschen
  */
-router.delete("/events/:id", async (req: Request, res: Response) => {
-  try {
+router.delete(
+  "/events/:id",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await db.run("DELETE FROM calendar_events WHERE id = ?", [
       id,
     ]);
 
     if (result.changes === 0) {
-      res.status(404).json({
-        success: false,
-        error: "Event not found",
-      });
-      return;
+      throw new NotFoundError("Event not found");
     }
 
     res.json({
       success: true,
       message: "Event deleted",
     });
-  } catch (error) {
-    console.error("❌ [Calendar] DELETE /events/:id error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/calendar/categories
  * Liste aller Kategorien
  */
-router.get("/categories", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/categories",
+  asyncHandler(async (req: Request, res: Response) => {
     const rows = await db.all<{ category: string; count: number }>(
       `SELECT category, COUNT(*) as count 
-       FROM calendar_events 
-       WHERE category IS NOT NULL 
-       GROUP BY category 
-       ORDER BY count DESC`,
+     FROM calendar_events 
+     WHERE category IS NOT NULL 
+     GROUP BY category 
+     ORDER BY count DESC`,
     );
 
     res.json({
       success: true,
       data: rows,
     });
-  } catch (error) {
-    console.error("❌ [Calendar] GET /categories error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/calendar/upcoming
  * Bevorstehende Events (für Erinnerungen)
  */
-router.get("/upcoming", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/upcoming",
+  asyncHandler(async (req: Request, res: Response) => {
     const { minutes = "60" } = req.query;
     const now = new Date();
     const until = new Date(now.getTime() + Number(minutes) * 60 * 1000);
 
     const rows = await db.all<Record<string, unknown>>(
       `SELECT * FROM calendar_events 
-       WHERE start_time BETWEEN ? AND ?
-       ORDER BY start_time ASC`,
+     WHERE start_time BETWEEN ? AND ?
+     ORDER BY start_time ASC`,
       [now.toISOString(), until.toISOString()],
     );
 
@@ -461,14 +414,8 @@ router.get("/upcoming", async (req: Request, res: Response) => {
         to: until.toISOString(),
       },
     });
-  } catch (error) {
-    console.error("❌ [Calendar] GET /upcoming error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 // Helper: Row zu Event
 function rowToEvent(row: Record<string, unknown>): CalendarEvent {

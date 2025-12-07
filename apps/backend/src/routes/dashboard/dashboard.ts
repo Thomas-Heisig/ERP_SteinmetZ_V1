@@ -6,6 +6,7 @@ import { Router } from "express";
 
 import { existsSync, readFileSync } from "fs";
 import path from "path";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 const router = Router();
 
@@ -31,8 +32,9 @@ router.get("/health", (_req, res) => {
 /* ---------------------------------------------------------
    Dashboard-Übersicht: System + AI + ERP-Daten
 --------------------------------------------------------- */
-router.get("/overview", async (_req, res) => {
-  try {
+router.get(
+  "/overview",
+  asyncHandler(async (_req, res) => {
     // Beispielhafte "ERP"-Werte (später echte Datenbank-Abfragen)
     const erpStats = {
       openOrders: 14,
@@ -79,11 +81,8 @@ router.get("/overview", async (_req, res) => {
       version: versionInfo,
       timestamp: new Date().toISOString(),
     });
-  } catch (e) {
-    console.error("Dashboard-Fehler:", e);
-    res.status(500).json({ error: "Fehler beim Laden der Übersicht" });
-  }
-});
+  }),
+);
 
 /* ---------------------------------------------------------
    (optional) Letzte Logs / Chat-Kontext

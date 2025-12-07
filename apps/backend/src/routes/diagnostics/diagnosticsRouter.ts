@@ -10,6 +10,7 @@ import {
   healingReport,
 } from "../../services/selfhealing/index.js";
 import { getVersionInfo } from "../../version.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 const router = Router();
 
@@ -17,8 +18,9 @@ const router = Router();
  * GET /diagnostics
  * HTML-Diagnoseseite
  */
-router.get("/", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/",
+  asyncHandler(async (_req: Request, res: Response) => {
     const versionInfo = getVersionInfo();
     const healthResult = await healthMonitor.runHealthChecks();
     const dbStats = await db.getStats();
@@ -48,26 +50,16 @@ router.get("/", async (_req: Request, res: Response) => {
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(html);
-  } catch (error) {
-    console.error("❌ [Diagnostics] Error:", error);
-    res.status(500).send(`
-      <html>
-        <head><title>Diagnostics Error</title></head>
-        <body>
-          <h1>Diagnostics Error</h1>
-          <pre>${error instanceof Error ? error.message : "Unknown error"}</pre>
-        </body>
-      </html>
-    `);
-  }
-});
+  }),
+);
 
 /**
  * GET /diagnostics/api
  * JSON API für Diagnosedaten
  */
-router.get("/api", async (_req: Request, res: Response) => {
-  try {
+router.get(
+  "/api",
+  asyncHandler(async (_req: Request, res: Response) => {
     const versionInfo = getVersionInfo();
     const healthResult = await healthMonitor.runHealthChecks();
     const dbStats = await db.getStats();
@@ -94,41 +86,31 @@ router.get("/api", async (_req: Request, res: Response) => {
         processUptime: process.uptime(),
       },
     });
-  } catch (error) {
-    console.error("❌ [Diagnostics] API Error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * POST /diagnostics/health-check
  * Manuellen Health-Check triggern
  */
-router.post("/health-check", async (_req: Request, res: Response) => {
-  try {
+router.post(
+  "/health-check",
+  asyncHandler(async (_req: Request, res: Response) => {
     const result = await scheduler.runManualCheck();
     res.json({
       success: true,
       result,
     });
-  } catch (error) {
-    console.error("❌ [Diagnostics] Health check error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /diagnostics/logs
  * Audit-Logs abrufen
  */
-router.get("/logs", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/logs",
+  asyncHandler(async (req: Request, res: Response) => {
     const { limit = "100", entity, action } = req.query;
 
     let sql = "SELECT * FROM audit_log WHERE 1=1";
@@ -154,14 +136,8 @@ router.get("/logs", async (req: Request, res: Response) => {
       data: logs,
       total: logs.length,
     });
-  } catch (error) {
-    console.error("❌ [Diagnostics] Logs error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 // HTML Generator
 function generateDiagnosticsHTML(
