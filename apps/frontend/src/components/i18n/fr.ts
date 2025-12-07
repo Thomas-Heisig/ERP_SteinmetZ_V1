@@ -1,7 +1,7 @@
 export default {
   dashboard: {
     title: "ERP SteinmetZ – Catalogue des fonctions",
-    subtitle: "Aperçu de l’état du système et des domaines fonctionnels",
+    subtitle: "Aperçu de l'état du système et des domaines fonctionnels",
 
     // État du système
     health: {
@@ -16,8 +16,10 @@ export default {
     categories: {
       title: "Domaines fonctionnels",
       count: "{{count}} domaines disponibles",
+      count_one: "{{count}} domaine disponible",
+      count_other: "{{count}} domaines disponibles",
       emptyTitle: "Aucune catégorie trouvée",
-      emptyDescription: "Aucune catégorie correspondante n’a pu être affichée.",
+      emptyDescription: "Aucune catégorie correspondante n'a pu être affichée.",
     },
 
     // Statuts généraux
@@ -44,7 +46,7 @@ export default {
       noResults: "Aucun résultat trouvé",
     },
 
-    // Écran d’erreur
+    // Écran d'erreur
     errorScreen: {
       title: "Erreur lors du chargement",
       retryButton: "Réessayer",
@@ -52,7 +54,7 @@ export default {
 
     // Navigation
     navigation: {
-      overview: "Vue d’ensemble",
+      overview: "Vue d'ensemble",
       catalog: "Fonctions",
       ai: "Annotateur IA",
       settings: "Paramètres",
@@ -111,6 +113,58 @@ export default {
       reload: "Recharger",
       details: "Détails",
       unknown: "Inconnu",
+      save: "Enregistrer",
+      delete: "Supprimer",
+      edit: "Modifier",
+      add: "Ajouter",
+      back: "Retour",
+      next: "Suivant",
+      previous: "Précédent",
+      loading: "Chargement...",
+      error: "Erreur",
+      success: "Succès",
+      warning: "Avertissement",
+      info: "Information",
+    },
+
+    // Formes plurielles pour les éléments courants
+    items: {
+      result: "Résultat",
+      result_one: "{{count}} résultat",
+      result_other: "{{count}} résultats",
+      file: "Fichier",
+      file_one: "{{count}} fichier",
+      file_other: "{{count}} fichiers",
+      user: "Utilisateur",
+      user_one: "{{count}} utilisateur",
+      user_other: "{{count}} utilisateurs",
+      message: "Message",
+      message_one: "{{count}} message",
+      message_other: "{{count}} messages",
+      item: "Élément",
+      item_one: "{{count}} élément",
+      item_other: "{{count}} éléments",
+    },
+
+    // Formatage de date et heure
+    datetime: {
+      today: "Aujourd'hui",
+      yesterday: "Hier",
+      tomorrow: "Demain",
+      now: "Maintenant",
+      minutesAgo: "il y a {{count}} minutes",
+      minutesAgo_one: "il y a 1 minute",
+      hoursAgo: "il y a {{count}} heures",
+      hoursAgo_one: "il y a 1 heure",
+      daysAgo: "il y a {{count}} jours",
+      daysAgo_one: "il y a 1 jour",
+    },
+
+    // Devises et nombres
+    format: {
+      currency: "{{value, currency:EUR}}",
+      percent: "{{value, percent}}",
+      decimal: "{{value, decimal}}",
     },
   },
 };

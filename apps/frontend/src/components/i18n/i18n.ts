@@ -14,6 +14,9 @@ import zh from "./zh";
 import ru from "./ru";
 import nds from "./nds";
 import fr from "./fr";
+import it from "./it";
+import pl from "./pl";
+import tr from "./tr";
 
 /**
  * Sprachen mit RTL-Schreibrichtung (ISO 15924)
@@ -36,6 +39,9 @@ if (!i18n.isInitialized) {
       ru: { translation: ru },
       nds: { translation: nds },
       fr: { translation: fr },
+      it: { translation: it },
+      pl: { translation: pl },
+      tr: { translation: tr },
     },
 
     /**
