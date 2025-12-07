@@ -127,6 +127,18 @@ Folge dem **Diátaxis Framework**:
 - Führe Tests aus: `npm test`
 - Prüfe mit Linter: `npm run lint`
 - Validiere TypeScript-Typen
+- Generiere Coverage-Reports: `npm run test:coverage`
+- Überprüfe SonarQube-Metriken auf Code-Qualität und Sicherheit
+
+**Code-Qualitätsstandards:**
+
+- **Coverage**: Mindestens 80% Gesamtabdeckung, 90% für neue Funktionen
+- **SonarQube Quality Gate**: Muss grün sein (keine Blocker/Critical Issues)
+- **Technical Debt**: Soll unter 5% bleiben (Maintainability Rating A)
+- **Security**: Keine Vulnerabilities (Security Rating A)
+- **Duplication**: Weniger als 3% Code-Duplikation
+
+Siehe [SonarQube Integration Guide](docs/SONARQUBE.md) für Details.
 
 ---
 
@@ -332,6 +344,8 @@ logger.error({ err, context }, "Operation failed");
    - Integration-Tests für API-Änderungen
    - Manuelle Tests für UI-Änderungen
    - Regression-Tests für kritische Pfade
+   - Coverage-Reports generieren: `npm run test:coverage`
+   - SonarQube Quality Gates überprüfen
 
 5. **Dokumentieren**
    - Code-Kommentare für komplexe Logik
