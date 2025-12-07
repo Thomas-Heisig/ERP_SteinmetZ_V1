@@ -2,6 +2,7 @@
 // apps/backend/src/routes/diagnostics/diagnosticsRouter.ts
 
 import { Router, Request, Response } from "express";
+import { z } from "zod";
 import os from "node:os";
 import db from "../../services/dbService.js";
 import {
@@ -11,6 +12,16 @@ import {
 } from "../../services/selfhealing/index.js";
 import { getVersionInfo } from "../../version.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
+
+/* ========================================================================== */
+/* Zod Validation Schemas                                                     */
+/* ========================================================================== */
+
+const logsQuerySchema = z.object({
+  limit: z.coerce.number().int().positive().optional().default(100),
+  entity: z.string().min(1).max(100).optional(),
+  action: z.string().min(1).max(100).optional(),
+});
 
 const router = Router();
 
@@ -111,7 +122,8 @@ router.post(
 router.get(
   "/logs",
   asyncHandler(async (req: Request, res: Response) => {
-    const { limit = "100", entity, action } = req.query;
+    const validated = logsQuerySchema.parse(req.query);
+    const { limit, entity, action } = validated;
 
     let sql = "SELECT * FROM audit_log WHERE 1=1";
     const params: unknown[] = [];
@@ -127,7 +139,7 @@ router.get(
     }
 
     sql += " ORDER BY created_at DESC LIMIT ?";
-    params.push(Number(limit));
+    params.push(limit);
 
     const logs = await db.all(sql, params);
 

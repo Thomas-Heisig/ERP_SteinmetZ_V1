@@ -63,9 +63,9 @@ res.status(400).send("Bad request");
 **Auswirkung**: Inkonsistente API-Responses erschweren Frontend-Integration
 
 **Aufwand (ursprünglich)**: 4-6 Stunden für alle verbleibenden Router
-**Aufwand (verbleibend)**: 2-3 Stunden für optionale Router (AI, Dashboard, etc.)
+**Aufwand (verbleibend)**: 2-3 Stunden für aiAnnotatorRouter
 
-**Hinweis**: Die kritischen Business-Router (HR, Finance, QuickChat) sind vollständig standardisiert. Weitere Router können bei Bedarf migriert werden.
+**Hinweis**: Die kritischen Business-Router (HR, Finance, QuickChat, Innovation, AI) sind vollständig standardisiert. Nur aiAnnotatorRouter (sehr umfangreich) verbleibt.
 
 ---
 
@@ -90,13 +90,16 @@ Viele API-Endpunkte validieren Eingaben nicht oder nur unzureichend. Malformed R
 3. In allen Routen einsetzen
 4. Klare Validation-Error-Messages
 
-**Fortschritt** (2025-12-06):
+**Fortschritt** (2025-12-07):
 
 1. ✅ quickchatRouter - Vollständige Zod-Validierung für alle 3 Endpoints
 2. ✅ hrRouter - Vollständige Zod-Validierung für alle 14 Endpoints
 3. ✅ financeRouter - Vollständige Zod-Validierung für alle 19 Endpoints
 4. ✅ functionsCatalog - Hat bereits Zod-Validierung
-5. 🟡 **Verbleibende Router optional** (AI, Dashboard, Diagnostics - niedrige Priorität)
+5. ✅ innovationRouter - Vollständige Zod-Validierung für alle 9 Endpoints (2025-12-07)
+6. ✅ aiRouter - Vollständige Zod-Validierung für alle 10 Endpoints (2025-12-07)
+7. ✅ diagnosticsRouter - Zod-Validierung für Query-Parameter hinzugefügt (2025-12-07)
+8. 🟡 **Verbleibend** (aiAnnotatorRouter - sehr umfangreich mit 69 Endpoints)
 
 **Beispiel**:
 
@@ -115,9 +118,9 @@ router.post("/chat", validate(chatMessageSchema), async (req, res) => {
 **Auswirkung**: **Security-Risiko**, instabile API
 
 **Aufwand (ursprünglich)**: 2-3 Tage
-**Aufwand (verbleibend)**: 1-2 Tage für optionale Router
+**Aufwand (verbleibend)**: 1-2 Tage für aiAnnotatorRouter
 
-**Hinweis**: Kritische Business-Endpoints (HR, Finance, QuickChat) haben vollständige Validierung. Weitere Router können bei Bedarf erweitert werden.
+**Hinweis**: Alle kritischen Router (HR, Finance, QuickChat, Innovation, AI, Diagnostics) haben jetzt vollständige Zod-Validierung. Nur aiAnnotatorRouter (sehr groß) verbleibt.
 
 ---
 
