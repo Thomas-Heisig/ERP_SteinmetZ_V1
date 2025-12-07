@@ -576,14 +576,16 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 ### Nächste Sprint-Planung (2025)
 
-**Sprint 1 (KW 1-2/2025)** - AI-Annotator Production-Ready: ✅ ERLEDIGT (2025-12-07)
+> **Hinweis**: Diese Sprints wurden ursprünglich für Q1 2025 geplant, aber vorzeitig abgeschlossen.
+
+**Sprint 1 (Geplant: KW 1-2/2025 | Tatsächlich: KW 49/2025)** - AI-Annotator Production-Ready: ✅ ERLEDIGT (2025-12-07)
 
 - [x] AI-Annotator Frontend-Integration (aiAnnotatorRouter.tsx, useAiAnnotatorRouter.ts)
 - [x] Batch-Processing-UI implementieren (BatchProcessingPage.tsx, BatchCreationForm.tsx, ProgressTracker.tsx)
 - [x] Quality-Dashboard visualisieren (QADashboard.tsx mit API-Integration)
 - [x] Model-Management-Interface (ModelComparison.tsx, ModelsTab.tsx mit Stats und Vergleich)
 
-**Sprint 2 (KW 3-4/2025)** - Function-Node-Transformation MVP: ⚠️ TEILWEISE (2025-12-07)
+**Sprint 2 (Geplant: KW 3-4/2025 | Status: KW 49/2025)** - Function-Node-Transformation MVP: ⚠️ TEILWEISE (2025-12-07)
 
 - [x] Markdown-Parser implementieren (outlineParser.ts - parst Unicode-ASCII-Bäume + Markdown-Bullets)
 - [ ] Schema-Extractor entwickeln (NICHT IMPLEMENTIERT - benötigt für Metadaten-Extraktion)
@@ -591,14 +593,14 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 - [ ] API-Registration-System (NICHT IMPLEMENTIERT - benötigt für dynamisches Laden)
 - [ ] Test-Generator implementieren (NICHT IMPLEMENTIERT - benötigt für Auto-Testing)
 
-**Sprint 3 (KW 5-6/2025)** - HR & Finance Module vervollständigen:
+**Sprint 3 (Geplant: KW 5-6/2025)** - HR & Finance Module vervollständigen:
 
 - [ ] HR-Modul: CRUD-Operationen vollständig
 - [ ] Finance-Modul: Buchhaltungsintegration
 - [ ] Datenbank-Migrationen
 - [ ] Frontend-Komponenten für beide Module
 
-**Sprint 4 (KW 7-8/2025)** - Compliance & Documentation:
+**Sprint 4 (Geplant: KW 7-8/2025)** - Compliance & Documentation:
 
 - [ ] GoBD-Compliance-Checks
 - [ ] DSGVO-Audit-Toolkit
