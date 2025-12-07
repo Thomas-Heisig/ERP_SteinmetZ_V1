@@ -1,0 +1,109 @@
+# SPDX-License-Identifier: MIT
+# apps/backend/config/prometheus/alerts.yml
+#
+# Prometheus alert rules for ERP SteinmetZ
+# These rules define alerts for various system and application metrics
+
+groups:
+  - name: erp_steinmetz_alerts
+    interval: 30s
+    rules:
+      # High error rate
+      - alert: HighErrorRate
+        expr: rate(erp_steinmetz_errors_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors/second for {{ $labels.type }}"
+
+      # High HTTP 5xx error rate
+      - alert: HighHTTP5xxRate
+        expr: rate(erp_steinmetz_http_requests_total{status_code=~"5.."}[5m]) > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High HTTP 5xx error rate"
+          description: "5xx error rate is {{ $value }} requests/second on {{ $labels.route }}"
+
+      # Slow HTTP requests
+      - alert: SlowHTTPRequests
+        expr: histogram_quantile(0.95, rate(erp_steinmetz_http_request_duration_seconds_bucket[5m])) > 5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow HTTP requests detected"
+          description: "95th percentile response time is {{ $value }}s on {{ $labels.route }}"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: erp_steinmetz_process_resident_memory_bytes > 1073741824
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanize }}B (> 1GB)"
+
+      # Database connection issues
+      - alert: HighDatabaseErrorRate
+        expr: rate(erp_steinmetz_db_queries_total{status="error"}[5m]) > 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High database error rate"
+          description: "Database error rate is {{ $value }} errors/second on {{ $labels.table }}"
+
+      # Slow database queries
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, rate(erp_steinmetz_db_query_duration_seconds_bucket[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow database queries detected"
+          description: "95th percentile query time is {{ $value }}s on {{ $labels.table }}"
+
+      # Authentication failures
+      - alert: HighAuthFailureRate
+        expr: rate(erp_steinmetz_auth_attempts_total{status="failure"}[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High authentication failure rate"
+          description: "Authentication failure rate is {{ $value }} failures/second"
+
+      # AI provider failures
+      - alert: AIProviderFailures
+        expr: rate(erp_steinmetz_ai_requests_total{status="error"}[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "AI provider failures detected"
+          description: "AI provider {{ $labels.provider }} error rate is {{ $value }} errors/second"
+
+      # Slow AI requests
+      - alert: SlowAIRequests
+        expr: histogram_quantile(0.95, rate(erp_steinmetz_ai_request_duration_seconds_bucket[5m])) > 30
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow AI requests detected"
+          description: "95th percentile AI request time is {{ $value }}s for {{ $labels.provider }}"
+
+      # Service down
+      - alert: ServiceDown
+        expr: up{job="erp-steinmetz"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ERP SteinmetZ service is down"
+          description: "Service has been down for more than 1 minute"

@@ -71,6 +71,7 @@ sonar.qualitygate.wait=true
 Both backend and frontend are configured to generate LCOV format:
 
 **apps/backend/vitest.config.ts**:
+
 ```typescript
 coverage: {
   provider: "v8",
@@ -81,6 +82,7 @@ coverage: {
 ```
 
 **apps/frontend/vitest.config.ts**:
+
 ```typescript
 coverage: {
   provider: "v8",
@@ -145,16 +147,17 @@ Add the following secrets in GitHub repository settings:
 
 **Settings → Secrets and variables → Actions → New repository secret**
 
-| Secret Name      | Description                          | Example Value                        |
-| ---------------- | ------------------------------------ | ------------------------------------ |
-| `SONAR_TOKEN`    | SonarQube authentication token       | `sqp_1234567890abcdef...`            |
-| `SONAR_HOST_URL` | SonarQube server URL                 | `https://sonarcloud.io`              |
+| Secret Name      | Description                    | Example Value             |
+| ---------------- | ------------------------------ | ------------------------- |
+| `SONAR_TOKEN`    | SonarQube authentication token | `sqp_1234567890abcdef...` |
+| `SONAR_HOST_URL` | SonarQube server URL           | `https://sonarcloud.io`   |
 
 **Note**: For SonarCloud, the `SONAR_HOST_URL` is `https://sonarcloud.io`
 
 ### Step 3: Run Initial Analysis
 
 1. **Trigger the workflow**:
+
    ```bash
    git push origin main
    ```
@@ -206,14 +209,14 @@ sonar-scanner \
 
 SonarQube enforces the following quality gate by default:
 
-| Metric                    | Threshold         |
-| ------------------------- | ----------------- |
-| Coverage                  | ≥ 80%             |
-| Duplicated Lines          | ≤ 3%              |
-| Maintainability Rating    | ≥ A               |
-| Reliability Rating        | ≥ A               |
-| Security Rating           | ≥ A               |
-| Security Hotspots Reviewed| = 100%            |
+| Metric                     | Threshold |
+| -------------------------- | --------- |
+| Coverage                   | ≥ 80%     |
+| Duplicated Lines           | ≤ 3%      |
+| Maintainability Rating     | ≥ A       |
+| Reliability Rating         | ≥ A       |
+| Security Rating            | ≥ A       |
+| Security Hotspots Reviewed | = 100%    |
 
 ### Custom Quality Gates
 
@@ -236,6 +239,7 @@ To create custom quality gates:
 ### Code Quality Metrics
 
 #### Reliability (Bugs)
+
 - **A**: 0 bugs
 - **B**: ≥ 1 minor bug
 - **C**: ≥ 1 major bug
@@ -243,6 +247,7 @@ To create custom quality gates:
 - **E**: ≥ 1 blocker bug
 
 #### Security (Vulnerabilities)
+
 - **A**: 0 vulnerabilities
 - **B**: ≥ 1 minor vulnerability
 - **C**: ≥ 1 major vulnerability
@@ -250,6 +255,7 @@ To create custom quality gates:
 - **E**: ≥ 1 blocker vulnerability
 
 #### Maintainability (Code Smells)
+
 - **A**: Technical debt ratio ≤ 5%
 - **B**: Technical debt ratio 6-10%
 - **C**: Technical debt ratio 11-20%
@@ -261,6 +267,7 @@ To create custom quality gates:
 ### SonarQube Dashboard
 
 Access the project dashboard at:
+
 - **SonarCloud**: `https://sonarcloud.io/project/overview?id=Thomas-Heisig_ERP_SteinmetZ_V1`
 - **Self-hosted**: `https://your-sonarqube.com/dashboard?id=Thomas-Heisig_ERP_SteinmetZ_V1`
 
@@ -292,6 +299,7 @@ Add SonarQube badges to README.md:
 **Problem**: Coverage is 0% in SonarQube
 
 **Solution**:
+
 - Verify LCOV files are generated: `ls apps/*/coverage/lcov.info`
 - Check `sonar.javascript.lcov.reportPaths` in `sonar-project.properties`
 - Ensure tests run with coverage: `npm run test:coverage`
@@ -301,6 +309,7 @@ Add SonarQube badges to README.md:
 **Problem**: SonarQube scan fails in CI
 
 **Solution**:
+
 - Check GitHub Actions logs for errors
 - Verify `SONAR_TOKEN` and `SONAR_HOST_URL` secrets are set
 - Ensure project key matches: `Thomas-Heisig_ERP_SteinmetZ_V1`
@@ -310,6 +319,7 @@ Add SonarQube badges to README.md:
 **Problem**: Build fails due to quality gate
 
 **Solution**:
+
 - Review issues in SonarQube dashboard
 - Fix critical/blocker issues first
 - Adjust quality gate thresholds if needed
@@ -320,6 +330,7 @@ Add SonarQube badges to README.md:
 **Problem**: SonarQube can't find source files
 
 **Solution**:
+
 - Verify `sonar.sources` paths in `sonar-project.properties`
 - Ensure paths are relative to project root
 - Check exclusion patterns in `sonar.exclusions`
@@ -334,7 +345,7 @@ Enable debug logging in GitHub Actions:
   env:
     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-    SONAR_SCANNER_OPTS: "-X"  # Enable debug mode
+    SONAR_SCANNER_OPTS: "-X" # Enable debug mode
 ```
 
 ## Best Practices
