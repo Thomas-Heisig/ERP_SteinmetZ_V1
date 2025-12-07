@@ -576,29 +576,31 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 ### Nächste Sprint-Planung (2025)
 
-**Sprint 1 (KW 1-2/2025)** - AI-Annotator Production-Ready:
+> **Hinweis**: Diese Sprints wurden ursprünglich für Q1 2025 geplant, aber vorzeitig abgeschlossen.
 
-- [ ] AI-Annotator Frontend-Integration
-- [ ] Batch-Processing-UI implementieren
-- [ ] Quality-Dashboard visualisieren
-- [ ] Model-Management-Interface
+**Sprint 1 (Geplant: KW 1-2/2025 | Tatsächlich: KW 49/2025)** - AI-Annotator Production-Ready: ✅ ERLEDIGT (2025-12-07)
 
-**Sprint 2 (KW 3-4/2025)** - Function-Node-Transformation MVP:
+- [x] AI-Annotator Frontend-Integration (aiAnnotatorRouter.tsx, useAiAnnotatorRouter.ts)
+- [x] Batch-Processing-UI implementieren (BatchProcessingPage.tsx, BatchCreationForm.tsx, ProgressTracker.tsx)
+- [x] Quality-Dashboard visualisieren (QADashboard.tsx mit API-Integration)
+- [x] Model-Management-Interface (ModelComparison.tsx, ModelsTab.tsx mit Stats und Vergleich)
 
-- [ ] Markdown-Parser implementieren
-- [ ] Schema-Extractor entwickeln
-- [ ] Code-Generator (TypeScript) erstellen
-- [ ] API-Registration-System
-- [ ] Test-Generator implementieren
+**Sprint 2 (Geplant: KW 3-4/2025 | Status: KW 49/2025)** - Function-Node-Transformation MVP: ⚠️ TEILWEISE (2025-12-07)
 
-**Sprint 3 (KW 5-6/2025)** - HR & Finance Module vervollständigen:
+- [x] Markdown-Parser implementieren (outlineParser.ts - parst Unicode-ASCII-Bäume + Markdown-Bullets)
+- [ ] Schema-Extractor entwickeln (NICHT IMPLEMENTIERT - benötigt für Metadaten-Extraktion)
+- [ ] Code-Generator (TypeScript) erstellen (NICHT IMPLEMENTIERT - benötigt für Function-Node → TypeScript)
+- [ ] API-Registration-System (NICHT IMPLEMENTIERT - benötigt für dynamisches Laden)
+- [ ] Test-Generator implementieren (NICHT IMPLEMENTIERT - benötigt für Auto-Testing)
+
+**Sprint 3 (Geplant: KW 5-6/2025)** - HR & Finance Module vervollständigen:
 
 - [ ] HR-Modul: CRUD-Operationen vollständig
 - [ ] Finance-Modul: Buchhaltungsintegration
 - [ ] Datenbank-Migrationen
 - [ ] Frontend-Komponenten für beide Module
 
-**Sprint 4 (KW 7-8/2025)** - Compliance & Documentation:
+**Sprint 4 (Geplant: KW 7-8/2025)** - Compliance & Documentation:
 
 - [ ] GoBD-Compliance-Checks
 - [ ] DSGVO-Audit-Toolkit
@@ -611,11 +613,22 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 ### Completion Rate (Stand 7. Dezember 2025)
 
-- 🟢 **Abgeschlossen**: 83% (Infrastructure, Core-Features, Error-Handling, i18n, Accessibility, Animations, Dokumentation)
-- 🟡 **In Arbeit**: 13% (AI-Annotator, Function-Transformation)
-- 🔴 **Offen**: 4% (Enterprise-Features, Advanced-AI)
+- 🟢 **Abgeschlossen**: 85% (Infrastructure, Core-Features, Error-Handling, i18n, Accessibility, Animations, Dokumentation, Sprint 1)
+- 🟡 **In Arbeit**: 11% (Sprint 2: Function-Transformation teilweise)
+- 🔴 **Offen**: 4% (Enterprise-Features, Advanced-AI, Sprint 3-4)
 
-**Neu Erledigt (7. Dezember 2025)**:
+**Neu Erledigt (7. Dezember 2025 - Sprint 1 Abschluss)**:
+
+- ✅ **Sprint 1 (Phase 1): AI-Annotator Production-Ready** - VOLLSTÄNDIG:
+  - ✅ AI-Annotator Frontend-Integration (aiAnnotatorRouter.tsx, Hook)
+  - ✅ Batch-Processing-UI (3 Komponenten mit WebSocket-Integration)
+  - ✅ Quality-Dashboard (QADashboard.tsx mit Metriken)
+  - ✅ Model-Management-Interface (ModelComparison.tsx mit Stats)
+- ⚠️ **Sprint 2 (Phase 2): Function-Node-Transformation MVP** - TEILWEISE:
+  - ✅ Markdown-Parser (outlineParser.ts) vorhanden
+  - ❌ Schema-Extractor, Code-Generator, API-Registration, Test-Generator fehlen noch
+
+**Neu Erledigt (7. Dezember 2025 - Vormittag)**:
 
 - ✅ **Dokumentations-Konsolidierung**:
   - ✅ README_COMPREHENSIVE.md → README.md zusammengeführt
