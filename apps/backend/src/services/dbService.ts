@@ -1156,10 +1156,10 @@ class DatabaseService {
 
   /** Prüft Tabellen und Spalten (manuell aufrufbar für Admin-Tools) */
   async verifySchema(): Promise<void> {
-    console.log("🔍 [DB] Manual schema verification started...");
+    logger.info("Manual schema verification started");
     try {
       await this.ensureInitialized();
-      console.log("✅ [DB] Schema verification completed successfully.");
+      logger.info("Schema verification completed successfully");
     } catch (err: any) {
       console.error("❌ [DB] Schema verification failed:", err.message);
       throw err;
@@ -1236,8 +1236,9 @@ class DatabaseService {
 
       if (originalKind !== correctedKind) {
         correctedCount++;
-        console.log(
-          `🔄 [DB Auto-Correct] ${n.id}: kind "${originalKind}" → "${correctedKind}"`,
+        logger.info(
+          { nodeId: n.id, originalKind, correctedKind },
+          `Auto-corrected kind: "${originalKind}" → "${correctedKind}"`,
         );
         n.kind = correctedKind;
       }
@@ -1339,11 +1340,12 @@ class DatabaseService {
     });
 
     if (correctedCount > 0) {
-      console.log(`🔄 [DB] ${correctedCount} Knoten automatisch korrigiert`);
+      logger.info({ correctedCount }, `${correctedCount} nodes auto-corrected`);
     }
 
-    console.log(
-      `✅ [DB] Catalog successfully saved (${nodeCount} nodes, ${edgeCount} edges).`,
+    logger.info(
+      { nodeCount, edgeCount },
+      `Catalog successfully saved (${nodeCount} nodes, ${edgeCount} edges)`,
     );
     return { nodes: nodeCount, edges: edgeCount };
   }

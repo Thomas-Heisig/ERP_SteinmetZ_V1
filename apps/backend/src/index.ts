@@ -23,7 +23,7 @@ import path from "node:path";
 import chokidar from "chokidar";
 import fs from "fs/promises";
 import { GlobalApp } from "./utils/globalApp.js";
-import { getVersionInfo, getVersionString } from "./version.js";
+import { getVersionInfo } from "./version.js";
 import { createLogger } from "./utils/logger.js";
 
 /* ---------------------- Router ---------------------- */

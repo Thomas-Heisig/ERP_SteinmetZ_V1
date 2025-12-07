@@ -8,11 +8,11 @@ import {
   sendUnauthorized,
   sendForbidden,
   sendRateLimitError,
-  ErrorCode,
 } from "../utils/errorResponse.js";
 
 // Extend Express Request to include auth context
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       auth?: AuthContext;
@@ -124,7 +124,6 @@ export function requirePermission(permission: string) {
       }
 
       // Check for pattern matching (e.g., "dashboard.*" matches "dashboard.read")
-      const permissionParts = permission.split(".");
       for (const perm of req.auth.permissions) {
         if (perm.endsWith(".*")) {
           const permBase = perm.slice(0, -2);

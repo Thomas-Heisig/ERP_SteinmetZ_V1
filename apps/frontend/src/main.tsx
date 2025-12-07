@@ -25,13 +25,13 @@ import "./styles/contrast.css";
 
 // Display version info in console
 const versionInfo = getVersionInfo();
-console.log("========================================================");
-console.log("🧱 ERP-SteinmetZ Frontend");
-console.log("========================================================");
-console.log(`📌 Version:           ${versionInfo.version}`);
-console.log(`🕒 Build:             ${versionInfo.buildDate}`);
-console.log(`🔧 Environment:       ${versionInfo.environment}`);
-console.log("========================================================");
+console.info("========================================================");
+console.info("🧱 ERP-SteinmetZ Frontend");
+console.info("========================================================");
+console.info(`📌 Version:           ${versionInfo.version}`);
+console.info(`🕒 Build:             ${versionInfo.buildDate}`);
+console.info(`🔧 Environment:       ${versionInfo.environment}`);
+console.info("========================================================");
 
 const container = document.getElementById("root");
 
