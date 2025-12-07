@@ -683,7 +683,7 @@ router.put(
     }
 
     const config = errorCorrectionConfigSchema.parse(req.body);
-    
+
     // TODO: Implement actual configuration persistence to database or configuration file
     // Currently returns simulated success response for development/testing purposes
     // Real implementation should:
