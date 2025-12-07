@@ -1,6 +1,6 @@
 # ERP SteinmetZ - Archiv
 
-**Stand**: Dezember 2025
+**Stand**: 7. Dezember 2025
 
 Dieses Dokument enthält archivierte Informationen, die nicht mehr aktiv sind, aber für historische Zwecke aufbewahrt werden.
 
@@ -212,6 +212,148 @@ Implementierung der nächsten 5 priorisierten TODO-Punkte mit umfassenden Tests 
 
 ---
 
+### ISSUE-005: Inkonsistente Error-Responses vom Backend ✅
+
+**Status**: ✅ Behoben | **Behoben am**: 2025-12-07
+
+**Beschreibung**: API-Fehler hatten kein einheitliches Format. Router gaben unterschiedliche Error-Formate zurück.
+
+**Lösung (vollständig abgeschlossen)**:
+
+1. ✅ Standardisiertes Error-Response-Format definiert in `errorResponse.ts`
+2. ✅ Helper-Funktionen erstellt (sendBadRequest, sendUnauthorized, etc.)
+3. ✅ Error-Codes definiert (BAD_REQUEST, UNAUTHORIZED, etc.)
+4. ✅ APIError-Klassen erstellt (BadRequestError, NotFoundError, ValidationError, etc.)
+5. ✅ asyncHandler-Middleware für async Route-Handler
+6. ✅ authMiddleware komplett aktualisiert
+7. ✅ rateLimitLogin Middleware aktualisiert
+8. ✅ Alle 16 Router aktualisiert (quickchatRouter, hrRouter, financeRouter, dashboard, diagnosticsRouter, systemInfoRouter, authRouter, calendarRouter, innovationRouter, aiRouter, aiAnnotatorRouter)
+
+**Standardformat**:
+
+```typescript
+{
+  success: false,
+  error: {
+    code: "NOT_FOUND",
+    message: "Resource not found",
+    details?: any,
+    timestamp: "2024-12-04T14:00:00Z",
+    path: "/api/functions/123"
+  }
+}
+```
+
+**Ergebnis**: Alle 16 Router haben jetzt standardisiertes Error-Handling mit asyncHandler und APIError-Klassen.
+
+**Aufwand**: 10 Stunden über 3 Tage verteilt
+
+---
+
+### ISSUE-006: Fehlende Input-Validierung auf Backend ✅
+
+**Status**: ✅ Behoben | **Behoben am**: 2025-12-07
+
+**Beschreibung**: Viele API-Endpunkte validierten Eingaben nicht oder nur unzureichend. Malformed Requests konnten zu unerwarteten Fehlern führen.
+
+**Lösung (vollständig abgeschlossen)**:
+
+1. ✅ Zod-Schemas für alle Request-Bodies definiert
+2. ✅ Validation-Middleware (schema.parse()) verwendet
+3. ✅ In allen Routen eingesetzt
+4. ✅ Klare Validation-Error-Messages durch Zod + errorHandler
+
+**Fortschritt**:
+
+1. ✅ quickchatRouter - Vollständige Zod-Validierung für alle 3 Endpoints
+2. ✅ hrRouter - Vollständige Zod-Validierung für alle 14 Endpoints
+3. ✅ financeRouter - Vollständige Zod-Validierung für alle 19 Endpoints
+4. ✅ functionsCatalog - Hat bereits Zod-Validierung
+5. ✅ innovationRouter - Vollständige Zod-Validierung für alle 9 Endpoints
+6. ✅ aiRouter - Vollständige Zod-Validierung für alle 10 Endpoints
+7. ✅ diagnosticsRouter - Zod-Validierung für Query-Parameter
+8. ✅ aiAnnotatorRouter - Zod-Validierung für 68 Endpoints
+
+**Beispiel**:
+
+```typescript
+const chatMessageSchema = z.object({
+  message: z.string().min(1).max(5000),
+  sessionId: z.string().uuid().optional(),
+  model: z.string().optional(),
+});
+
+router.post(
+  "/chat",
+  asyncHandler(async (req, res) => {
+    const validated = chatMessageSchema.parse(req.body); // Automatic validation
+    // req.body ist garantiert valide
+  }),
+);
+```
+
+**Ergebnis**: Alle kritischen Router haben jetzt vollständige Zod-Validierung. Security-Risiko behoben.
+
+**Aufwand**: 2 Tage über 3 Tage verteilt
+
+---
+
+### ISSUE-015: Package.json Scripts fehlen Beschreibungen ✅
+
+**Status**: ✅ Behoben | **Behoben am**: 2025-12-06
+
+**Beschreibung**: Die npm-scripts hatten keine Beschreibungen. `npm run` zeigte eine unleserliche Liste.
+
+**Lösung**:
+
+Umfassende Dokumentation in SCRIPTS.md erstellt mit:
+
+- Detaillierte Beschreibung aller npm-Scripts
+- Verwendungsbeispiele und Workflows
+- Troubleshooting-Tipps
+- Quick Reference Tabelle
+
+**Zusätzlich**:
+
+- ✅ ESLint-Scripts funktionieren mit ESLint v9
+- ✅ Linting-Workflow komplett eingerichtet
+- ✅ npm audit fix Script erfolgreich getestet
+
+**Aufwand**: 45 Minuten
+
+---
+
+### ISSUE-016: Fehlende Commit-Conventions ✅
+
+**Status**: ✅ Behoben | **Behoben am**: 2025-12-06
+
+**Beschreibung**: Keine enforzierten Commit-Message-Conventions. Commits waren unstrukturiert.
+
+**Lösung implementiert**:
+
+1. ✅ Conventional Commits Standard eingeführt
+2. ✅ Commitlint installiert und konfiguriert (.commitlintrc.json)
+3. ✅ Husky Hooks eingerichtet:
+   - pre-commit: Format-Check mit Prettier
+   - commit-msg: Commit-Message-Validierung mit commitlint
+4. ✅ Umfassende Dokumentation in COMMIT_CONVENTIONS.md:
+   - Format-Spezifikation und Beispiele
+   - Type/Scope-Definitionen
+   - Validierungs-Fehler und Lösungen
+   - IDE-Integration-Tipps
+
+**Beispiel** (nun enforced):
+
+```
+feat(backend): add rate limiting to AI endpoints
+fix(frontend): resolve theme toggle bug
+docs(readme): update installation instructions
+```
+
+**Aufwand**: 2 Stunden (inklusive Dokumentation)
+
+---
+
 ## 📊 Archivierte Zusammenfassungen
 
 ### Analyse-Zusammenfassung (3. Dezember 2024)
@@ -297,5 +439,5 @@ Implementierung der nächsten 5 priorisierten TODO-Punkte mit umfassenden Tests 
 
 ---
 
-**Letzte Aktualisierung**: 5. Dezember 2024  
+**Letzte Aktualisierung**: 7. Dezember 2025  
 **Maintainer**: Thomas Heisig

@@ -11,103 +11,6 @@ Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical D
 
 ## 🟠 Hohe Priorität (Sollten bald behoben werden)
 
-### ISSUE-005: Inkonsistente Error-Responses vom Backend ✅
-
-**Status**: ✅ VOLLSTÄNDIG BEHOBEN | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2025-12-07 | **Behoben**: 2025-12-07
-
-**Beschreibung**:
-API-Fehler hatten kein einheitliches Format. Router gaben unterschiedliche Error-Formate zurück.
-
-**Lösung (vollständig abgeschlossen)**:
-
-1. ✅ Standardisiertes Error-Response-Format definiert in `errorResponse.ts`
-2. ✅ Helper-Funktionen erstellt (sendBadRequest, sendUnauthorized, etc.)
-3. ✅ Error-Codes definiert (BAD_REQUEST, UNAUTHORIZED, etc.)
-4. ✅ APIError-Klassen erstellt (BadRequestError, NotFoundError, ValidationError, etc.)
-5. ✅ asyncHandler-Middleware für async Route-Handler
-6. ✅ authMiddleware komplett aktualisiert
-7. ✅ rateLimitLogin Middleware aktualisiert
-8. ✅ quickchatRouter komplett aktualisiert (3/3 Endpoints - 2024-12-06)
-9. ✅ hrRouter komplett aktualisiert (14/14 Endpoints - 2025-12-06)
-10. ✅ financeRouter komplett aktualisiert (19/19 Endpoints - 2025-12-06)
-11. ✅ dashboard.ts, diagnosticsRouter.ts, systemInfoRouter.ts aktualisiert (2025-12-06)
-12. ✅ authRouter.ts, calendarRouter.ts aktualisiert (2025-12-06)
-13. ✅ innovationRouter.ts (9 Endpoints) aktualisiert (2025-12-07)
-14. ✅ aiRouter.ts (10 Endpoints) aktualisiert (2025-12-07)
-15. ✅ aiAnnotatorRouter.ts (68 Endpoints) aktualisiert (2025-12-07)
-
-**Standardformat**:
-
-```typescript
-{
-  success: false,
-  error: {
-    code: "NOT_FOUND",
-    message: "Resource not found",
-    details?: any,
-    timestamp: "2024-12-04T14:00:00Z",
-    path: "/api/functions/123"
-  }
-}
-```
-
-**Ergebnis**: Alle 16 Router haben jetzt standardisiertes Error-Handling mit asyncHandler und APIError-Klassen.
-
-**Aufwand (gesamt)**: 10 Stunden über 3 Tage verteilt
-
----
-
-### ISSUE-006: Fehlende Input-Validierung auf Backend ✅
-
-**Status**: ✅ VOLLSTÄNDIG BEHOBEN | **Priorität**: Hoch | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2025-12-07 | **Behoben**: 2025-12-07
-
-**Beschreibung**:
-Viele API-Endpunkte validierten Eingaben nicht oder nur unzureichend. Malformed Requests konnten zu unerwarteten Fehlern führen.
-
-**Lösung (vollständig abgeschlossen)**:
-
-1. ✅ Zod-Schemas für alle Request-Bodies definiert
-2. ✅ Validation-Middleware (schema.parse()) verwendet
-3. ✅ In allen Routen eingesetzt
-4. ✅ Klare Validation-Error-Messages durch Zod + errorHandler
-
-**Fortschritt** (2025-12-07):
-
-1. ✅ quickchatRouter - Vollständige Zod-Validierung für alle 3 Endpoints
-2. ✅ hrRouter - Vollständige Zod-Validierung für alle 14 Endpoints
-3. ✅ financeRouter - Vollständige Zod-Validierung für alle 19 Endpoints
-4. ✅ functionsCatalog - Hat bereits Zod-Validierung
-5. ✅ innovationRouter - Vollständige Zod-Validierung für alle 9 Endpoints (2025-12-07)
-6. ✅ aiRouter - Vollständige Zod-Validierung für alle 10 Endpoints (2025-12-07)
-7. ✅ diagnosticsRouter - Zod-Validierung für Query-Parameter (2025-12-07)
-8. ✅ aiAnnotatorRouter - Zod-Validierung für 68 Endpoints (2025-12-07)
-
-**Beispiel**:
-
-```typescript
-const chatMessageSchema = z.object({
-  message: z.string().min(1).max(5000),
-  sessionId: z.string().uuid().optional(),
-  model: z.string().optional(),
-});
-
-router.post(
-  "/chat",
-  asyncHandler(async (req, res) => {
-    const validated = chatMessageSchema.parse(req.body); // Automatic validation
-    // req.body ist garantiert valide
-  }),
-);
-```
-
-**Ergebnis**: Alle kritischen Router haben jetzt vollständige Zod-Validierung. Security-Risiko behoben.
-
-**Hinweis**: Einige komplexe Schemas verwenden z.any() für Backward-Compatibility und sollten in der Zukunft weiter verfeinert werden (siehe TODO-Kommentare im Code).
-
-**Aufwand (gesamt)**: 2 Tage über 3 Tage verteilt
-
----
-
 ### ISSUE-008: Fehlende Monitoring & Observability 📊
 
 **Status**: 🟠 Offen | **Priorität**: Mittel | **Erstellt**: 2024-12-03
@@ -331,60 +234,7 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 
 ## 🟢 Kleinere Issues & Verbesserungsvorschläge
 
-### ISSUE-015: Package.json Scripts fehlen Beschreibungen 📋
-
-**Status**: 🟢 ERLEDIGT | **Priorität**: Sehr niedrig | **Erstellt**: 2024-12-03 | **Gelöst**: 2025-12-06
-
-**Beschreibung**:
-Die npm-scripts haben keine Beschreibungen. `npm run` zeigt eine unleserliche Liste.
-
-**Lösung**:
-Umfassende Dokumentation in SCRIPTS.md erstellt mit:
-
-- Detaillierte Beschreibung aller npm-Scripts
-- Verwendungsbeispiele und Workflows
-- Troubleshooting-Tipps
-- Quick Reference Tabelle
-
-**Zusätzlich (6. Dezember 2025)**:
-
-- ✅ ESLint-Scripts funktionieren mit ESLint v9
-- ✅ Linting-Workflow komplett eingerichtet
-- ✅ npm audit fix Script erfolgreich getestet
-
-**Aufwand**: 30 Minuten → 45 Minuten (umfassendere Lösung)
-
----
-
-### ISSUE-016: Fehlende Commit-Conventions 🔖
-
-**Status**: 🟢 ERLEDIGT | **Priorität**: Sehr niedrig | **Erstellt**: 2024-12-03 | **Gelöst**: 2025-12-06
-
-**Beschreibung**:
-Keine enforzierten Commit-Message-Conventions. Commits sind unstrukturiert.
-
-**Lösung implementiert**:
-
-1. ✅ Conventional Commits Standard eingeführt
-2. ✅ Commitlint installiert und konfiguriert (.commitlintrc.json)
-3. ✅ Husky Hooks eingerichtet:
-   - pre-commit: Format-Check mit Prettier
-   - commit-msg: Commit-Message-Validierung mit commitlint
-4. ✅ Umfassende Dokumentation in COMMIT_CONVENTIONS.md:
-   - Format-Spezifikation und Beispiele
-   - Type/Scope-Definitionen
-   - Validierungs-Fehler und Lösungen
-   - IDE-Integration-Tipps
-
-**Beispiel** (nun enforced):
-
-```
-feat(backend): add rate limiting to AI endpoints
-fix(frontend): resolve theme toggle bug
-docs(readme): update installation instructions
-```
-
-**Aufwand**: 1-2 Stunden → 2 Stunden (inklusive Dokumentation)
+_Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](ARCHIVE.md) verschoben._
 
 ---
 
@@ -392,43 +242,37 @@ docs(readme): update installation instructions
 
 ### Nach Priorität
 
-- 🟠 Hoch: 3 Issues (✅ 2 komplett behoben, 1 offen)
-- 🟡 Mittel: 5 Issues (1 weitgehend behoben, 4 offen)
-- 🟢 Niedrig: 2 Issues (✅ beide erledigt)
+- 🟠 Hoch: 1 Issue (1 offen)
+- 🟡 Mittel: 5 Issues (2 weitgehend behoben, 3 offen)
+- 🟢 Niedrig: 0 Issues (✅ alle erledigt und archiviert)
 
-**Gesamt**: 10 Issues (✅ 4 komplett behoben, 1 weitgehend behoben, 5 offen)
+**Gesamt**: 6 aktive Issues (2 weitgehend behoben, 4 offen) | **Archiviert**: 10 Issues (siehe [ARCHIVE.md](ARCHIVE.md))
 
 ### Nach Kategorie
 
-- **Security**: 1 (ISSUE-006 ✅ vollständig behoben)
-- **Code-Quality**: 4 (ISSUE-005 ✅, ISSUE-010 teilweise, ISSUE-011, ISSUE-013 teilweise)
+- **Code-Quality**: 3 (ISSUE-010 teilweise, ISSUE-011, ISSUE-013 teilweise)
 - **Monitoring**: 1 (ISSUE-008)
-- **Dependencies**: 1 (ISSUE-009 ✅ weitgehend behoben)
+- **Dependencies**: 1 (ISSUE-009 weitgehend behoben)
 - **Accessibility**: 1 (ISSUE-012)
-- **Developer Experience**: 2 (ISSUE-015 ✅, ISSUE-016 ✅)
+- **Security**: ✅ Alle behoben (archiviert)
+- **Developer Experience**: ✅ Alle behoben (archiviert)
 
 ### Geschätzter Gesamtaufwand
 
-- **Hohe Priorität**: ✅ Komplett erledigt!
-- **Mittlere Priorität**: 1-2 Wochen
-- **Niedrige Priorität**: ✅ Komplett erledigt
+- **Hohe Priorität**: ✅ Komplett erledigt und archiviert!
+- **Mittlere Priorität**: 1-2 Wochen verbleibend
+- **Niedrige Priorität**: ✅ Komplett erledigt und archiviert!
 
-**Gesamt**: ~1-2 Wochen für verbleibende offene Issues
+**Gesamt**: ~1-2 Wochen für verbleibende 6 aktive Issues
 
-**Erledigt (2025-12-07)**:
+**Kürzlich archiviert (2025-12-07)**:
 
-- **Vormittag**: ISSUE-005 & ISSUE-006 vollständig behoben
-  - aiAnnotatorRouter.ts komplett refaktoriert (68 Endpoints)
-  - AsyncHandler + APIError-Klassen für alle Endpoints
-  - Zod-Validierung für alle Request-Bodies
-  - Build erfolgreich, alle Tests bestehen
-- **Aufwand**: 3 Stunden für aiAnnotatorRouter-Refactoring
+- ✅ **ISSUE-005**: Inkonsistente Error-Responses - vollständig behoben
+- ✅ **ISSUE-006**: Fehlende Input-Validierung - vollständig behoben
+- ✅ **ISSUE-015**: Package.json Scripts - vollständig behoben
+- ✅ **ISSUE-016**: Commit-Conventions - vollständig behoben
 
-**Erledigt (2025-12-06)**:
-
-- **Vormittag**: ISSUE-015 (Scripts: 45 min), ISSUE-016 (Commits: 2 Std.)
-- **Nachmittag**: Repository Cleanup (Security + ESLint + npm audit + Docs: 2 Std.)
-- **Teilweise**: ISSUE-009 (Dependencies audit + fixes: 1 Std.)
+**Details siehe**: [ARCHIVE.md](ARCHIVE.md)
 
 ---
 
@@ -461,48 +305,12 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ### Empfohlene Reihenfolge
 
-1. **ISSUE-006** (Input-Validierung) - Security-Risiko
-2. **ISSUE-005** (Error-Responses standardisieren) - API-Konsistenz
-3. **ISSUE-010** (Console.logs entfernen) - Code-Qualität
-4. **ISSUE-008** (Monitoring) - Production-Readiness
-5. Weitere nach Bedarf
-
----
-
-## 🆕 Kürzlich Behobene Probleme (6. Dezember 2025)
-
-### Repository Cleanup & Infrastructure ✅ (6. Dezember 2025 - Nachmittag)
-
-**Behobene Probleme**:
-
-1. 🚨 **CRITICAL SECURITY**: GitHub PAT Token in github.txt entfernt
-2. ✅ ESLint v9 Flat Config für Backend und Frontend eingerichtet
-3. ✅ npm audit: Alle 3 Vulnerabilities behoben (body-parser, js-yaml, jws)
-4. ✅ .gitignore erweitert mit umfassenden Patterns
-5. ✅ Dokumentations-Konsolidierung: 8 Dateien nach docs/archive/ verschoben
-6. ✅ Repository-Struktur bereinigt und organisiert
-
-**Details**:
-
-- **Sicherheit**: github.txt mit exposed PAT wurde gelöscht, .gitignore erweitert um _.token, _.secret, secrets/
-- **Linting**: ESLint v9 Migration mit @eslint/js flat config, TypeScript-Plugin, React-Plugin
-- **Dependencies**: 0 Vulnerabilities (von 3), deprecated packages dokumentiert
-- **.gitignore**: Erweitert um Caches, IDE-Patterns, Test-Coverage, Logs, Work-Summary-Patterns
-- **Dokumentation**: WORK_SUMMARY, UPDATE_SUMMARY, FRONTEND_REVAMP_SUMMARY nach archive/ verschoben
-
-### Test-Infrastruktur Verbesserungen ✅ (6. Dezember 2025 - Vormittag)
-
-**Behobene Probleme**:
-
-1. ✅ Frontend Skeleton-Tests korrigiert (CSS Module Hashing berücksichtigt)
-2. ✅ ErrorBoundary-Test korrigiert (Reset-Verhalten korrekt getestet)
-3. ✅ Alle 50 Frontend-Tests bestehen erfolgreich
-4. ✅ Alle 42 Backend-Tests bestehen erfolgreich
-
-**Details**:
-
-- CSS Module generieren gehashte Klassennamen (z.B. `_text_6deae7`), Tests mussten aktualisiert werden, um die importierten Styles-Objekte zu verwenden
-- ErrorBoundary Reset-Test wurde vereinfacht, um das korrekte Verhalten zu testen (Reset versucht Re-Rendering, aber wenn Kind weiterhin wirft, wird Fehler erneut gefangen)
+1. **ISSUE-008** (Monitoring & Observability) - Production-Readiness
+2. **ISSUE-010** (Console.logs entfernen) - Code-Qualität (weitgehend behoben, Finalisierung ausstehend)
+3. **ISSUE-011** (TypeScript Strict Mode) - Code-Qualität
+4. **ISSUE-013** (Code-Dokumentation) - Developer Experience (teilweise behoben)
+5. **ISSUE-012** (Accessibility) - Inklusion
+6. **ISSUE-009** (Dependencies) - Wartung (weitgehend behoben)
 
 ---
 
