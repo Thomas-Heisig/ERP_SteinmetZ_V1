@@ -219,11 +219,11 @@ See [COMMIT_CONVENTIONS.md](COMMIT_CONVENTIONS.md) for commit message standards.
 
 The following secrets need to be configured in GitHub repository settings:
 
-| Secret            | Description                    | Required                  |
-| ----------------- | ------------------------------ | ------------------------- |
-| `CODECOV_TOKEN`   | Codecov upload token           | Optional (for trends)     |
-| `SONAR_TOKEN`     | SonarQube authentication token | Required (for quality)    |
-| `SONAR_HOST_URL`  | SonarQube server URL           | Required (SonarCloud URL) |
+| Secret           | Description                    | Required                  |
+| ---------------- | ------------------------------ | ------------------------- |
+| `CODECOV_TOKEN`  | Codecov upload token           | Optional (for trends)     |
+| `SONAR_TOKEN`    | SonarQube authentication token | Required (for quality)    |
+| `SONAR_HOST_URL` | SonarQube server URL           | Required (SonarCloud URL) |
 
 ### Repository Settings
 
@@ -385,6 +385,7 @@ SonarQube provides continuous code quality inspection and analysis:
 - **Duplication Detection**: Identifies duplicate code blocks
 
 **Configuration Files:**
+
 - `sonar-project.properties` - Project configuration
 - `.github/workflows/test.yml` - CI integration
 - Coverage reports: LCOV format from Vitest
@@ -396,16 +397,19 @@ SonarQube provides continuous code quality inspection and analysis:
 Test coverage is generated using Vitest with v8 provider:
 
 **Configuration:**
+
 - **Format**: Text, JSON, HTML, LCOV
 - **Location**: `apps/backend/coverage/`, `apps/frontend/coverage/`
 - **Upload**: Codecov (for trends) + SonarQube (for quality gates)
 
 **Coverage Targets:**
+
 - **Backend**: 47% (Goal: 80%+)
 - **Frontend**: 96% (Goal: 80%+)
 - **Overall**: 80%+ required by quality gate
 
 **Run Coverage Locally:**
+
 ```bash
 # All coverage reports
 npm run test:coverage
@@ -475,5 +479,6 @@ open apps/frontend/coverage/index.html
 **Next Review:** March 2026
 
 **Changelog:**
+
 - **v2.0.0** (Dec 7, 2025): Added SonarQube integration and coverage reporting
 - **v1.0.0** (Dec 6, 2025): Initial CI/CD documentation

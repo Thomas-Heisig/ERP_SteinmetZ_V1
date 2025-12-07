@@ -41,6 +41,7 @@ import diagnosticsRouter from "./routes/diagnostics/diagnosticsRouter.js";
 import hrRouter from "./routes/hr/hrRouter.js";
 import financeRouter from "./routes/finance/financeRouter.js";
 import searchAnalyticsRouter from "./routes/searchAnalytics/searchAnalyticsRouter.js";
+import metricsRouter from "./routes/metrics/metricsRouter.js";
 
 import { toolRegistry } from "./tools/registry.js";
 import { listRoutesTool } from "./tools/listRoutesTool.js";
@@ -51,6 +52,12 @@ import { FunctionsCatalogService } from "./services/functionsCatalogService.js";
 import { AuthService } from "./services/authService.js";
 import db from "./services/dbService.js";
 import { websocketService } from "./services/websocketService.js";
+import { tracingService } from "./services/tracingService.js";
+import { errorTrackingService } from "./services/errorTrackingService.js";
+
+/* ---------------------- Middleware ---------------------- */
+import { metricsMiddleware } from "./middleware/metricsMiddleware.js";
+import { errorTrackingMiddleware } from "./middleware/errorTrackingMiddleware.js";
 
 /* ---------------------- Error-Handler ---------------------- */
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -114,6 +121,10 @@ import { createSessionMiddleware } from "./middleware/sessionMiddleware.js";
 app.use(createSessionMiddleware());
 logger.info("Session middleware configured with Redis support");
 
+// Metrics middleware - must be early to capture all requests
+app.use(metricsMiddleware);
+logger.info("Metrics middleware enabled");
+
 /* ---------------------- Optionale Admin-Auth ---------------------- */
 app.use((req, res, next) => {
   if (process.env.ADMIN_TOKEN && req.path.startsWith("/api/system")) {
@@ -158,6 +169,7 @@ app.use("/diagnostics", diagnosticsRouter);
 app.use("/api/hr", hrRouter);
 app.use("/api/finance", financeRouter);
 app.use("/api/search", searchAnalyticsRouter);
+app.use("/api/metrics", metricsRouter);
 
 // WebSocket statistics endpoint
 app.get("/api/ws/stats", (_req: Request, res: Response) => {
@@ -219,7 +231,9 @@ app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: "Not found" });
 });
 
-/* ---------------------- Globaler Error-Handler ---------------------- */
+/* ---------------------- Error Tracking & Error Handler ---------------------- */
+// Error tracking must come before error handler
+app.use(errorTrackingMiddleware);
 app.use(errorHandler);
 
 /* ---------------------- Bootstrap Functions-Katalog ---------------------- */
@@ -228,6 +242,17 @@ async function bootstrapFunctionsCatalog() {
   const service = new FunctionsCatalogService();
 
   try {
+    // Initialize monitoring services
+    await tracingService.initialize();
+    if (tracingService.isEnabled()) {
+      logger.info("OpenTelemetry tracing initialized");
+    }
+
+    errorTrackingService.initialize(app);
+    if (errorTrackingService.isEnabled()) {
+      logger.info("Sentry error tracking initialized");
+    }
+
     await db.init();
     logger.info("Database initialized");
 
@@ -315,6 +340,7 @@ export async function start() {
       logger.info(
         `AI Annotator API:     http://localhost:${PORT}/api/ai-annotator`,
       );
+      logger.info(`Metrics API:          http://localhost:${PORT}/api/metrics`);
       logger.info("--------------------------------------------------------");
 
       // Initialize WebSocket server

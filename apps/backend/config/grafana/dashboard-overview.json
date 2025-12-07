@@ -1,0 +1,90 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "erp-steinmetz-overview",
+    "title": "ERP SteinmetZ - Overview",
+    "tags": ["erp", "steinmetz", "overview"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "HTTP Request Rate",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "expr": "rate(erp_steinmetz_http_requests_total[5m])",
+            "legendFormat": "{{method}} {{route}} - {{status_code}}"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "HTTP Request Duration (95th percentile)",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(erp_steinmetz_http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{method}} {{route}}"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Active HTTP Requests",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "targets": [
+          {
+            "expr": "erp_steinmetz_http_requests_in_progress",
+            "legendFormat": "{{method}} {{route}}"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Error Rate",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+        "targets": [
+          {
+            "expr": "rate(erp_steinmetz_errors_total[5m])",
+            "legendFormat": "{{type}} - {{severity}}"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Memory Usage",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+        "targets": [
+          {
+            "expr": "erp_steinmetz_process_resident_memory_bytes",
+            "legendFormat": "Resident Memory"
+          },
+          {
+            "expr": "erp_steinmetz_nodejs_heap_size_used_bytes",
+            "legendFormat": "Heap Used"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "CPU Usage",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+        "targets": [
+          {
+            "expr": "rate(erp_steinmetz_process_cpu_seconds_total[5m])",
+            "legendFormat": "CPU Usage"
+          }
+        ]
+      }
+    ]
+  }
+}

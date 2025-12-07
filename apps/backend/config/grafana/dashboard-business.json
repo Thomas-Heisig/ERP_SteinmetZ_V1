@@ -1,0 +1,98 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "erp-steinmetz-business",
+    "title": "ERP SteinmetZ - Business Metrics",
+    "tags": ["erp", "steinmetz", "business"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Business Events Rate",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "expr": "rate(erp_steinmetz_business_events_total[5m])",
+            "legendFormat": "{{event_type}} - {{status}}"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Business Operation Duration (95th percentile)",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(erp_steinmetz_business_operation_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{operation}}"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Database Query Rate",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "targets": [
+          {
+            "expr": "rate(erp_steinmetz_db_queries_total[5m])",
+            "legendFormat": "{{operation}} {{table}} - {{status}}"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Database Query Duration (95th percentile)",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(erp_steinmetz_db_query_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{operation}} {{table}}"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Active Database Connections",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+        "targets": [
+          {
+            "expr": "erp_steinmetz_db_connections_active",
+            "legendFormat": "Active Connections"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Authentication Attempts",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+        "targets": [
+          {
+            "expr": "rate(erp_steinmetz_auth_attempts_total[5m])",
+            "legendFormat": "{{method}} - {{status}}"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Active Sessions",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+        "targets": [
+          {
+            "expr": "erp_steinmetz_auth_active_sessions",
+            "legendFormat": "Active Sessions"
+          }
+        ]
+      }
+    ]
+  }
+}

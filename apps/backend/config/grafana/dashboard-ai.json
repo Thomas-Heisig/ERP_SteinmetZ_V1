@@ -1,0 +1,62 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "erp-steinmetz-ai",
+    "title": "ERP SteinmetZ - AI Metrics",
+    "tags": ["erp", "steinmetz", "ai"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "AI Request Rate",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "expr": "rate(erp_steinmetz_ai_requests_total[5m])",
+            "legendFormat": "{{provider}} - {{status}}"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "AI Request Duration (95th percentile)",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(erp_steinmetz_ai_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{provider}}"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "AI Tokens Used",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "targets": [
+          {
+            "expr": "rate(erp_steinmetz_ai_tokens_used_total[5m])",
+            "legendFormat": "{{provider}} - {{type}}"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Total Tokens by Provider",
+        "type": "graph",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+        "targets": [
+          {
+            "expr": "sum by (provider) (increase(erp_steinmetz_ai_tokens_used_total[1h]))",
+            "legendFormat": "{{provider}}"
+          }
+        ]
+      }
+    ]
+  }
+}
