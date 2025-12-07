@@ -77,11 +77,11 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - [x] systemInfoRouter.ts aktualisiert mit asyncHandler (2025-12-06)
   - [x] authRouter.ts aktualisiert mit asyncHandler (2025-12-06)
   - [x] calendarRouter.ts aktualisiert mit asyncHandler (2025-12-06)
-  - [ ] innovationRouter.ts (9 Endpoints) - Ausstehend
-  - [ ] aiRouter.ts (10 Endpoints) - Ausstehend
+  - [x] innovationRouter.ts (9 Endpoints) - ✅ ERLEDIGT (2025-12-07)
+  - [x] aiRouter.ts (10 Endpoints) - ✅ ERLEDIGT (2025-12-07)
   - [ ] aiAnnotatorRouter.ts (69 Endpoints) - Ausstehend (Sehr umfangreich)
-  - **Aufwand**: 8 Stunden (13/16 Router komplett, 3 große Router ausstehend)
-  - **Ergebnis**: Standardisiertes Error-Handling für 13 von 16 Routern implementiert
+  - **Aufwand**: 8 Stunden (15/16 Router komplett, 1 großer Router ausstehend)
+  - **Ergebnis**: Standardisiertes Error-Handling für 15 von 16 Routern implementiert
 
 - [x] **AI Provider Connection Tests** ✅ ERLEDIGT (2024-12-04)
   - [x] Health-Checks für alle Provider (OpenAI, Ollama, Anthropic, Fallback)
