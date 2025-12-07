@@ -596,6 +596,9 @@ Dieses Projekt nutzt zahlreiche Open-Source-Technologien und -Bibliotheken:
 
 ---
 
-**Version**: 0.2.0  
+**Version**: 0.3.0  
 **Letztes Update**: Dezember 2024  
-**Status**: ✅ Production-Ready Foundation, 🔄 Active Development
+**Archiviert**: 7. Dezember 2025  
+**Status**: ✅ Archiviert - Konsolidiert in README.md
+
+> **Hinweis**: Diese Datei wurde am 7. Dezember 2025 archiviert. Der Inhalt wurde in die Haupt-README.md konsolidiert. Siehe [README.md](../../README.md) für die aktuelle Dokumentation.

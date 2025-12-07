@@ -4,41 +4,45 @@
 [![Node](https://img.shields.io/badge/Node-%3E%3D18.18.0-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> 📘 **Hinweis**: Für eine vollständige Dokumentation siehe [README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)
+> 📘 **Dokumentation**: Vollständige technische Referenz im [Documentation Hub](docs/README.md)
 
-## 🎯 Vision
+## 🎯 Projektvision
 
 ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit einem innovativen **KI-gestützten Architekturansatz**. Das System nutzt einen **AI Annotator**, um Funktionen, Metadaten, Regeln und Formulare flexibel zu analysieren, generieren und zu erweitern – damit wird das ERP zu einer sich selbst dokumentierenden und kontinuierlich lernenden Plattform.
 
-## ✅ Aktueller Status (Stand: Dezember 2025)
+### Kernphilosophie
 
-### Frontend ✅ Vollständig Funktionsfähig & Überarbeitet ✨ NEU
+- **Instruction-driven ERP**: Fachprozesse als Arbeitsanweisungen (AA/DSL) und JSON-Schemas beschrieben
+- **KI als Moderator**: AI orchestriert Eingaben und ruft deterministische Services auf
+- **Flexible Architektur**: Dynamische Navigation und Dashboards aus Modul-Manifesten
+- **Deterministische Basis**: Kernzahlen werden ausschließlich deterministisch berechnet
+- **RAG für Wissensmanagement**: Retrieval Augmented Generation nur für Text-/Webquellen
 
-- ✅ React 19 + Vite Setup funktioniert
-- ✅ Dashboard lädt dynamisch 11 Funktionsbereiche vom Backend
-- ✅ **Zentralisiertes Theme-System** (Light, Dark, LCARS, Contrast) ✨ NEU
-- ✅ **Zentrale Route-Konfiguration** (routes.tsx) ✨ NEU
-- ✅ **CSS-Variablen System** für konsistentes Design ✨ NEU
-- ✅ QuickChat Assistant Komponente integriert und funktionsfähig
-- ✅ AI Annotator vollständig integriert und geroutet ✨ NEU
-- ✅ Navigation zwischen Seiten funktioniert
-- ✅ Mehrsprachige Oberfläche (7 Sprachen)
-- ✅ Responsive Design
-- ✅ **Umfassende Dokumentation** (THEME_SYSTEM.md, FRONTEND_STRUCTURE.md) ✨ NEU
+## ✅ Aktueller Status (Stand: 7. Dezember 2025)
 
-### Backend ✅ Stabil & Funktionsfähig
+### Frontend ✅ Vollständig Funktionsfähig
 
-- ✅ Express 5 Server läuft stabil
-- ✅ Health-Check Endpoint aktiv (`/api/health`)
-- ✅ Functions Catalog API mit 11 Kategorien und 15.472 Funktionsknoten
-- ✅ AI-Integration vorbereitet (Ollama, OpenAI, lokale Modelle)
-- ✅ SQLite Datenbank für Entwicklung
-- ✅ CORS konfiguriert für Frontend-Integration
-- ✅ File-Watcher für automatisches Reload der Funktionen
-- ✅ WebSocket-Server mit Socket.IO ✨ NEU
-- ✅ API-Response-Caching mit TTL ✨ NEU
-- ✅ Query-Performance-Monitoring ✨ NEU
-- ✅ Enhanced Full-Text-Search ✨ NEU
+- ✅ **React 19 + Vite**: Modernes Build-System mit optimiertem Code-Splitting
+- ✅ **Dashboard**: Dynamisches Laden von 11 Funktionsbereichen vom Backend
+- ✅ **Theme-System**: 4 Themes (Light, Dark, LCARS, High Contrast)
+- ✅ **Routing**: Zentrale Route-Konfiguration mit React Router v7
+- ✅ **QuickChat Assistant**: KI-gestützte Chat-Komponente integriert
+- ✅ **AI Annotator UI**: Batch-Processing und Quality-Dashboard
+- ✅ **Internationalisierung**: 7 Sprachen mit i18next
+- ✅ **Responsive Design**: Mobile-optimiert mit Touch-Interaktionen
+- ✅ **Error Handling**: Error Boundaries mit Fallback-UI
+
+### Backend ✅ Production-Ready
+
+- ✅ **Express 5**: TypeScript-basierter API-Server
+- ✅ **Functions Catalog**: 15.472 Funktionsknoten in 11 Kategorien
+- ✅ **AI-Integration**: 13 Provider (OpenAI, Ollama, Anthropic, Azure, Vertex AI, etc.)
+- ✅ **AI Annotator**: Automatische Metadaten-, Regel- und Formular-Generierung
+- ✅ **Datenbank**: SQLite (Dev) / PostgreSQL (Production)
+- ✅ **WebSocket**: Socket.IO für Real-Time Updates
+- ✅ **Caching**: API-Response-Caching mit TTL
+- ✅ **Monitoring**: Query-Performance-Monitoring und Health-Checks
+- ✅ **Resilience**: Circuit Breaker, Retry Policy, SAGA Pattern
 
 ### API-Endpunkte
 
@@ -301,13 +305,13 @@ npm test:coverage     # Mit Coverage-Report
 
 ### 🚀 Schnellstart
 
-- **[Getting Started Tutorial](docs/tutorials/getting-started.md)** ⭐ NEU - 5-Minuten-Setup
-- **[README_COMPREHENSIVE.md](README_COMPREHENSIVE.md)** - Vollständige Projekt-Dokumentation
-- **[COPILOT_RULESET.md](COPILOT_RULESET.md)** ⭐ NEU - Entwicklungsrichtlinien für Copilot
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** ⭐ NEU - Contribution Guidelines
-- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** ⭐ NEU - Community Standards
-- **[SECURITY.md](SECURITY.md)** ⭐ NEU - Security Policy
-- **[SUPPORT.md](SUPPORT.md)** ⭐ NEU - Getting Help & FAQ
+- **[Getting Started Tutorial](docs/tutorials/getting-started.md)** - 5-Minuten-Setup für neue Entwickler
+- **[Documentation Hub](docs/README.md)** - Zentraler Dokumentations-Index mit allen Guides
+- **[COPILOT_RULESET.md](COPILOT_RULESET.md)** - Entwicklungsrichtlinien für Copilot
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution Guidelines
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** - Community Standards
+- **[SECURITY.md](SECURITY.md)** - Security Policy
+- **[SUPPORT.md](SUPPORT.md)** - Getting Help & FAQ
 
 ### 📖 Dokumentations-Hub
 
@@ -393,7 +397,7 @@ Siehe LICENSE file für Details.
 ---
 
 **Version:** 0.3.0  
-**Letztes Update:** 6. Dezember 2025  
+**Letztes Update:** 7. Dezember 2025  
 **Build-Status:** ✅ Erfolgreich  
 **Test-Status:** ✅ 79/92 passing (Backend: 42/42, Frontend: 37/50)
 
