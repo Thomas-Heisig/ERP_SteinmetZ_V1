@@ -6,6 +6,7 @@
  */
 
 import { Router } from "express";
+import { z } from "zod";
 import multer from "multer";
 import path from "node:path";
 import fs from "node:fs";
@@ -16,6 +17,8 @@ import {
   strictAiRateLimiter,
   audioRateLimiter,
 } from "../../middleware/rateLimiters.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { BadRequestError, NotFoundError } from "../../types/errors.js";
 
 // Services
 import { getModelOverview } from "./services/modelService.js";
@@ -63,50 +66,83 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 const upload = multer({ dest: uploadDir });
 
 /* ========================================================================== */
+/* Zod Validation Schemas                                                     */
+/* ========================================================================== */
+
+const createSessionSchema = z.object({
+  model: z.string().min(1).max(100).optional().default("gpt-4o-mini"),
+});
+
+const chatMessageSchema = z.object({
+  message: z.string().min(1).max(10000),
+});
+
+const translateSchema = z.object({
+  text: z.string().min(1).max(10000),
+  targetLang: z.string().min(2).max(10),
+  engine: z
+    .enum(["openai", "vertex", "huggingface"])
+    .optional()
+    .default("openai"),
+});
+
+const updateSettingSchema = z.object({
+  value: z.any(),
+});
+
+const toolRunSchema = z.object({
+  // Generic schema - tool-specific validation happens in toolRegistry
+}).passthrough();
+
+const workflowRunSchema = z.object({
+  // Generic schema - workflow-specific validation happens in workflowEngine
+}).passthrough();
+
+/* ========================================================================== */
 /* ⚙️ Modelle                                                                 */
 /* ========================================================================== */
 
-router.get("/models", async (_req, res) => {
-  try {
+router.get(
+  "/models",
+  asyncHandler(async (_req, res) => {
     const models = await getModelOverview();
     res.json({ success: true, models });
-  } catch (err: any) {
-    errorResponse(res, 500, "Fehler beim Abrufen der Modelle", err);
-  }
-});
+  }),
+);
 
 /* ========================================================================== */
 /* 💬 Chat-System                                                             */
 /* ========================================================================== */
 
 // Neue Chat-Session
-router.post("/chat", aiRateLimiter, async (req, res) => {
-  try {
-    const model = req.body?.model ?? "gpt-4o-mini";
-    const session = await createSession(model);
+router.post(
+  "/chat",
+  aiRateLimiter,
+  asyncHandler(async (req, res) => {
+    const validated = createSessionSchema.parse(req.body);
+    const session = await createSession(validated.model);
     res.json({ success: true, session });
-  } catch (err: any) {
-    errorResponse(res, 400, "Fehler beim Erstellen der Chat-Session", err);
-  }
-});
+  }),
+);
 
 // Nachricht an eine Session
-router.post("/chat/:sessionId/message", aiRateLimiter, async (req, res) => {
-  const session = getSession(req.params.sessionId);
-  if (!session) return errorResponse(res, 404, "Session nicht gefunden");
+router.post(
+  "/chat/:sessionId/message",
+  aiRateLimiter,
+  asyncHandler(async (req, res) => {
+    const session = getSession(req.params.sessionId);
+    if (!session) throw new NotFoundError("Session nicht gefunden");
 
-  const message = String(req.body?.message ?? "").trim();
-  if (!message)
-    return errorResponse(res, 400, "Nachricht darf nicht leer sein");
+    const validated = chatMessageSchema.parse(req.body);
+    const message = validated.message.trim();
 
-  const inbound: ChatMessage = {
-    role: "user",
-    content: message,
-    timestamp: nowISO(),
-  };
-  session.messages.push(inbound);
+    const inbound: ChatMessage = {
+      role: "user",
+      content: message,
+      timestamp: nowISO(),
+    };
+    session.messages.push(inbound);
 
-  try {
     const cleanMessages = sanitizeMessages(session.messages);
     const aiResponse = await generateAIResponse(session.model, cleanMessages);
 
@@ -126,10 +162,8 @@ router.post("/chat/:sessionId/message", aiRateLimiter, async (req, res) => {
 
     log("info", "KI-Antwort generiert", { sessionId: session.id });
     res.json({ success: true, response: outbound });
-  } catch (err: any) {
-    errorResponse(res, 500, "Fehler beim Verarbeiten der KI-Anfrage", err);
-  }
-});
+  }),
+);
 
 // Alle Sessions abrufen
 router.get("/sessions", (_req, res) => {
@@ -137,11 +171,14 @@ router.get("/sessions", (_req, res) => {
 });
 
 // Session löschen
-router.delete("/chat/:sessionId", (req, res) => {
-  const ok = removeSession(req.params.sessionId);
-  if (!ok) return errorResponse(res, 404, "Session nicht gefunden");
-  res.json({ success: true, message: "Session gelöscht" });
-});
+router.delete(
+  "/chat/:sessionId",
+  asyncHandler(async (req, res) => {
+    const ok = removeSession(req.params.sessionId);
+    if (!ok) throw new NotFoundError("Session nicht gefunden");
+    res.json({ success: true, message: "Session gelöscht" });
+  }),
+);
 
 /* ========================================================================== */
 /* 🔊 Audioverarbeitung (STT / TTS)                                           */
@@ -151,64 +188,57 @@ router.post(
   "/audio/transcribe",
   audioRateLimiter,
   upload.single("audio"),
-  async (req, res) => {
-    if (!req.file) return errorResponse(res, 400, "Keine Datei vorhanden");
-    try {
-      const transcript = await transcribeAudio(req.file.path);
-      res.json({ success: true, transcript });
-    } catch (err: any) {
-      errorResponse(res, 500, "Fehler bei der Audioverarbeitung", err);
-    }
-  },
+  asyncHandler(async (req, res) => {
+    if (!req.file) throw new BadRequestError("Keine Datei vorhanden");
+    const transcript = await transcribeAudio(req.file.path);
+    res.json({ success: true, transcript });
+  }),
 );
 
 /* ========================================================================== */
 /* 🌍 Übersetzungen                                                           */
 /* ========================================================================== */
 
-router.post("/translate", aiRateLimiter, async (req, res) => {
-  const { text, targetLang, engine = "openai" } = req.body;
-  if (!text || !targetLang)
-    return errorResponse(res, 400, "Fehlende Parameter: text, targetLang");
+router.post(
+  "/translate",
+  aiRateLimiter,
+  asyncHandler(async (req, res) => {
+    const validated = translateSchema.parse(req.body);
+    const { text, targetLang, engine } = validated;
 
-  try {
     const result = await translateText(text, targetLang, engine);
     res.json({ success: true, translatedText: result.text ?? result });
-  } catch (err: any) {
-    errorResponse(res, 500, "Übersetzungsfehler", err);
-  }
-});
+  }),
+);
 
 /* ========================================================================== */
 /* ⚙️ Einstellungen & Konfiguration                                           */
 /* ========================================================================== */
 
-router.get("/settings", async (_req, res) => {
-  try {
+router.get(
+  "/settings",
+  asyncHandler(async (_req, res) => {
     const settings = await loadSettings();
     res.json({ success: true, settings });
-  } catch (err: any) {
-    errorResponse(res, 500, "Fehler beim Laden der Einstellungen", err);
-  }
-});
+  }),
+);
 
-router.put("/settings", async (req, res) => {
-  try {
+router.put(
+  "/settings",
+  asyncHandler(async (req, res) => {
     const ok = await saveSettings(req.body);
     res.json({ success: ok });
-  } catch (err: any) {
-    errorResponse(res, 500, "Fehler beim Speichern der Einstellungen", err);
-  }
-});
+  }),
+);
 
-router.patch("/settings/:key", async (req, res) => {
-  try {
-    const updated = await updateSetting(req.params.key, req.body?.value);
+router.patch(
+  "/settings/:key",
+  asyncHandler(async (req, res) => {
+    const validated = updateSettingSchema.parse(req.body);
+    const updated = await updateSetting(req.params.key, validated.value);
     res.json({ success: true, updated });
-  } catch (err: any) {
-    errorResponse(res, 500, "Fehler beim Aktualisieren einer Einstellung", err);
-  }
-});
+  }),
+);
 
 /* ========================================================================== */
 /* 🧠 Tools & Workflows                                                       */
@@ -221,15 +251,15 @@ router.get("/tools", (_req, res) => {
 });
 
 // Einzelnes Tool aufrufen
-router.post("/tools/:name/run", async (req, res) => {
-  const { name } = req.params;
-  try {
-    const result = await toolRegistry.call(name, req.body ?? {});
+router.post(
+  "/tools/:name/run",
+  asyncHandler(async (req, res) => {
+    const { name } = req.params;
+    const validated = toolRunSchema.parse(req.body);
+    const result = await toolRegistry.call(name, validated);
     res.json({ success: true, name, result });
-  } catch (err: any) {
-    errorResponse(res, 500, `Fehler beim Ausführen von Tool '${name}'`, err);
-  }
-});
+  }),
+);
 
 // Workflows auflisten
 router.get("/workflows", (_req, res) => {
@@ -238,24 +268,15 @@ router.get("/workflows", (_req, res) => {
 });
 
 // Workflow ausführen
-router.post("/workflow/:name/run", async (req, res) => {
-  const { name } = req.params;
-  try {
-    const result = await workflowEngine.executeWorkflow(
-      name,
-      req.body ?? {},
-      true,
-    );
+router.post(
+  "/workflow/:name/run",
+  asyncHandler(async (req, res) => {
+    const { name } = req.params;
+    const validated = workflowRunSchema.parse(req.body);
+    const result = await workflowEngine.executeWorkflow(name, validated, true);
     res.json({ success: true, result });
-  } catch (err: any) {
-    errorResponse(
-      res,
-      500,
-      `Fehler beim Ausführen von Workflow '${name}'`,
-      err,
-    );
-  }
-});
+  }),
+);
 
 /* ========================================================================== */
 /* 🩺 Systemstatus / Diagnose                                                 */

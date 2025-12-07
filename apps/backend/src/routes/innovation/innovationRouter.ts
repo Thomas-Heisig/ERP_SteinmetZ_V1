@@ -2,9 +2,13 @@
 // apps/backend/src/routes/innovation/innovationRouter.ts
 
 import { Router, Request, Response } from "express";
+import { z } from "zod";
 import db from "../../services/dbService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { BadRequestError, NotFoundError } from "../../types/errors.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("innovation");
 
 const router = Router();
 
@@ -81,19 +85,83 @@ async function ensureIdeasTable(): Promise<void> {
       `CREATE INDEX IF NOT EXISTS idx_ideas_author ON ideas(author)`,
     );
   } catch (error) {
-    console.error("❌ [Innovation] Failed to create ideas table:", error);
+    logger.error({ error }, "Failed to create ideas table");
   }
 }
 
 // Initialisierung
 ensureIdeasTable();
 
+/* ========================================================================== */
+/* Zod Validation Schemas                                                     */
+/* ========================================================================== */
+
+const ideaPhaseSchema = z.enum([
+  "parked",
+  "analysis",
+  "development",
+  "testing",
+  "completed",
+  "archived",
+]);
+
+const getIdeasQuerySchema = z.object({
+  phase: ideaPhaseSchema.optional(),
+  priority: z.string().regex(/^\d+$/).optional(),
+  author: z.string().min(1).max(100).optional(),
+  search: z.string().min(1).max(200).optional(),
+  limit: z.string().regex(/^\d+$/).optional(),
+  offset: z.string().regex(/^\d+$/).optional(),
+});
+
+const createIdeaSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(5000).optional().default(""),
+  phase: ideaPhaseSchema.optional().default("parked"),
+  priority: z.number().int().min(0).max(10).optional().default(0),
+  author: z.string().min(1).max(100).optional().default("anonymous"),
+  assignee: z.string().min(1).max(100).optional(),
+  tags: z.array(z.string().max(50)).optional().default([]),
+  milestone: z.string().max(100).optional(),
+  estimatedEffort: z.number().positive().optional(),
+  dueDate: z.string().datetime().optional(),
+});
+
+const updateIdeaSchema = z.object({
+  title: z.string().min(1).max(200).optional(),
+  description: z.string().max(5000).optional(),
+  phase: ideaPhaseSchema.optional(),
+  priority: z.number().int().min(0).max(10).optional(),
+  assignee: z.string().min(1).max(100).optional(),
+  tags: z.array(z.string().max(50)).optional(),
+  attachments: z.array(z.string().max(500)).optional(),
+  relatedTasks: z.array(z.string().uuid()).optional(),
+  milestone: z.string().max(100).optional(),
+  estimatedEffort: z.number().positive().optional(),
+  actualEffort: z.number().positive().optional(),
+  dueDate: z.string().datetime().optional(),
+  phaseComment: z.string().max(500).optional(),
+  changedBy: z.string().min(1).max(100).optional(),
+});
+
+const updatePhaseSchema = z.object({
+  phase: ideaPhaseSchema,
+  comment: z.string().max(500).optional(),
+  changedBy: z.string().min(1).max(100).optional().default("system"),
+});
+
+/* ========================================================================== */
+/* Routes                                                                     */
+/* ========================================================================== */
+
 /**
  * GET /api/innovation/ideas
  * Liste aller Ideen mit optionalen Filtern
  */
-router.get("/ideas", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/ideas",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = getIdeasQuerySchema.parse(req.query);
     const {
       phase,
       priority,
@@ -101,7 +169,7 @@ router.get("/ideas", async (req: Request, res: Response) => {
       search,
       limit = "100",
       offset = "0",
-    } = req.query;
+    } = validated;
 
     let sql = "SELECT * FROM ideas WHERE 1=1";
     const params: unknown[] = [];
@@ -132,7 +200,6 @@ router.get("/ideas", async (req: Request, res: Response) => {
     params.push(Number(limit), Number(offset));
 
     const rows = await db.all<Record<string, unknown>>(sql, params);
-
     const ideas = rows.map(rowToIdea);
 
     res.json({
@@ -140,21 +207,16 @@ router.get("/ideas", async (req: Request, res: Response) => {
       data: ideas,
       total: ideas.length,
     });
-  } catch (error) {
-    console.error("❌ [Innovation] GET /ideas error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/innovation/ideas/:id
  * Einzelne Idee abrufen
  */
-router.get("/ideas/:id", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/ideas/:id",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const row = await db.get<Record<string, unknown>>(
       "SELECT * FROM ideas WHERE id = ?",
@@ -162,60 +224,44 @@ router.get("/ideas/:id", async (req: Request, res: Response) => {
     );
 
     if (!row) {
-      res.status(404).json({
-        success: false,
-        error: "Idea not found",
-      });
-      return;
+      throw new NotFoundError("Idea not found");
     }
 
     res.json({
       success: true,
       data: rowToIdea(row),
     });
-  } catch (error) {
-    console.error("❌ [Innovation] GET /ideas/:id error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * POST /api/innovation/ideas
  * Neue Idee erstellen (Schnelles "Parken")
  */
-router.post("/ideas", async (req: Request, res: Response) => {
-  try {
+router.post(
+  "/ideas",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = createIdeaSchema.parse(req.body);
     const {
       title,
-      description = "",
-      phase = "parked",
-      priority = 0,
-      author = "anonymous",
+      description,
+      phase,
+      priority,
+      author,
       assignee,
-      tags = [],
+      tags,
       milestone,
       estimatedEffort,
       dueDate,
-    } = req.body;
-
-    if (!title || title.trim() === "") {
-      res.status(400).json({
-        success: false,
-        error: "Title is required",
-      });
-      return;
-    }
+    } = validated;
 
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
     const phaseHistory: PhaseChange[] = [
       {
-        from: "parked",
-        to: phase,
+        from: "parked" as IdeaPhase,
+        to: phase as IdeaPhase,
         timestamp: now,
         comment: "Idee erstellt",
         changedBy: author,
@@ -252,7 +298,7 @@ router.post("/ideas", async (req: Request, res: Response) => {
       id,
       title: title.trim(),
       description,
-      phase,
+      phase: phase as IdeaPhase,
       priority,
       author,
       assignee,
@@ -271,33 +317,26 @@ router.post("/ideas", async (req: Request, res: Response) => {
       success: true,
       data: newIdea,
     });
-  } catch (error) {
-    console.error("❌ [Innovation] POST /ideas error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * PUT /api/innovation/ideas/:id
  * Idee aktualisieren
  */
-router.put("/ideas/:id", async (req: Request, res: Response) => {
-  try {
+router.put(
+  "/ideas/:id",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
+    const validated = updateIdeaSchema.parse(req.body);
+
     const existingRow = await db.get<Record<string, unknown>>(
       "SELECT * FROM ideas WHERE id = ?",
       [id],
     );
 
     if (!existingRow) {
-      res.status(404).json({
-        success: false,
-        error: "Idea not found",
-      });
-      return;
+      throw new NotFoundError("Idea not found");
     }
 
     const existing = rowToIdea(existingRow);
@@ -316,7 +355,7 @@ router.put("/ideas/:id", async (req: Request, res: Response) => {
       dueDate = existing.dueDate,
       phaseComment,
       changedBy = "system",
-    } = req.body;
+    } = validated;
 
     const now = new Date().toISOString();
     let phaseHistory = existing.phaseHistory;
@@ -327,7 +366,7 @@ router.put("/ideas/:id", async (req: Request, res: Response) => {
         ...phaseHistory,
         {
           from: existing.phase,
-          to: phase,
+          to: phase as IdeaPhase,
           timestamp: now,
           comment: phaseComment,
           changedBy,
@@ -366,7 +405,7 @@ router.put("/ideas/:id", async (req: Request, res: Response) => {
       id,
       title,
       description,
-      phase,
+      phase: phase as IdeaPhase,
       priority,
       author: existing.author,
       assignee,
@@ -386,31 +425,19 @@ router.put("/ideas/:id", async (req: Request, res: Response) => {
       success: true,
       data: updatedIdea,
     });
-  } catch (error) {
-    console.error("❌ [Innovation] PUT /ideas/:id error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * PATCH /api/innovation/ideas/:id/phase
  * Phase einer Idee ändern (Workflow)
  */
-router.patch("/ideas/:id/phase", async (req: Request, res: Response) => {
-  try {
+router.patch(
+  "/ideas/:id/phase",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { phase, comment, changedBy = "system" } = req.body;
-
-    if (!phase || !IDEA_PHASES.includes(phase)) {
-      res.status(400).json({
-        success: false,
-        error: `Invalid phase. Must be one of: ${IDEA_PHASES.join(", ")}`,
-      });
-      return;
-    }
+    const validated = updatePhaseSchema.parse(req.body);
+    const { phase, comment, changedBy } = validated;
 
     const existingRow = await db.get<Record<string, unknown>>(
       "SELECT * FROM ideas WHERE id = ?",
@@ -418,11 +445,7 @@ router.patch("/ideas/:id/phase", async (req: Request, res: Response) => {
     );
 
     if (!existingRow) {
-      res.status(404).json({
-        success: false,
-        error: "Idea not found",
-      });
-      return;
+      throw new NotFoundError("Idea not found");
     }
 
     const existing = rowToIdea(existingRow);
@@ -432,7 +455,7 @@ router.patch("/ideas/:id/phase", async (req: Request, res: Response) => {
       ...existing.phaseHistory,
       {
         from: existing.phase,
-        to: phase,
+        to: phase as IdeaPhase,
         timestamp: now,
         comment,
         changedBy,
@@ -453,51 +476,37 @@ router.patch("/ideas/:id/phase", async (req: Request, res: Response) => {
         phaseHistory,
       },
     });
-  } catch (error) {
-    console.error("❌ [Innovation] PATCH /ideas/:id/phase error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * DELETE /api/innovation/ideas/:id
  * Idee löschen
  */
-router.delete("/ideas/:id", async (req: Request, res: Response) => {
-  try {
+router.delete(
+  "/ideas/:id",
+  asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await db.run("DELETE FROM ideas WHERE id = ?", [id]);
 
     if (result.changes === 0) {
-      res.status(404).json({
-        success: false,
-        error: "Idea not found",
-      });
-      return;
+      throw new NotFoundError("Idea not found");
     }
 
     res.json({
       success: true,
       message: "Idea deleted",
     });
-  } catch (error) {
-    console.error("❌ [Innovation] DELETE /ideas/:id error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/innovation/board
  * Kanban-Board Daten (Ideen gruppiert nach Phase)
  */
-router.get("/board", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/board",
+  asyncHandler(async (req: Request, res: Response) => {
     const rows = await db.all<Record<string, unknown>>(
       "SELECT * FROM ideas ORDER BY priority DESC, created_at DESC",
     );
@@ -527,21 +536,16 @@ router.get("/board", async (req: Request, res: Response) => {
         ),
       },
     });
-  } catch (error) {
-    console.error("❌ [Innovation] GET /board error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 /**
  * GET /api/innovation/roadmap
  * Roadmap-Daten für Gantt-Darstellung
  */
-router.get("/roadmap", async (req: Request, res: Response) => {
-  try {
+router.get(
+  "/roadmap",
+  asyncHandler(async (req: Request, res: Response) => {
     const rows = await db.all<Record<string, unknown>>(
       `SELECT * FROM ideas 
        WHERE phase NOT IN ('archived', 'completed')
@@ -573,14 +577,8 @@ router.get("/roadmap", async (req: Request, res: Response) => {
         total: ideas.length,
       },
     });
-  } catch (error) {
-    console.error("❌ [Innovation] GET /roadmap error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  }),
+);
 
 // Helper: Row zu Idea
 function rowToIdea(row: Record<string, unknown>): Idea {
