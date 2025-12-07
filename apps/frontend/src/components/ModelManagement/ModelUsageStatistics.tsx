@@ -37,13 +37,13 @@ export const ModelUsageStatistics: React.FC<{ apiBaseUrl?: string }> = ({
   const fetchUsageData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch usage over time
       const usageResponse = await fetch(
         `${apiBaseUrl}/api/ai-annotator/models/usage?days=${days}`,
       );
       const usageResult = await usageResponse.json();
-      
+
       // Fetch model stats
       const statsResponse = await fetch(
         `${apiBaseUrl}/api/ai-annotator/models/stats?days=${days}`,
@@ -53,7 +53,7 @@ export const ModelUsageStatistics: React.FC<{ apiBaseUrl?: string }> = ({
       if (usageResult.success) {
         setUsageData(usageResult.data);
       }
-      
+
       if (statsResult.success) {
         setModelStats(statsResult.data);
       }
@@ -73,7 +73,8 @@ export const ModelUsageStatistics: React.FC<{ apiBaseUrl?: string }> = ({
   const totalTokens = modelStats.reduce((sum, m) => sum + m.totalTokens, 0);
   const avgSuccessRate =
     modelStats.length > 0
-      ? modelStats.reduce((sum, m) => sum + m.successRate, 0) / modelStats.length
+      ? modelStats.reduce((sum, m) => sum + m.successRate, 0) /
+        modelStats.length
       : 0;
 
   const maxRequests = Math.max(...usageData.map((d) => d.requests), 1);
@@ -129,7 +130,7 @@ export const ModelUsageStatistics: React.FC<{ apiBaseUrl?: string }> = ({
               {usageData.map((dataPoint, index) => {
                 const height = (dataPoint.requests / maxRequests) * 200;
                 const date = new Date(dataPoint.timestamp);
-                
+
                 return (
                   <div key={index} style={styles.bar}>
                     <div
@@ -209,11 +210,13 @@ export const ModelUsageStatistics: React.FC<{ apiBaseUrl?: string }> = ({
         <div style={styles.distributionGrid}>
           {modelStats.map((model, index) => {
             const percentage = (model.totalRequests / totalRequests) * 100;
-            
+
             return (
               <div key={index} style={styles.distributionItem}>
                 <div style={styles.distributionHeader}>
-                  <span style={styles.distributionModel}>{model.modelName}</span>
+                  <span style={styles.distributionModel}>
+                    {model.modelName}
+                  </span>
                   <span style={styles.distributionValue}>
                     {percentage.toFixed(1)}%
                   </span>

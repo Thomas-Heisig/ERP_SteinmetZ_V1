@@ -2,7 +2,7 @@
 // apps/backend/src/routes/quickchat/quickchatRouter.ts
 /**
  * QuickChat Router - Redesigned
- * 
+ *
  * Improvements:
  * - Enhanced command system
  * - Better validation
@@ -27,23 +27,31 @@ const logger = createLogger("quickchat");
 // ✅ IMPROVED: Enhanced validation schemas with better error messages
 const messageSchema = z.object({
   sessionId: z.string().uuid("Invalid session ID format").optional(),
-  message: z.string().trim().min(1, "Message cannot be empty").max(5000, "Message too long (max 5000 characters)"),
+  message: z
+    .string()
+    .trim()
+    .min(1, "Message cannot be empty")
+    .max(5000, "Message too long (max 5000 characters)"),
   context: z.record(z.string(), z.unknown()).optional(),
-  metadata: z.object({
-    source: z.string().optional(),
-    priority: z.enum(["low", "normal", "high"]).optional(),
-    tags: z.array(z.string()).optional(),
-  }).optional(),
+  metadata: z
+    .object({
+      source: z.string().optional(),
+      priority: z.enum(["low", "normal", "high"]).optional(),
+      tags: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 const commandSchema = z.object({
   command: z.string().trim().min(1, "Command cannot be empty"),
   args: z.string().trim().optional(),
   context: z.record(z.string(), z.unknown()).optional(),
-  options: z.object({
-    silent: z.boolean().optional(),
-    async: z.boolean().optional(),
-  }).optional(),
+  options: z
+    .object({
+      silent: z.boolean().optional(),
+      async: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 // Command definitions

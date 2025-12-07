@@ -81,9 +81,7 @@ export const ModelCostTracking: React.FC<{ apiBaseUrl?: string }> = ({
       {/* Total Cost Summary */}
       <div style={styles.totalCard}>
         <div style={styles.totalLabel}>Total Cost</div>
-        <div style={styles.totalValue}>
-          ${costData.totalCost.toFixed(2)}
-        </div>
+        <div style={styles.totalValue}>${costData.totalCost.toFixed(2)}</div>
         <div style={styles.totalPeriod}>
           {new Date(costData.startDate).toLocaleDateString()} -{" "}
           {new Date(costData.endDate).toLocaleDateString()}
@@ -116,8 +114,8 @@ export const ModelCostTracking: React.FC<{ apiBaseUrl?: string }> = ({
                 </div>
                 <div style={styles.modelStats}>
                   {model.requests.toLocaleString()} requests •{" "}
-                  {model.tokens.toLocaleString()} tokens •{" "}
-                  ${(model.cost / model.requests).toFixed(4)}/request
+                  {model.tokens.toLocaleString()} tokens • $
+                  {(model.cost / model.requests).toFixed(4)}/request
                 </div>
               </div>
             ))}

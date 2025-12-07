@@ -11,6 +11,7 @@ Dieses Dokument evaluiert ElasticSearch und MeiliSearch als mögliche Skalierung
 ## Aktuelle Lösung
 
 **SearchService** (In-Memory)
+
 - ✅ Einfache Integration
 - ✅ Keine zusätzliche Infrastruktur
 - ✅ Fuzzy Matching mit Levenshtein Distance
@@ -181,19 +182,19 @@ Dieses Dokument evaluiert ElasticSearch und MeiliSearch als mögliche Skalierung
 
 ## Vergleich
 
-| Kriterium | ElasticSearch | MeiliSearch | Aktuell (In-Memory) |
-|-----------|---------------|-------------|---------------------|
-| **Setup-Komplexität** | Hoch (JVM, Config) | Niedrig (Binary) | Sehr niedrig |
-| **Search-Geschwindigkeit** | <100ms | <50ms | <10ms (RAM) |
-| **Indexierung** | Mittel-schnell | Sehr schnell | Instant |
-| **Memory-Footprint** | Hoch (>2GB) | Niedrig (~100MB) | Abhängig von Daten |
-| **Skalierbarkeit** | Horizontal (Cluster) | Vertical only | In-Memory limitiert |
-| **Lizenz** | Elastic 2.0/SSPL | MIT | N/A |
-| **Typo-Tolerance** | Konfigurierbar | Built-in | Levenshtein (custom) |
-| **Analytics** | Kibana | Extern | Keine |
-| **Learning Curve** | Steil | Flach | Minimal |
-| **Community** | Sehr groß | Wachsend | N/A |
-| **Kosten (Self-Hosted)** | Mittel-Hoch | Niedrig | Minimal |
+| Kriterium                  | ElasticSearch        | MeiliSearch      | Aktuell (In-Memory)  |
+| -------------------------- | -------------------- | ---------------- | -------------------- |
+| **Setup-Komplexität**      | Hoch (JVM, Config)   | Niedrig (Binary) | Sehr niedrig         |
+| **Search-Geschwindigkeit** | <100ms               | <50ms            | <10ms (RAM)          |
+| **Indexierung**            | Mittel-schnell       | Sehr schnell     | Instant              |
+| **Memory-Footprint**       | Hoch (>2GB)          | Niedrig (~100MB) | Abhängig von Daten   |
+| **Skalierbarkeit**         | Horizontal (Cluster) | Vertical only    | In-Memory limitiert  |
+| **Lizenz**                 | Elastic 2.0/SSPL     | MIT              | N/A                  |
+| **Typo-Tolerance**         | Konfigurierbar       | Built-in         | Levenshtein (custom) |
+| **Analytics**              | Kibana               | Extern           | Keine                |
+| **Learning Curve**         | Steil                | Flach            | Minimal              |
+| **Community**              | Sehr groß            | Wachsend         | N/A                  |
+| **Kosten (Self-Hosted)**   | Mittel-Hoch          | Niedrig          | Minimal              |
 
 ---
 
@@ -202,12 +203,14 @@ Dieses Dokument evaluiert ElasticSearch und MeiliSearch als mögliche Skalierung
 ### Kurzfristig (0-6 Monate): **BEHALTEN (In-Memory)**
 
 **Begründung**:
+
 - Aktuelles Datenvolumen: <10k Funktions-Nodes
 - Geschwindigkeit ist bereits exzellent (<10ms)
 - Keine zusätzliche Infrastruktur notwendig
 - Entwicklungsfokus auf Business-Features
 
 **Next Steps**:
+
 1. ✅ Monitoring für Search-Performance implementieren
 2. ✅ Metriken sammeln (Query-Count, Latency, Memory)
 3. ⏳ Schwellenwerte definieren (wann Migration notwendig)
@@ -215,6 +218,7 @@ Dieses Dokument evaluiert ElasticSearch und MeiliSearch als mögliche Skalierung
 ### Mittelfristig (6-12 Monate): **MeiliSearch**
 
 **Begründung**:
+
 - Einfache Migration (RESTful API)
 - MIT Lizenz (keine Einschränkungen)
 - Geringer Ressourcen-Overhead
@@ -222,25 +226,27 @@ Dieses Dokument evaluiert ElasticSearch und MeiliSearch als mögliche Skalierung
 - Ausreichend für erwartetes Wachstum (<100k Nodes)
 
 **Migration Path**:
+
 1. MeiliSearch parallel zum aktuellen Service laufen lassen
 2. A/B-Testing für Performance-Vergleich
 3. Schrittweise Migration (Dual-Write)
 4. Cutover nach erfolgreichen Tests
 
 **Integration (Beispiel)**:
+
 ```typescript
-import { MeiliSearch } from 'meilisearch';
+import { MeiliSearch } from "meilisearch";
 
 const client = new MeiliSearch({
   host: process.env.MEILISEARCH_HOST,
   apiKey: process.env.MEILISEARCH_API_KEY,
 });
 
-const index = client.index('function-nodes');
+const index = client.index("function-nodes");
 
 // Search
-const results = await index.search('query', {
-  attributesToHighlight: ['name', 'description'],
+const results = await index.search("query", {
+  attributesToHighlight: ["name", "description"],
   filters: 'kind = "function" AND area = "crm"',
   limit: 20,
 });
@@ -249,12 +255,14 @@ const results = await index.search('query', {
 ### Langfristig (>12 Monate): **ElasticSearch (Optional)**
 
 **Nur wenn**:
+
 - Datenvolumen >10 Millionen Dokumente
 - Komplexe Analytics-Requirements
 - Multi-Tenancy mit strikter Isolation
 - Geospatiale oder ML-Features notwendig
 
 **Voraussetzungen**:
+
 - Dediziertes DevOps-Team
 - Cluster-Management-Expertise
 - Höheres Budget für Infrastruktur
@@ -288,11 +296,16 @@ class ElasticSearchProvider implements ISearchProvider {
 
 // Factory Pattern
 class SearchServiceFactory {
-  static create(provider: 'memory' | 'meilisearch' | 'elasticsearch'): ISearchProvider {
+  static create(
+    provider: "memory" | "meilisearch" | "elasticsearch",
+  ): ISearchProvider {
     switch (provider) {
-      case 'memory': return new InMemorySearchProvider();
-      case 'meilisearch': return new MeiliSearchProvider();
-      case 'elasticsearch': return new ElasticSearchProvider();
+      case "memory":
+        return new InMemorySearchProvider();
+      case "meilisearch":
+        return new MeiliSearchProvider();
+      case "elasticsearch":
+        return new ElasticSearchProvider();
     }
   }
 }
@@ -364,24 +377,25 @@ services:
 ### Migration Trigger
 
 **Migration zu externer Search Engine wenn**:
+
 - Query Latency >100ms (p95)
 - Memory-Nutzung >4GB
 - Datenvolumen >50k Dokumente
-- >1000 Queries/Minute
+- > 1000 Queries/Minute
 
 ---
 
 ## Entscheidungsmatrix
 
-| Kriterium | Gewichtung | In-Memory | MeiliSearch | ElasticSearch |
-|-----------|------------|-----------|-------------|---------------|
-| **Einfachheit** | 25% | 10 | 9 | 4 |
-| **Performance** | 20% | 10 | 9 | 8 |
-| **Skalierbarkeit** | 20% | 4 | 7 | 10 |
-| **Kosten** | 15% | 10 | 9 | 5 |
-| **Features** | 10% | 6 | 7 | 10 |
-| **Lizenz** | 10% | 10 | 10 | 6 |
-| **Gesamt** | 100% | **8.15** | **8.30** | **6.85** |
+| Kriterium          | Gewichtung | In-Memory | MeiliSearch | ElasticSearch |
+| ------------------ | ---------- | --------- | ----------- | ------------- |
+| **Einfachheit**    | 25%        | 10        | 9           | 4             |
+| **Performance**    | 20%        | 10        | 9           | 8             |
+| **Skalierbarkeit** | 20%        | 4         | 7           | 10            |
+| **Kosten**         | 15%        | 10        | 9           | 5             |
+| **Features**       | 10%        | 6         | 7           | 10            |
+| **Lizenz**         | 10%        | 10        | 10          | 6             |
+| **Gesamt**         | 100%       | **8.15**  | **8.30**    | **6.85**      |
 
 **Ergebnis**: MeiliSearch ist die beste Wahl für mittelfristige Skalierung.
 
@@ -394,6 +408,7 @@ services:
 3. **Langfristig (Phase >12 Monate)**: ElasticSearch nur bei Bedarf
 
 **Nächste Schritte**:
+
 - [ ] Search-Analytics-Dashboard implementieren (Monitoring)
 - [ ] Performance-Metriken sammeln
 - [ ] MeiliSearch POC mit echten Daten
@@ -402,6 +417,7 @@ services:
 ---
 
 **Referenzen**:
+
 - [MeiliSearch Dokumentation](https://www.meilisearch.com/docs)
 - [ElasticSearch Dokumentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html)
 - [OpenSearch (Open Source Alternative)](https://opensearch.org/)

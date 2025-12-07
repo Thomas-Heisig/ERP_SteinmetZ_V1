@@ -61,7 +61,8 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
       setLoading(true);
       const params = new URLSearchParams();
       if (criteria.prioritize) params.append("prioritize", criteria.prioritize);
-      if (criteria.maxCost) params.append("maxCost", criteria.maxCost.toString());
+      if (criteria.maxCost)
+        params.append("maxCost", criteria.maxCost.toString());
       if (criteria.minAccuracy)
         params.append("minAccuracy", criteria.minAccuracy.toString());
 
@@ -167,9 +168,7 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
                   ...(index === 0 ? styles.topRecommendation : {}),
                 }}
               >
-                {index === 0 && (
-                  <div style={styles.badge}>🏆 Best Match</div>
-                )}
+                {index === 0 && <div style={styles.badge}>🏆 Best Match</div>}
                 <div style={styles.recommendationHeader}>
                   <div>
                     <div style={styles.recommendationName}>{rec.modelName}</div>
@@ -192,7 +191,9 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
                         }}
                       />
                     </div>
-                    <div style={styles.metricValue}>{rec.speed.toFixed(0)}ms</div>
+                    <div style={styles.metricValue}>
+                      {rec.speed.toFixed(0)}ms
+                    </div>
                   </div>
 
                   <div style={styles.metric}>
@@ -252,7 +253,9 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
                       : styles.selectButton
                   }
                 >
-                  {selectedModel === rec.modelName ? "✓ Selected" : "Select Model"}
+                  {selectedModel === rec.modelName
+                    ? "✓ Selected"
+                    : "Select Model"}
                 </button>
               </div>
             ))}

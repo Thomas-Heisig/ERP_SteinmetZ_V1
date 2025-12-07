@@ -129,7 +129,9 @@ export class SearchAnalyticsService {
     const p95Index = Math.floor(sortedLatencies.length * 0.95);
     const p99Index = Math.floor(sortedLatencies.length * 0.99);
 
-    const zeroResultsCount = recentLogs.filter((q) => q.resultCount === 0).length;
+    const zeroResultsCount = recentLogs.filter(
+      (q) => q.resultCount === 0,
+    ).length;
     const zeroResultsRate = zeroResultsCount / recentLogs.length;
 
     const queriesWithClicks = recentLogs.filter(
@@ -178,9 +180,7 @@ export class SearchAnalyticsService {
       });
     }
 
-    return popularQueries
-      .sort((a, b) => b.count - a.count)
-      .slice(0, limit);
+    return popularQueries.sort((a, b) => b.count - a.count).slice(0, limit);
   }
 
   /**
@@ -214,9 +214,7 @@ export class SearchAnalyticsService {
       });
     }
 
-    return zeroResultQueries
-      .sort((a, b) => b.count - a.count)
-      .slice(0, limit);
+    return zeroResultQueries.sort((a, b) => b.count - a.count).slice(0, limit);
   }
 
   /**
@@ -306,10 +304,7 @@ export class SearchAnalyticsService {
   /**
    * Export analytics data (for external analysis)
    */
-  exportData(
-    startDate?: string,
-    endDate?: string,
-  ): SearchQueryLog[] {
+  exportData(startDate?: string, endDate?: string): SearchQueryLog[] {
     let logs = this.queryLogs;
 
     if (startDate) {

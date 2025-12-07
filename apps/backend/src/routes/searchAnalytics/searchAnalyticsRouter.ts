@@ -268,9 +268,7 @@ router.post(
     const daysToKeep = parseInt(req.body.daysToKeep) || 30;
 
     if (daysToKeep < 1 || daysToKeep > 365) {
-      throw new BadRequestError(
-        "Days to keep must be between 1 and 365",
-      );
+      throw new BadRequestError("Days to keep must be between 1 and 365");
     }
 
     const deleted = searchAnalyticsService.cleanup(daysToKeep);

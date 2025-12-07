@@ -81,7 +81,13 @@ export const SearchAnalyticsDashboard: React.FC<
     return <div style={styles.error}>Failed to load analytics data</div>;
   }
 
-  const { summary, topQueries, zeroResultQueries, trends, performanceDistribution } = data;
+  const {
+    summary,
+    topQueries,
+    zeroResultQueries,
+    trends,
+    performanceDistribution,
+  } = data;
 
   return (
     <div style={styles.container}>
@@ -156,7 +162,8 @@ export const SearchAnalyticsDashboard: React.FC<
                   <div style={styles.queryDetails}>
                     <div style={styles.queryText}>{query.query}</div>
                     <div style={styles.queryStats}>
-                      {query.count} searches • {query.averageResults} avg results • {query.averageLatency}ms
+                      {query.count} searches • {query.averageResults} avg
+                      results • {query.averageLatency}ms
                     </div>
                   </div>
                   <div style={styles.queryBar}>
@@ -182,7 +189,9 @@ export const SearchAnalyticsDashboard: React.FC<
             <div style={styles.queryList}>
               {zeroResultQueries.map((query, index) => (
                 <div key={index} style={styles.queryItem}>
-                  <div style={{ ...styles.queryRank, backgroundColor: "#dc3545" }}>
+                  <div
+                    style={{ ...styles.queryRank, backgroundColor: "#dc3545" }}
+                  >
                     {index + 1}
                   </div>
                   <div style={styles.queryDetails}>
@@ -227,7 +236,7 @@ export const SearchAnalyticsDashboard: React.FC<
             {trends.map((trend, index) => {
               const maxQueries = Math.max(...trends.map((t) => t.queryCount));
               const height = (trend.queryCount / maxQueries) * 200;
-              
+
               return (
                 <div key={index} style={styles.trendBar}>
                   <div

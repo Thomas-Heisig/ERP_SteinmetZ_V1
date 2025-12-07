@@ -21,30 +21,32 @@ npm install --save-dev @storybook/react-vite @storybook/addon-essentials @storyb
 ### Konfiguration
 
 **.storybook/main.js**:
+
 ```javascript
 export default {
-  stories: ['../apps/frontend/src/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ["../apps/frontend/src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
+    "@storybook/addon-links",
+    "@storybook/addon-essentials",
+    "@storybook/addon-interactions",
   ],
   framework: {
-    name: '@storybook/react-vite',
+    name: "@storybook/react-vite",
     options: {},
   },
   docs: {
-    autodocs: 'tag',
+    autodocs: "tag",
   },
 };
 ```
 
 **.storybook/preview.js**:
+
 ```javascript
-import '../apps/frontend/src/styles/globals.css';
+import "../apps/frontend/src/styles/globals.css";
 
 export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
+  actions: { argTypesRegex: "^on[A-Z].*" },
   controls: {
     matchers: {
       color: /(background|color)$/i,
@@ -57,22 +59,23 @@ export const parameters = {
 ### Beispiel Story
 
 **Button.stories.tsx**:
+
 ```typescript
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from './Button';
+import type { Meta, StoryObj } from "@storybook/react";
+import { Button } from "./Button";
 
 const meta: Meta<typeof Button> = {
-  title: 'Components/Button',
+  title: "Components/Button",
   component: Button,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['primary', 'secondary', 'danger'],
+      control: "select",
+      options: ["primary", "secondary", "danger"],
     },
     size: {
-      control: 'select',
-      options: ['small', 'medium', 'large'],
+      control: "select",
+      options: ["small", "medium", "large"],
     },
   },
 };
@@ -82,15 +85,15 @@ type Story = StoryObj<typeof Button>;
 
 export const Primary: Story = {
   args: {
-    variant: 'primary',
-    children: 'Primary Button',
+    variant: "primary",
+    children: "Primary Button",
   },
 };
 
 export const Secondary: Story = {
   args: {
-    variant: 'secondary',
-    children: 'Secondary Button',
+    variant: "secondary",
+    children: "Secondary Button",
   },
 };
 ```
@@ -98,6 +101,7 @@ export const Secondary: Story = {
 ### Scripts hinzufügen
 
 **package.json**:
+
 ```json
 {
   "scripts": {
@@ -126,21 +130,17 @@ npm install --save-dev json-server
 ```
 
 **mock-server/db.json**:
+
 ```json
 {
-  "users": [
-    { "id": 1, "name": "Admin User", "email": "admin@steinmetz.de" }
-  ],
-  "functionNodes": [
-    { "id": 1, "name": "createUser", "kind": "function" }
-  ],
-  "batches": [
-    { "id": "batch_1", "status": "completed", "progress": 100 }
-  ]
+  "users": [{ "id": 1, "name": "Admin User", "email": "admin@steinmetz.de" }],
+  "functionNodes": [{ "id": 1, "name": "createUser", "kind": "function" }],
+  "batches": [{ "id": "batch_1", "status": "completed", "progress": 100 }]
 }
 ```
 
 **mock-server/routes.json**:
+
 ```json
 {
   "/api/*": "/$1"
@@ -148,13 +148,14 @@ npm install --save-dev json-server
 ```
 
 **mock-server/middlewares.js**:
+
 ```javascript
 module.exports = (req, res, next) => {
   // Add custom response headers
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
   // Delay responses to simulate network latency
   setTimeout(() => {
     next();
@@ -165,6 +166,7 @@ module.exports = (req, res, next) => {
 ### Scripts
 
 **package.json**:
+
 ```json
 {
   "scripts": {
@@ -180,36 +182,40 @@ npm install --save-dev msw
 ```
 
 **mocks/handlers.ts**:
+
 ```typescript
-import { http, HttpResponse } from 'msw';
+import { http, HttpResponse } from "msw";
 
 export const handlers = [
-  http.get('/api/users', () => {
-    return HttpResponse.json([
-      { id: 1, name: 'Admin User' },
-    ]);
+  http.get("/api/users", () => {
+    return HttpResponse.json([{ id: 1, name: "Admin User" }]);
   }),
-  
-  http.post('/api/batches', async ({ request }) => {
+
+  http.post("/api/batches", async ({ request }) => {
     const batch = await request.json();
-    return HttpResponse.json({
-      id: 'batch_' + Date.now(),
-      ...batch,
-      status: 'pending',
-    }, { status: 201 });
+    return HttpResponse.json(
+      {
+        id: "batch_" + Date.now(),
+        ...batch,
+        status: "pending",
+      },
+      { status: 201 },
+    );
   }),
 ];
 ```
 
 **mocks/browser.ts**:
+
 ```typescript
-import { setupWorker } from 'msw/browser';
-import { handlers } from './handlers';
+import { setupWorker } from "msw/browser";
+import { handlers } from "./handlers";
 
 export const worker = setupWorker(...handlers);
 ```
 
 **main.tsx** (Development only):
+
 ```typescript
 async function enableMocking() {
   if (process.env.NODE_ENV !== 'development') {
@@ -236,16 +242,17 @@ enableMocking().then(() => {
 ### Vite HMR Config
 
 **vite.config.ts**:
+
 ```typescript
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [
     react({
       // Fast Refresh Configuration
       fastRefresh: true,
-      
+
       // Babel options for better HMR
       babel: {
         plugins: [
@@ -254,7 +261,7 @@ export default defineConfig({
       },
     }),
   ],
-  
+
   server: {
     hmr: {
       overlay: true, // Show errors as overlay
@@ -262,13 +269,13 @@ export default defineConfig({
     },
     watch: {
       // Ignore node_modules for better performance
-      ignored: ['**/node_modules/**', '**/dist/**'],
+      ignored: ["**/node_modules/**", "**/dist/**"],
     },
   },
-  
+
   optimizeDeps: {
     // Pre-bundle dependencies
-    include: ['react', 'react-dom', 'react-router-dom'],
+    include: ["react", "react-dom", "react-router-dom"],
   },
 });
 ```
@@ -276,6 +283,7 @@ export default defineConfig({
 ### Best Practices für HMR
 
 1. **State Preservation**: Use React Fast Refresh
+
 ```typescript
 // Component state is preserved on hot reload
 function Counter() {
@@ -285,6 +293,7 @@ function Counter() {
 ```
 
 2. **Module Boundaries**: Export components properly
+
 ```typescript
 // ✅ Good - HMR works
 export function Button() { ... }
@@ -294,6 +303,7 @@ export default function() { ... }
 ```
 
 3. **Accept HMR**: Manually accept HMR for non-React modules
+
 ```typescript
 if (import.meta.hot) {
   import.meta.hot.accept((newModule) => {
@@ -309,10 +319,12 @@ if (import.meta.hot) {
 ### React DevTools
 
 Browser-Erweiterung für React:
+
 - Chrome: https://chrome.google.com/webstore (React Developer Tools)
 - Firefox: https://addons.mozilla.org (React Developer Tools)
 
 Features:
+
 - Component Tree inspektion
 - Props und State debugging
 - Performance Profiling
@@ -325,8 +337,8 @@ npm install --save-dev @redux-devtools/extension
 ```
 
 ```typescript
-import { configureStore } from '@reduxjs/toolkit';
-import { devToolsEnhancer } from '@redux-devtools/extension';
+import { configureStore } from "@reduxjs/toolkit";
+import { devToolsEnhancer } from "@redux-devtools/extension";
 
 const store = configureStore({
   reducer: rootReducer,
@@ -337,16 +349,17 @@ const store = configureStore({
 ### Custom DevTools Panel (Optional)
 
 **dev-tools/DevPanel.tsx**:
+
 ```typescript
 import React, { useState } from 'react';
 
 export const DevPanel: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   if (process.env.NODE_ENV !== 'development') {
     return null;
   }
-  
+
   return (
     <div style={{
       position: 'fixed',
@@ -361,17 +374,17 @@ export const DevPanel: React.FC = () => {
       <button onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? 'Close' : 'Dev Tools'}
       </button>
-      
+
       {isOpen && (
         <div style={{ marginTop: '10px' }}>
           <h3>Environment</h3>
           <pre>{JSON.stringify(import.meta.env, null, 2)}</pre>
-          
+
           <h3>Performance</h3>
           <button onClick={() => console.log(performance.getEntries())}>
             Log Performance Metrics
           </button>
-          
+
           <h3>Storage</h3>
           <button onClick={() => console.log(localStorage)}>
             Log LocalStorage
@@ -395,21 +408,22 @@ export const DevPanel: React.FC = () => {
 ### Coverage-Konfiguration
 
 **vitest.config.ts**:
+
 ```typescript
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
-      include: ['apps/*/src/**/*.{js,ts,jsx,tsx}'],
+      provider: "v8",
+      reporter: ["text", "json", "html", "lcov"],
+      include: ["apps/*/src/**/*.{js,ts,jsx,tsx}"],
       exclude: [
-        'node_modules/',
-        'dist/',
-        '**/*.test.{js,ts,jsx,tsx}',
-        '**/*.spec.{js,ts,jsx,tsx}',
-        '**/*.stories.{js,ts,jsx,tsx}',
+        "node_modules/",
+        "dist/",
+        "**/*.test.{js,ts,jsx,tsx}",
+        "**/*.spec.{js,ts,jsx,tsx}",
+        "**/*.stories.{js,ts,jsx,tsx}",
       ],
       thresholds: {
         lines: 80,
@@ -452,8 +466,9 @@ open apps/frontend/coverage/index.html
 ### SonarQube Docker Setup
 
 **docker-compose.sonar.yml**:
+
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   sonarqube:
@@ -486,6 +501,7 @@ npm install --save-dev sonarqube-scanner
 ### SonarQube Konfiguration
 
 **sonar-project.properties**:
+
 ```properties
 sonar.projectKey=erp-steinmetz
 sonar.projectName=ERP SteinmetZ
@@ -510,25 +526,27 @@ sonar.sourceEncoding=UTF-8
 ### SonarQube Scanner Script
 
 **scripts/sonar-scan.js**:
+
 ```javascript
-import sonarqubeScanner from 'sonarqube-scanner';
+import sonarqubeScanner from "sonarqube-scanner";
 
 sonarqubeScanner(
   {
-    serverUrl: process.env.SONAR_HOST_URL || 'http://localhost:9000',
-    token: process.env.SONAR_TOKEN || 'your-token',
+    serverUrl: process.env.SONAR_HOST_URL || "http://localhost:9000",
+    token: process.env.SONAR_TOKEN || "your-token",
     options: {
-      'sonar.projectKey': 'erp-steinmetz',
-      'sonar.sources': 'apps',
+      "sonar.projectKey": "erp-steinmetz",
+      "sonar.sources": "apps",
     },
   },
   () => {
-    console.log('SonarQube scan completed');
-  }
+    console.log("SonarQube scan completed");
+  },
 );
 ```
 
 **package.json**:
+
 ```json
 {
   "scripts": {
@@ -553,12 +571,14 @@ npm run sonar
 ### SonarQube Dashboard
 
 Öffne http://localhost:9000 und logge dich ein:
+
 - Default Username: `admin`
 - Default Password: `admin`
 
 ### CI/CD Integration
 
 **GitHub Actions** (.github/workflows/sonar.yml):
+
 ```yaml
 name: SonarQube Analysis
 
@@ -575,18 +595,18 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-      
+          node-version: "18"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run tests with coverage
         run: npm run test:coverage
-      
+
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
@@ -610,11 +630,13 @@ jobs:
 ### Next Steps
 
 1. **Storybook installieren**:
+
 ```bash
 npx storybook@latest init
 ```
 
 2. **Mock Server einrichten**:
+
 ```bash
 npm install --save-dev json-server
 # oder
@@ -622,12 +644,14 @@ npm install --save-dev msw
 ```
 
 3. **SonarQube aufsetzen**:
+
 ```bash
 docker-compose -f docker-compose.sonar.yml up -d
 npm install --save-dev sonarqube-scanner
 ```
 
 4. **Dev Tools Panel integrieren**:
+
 - DevPanel.tsx in App.tsx einbinden (nur in Development)
 
 ---

@@ -80,7 +80,9 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
         onReviewComplete?.(data.data);
 
         // Move to next review
-        const remainingReviews = reviews.filter((r) => r.id !== currentReview.id);
+        const remainingReviews = reviews.filter(
+          (r) => r.id !== currentReview.id,
+        );
         setReviews(remainingReviews);
         setCurrentReview(remainingReviews[0] || null);
         setComments("");
@@ -239,9 +241,7 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
               </div>
             ))}
             {reviews.length > 6 && (
-              <div style={styles.queueMore}>
-                +{reviews.length - 6} more...
-              </div>
+              <div style={styles.queueMore}>+{reviews.length - 6} more...</div>
             )}
           </div>
         </div>
