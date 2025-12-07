@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useQuickChat } from "./hooks";
 import { ChatTab } from "./components/ChatTab";
@@ -16,7 +22,7 @@ interface QuickChatProps {
 
 /**
  * QuickChat - Redesigned AI Assistant Component
- * 
+ *
  * Complete overhaul with:
  * - Modern design with glassmorphism effects
  * - Improved performance with memoization
@@ -570,7 +576,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className={`quick-chat-overlay ${theme}`}
       role="dialog"
       aria-modal="true"
@@ -594,9 +600,9 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="quick-chat-header-right">
             {/* ✅ IMPROVED: Enhanced status indicator with ARIA */}
-            <div 
-              className="connection-status" 
-              role="status" 
+            <div
+              className="connection-status"
+              role="status"
               aria-live="polite"
               title={
                 systemInfoLoading
@@ -609,12 +615,14 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
               {systemInfoLoading && (
                 <span className="loading-indicator">⏳ Lädt...</span>
               )}
-              {!systemInfoLoading && systemInfo?.status?.system_status === "healthy" && (
-                <span className="status-online">🟢 Online</span>
-              )}
-              {!systemInfoLoading && systemInfo?.status?.system_status !== "healthy" && (
-                <span className="status-offline">🔴 Offline</span>
-              )}
+              {!systemInfoLoading &&
+                systemInfo?.status?.system_status === "healthy" && (
+                  <span className="status-online">🟢 Online</span>
+                )}
+              {!systemInfoLoading &&
+                systemInfo?.status?.system_status !== "healthy" && (
+                  <span className="status-offline">🔴 Offline</span>
+                )}
             </div>
             <button
               className="close-btn"
@@ -629,15 +637,19 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
         </header>
 
         {/* Tab Navigation - Enhanced with ARIA */}
-        <nav className="quick-chat-tabs" role="tablist" aria-label="Chat Functions">
+        <nav
+          className="quick-chat-tabs"
+          role="tablist"
+          aria-label="Chat Functions"
+        >
           {(["chat", "models", "settings", "info"] as const).map((tab) => {
             const tabLabels: Record<typeof tab, string> = {
               chat: "💬 Chat",
               models: "🧠 Modelle",
               settings: "⚙️ Einstellungen",
-              info: "📊 System"
+              info: "📊 System",
             };
-            
+
             return (
               <button
                 key={tab}
@@ -658,11 +670,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
 
         {/* Error Banner - Enhanced */}
         {error && (
-          <div 
-            className="error-banner" 
-            role="alert" 
-            aria-live="assertive"
-          >
+          <div className="error-banner" role="alert" aria-live="assertive">
             <span>{error}</span>
             <button
               className="dismiss-btn"
@@ -677,7 +685,7 @@ const QuickChat: React.FC<QuickChatProps> = ({ isOpen, onClose }) => {
         )}
 
         {/* Main Content - Memoized for performance */}
-        <section 
+        <section
           className="quick-chat-content"
           role="tabpanel"
           id={`${activeTab}-panel`}

@@ -114,20 +114,15 @@ Themes are applied via `data-theme` attribute:
 ### Basic Usage
 
 ```tsx
-import QuickChat from './components/QuickChat';
+import QuickChat from "./components/QuickChat";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>
-        Open Chat
-      </button>
-      <QuickChat 
-        isOpen={isOpen} 
-        onClose={() => setIsOpen(false)} 
-      />
+      <button onClick={() => setIsOpen(true)}>Open Chat</button>
+      <QuickChat isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>
   );
 }
@@ -136,7 +131,7 @@ function App() {
 ### With Context
 
 ```tsx
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 function App() {
   return (
@@ -153,7 +148,7 @@ function App() {
 
 ```typescript
 interface QuickChatProps {
-  isOpen: boolean;    // Controls visibility
+  isOpen: boolean; // Controls visibility
   onClose: () => void; // Callback when closed
 }
 ```
@@ -189,6 +184,7 @@ export const DEFAULT_SETTINGS: Settings = {
 The main container component that orchestrates all sub-components.
 
 **Features:**
+
 - Modal overlay with backdrop
 - Tab navigation
 - Error handling
@@ -200,6 +196,7 @@ The main container component that orchestrates all sub-components.
 Displays chat messages with rich formatting.
 
 **Features:**
+
 - Message bubbles (user/assistant/system)
 - Metadata display
 - Tool calls visualization
@@ -208,6 +205,7 @@ Displays chat messages with rich formatting.
 - Context info banner
 
 **Styling:**
+
 - Glassmorphism message bubbles
 - Provider badges
 - Intent/sentiment indicators
@@ -219,6 +217,7 @@ Displays chat messages with rich formatting.
 Main chat interface with input and messages.
 
 **Features:**
+
 - Message display
 - Input area with multiple features
 - Session sidebar
@@ -231,6 +230,7 @@ Main chat interface with input and messages.
 Rich input area with multiple input methods.
 
 **Features:**
+
 - Text input with auto-resize
 - Quick actions dropdown
 - File upload
@@ -243,6 +243,7 @@ Rich input area with multiple input methods.
 Manages chat sessions.
 
 **Features:**
+
 - Session list
 - Create new session
 - Delete session
@@ -254,6 +255,7 @@ Manages chat sessions.
 AI model selection interface.
 
 **Features:**
+
 - Available models list
 - Model details
 - Provider information
@@ -265,6 +267,7 @@ AI model selection interface.
 User preferences and configuration.
 
 **Features:**
+
 - Model settings
 - Feature toggles
 - UI preferences
@@ -276,6 +279,7 @@ User preferences and configuration.
 System information and diagnostics.
 
 **Features:**
+
 - System status
 - Active model info
 - Resource usage
@@ -405,6 +409,7 @@ SPDX-License-Identifier: MIT
 ## 🆘 Support
 
 For issues or questions:
+
 1. Check this README
 2. Review the code comments
 3. Check existing GitHub issues
