@@ -2,7 +2,7 @@
 // apps/backend/src/services/monitoring/prometheusMetricsService.ts
 
 import { createLogger } from "../../utils/logger.js";
-import client from "prom-client";
+import * as client from "prom-client";
 
 const logger = createLogger("prometheus-metrics");
 
@@ -271,7 +271,7 @@ class PrometheusMetricsService {
   /**
    * Get metrics as JSON (for debugging/custom endpoints)
    */
-  async getMetricsJSON(): Promise<client.metric[]> {
+  async getMetricsJSON(): Promise<any[]> {
     if (!this.isEnabled) return [];
     return await this.register.getMetricsAsJSON();
   }
