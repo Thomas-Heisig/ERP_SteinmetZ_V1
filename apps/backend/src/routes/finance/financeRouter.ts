@@ -1,6 +1,74 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/finance/financeRouter.ts
 
+/**
+ * Finance Router
+ *
+ * Provides comprehensive financial management API including invoicing,
+ * customer management, payments, accounting, and financial reporting.
+ *
+ * @remarks
+ * This router provides:
+ * - Invoice CRUD operations (create, read, update, delete)
+ * - Customer management
+ * - Payment tracking and reconciliation
+ * - Accounting entry management
+ * - Financial statistics and reports
+ * - Invoice status management (draft, sent, paid, overdue, cancelled)
+ * - Multi-currency support
+ *
+ * Features:
+ * - XRechnung and ZUGFeRD compliance (future)
+ * - Automatic invoice numbering
+ * - Payment reminders and dunning
+ * - Tax calculation
+ * - Revenue and expense tracking
+ * - Profit/loss reporting
+ * - Outstanding invoices monitoring
+ *
+ * Invoice Workflow:
+ * 1. draft - Invoice is being prepared
+ * 2. sent - Invoice has been sent to customer
+ * 3. paid - Invoice has been paid
+ * 4. overdue - Payment is past due date
+ * 5. cancelled - Invoice has been cancelled
+ *
+ * @module routes/finance
+ *
+ * @example
+ * ```typescript
+ * // Create invoice
+ * POST /api/finance/invoices
+ * {
+ *   "customerId": "cust-123",
+ *   "customerName": "ACME Corp",
+ *   "amount": 1500.00,
+ *   "currency": "EUR",
+ *   "dueDate": "2024-12-31",
+ *   "items": [
+ *     {
+ *       "description": "Software Development",
+ *       "quantity": 40,
+ *       "unitPrice": 37.50,
+ *       "total": 1500.00
+ *     }
+ *   ]
+ * }
+ *
+ * // Record payment
+ * POST /api/finance/payments
+ * {
+ *   "invoiceId": "inv-456",
+ *   "amount": 1500.00,
+ *   "paymentDate": "2024-12-15",
+ *   "paymentMethod": "bank_transfer"
+ * }
+ *
+ * // Get financial statistics
+ * GET /api/finance/statistics
+ * ```
+ */
+
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import {

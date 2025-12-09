@@ -1,5 +1,36 @@
 // SPDX-License-Identifier: MIT
 
+/**
+ * Database Service
+ *
+ * Provides unified database abstraction layer supporting both SQLite and PostgreSQL.
+ * Handles schema management, migrations, query execution, and connection pooling.
+ *
+ * @remarks
+ * This service offers:
+ * - Dual database driver support (SQLite for development, PostgreSQL for production)
+ * - Automatic schema initialization and migrations
+ * - Query performance tracking and monitoring
+ * - Connection pooling and retry logic
+ * - Data validation and auto-correction for node types
+ * - Backup and maintenance operations (SQLite)
+ * - Health checks and diagnostics
+ *
+ * @example
+ * ```typescript
+ * import db from './services/dbService.js';
+ *
+ * // Initialize database
+ * await db.init();
+ *
+ * // Query data
+ * const users = await db.all('SELECT * FROM users WHERE active = ?', [true]);
+ *
+ * // Insert data
+ * const result = await db.run('INSERT INTO users (name, email) VALUES (?, ?)', ['John', 'john@example.com']);
+ * ```
+ */
+
 // -------------------------------------------------------------------
 // Node.js Standardmodule
 // -------------------------------------------------------------------
@@ -25,7 +56,20 @@ import type {
 // -------------------------------------------------------------------
 
 /**
- * Automatische Korrektur für kind-Werte in Funktionen
+ * Automatically corrects kind values for function nodes
+ *
+ * Attempts to map invalid or German kind values to valid NodeKind enum values.
+ * Supports fuzzy matching, typo correction, and German-to-English translation.
+ *
+ * @param kind - The kind value to correct (may be invalid or in German)
+ * @returns A valid NodeKind value
+ *
+ * @example
+ * ```typescript
+ * autoCorrectKind('kategorie'); // returns 'category'
+ * autoCorrectKind('aktion'); // returns 'action'
+ * autoCorrectKind('cateogry'); // returns 'category' (typo correction)
+ * ```
  */
 function autoCorrectKind(kind: string): NodeKind {
   const validKinds: NodeKind[] = [
@@ -132,7 +176,25 @@ function autoCorrectKind(kind: string): NodeKind {
 }
 
 /**
- * Erweiterte Korrektur für komplexe Fälle
+ * Advanced correction for complex data validation cases
+ *
+ * Performs deep data correction including kind field normalization,
+ * path array conversion, and default value assignment.
+ *
+ * @param rawData - The raw data object to correct
+ * @param lineIndex - Line number in source file (for logging)
+ * @param fileName - Source file name (for logging)
+ * @returns Corrected data object with normalized fields
+ *
+ * @example
+ * ```typescript
+ * const corrected = attemptAdvancedCorrection(
+ *   { kind: 'kategorie', path: 'root' },
+ *   10,
+ *   'functions.json'
+ * );
+ * // Returns: { kind: 'category', path: ['root'], children: [], weight: 1, icon: '' }
+ * ```
  */
 function attemptAdvancedCorrection(
   rawData: any,
@@ -193,6 +255,12 @@ function attemptAdvancedCorrection(
 // Erweiterte Fehlerklassen
 // -------------------------------------------------------------------
 
+/**
+ * Database query execution error
+ *
+ * Enhanced error class that captures SQL query context for debugging.
+ * Includes the original error, SQL statement, parameters, and database error code.
+ */
 class DatabaseError extends Error {
   public readonly sql: string;
   public readonly params: any[];
@@ -209,6 +277,12 @@ class DatabaseError extends Error {
   }
 }
 
+/**
+ * Database connection failure error
+ *
+ * Thrown when the database connection cannot be established.
+ * Includes driver type and connection string (sanitized).
+ */
 class DatabaseConnectionError extends Error {
   public readonly driver: string;
   public readonly connectionString?: string;
@@ -221,6 +295,12 @@ class DatabaseConnectionError extends Error {
   }
 }
 
+/**
+ * Database schema operation error
+ *
+ * Thrown when schema creation, migration, or validation fails.
+ * Includes the affected table and operation type.
+ */
 class DatabaseSchemaError extends Error {
   public readonly table?: string;
   public readonly operation: string;
@@ -237,30 +317,58 @@ class DatabaseSchemaError extends Error {
 // Konfiguration und Typdefinitionen
 // -------------------------------------------------------------------
 
+/**
+ * Supported database drivers
+ */
 type Driver = "sqlite" | "postgres";
 
+/**
+ * Database configuration options
+ */
 interface DatabaseConfig {
+  /** Database driver to use (sqlite or postgres) */
   driver: Driver;
+  /** Path to SQLite database file (only for SQLite) */
   sqliteFile?: string;
+  /** PostgreSQL connection URL (only for PostgreSQL) */
   postgresUrl?: string;
+  /** Maximum number of connections in pool (PostgreSQL only) */
   maxConnections?: number;
+  /** Query timeout in milliseconds */
   timeout?: number;
+  /** Enable Write-Ahead Logging for SQLite */
   enableWAL?: boolean;
+  /** Number of retry attempts for failed operations */
   retryAttempts?: number;
 }
 
+/**
+ * Query performance tracking data
+ */
 interface QueryStats {
+  /** SQL query text */
   sql: string;
+  /** Query execution duration in milliseconds */
   duration: number;
+  /** Number of rows affected/returned */
   rowCount?: number;
+  /** Timestamp when query was executed */
   timestamp: Date;
 }
 
+/**
+ * Database health status information
+ */
 interface HealthStatus {
+  /** Overall health status */
   status: "healthy" | "degraded" | "unhealthy";
+  /** Database driver in use */
   driver: Driver;
+  /** Connection latency in milliseconds */
   latency?: number;
+  /** Error message if unhealthy */
   error?: string;
+  /** Additional diagnostic details */
   details?: Record<string, any>;
 }
 
@@ -997,6 +1105,40 @@ class PostgresApi implements SqlApi {
 // Haupt-Datenbank-Service (KORRIGIERT mit Auto-Validierung)
 // -------------------------------------------------------------------
 
+/**
+ * Database Service
+ *
+ * Main database service class providing unified access to SQLite or PostgreSQL.
+ * Handles connection management, schema initialization, query execution, and monitoring.
+ *
+ * @remarks
+ * The service automatically selects the appropriate database driver based on
+ * environment variables (DB_DRIVER, DATABASE_URL). Provides query performance
+ * tracking, health checks, and backup functionality.
+ *
+ * Features:
+ * - Automatic driver selection (SQLite for dev, PostgreSQL for prod)
+ * - Schema initialization and migrations
+ * - Query performance monitoring
+ * - Connection pooling (PostgreSQL)
+ * - WAL mode support (SQLite)
+ * - Backup and vacuum operations
+ *
+ * @example
+ * ```typescript
+ * // Initialize
+ * await db.init();
+ *
+ * // Execute query
+ * const result = await db.run('INSERT INTO users VALUES (?, ?)', ['name', 'email']);
+ *
+ * // Fetch data
+ * const users = await db.all('SELECT * FROM users WHERE active = ?', [true]);
+ *
+ * // Health check
+ * const health = await db.healthCheck();
+ * ```
+ */
 class DatabaseService {
   private config: DatabaseConfig;
   private api: SqlApi;
@@ -1004,6 +1146,11 @@ class DatabaseService {
   private queryStats: QueryStats[] = [];
   private readonly maxQueryStats = 1000;
 
+  /**
+   * Creates a new DatabaseService instance
+   *
+   * @param config - Optional database configuration overrides
+   */
   constructor(config?: Partial<DatabaseConfig>) {
     this.config = {
       driver: resolveDriver(),
@@ -1023,7 +1170,18 @@ class DatabaseService {
   }
 
   /**
-   * Initialisiert den Datenbankzugang und prüft das Schema.
+   * Initializes database connection and schema
+   *
+   * Establishes connection to the configured database and ensures
+   * all required tables and indexes exist. Safe to call multiple times.
+   *
+   * @throws {DatabaseConnectionError} If connection fails
+   * @throws {DatabaseSchemaError} If schema initialization fails
+   *
+   * @example
+   * ```typescript
+   * await db.init();
+   * ```
    */
   async init(): Promise<void> {
     if (this.isInitialized) return;
@@ -1094,6 +1252,24 @@ class DatabaseService {
     }
   }
 
+  /**
+   * Executes a SQL statement and returns execution metadata
+   *
+   * Use for INSERT, UPDATE, DELETE when you need to know how many
+   * rows were affected or what the last inserted ID was.
+   *
+   * @param sql - SQL statement to execute
+   * @param params - Query parameters (prevents SQL injection)
+   * @returns Object with changes count and lastID (for INSERT)
+   * @throws {DatabaseError} If query execution fails
+   *
+   * @example
+   * ```typescript
+   * const result = await db.run('INSERT INTO users (name) VALUES (?)', ['John']);
+   * console.log(result.lastID); // ID of inserted row
+   * console.log(result.changes); // Number of rows affected
+   * ```
+   */
   async run<T = any>(
     sql: string,
     params: any[] = [],
@@ -1111,6 +1287,20 @@ class DatabaseService {
     }
   }
 
+  /**
+   * Executes a SELECT query and returns all matching rows
+   *
+   * @param sql - SELECT query to execute
+   * @param params - Query parameters (prevents SQL injection)
+   * @returns Array of matching rows (empty array if no matches)
+   * @throws {DatabaseError} If query execution fails
+   *
+   * @example
+   * ```typescript
+   * const users = await db.all<User>('SELECT * FROM users WHERE active = ?', [true]);
+   * console.log(users.length); // Number of active users
+   * ```
+   */
   async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
     await this.ensureInitialized();
     const startTime = Date.now();
@@ -1125,6 +1315,22 @@ class DatabaseService {
     }
   }
 
+  /**
+   * Executes a SELECT query and returns the first matching row
+   *
+   * @param sql - SELECT query to execute
+   * @param params - Query parameters (prevents SQL injection)
+   * @returns First matching row, or undefined if no matches
+   * @throws {DatabaseError} If query execution fails
+   *
+   * @example
+   * ```typescript
+   * const user = await db.get<User>('SELECT * FROM users WHERE id = ?', [123]);
+   * if (user) {
+   *   console.log(user.name);
+   * }
+   * ```
+   */
   async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
     await this.ensureInitialized();
     const startTime = Date.now();
@@ -1139,6 +1345,24 @@ class DatabaseService {
     }
   }
 
+  /**
+   * Executes multiple queries as an atomic transaction
+   *
+   * If any query fails, all changes are rolled back. Use for operations
+   * that must succeed or fail together (e.g., transferring money between accounts).
+   *
+   * @param fn - Async function containing queries to execute
+   * @returns Result of the transaction function
+   * @throws Error if any query in the transaction fails
+   *
+   * @example
+   * ```typescript
+   * await db.transaction(async () => {
+   *   await db.run('UPDATE accounts SET balance = balance - ? WHERE id = ?', [100, 1]);
+   *   await db.run('UPDATE accounts SET balance = balance + ? WHERE id = ?', [100, 2]);
+   * });
+   * ```
+   */
   async transaction<T>(fn: () => Promise<T>): Promise<T> {
     await this.ensureInitialized();
 

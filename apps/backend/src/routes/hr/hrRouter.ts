@@ -1,6 +1,66 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/hr/hrRouter.ts
 
+/**
+ * HR (Human Resources) Router
+ *
+ * Provides comprehensive HR management API including employee records,
+ * time tracking, leave management, payroll, and document handling.
+ *
+ * @remarks
+ * This router provides:
+ * - Employee CRUD operations
+ * - Time entry tracking (clock in/out)
+ * - Leave request management (vacation, sick leave)
+ * - Payroll record management
+ * - Document upload and retrieval
+ * - HR statistics and reports
+ * - Department and position management
+ *
+ * Features:
+ * - Zod-based request validation
+ * - Status-based filtering (active, on_leave, terminated)
+ * - Date-range queries for time entries and leave
+ * - Payroll calculation and history
+ * - Document attachment support
+ * - Search and filtering capabilities
+ *
+ * @module routes/hr
+ *
+ * @example
+ * ```typescript
+ * // Create employee
+ * POST /api/hr/employees
+ * {
+ *   "firstName": "John",
+ *   "lastName": "Doe",
+ *   "email": "john@example.com",
+ *   "department": "Engineering",
+ *   "position": "Software Developer",
+ *   "startDate": "2024-01-15"
+ * }
+ *
+ * // Record time entry
+ * POST /api/hr/time-entries
+ * {
+ *   "employeeId": "emp-123",
+ *   "date": "2024-12-09",
+ *   "startTime": "09:00",
+ *   "endTime": "17:00"
+ * }
+ *
+ * // Request leave
+ * POST /api/hr/leave-requests
+ * {
+ *   "employeeId": "emp-123",
+ *   "startDate": "2024-12-20",
+ *   "endDate": "2024-12-25",
+ *   "type": "vacation",
+ *   "reason": "Holiday vacation"
+ * }
+ * ```
+ */
+
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import {

@@ -1,6 +1,68 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/aiAnnotatorRouter/aiAnnotatorRouter.ts
 
+/**
+ * AI Annotator Router
+ *
+ * Provides AI-powered metadata annotation and quality assurance for function
+ * catalog nodes. Supports batch processing, model management, and quality
+ * validation workflows.
+ *
+ * @remarks
+ * This router provides:
+ * - Node annotation with AI-generated metadata
+ * - Batch processing for bulk annotations
+ * - Quality assurance workflows
+ * - Manual review and approval
+ * - Model selection and performance comparison
+ * - Filter management for targeted processing
+ * - Dashboard and form generation
+ * - Annotation history and statistics
+ *
+ * Features:
+ * - Multi-provider AI support (OpenAI, Anthropic, Ollama)
+ * - Smart model selection based on task complexity
+ * - Quality scoring and validation
+ * - Approval workflows with review status
+ * - Batch progress tracking with WebSocket updates
+ * - Cost tracking per model and operation
+ * - PII classification and compliance tagging
+ *
+ * Annotation Quality Workflow:
+ * 1. pending - Node awaiting annotation
+ * 2. annotated - AI has generated metadata
+ * 3. reviewed - Human has reviewed annotation
+ * 4. approved - Annotation quality approved
+ * 5. rejected - Annotation rejected, needs rework
+ *
+ * @module routes/aiAnnotator
+ *
+ * @example
+ * ```typescript
+ * // Annotate single node
+ * POST /api/ai-annotator/annotate
+ * {
+ *   "nodeIds": [123, 456],
+ *   "force": false
+ * }
+ *
+ * // Create batch operation
+ * POST /api/ai-annotator/batch
+ * {
+ *   "operation": "annotate",
+ *   "filters": { "annotation_status": "pending" },
+ *   "options": { "batchSize": 50 }
+ * }
+ *
+ * // Get quality metrics
+ * GET /api/ai-annotator/quality/metrics
+ *
+ * // Approve annotation
+ * POST /api/ai-annotator/quality/approve/:nodeId
+ * { "approvedBy": "user-123" }
+ * ```
+ */
+
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import aiAnnotatorService, {

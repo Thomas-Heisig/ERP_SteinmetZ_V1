@@ -1,8 +1,62 @@
 /**
- * aiRouter.ts
- * ---------------------------------------------------------
- * Zentraler Express-Router für alle KI-bezogenen Endpunkte.
- * Bindet Services, Workflows, Tools und Sessions ein.
+ * AI Router
+ *
+ * Central router for all AI-related endpoints including chat completions,
+ * model management, embeddings, vision analysis, audio transcription,
+ * translation, and knowledge base integration.
+ *
+ * @remarks
+ * This router provides:
+ * - Chat completion with multiple providers (OpenAI, Anthropic, Ollama)
+ * - Session-based conversation management
+ * - Tool calling and workflow execution
+ * - Model selection and configuration
+ * - Vision analysis (image understanding)
+ * - Audio transcription (Whisper API)
+ * - Text translation
+ * - Knowledge base embeddings and search
+ * - Provider health checks
+ * - Rate limiting for AI operations
+ *
+ * Features:
+ * - Multi-provider support with automatic fallback
+ * - Session persistence for conversation context
+ * - Tool registry for function calling
+ * - Workflow engine for complex AI tasks
+ * - File upload support (audio, images)
+ * - Streaming responses
+ * - Cost tracking and usage statistics
+ *
+ * Supported Providers:
+ * - OpenAI (GPT-4, GPT-3.5, Whisper, DALL-E)
+ * - Anthropic (Claude 3 family)
+ * - Ollama (local models)
+ * - Fallback (simple rule-based responses)
+ *
+ * @module routes/ai
+ *
+ * @example
+ * ```typescript
+ * // Chat completion
+ * POST /api/ai/chat/completions
+ * {
+ *   "sessionId": "session-123",
+ *   "message": "Explain quantum computing",
+ *   "provider": "openai",
+ *   "model": "gpt-4"
+ * }
+ *
+ * // Vision analysis
+ * POST /api/ai/vision/analyze
+ * {
+ *   "imageUrl": "https://example.com/image.jpg",
+ *   "prompt": "Describe this image"
+ * }
+ *
+ * // Audio transcription
+ * POST /api/ai/audio/transcribe
+ * (multipart/form-data with audio file)
+ * ```
  */
 
 import { Router } from "express";

@@ -1,6 +1,42 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/middleware/authMiddleware.ts
 
+/**
+ * Authentication Middleware
+ *
+ * Provides JWT-based authentication and role-based authorization middleware.
+ * Validates tokens from Authorization headers or cookies and attaches user
+ * context to requests.
+ *
+ * @remarks
+ * This middleware offers:
+ * - JWT token validation
+ * - Token extraction from headers or cookies
+ * - User authentication context (user, role, permissions)
+ * - Role-based access control (RBAC)
+ * - Permission-based access control
+ * - Optional authentication (for public endpoints)
+ *
+ * @example
+ * ```typescript
+ * // Require authentication
+ * router.get('/profile', authenticate, (req, res) => {
+ *   const user = req.auth.user;
+ *   res.json(user);
+ * });
+ *
+ * // Require specific role
+ * router.delete('/users/:id', authenticate, requireRole('admin'), (req, res) => {
+ *   // Only admins can access
+ * });
+ *
+ * // Require specific permission
+ * router.post('/invoices', authenticate, requirePermission('invoices:create'), (req, res) => {
+ *   // Only users with 'invoices:create' permission can access
+ * });
+ * ```
+ */
+
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/authService.js";
 import type { AuthContext } from "../types/auth.js";
@@ -21,8 +57,28 @@ declare global {
 }
 
 /**
- * Authentication middleware
- * Validates JWT token and attaches auth context to request
+ * Authentication middleware - requires valid JWT token
+ *
+ * Validates JWT token from Authorization header or cookie and attaches
+ * auth context to request. Rejects requests without valid token.
+ *
+ * Token sources (in order of priority):
+ * 1. Authorization: Bearer <token> header
+ * 2. Cookie: token=<token>
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ *
+ * @throws {401} If no token provided or token is invalid
+ *
+ * @example
+ * ```typescript
+ * router.get('/profile', authenticate, (req, res) => {
+ *   const userId = req.auth.user.id;
+ *   // User is guaranteed to be authenticated
+ * });
+ * ```
  */
 export async function authenticate(
   req: Request,
@@ -62,8 +118,26 @@ export async function authenticate(
 }
 
 /**
- * Optional authentication middleware
- * Validates token if present, but doesn't require it
+ * Optional authentication middleware - token not required
+ *
+ * Validates JWT token if present, but allows request to proceed even
+ * without authentication. Useful for endpoints that behave differently
+ * for authenticated vs. anonymous users.
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next function
+ *
+ * @example
+ * ```typescript
+ * router.get('/products', optionalAuthenticate, (req, res) => {
+ *   if (req.auth) {
+ *     // Show personalized pricing for authenticated users
+ *   } else {
+ *     // Show regular pricing for anonymous users
+ *   }
+ * });
+ * ```
  */
 export async function optionalAuthenticate(
   req: Request,
@@ -96,8 +170,30 @@ export async function optionalAuthenticate(
 }
 
 /**
- * Authorization middleware factory
- * Checks if user has required permission
+ * Authorization middleware factory - require specific permission
+ *
+ * Creates middleware that checks if authenticated user has the specified
+ * permission. Must be used after authenticate() middleware.
+ *
+ * Permission format: `resource:action` (e.g., 'invoices:create', 'users:delete')
+ * Wildcard permission '*' grants access to all resources.
+ *
+ * @param permission - Required permission string
+ * @returns Express middleware function
+ *
+ * @throws {401} If user is not authenticated
+ * @throws {403} If user lacks the required permission
+ *
+ * @example
+ * ```typescript
+ * router.post('/invoices',
+ *   authenticate,
+ *   requirePermission('invoices:create'),
+ *   (req, res) => {
+ *     // Only users with 'invoices:create' permission can access
+ *   }
+ * );
+ * ```
  */
 export function requirePermission(permission: string) {
   return async (
