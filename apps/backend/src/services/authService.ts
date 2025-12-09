@@ -7,6 +7,7 @@ import crypto from "crypto";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import db from "./dbService.js";
+import { createLogger } from "../utils/logger.js";
 import type {
   User,
   SafeUser,
@@ -19,6 +20,8 @@ import type {
   AuthContext,
   PasswordResetToken,
 } from "../types/auth.js";
+
+const logger = createLogger("auth");
 
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "24h";
@@ -79,15 +82,15 @@ export class AuthService {
       try {
         await db.exec(statement);
       } catch (error) {
-        console.error(
-          `[auth] Failed to execute statement: ${statement.substring(0, 100)}...`,
+        logger.error(
+          { err: error, statement: statement.substring(0, 100) },
+          "Failed to execute migration statement",
         );
-        console.error(`[auth] Error:`, error);
         throw error;
       }
     }
 
-    console.log("[auth] Authentication tables initialized");
+    logger.info("Authentication tables initialized");
   }
 
   /**

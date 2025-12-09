@@ -7,7 +7,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { createLogger } from "../../../utils/logger.js";
 import { log } from "../utils/logger.js";
+
+const logger = createLogger("tool-registry");
 
 /* ===================================================================== */
 /* 🧠 Typdefinitionen                                                    */
@@ -291,10 +294,11 @@ export class ToolRegistry {
   debugPrint(): void {
     const defs = this.getToolDefinitions();
     if (defs.length === 0) {
-      console.log("⚠️  Keine Tools registriert.");
+      logger.warn("No tools registered");
       return;
     }
 
+    logger.info({ tools: defs.map(t => ({ name: t.name, category: t.category, restricted: t.restricted })) }, "Registered tools");
     console.table(
       defs.map((t) => ({
         Name: t.name,

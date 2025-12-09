@@ -3,6 +3,7 @@
 
 import React, { useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { createLogger } from "../../../utils/logger.js";
 import { useDashboardLogic } from "../hooks/useDashboardLogic";
 import { useDashboardNavigation } from "../hooks/useDashboardNavigation";
 import { NodeBuilder } from "../features/builder/NodeBuilder";
@@ -17,6 +18,8 @@ import {
 import cls from "../utils/cls";
 
 import type { DashboardNode, NodeDetail, WidgetInstance } from "../types";
+
+const logger = createLogger("node-details");
 
 // ============================================================================
 // Type Definitions
@@ -386,7 +389,7 @@ const NodeDetails: React.FC<NodeDetailsProps> = ({
   const handleDelete = useCallback(() => {
     // TODO: Implement delete functionality
     if (window.confirm(t("nodeDetails.deleteConfirm"))) {
-      console.log("Delete node:", node?.id);
+      logger.info("Deleting node", { nodeId: node?.id });
     }
   }, [node, t]);
 

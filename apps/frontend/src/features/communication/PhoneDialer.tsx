@@ -2,7 +2,10 @@
 // apps/frontend/src/features/communication/PhoneDialer.tsx
 
 import React, { useState } from "react";
+import { createLogger } from "../../utils/logger.js";
 import { Button, Input } from "../../components/ui";
+
+const logger = createLogger("phone-dialer");
 
 interface PhoneDialerProps {
   onClose?: () => void;
@@ -35,9 +38,9 @@ export const PhoneDialer: React.FC<PhoneDialerProps> = ({
     try {
       // In production, call the API
       onCall?.(phoneNumber);
-      console.log(`📞 Calling ${phoneNumber}...`);
+      logger.info("Initiating call", { phoneNumber });
     } catch (error) {
-      console.error("Call failed:", error);
+      logger.error("Call failed", { error, phoneNumber });
     } finally {
       setIsDialing(false);
     }

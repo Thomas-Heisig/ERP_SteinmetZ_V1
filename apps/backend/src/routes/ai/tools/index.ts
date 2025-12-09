@@ -7,7 +7,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { createLogger } from "../../../utils/logger.js";
 import { toolRegistry } from "./registry.js";
+
+const logger = createLogger("ai-tools");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,14 +61,15 @@ async function importToolModule(filePath: string) {
 
     if (typeof mod.registerTools === "function") {
       await mod.registerTools(toolRegistry);
-      console.log(`🧰  Toolmodul geladen: ${fileName}`);
+      logger.debug({ fileName }, "Tool module loaded");
     } else {
-      console.warn(
-        `⚠️  Modul '${fileName}' enthält keine exportierte Funktion registerTools().`,
+      logger.warn(
+        { fileName },
+        "Module does not export registerTools() function",
       );
     }
   } catch (err) {
-    console.error(`❌ Fehler beim Laden von ${filePath}:`, err);
+    logger.error({ err, filePath }, "Failed to load tool module");
   }
 }
 
@@ -88,15 +92,16 @@ export async function loadAllTools(filter?: string[], recursive = true) {
     return filter.some((p) => f.toLowerCase().includes(p.toLowerCase()));
   });
 
-  console.log(
-    `🔎 Lade ${candidates.length} Toolmodule${filter ? ` (Filter: ${filter.join(", ")})` : ""}...`,
+  logger.info(
+    { candidateCount: candidates.length, filter },
+    "Loading tool modules",
   );
 
   for (const file of candidates) {
     await importToolModule(file);
   }
 
-  console.log(`✅ Tools geladen: ${toolRegistry.count()} registriert.`);
+  logger.info({ toolCount: toolRegistry.count() }, "Tools loaded and registered");
   return toolRegistry;
 }
 
@@ -117,7 +122,7 @@ if (process.env.AI_AUTOLOAD_TOOLS !== "0") {
     process.env.AI_HOT_RELOAD === "1"
   ) {
     const reloadInterval = Number(process.env.AI_HOT_RELOAD_INTERVAL ?? 10000);
-    console.log(`♻️  Hot-Reload aktiv (alle ${reloadInterval / 1000}s).`);
+    logger.info({ reloadInterval }, "Hot-reload enabled for tools");
     setInterval(async () => {
       toolRegistry.clear();
       await loadAllTools();

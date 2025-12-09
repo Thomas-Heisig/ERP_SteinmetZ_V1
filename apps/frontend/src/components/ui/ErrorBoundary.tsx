@@ -1,6 +1,9 @@
 // apps/frontend/src/components/ui/ErrorBoundary.tsx
 import { Component, ErrorInfo, ReactNode } from "react";
+import { createLogger } from "../../utils/logger.js";
 import styles from "./ErrorBoundary.module.css";
+
+const logger = createLogger("error-boundary");
 
 interface Props {
   children: ReactNode;
@@ -94,10 +97,10 @@ export class ErrorBoundary extends Component<Props, State> {
   reportError(error: Error, errorInfo: ErrorInfo) {
     // Send error to monitoring service (e.g., Sentry, LogRocket)
     // This is a placeholder - implement your actual error reporting here
-    if (process.env.NODE_ENV === "production") {
+    if (import.meta.env.PROD) {
       // Example: Sentry.captureException(error, { extra: errorInfo });
-      console.log("Error reported:", {
-        error: error.message,
+      logger.error("React component error", {
+        message: error.message,
         componentStack: errorInfo.componentStack,
       });
     }

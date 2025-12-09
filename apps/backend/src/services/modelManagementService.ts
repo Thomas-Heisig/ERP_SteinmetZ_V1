@@ -6,7 +6,10 @@
  * Provides functionality for model selection, performance comparison, and cost tracking
  */
 
+import { createLogger } from "../utils/logger.js";
 import type { ModelConfig, AIProvider } from "./aiAnnotatorService.js";
+
+const logger = createLogger("model-management");
 
 export interface ModelUsageStats {
   modelName: string;
@@ -193,7 +196,10 @@ export class ModelManagementService {
   }
 
   registerModel(config: ModelConfig): void {
-    console.log(`Registering model: ${config.name} (${config.provider})`);
+    logger.info(
+      { modelName: config.name, provider: config.provider },
+      "Registering model",
+    );
   }
 
   getRegisteredModels(): ModelConfig[] {
@@ -205,7 +211,10 @@ export class ModelManagementService {
     available: boolean,
     error?: string,
   ): void {
-    console.log(`Model ${modelName} availability: ${available}`);
+    logger.info(
+      { modelName, available, error },
+      "Model availability updated",
+    );
   }
 
   getModelAvailability(): ModelAvailability[] {
