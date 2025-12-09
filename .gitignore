@@ -98,6 +98,9 @@ coverage/
 *.lcov
 .nyc_output/
 
+# Generated documentation
+docs/api/
+
 # Secrets and sensitive files
 github.txt
 *.token

@@ -220,7 +220,10 @@ export class ConversationContext {
         });
 
       if (files.length === 0) {
-        logger.warn({ dataDir }, "No JSON files found in directory, using fallback context");
+        logger.warn(
+          { dataDir },
+          "No JSON files found in directory, using fallback context",
+        );
         this.initializeFallbackContext();
         return;
       }
@@ -249,7 +252,10 @@ export class ConversationContext {
 
             if (rules.length > 0) {
               combined.eliza_rules.push(...rules);
-              logger.debug({ file, ruleCount: rules.length }, "Loaded rules from file");
+              logger.debug(
+                { file, ruleCount: rules.length },
+                "Loaded rules from file",
+              );
             }
 
             if (Object.keys(metadata).length > 0) {
@@ -269,7 +275,9 @@ export class ConversationContext {
       const totalReflections = Object.keys(this.reflections).length;
 
       if (totalRules === 0 && totalReflections === 0) {
-        logger.warn("No valid rules or reflections loaded, using fallback context");
+        logger.warn(
+          "No valid rules or reflections loaded, using fallback context",
+        );
         this.initializeFallbackContext();
       } else {
         logger.info(
@@ -279,7 +287,10 @@ export class ConversationContext {
 
         // Aktive Regeln für Debugging loggen
         const activeRules = this.rules.filter((rule) => rule.enabled !== false);
-        logger.debug({ activeRules: activeRules.length, totalRules }, "Active rules count");
+        logger.debug(
+          { activeRules: activeRules.length, totalRules },
+          "Active rules count",
+        );
       }
     } catch (err: any) {
       console.error(

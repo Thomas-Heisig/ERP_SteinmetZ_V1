@@ -80,10 +80,7 @@ export class AutoRepair {
     } catch (error) {
       session.status = "failed";
       session.endTime = new Date();
-      logger.error(
-        { err: error, sessionId },
-        "Repair session failed",
-      );
+      logger.error({ err: error, sessionId }, "Repair session failed");
     }
 
     return session;
@@ -289,10 +286,7 @@ export class AutoRepair {
     }
 
     session.status = "rolledback";
-    logger.info(
-      { sessionId, rollbackCount },
-      "Session rolled back",
-    );
+    logger.info({ sessionId, rollbackCount }, "Session rolled back");
 
     return true;
   }
