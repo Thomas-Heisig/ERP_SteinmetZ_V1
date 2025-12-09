@@ -1,0 +1,312 @@
+{
+  "dashboard": {
+    "title": "ERP SteinmetZ - Overview",
+    "tags": ["erp", "steinmetz", "overview"],
+    "timezone": "browser",
+    "editable": true,
+    "graphTooltip": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "HTTP Request Rate",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "{{method}} {{path}} - {{status}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "reqps", "label": "Requests/sec" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "HTTP Request Duration (p95)",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{method}} {{path}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "s", "label": "Duration (seconds)" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "HTTP Error Rate",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(http_request_errors_total[5m])",
+            "legendFormat": "{{method}} {{path}} - {{error_type}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "reqps", "label": "Errors/sec" },
+          { "format": "short" }
+        ],
+        "alert": {
+          "name": "High HTTP Error Rate",
+          "conditions": [
+            {
+              "evaluator": { "params": [10], "type": "gt" },
+              "operator": { "type": "and" },
+              "query": { "params": ["A", "5m", "now"] },
+              "reducer": { "params": [], "type": "avg" },
+              "type": "query"
+            }
+          ],
+          "frequency": "60s",
+          "handler": 1,
+          "message": "HTTP error rate is above threshold",
+          "noDataState": "no_data",
+          "executionErrorState": "alerting"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Active Users & Sessions",
+        "type": "stat",
+        "gridPos": { "x": 12, "y": 8, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "active_users",
+            "legendFormat": "Active Users",
+            "refId": "A"
+          },
+          {
+            "expr": "active_sessions",
+            "legendFormat": "Active Sessions",
+            "refId": "B"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "orientation": "horizontal",
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Database Query Rate",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(db_queries_total[5m])",
+            "legendFormat": "{{operation}} on {{table}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "qps", "label": "Queries/sec" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Database Query Duration (p95)",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(db_query_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{operation}} on {{table}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "s", "label": "Duration (seconds)" },
+          { "format": "short" }
+        ],
+        "alert": {
+          "name": "Slow Database Queries",
+          "conditions": [
+            {
+              "evaluator": { "params": [1], "type": "gt" },
+              "operator": { "type": "and" },
+              "query": { "params": ["A", "5m", "now"] },
+              "reducer": { "params": [], "type": "avg" },
+              "type": "query"
+            }
+          ],
+          "frequency": "60s",
+          "handler": 1,
+          "message": "Database query duration is above 1 second",
+          "noDataState": "no_data",
+          "executionErrorState": "alerting"
+        }
+      },
+      {
+        "id": 7,
+        "title": "AI Request Rate by Provider",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 24, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(ai_requests_total[5m])",
+            "legendFormat": "{{provider}} - {{model}} ({{status}})",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "reqps", "label": "Requests/sec" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "AI Request Duration (p95)",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 24, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(ai_request_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{provider}} - {{model}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "s", "label": "Duration (seconds)" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "AI Tokens Used (24h)",
+        "type": "stat",
+        "gridPos": { "x": 0, "y": 32, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "sum(increase(ai_tokens_used_total[24h])) by (provider, model)",
+            "legendFormat": "{{provider}} - {{model}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name"
+        }
+      },
+      {
+        "id": 10,
+        "title": "AI Cost (24h)",
+        "type": "stat",
+        "gridPos": { "x": 6, "y": 32, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "sum(increase(ai_request_cost_total[24h])) by (provider)",
+            "legendFormat": "{{provider}}",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "values": false,
+            "calcs": ["lastNotNull"]
+          },
+          "textMode": "value_and_name",
+          "unit": "currencyUSD"
+        },
+        "alert": {
+          "name": "High AI Cost",
+          "conditions": [
+            {
+              "evaluator": { "params": [100], "type": "gt" },
+              "operator": { "type": "and" },
+              "query": { "params": ["A", "24h", "now"] },
+              "reducer": { "params": [], "type": "sum" },
+              "type": "query"
+            }
+          ],
+          "frequency": "1h",
+          "handler": 1,
+          "message": "AI costs exceeded $100 in the last 24 hours",
+          "noDataState": "no_data",
+          "executionErrorState": "alerting"
+        }
+      },
+      {
+        "id": 11,
+        "title": "CPU Usage",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 32, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[5m]) * 100",
+            "legendFormat": "CPU Usage %",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "percent", "label": "CPU %" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Memory Usage",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 40, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "legendFormat": "Resident Memory",
+            "refId": "A"
+          },
+          {
+            "expr": "process_heap_bytes",
+            "legendFormat": "Heap Memory",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          { "format": "bytes", "label": "Memory" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 13,
+        "title": "Business Events",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 40, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(business_events_total[5m])",
+            "legendFormat": "{{event_type}} - {{status}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "eps", "label": "Events/sec" },
+          { "format": "short" }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"]
+    },
+    "refresh": "30s"
+  }
+}
