@@ -14,12 +14,12 @@ Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical D
 
 ### ISSUE-008: Fehlende Monitoring & Observability 📊
 
-**Status**: 🟢 Weitgehend behoben | **Priorität**: Mittel | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2025-12-09
+**Status**: 🟢 Weitgehend behoben | **Priorität**: Mittel | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2025-12-09 (Dokumentation vervollständigt)
 
 **Beschreibung**:
 Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tracking.
 
-**Fortschritt (9. Dezember 2025)**:
+**Fortschritt (9. Dezember 2025 - Dokumentation)**:
 
 - ✅ **Structured Logging**: Vollständig implementiert mit Pino
   - Centralized Logger (`apps/backend/src/utils/logger.ts`)
@@ -60,14 +60,31 @@ Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tr
   - Konfiguration und Anpassung
   - Troubleshooting-Guide
 
-**Noch ausstehend**:
+- ✅ **Dokumentation**: Umfassende Setup-Anleitungen erstellt (9. Dezember 2025)
+  - ✅ OpenTelemetry Integration Guide (docs/OPENTELEMETRY_SETUP.md)
+    - Collector-Setup mit Docker Compose
+    - Backend & Frontend Integration
+    - Jaeger/Tempo Anbindung
+    - Best Practices & Troubleshooting
+  - ✅ Sentry Integration Guide (docs/SENTRY_INTEGRATION.md)
+    - Backend & Frontend Setup
+    - Source Maps Konfiguration
+    - CI/CD Integration
+    - Alert Rules & Dashboards
+  - ✅ Log Aggregation Guide (docs/LOG_AGGREGATION.md)
+    - Loki + Grafana (empfohlen)
+    - ELK Stack Alternative
+    - Cloud-Lösungen (Datadog, CloudWatch)
+    - LogQL Queries & Best Practices
 
-- [ ] OpenTelemetry Integration (Tracing)
-- [ ] Distributed Tracing (Jaeger/Zipkin)
-- [ ] Sentry Integration (Error-Tracking)
-- [ ] Log-Aggregation (ELK Stack / Loki)
+**Noch ausstehend (Implementation)**:
 
-**Aufwand**: 1-2 Wochen gesamt → ~65% erledigt (6-7 Tage)
+- [ ] OpenTelemetry Integration (Tracing) - Dokumentation vorhanden ✅
+- [ ] Distributed Tracing (Jaeger/Zipkin) - Dokumentation vorhanden ✅
+- [ ] Sentry Integration (Error-Tracking) - Dokumentation vorhanden ✅
+- [ ] Log-Aggregation (ELK Stack / Loki) - Dokumentation vorhanden ✅
+
+**Aufwand**: 1-2 Wochen gesamt → ~75% erledigt (Infrastruktur + Dokumentation)
 
 **Dokumentation**:
 
