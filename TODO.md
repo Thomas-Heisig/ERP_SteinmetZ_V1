@@ -444,18 +444,23 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 3-4 Tage → 3 Tage erledigt
   - **Ergebnis**: Vollständiges Prometheus + Grafana Monitoring-Setup
 
-- [ ] **Tracing**
-  - [ ] OpenTelemetry Integration
-  - [ ] Distributed Tracing
-  - [ ] Jaeger/Zipkin Setup
-  - **Aufwand**: 2-3 Tage
+- [x] **Tracing** ✅ ERLEDIGT (2025-12-09)
+  - [x] OpenTelemetry Integration (bereits vorhanden, dokumentiert)
+  - [x] Distributed Tracing (konfiguriert und dokumentiert)
+  - [x] Jaeger/Zipkin Setup (docker-compose.yml erstellt)
+  - [x] OTLP Collector Konfiguration
+  - [x] Grafana Integration für Traces
+  - [x] Umfassende Dokumentation (TRACING_SETUP.md)
+  - **Aufwand**: 2-3 Tage → 3 Stunden erledigt
 
-- [ ] **Error Tracking**
-  - [ ] Sentry Integration
-  - [ ] Error-Grouping und -Deduplication
-  - [ ] Source-Maps für Stack-Traces
-  - [ ] Alert-Notifications
-  - **Aufwand**: 1 Tag
+- [x] **Error Tracking** ✅ ERLEDIGT (2025-12-09)
+  - [x] Sentry Integration (bereits vorhanden, erweitert)
+  - [x] Error-Grouping und -Deduplication (automatisch)
+  - [x] Source-Maps für Stack-Traces (konfiguriert und dokumentiert)
+  - [x] Alert-Notifications (Alertmanager konfiguriert)
+  - [x] Sensitive Data Redaction (implementiert)
+  - [x] Umfassende Dokumentation (ERROR_TRACKING_SETUP.md)
+  - **Aufwand**: 1 Tag → 2 Stunden erledigt
 
 ---
 
