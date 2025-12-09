@@ -1,3 +1,4 @@
-# TODO: Re-enable after ESLint v9 migration (see https://eslint.org/docs/latest/use/configure/migration-guide)
+bash scripts/check-console-logs.sh
+# TODO: Re-enable full lint after console.log migration complete
 # npm run lint
 npm run format

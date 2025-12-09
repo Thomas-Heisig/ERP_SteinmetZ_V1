@@ -29,6 +29,7 @@
     "docs": "typedoc",
     "docs:serve": "npx http-server docs/api -p 8080 -o",
     "sonar:setup": "bash scripts/sonarqube-setup.sh",
+    "check:console": "bash scripts/check-console-logs.sh",
     "clean": "rimraf node_modules **/node_modules **/dist",
     "clean:frontend": "rimraf apps/frontend/dist",
     "clean:backend": "rimraf apps/backend/dist",

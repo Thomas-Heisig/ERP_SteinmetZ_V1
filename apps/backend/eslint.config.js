@@ -27,7 +27,8 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       // Code Quality
-      "no-console": ["warn", { allow: ["warn", "error", "info"] }],
+      // Gradual migration: warn now, will be error after full migration
+      "no-console": ["warn", { allow: ["warn", "error"] }],
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",

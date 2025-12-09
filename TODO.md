@@ -290,6 +290,18 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
     - npm run sonar:setup für lokale Vorbereitung
   - **Aufwand**: 1-2 Tage → 10 Stunden erledigt ✅ KOMPLETT
 
+### Code Quality Enhancement
+
+- [x] **ESLint Strict Mode & Pre-commit Hooks** ✅ INFRASTRUKTUR ERLEDIGT (9. Dez 2025)
+  - [x] ESLint no-console Regel konfiguriert (aktuell "warn")
+  - [x] Pre-commit Hook aktiviert (console-check + format)
+  - [x] Console.log Check-Script erstellt (check-console-logs.sh)
+  - [x] Script läuft automatisch bei jedem Commit (verhindert neue console.log)
+  - [x] npm run check:console für manuelle Prüfung
+  - [ ] Graduelle Migration: 90 bestehende console.log Fehler schrittweise beheben
+  - [ ] Nach Migration: no-console auf "error" hochstufen
+  - **Aufwand**: 2-3 Stunden → 1.5 Stunden erledigt (Infrastruktur ✅), 4-6 Stunden für Migration verbleibend
+
 ### UI/UX Enhancements
 
 - [x] **Accessibility (a11y)** ✅ GRUNDLAGEN ERLEDIGT (2025-12-06)
