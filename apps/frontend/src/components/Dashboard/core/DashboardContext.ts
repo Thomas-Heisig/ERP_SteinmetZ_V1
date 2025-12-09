@@ -13,8 +13,11 @@ import React, {
   ComponentType,
   FC,
 } from "react";
+import { createLogger } from "../../../utils/logger.js";
 
 import type { DashboardState, DashboardAction } from "../types";
+
+const logger = createLogger("dashboard-context");
 
 // ============================================================================
 // Type Definitions
@@ -411,9 +414,7 @@ export function useDashboardDebug(
     if (logChanges && prevStateRef.current !== undefined) {
       const changes = findStateChanges(prevStateRef.current, state, selector);
       if (changes.length > 0) {
-        console.group("Dashboard State Changes");
-        changes.forEach((c) => console.log(c));
-        console.groupEnd();
+        logger.debug("Dashboard state changes", { changes });
       }
     }
 

@@ -249,7 +249,7 @@ export class ConversationContext {
 
             if (rules.length > 0) {
               combined.eliza_rules.push(...rules);
-              console.log(`   ➕ Regeln aus ${file}: ${rules.length}`);
+              logger.debug({ file, ruleCount: rules.length }, "Loaded rules from file");
             }
 
             if (Object.keys(metadata).length > 0) {
@@ -269,18 +269,17 @@ export class ConversationContext {
       const totalReflections = Object.keys(this.reflections).length;
 
       if (totalRules === 0 && totalReflections === 0) {
-        console.warn(
-          "⚠️ [CONTEXT] Keine gültigen Regeln oder Reflexionen geladen, verwende Fallback!",
-        );
+        logger.warn("No valid rules or reflections loaded, using fallback context");
         this.initializeFallbackContext();
       } else {
-        console.log(
-          `✅ [CONTEXT] Gesamtdaten geladen: ${totalRules} Regeln, ${totalReflections} Reflexionen`,
+        logger.info(
+          { totalRules, totalReflections },
+          "Context data loaded successfully",
         );
 
         // Aktive Regeln für Debugging loggen
         const activeRules = this.rules.filter((rule) => rule.enabled !== false);
-        console.log(`   📊 Aktive Regeln: ${activeRules.length}/${totalRules}`);
+        logger.debug({ activeRules: activeRules.length, totalRules }, "Active rules count");
       }
     } catch (err: any) {
       console.error(
@@ -322,7 +321,7 @@ export class ConversationContext {
   }
 
   private initializeFallbackContext(): void {
-    console.log("🔄 [CONTEXT] Initialisiere Fallback-Kontext");
+    logger.info("Initializing fallback context");
 
     this.reflections = {
       ich: "du",

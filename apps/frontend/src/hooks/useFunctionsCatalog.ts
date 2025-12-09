@@ -2,6 +2,9 @@
 // apps/frontend/src/hooks/useFunctionsCatalog.ts
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createLogger } from "../utils/logger.js";
+
+const logger = createLogger("functions-catalog");
 
 /* ---------- Typen (kompatibel zum Backend) ---------- */
 
@@ -125,13 +128,13 @@ class CatalogLogger {
 
   info(message: string, data?: any) {
     if (this.enabled) {
-      console.log(`${this.prefix} ${message}`, data || "");
+      logger.info(message, data);
     }
   }
 
   warn(message: string, data?: any) {
     if (this.enabled) {
-      console.warn(`${this.prefix} ${message}`, data || "");
+      logger.warn(message, data);
     }
   }
 
