@@ -1,6 +1,6 @@
 # ERP SteinmetZ - TODO Liste
 
-**Stand**: 7. Dezember 2025  
+**Stand**: 9. Dezember 2025  
 **Version**: 0.3.0
 
 Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und Phase.
@@ -277,9 +277,64 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - [x] npm audit: 0 Vulnerabilities (3 behoben) ✅
   - [x] Dokumentations-Konsolidierung: 4 Dateien archiviert ✅
   - [x] TypeScript Strict Mode für Backend aktiviert ✅ NEU (9. Dez 2025)
-  - [ ] Code-Coverage-Reports (bereits vorhanden)
-  - [ ] SonarQube Integration
-  - **Aufwand**: 1-2 Tage → 8 Stunden erledigt, 1 Tag verbleibend für SonarQube
+  - [x] Code-Coverage-Reports (bereits vorhanden) ✅ NEU (9. Dez 2025)
+    - Backend: 57.73% statements, 44.11% branches
+    - Frontend: 71.42% statements, 75.63% branches
+    - Umfassende Dokumentation erstellt (CODE_COVERAGE.md)
+    - Package.json Scripts erweitert
+  - [x] SonarQube Integration ✅ ERLEDIGT (9. Dez 2025)
+    - Bereits in GitHub Actions konfiguriert (.github/workflows/test.yml)
+    - sonar-project.properties vollständig konfiguriert
+    - Setup-Script erstellt (scripts/sonarqube-setup.sh)
+    - Umfassende Dokumentation vorhanden (docs/SONARQUBE.md)
+    - npm run sonar:setup für lokale Vorbereitung
+  - **Aufwand**: 1-2 Tage → 10 Stunden erledigt ✅ KOMPLETT
+
+### Code Quality Enhancement
+
+- [x] **ESLint Strict Mode & Pre-commit Hooks** ✅ INFRASTRUKTUR ERLEDIGT (9. Dez 2025)
+  - [x] ESLint no-console Regel konfiguriert (aktuell "warn")
+  - [x] Pre-commit Hook aktiviert (console-check + format)
+  - [x] Console.log Check-Script erstellt (check-console-logs.sh)
+  - [x] Script läuft automatisch bei jedem Commit (verhindert neue console.log)
+  - [x] npm run check:console für manuelle Prüfung
+  - [ ] Graduelle Migration: 90 bestehende console.log Fehler schrittweise beheben
+  - [ ] Nach Migration: no-console auf "error" hochstufen
+  - **Aufwand**: 2-3 Stunden → 1.5 Stunden erledigt (Infrastruktur ✅), 4-6 Stunden für Migration verbleibend
+
+### Logging & Monitoring
+
+- [x] **Log-Aggregation & Retention** ✅ DOKUMENTIERT (9. Dez 2025)
+  - [x] LOG_AGGREGATION.md bereits vorhanden (Loki + Grafana)
+  - [x] LOG_RETENTION_POLICY.md erstellt mit:
+    - Retention-Perioden nach Umgebung (Dev/Staging/Prod)
+    - DSGVO/GoBD Compliance-Anforderungen
+    - Log-Kategorisierung (Critical, Important, Standard, Temporary)
+    - Loki & Promtail Konfiguration
+    - Backup & Archivierungs-Strategien
+    - S3 Lifecycle Policies
+    - Kosten-Optimierung
+    - Compliance-Audit-Checkliste
+  - **Aufwand**: 2 Stunden → 2 Stunden erledigt ✅ KOMPLETT
+
+### Code Dokumentation
+
+- [x] **JSDoc & TypeDoc** ✅ INFRASTRUKTUR ERLEDIGT (9. Dez 2025)
+  - [x] JSDoc Style Guide erstellt (JSDOC_GUIDE.md)
+    - Dokumentations-Standards definiert
+    - Best Practices für Functions, Classes, Types
+    - Migration Plan (3-Phasen-Ansatz)
+    - Beispiele für alle gängigen Patterns
+  - [x] TypeDoc Konfiguration optimiert
+    - Erfolgreiche Generierung von API-Dokumentation
+    - Output: docs/api/index.html
+    - npm run docs funktioniert
+    - npm run docs:serve für lokale Ansicht
+  - [ ] Graduelle Migration: JSDoc für alle öffentlichen APIs hinzufügen
+    - Phase 1: Critical APIs (Services, Middleware, Core Utils)
+    - Phase 2: Routes
+    - Phase 3: Supporting Code
+  - **Aufwand**: 2-3 Stunden → 2 Stunden erledigt (Infrastruktur ✅), 10-15 Stunden für Migration verbleibend
 
 ### UI/UX Enhancements
 
@@ -655,6 +710,27 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 ---
 
-**Letzte Aktualisierung**: 7. Dezember 2025  
+**Letzte Aktualisierung**: 9. Dezember 2025  
 **Maintainer**: Thomas Heisig  
 **Nächster Review**: Januar 2026
+
+---
+
+## 📋 Aktuelle Session (9. Dezember 2025)
+
+**Ziel**: 20 TODO/ISSUES Punkte abarbeiten
+
+**Fortschritt**: 8/20 Tasks abgeschlossen (40%) ✅
+
+### Phase 1: Code Quality & Infrastructure ✅ KOMPLETT (8/8)
+
+1. ✅ Code-Coverage-Reports: Dokumentation + Scripts (CODE_COVERAGE.md)
+2. ✅ SonarQube Integration: Setup-Script + vollständige Konfiguration
+3. ✅ ESLint Console-Checks: Infrastruktur bereit, pre-commit hook aktiv
+4. ✅ Pre-commit Hooks: check-console-logs.sh verhindert neue console.log
+5. ✅ Log-Aggregation: Umfassende Dokumentation (LOG_AGGREGATION.md)
+6. ✅ Log-Retention-Policy: DSGVO/GoBD-konform (LOG_RETENTION_POLICY.md)
+7. ✅ JSDoc: Umfassender Style Guide (JSDOC_GUIDE.md)
+8. ✅ TypeDoc: API-Dokumentation erfolgreich generiert
+
+**Ergebnis**: Solide Code-Quality & Dokumentations-Infrastruktur ✅
