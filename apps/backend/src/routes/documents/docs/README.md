@@ -23,11 +23,13 @@ Das Document Management System (DMS) bietet umfassende Funktionen für die Verwa
 ### Dokumenten-Repository
 
 #### Alle Dokumente abrufen
+
 ```http
 GET /api/documents
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -50,11 +52,13 @@ GET /api/documents
 ```
 
 #### Einzelnes Dokument abrufen
+
 ```http
 GET /api/documents/:id
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -72,7 +76,7 @@ GET /api/documents/:id
     "status": "active",
     "metadata": {
       "customer": "ABC GmbH",
-      "amount": 1500.00,
+      "amount": 1500.0,
       "invoiceNumber": "RE-2024-001"
     },
     "ocrData": {
@@ -93,12 +97,14 @@ GET /api/documents/:id
 ```
 
 #### Dokument hochladen
+
 ```http
 POST /api/documents/upload
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "category": "invoice",
@@ -107,13 +113,14 @@ Content-Type: application/json
   "tags": ["rechnung", "wichtig"],
   "metadata": {
     "customer": "ABC GmbH",
-    "amount": 1500.00
+    "amount": 1500.0
   },
   "retentionYears": 10
 }
 ```
 
 **Kategorien:**
+
 - `invoice` - Rechnungen (10 Jahre Aufbewahrung)
 - `contract` - Verträge (6 Jahre)
 - `employee_document` - Personalunterlagen (3 Jahre nach Ausscheiden)
@@ -122,6 +129,7 @@ Content-Type: application/json
 - `other` - Sonstige
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -142,12 +150,14 @@ Content-Type: application/json
 ```
 
 #### Neue Version hochladen
+
 ```http
 POST /api/documents/:id/versions
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "changes": "Korrektur Rechnungsbetrag"
@@ -155,6 +165,7 @@ Content-Type: application/json
 ```
 
 #### Dokument löschen (Soft Delete)
+
 ```http
 DELETE /api/documents/:id
 ```
@@ -162,11 +173,13 @@ DELETE /api/documents/:id
 ### Suche & OCR
 
 #### Volltextsuche
+
 ```http
 GET /api/documents/search?query=rechnung&category=invoice&fileType=pdf
 ```
 
 **Query-Parameter:**
+
 - `query` - Suchbegriff
 - `category` - Dokumentenkategorie
 - `tags` - Array von Tags
@@ -175,6 +188,7 @@ GET /api/documents/search?query=rechnung&category=invoice&fileType=pdf
 - `fileType` - Dateityp (pdf, docx, xlsx, etc.)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -194,11 +208,13 @@ GET /api/documents/search?query=rechnung&category=invoice&fileType=pdf
 ```
 
 #### OCR-Verarbeitung starten
+
 ```http
 POST /api/documents/:id/ocr
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -208,11 +224,13 @@ POST /api/documents/:id/ocr
 ```
 
 #### AI-Tags generieren
+
 ```http
 POST /api/documents/:id/ai-tags
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -239,12 +257,14 @@ POST /api/documents/:id/ai-tags
 ### Workflow-Automation
 
 #### Workflow starten
+
 ```http
 POST /api/documents/:id/workflows
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "type": "approval",
@@ -255,11 +275,13 @@ Content-Type: application/json
 ```
 
 **Workflow-Typen:**
+
 - `approval` - Genehmigungsworkflow
 - `review` - Prüfungsworkflow
 - `signature` - Unterschriftsworkflow
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -278,17 +300,20 @@ Content-Type: application/json
 ```
 
 #### Workflows abrufen
+
 ```http
 GET /api/documents/:id/workflows
 ```
 
 #### Workflow-Schritt genehmigen
+
 ```http
 POST /api/documents/:id/workflows/:workflowId/approve
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "comment": "Genehmigt, sieht gut aus"
@@ -296,12 +321,14 @@ Content-Type: application/json
 ```
 
 #### Workflow-Schritt ablehnen
+
 ```http
 POST /api/documents/:id/workflows/:workflowId/reject
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "reason": "Bitte Betrag korrigieren"
@@ -311,12 +338,14 @@ Content-Type: application/json
 ### E-Signature Integration
 
 #### Unterschrift anfordern
+
 ```http
 POST /api/documents/:id/sign
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "signers": ["user-123@company.com", "user-456@company.com"],
@@ -325,6 +354,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -341,6 +371,7 @@ Content-Type: application/json
 ```
 
 #### Unterschriftenstatus abrufen
+
 ```http
 GET /api/documents/:id/signatures
 ```
@@ -348,11 +379,13 @@ GET /api/documents/:id/signatures
 ### Retention Policies
 
 #### Aufbewahrungsrichtlinien abrufen
+
 ```http
 GET /api/documents/retention-policies
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -383,12 +416,14 @@ GET /api/documents/retention-policies
 ```
 
 #### Aufbewahrungsrichtlinie ändern
+
 ```http
 PUT /api/documents/:id/retention-policy
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
   "retentionYears": 12,
@@ -397,11 +432,13 @@ Content-Type: application/json
 ```
 
 #### Ablaufende Dokumente abrufen
+
 ```http
 GET /api/documents/expiring?days=30
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -421,11 +458,13 @@ GET /api/documents/expiring?days=30
 ### Statistiken
 
 #### DMS-Statistiken abrufen
+
 ```http
 GET /api/documents/statistics
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -451,14 +490,14 @@ GET /api/documents/statistics
 
 ### Aufbewahrungsfristen (Deutschland)
 
-| Dokumentenart | Frist | Rechtsgrundlage |
-|--------------|-------|-----------------|
-| Rechnungen | 10 Jahre | HGB §257 |
-| Buchungsbelege | 10 Jahre | HGB §257 |
-| Jahresabschlüsse | 10 Jahre | HGB §257 |
-| Verträge | 6 Jahre | BGB §195 |
-| Personalunterlagen | 3 Jahre nach Ausscheiden | DSGVO Art. 17 |
-| Steuerunterlagen | 10 Jahre | AO §147 |
+| Dokumentenart      | Frist                    | Rechtsgrundlage |
+| ------------------ | ------------------------ | --------------- |
+| Rechnungen         | 10 Jahre                 | HGB §257        |
+| Buchungsbelege     | 10 Jahre                 | HGB §257        |
+| Jahresabschlüsse   | 10 Jahre                 | HGB §257        |
+| Verträge           | 6 Jahre                  | BGB §195        |
+| Personalunterlagen | 3 Jahre nach Ausscheiden | DSGVO Art. 17   |
+| Steuerunterlagen   | 10 Jahre                 | AO §147         |
 
 ### DSGVO-Compliance
 
@@ -549,6 +588,7 @@ Alle Aktionen werden protokolliert:
 ## Roadmap
 
 ### Phase 1 (Q1 2025) - ✅ ERLEDIGT
+
 - [x] Basis-Repository-Funktionen
 - [x] Upload und Versionierung
 - [x] Suche und Filterung
@@ -556,6 +596,7 @@ Alle Aktionen werden protokolliert:
 - [x] E-Signature-Integration
 
 ### Phase 2 (Q2 2025) - GEPLANT
+
 - [ ] Datenbankintegration
 - [ ] Tatsächliche Dateiablage (S3/MinIO)
 - [ ] OCR-Implementierung
@@ -563,12 +604,14 @@ Alle Aktionen werden protokolliert:
 - [ ] Frontend-Komponenten
 
 ### Phase 3 (Q3 2025) - GEPLANT
+
 - [ ] Advanced Workflows (BPMN)
 - [ ] Collaboration-Features
 - [ ] Mobile App
 - [ ] Offline-Modus
 
 ### Phase 4 (Q4 2025) - GEPLANT
+
 - [ ] Records Management
 - [ ] Advanced Analytics
 - [ ] Blockchain-Integration für Audit-Trail
