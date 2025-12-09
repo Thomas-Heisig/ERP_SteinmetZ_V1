@@ -32,11 +32,11 @@ const LOCK_DURATION_MINUTES = 15;
 
 /**
  * Authentication Service
- * 
+ *
  * Provides comprehensive user authentication, authorization, and session management.
  * Implements secure password hashing, JWT token generation, and account security features
  * including rate limiting and account locking.
- * 
+ *
  * @remarks
  * This service handles:
  * - User registration and login
@@ -46,7 +46,7 @@ const LOCK_DURATION_MINUTES = 15;
  * - Role-based access control
  * - Account security (failed login attempts, account locking)
  * - Password reset functionality
- * 
+ *
  * @example
  * ```typescript
  * // Register a new user
@@ -56,13 +56,13 @@ const LOCK_DURATION_MINUTES = 15;
  *   password: 'SecurePass123!',
  *   full_name: 'John Doe'
  * });
- * 
+ *
  * // Login
  * const result = await AuthService.login({
  *   username: 'john.doe',
  *   password: 'SecurePass123!'
  * });
- * 
+ *
  * if (result.success) {
  *   console.log('Access token:', result.token);
  * }
@@ -71,7 +71,7 @@ const LOCK_DURATION_MINUTES = 15;
 export class AuthService {
   /**
    * Initialize authentication tables in the database
-   * 
+   *
    * Executes SQL migrations to create necessary tables for authentication:
    * - users: User accounts with credentials
    * - roles: User roles for RBAC
@@ -80,9 +80,9 @@ export class AuthService {
    * - role_permissions: Many-to-many relationship between roles and permissions
    * - sessions: Active user sessions
    * - password_reset_tokens: Tokens for password reset flow
-   * 
+   *
    * @throws {Error} If database migration fails
-   * 
+   *
    * @example
    * ```typescript
    * await AuthService.init();
@@ -145,20 +145,20 @@ export class AuthService {
 
   /**
    * Register a new user account
-   * 
+   *
    * Creates a new user with hashed password and assigns default "User" role.
    * Validates username uniqueness, email format, and password strength.
-   * 
+   *
    * @param data - User registration data
    * @param data.username - Unique username (required)
    * @param data.email - Unique email address (required)
    * @param data.password - Password, minimum 8 characters (required)
    * @param data.full_name - User's full name (optional)
-   * 
+   *
    * @returns Promise resolving to SafeUser (user without password hash)
-   * 
+   *
    * @throws {Error} If username/email exists or validation fails
-   * 
+   *
    * @example
    * ```typescript
    * const user = await AuthService.register({
@@ -235,22 +235,22 @@ export class AuthService {
 
   /**
    * Authenticate user and create session
-   * 
+   *
    * Validates credentials, checks account status, and generates JWT tokens.
    * Implements security features:
    * - Account locking after failed attempts (5 attempts → 15 minute lock)
    * - Password verification using bcrypt
    * - Session tracking with IP and user agent
    * - Access and refresh token generation
-   * 
+   *
    * @param credentials - Login credentials
    * @param credentials.username - Username or email address
    * @param credentials.password - User password
    * @param ipAddress - Optional IP address for session tracking
    * @param userAgent - Optional user agent for session tracking
-   * 
+   *
    * @returns Promise resolving to LoginResponse with tokens or error
-   * 
+   *
    * @example
    * ```typescript
    * const result = await AuthService.login(
@@ -258,7 +258,7 @@ export class AuthService {
    *   '192.168.1.1',
    *   'Mozilla/5.0...'
    * );
-   * 
+   *
    * if (result.success) {
    *   console.log('Logged in:', result.user);
    *   console.log('Token:', result.token);
@@ -391,12 +391,12 @@ export class AuthService {
    */
   /**
    * Logout user by invalidating session
-   * 
+   *
    * Marks the session as invalid, preventing further use of the access token.
    * The token itself remains valid until expiration, but session validation will fail.
-   * 
+   *
    * @param token - Access token to invalidate
-   * 
+   *
    * @example
    * ```typescript
    * await AuthService.logout(accessToken);
@@ -408,18 +408,18 @@ export class AuthService {
 
   /**
    * Validate and verify a session token
-   * 
+   *
    * Performs comprehensive token validation:
    * - Verifies JWT signature and expiration
    * - Checks session validity in database
    * - Validates user account status
    * - Updates last activity timestamp
    * - Returns full authentication context
-   * 
+   *
    * @param token - JWT access token to validate
-   * 
+   *
    * @returns Promise resolving to AuthContext with user, roles, permissions, or null if invalid
-   * 
+   *
    * @example
    * ```typescript
    * const authContext = await AuthService.validateToken(token);
@@ -486,15 +486,15 @@ export class AuthService {
 
   /**
    * Refresh access token using refresh token
-   * 
+   *
    * Generates a new access token for an existing valid session.
    * Useful for maintaining authentication without requiring re-login.
    * Validates refresh token and session before issuing new access token.
-   * 
+   *
    * @param refreshToken - Refresh token from original login
-   * 
+   *
    * @returns Promise resolving to new token and expiration, or null if invalid
-   * 
+   *
    * @example
    * ```typescript
    * const result = await AuthService.refreshToken(refreshToken);

@@ -5,10 +5,10 @@ import { log } from "../routes/ai/utils/logger.js";
 
 /**
  * Enhanced error handler middleware with standardized error responses and logging
- * 
+ *
  * Centralized error handling for Express applications. Catches all errors thrown
  * in route handlers and middleware, formats them consistently, and logs appropriately.
- * 
+ *
  * Features:
  * - Recognizes and formats APIError instances
  * - Handles validation errors (Zod, express-validator)
@@ -16,16 +16,16 @@ import { log } from "../routes/ai/utils/logger.js";
  * - Generates unique request IDs for tracking
  * - Environment-aware error details (verbose in development)
  * - Structured logging with severity levels
- * 
+ *
  * @param err - Error object (any type)
  * @param req - Express request object
  * @param res - Express response object
  * @param _next - Express next function (unused)
- * 
+ *
  * @remarks
  * This middleware must be registered AFTER all routes and other middleware.
  * It's the last line of defense for error handling.
- * 
+ *
  * Response format:
  * ```json
  * {
@@ -38,16 +38,16 @@ import { log } from "../routes/ai/utils/logger.js";
  *   "requestId": "uuid"
  * }
  * ```
- * 
+ *
  * @example
  * ```typescript
  * import express from 'express';
  * import { errorHandler } from './middleware/errorHandler';
- * 
+ *
  * const app = express();
- * 
+ *
  * // ... routes ...
- * 
+ *
  * // Error handler must be last
  * app.use(errorHandler);
  * ```

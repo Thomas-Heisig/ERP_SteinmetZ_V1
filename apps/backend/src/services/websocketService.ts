@@ -5,11 +5,46 @@
  * WebSocket Service
  *
  * Provides real-time bidirectional communication between server and clients
- * using Socket.IO for features like:
- * - Dashboard live updates
- * - Chat message notifications
- * - System status updates
- * - Batch processing progress
+ * using Socket.IO. Enables push notifications, live updates, and interactive features.
+ * 
+ * Features:
+ * - JWT-based authentication
+ * - Room-based broadcasting
+ * - Connection tracking and management
+ * - Automatic reconnection handling
+ * - CORS-enabled for cross-origin requests
+ * 
+ * Supported event types:
+ * - `dashboard:update` - Dashboard widget updates
+ * - `chat:message` - New chat messages
+ * - `system:notification` - System-wide notifications
+ * - `batch:progress` - Batch processing progress updates
+ * - `catalog:update` - Functions catalog changes
+ * 
+ * @example
+ * ```typescript
+ * // Initialize in server setup
+ * const httpServer = http.createServer(app);
+ * websocketService.initialize(httpServer);
+ * 
+ * // Broadcast to all connected clients
+ * websocketService.broadcast('dashboard:update', {
+ *   widget: 'user-stats',
+ *   data: { activeUsers: 42 }
+ * });
+ * 
+ * // Send to specific room
+ * websocketService.toRoom('admin', 'system:notification', {
+ *   level: 'warning',
+ *   message: 'Server maintenance in 1 hour'
+ * });
+ * 
+ * // Send to specific user
+ * websocketService.toUser('user-123', 'chat:message', {
+ *   from: 'support',
+ *   text: 'How can I help you?'
+ * });
+ * ```
  */
 
 import { Server as HttpServer } from "http";
@@ -17,15 +52,27 @@ import { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import { log } from "../routes/ai/utils/logger.js";
 
+/**
+ * Socket.IO socket with authentication context
+ */
 interface AuthenticatedSocket extends Socket {
+  /** Authenticated user ID */
   userId?: string;
+  /** User roles for authorization */
   userRoles?: string[];
 }
 
+/**
+ * Active WebSocket connection metadata
+ */
 interface ConnectionInfo {
+  /** Socket.IO connection ID */
   socketId: string;
+  /** Authenticated user ID (if authenticated) */
   userId?: string;
+  /** Connection timestamp (Unix ms) */
   connectedAt: number;
+  /** List of joined rooms */
   rooms: string[];
 }
 
@@ -34,7 +81,20 @@ class WebSocketService {
   private connections = new Map<string, ConnectionInfo>();
 
   /**
-   * Initialize WebSocket server with HTTP server
+   * Initialize WebSocket server and attach to HTTP server
+   * 
+   * Sets up Socket.IO with authentication middleware, CORS configuration,
+   * and event handlers. Must be called after Express app is created.
+   * 
+   * @param httpServer - Node.js HTTP server instance
+   * 
+   * @example
+   * ```typescript
+   * const app = express();
+   * const httpServer = http.createServer(app);
+   * websocketService.initialize(httpServer);
+   * httpServer.listen(3000);
+   * ```
    */
   initialize(httpServer: HttpServer): void {
     this.io = new Server(httpServer, {
@@ -177,6 +237,23 @@ class WebSocketService {
 
   /**
    * Broadcast event to all connected clients
+   * 
+   * Sends an event to every active WebSocket connection, regardless of
+   * authentication status or room membership. Use for system-wide notifications.
+   * 
+   * @param event - Event name (e.g., 'system:notification', 'dashboard:update')
+   * @param data - Event payload (will be JSON serialized)
+   * 
+   * @example
+   * ```typescript
+   * // Notify all users of system maintenance
+   * websocketService.broadcast('system:notification', {
+   *   level: 'warning',
+   *   title: 'Scheduled Maintenance',
+   *   message: 'System will be down for 30 minutes at 2 AM UTC',
+   *   timestamp: Date.now()
+   * });
+   * ```
    */
   broadcast(event: string, data: any): void {
     if (!this.io) {
@@ -191,7 +268,30 @@ class WebSocketService {
   }
 
   /**
-   * Send event to specific room
+   * Send event to all clients in a specific room
+   * 
+   * Delivers event only to sockets that have joined the specified room.
+   * Useful for department-specific updates, project teams, or role-based notifications.
+   * 
+   * @param room - Room name (clients join via 'join-room' event)
+   * @param event - Event name
+   * @param data - Event payload
+   * 
+   * @example
+   * ```typescript
+   * // Notify all admins
+   * websocketService.toRoom('admin', 'user:login', {
+   *   userId: 'user-123',
+   *   ipAddress: '192.168.1.100',
+   *   timestamp: Date.now()
+   * });
+   * 
+   * // Update dashboard for finance department
+   * websocketService.toRoom('finance', 'dashboard:update', {
+   *   widget: 'revenue',
+   *   value: 125000
+   * });
+   * ```
    */
   toRoom(room: string, event: string, data: any): void {
     if (!this.io) {
@@ -204,7 +304,31 @@ class WebSocketService {
   }
 
   /**
-   * Send event to specific user
+   * Send event to all active connections for a specific user
+   * 
+   * Delivers event to all sockets belonging to the user (handles multiple
+   * tabs/devices). Requires authenticated connection with userId.
+   * 
+   * @param userId - Target user ID (from JWT authentication)
+   * @param event - Event name
+   * @param data - Event payload
+   * 
+   * @example
+   * ```typescript
+   * // Send personal notification
+   * websocketService.toUser('user-123', 'notification', {
+   *   title: 'Task Assigned',
+   *   body: 'You have been assigned to Project X',
+   *   actionUrl: '/projects/x'
+   * });
+   * 
+   * // Update user's batch processing status
+   * websocketService.toUser('user-123', 'batch:progress', {
+   *   batchId: 'batch-456',
+   *   progress: 75,
+   *   status: 'processing'
+   * });
+   * ```
    */
   toUser(userId: string, event: string, data: any): void {
     if (!this.io) {
@@ -232,7 +356,21 @@ class WebSocketService {
   }
 
   /**
-   * Get connection statistics
+   * Get WebSocket connection statistics
+   * 
+   * Returns metrics about active connections, authentication status,
+   * and room membership. Useful for monitoring and debugging.
+   * 
+   * @returns Statistics object with connection counts and room distribution
+   * 
+   * @example
+   * ```typescript
+   * const stats = websocketService.getStats();
+   * console.log(`Total connections: ${stats.totalConnections}`);
+   * console.log(`Authenticated: ${stats.authenticated}`);
+   * console.log(`Anonymous: ${stats.anonymous}`);
+   * console.log('Rooms:', stats.rooms);
+   * ```
    */
   getStats() {
     const connections = Array.from(this.connections.values());

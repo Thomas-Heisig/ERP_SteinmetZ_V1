@@ -195,7 +195,7 @@ Viele console.log() Statements im Code, die in Production nicht sein sollten.
 
 - ✅ dbService.ts: 6 console.log → structured logging migriert
 - ✅ ESLint no-console auf "error" hochgestuft (Backend & Frontend)
-- ✅ ESLint-Ausnahmen für legitime Verwendung (src/scripts/**, ai/utils/logger.ts)
+- ✅ ESLint-Ausnahmen für legitime Verwendung (src/scripts/\*\*, ai/utils/logger.ts)
 - ✅ Pre-commit Hook verhindert neue console.log
 - ✅ Verbleibende console.log nur in: CLI-Scripts (createAdminUser.ts), Logger-Utility (ai/utils/logger.ts)
 
