@@ -22,8 +22,11 @@ fi
 FOUND=0
 for FILE in $STAGED_FILES; do
     if [ -f "$FILE" ]; then
-        # Check for console.log but exclude console.warn and console.error
-        MATCHES=$(git diff --cached "$FILE" | grep -E "^\+.*console\.(log|info|debug)" | grep -v "^\+.*\/\/" || true)
+        # Check for console.log but exclude:
+        # - console.warn and console.error
+        # - single-line comments (//)
+        # - JSDoc comments (* or  *)
+        MATCHES=$(git diff --cached "$FILE" | grep -E "^\+.*console\.(log|info|debug)" | grep -v "^\+.*\/\/" | grep -v "^\+.*\*" || true)
         if [ -n "$MATCHES" ]; then
             echo -e "${RED}❌ Found console.log in: $FILE${NC}"
             echo "$MATCHES"

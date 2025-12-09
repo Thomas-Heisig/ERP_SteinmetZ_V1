@@ -292,15 +292,16 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 ### Code Quality Enhancement
 
-- [x] **ESLint Strict Mode & Pre-commit Hooks** ✅ INFRASTRUKTUR ERLEDIGT (9. Dez 2025)
-  - [x] ESLint no-console Regel konfiguriert (aktuell "warn")
+- [x] **ESLint Strict Mode & Pre-commit Hooks** ✅ KOMPLETT ERLEDIGT (9. Dez 2025)
+  - [x] ESLint no-console Regel hochgestuft auf "error"
   - [x] Pre-commit Hook aktiviert (console-check + format)
   - [x] Console.log Check-Script erstellt (check-console-logs.sh)
   - [x] Script läuft automatisch bei jedem Commit (verhindert neue console.log)
   - [x] npm run check:console für manuelle Prüfung
-  - [ ] Graduelle Migration: 90 bestehende console.log Fehler schrittweise beheben
-  - [ ] Nach Migration: no-console auf "error" hochstufen
-  - **Aufwand**: 2-3 Stunden → 1.5 Stunden erledigt (Infrastruktur ✅), 4-6 Stunden für Migration verbleibend
+  - [x] Console.log Migration vollständig abgeschlossen (6 Instanzen in dbService.ts)
+  - [x] Verbleibende console.log nur in legitimen Bereichen (CLI-Scripts, Logger-Utilities)
+  - [x] ESLint-Ausnahmen für Scripts und Logger konfiguriert
+  - **Aufwand**: 2-3 Stunden → 2 Stunden erledigt ✅ KOMPLETT
 
 ### Logging & Monitoring
 
@@ -319,7 +320,7 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 ### Code Dokumentation
 
-- [x] **JSDoc & TypeDoc** ✅ INFRASTRUKTUR ERLEDIGT (9. Dez 2025)
+- [x] **JSDoc & TypeDoc** ✅ PHASE 1 BEGONNEN (9. Dez 2025)
   - [x] JSDoc Style Guide erstellt (JSDOC_GUIDE.md)
     - Dokumentations-Standards definiert
     - Best Practices für Functions, Classes, Types
@@ -330,11 +331,15 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
     - Output: docs/api/index.html
     - npm run docs funktioniert
     - npm run docs:serve für lokale Ansicht
-  - [ ] Graduelle Migration: JSDoc für alle öffentlichen APIs hinzufügen
-    - Phase 1: Critical APIs (Services, Middleware, Core Utils)
-    - Phase 2: Routes
-    - Phase 3: Supporting Code
-  - **Aufwand**: 2-3 Stunden → 2 Stunden erledigt (Infrastruktur ✅), 10-15 Stunden für Migration verbleibend
+  - [x] Phase 1: Critical APIs (begonnen - 3 von ~20 Dateien)
+    - [x] AuthService: Vollständige JSDoc für init, register, login, logout, validateToken, refreshToken
+    - [x] errorHandler Middleware: Umfassende Dokumentation mit Beispielen
+    - [x] asyncHandler Middleware: Best-Practice-Beispiele hinzugefügt
+    - [ ] Verbleibende Services (dbService, websocketService, redisService, etc.)
+    - [ ] Verbleibende Middleware (cacheMiddleware, metricsMiddleware, etc.)
+  - [ ] Phase 2: Routes
+  - [ ] Phase 3: Supporting Code
+  - **Aufwand**: 2-3 Stunden → 2.5 Stunden erledigt (Infrastruktur + Phase 1 Start ✅), 8-12 Stunden für vollständige Migration verbleibend
 
 ### UI/UX Enhancements
 
