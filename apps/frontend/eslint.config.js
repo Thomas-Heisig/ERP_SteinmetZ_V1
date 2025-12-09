@@ -45,8 +45,8 @@ export default [
         { allowConstantExport: true },
       ],
       // Code Quality
-      // Gradual migration: warn now, will be error after full migration
-      "no-console": ["warn", { allow: ["warn", "error"] }],
+      // Upgraded to error after completing console.log migration
+      "no-console": ["error", { allow: ["warn", "error"] }],
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",

@@ -1503,7 +1503,10 @@ class DatabaseService {
 
   async backup(backupPath?: string): Promise<string | null> {
     if (this.config.driver !== "sqlite") {
-      console.log("⚠️ [DB] Backup only supported for SQLite");
+      logger.info(
+        { driver: this.config.driver },
+        "Backup only supported for SQLite",
+      );
       return null;
     }
 
@@ -1523,7 +1526,7 @@ class DatabaseService {
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
     await fs.copyFile(sourcePath, targetPath);
 
-    console.log(`💾 [DB] Database backed up to: ${targetPath}`);
+    logger.info({ sourcePath, targetPath }, "Database backed up successfully");
     return targetPath;
   }
 
@@ -1536,7 +1539,7 @@ class DatabaseService {
       } else {
         await this.exec("VACUUM ANALYZE");
       }
-      console.log("🧹 [DB] Database vacuum completed");
+      logger.info({ driver: this.config.driver }, "Database vacuum completed");
     } catch (error) {
       console.error("❌ [DB] Vacuum failed:", error);
     }
@@ -1550,7 +1553,7 @@ class DatabaseService {
     if (this.api) {
       await this.api.close();
       this.isInitialized = false;
-      console.log("🔒 [DB] Database connection closed");
+      logger.info("Database connection closed");
     }
   }
 
@@ -1574,8 +1577,9 @@ class DatabaseService {
   autoCorrectNode(node: CatalogNode): CatalogNode {
     const correctedKind = autoCorrectKind(node.kind);
     if (node.kind !== correctedKind) {
-      console.log(
-        `🔄 [DB Auto-Correct] ${node.id}: "${node.kind}" → "${correctedKind}"`,
+      logger.info(
+        { nodeId: node.id, oldKind: node.kind, newKind: correctedKind },
+        "Auto-correcting node kind",
       );
       return { ...node, kind: correctedKind };
     }
@@ -1602,7 +1606,7 @@ db.init().catch((err: unknown) => {
 
 // Graceful shutdown
 const shutdown = async () => {
-  console.log("🔄 [DB] Shutting down database...");
+  logger.info("Shutting down database...");
   await db.close();
 };
 
