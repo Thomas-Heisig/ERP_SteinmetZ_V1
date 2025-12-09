@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/services/selfhealing/AutoRepair.ts
 
+import { createLogger } from "../../utils/logger.js";
 import db from "../dbService.js";
 import {
   DatabaseHealthMonitor,
   IntegrityIssue,
 } from "./DatabaseHealthMonitor.js";
+
+const logger = createLogger("auto-repair");
 
 export interface RepairResult {
   timestamp: Date;
@@ -53,8 +56,9 @@ export class AutoRepair {
 
     try {
       const issues = await this.healthMonitor.findIntegrityIssues();
-      console.log(
-        `🔧 [AutoRepair] Starting repair session ${sessionId} with ${issues.length} issues`,
+      logger.info(
+        { sessionId, issueCount: issues.length },
+        "Starting repair session",
       );
 
       for (const issue of issues) {
@@ -68,15 +72,17 @@ export class AutoRepair {
       // Alte Sessions entfernen
       this.cleanupOldSessions();
 
-      console.log(
-        `✅ [AutoRepair] Session ${sessionId} completed: ${session.results.filter((r) => r.success).length}/${session.results.length} repairs successful`,
+      const successCount = session.results.filter((r) => r.success).length;
+      logger.info(
+        { sessionId, successCount, totalCount: session.results.length },
+        "Repair session completed",
       );
     } catch (error) {
       session.status = "failed";
       session.endTime = new Date();
-      console.error(
-        `❌ [AutoRepair] Session ${sessionId} failed:`,
-        error instanceof Error ? error.message : error,
+      logger.error(
+        { err: error, sessionId },
+        "Repair session failed",
       );
     }
 
@@ -258,11 +264,11 @@ export class AutoRepair {
   async rollbackSession(sessionId: string): Promise<boolean> {
     const session = this.sessions.get(sessionId);
     if (!session) {
-      console.error(`❌ [AutoRepair] Session ${sessionId} not found`);
+      logger.error({ sessionId }, "Session not found for rollback");
       return false;
     }
 
-    console.log(`🔄 [AutoRepair] Rolling back session ${sessionId}`);
+    logger.info({ sessionId }, "Rolling back session");
 
     let rollbackCount = 0;
 
@@ -274,17 +280,18 @@ export class AutoRepair {
           await this.rollbackResult(result);
           rollbackCount++;
         } catch (error) {
-          console.error(
-            `❌ [AutoRepair] Rollback failed for ${result.issue.recordId}:`,
-            error,
+          logger.error(
+            { err: error, recordId: result.issue.recordId },
+            "Rollback failed for record",
           );
         }
       }
     }
 
     session.status = "rolledback";
-    console.log(
-      `✅ [AutoRepair] Session ${sessionId} rolled back (${rollbackCount} actions undone)`,
+    logger.info(
+      { sessionId, rollbackCount },
+      "Session rolled back",
     );
 
     return true;

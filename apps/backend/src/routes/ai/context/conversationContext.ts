@@ -11,6 +11,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createLogger } from "../../../utils/logger.js";
 import type {
   ChatMessage,
   ConversationState,
@@ -19,6 +20,8 @@ import type {
 } from "../types/types.js";
 import { toolRegistry } from "../tools/registry.js";
 import { workflowEngine } from "../workflows/workflowEngine.js";
+
+const logger = createLogger("conversation-context");
 
 /* ========================================================================== */
 /* 📦 Erweiterte Datentypen */
@@ -192,9 +195,7 @@ export class ConversationContext {
       const baseDir = __dirname;
       const dataDir = path.join(baseDir, "data");
 
-      console.log("🧠 [CONTEXT] Lade Kontextdaten aus /data/");
-      console.log("   📁 Basisverzeichnis:", baseDir);
-      console.log("   📁 Datenverzeichnis:", dataDir);
+      logger.info({ baseDir, dataDir }, "Loading context data from /data/");
 
       const combined: Required<LoadedContextData> = {
         reflections: {},
@@ -203,7 +204,7 @@ export class ConversationContext {
       };
 
       if (!fs.existsSync(dataDir)) {
-        console.warn(`⚠️ [CONTEXT] Verzeichnis nicht gefunden: ${dataDir}`);
+        logger.warn({ dataDir }, "Directory not found, using fallback context");
         this.initializeFallbackContext();
         return;
       }
@@ -219,14 +220,12 @@ export class ConversationContext {
         });
 
       if (files.length === 0) {
-        console.warn(
-          `⚠️ [CONTEXT] Keine JSON-Dateien im Verzeichnis: ${dataDir}`,
-        );
+        logger.warn({ dataDir }, "No JSON files found in directory, using fallback context");
         this.initializeFallbackContext();
         return;
       }
 
-      console.log(`   🔍 Gefundene JSON-Dateien: ${files.length}`);
+      logger.info({ fileCount: files.length }, "Found JSON context files");
 
       for (const file of files) {
         const fullPath = path.join(dataDir, file);
@@ -242,8 +241,9 @@ export class ConversationContext {
 
             if (Object.keys(reflections).length > 0) {
               Object.assign(combined.reflections, reflections);
-              console.log(
-                `   ➕ Reflexionen aus ${file}: ${Object.keys(reflections).length}`,
+              logger.debug(
+                { file, reflectionCount: Object.keys(reflections).length },
+                "Loaded reflections from file",
               );
             }
 

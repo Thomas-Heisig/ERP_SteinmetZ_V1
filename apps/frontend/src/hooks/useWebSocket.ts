@@ -8,6 +8,9 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
+import { createLogger } from "../utils/logger.js";
+
+const logger = createLogger("websocket");
 
 interface UseWebSocketOptions {
   /** Auto-connect on mount */
@@ -74,22 +77,22 @@ export function useWebSocket(
     });
 
     socket.on("connect", () => {
-      console.log("✅ WebSocket connected:", socket.id);
+      logger.info("WebSocket connected", { socketId: socket.id });
       setIsConnected(true);
     });
 
     socket.on("disconnect", (reason) => {
-      console.log("❌ WebSocket disconnected:", reason);
+      logger.info("WebSocket disconnected", { reason });
       setIsConnected(false);
     });
 
     socket.on("connect_error", (error) => {
-      console.error("WebSocket connection error:", error.message);
+      logger.error("WebSocket connection error", { message: error.message });
       setIsConnected(false);
     });
 
     socket.on("welcome", (data) => {
-      console.log("Welcome message:", data);
+      logger.debug("Welcome message received", { data });
     });
 
     socketRef.current = socket;

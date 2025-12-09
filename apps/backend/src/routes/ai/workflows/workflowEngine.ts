@@ -6,6 +6,7 @@
  * und Kontextinteraktionen aus.
  */
 
+import { createLogger } from "../../../utils/logger.js";
 import { toolRegistry } from "../tools/registry.js";
 import { ConversationContext } from "../context/conversationContext.js";
 import { log } from "../utils/logger.js";
@@ -14,6 +15,8 @@ import { validateSchema, logValidationErrors } from "../utils/validation.js";
 import type { WorkflowDefinition, WorkflowStep } from "../types/types.js";
 import fs from "fs";
 import path from "path";
+
+const logger = createLogger("workflow-engine");
 
 /* ========================================================================== */
 /* 🧠 WorkflowEngine-Klasse                                                  */
@@ -199,7 +202,7 @@ export class WorkflowEngine {
     const results: any[] = [];
 
     const dlog = (msg: string, data?: any) => {
-      if (debug) console.log(`[WF:${name}] ${msg}`, data ?? "");
+      if (debug) logger.debug({ workflowName: name, data }, msg);
     };
 
     dlog(`Starte Workflow (${wf.steps.length} Schritte)...`);
@@ -275,7 +278,7 @@ export class WorkflowEngine {
     debug = false,
   ): Promise<any> {
     const dlog = (msg: string, data?: any) => {
-      if (debug) console.log(`[WF:${workflowName}] ${msg}`, data ?? "");
+      if (debug) logger.debug({ workflowName, data }, msg);
     };
 
     switch (step.type) {

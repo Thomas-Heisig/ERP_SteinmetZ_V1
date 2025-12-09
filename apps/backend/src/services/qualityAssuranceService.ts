@@ -6,6 +6,10 @@
  * Provides functionality for annotation quality metrics and manual reviews
  */
 
+import { createLogger } from "../utils/logger.js";
+
+const logger = createLogger("qa");
+
 export interface QAReview {
   id: string;
   nodeId: string;
@@ -193,8 +197,9 @@ export class QualityAssuranceService {
     batchId?: string,
   ): void {
     // Stub implementation
-    console.log(
-      `Recording metric: ${metricType} = ${metricValue} (${nodeCount} nodes)`,
+    logger.debug(
+      { metricType, metricValue, nodeCount, batchId },
+      "Recording quality metric",
     );
   }
 
