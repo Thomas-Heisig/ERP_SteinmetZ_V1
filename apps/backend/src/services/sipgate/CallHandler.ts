@@ -2,6 +2,9 @@
 // apps/backend/src/services/sipgate/CallHandler.ts
 
 import sipgateClient, { SipgateCall } from "./SipgateClient.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("call-handler");
 
 export interface IncomingCall {
   id: string;
@@ -58,8 +61,9 @@ export class CallHandler {
 
     this.activeCalls.set(call.id, call);
 
-    console.log(
-      `📞 [CallHandler] Incoming call from ${call.from} (${call.contactName || "Unknown"})`,
+    logger.info(
+      { callId: call.id, from: call.from, contactName: call.contactName },
+      `📞 Incoming call from ${call.from} (${call.contactName || "Unknown"})`,
     );
 
     return call;
@@ -121,7 +125,10 @@ export class CallHandler {
     this.callLogs.unshift(callLog);
     this.trimCallLogs();
 
-    console.log(`📞 [CallHandler] Outgoing call to ${to}`);
+    logger.info(
+      { to, sessionId: result.sessionId },
+      `📞 Outgoing call to ${to}`,
+    );
 
     return { sessionId: result.sessionId, call: callLog };
   }
@@ -200,7 +207,7 @@ export class CallHandler {
 
       return history.items.length;
     } catch (error) {
-      console.error("❌ [CallHandler] Failed to sync call history:", error);
+      logger.error({ error }, "❌ Failed to sync call history");
       return 0;
     }
   }

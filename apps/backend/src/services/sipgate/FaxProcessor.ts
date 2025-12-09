@@ -2,6 +2,9 @@
 // apps/backend/src/services/sipgate/FaxProcessor.ts
 
 import sipgateClient, { SipgateFax } from "./SipgateClient.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("fax-processor");
 
 export interface FaxDocument {
   id: string;
@@ -54,8 +57,9 @@ export class FaxProcessor {
     this.processedFaxes.set(fax.id, fax);
     this.pendingQueue.push(fax);
 
-    console.log(
-      `📠 [FaxProcessor] Received fax from ${fax.from} (${fax.pages} pages)`,
+    logger.info(
+      { faxId: fax.id, from: fax.from, pages: fax.pages },
+      `📠 Received fax from ${fax.from} (${fax.pages} pages)`,
     );
 
     // Start async processing
@@ -95,13 +99,18 @@ export class FaxProcessor {
         this.pendingQueue.splice(index, 1);
       }
 
-      console.log(
-        `✅ [FaxProcessor] Processed fax ${fax.id}: ${fax.classification?.type || "unknown"} (${(fax.classification?.confidence || 0) * 100}% confidence)`,
+      logger.info(
+        {
+          faxId: fax.id,
+          type: fax.classification?.type,
+          confidence: fax.classification?.confidence,
+        },
+        `✅ Processed fax ${fax.id}: ${fax.classification?.type || "unknown"} (${(fax.classification?.confidence || 0) * 100}% confidence)`,
       );
     } catch (error) {
-      console.error(
-        `❌ [FaxProcessor] Failed to process fax ${fax.id}:`,
-        error,
+      logger.error(
+        { faxId: fax.id, error },
+        `❌ Failed to process fax ${fax.id}`,
       );
       fax.status = "failed";
       this.processedFaxes.set(fax.id, fax);
@@ -120,7 +129,7 @@ export class FaxProcessor {
     // - AWS Textract
     // - Azure Computer Vision
 
-    console.log("🔍 [FaxProcessor] Performing OCR...");
+    logger.info("🔍 Performing OCR...");
 
     // Simulate OCR processing time
     await new Promise((resolve) => setTimeout(resolve, 500));

@@ -4,6 +4,9 @@
 import db from "./dbService.js";
 import { EventEmitter } from "events";
 import * as os from "os";
+import { createLogger } from "../utils/logger.js";
+
+const logger = createLogger("ai-annotator");
 
 /* -------------------------------------------------------------------------- */
 /*                     KONFIGURATION & DEFAULTS                              */
@@ -723,7 +726,8 @@ export class AiAnnotatorService extends EventEmitter {
     });
 
     this.on("model_health_changed", (modelName: string, healthy: boolean) => {
-      console.log(
+      logger.info(
+        { modelName, healthy },
         `Model ${modelName} health changed: ${healthy ? "healthy" : "unhealthy"}`,
       );
     });
@@ -1413,7 +1417,8 @@ export class AiAnnotatorService extends EventEmitter {
 
     // Sofortiger Fallback für "none" Provider
     if (model.provider === "none") {
-      console.log(
+      logger.info(
+        { operation },
         `[callAIWithModel] Provider "none" - verwende Fallback für ${operation}`,
       );
       return this.generateLocalFallback(operation);
@@ -1572,7 +1577,7 @@ export class AiAnnotatorService extends EventEmitter {
     const result = (await pullResp.json().catch(() => ({}))) as any;
     if (result.error) throw new Error(`Ollama Pull-Fehler: ${result.error}`);
 
-    console.log(`[ollama] Modell "${model}" erfolgreich geladen`);
+    logger.info({ model }, `[ollama] Modell "${model}" erfolgreich geladen`);
   }
 
   /** Aufruf bei Anthropic */
@@ -1608,7 +1613,11 @@ export class AiAnnotatorService extends EventEmitter {
 
   /** Simulierter lokaler Aufruf (oder echter HTTP‑Endpoint) */
   private async callLocal(prompt: string): Promise<string> {
-    console.log("[local] Aufruf:", prompt.slice(0, 100) + "...");
+    logger.info(
+      { promptLength: prompt.length },
+      "[local] Aufruf:",
+      prompt.slice(0, 100) + "...",
+    );
     // Dummy‑Implementierung – in Produktion durch echten Service ersetzen
     if (prompt.includes("METADATEN‑GENERIERUNG")) {
       return JSON.stringify({
@@ -1632,16 +1641,16 @@ export class AiAnnotatorService extends EventEmitter {
     operation: string,
     originalError: any,
   ): Promise<string> {
-    console.warn(
+    logger.warn(
+      { operation, error: originalError?.message ?? originalError },
       `Fallback für ${operation} wegen:`,
-      originalError?.message ?? originalError,
     );
     const fallbackIdx = this.errorCorrection.fallbackModels.indexOf(
       this.currentModel,
     );
     if (fallbackIdx < this.errorCorrection.fallbackModels.length - 1) {
       const next = this.errorCorrection.fallbackModels[fallbackIdx + 1];
-      console.log(`Wechsle zu Fallback‑Modell: ${next}`);
+      logger.info({ next }, `Wechsle zu Fallback‑Modell: ${next}`);
       this.currentModel = next;
       return this.callAI(prompt, operation);
     }

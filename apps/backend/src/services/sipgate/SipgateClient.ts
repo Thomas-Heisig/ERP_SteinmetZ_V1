@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/services/sipgate/SipgateClient.ts
 
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("sipgate-client");
+
 /**
  * Sipgate API Client
  * Handles authentication and API communication with Sipgate
@@ -67,9 +71,7 @@ export class SipgateClient {
     this.isConfigured = !!(this.tokenId && this.token);
 
     if (!this.isConfigured) {
-      console.warn(
-        "⚠️ [Sipgate] No credentials configured - API calls will be mocked",
-      );
+      logger.warn("⚠️ No credentials configured - API calls will be mocked");
     }
   }
 
@@ -127,7 +129,7 @@ export class SipgateClient {
 
       return {} as T;
     } catch (error) {
-      console.error(`❌ [Sipgate] API request failed:`, error);
+      logger.error({ error, endpoint }, `❌ API request failed`);
       throw error;
     }
   }
@@ -209,8 +211,9 @@ export class SipgateClient {
     callee: string;
   }): Promise<{ sessionId: string }> {
     if (!this.isConfigured) {
-      console.log(
-        `📞 [Sipgate Mock] Initiating call from ${params.caller} to ${params.callee}`,
+      logger.info(
+        { caller: params.caller, callee: params.callee },
+        `📞 [Mock] Initiating call from ${params.caller} to ${params.callee}`,
       );
       return { sessionId: `mock-${Date.now()}` };
     }
@@ -231,8 +234,9 @@ export class SipgateClient {
     message: string;
   }): Promise<SipgateSMS> {
     if (!this.isConfigured) {
-      console.log(
-        `📱 [Sipgate Mock] Sending SMS to ${params.recipient}: ${params.message}`,
+      logger.info(
+        { recipient: params.recipient, messageLength: params.message.length },
+        `📱 [Mock] Sending SMS to ${params.recipient}`,
       );
       return {
         id: `sms-${Date.now()}`,
@@ -268,7 +272,10 @@ export class SipgateClient {
     base64Content: string;
   }): Promise<SipgateFax> {
     if (!this.isConfigured) {
-      console.log(`📠 [Sipgate Mock] Sending fax to ${params.recipient}`);
+      logger.info(
+        { recipient: params.recipient, filename: params.filename },
+        `📠 [Mock] Sending fax to ${params.recipient}`,
+      );
       return {
         id: `fax-${Date.now()}`,
         to: params.recipient,

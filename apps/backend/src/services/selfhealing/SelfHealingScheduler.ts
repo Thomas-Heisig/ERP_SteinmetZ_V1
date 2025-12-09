@@ -7,6 +7,9 @@ import {
 } from "./DatabaseHealthMonitor.js";
 import { AutoRepair, RepairSession } from "./AutoRepair.js";
 import { HealingReport } from "./HealingReport.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("selfhealing-scheduler");
 
 export interface ScheduleConfig {
   nightlyCheckEnabled: boolean;
@@ -67,12 +70,12 @@ export class SelfHealingScheduler {
    */
   start(): void {
     if (this.isRunning) {
-      console.log("⚠️ [Scheduler] Already running");
+      logger.warn("⚠️ Already running");
       return;
     }
 
     this.isRunning = true;
-    console.log("🚀 [Scheduler] Starting self-healing scheduler");
+    logger.info("🚀 Starting self-healing scheduler");
 
     // Stündlich prüfen, ob eine geplante Aufgabe ausgeführt werden soll
     this.nightlyInterval = setInterval(
@@ -93,7 +96,7 @@ export class SelfHealingScheduler {
       this.nightlyInterval = undefined;
     }
     this.isRunning = false;
-    console.log("🛑 [Scheduler] Stopped");
+    logger.info("🛑 Stopped");
   }
 
   /**
@@ -136,7 +139,7 @@ export class SelfHealingScheduler {
     };
 
     this.scheduledTasks.set(taskId, task);
-    console.log(`🌙 [Scheduler] Running nightly check (${taskId})`);
+    logger.info({ taskId }, `🌙 Running nightly check (${taskId})`);
 
     try {
       // Health Check durchführen
@@ -149,7 +152,10 @@ export class SelfHealingScheduler {
         (healthResult.status === "degraded" ||
           healthResult.status === "unhealthy")
       ) {
-        console.log("🔧 [Scheduler] Issues found, starting auto-repair");
+        logger.info(
+          { status: healthResult.status },
+          "🔧 Issues found, starting auto-repair",
+        );
         const repairSession = await this.autoRepair.startRepairSession(
           this.config.autoRepairDryRunOnly,
         );
@@ -167,7 +173,7 @@ export class SelfHealingScheduler {
       task.status = "failed";
       task.error = error instanceof Error ? error.message : "Unknown error";
       task.executedTime = new Date();
-      console.error(`❌ [Scheduler] Nightly check failed:`, task.error);
+      logger.error({ taskId, error: task.error }, `❌ Nightly check failed`);
     }
 
     return task;
@@ -187,7 +193,7 @@ export class SelfHealingScheduler {
     };
 
     this.scheduledTasks.set(taskId, task);
-    console.log(`📊 [Scheduler] Running weekly deep analysis (${taskId})`);
+    logger.info({ taskId }, `📊 Running weekly deep analysis (${taskId})`);
 
     try {
       // Ausführlicher Health Check
@@ -199,8 +205,9 @@ export class SelfHealingScheduler {
       // Auto-Repair wenn aktiviert
       let repairSession: RepairSession | undefined;
       if (this.config.autoRepairEnabled && issues.length > 0) {
-        console.log(
-          `🔧 [Scheduler] Found ${issues.length} issues, starting repair`,
+        logger.info(
+          { issuesCount: issues.length },
+          `🔧 Found ${issues.length} issues, starting repair`,
         );
         repairSession = await this.autoRepair.startRepairSession(
           this.config.autoRepairDryRunOnly,
@@ -222,7 +229,7 @@ export class SelfHealingScheduler {
       task.status = "failed";
       task.error = error instanceof Error ? error.message : "Unknown error";
       task.executedTime = new Date();
-      console.error(`❌ [Scheduler] Weekly analysis failed:`, task.error);
+      logger.error({ taskId, error: task.error }, `❌ Weekly analysis failed`);
     }
 
     return task;
@@ -242,7 +249,7 @@ export class SelfHealingScheduler {
     };
 
     this.scheduledTasks.set(taskId, task);
-    console.log(`🔍 [Scheduler] Running manual check (${taskId})`);
+    logger.info({ taskId }, `🔍 Running manual check (${taskId})`);
 
     try {
       const healthResult = await this.healthMonitor.runHealthChecks();
@@ -263,7 +270,7 @@ export class SelfHealingScheduler {
    */
   updateConfig(newConfig: Partial<ScheduleConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    console.log("⚙️ [Scheduler] Configuration updated", this.config);
+    logger.info({ config: this.config }, "⚙️ Configuration updated");
   }
 
   /**
