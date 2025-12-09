@@ -27,8 +27,8 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       // Code Quality
-      // Gradual migration: warn now, will be error after full migration
-      "no-console": ["warn", { allow: ["warn", "error"] }],
+      // Upgraded to error after completing console.log migration
+      "no-console": ["error", { allow: ["warn", "error"] }],
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
@@ -53,7 +53,7 @@ export default [
     },
   },
   {
-    files: ["scripts/**/*.js"],
+    files: ["scripts/**/*.js", "src/scripts/**/*.ts"],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -63,6 +63,12 @@ export default [
     },
     rules: {
       "no-console": "off",
+    },
+  },
+  {
+    files: ["src/routes/ai/utils/logger.ts"],
+    rules: {
+      "no-console": "off", // Logger utility - intentional console use
     },
   },
   {
