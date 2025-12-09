@@ -1,6 +1,64 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/calendar/calendarRouter.ts
 
+/**
+ * Calendar Router
+ *
+ * Provides calendar and event management API with support for recurring
+ * events, reminders, attendees, and various calendar views.
+ *
+ * @remarks
+ * This router provides:
+ * - Event CRUD operations (create, read, update, delete)
+ * - Recurring event support (daily, weekly, monthly, yearly)
+ * - Date-range queries for calendar views
+ * - Category and color-based organization
+ * - Reminder notifications
+ * - Attendee management
+ * - All-day event support
+ * - Event search and filtering
+ *
+ * Recurrence Types:
+ * - none - Single occurrence event
+ * - daily - Repeats every day
+ * - weekly - Repeats every week
+ * - biweekly - Repeats every two weeks
+ * - monthly - Repeats every month
+ * - yearly - Repeats every year
+ *
+ * Features:
+ * - ISO 8601 datetime format
+ * - Timezone support
+ * - Location field for meetings
+ * - Custom colors and categories
+ * - Multiple reminder times
+ * - Attendee list management
+ *
+ * @module routes/calendar
+ *
+ * @example
+ * ```typescript
+ * // Create event
+ * POST /api/calendar/events
+ * {
+ *   "title": "Team Meeting",
+ *   "description": "Weekly sync",
+ *   "start": "2024-12-09T10:00:00Z",
+ *   "end": "2024-12-09T11:00:00Z",
+ *   "recurrence": "weekly",
+ *   "reminders": [15, 60],
+ *   "attendees": ["user1@example.com", "user2@example.com"]
+ * }
+ *
+ * // Get events in date range
+ * GET /api/calendar/events?start=2024-12-01&end=2024-12-31
+ *
+ * // Update event
+ * PATCH /api/calendar/events/:id
+ * { "title": "Updated Meeting Title" }
+ * ```
+ */
+
 import { Router, Request, Response } from "express";
 import db from "../../services/dbService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";

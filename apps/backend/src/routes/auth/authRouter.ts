@@ -1,6 +1,66 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/auth/authRouter.ts
 
+/**
+ * Authentication Router
+ *
+ * Provides user authentication and authorization endpoints including
+ * registration, login, logout, token refresh, and profile management.
+ *
+ * @remarks
+ * This router provides:
+ * - User registration with password hashing
+ * - Login with JWT token generation
+ * - Token refresh for session extension
+ * - Logout with session invalidation
+ * - Profile retrieval and updates
+ * - Role-based access control
+ * - Rate limiting for brute force protection
+ * - Secure cookie management
+ *
+ * Security Features:
+ * - Bcrypt password hashing (10 rounds)
+ * - JWT tokens with configurable expiry
+ * - HttpOnly cookies for token storage
+ * - Rate limiting on login attempts
+ * - Account lockout after failed attempts
+ * - CSRF protection via SameSite cookies
+ *
+ * Token Management:
+ * - Access tokens (short-lived, 24h default)
+ * - Refresh tokens (long-lived, 7d default)
+ * - Secure cookie storage in production (HTTPS)
+ *
+ * @module routes/auth
+ *
+ * @example
+ * ```typescript
+ * // Register new user
+ * POST /api/auth/register
+ * {
+ *   "username": "john_doe",
+ *   "password": "SecurePass123!",
+ *   "email": "john@example.com"
+ * }
+ *
+ * // Login
+ * POST /api/auth/login
+ * {
+ *   "username": "john_doe",
+ *   "password": "SecurePass123!"
+ * }
+ * // Response: { success: true, token: "jwt-token", user: {...} }
+ *
+ * // Get profile (requires authentication)
+ * GET /api/auth/profile
+ * Headers: { Authorization: "Bearer jwt-token" }
+ *
+ * // Refresh token
+ * POST /api/auth/refresh
+ * { "refreshToken": "refresh-token" }
+ * ```
+ */
+
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { AuthService } from "../../services/authService.js";
