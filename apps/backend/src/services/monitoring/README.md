@@ -15,49 +15,55 @@ This module provides basic metrics collection and monitoring capabilities for th
 ### Basic Examples
 
 ```typescript
-import { metricsService } from './services/monitoring/metricsService.js';
+import { metricsService } from "./services/monitoring/metricsService.js";
 
 // Increment a counter
-metricsService.incrementCounter('http_requests_total', {
-  method: 'GET',
-  endpoint: '/api/users',
-  status: '200'
+metricsService.incrementCounter("http_requests_total", {
+  method: "GET",
+  endpoint: "/api/users",
+  status: "200",
 });
 
 // Set a gauge value
-metricsService.setGauge('active_connections', 42);
+metricsService.setGauge("active_connections", 42);
 
 // Record histogram observation
 const start = Date.now();
 // ... do work
 const duration = (Date.now() - start) / 1000;
-metricsService.recordHistogram('request_duration_seconds', duration);
+metricsService.recordHistogram("request_duration_seconds", duration);
 ```
 
 ### Available Metrics
 
 #### HTTP Metrics
+
 - `http_requests_total` - Total HTTP requests (counter)
 - `http_request_errors_total` - Total HTTP errors (counter)
 
 #### Database Metrics
+
 - `db_queries_total` - Total database queries (counter)
 - `db_query_duration_seconds` - Database query duration (histogram)
 
 #### AI Metrics
+
 - `ai_requests_total` - Total AI requests (counter)
 - `ai_request_duration_seconds` - AI request duration (histogram)
 
 #### Business Metrics
+
 - `active_users` - Currently active users (gauge)
 - `active_sessions` - Currently active sessions (gauge)
 
 ## API Endpoints
 
 ### GET /api/monitoring/metrics
+
 Get all metrics in JSON format.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -86,9 +92,11 @@ Get all metrics in JSON format.
 ```
 
 ### GET /api/monitoring/metrics/prometheus
+
 Get all metrics in Prometheus text format for scraping.
 
 **Response:**
+
 ```
 # TYPE http_requests_total counter
 http_requests_total 1234
@@ -107,9 +115,11 @@ request_duration_seconds_bucket{le="0.01"} 250
 ```
 
 ### GET /api/monitoring/health
+
 Health check endpoint.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -126,9 +136,11 @@ Health check endpoint.
 ```
 
 ### POST /api/monitoring/metrics/reset
+
 Reset all metrics (for testing/development only).
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -144,34 +156,34 @@ Reset all metrics (for testing/development only).
 You can automatically track HTTP requests using the existing `metricsMiddleware`:
 
 ```typescript
-import { metricsService } from './services/monitoring/metricsService.js';
+import { metricsService } from "./services/monitoring/metricsService.js";
 
 app.use((req, res, next) => {
   const start = Date.now();
-  
-  res.on('finish', () => {
+
+  res.on("finish", () => {
     const duration = (Date.now() - start) / 1000;
-    
+
     // Increment counter
-    metricsService.incrementCounter('http_requests_total', {
+    metricsService.incrementCounter("http_requests_total", {
       method: req.method,
       endpoint: req.path,
-      status: res.statusCode.toString()
+      status: res.statusCode.toString(),
     });
-    
+
     // Record duration
-    metricsService.recordHistogram('http_request_duration_seconds', duration);
-    
+    metricsService.recordHistogram("http_request_duration_seconds", duration);
+
     // Track errors
     if (res.statusCode >= 400) {
-      metricsService.incrementCounter('http_request_errors_total', {
+      metricsService.incrementCounter("http_request_errors_total", {
         method: req.method,
         endpoint: req.path,
-        status: res.statusCode.toString()
+        status: res.statusCode.toString(),
       });
     }
   });
-  
+
   next();
 });
 ```
@@ -199,10 +211,10 @@ global:
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'erp-steinmetz'
+  - job_name: "erp-steinmetz"
     static_configs:
-      - targets: ['localhost:3001']
-    metrics_path: '/api/monitoring/metrics/prometheus'
+      - targets: ["localhost:3001"]
+    metrics_path: "/api/monitoring/metrics/prometheus"
 ```
 
 ### Grafana Dashboard
@@ -216,7 +228,7 @@ Import the pre-built Grafana dashboards from `apps/backend/config/grafana/`:
 ## Testing
 
 ```typescript
-import { metricsService } from './services/monitoring/metricsService.js';
+import { metricsService } from "./services/monitoring/metricsService.js";
 
 // Reset metrics before each test
 beforeEach(() => {
@@ -224,21 +236,21 @@ beforeEach(() => {
 });
 
 // Test counter
-test('counter increments correctly', () => {
-  metricsService.incrementCounter('test_counter');
-  expect(metricsService.getCounter('test_counter')).toBe(1);
-  
-  metricsService.incrementCounter('test_counter', {}, 5);
-  expect(metricsService.getCounter('test_counter')).toBe(6);
+test("counter increments correctly", () => {
+  metricsService.incrementCounter("test_counter");
+  expect(metricsService.getCounter("test_counter")).toBe(1);
+
+  metricsService.incrementCounter("test_counter", {}, 5);
+  expect(metricsService.getCounter("test_counter")).toBe(6);
 });
 
 // Test histogram
-test('histogram records observations', () => {
-  metricsService.recordHistogram('test_histogram', 0.1);
-  metricsService.recordHistogram('test_histogram', 0.2);
-  metricsService.recordHistogram('test_histogram', 0.3);
-  
-  const stats = metricsService.getHistogramStats('test_histogram');
+test("histogram records observations", () => {
+  metricsService.recordHistogram("test_histogram", 0.1);
+  metricsService.recordHistogram("test_histogram", 0.2);
+  metricsService.recordHistogram("test_histogram", 0.3);
+
+  const stats = metricsService.getHistogramStats("test_histogram");
   expect(stats?.count).toBe(3);
   expect(stats?.avg).toBeCloseTo(0.2);
 });

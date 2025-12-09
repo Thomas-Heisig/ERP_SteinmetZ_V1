@@ -48,7 +48,8 @@ Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tr
 
 **Aufwand**: 1-2 Wochen gesamt → ~30% erledigt (3-4 Tage)
 
-**Dokumentation**: 
+**Dokumentation**:
+
 - [Monitoring README](apps/backend/src/services/monitoring/README.md)
 - [CODE_QUALITY_IMPROVEMENTS.md](docs/CODE_QUALITY_IMPROVEMENTS.md)
 

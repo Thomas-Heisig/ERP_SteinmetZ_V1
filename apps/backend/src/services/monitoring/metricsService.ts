@@ -8,7 +8,7 @@ const logger = createLogger("metrics-service");
 /**
  * Simple in-memory metrics collector
  * In production, this would integrate with Prometheus client
- * 
+ *
  * @example
  * ```typescript
  * metricsService.incrementCounter('http_requests_total', { method: 'GET', status: '200' });
@@ -17,7 +17,10 @@ const logger = createLogger("metrics-service");
  * ```
  */
 class MetricsService {
-  private counters: Map<string, { value: number; labels: Map<string, number> }> = new Map();
+  private counters: Map<
+    string,
+    { value: number; labels: Map<string, number> }
+  > = new Map();
   private gauges: Map<string, number> = new Map();
   private histograms: Map<string, number[]> = new Map();
   private isEnabled: boolean = false;
@@ -33,38 +36,45 @@ class MetricsService {
    */
   private initializeMetrics(): void {
     // HTTP metrics
-    this.counters.set('http_requests_total', { value: 0, labels: new Map() });
-    this.counters.set('http_request_errors_total', { value: 0, labels: new Map() });
-    
+    this.counters.set("http_requests_total", { value: 0, labels: new Map() });
+    this.counters.set("http_request_errors_total", {
+      value: 0,
+      labels: new Map(),
+    });
+
     // Database metrics
-    this.counters.set('db_queries_total', { value: 0, labels: new Map() });
-    this.histograms.set('db_query_duration_seconds', []);
-    
+    this.counters.set("db_queries_total", { value: 0, labels: new Map() });
+    this.histograms.set("db_query_duration_seconds", []);
+
     // AI metrics
-    this.counters.set('ai_requests_total', { value: 0, labels: new Map() });
-    this.histograms.set('ai_request_duration_seconds', []);
-    
+    this.counters.set("ai_requests_total", { value: 0, labels: new Map() });
+    this.histograms.set("ai_request_duration_seconds", []);
+
     // Business metrics
-    this.gauges.set('active_users', 0);
-    this.gauges.set('active_sessions', 0);
-    
-    logger.info('Metrics service initialized');
+    this.gauges.set("active_users", 0);
+    this.gauges.set("active_sessions", 0);
+
+    logger.info("Metrics service initialized");
     this.isEnabled = true;
   }
 
   /**
    * Increment a counter metric
-   * 
+   *
    * @param name - Metric name
    * @param labels - Optional labels for the metric
    * @param value - Value to increment by (default: 1)
-   * 
+   *
    * @example
    * ```typescript
    * metricsService.incrementCounter('api_requests_total', { endpoint: '/api/users', method: 'GET' });
    * ```
    */
-  incrementCounter(name: string, labels?: Record<string, string>, value: number = 1): void {
+  incrementCounter(
+    name: string,
+    labels?: Record<string, string>,
+    value: number = 1,
+  ): void {
     if (!this.isEnabled) return;
 
     const counter = this.counters.get(name);
@@ -84,10 +94,10 @@ class MetricsService {
 
   /**
    * Set a gauge metric value
-   * 
+   *
    * @param name - Metric name
    * @param value - Value to set
-   * 
+   *
    * @example
    * ```typescript
    * metricsService.setGauge('cpu_usage_percent', 45.2);
@@ -100,7 +110,7 @@ class MetricsService {
 
   /**
    * Increment a gauge metric
-   * 
+   *
    * @param name - Metric name
    * @param value - Value to increment by (default: 1)
    */
@@ -112,7 +122,7 @@ class MetricsService {
 
   /**
    * Decrement a gauge metric
-   * 
+   *
    * @param name - Metric name
    * @param value - Value to decrement by (default: 1)
    */
@@ -124,10 +134,10 @@ class MetricsService {
 
   /**
    * Record a histogram observation
-   * 
+   *
    * @param name - Metric name
    * @param value - Observed value
-   * 
+   *
    * @example
    * ```typescript
    * const start = Date.now();
@@ -155,7 +165,7 @@ class MetricsService {
 
   /**
    * Get counter value
-   * 
+   *
    * @param name - Metric name
    * @returns Counter value or 0 if not found
    */
@@ -165,7 +175,7 @@ class MetricsService {
 
   /**
    * Get gauge value
-   * 
+   *
    * @param name - Metric name
    * @returns Gauge value or 0 if not found
    */
@@ -175,7 +185,7 @@ class MetricsService {
 
   /**
    * Get histogram statistics
-   * 
+   *
    * @param name - Metric name
    * @returns Statistics object with count, sum, min, max, avg, p50, p95, p99
    */
@@ -218,7 +228,7 @@ class MetricsService {
 
   /**
    * Get all metrics in Prometheus text format
-   * 
+   *
    * @returns Metrics in Prometheus exposition format
    */
   getPrometheusMetrics(): string {
@@ -228,13 +238,13 @@ class MetricsService {
     for (const [name, data] of this.counters.entries()) {
       lines.push(`# TYPE ${name} counter`);
       lines.push(`${name} ${data.value}`);
-      
+
       // Add labeled metrics
       for (const [labelKey, value] of data.labels.entries()) {
         const labels = JSON.parse(labelKey);
         const labelStr = Object.entries(labels)
           .map(([k, v]) => `${k}="${v}"`)
-          .join(',');
+          .join(",");
         lines.push(`${name}{${labelStr}} ${value}`);
       }
     }
@@ -255,26 +265,48 @@ class MetricsService {
       lines.push(`# TYPE ${name} histogram`);
       lines.push(`${name}_count ${stats.count}`);
       lines.push(`${name}_sum ${stats.sum}`);
-      lines.push(`${name}_bucket{le="0.005"} ${values.filter(v => v <= 0.005).length}`);
-      lines.push(`${name}_bucket{le="0.01"} ${values.filter(v => v <= 0.01).length}`);
-      lines.push(`${name}_bucket{le="0.025"} ${values.filter(v => v <= 0.025).length}`);
-      lines.push(`${name}_bucket{le="0.05"} ${values.filter(v => v <= 0.05).length}`);
-      lines.push(`${name}_bucket{le="0.1"} ${values.filter(v => v <= 0.1).length}`);
-      lines.push(`${name}_bucket{le="0.25"} ${values.filter(v => v <= 0.25).length}`);
-      lines.push(`${name}_bucket{le="0.5"} ${values.filter(v => v <= 0.5).length}`);
-      lines.push(`${name}_bucket{le="1"} ${values.filter(v => v <= 1).length}`);
-      lines.push(`${name}_bucket{le="2.5"} ${values.filter(v => v <= 2.5).length}`);
-      lines.push(`${name}_bucket{le="5"} ${values.filter(v => v <= 5).length}`);
-      lines.push(`${name}_bucket{le="10"} ${values.filter(v => v <= 10).length}`);
+      lines.push(
+        `${name}_bucket{le="0.005"} ${values.filter((v) => v <= 0.005).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="0.01"} ${values.filter((v) => v <= 0.01).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="0.025"} ${values.filter((v) => v <= 0.025).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="0.05"} ${values.filter((v) => v <= 0.05).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="0.1"} ${values.filter((v) => v <= 0.1).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="0.25"} ${values.filter((v) => v <= 0.25).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="0.5"} ${values.filter((v) => v <= 0.5).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="1"} ${values.filter((v) => v <= 1).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="2.5"} ${values.filter((v) => v <= 2.5).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="5"} ${values.filter((v) => v <= 5).length}`,
+      );
+      lines.push(
+        `${name}_bucket{le="10"} ${values.filter((v) => v <= 10).length}`,
+      );
       lines.push(`${name}_bucket{le="+Inf"} ${values.length}`);
     }
 
-    return lines.join('\n') + '\n';
+    return lines.join("\n") + "\n";
   }
 
   /**
    * Get all metrics as JSON
-   * 
+   *
    * @returns Metrics object with counters, gauges, and histograms
    */
   getMetricsJSON(): {
@@ -308,7 +340,7 @@ class MetricsService {
     this.gauges.clear();
     this.histograms.clear();
     this.initializeMetrics();
-    logger.info('Metrics reset');
+    logger.info("Metrics reset");
   }
 
   /**
