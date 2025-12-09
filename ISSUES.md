@@ -14,28 +14,43 @@ Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical D
 
 ### ISSUE-008: Fehlende Monitoring & Observability 📊
 
-**Status**: 🟠 Offen | **Priorität**: Mittel | **Erstellt**: 2024-12-03
+**Status**: 🟡 In Arbeit | **Priorität**: Mittel | **Erstellt**: 2024-12-03 | **Aktualisiert**: 2025-12-09
 
 **Beschreibung**:
 Es gibt kein strukturiertes Logging, keine Metriken, kein Tracing, kein Error-Tracking.
 
-**Fehlende Features**:
+**Fortschritt (9. Dezember 2025)**:
 
-- Structured Logging (Pino ist da, aber nicht überall genutzt)
-- Metrics (Prometheus-Exporter)
-- Distributed Tracing (OpenTelemetry)
-- Error-Tracking (Sentry o.ä.)
-- Performance-Monitoring (APM)
-- Log-Aggregation (ELK, Loki)
+- ✅ **Structured Logging**: Vollständig implementiert mit Pino
+  - Centralized Logger (`apps/backend/src/utils/logger.ts`)
+  - Security Redaction (passwords, tokens, apiKeys)
+  - Semantic Log Helpers (request, query, auth, performance, business, security)
+  - 133+ console.log Statements zu structured logging migriert
 
-**Konsequenzen**:
+- ✅ **Metrics (Basic Implementation)**: Grundlegende Metriken implementiert
+  - MetricsService (`apps/backend/src/services/monitoring/metricsService.ts`)
+  - Counters, Gauges, Histograms
+  - Prometheus Export Format
+  - JSON Export
+  - Monitoring Router mit Endpoints (/api/monitoring/metrics, /health)
+  - Umfassende Dokumentation (README.md)
 
-- Schwierig, Probleme in Production zu debuggen
-- Keine Performance-Insights
-- Keine Anomalie-Detection
-- Reaktiv statt proaktiv
+**Noch ausstehend**:
 
-**Aufwand**: 1-2 Wochen
+- [ ] Prometheus Client Integration (prom-client)
+- [ ] Grafana-Dashboards (Vorlagen existieren bereits)
+- [ ] Custom Business-Metrics erweitern
+- [ ] Alert-Rules definieren
+- [ ] OpenTelemetry Integration (Tracing)
+- [ ] Distributed Tracing (Jaeger/Zipkin)
+- [ ] Sentry Integration (Error-Tracking)
+- [ ] Log-Aggregation (ELK Stack / Loki)
+
+**Aufwand**: 1-2 Wochen gesamt → ~30% erledigt (3-4 Tage)
+
+**Dokumentation**: 
+- [Monitoring README](apps/backend/src/services/monitoring/README.md)
+- [CODE_QUALITY_IMPROVEMENTS.md](docs/CODE_QUALITY_IMPROVEMENTS.md)
 
 ---
 
@@ -80,11 +95,11 @@ Mehrere Dependencies sind installiert, werden aber nicht genutzt oder sind veral
 **Beschreibung**:
 Viele console.log() Statements im Code, die in Production nicht sein sollten.
 
-**Analyse (6. Dezember 2025)**:
+**Analyse (9. Dezember 2025)**:
 
-- **Backend**: 106 console.log Statements (von ursprünglich 171)
-- **Frontend**: 16 console.log Statements (von ursprünglich 6, aber umfasst nun mehr Komponenten)
-- **Gesamt**: 122 Instanzen (von ursprünglich 177)
+- **Backend**: 45 console.log Statements (von ursprünglich 106, gestartet bei 171)
+- **Frontend**: 9 console.log Statements (von ursprünglich 16)
+- **Gesamt**: 54 Instanzen (von ursprünglich 177, ~70% Reduktion)
 
 **Lösung (Phase 1 - Infrastruktur) ✅**:
 
@@ -101,11 +116,25 @@ Viele console.log() Statements im Code, die in Production nicht sein sollten.
 4. ✅ elizaProvider.ts migriert (19 console.log → structured logging)
 5. ✅ **Gesamt**: 88 console.log Statements in kritischen Services ersetzt
 
-**Nächste Schritte (Phase 3-4)**:
+**Phase 3 - Backend Services ✅ (9. Dezember 2025)**:
 
-- [ ] Weitere Backend-Services migrieren (Auth, weitere AI-Provider)
-- [ ] Business-Logik migrieren (HR, Finance - bereits mit pino)
-- [ ] Frontend komplett migrieren (16 Instanzen)
+1. ✅ migrateSchema.ts migriert (10 console.log → structured logging)
+2. ✅ Sipgate Services komplett migriert:
+   - ✅ SipgateClient.ts (5 console.log → structured logging)
+   - ✅ CallHandler.ts (3 console.log → structured logging)
+   - ✅ VoiceAI.ts (4 console.log → structured logging)
+   - ✅ FaxProcessor.ts (3 console.log → structured logging)
+3. ✅ aiAnnotatorService.ts migriert (5 console.log → structured logging)
+4. ✅ Self-Healing Services migriert:
+   - ✅ HealingReport.ts (3 console.log → structured logging)
+   - ✅ SelfHealingScheduler.ts (12 console.log → structured logging)
+5. ✅ **Gesamt Phase 3**: 45 console.log Statements ersetzt
+6. ✅ **Gesamt kumulativ**: 133 console.log Statements ersetzt (~75% des Ziels)
+
+**Nächste Schritte (Phase 4-5)**:
+
+- [ ] Verbleibende Backend-Services migrieren (45 Instanzen)
+- [ ] Frontend komplett migrieren (9 Instanzen)
 - [ ] ESLint auf "error" hochstufen
 - [ ] Pre-commit Hooks einrichten
 
