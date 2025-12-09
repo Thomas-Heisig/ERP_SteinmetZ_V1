@@ -592,8 +592,8 @@ All documentation is licensed under MIT License. See [LICENSE](../LICENSE) for d
 
 ---
 
-**Documentation Version:** 2.0.0  
-**Last Updated:** December 6, 2025  
+**Documentation Version:** 2.0.1  
+**Last Updated:** December 9, 2025  
 **Maintainer:** Thomas Heisig  
 **Standard Compliance:** ISO/IEC/IEEE 26514, Diátaxis Framework
 

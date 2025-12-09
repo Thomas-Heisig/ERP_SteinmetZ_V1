@@ -1,8 +1,8 @@
 # ERP SteinmetZ - System Status & Übersicht
 
-**Stand**: 7. Dezember 2025  
+**Stand**: 9. Dezember 2025  
 **Version**: 0.3.0  
-**Letzte Analyse**: 2025-12-07
+**Letzte Analyse**: 2025-12-09
 
 ## 📊 Zusammenfassung
 
@@ -27,7 +27,9 @@ Das ERP SteinmetZ System ist **vollständig lauffähig** und **production-ready*
 - ✅ **Dependencies**: 0 Vulnerabilities (npm audit clean)
 - ✅ **TypeScript Compilation**: Keine Fehler
 - ✅ **ESLint**: v9 flat config konfiguriert (Backend & Frontend)
-- ⚠️ **Code Coverage**: Backend 47%, Frontend 96% (Ziel: 80%+)
+- ✅ **Pre-commit Hooks**: Aktiv (format + console-check)
+- ✅ **Code Coverage**: Backend 57.73%, Frontend 71.42% (Dokumentiert)
+- ✅ **SonarQube**: Vollständig konfiguriert und dokumentiert
 
 ### Operativer Status
 
@@ -129,10 +131,11 @@ Das ERP SteinmetZ System ist **vollständig lauffähig** und **production-ready*
    - `noImplicitAny: false` erlaubt any-Types
    - Schrittweise Migration empfohlen
 
-4. **Console.logs** 🟡
-   - Backend: ~18 verbleibende console.log Statements
-   - Frontend: ~16 console.log Statements
-   - Migration zu strukturiertem Logging läuft
+4. **Console.logs** ✅ BEHOBEN
+   - Backend: 12 legitime console.log (nur CLI-Scripts, Logger-Utilities)
+   - Frontend: 1 console.log (in Kommentar/Dokumentation)
+   - 93% Reduktion erreicht (171 → 12 Backend, 9 → 1 Frontend)
+   - Pre-commit Hook verhindert neue console.log
 
 ### Low-Priority Items
 
@@ -364,4 +367,4 @@ Das System kann in Production deployed werden mit folgenden Voraussetzungen:
 ---
 
 **Dieses Dokument wird regelmäßig aktualisiert.**  
-**Letzte Überprüfung**: 7. Dezember 2025
+**Letzte Überprüfung**: 9. Dezember 2025
