@@ -190,14 +190,22 @@ export class BatchProcessingService {
     }
 
     if (filter.createdAfter) {
-      batches = batches.filter((b) => b.created_at >= filter.createdAfter!);
+      batches = batches.filter(
+        (b) => b.created_at && b.created_at >= filter.createdAfter!,
+      );
     }
 
     if (filter.createdBefore) {
-      batches = batches.filter((b) => b.created_at <= filter.createdBefore!);
+      batches = batches.filter(
+        (b) => b.created_at && b.created_at <= filter.createdBefore!,
+      );
     }
 
-    batches.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    batches.sort((a, b) => {
+      const aDate = a.created_at || "";
+      const bDate = b.created_at || "";
+      return bDate.localeCompare(aDate);
+    });
 
     const limit = filter.limit || 50;
     const offset = filter.offset || 0;
@@ -258,7 +266,7 @@ export class BatchProcessingService {
     let deleted = 0;
 
     for (const [id, batch] of this.batches.entries()) {
-      if (batch.created_at < cutoffDate) {
+      if (batch.created_at && batch.created_at < cutoffDate) {
         this.batches.delete(id);
         this.results.delete(id);
         deleted++;

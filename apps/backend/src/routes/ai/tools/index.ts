@@ -101,7 +101,10 @@ export async function loadAllTools(filter?: string[], recursive = true) {
     await importToolModule(file);
   }
 
-  logger.info({ toolCount: toolRegistry.count() }, "Tools loaded and registered");
+  logger.info(
+    { toolCount: toolRegistry.count() },
+    "Tools loaded and registered",
+  );
   return toolRegistry;
 }
 

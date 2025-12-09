@@ -39,6 +39,7 @@ docker run -d \
 ```
 
 Default credentials:
+
 - Username: `admin`
 - Password: `admin` (you'll be prompted to change on first login)
 
@@ -69,27 +70,32 @@ The application exposes metrics at:
 ## Available Metrics
 
 ### HTTP Metrics
+
 - `http_requests_total` - Total HTTP requests (counter)
 - `http_request_duration_seconds` - HTTP request duration (histogram)
 - `http_request_errors_total` - Total HTTP errors (counter)
 
 ### Database Metrics
+
 - `db_queries_total` - Total database queries (counter)
 - `db_query_duration_seconds` - Database query duration (histogram)
 - `db_connections_active` - Active database connections (gauge)
 
 ### AI Metrics
+
 - `ai_requests_total` - Total AI requests (counter)
 - `ai_request_duration_seconds` - AI request duration (histogram)
 - `ai_tokens_used_total` - Total AI tokens used (counter)
 - `ai_request_cost_total` - Total AI request cost in USD (counter)
 
 ### Business Metrics
+
 - `active_users` - Currently active users (gauge)
 - `active_sessions` - Currently active sessions (gauge)
 - `business_events_total` - Total business events (counter)
 
 ### System Metrics
+
 - `process_cpu_seconds_total` - Process CPU usage
 - `process_resident_memory_bytes` - Process memory usage
 - `process_heap_bytes` - Heap memory usage
@@ -100,26 +106,31 @@ The application exposes metrics at:
 Alert rules are defined in `prometheus/alert-rules.yml`:
 
 ### HTTP Alerts
+
 - **HighHTTPErrorRate**: Triggers when error rate > 10 errors/sec for 5 minutes
 - **SlowHTTPRequests**: Triggers when p95 latency > 2 seconds for 5 minutes
 - **VerySlowHTTPRequests**: Triggers when p95 latency > 5 seconds for 3 minutes
 
 ### Database Alerts
+
 - **SlowDatabaseQueries**: Triggers when p95 query time > 1 second for 5 minutes
 - **HighDatabaseQueryRate**: Triggers when query rate > 1000 queries/sec for 5 minutes
 - **DatabaseConnectionPoolExhausted**: Triggers when active connections > 45 for 3 minutes
 
 ### AI Alerts
+
 - **HighAICost**: Triggers when hourly cost > $50 for 10 minutes
 - **AIProviderFailure**: Triggers when error rate > 10% for 5 minutes
 - **SlowAIRequests**: Triggers when p95 latency > 30 seconds for 5 minutes
 
 ### System Alerts
+
 - **HighCPUUsage**: Triggers when CPU usage > 80% for 5 minutes
 - **HighMemoryUsage**: Triggers when memory usage > 2 GB for 5 minutes
 - **ServiceDown**: Triggers immediately when service is down for 1 minute
 
 ### Business Alerts
+
 - **LowUserActivity**: Triggers when active users < 1 for 30 minutes
 - **HighBusinessEventFailureRate**: Triggers when event failure rate > 5% for 5 minutes
 
@@ -153,10 +164,10 @@ The Grafana dashboard includes:
 Example:
 
 ```typescript
-import prometheusMetrics from './services/monitoring/prometheusMetricsService.js';
+import prometheusMetrics from "./services/monitoring/prometheusMetricsService.js";
 
 // Record a custom metric
-prometheusMetrics.recordBusinessEvent('order_created', 'success');
+prometheusMetrics.recordBusinessEvent("order_created", "success");
 ```
 
 ### Adding New Alert Rules
@@ -203,6 +214,7 @@ Or create dashboards directly in Grafana UI and export them.
 ### Metrics not showing up
 
 1. Check if metrics endpoint is accessible:
+
    ```bash
    curl http://localhost:3000/api/metrics
    ```
@@ -238,6 +250,7 @@ Or create dashboards directly in Grafana UI and export them.
 ## Support
 
 For questions or issues, please check:
+
 - Project documentation in `/docs`
 - Issue tracker on GitHub
 - Contact: maintainer@erp-steinmetz.local

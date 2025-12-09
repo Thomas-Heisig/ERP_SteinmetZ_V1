@@ -266,19 +266,20 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 2-3 Tage → 1 Tag (Dokumentation)
   - **Ergebnis**: Vollständige DEV_TOOLS_GUIDE.md mit Konfiguration und Best Practices
 
-- [x] **Code Quality Tools** ✅ ERLEDIGT (2025-12-07)
+- [x] **Code Quality Tools** ✅ ERLEDIGT (2025-12-09)
   - [x] Pre-commit Hooks (Husky) - Format Hook aktiv
   - [x] Conventional Commits enforcing - commitlint konfiguriert
   - [x] Umfassende Dokumentation (COMMIT_CONVENTIONS.md, SCRIPTS.md)
-  - [x] ESLint v9 flat config für Backend und Frontend ✅ NEU (6. Dez 2025)
-  - [x] TypeScript ESLint-Plugin konfiguriert ✅ NEU
-  - [x] React-spezifische ESLint-Regeln (React 19) ✅ NEU
-  - [x] Security: GitHub PAT entfernt, .gitignore erweitert ✅ NEU
-  - [x] npm audit: 0 Vulnerabilities (3 behoben) ✅ NEU
-  - [x] Dokumentations-Konsolidierung: 4 Dateien archiviert ✅ NEU
+  - [x] ESLint v9 flat config für Backend und Frontend ✅ (6. Dez 2025)
+  - [x] TypeScript ESLint-Plugin konfiguriert ✅
+  - [x] React-spezifische ESLint-Regeln (React 19) ✅
+  - [x] Security: GitHub PAT entfernt, .gitignore erweitert ✅
+  - [x] npm audit: 0 Vulnerabilities (3 behoben) ✅
+  - [x] Dokumentations-Konsolidierung: 4 Dateien archiviert ✅
+  - [x] TypeScript Strict Mode für Backend aktiviert ✅ NEU (9. Dez 2025)
   - [ ] Code-Coverage-Reports (bereits vorhanden)
   - [ ] SonarQube Integration
-  - **Aufwand**: 1-2 Tage → 6 Stunden erledigt, 1 Tag verbleibend für SonarQube
+  - **Aufwand**: 1-2 Tage → 8 Stunden erledigt, 1 Tag verbleibend für SonarQube
 
 ### UI/UX Enhancements
 
@@ -575,9 +576,11 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 **Sprint 3 (Geplant: KW 5-6/2025)** - HR & Finance Module vervollständigen:
 
-- [ ] HR-Modul: CRUD-Operationen vollständig
-- [ ] Finance-Modul: Buchhaltungsintegration
-- [ ] Datenbank-Migrationen
+- [x] HR-Modul: Entwicklungsanleitung erstellt (docs/HR_MODULE_GUIDE.md - 9. Dez 2025)
+- [x] Finance-Modul: Entwicklungsanleitung erstellt (docs/FINANCE_MODULE_GUIDE.md - 9. Dez 2025)
+- [ ] HR-Modul: CRUD-Operationen implementieren
+- [ ] Finance-Modul: Rechnungserstellung implementieren
+- [ ] Datenbank-Migrationen für HR und Finance
 - [ ] Frontend-Komponenten für beide Module
 
 **Sprint 4 (Geplant: KW 7-8/2025)** - Compliance & Documentation:

@@ -171,7 +171,10 @@ class PrometheusMetricsService {
 
     const statusStr = status.toString();
     this.httpRequestsTotal.inc({ method, path, status: statusStr });
-    this.httpRequestDuration.observe({ method, path, status: statusStr }, durationSeconds);
+    this.httpRequestDuration.observe(
+      { method, path, status: statusStr },
+      durationSeconds,
+    );
   }
 
   /**

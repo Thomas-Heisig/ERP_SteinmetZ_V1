@@ -133,10 +133,11 @@ router.post(
     const { sessionId, message, context } = validationResult.data;
 
     // Session holen oder erstellen
-    let session = sessions.get(sessionId);
+    const effectiveSessionId = sessionId || crypto.randomUUID();
+    let session = sessions.get(effectiveSessionId);
     if (!session) {
       session = {
-        id: sessionId || crypto.randomUUID(),
+        id: effectiveSessionId,
         messages: [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "apps/backend/src/services",
+    "apps/backend/src/routes",
+    "apps/backend/src/middleware",
+    "apps/backend/src/utils"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs/api",
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**"],
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": false,
+  "includeVersion": true,
+  "sort": ["source-order"],
+  "categorizeByGroup": true,
+  "categoryOrder": ["Services", "Routes", "Middleware", "Utilities", "*"],
+  "readme": "README.md",
+  "name": "ERP SteinmetZ - API Documentation",
+  "navigationLinks": {
+    "GitHub": "https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1"
+  },
+  "plugin": [],
+  "theme": "default",
+  "hideGenerator": false,
+  "searchInComments": true,
+  "cleanOutputDir": true,
+  "treatWarningsAsErrors": false,
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  }
+}

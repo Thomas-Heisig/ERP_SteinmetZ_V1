@@ -43,7 +43,10 @@ export function createLogger(moduleName: string) {
       case "trace":
       case "debug":
         if (isDevelopment) {
-          console.debug(`[${level.toUpperCase()}] [${moduleName}] ${message}`, context || "");
+          console.debug(
+            `[${level.toUpperCase()}] [${moduleName}] ${message}`,
+            context || "",
+          );
         }
         break;
       case "info":
@@ -59,11 +62,16 @@ export function createLogger(moduleName: string) {
   };
 
   return {
-    trace: (message: string, context?: LogContext) => log("trace", message, context),
-    debug: (message: string, context?: LogContext) => log("debug", message, context),
-    info: (message: string, context?: LogContext) => log("info", message, context),
-    warn: (message: string, context?: LogContext) => log("warn", message, context),
-    error: (message: string, context?: LogContext) => log("error", message, context),
+    trace: (message: string, context?: LogContext) =>
+      log("trace", message, context),
+    debug: (message: string, context?: LogContext) =>
+      log("debug", message, context),
+    info: (message: string, context?: LogContext) =>
+      log("info", message, context),
+    warn: (message: string, context?: LogContext) =>
+      log("warn", message, context),
+    error: (message: string, context?: LogContext) =>
+      log("error", message, context),
   };
 }
 

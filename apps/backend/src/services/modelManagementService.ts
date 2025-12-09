@@ -211,10 +211,7 @@ export class ModelManagementService {
     available: boolean,
     error?: string,
   ): void {
-    logger.info(
-      { modelName, available, error },
-      "Model availability updated",
-    );
+    logger.info({ modelName, available, error }, "Model availability updated");
   }
 
   getModelAvailability(): ModelAvailability[] {

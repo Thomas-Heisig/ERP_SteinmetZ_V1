@@ -298,7 +298,16 @@ export class ToolRegistry {
       return;
     }
 
-    logger.info({ tools: defs.map(t => ({ name: t.name, category: t.category, restricted: t.restricted })) }, "Registered tools");
+    logger.info(
+      {
+        tools: defs.map((t) => ({
+          name: t.name,
+          category: t.category,
+          restricted: t.restricted,
+        })),
+      },
+      "Registered tools",
+    );
     console.table(
       defs.map((t) => ({
         Name: t.name,
