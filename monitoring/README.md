@@ -1,63 +1,112 @@
 # Monitoring Setup for ERP SteinmetZ
 
-This directory contains monitoring configurations for Prometheus and Grafana.
+**Status**: ✅ Operational  
+**Version**: 2.0.0  
+**Letzte Aktualisierung**: 9. Dezember 2025
+
+This directory contains the complete monitoring infrastructure for the ERP SteinmetZ system, including distributed tracing, metrics collection, visualization, and alerting.
+
+---
 
 ## Overview
 
 The monitoring stack includes:
 
-- **Prometheus**: Metrics collection and alerting
-- **Grafana**: Visualization and dashboards
+- **Prometheus**: Metrics collection, storage, and alerting
+- **Grafana**: Visualization dashboards and analytics
+- **Jaeger**: Distributed tracing and performance monitoring
+- **Zipkin**: Alternative lightweight tracing backend
+- **OTLP Collector**: OpenTelemetry collector for advanced scenarios
+- **Alertmanager**: Alert routing and notification management
 - **prom-client**: Node.js Prometheus client for metrics export
+
+---
 
 ## Quick Start
 
-### 1. Start Prometheus
-
-Using Docker:
+### Option 1: Using the Start Script (Recommended)
 
 ```bash
-docker run -d \
-  --name prometheus \
-  -p 9090:9090 \
-  -v $(pwd)/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
-  -v $(pwd)/monitoring/prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml \
-  prom/prometheus
+# Start default stack (Prometheus + Grafana + Jaeger)
+cd monitoring
+./start-monitoring.sh
+
+# Start with advanced features (OTLP Collector + Alertmanager)
+./start-monitoring.sh --profile advanced
+
+# Start with Zipkin instead of Jaeger
+./start-monitoring.sh --profile zipkin
+
+# Run in foreground (see logs)
+./start-monitoring.sh --fg
 ```
 
-Or using Docker Compose (see `docker-compose.yml` in project root).
-
-### 2. Start Grafana
-
-Using Docker:
+### Option 2: Using Docker Compose Directly
 
 ```bash
-docker run -d \
-  --name grafana \
-  -p 3001:3000 \
-  grafana/grafana
+# Start default stack
+docker-compose up -d
+
+# Start with advanced profile
+docker-compose --profile advanced up -d
+
+# Start with Zipkin
+docker-compose --profile zipkin up -d
 ```
 
-Default credentials:
+---
 
-- Username: `admin`
-- Password: `admin` (you'll be prompted to change on first login)
+## Services & Access URLs
 
-### 3. Configure Grafana
+Once started, access the services at:
 
-1. Open Grafana at http://localhost:3001
-2. Add Prometheus as a data source:
-   - Go to Configuration → Data Sources
-   - Click "Add data source"
-   - Select "Prometheus"
-   - URL: `http://prometheus:9090` (or `http://localhost:9090` if running locally)
-   - Click "Save & Test"
+| Service | URL | Credentials | Purpose |
+|---------|-----|-------------|---------|
+| **Prometheus** | http://localhost:9090 | - | Metrics collection & queries |
+| **Grafana** | http://localhost:3001 | admin/admin | Dashboards & visualization |
+| **Jaeger UI** | http://localhost:16686 | - | Distributed tracing |
+| **Zipkin UI** | http://localhost:9411 | - | Alternative tracing (zipkin profile) |
+| **Alertmanager** | http://localhost:9093 | - | Alert management (advanced profile) |
+| **OTLP Health** | http://localhost:13133 | - | Collector health (advanced profile) |
 
-3. Import the dashboard:
-   - Go to Dashboards → Import
-   - Upload `grafana/erp-steinmetz-dashboard.json`
-   - Select the Prometheus data source
-   - Click "Import"
+---
+
+## Configuration
+
+### Backend Application
+
+Update your `apps/backend/.env`:
+
+```env
+# Enable tracing
+OTEL_TRACES_ENABLED=true
+OTEL_SERVICE_NAME=erp-steinmetz-backend
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
+
+# Enable error tracking (optional)
+SENTRY_ENABLED=true
+SENTRY_DSN=your-sentry-dsn
+
+# Sample rates (0.0 - 1.0)
+OTEL_TRACES_SAMPLER_ARG=0.1
+SENTRY_TRACES_SAMPLE_RATE=0.1
+```
+
+### Grafana Datasources
+
+Datasources are automatically provisioned on startup:
+- **Prometheus**: http://prometheus:9090 (default)
+- **Jaeger**: http://jaeger:16686
+
+The dashboard at `grafana/erp-steinmetz-dashboard.json` is automatically loaded.
+
+### Prometheus Scraping
+
+Prometheus is configured to scrape metrics from:
+- Backend: http://host.docker.internal:3000/api/metrics
+- Scrape interval: 15 seconds
+
+Edit `prometheus/prometheus.yml` to add more targets.
 
 ## Metrics Endpoint
 

@@ -1,0 +1,32 @@
+# Grafana Datasource Provisioning
+# Automatically configures Prometheus and Jaeger datasources
+
+apiVersion: 1
+
+datasources:
+  # Prometheus datasource for metrics
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMethod: POST
+      timeInterval: 15s
+    version: 1
+
+  # Jaeger datasource for traces
+  - name: Jaeger
+    type: jaeger
+    access: proxy
+    url: http://jaeger:16686
+    editable: true
+    jsonData:
+      # Traces to Logs correlation can be configured here
+      # when a logging backend (e.g., Loki) is added
+      nodeGraph:
+        enabled: true
+      traceDiff:
+        enabled: true
+    version: 1

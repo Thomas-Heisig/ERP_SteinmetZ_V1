@@ -1,0 +1,146 @@
+# Monitoring Stack for ERP SteinmetZ
+# Includes Prometheus, Grafana, Jaeger, and OTLP Collector
+# 
+# Usage:
+#   docker-compose -f monitoring/docker-compose.yml up -d
+#
+# Access:
+#   - Prometheus: http://localhost:9090
+#   - Grafana: http://localhost:3001 (admin/admin)
+#   - Jaeger UI: http://localhost:16686
+#   - OTLP Collector: http://localhost:4318 (HTTP), http://localhost:4317 (gRPC)
+
+version: '3.8'
+
+services:
+  # Prometheus - Metrics Collection & Alerting
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: erp-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  # Grafana - Visualization & Dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: erp-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3001
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/erp-steinmetz-dashboard.json:/var/lib/grafana/dashboards/erp-steinmetz-dashboard.json:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  # Jaeger All-in-One - Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: erp-jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4317:4317"    # OTLP gRPC
+      - "4318:4318"    # OTLP HTTP
+      - "14250:14250"  # Jaeger gRPC
+      - "14268:14268"  # Jaeger HTTP
+      - "6831:6831/udp"  # Jaeger Thrift compact
+      - "6832:6832/udp"  # Jaeger Thrift binary
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=badger
+      - BADGER_EPHEMERAL=false
+      - BADGER_DIRECTORY_VALUE=/badger/data
+      - BADGER_DIRECTORY_KEY=/badger/key
+    volumes:
+      - jaeger-data:/badger
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  # OpenTelemetry Collector (Optional - for advanced configurations)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: erp-otel-collector
+    command: ["--config=/etc/otel-collector-config.yml"]
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml:ro
+    ports:
+      - "4319:4318"    # OTLP HTTP (alternative port to not conflict with Jaeger)
+      - "8888:8888"    # Prometheus metrics exposed by the collector
+      - "8889:8889"    # Prometheus exporter metrics
+      - "13133:13133"  # Health check
+    depends_on:
+      - jaeger
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - monitoring
+    profiles:
+      - advanced  # Only start with: docker-compose --profile advanced up
+
+  # Alertmanager - Alert Routing & Notifications (Optional)
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: erp-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    restart: unless-stopped
+    networks:
+      - monitoring
+    profiles:
+      - advanced  # Only start with: docker-compose --profile advanced up
+
+  # Zipkin - Alternative Tracing Backend (Optional)
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: erp-zipkin
+    ports:
+      - "9411:9411"  # Zipkin UI and API
+    environment:
+      - STORAGE_TYPE=mem
+    restart: unless-stopped
+    networks:
+      - monitoring
+    profiles:
+      - zipkin  # Only start with: docker-compose --profile zipkin up
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  jaeger-data:
+  alertmanager-data:
