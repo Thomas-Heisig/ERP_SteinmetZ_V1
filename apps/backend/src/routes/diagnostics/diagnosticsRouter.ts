@@ -1,6 +1,48 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/diagnostics/diagnosticsRouter.ts
 
+/**
+ * Diagnostics Router
+ *
+ * Provides system health checks, diagnostics, and self-healing status endpoints.
+ * Displays system information, database statistics, health check results,
+ * and healing scheduler status.
+ *
+ * @remarks
+ * This router provides:
+ * - System diagnostics (CPU, memory, uptime)
+ * - Database health and statistics
+ * - Self-healing system status
+ * - Healing scheduler information
+ * - Health check results
+ * - Audit log retrieval
+ * - HTML diagnostics dashboard
+ *
+ * Endpoints:
+ * - GET /diagnostics - HTML diagnostics page
+ * - GET /diagnostics/health - JSON health status
+ * - GET /diagnostics/system - System information
+ * - GET /diagnostics/database - Database statistics
+ * - GET /diagnostics/scheduler - Self-healing scheduler status
+ * - GET /diagnostics/logs - Audit logs with filtering
+ *
+ * @module routes/diagnostics
+ *
+ * @example
+ * ```typescript
+ * // Get health status
+ * GET /api/diagnostics/health
+ * // Response: { status: 'healthy', checks: [...] }
+ *
+ * // Get system info
+ * GET /api/diagnostics/system
+ * // Response: { cpu: ..., memory: ..., uptime: ... }
+ *
+ * // Get audit logs
+ * GET /api/diagnostics/logs?limit=50&entity=users
+ * ```
+ */
+
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import os from "node:os";

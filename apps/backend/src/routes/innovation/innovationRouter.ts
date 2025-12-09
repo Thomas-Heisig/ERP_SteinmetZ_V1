@@ -1,6 +1,54 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/innovation/innovationRouter.ts
 
+/**
+ * Innovation Router
+ *
+ * Manages innovation ideas and their lifecycle from concept to completion.
+ * Provides CRUD operations, phase management, and statistics for innovation
+ * tracking.
+ *
+ * @remarks
+ * This router provides:
+ * - Idea CRUD operations (create, read, update, delete)
+ * - Phase management (parked, analysis, development, testing, completed, archived)
+ * - Priority and milestone tracking
+ * - Effort estimation and tracking
+ * - Tag-based categorization
+ * - Phase history tracking
+ * - Statistics and metrics
+ *
+ * Idea Phases:
+ * - parked - Idea is parked for later consideration
+ * - analysis - Idea is being analyzed
+ * - development - Idea is in active development
+ * - testing - Idea implementation is being tested
+ * - completed - Idea has been successfully implemented
+ * - archived - Idea has been archived
+ *
+ * @module routes/innovation
+ *
+ * @example
+ * ```typescript
+ * // Create new idea
+ * POST /api/innovation/ideas
+ * {
+ *   "title": "Automated Invoice Processing",
+ *   "description": "Use AI to automate invoice data extraction",
+ *   "phase": "parked",
+ *   "priority": 5,
+ *   "tags": ["automation", "ai", "invoicing"]
+ * }
+ *
+ * // Update idea phase
+ * PATCH /api/innovation/ideas/:id/phase
+ * { "phase": "development" }
+ *
+ * // Get statistics
+ * GET /api/innovation/statistics
+ * ```
+ */
+
 import { Router, Request, Response } from "express";
 import { z } from "zod";
 import db from "../../services/dbService.js";

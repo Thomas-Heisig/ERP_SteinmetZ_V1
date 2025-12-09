@@ -2,8 +2,38 @@
 // apps/backend/src/middleware/sessionMiddleware.ts
 
 /**
- * Session Middleware with Redis Support
- * Provides session management with Redis store and in-memory fallback
+ * Session Middleware
+ *
+ * Provides HTTP session management with Redis backend for distributed applications.
+ * Falls back to in-memory storage in development when Redis is unavailable.
+ *
+ * @remarks
+ * This middleware offers:
+ * - Persistent sessions with Redis backend (production)
+ * - In-memory fallback for development
+ * - Secure cookie configuration
+ * - Automatic session expiration (24 hours)
+ * - CSRF protection via SameSite cookies
+ *
+ * Session Configuration:
+ * - Cookie name: 'erp.sid'
+ * - Max age: 24 hours
+ * - HttpOnly: true (prevents XSS)
+ * - Secure: true in production (HTTPS only)
+ * - SameSite: 'lax' (CSRF protection)
+ *
+ * @example
+ * ```typescript
+ * import { createSessionMiddleware } from './middleware/sessionMiddleware.js';
+ *
+ * app.use(createSessionMiddleware());
+ *
+ * // Access session in routes
+ * app.get('/profile', (req, res) => {
+ *   req.session.userId = 123;
+ *   res.json({ sessionId: req.sessionID });
+ * });
+ * ```
  */
 
 import session from "express-session";
@@ -12,7 +42,19 @@ import { redisService } from "../services/redisService.js";
 import { log } from "../routes/ai/utils/logger.js";
 
 /**
- * Create session middleware with Redis store
+ * Creates session middleware with Redis store or in-memory fallback
+ *
+ * Automatically selects Redis store if available, otherwise uses in-memory store
+ * (not recommended for production). Session secret is read from SESSION_SECRET
+ * environment variable.
+ *
+ * @returns Express session middleware
+ *
+ * @example
+ * ```typescript
+ * const sessionMiddleware = createSessionMiddleware();
+ * app.use(sessionMiddleware);
+ * ```
  */
 export function createSessionMiddleware() {
   const sessionSecret =

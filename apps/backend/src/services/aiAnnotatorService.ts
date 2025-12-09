@@ -1,6 +1,53 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/services/aiAnnotatorService.ts
 
+/**
+ * AI Annotator Service
+ *
+ * Provides intelligent metadata generation and annotation for function nodes using
+ * various AI providers (OpenAI, Anthropic, Ollama). Supports batch processing,
+ * quality assurance, and model management.
+ *
+ * @remarks
+ * This service offers:
+ * - AI-powered metadata generation (descriptions, tags, business areas)
+ * - Multi-provider support (OpenAI, Anthropic, Ollama, fallback)
+ * - Batch processing with progress tracking
+ * - Quality assurance and validation
+ * - Model selection and health monitoring
+ * - Dashboard and form generation
+ * - Error correction and retry logic
+ * - Event-driven architecture for real-time updates
+ *
+ * Features:
+ * - Smart model selection based on task complexity
+ * - Automatic fallback on provider failure
+ * - PII classification and compliance tagging
+ * - Technical complexity analysis
+ * - Integration point detection
+ * - GDPR relevance assessment
+ *
+ * @example
+ * ```typescript
+ * const annotator = new AiAnnotatorService();
+ *
+ * // Annotate single node
+ * const metadata = await annotator.annotateNode({ id: 123, name: 'createInvoice' });
+ *
+ * // Batch processing
+ * const batchId = await annotator.createBatch({
+ *   operation: 'annotate',
+ *   filters: { annotation_status: 'pending' },
+ *   options: { batchSize: 50 }
+ * });
+ *
+ * // Listen for progress
+ * annotator.on('batch_progress', (id, progress) => {
+ *   console.log(`Batch ${id}: ${progress}%`);
+ * });
+ * ```
+ */
+
 import db from "./dbService.js";
 import { EventEmitter } from "events";
 import * as os from "os";
@@ -677,6 +724,40 @@ export class DatabaseTool {
 /*                           HAUService – AI‑Annotator                         */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * AI Annotator Service - Main Service Class
+ *
+ * Orchestrates AI-powered metadata generation with multi-provider support,
+ * batch processing, and quality assurance. Extends EventEmitter to provide
+ * real-time progress updates.
+ *
+ * @fires AiAnnotatorService#batch_progress - Emitted when batch progress updates
+ * @fires AiAnnotatorService#batch_complete - Emitted when batch completes
+ * @fires AiAnnotatorService#batch_error - Emitted when batch fails
+ * @fires AiAnnotatorService#model_health_changed - Emitted when model health changes
+ *
+ * @example
+ * ```typescript
+ * const service = new AiAnnotatorService();
+ *
+ * // Single node annotation
+ * const result = await service.annotateNode({
+ *   id: 123,
+ *   name: 'createInvoice',
+ *   kind: 'action'
+ * });
+ *
+ * // Batch processing
+ * const batchId = await service.createBatch({
+ *   operation: 'annotate',
+ *   filters: { annotation_status: 'pending' }
+ * });
+ *
+ * service.on('batch_progress', (id, progress) => {
+ *   console.log(`Progress: ${progress}%`);
+ * });
+ * ```
+ */
 export class AiAnnotatorService extends EventEmitter {
   private provider: AIProvider;
   private currentModel: string;
@@ -693,6 +774,12 @@ export class AiAnnotatorService extends EventEmitter {
     lastHealthCheck: new Date().toISOString(),
   };
 
+  /**
+   * Creates a new AiAnnotatorService instance
+   *
+   * Initializes AI providers, model selector, and starts health monitoring.
+   * Sets up event handlers for batch processing and health checks.
+   */
   constructor() {
     super();
     this.provider = this.detectProvider();

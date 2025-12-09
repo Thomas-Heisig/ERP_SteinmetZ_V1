@@ -1,6 +1,48 @@
 // apps/backend/src/services/functionsCatalogService.ts
 // SPDX-License-Identifier: MIT
 
+/**
+ * Functions Catalog Service
+ *
+ * Manages the hierarchical functions catalog, providing CRUD operations,
+ * validation, caching, and linting for function nodes. Supports multi-language
+ * localization and rule-based validation.
+ *
+ * @remarks
+ * This service offers:
+ * - Hierarchical function node management (categories, sections, actions)
+ * - JSON-based persistence with file watching
+ * - In-memory caching with TTL
+ * - Schema validation using Zod
+ * - Rule-based linting and validation
+ * - Multi-language support (de, en, fr, it, pl, tr)
+ * - Concurrent access control with locks
+ *
+ * Features:
+ * - Build and update catalog index
+ * - Node CRUD operations (create, read, update, delete)
+ * - Tree traversal and path resolution
+ * - Global rules validation
+ * - Lint findings and error reporting
+ *
+ * @example
+ * ```typescript
+ * import catalogService from './services/functionsCatalogService.js';
+ *
+ * // Get full catalog
+ * const catalog = await catalogService.getIndex();
+ *
+ * // Get specific node
+ * const node = await catalogService.getNode(123);
+ *
+ * // Update node
+ * await catalogService.updateNode(123, { name: 'newName' });
+ *
+ * // Validate catalog
+ * const lintResults = await catalogService.lintCatalog();
+ * ```
+ */
+
 /*==========================================================================*/
 /*  Imports & Grund‑Konfiguration                                            */
 /*==========================================================================*/

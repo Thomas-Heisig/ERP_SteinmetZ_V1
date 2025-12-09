@@ -1,14 +1,52 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/quickchat/quickchatRouter.ts
+
 /**
- * QuickChat Router - Redesigned
+ * QuickChat Router
  *
- * Improvements:
- * - Enhanced command system
- * - Better validation
- * - Improved error handling
- * - Session management
- * - Rate limiting ready
+ * AI-powered chat assistant API providing natural language interactions,
+ * command execution, and context-aware responses. Supports session management
+ * and multi-turn conversations.
+ *
+ * @remarks
+ * This router provides:
+ * - Natural language message processing
+ * - Command system with slash commands (/rechnung, /mahnung, etc.)
+ * - Session-based conversation history
+ * - Context preservation across messages
+ * - Zod-based request validation
+ * - Error handling with standardized responses
+ * - Rate limiting support
+ *
+ * Features:
+ * - AI chat completions with context
+ * - Slash command execution
+ * - Session CRUD operations
+ * - Conversation history retrieval
+ * - Metadata tagging and priorities
+ *
+ * @module routes/quickchat
+ *
+ * @example
+ * ```typescript
+ * // Send a message
+ * POST /api/quickchat/message
+ * {
+ *   "sessionId": "uuid-string",
+ *   "message": "Create an invoice for customer ABC",
+ *   "context": { "customerId": "ABC" }
+ * }
+ *
+ * // Execute a command
+ * POST /api/quickchat/command
+ * {
+ *   "command": "/rechnung",
+ *   "args": "Kunde: ABC, Betrag: 100€"
+ * }
+ *
+ * // Get conversation history
+ * GET /api/quickchat/sessions/:sessionId/messages
+ * ```
  */
 
 import { Router, Request, Response } from "express";
