@@ -576,9 +576,11 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 **Sprint 3 (Geplant: KW 5-6/2025)** - HR & Finance Module vervollständigen:
 
-- [ ] HR-Modul: CRUD-Operationen vollständig
-- [ ] Finance-Modul: Buchhaltungsintegration
-- [ ] Datenbank-Migrationen
+- [x] HR-Modul: Entwicklungsanleitung erstellt (docs/HR_MODULE_GUIDE.md - 9. Dez 2025)
+- [x] Finance-Modul: Entwicklungsanleitung erstellt (docs/FINANCE_MODULE_GUIDE.md - 9. Dez 2025)
+- [ ] HR-Modul: CRUD-Operationen implementieren
+- [ ] Finance-Modul: Rechnungserstellung implementieren
+- [ ] Datenbank-Migrationen für HR und Finance
 - [ ] Frontend-Komponenten für beide Module
 
 **Sprint 4 (Geplant: KW 7-8/2025)** - Compliance & Documentation:
