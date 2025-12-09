@@ -13,6 +13,7 @@ Diese Anleitung definiert, wie Code in ERP SteinmetZ dokumentiert werden soll. G
 ### 1. Was muss dokumentiert werden?
 
 ✅ **MUSS dokumentiert werden**:
+
 - Öffentliche APIs (exported functions, classes, methods)
 - Komplexe Logik oder Algorithmen
 - Non-triviale Business Rules
@@ -21,6 +22,7 @@ Diese Anleitung definiert, wie Code in ERP SteinmetZ dokumentiert werden soll. G
 - Services und Utilities
 
 ❌ **Muss NICHT dokumentiert werden**:
+
 - Getter/Setter ohne Logik
 - Triviale Private Methods
 - Test Files (außer komplexe Test-Utilities)
@@ -39,7 +41,7 @@ Diese Anleitung definiert, wie Code in ERP SteinmetZ dokumentiert werden soll. G
 
 ### Basic Function
 
-```typescript
+````typescript
 /**
  * Calculates the total price including tax.
  *
@@ -54,20 +56,17 @@ Diese Anleitung definiert, wie Code in ERP SteinmetZ dokumentiert werden soll. G
  * // returns 119
  * ```
  */
-export function calculateTotalPrice(
-  price: number,
-  taxRate: number,
-): number {
+export function calculateTotalPrice(price: number, taxRate: number): number {
   if (price < 0 || taxRate < 0) {
     throw new BadRequestError("Price and tax rate must be positive");
   }
   return price * (1 + taxRate);
 }
-```
+````
 
 ### Class
 
-```typescript
+````typescript
 /**
  * Manages user sessions with Redis backend.
  *
@@ -108,7 +107,7 @@ export class SessionManager {
     // implementation
   }
 }
-```
+````
 
 ### Type/Interface
 
@@ -181,7 +180,7 @@ export enum HttpStatus {
 
 ### Async Function
 
-```typescript
+````typescript
 /**
  * Fetches user data from the database.
  *
@@ -205,42 +204,42 @@ export enum HttpStatus {
 export async function getUserById(userId: string): Promise<User> {
   // implementation
 }
-```
+````
 
 ## JSDoc Tags
 
 ### Essential Tags
 
-| Tag | Verwendung | Beispiel |
-|-----|------------|----------|
-| `@param` | Beschreibt Parameter | `@param userId - The user ID` |
-| `@returns` | Beschreibt Rückgabewert | `@returns The user object` |
-| `@throws` | Beschreibt mögliche Exceptions | `@throws {NotFoundError}` |
-| `@example` | Zeigt Verwendungsbeispiel | Siehe oben |
-| `@remarks` | Zusätzliche Hinweise | `@remarks This is thread-safe` |
-| `@see` | Link zu verwandten Docs | `@see getUserById` |
-| `@deprecated` | Markiert veraltete APIs | `@deprecated Use getUserV2 instead` |
-| `@since` | Seit welcher Version verfügbar | `@since 0.3.0` |
-| `@internal` | Nur für internen Gebrauch | `@internal` |
-| `@public` | Öffentliche API | `@public` |
-| `@private` | Private Implementierung | `@private` |
+| Tag           | Verwendung                     | Beispiel                            |
+| ------------- | ------------------------------ | ----------------------------------- |
+| `@param`      | Beschreibt Parameter           | `@param userId - The user ID`       |
+| `@returns`    | Beschreibt Rückgabewert        | `@returns The user object`          |
+| `@throws`     | Beschreibt mögliche Exceptions | `@throws {NotFoundError}`           |
+| `@example`    | Zeigt Verwendungsbeispiel      | Siehe oben                          |
+| `@remarks`    | Zusätzliche Hinweise           | `@remarks This is thread-safe`      |
+| `@see`        | Link zu verwandten Docs        | `@see getUserById`                  |
+| `@deprecated` | Markiert veraltete APIs        | `@deprecated Use getUserV2 instead` |
+| `@since`      | Seit welcher Version verfügbar | `@since 0.3.0`                      |
+| `@internal`   | Nur für internen Gebrauch      | `@internal`                         |
+| `@public`     | Öffentliche API                | `@public`                           |
+| `@private`    | Private Implementierung        | `@private`                          |
 
 ### Advanced Tags
 
-| Tag | Verwendung | Beispiel |
-|-----|------------|----------|
-| `@typeParam` | Beschreibt Generic Type | `@typeParam T - The item type` |
-| `@defaultValue` | Default-Wert | `@defaultValue 10` |
-| `@beta` | Beta-Feature | `@beta` |
-| `@experimental` | Experimentell | `@experimental` |
-| `@eventProperty` | Event-Property | Für Event-Emitter |
-| `@callback` | Callback-Function | `@callback RequestCallback` |
+| Tag              | Verwendung              | Beispiel                       |
+| ---------------- | ----------------------- | ------------------------------ |
+| `@typeParam`     | Beschreibt Generic Type | `@typeParam T - The item type` |
+| `@defaultValue`  | Default-Wert            | `@defaultValue 10`             |
+| `@beta`          | Beta-Feature            | `@beta`                        |
+| `@experimental`  | Experimentell           | `@experimental`                |
+| `@eventProperty` | Event-Property          | Für Event-Emitter              |
+| `@callback`      | Callback-Function       | `@callback RequestCallback`    |
 
 ## Patterns & Best Practices
 
 ### 1. Generic Function
 
-```typescript
+````typescript
 /**
  * Filters an array based on a predicate function.
  *
@@ -262,11 +261,11 @@ export function filterArray<T>(
 ): T[] {
   return items.filter(predicate);
 }
-```
+````
 
 ### 2. HOC (Higher-Order Component)
 
-```typescript
+````typescript
 /**
  * Wraps a component with error boundary.
  *
@@ -285,11 +284,11 @@ export function withErrorBoundary<P extends object>(
 ): React.ComponentType<P> {
   // implementation
 }
-```
+````
 
 ### 3. Type Guard
 
-```typescript
+````typescript
 /**
  * Type guard to check if value is a valid User object.
  *
@@ -311,11 +310,11 @@ export function isUser(value: unknown): value is User {
     "name" in value
   );
 }
-```
+````
 
 ### 4. Factory Function
 
-```typescript
+````typescript
 /**
  * Creates a configured logger instance.
  *
@@ -338,11 +337,11 @@ export function createLogger(
 ): Logger {
   // implementation
 }
-```
+````
 
 ### 5. Middleware
 
-```typescript
+````typescript
 /**
  * Express middleware for request authentication.
  *
@@ -363,13 +362,13 @@ export function createLogger(
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   // implementation
 };
-```
+````
 
 ## Code Examples
 
 ### Example-Struktur
 
-```typescript
+````typescript
 /**
  * @example
  * Basic usage:
@@ -389,7 +388,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
  * }
  * ```
  */
-```
+````
 
 ## TypeDoc-Generierung
 
