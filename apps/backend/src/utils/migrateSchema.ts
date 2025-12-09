@@ -5,6 +5,9 @@ import path from "path";
 import fs from "fs";
 import Database from "better-sqlite3";
 import { fileURLToPath } from "url";
+import { createLogger } from "./logger.js";
+
+const logger = createLogger("schema-migration");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,17 +15,20 @@ const __dirname = path.dirname(__filename);
 const dbPath = path.resolve(__dirname, "../../data/database.db");
 const migrationsDir = path.resolve(__dirname, "../../data/migrations");
 
-console.log("📦 Starte Schema-Migration...");
-console.log("📁 Datenbank:", dbPath);
-console.log("📂 Migrations-Ordner:", migrationsDir);
+logger.info("📦 Starte Schema-Migration...");
+logger.info({ dbPath }, "📁 Datenbank");
+logger.info({ migrationsDir }, "📂 Migrations-Ordner");
 
 // Sicherheitsprüfungen
 if (!fs.existsSync(migrationsDir)) {
-  console.error("❌ Fehler: Migrations-Ordner nicht gefunden!");
+  logger.error(
+    { migrationsDir },
+    "❌ Fehler: Migrations-Ordner nicht gefunden!",
+  );
   process.exit(1);
 }
 if (!fs.existsSync(dbPath)) {
-  console.error("❌ Fehler: Datenbankdatei existiert nicht!");
+  logger.error({ dbPath }, "❌ Fehler: Datenbankdatei existiert nicht!");
   process.exit(1);
 }
 
@@ -58,11 +64,14 @@ const migrationFiles = fs
   .sort();
 
 if (migrationFiles.length === 0) {
-  console.log("ℹ️  Keine Migrationsdateien gefunden.");
+  logger.info("ℹ️  Keine Migrationsdateien gefunden.");
   process.exit(0);
 }
 
-console.log(`📄 Gefundene Migrationen: ${migrationFiles.length}\n`);
+logger.info(
+  { count: migrationFiles.length },
+  `📄 Gefundene Migrationen: ${migrationFiles.length}`,
+);
 
 // Hilfsfunktion: Prüft, ob eine Spalte existiert
 function columnExists(table: string, column: string): boolean {
@@ -86,18 +95,21 @@ try {
     db.exec("ALTER TABLE schema_migrations ADD COLUMN message TEXT;");
   }
 } catch (err) {
-  console.warn("⚠️  Konnte schema_migrations nicht prüfen:", err);
+  logger.warn({ err }, "⚠️  Konnte schema_migrations nicht prüfen");
 }
 
 // Migrationen anwenden
 for (const file of migrationFiles) {
   if (appliedMigrations.has(file)) {
-    console.log(`⏭️  Überspringe bereits angewendete Migration: ${file}`);
+    logger.info(
+      { file },
+      `⏭️  Überspringe bereits angewendete Migration: ${file}`,
+    );
     continue;
   }
 
   const filePath = path.join(migrationsDir, file);
-  console.log(`🚀 Wende Migration an: ${file}`);
+  logger.info({ file }, `🚀 Wende Migration an: ${file}`);
 
   const sqlContent = fs.readFileSync(filePath, "utf8");
   const statements = sqlContent
@@ -123,7 +135,8 @@ for (const file of migrationFiles) {
       if (alterMatch) {
         const [, table, column] = alterMatch;
         if (columnExists(table, column)) {
-          console.log(
+          logger.info(
+            { table, column },
             `⚠️  Spalte '${column}' in Tabelle '${table}' existiert bereits – überspringe.`,
           );
           continue;
@@ -134,7 +147,7 @@ for (const file of migrationFiles) {
     }
 
     if (!hasOwnTransaction) db.exec("COMMIT;");
-    console.log(`✅ Erfolgreich angewendet: ${file}\n`);
+    logger.info({ file }, `✅ Erfolgreich angewendet: ${file}`);
 
     db.prepare(
       "INSERT INTO schema_migrations (filename, status, message) VALUES (?, ?, ?)",
@@ -142,7 +155,7 @@ for (const file of migrationFiles) {
   } catch (err: unknown) {
     success = false;
     message = err instanceof Error ? err.message : JSON.stringify(err, null, 2);
-    console.error(`❌ Fehler bei Migration ${file}: ${message}`);
+    logger.error({ file, message, err }, `❌ Fehler bei Migration ${file}`);
 
     if (!hasOwnTransaction) db.exec("ROLLBACK;");
 
@@ -151,10 +164,10 @@ for (const file of migrationFiles) {
       "INSERT INTO schema_migrations (filename, status, message) VALUES (?, ?, ?)",
     ).run(file, "failed", message);
 
-    console.warn(`➡️  Fahre mit nächster Migration fort.\n`);
+    logger.warn({ file }, `➡️  Fahre mit nächster Migration fort.`);
   }
 }
 
 // Abschluss
 db.close();
-console.log("🎉 Alle Migrationen abgeschlossen!");
+logger.info("🎉 Alle Migrationen abgeschlossen!");

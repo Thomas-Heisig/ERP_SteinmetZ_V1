@@ -5,6 +5,9 @@ import { HealthCheckResult } from "./DatabaseHealthMonitor.js";
 import { IntegrityIssue } from "./DatabaseHealthMonitor.js";
 import { RepairSession } from "./AutoRepair.js";
 import db from "../dbService.js";
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("healing-report");
 
 export interface HealingReportEntry {
   id: string;
@@ -82,7 +85,10 @@ export class HealingReport {
     // Alte Reports aufräumen
     this.cleanupOldReports();
 
-    console.log(`📝 [HealingReport] Created report ${reportId}: ${status}`);
+    logger.info(
+      { reportId, status, type },
+      `📝 Created report ${reportId}: ${status}`,
+    );
     return report;
   }
 
@@ -109,9 +115,9 @@ export class HealingReport {
         ],
       );
     } catch (error) {
-      console.error(
-        "❌ [HealingReport] Failed to save report to database:",
-        error instanceof Error ? error.message : error,
+      logger.error(
+        { error: error instanceof Error ? error.message : error },
+        "❌ Failed to save report to database",
       );
     }
   }
@@ -239,9 +245,9 @@ export class HealingReport {
         };
       });
     } catch (error) {
-      console.error(
-        "❌ [HealingReport] Failed to load reports from database:",
-        error instanceof Error ? error.message : error,
+      logger.error(
+        { error: error instanceof Error ? error.message : error },
+        "❌ Failed to load reports from database",
       );
       return [];
     }

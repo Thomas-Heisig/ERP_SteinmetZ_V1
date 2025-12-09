@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/services/sipgate/VoiceAI.ts
 
+import { createLogger } from "../../utils/logger.js";
+
+const logger = createLogger("voice-ai");
+
 /**
  * VoiceAI - Text-to-Speech and Speech-to-Text services
  * Provides voice AI capabilities for call handling
@@ -61,7 +65,10 @@ export class VoiceAI {
     const voice = options?.voice || this.defaultTTSVoice;
     const language = options?.language || this.defaultLanguage;
 
-    console.log(`🔊 [VoiceAI] TTS: "${text.substring(0, 50)}..." (${voice})`);
+    logger.info(
+      { textLength: text.length, voice, language },
+      `🔊 TTS: "${text.substring(0, 50)}..." (${voice})`,
+    );
 
     // Mock implementation
     // In production, call actual TTS API
@@ -89,7 +96,10 @@ export class VoiceAI {
   ): Promise<TranscriptionResult> {
     const language = options?.language || this.defaultLanguage;
 
-    console.log(`🎤 [VoiceAI] STT: Processing audio... (${language})`);
+    logger.info(
+      { language, enhanced: options?.enhanced },
+      `🎤 STT: Processing audio... (${language})`,
+    );
 
     // Mock implementation
     // In production, call actual STT API
@@ -127,8 +137,9 @@ export class VoiceAI {
   }): Promise<VoiceResponse> {
     const { transcript, callerInfo, context } = params;
 
-    console.log(
-      `🤖 [VoiceAI] Generating response for: "${transcript.substring(0, 50)}..."`,
+    logger.info(
+      { transcriptLength: transcript.length, callerName: callerInfo?.name },
+      `🤖 Generating response for: "${transcript.substring(0, 50)}..."`,
     );
 
     // Intent detection (simplified)
@@ -253,7 +264,10 @@ export class VoiceAI {
     actionItems: string[];
     sentiment: "positive" | "neutral" | "negative";
   }> {
-    console.log(`📝 [VoiceAI] Summarizing call transcript...`);
+    logger.info(
+      { transcriptLength: transcript.length },
+      `📝 Summarizing call transcript...`,
+    );
 
     // Mock implementation
     // In production, use OpenAI/Claude/etc. for summarization
