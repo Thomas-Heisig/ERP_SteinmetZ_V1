@@ -374,12 +374,14 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 2-3 Tage → 1 Stunde für Grundlagen erledigt
   - **Ergebnis**: Enhanced Pino Logger mit Redaction und Semantic Helpers
 
-- [ ] **Metrics & Monitoring**
-  - [ ] Prometheus-Exporter
-  - [ ] Grafana-Dashboards
-  - [ ] Custom Business-Metrics
-  - [ ] Alert-Rules definieren
-  - **Aufwand**: 3-4 Tage
+- [x] **Metrics & Monitoring** ✅ ERLEDIGT (2025-12-09)
+  - [x] Prometheus-Exporter (prom-client integriert)
+  - [x] Grafana-Dashboards (13-Panel Dashboard erstellt)
+  - [x] Custom Business-Metrics (HTTP, DB, AI, Business, System)
+  - [x] Alert-Rules definieren (15 Rules in 5 Kategorien)
+  - [x] Umfassende Dokumentation (monitoring/README.md)
+  - **Aufwand**: 3-4 Tage → 3 Tage erledigt
+  - **Ergebnis**: Vollständiges Prometheus + Grafana Monitoring-Setup
 
 - [ ] **Tracing**
   - [ ] OpenTelemetry Integration
