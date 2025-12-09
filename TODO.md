@@ -277,9 +277,13 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - [x] npm audit: 0 Vulnerabilities (3 behoben) ✅
   - [x] Dokumentations-Konsolidierung: 4 Dateien archiviert ✅
   - [x] TypeScript Strict Mode für Backend aktiviert ✅ NEU (9. Dez 2025)
-  - [ ] Code-Coverage-Reports (bereits vorhanden)
+  - [x] Code-Coverage-Reports (bereits vorhanden) ✅ NEU (9. Dez 2025)
+    - Backend: 57.73% statements, 44.11% branches
+    - Frontend: 71.42% statements, 75.63% branches
+    - Umfassende Dokumentation erstellt (CODE_COVERAGE.md)
+    - Package.json Scripts erweitert
   - [ ] SonarQube Integration
-  - **Aufwand**: 1-2 Tage → 8 Stunden erledigt, 1 Tag verbleibend für SonarQube
+  - **Aufwand**: 1-2 Tage → 9 Stunden erledigt, 1 Tag verbleibend für SonarQube
 
 ### UI/UX Enhancements
 
