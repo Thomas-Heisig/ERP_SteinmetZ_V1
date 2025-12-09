@@ -9,6 +9,7 @@ This directory contains utility scripts for the ERP SteinmetZ project.
 Checks for console.log statements in staged files.
 
 **Usage**:
+
 ```bash
 npm run check:console
 # or directly:
@@ -16,12 +17,14 @@ bash scripts/check-console-logs.sh
 ```
 
 **What it does**:
+
 - Scans staged files for console.log, console.info, console.debug
 - Allows console.warn and console.error
 - Excludes test files and node_modules
 - Runs automatically in pre-commit hook
 
 **Why**:
+
 - Prevents debug statements in production
 - Enforces structured logging
 - Improves code quality

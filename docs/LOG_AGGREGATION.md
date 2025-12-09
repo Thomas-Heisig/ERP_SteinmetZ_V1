@@ -522,9 +522,11 @@ Nutze Logger-Redaction (bereits in unserem Logger implementiert).
 
 **Empfohlene Retention**:
 
-- **Production**: 30-90 Tage
+- **Production**: 30-90 Tage (Standard), 1-7 Jahre (Audit/Security)
 - **Staging**: 14-30 Tage
 - **Development**: 7 Tage
+
+> 📋 **Detaillierte Retention-Richtlinien**: Siehe [LOG_RETENTION_POLICY.md](LOG_RETENTION_POLICY.md) für umfassende Compliance-, Archivierungs- und Kosten-Strategien
 
 ### 5. Performance
 

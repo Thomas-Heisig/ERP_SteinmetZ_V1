@@ -302,6 +302,21 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - [ ] Nach Migration: no-console auf "error" hochstufen
   - **Aufwand**: 2-3 Stunden → 1.5 Stunden erledigt (Infrastruktur ✅), 4-6 Stunden für Migration verbleibend
 
+### Logging & Monitoring
+
+- [x] **Log-Aggregation & Retention** ✅ DOKUMENTIERT (9. Dez 2025)
+  - [x] LOG_AGGREGATION.md bereits vorhanden (Loki + Grafana)
+  - [x] LOG_RETENTION_POLICY.md erstellt mit:
+    - Retention-Perioden nach Umgebung (Dev/Staging/Prod)
+    - DSGVO/GoBD Compliance-Anforderungen
+    - Log-Kategorisierung (Critical, Important, Standard, Temporary)
+    - Loki & Promtail Konfiguration
+    - Backup & Archivierungs-Strategien
+    - S3 Lifecycle Policies
+    - Kosten-Optimierung
+    - Compliance-Audit-Checkliste
+  - **Aufwand**: 2 Stunden → 2 Stunden erledigt ✅ KOMPLETT
+
 ### UI/UX Enhancements
 
 - [x] **Accessibility (a11y)** ✅ GRUNDLAGEN ERLEDIGT (2025-12-06)
