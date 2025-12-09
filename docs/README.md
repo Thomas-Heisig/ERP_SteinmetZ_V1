@@ -2,6 +2,10 @@
 
 Welcome to the ERP SteinmetZ documentation! This directory contains comprehensive documentation following international standards.
 
+## 📚 Quick Navigation
+
+**➡️ [DOCUMENTATION INDEX](DOCUMENTATION_INDEX.md)** ⭐ **NEU** - Strukturierter Übersichtsindex aller Dokumentation
+
 ## 🎯 System Status
 
 **➡️ [SYSTEM STATUS & OVERVIEW](SYSTEM_STATUS.md)** ⭐ **NEU**
