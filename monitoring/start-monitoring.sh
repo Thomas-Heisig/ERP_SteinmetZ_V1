@@ -142,9 +142,15 @@ if [ -n "$DETACH" ]; then
     echo -e "  ${GREEN}OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces${NC}"
     echo ""
     echo -e "${BLUE}Commands:${NC}"
-    echo -e "  Stop:    ${YELLOW}docker-compose down${NC}"
-    echo -e "  Logs:    ${YELLOW}docker-compose logs -f${NC}"
-    echo -e "  Restart: ${YELLOW}docker-compose restart${NC}"
+    if command -v docker-compose &> /dev/null; then
+        echo -e "  Stop:    ${YELLOW}docker-compose down${NC}"
+        echo -e "  Logs:    ${YELLOW}docker-compose logs -f${NC}"
+        echo -e "  Restart: ${YELLOW}docker-compose restart${NC}"
+    else
+        echo -e "  Stop:    ${YELLOW}docker compose down${NC}"
+        echo -e "  Logs:    ${YELLOW}docker compose logs -f${NC}"
+        echo -e "  Restart: ${YELLOW}docker compose restart${NC}"
+    fi
     echo ""
 else
     echo ""

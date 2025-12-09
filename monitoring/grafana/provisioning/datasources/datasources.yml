@@ -23,13 +23,10 @@ datasources:
     url: http://jaeger:16686
     editable: true
     jsonData:
-      tracesToLogs:
-        datasourceUid: 'loki'
-        tags: ['job', 'instance', 'pod', 'namespace']
-        mappedTags: [{ key: 'service.name', value: 'service' }]
-        mapTagNamesEnabled: false
-        spanStartTimeShift: '-1h'
-        spanEndTimeShift: '1h'
-        filterByTraceID: true
-        filterBySpanID: false
+      # Traces to Logs correlation can be configured here
+      # when a logging backend (e.g., Loki) is added
+      nodeGraph:
+        enabled: true
+      traceDiff:
+        enabled: true
     version: 1

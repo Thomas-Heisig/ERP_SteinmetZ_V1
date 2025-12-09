@@ -820,8 +820,8 @@ errorTrackingService.captureException(error, {
 
 ### Internal Documentation
 - [Tracing Setup](./TRACING_SETUP.md)
-- [Monitoring Overview](./MONITORING.md)
 - [Metrics Setup](../monitoring/README.md)
+- [Database Optimization](./DATABASE_OPTIMIZATION.md)
 
 ---
 

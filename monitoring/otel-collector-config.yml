@@ -45,6 +45,7 @@ processors:
       - key: deployment.environment
         value: ${env:ENVIRONMENT}
         action: upsert
+        # Default to 'development' if ENVIRONMENT is not set
 
   # Span processor for sampling and filtering
   probabilistic_sampler:
