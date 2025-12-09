@@ -89,6 +89,20 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - `GET /api/finance/reports/profit-loss` - GuV
 - `GET /api/finance/statistics` - Finanzstatistiken
 
+#### Document Management System (DMS) ✨ NEU
+
+- `GET /api/documents` - Alle Dokumente
+- `POST /api/documents/upload` - Dokument hochladen
+- `GET /api/documents/:id` - Einzelnes Dokument
+- `POST /api/documents/:id/versions` - Neue Version
+- `GET /api/documents/search` - Volltextsuche
+- `POST /api/documents/:id/ocr` - OCR-Verarbeitung
+- `POST /api/documents/:id/ai-tags` - AI-Tag-Generierung
+- `POST /api/documents/:id/workflows` - Workflow starten
+- `POST /api/documents/:id/sign` - E-Signature anfordern
+- `GET /api/documents/retention-policies` - Aufbewahrungsrichtlinien
+- `GET /api/documents/statistics` - DMS-Statistiken
+
 ## 🚀 Quick Start
 
 ### Voraussetzungen
@@ -216,29 +230,53 @@ ERP_SteinmetZ_V1/
   - APIError-Klassen für konsistente Fehlerbehandlung
   - Zod-Validierung für Request-Parameter
   - Vollständig implementiert in HR, Finance und QuickChat
-- **HR-Modul** ✨ NEU
-  - Mitarbeiterverwaltung (14 Endpoints)
-  - Zeiterfassung
-  - Urlaubsmanagement
-  - Gehaltsabrechnung (Basis)
+- **HR-Modul** ✨ ERWEITERT
+  - Mitarbeiterverwaltung (26 Endpoints)
+  - Vertragsmanagement (permanent, befristet, freiberuflich)
+  - Dokumentenverwaltung für Mitarbeiter
+  - Onboarding-Workflow-System
+  - Zeiterfassung mit Überstundenkonto
+  - Urlaubsmanagement mit Genehmigungsworkflows
+  - Gehaltsabrechnung mit Steuerberechnung
+  - SEPA-Export für Gehaltszahlungen
+  - Lohnjournal
   - Vollständige Input-Validierung und Error-Handling
-- **Finance-Modul** ✨ NEU
-  - Rechnungsmanagement (19 Endpoints)
+- **Finance-Modul** ✨ ERWEITERT
+  - Rechnungsmanagement (39+ Endpoints)
+  - XRechnung-Export (EN 16931-konform)
+  - ZUGFeRD-Integration (PDF mit eingebettetem XML)
+  - Nummernkreisverwaltung
+  - Mahnwesen mit 3 Eskalationsstufen
+  - Auto-Eskalation für überfällige Rechnungen
+  - Kontenrahmen SKR03/SKR04
+  - DATEV-Export
+  - Umsatzsteuer-Voranmeldung (UStVA)
+  - Zahlungsüberwachung mit Risikobewertung
   - Kunden-/Lieferantenverwaltung
-  - Zahlungsabwicklung
   - Buchhaltung (Hauptbuch, Debitoren, Kreditoren)
   - Finanzberichte (Bilanz, GuV)
-  - Vollständige Input-Validierung und Error-Handling
+- **Document Management System (DMS)** ✨ NEU
+  - Dokumenten-Repository (25 Endpoints)
+  - Upload & Versionierung
+  - OCR-Integration für Dokumentenscanning
+  - AI-basierte Verschlagwortung
+  - Full-Text-Suche
+  - Workflow-Automation (Genehmigung, Prüfung, Unterschrift)
+  - E-Signature-Integration
+  - Aufbewahrungsrichtlinien nach deutschem Recht
+  - Audit-Trail für alle Aktionen
 
 ### 🔄 In Entwicklung
 
-- **HR & Finance Module**
-  - Datenbank-Integration für persistente Speicherung
-  - Services-Layer für Business-Logik
-  - Frontend-Komponenten für vollständige Benutzeroberfläche
-  - Workflow-Automatisierung (Genehmigungen, Mahnwesen)
-  - OCR für Eingangsrechnungen
-  - XRechnung/ZUGFeRD-Unterstützung
+- **HR, Finance & DMS Module** ✅ APIs fertig
+  - ✅ 60+ neue API-Endpoints implementiert
+  - ✅ Workflow-Automatisierung (Genehmigungen, Mahnwesen)
+  - ✅ XRechnung/ZUGFeRD-Unterstützung
+  - ✅ OCR-Integration (Placeholder)
+  - ✅ E-Signature-Integration (Placeholder)
+  - 🔄 Datenbank-Integration für persistente Speicherung (folgt)
+  - 🔄 Services-Layer für Business-Logik (folgt)
+  - 🔄 Frontend-Komponenten für vollständige Benutzeroberfläche (folgt)
 - **Real-Time Features** ✅ Backend fertig
   - WebSocket-Server mit Socket.IO ✅
   - JWT-Authentifizierung für WebSocket ✅
@@ -372,6 +410,7 @@ Siehe [SonarQube Guide](docs/SONARQUBE.md) und [CI/CD Setup](CI_CD_SETUP.md) fü
 - **[Functions Catalog](apps/backend/src/routes/functionsCatalog/docs/)** - Funktionskatalog-API
 - **[HR Module](apps/backend/src/routes/hr/docs/)** - Personal & HR Management API
 - **[Finance Module](apps/backend/src/routes/finance/docs/)** - Finanzen & Controlling API
+- **[Document Management](apps/backend/src/routes/documents/docs/)** - DMS API ✨ NEU
 
 ### Erweiterte Themen
 
