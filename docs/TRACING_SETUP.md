@@ -154,6 +154,7 @@ Backend App → OTLP Collector → Jaeger/Zipkin
 ```
 
 Benefits:
+
 - Centralized configuration
 - Multiple exporters
 - Data processing and filtering
@@ -262,12 +263,14 @@ Navigate to http://localhost:16686
 ### Understanding the UI
 
 #### Trace View
+
 - **Timeline**: Visual representation of spans
 - **Duration**: Total time for the request
 - **Services**: Number of services involved
 - **Depth**: Nesting level of spans
 
 #### Span Details
+
 - **Operation Name**: What the span represents
 - **Duration**: How long it took
 - **Tags**: Key-value metadata
@@ -333,13 +336,13 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:9411/api/v2/spans
 
 ### Zipkin vs Jaeger
 
-| Feature | Jaeger | Zipkin |
-|---------|--------|--------|
-| UI | Modern, feature-rich | Simple, lightweight |
-| Performance | Better for high volume | Good for medium volume |
-| Storage | Multiple backends | Limited backends |
-| Dependencies | Full service graph | Basic dependencies |
-| Best For | Production systems | Development, simple setups |
+| Feature      | Jaeger                 | Zipkin                     |
+| ------------ | ---------------------- | -------------------------- |
+| UI           | Modern, feature-rich   | Simple, lightweight        |
+| Performance  | Better for high volume | Good for medium volume     |
+| Storage      | Multiple backends      | Limited backends           |
+| Dependencies | Full service graph     | Basic dependencies         |
+| Best For     | Production systems     | Development, simple setups |
 
 ---
 
@@ -350,19 +353,19 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:9411/api/v2/spans
 Add custom instrumentation to your code:
 
 ```typescript
-import { tracingService } from './services/tracingService.js';
+import { tracingService } from "./services/tracingService.js";
 
 // Method 1: Manual span management
-const span = tracingService.startSpan('custom-operation', {
-  'custom.attribute': 'value',
-  'user.id': userId,
+const span = tracingService.startSpan("custom-operation", {
+  "custom.attribute": "value",
+  "user.id": userId,
 });
 
 try {
   const result = await performOperation();
   tracingService.setAttributes(span, {
-    'result.count': result.length,
-    'result.success': true,
+    "result.count": result.length,
+    "result.success": true,
   });
   tracingService.endSpan(span);
 } catch (error) {
@@ -373,20 +376,20 @@ try {
 
 // Method 2: Using executeInSpan (recommended)
 const result = await tracingService.executeInSpan(
-  'custom-operation',
+  "custom-operation",
   async (span) => {
     // Your code here
     const result = await performOperation();
-    
+
     // Add attributes
     span.setAttributes({
-      'result.count': result.length,
-      'result.success': true,
+      "result.count": result.length,
+      "result.success": true,
     });
-    
+
     return result;
   },
-  { 'user.id': userId }
+  { "user.id": userId },
 );
 ```
 
@@ -407,6 +410,7 @@ await tracingService.initialize();
 ### Sampling Strategies
 
 #### Development
+
 ```env
 # Trace everything
 OTEL_TRACES_SAMPLER=always_on
@@ -414,6 +418,7 @@ OTEL_TRACES_SAMPLER_ARG=1.0
 ```
 
 #### Production - Low Traffic
+
 ```env
 # Trace 50%
 OTEL_TRACES_SAMPLER=parentbased_traceidratio
@@ -421,6 +426,7 @@ OTEL_TRACES_SAMPLER_ARG=0.5
 ```
 
 #### Production - High Traffic
+
 ```env
 # Trace 1%
 OTEL_TRACES_SAMPLER=parentbased_traceidratio
@@ -446,13 +452,13 @@ processors:
         type: status_code
         status_code:
           status_codes: [ERROR]
-      
+
       # Always sample slow requests
       - name: slow-traces
         type: latency
         latency:
           threshold_ms: 5000
-      
+
       # Sample 10% of everything else
       - name: probabilistic
         type: probabilistic
@@ -465,7 +471,7 @@ processors:
 When calling other services, propagate context:
 
 ```typescript
-import { trace, context } from '@opentelemetry/api';
+import { trace, context } from "@opentelemetry/api";
 
 // Get current span
 const span = trace.getSpan(context.active());
@@ -475,10 +481,10 @@ const headers = {};
 propagation.inject(context.active(), headers);
 
 // Make request with propagated context
-const response = await fetch('http://other-service/api', {
+const response = await fetch("http://other-service/api", {
   headers: {
     ...headers,
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   // ... other options
 });
@@ -490,17 +496,17 @@ Database queries are automatically traced, but you can add custom attributes:
 
 ```typescript
 // In dbService.ts or similar
-const span = tracingService.startSpan('db.query', {
-  'db.system': 'sqlite',
-  'db.operation': 'SELECT',
-  'db.table': 'users',
-  'db.statement': query,
+const span = tracingService.startSpan("db.query", {
+  "db.system": "sqlite",
+  "db.operation": "SELECT",
+  "db.table": "users",
+  "db.statement": query,
 });
 
 try {
   const result = await db.query(query);
   span.setAttributes({
-    'db.rows_affected': result.length,
+    "db.rows_affected": result.length,
   });
   tracingService.endSpan(span);
   return result;
@@ -521,21 +527,21 @@ Use consistent span names:
 
 ```typescript
 // HTTP operations
-'http.get /api/users'
-'http.post /api/orders'
+"http.get /api/users";
+"http.post /api/orders";
 
 // Database operations
-'db.select users'
-'db.insert orders'
+"db.select users";
+"db.insert orders";
 
 // Business operations
-'process.order'
-'send.notification'
-'generate.report'
+"process.order";
+"send.notification";
+"generate.report";
 
 // AI operations
-'ai.chat.openai'
-'ai.completion.ollama'
+"ai.chat.openai";
+"ai.completion.ollama";
 ```
 
 ### 2. Attributes
@@ -545,18 +551,18 @@ Add meaningful attributes:
 ```typescript
 span.setAttributes({
   // Business context
-  'user.id': userId,
-  'order.id': orderId,
-  'customer.tier': 'premium',
-  
+  "user.id": userId,
+  "order.id": orderId,
+  "customer.tier": "premium",
+
   // Technical context
-  'db.rows_affected': 10,
-  'cache.hit': true,
-  'api.version': 'v2',
-  
+  "db.rows_affected": 10,
+  "cache.hit": true,
+  "api.version": "v2",
+
   // Performance metrics
-  'result.size_bytes': dataSize,
-  'query.complexity': 'high',
+  "result.size_bytes": dataSize,
+  "query.complexity": "high",
 });
 ```
 
@@ -570,13 +576,13 @@ try {
 } catch (error) {
   // Record error with context
   tracingService.recordError(span, error);
-  
+
   // Add error attributes
   span.setAttributes({
-    'error.type': error.constructor.name,
-    'error.handled': true,
+    "error.type": error.constructor.name,
+    "error.handled": true,
   });
-  
+
   throw error;
 }
 ```
@@ -585,12 +591,12 @@ try {
 
 ```typescript
 // ❌ Bad: Forgetting to end span
-const span = tracingService.startSpan('operation');
+const span = tracingService.startSpan("operation");
 await doWork();
 // span never ended - memory leak!
 
 // ✅ Good: Always end span
-const span = tracingService.startSpan('operation');
+const span = tracingService.startSpan("operation");
 try {
   await doWork();
 } finally {
@@ -598,7 +604,7 @@ try {
 }
 
 // ✅ Better: Use executeInSpan
-await tracingService.executeInSpan('operation', async () => {
+await tracingService.executeInSpan("operation", async () => {
   await doWork();
 });
 ```
@@ -619,14 +625,14 @@ await tracingService.executeInSpan('operation', async () => {
 ```typescript
 // ❌ Bad: Including sensitive data
 span.setAttributes({
-  'user.password': password,
-  'api.key': apiKey,
+  "user.password": password,
+  "api.key": apiKey,
 });
 
 // ✅ Good: Only safe data
 span.setAttributes({
-  'user.id': userId,
-  'api.key_prefix': apiKey.slice(0, 8),
+  "user.id": userId,
+  "api.key_prefix": apiKey.slice(0, 8),
 });
 ```
 
@@ -637,24 +643,28 @@ span.setAttributes({
 ### Traces Not Appearing
 
 **Check if tracing is enabled:**
+
 ```bash
 curl http://localhost:3000/api/health
 # Look for: "tracing": {"enabled": true}
 ```
 
 **Check backend logs:**
+
 ```bash
 docker logs -f backend-container
 # Look for: "OpenTelemetry tracing initialized"
 ```
 
 **Verify Jaeger is running:**
+
 ```bash
 docker ps | grep jaeger
 curl http://localhost:16686/api/services
 ```
 
 **Test OTLP endpoint:**
+
 ```bash
 curl -X POST http://localhost:4318/v1/traces \
   -H "Content-Type: application/json" \
@@ -665,12 +675,14 @@ curl -X POST http://localhost:4318/v1/traces \
 ### Connection Errors
 
 **Error: ECONNREFUSED**
+
 ```
 Solution: Ensure Jaeger is running
 docker-compose up -d jaeger
 ```
 
 **Error: Cannot connect to OTLP endpoint**
+
 ```
 Solution: Check endpoint URL in .env
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
@@ -681,7 +693,9 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
 **Symptoms:** Application slowdown with tracing enabled
 
 **Solutions:**
+
 1. Reduce sample rate:
+
    ```env
    OTEL_TRACES_SAMPLER_ARG=0.01  # 1%
    ```
@@ -696,6 +710,7 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
 ### Missing Spans
 
 **Auto-instrumentation not working:**
+
 ```typescript
 // Ensure tracingService is initialized early
 // in apps/backend/src/index.ts
@@ -704,9 +719,10 @@ await tracingService.initialize();
 ```
 
 **Manual spans disappearing:**
+
 ```typescript
 // Always propagate context
-import { context } from '@opentelemetry/api';
+import { context } from "@opentelemetry/api";
 
 const ctx = context.active();
 await someAsyncOperation(); // Context lost!
@@ -720,15 +736,17 @@ await context.with(ctx, async () => {
 ### Storage Issues
 
 **Jaeger running out of space:**
+
 ```yaml
 # Limit retention in docker-compose.yml
 environment:
   - SPAN_STORAGE_TYPE=badger
-  - BADGER_TTL=168h  # 7 days
-  - BADGER_MAX_VALUE_LOG_FILE_SIZE=1073741824  # 1GB
+  - BADGER_TTL=168h # 7 days
+  - BADGER_MAX_VALUE_LOG_FILE_SIZE=1073741824 # 1GB
 ```
 
 **Alternative: Use external storage**
+
 ```yaml
 environment:
   - SPAN_STORAGE_TYPE=elasticsearch
@@ -741,21 +759,21 @@ environment:
 
 ### Overhead Measurements
 
-| Scenario | Without Tracing | With Tracing (10%) | Overhead |
-|----------|----------------|-------------------|----------|
-| Simple HTTP request | 5ms | 5.1ms | 2% |
-| Database query | 10ms | 10.2ms | 2% |
-| AI request | 2000ms | 2005ms | 0.25% |
-| Complex operation | 100ms | 102ms | 2% |
+| Scenario            | Without Tracing | With Tracing (10%) | Overhead |
+| ------------------- | --------------- | ------------------ | -------- |
+| Simple HTTP request | 5ms             | 5.1ms              | 2%       |
+| Database query      | 10ms            | 10.2ms             | 2%       |
+| AI request          | 2000ms          | 2005ms             | 0.25%    |
+| Complex operation   | 100ms           | 102ms              | 2%       |
 
 ### Recommended Settings
 
-| Environment | Sample Rate | Expected Overhead | Storage per Day |
-|------------|-------------|-------------------|-----------------|
-| Development | 100% | 2-3% | 1-5 GB |
-| Staging | 50% | 1-2% | 500 MB - 2.5 GB |
-| Production (Low Traffic) | 10% | 0.2-0.5% | 100-500 MB |
-| Production (High Traffic) | 1% | <0.1% | 10-50 MB |
+| Environment               | Sample Rate | Expected Overhead | Storage per Day |
+| ------------------------- | ----------- | ----------------- | --------------- |
+| Development               | 100%        | 2-3%              | 1-5 GB          |
+| Staging                   | 50%         | 1-2%              | 500 MB - 2.5 GB |
+| Production (Low Traffic)  | 10%         | 0.2-0.5%          | 100-500 MB      |
+| Production (High Traffic) | 1%          | <0.1%             | 10-50 MB        |
 
 ---
 
@@ -774,12 +792,12 @@ Import Jaeger traces in Grafana:
 Link logs to traces using trace ID:
 
 ```typescript
-import { trace } from '@opentelemetry/api';
+import { trace } from "@opentelemetry/api";
 
 const span = trace.getSpan(context.active());
 const traceId = span?.spanContext().traceId;
 
-logger.info({ traceId }, 'Operation completed');
+logger.info({ traceId }, "Operation completed");
 ```
 
 ### Metrics Correlation
@@ -787,13 +805,9 @@ logger.info({ traceId }, 'Operation completed');
 Add trace IDs to metrics:
 
 ```typescript
-prometheusMetrics.recordHttpRequest(
-  method,
-  path,
-  statusCode,
-  duration,
-  { trace_id: traceId }
-);
+prometheusMetrics.recordHttpRequest(method, path, statusCode, duration, {
+  trace_id: traceId,
+});
 ```
 
 ---
@@ -801,17 +815,20 @@ prometheusMetrics.recordHttpRequest(
 ## Resources
 
 ### Documentation
+
 - [OpenTelemetry Docs](https://opentelemetry.io/docs/)
 - [Jaeger Documentation](https://www.jaegertracing.io/docs/)
 - [Zipkin Documentation](https://zipkin.io/pages/documentation.html)
 - [OTLP Specification](https://opentelemetry.io/docs/specs/otlp/)
 
 ### Tools
+
 - [Jaeger UI](http://localhost:16686)
 - [Zipkin UI](http://localhost:9411)
 - [OTLP Collector](https://github.com/open-telemetry/opentelemetry-collector)
 
 ### Internal Documentation
+
 - [Monitoring Overview](./MONITORING.md)
 - [Metrics Setup](../monitoring/README.md)
 - [Error Tracking](./ERROR_TRACKING_SETUP.md)

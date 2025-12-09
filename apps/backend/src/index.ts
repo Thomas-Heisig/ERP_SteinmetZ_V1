@@ -40,6 +40,7 @@ import quickchatRouter from "./routes/quickchat/quickchatRouter.js";
 import diagnosticsRouter from "./routes/diagnostics/diagnosticsRouter.js";
 import hrRouter from "./routes/hr/hrRouter.js";
 import financeRouter from "./routes/finance/financeRouter.js";
+import documentsRouter from "./routes/documents/documentsRouter.js";
 import searchAnalyticsRouter from "./routes/searchAnalytics/searchAnalyticsRouter.js";
 import metricsRouter from "./routes/metrics/metricsRouter.js";
 
@@ -168,6 +169,7 @@ app.use("/api/quickchat", quickchatRouter);
 app.use("/diagnostics", diagnosticsRouter);
 app.use("/api/hr", hrRouter);
 app.use("/api/finance", financeRouter);
+app.use("/api/documents", documentsRouter);
 app.use("/api/search", searchAnalyticsRouter);
 app.use("/api/metrics", metricsRouter);
 

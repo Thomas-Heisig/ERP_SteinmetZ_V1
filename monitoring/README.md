@@ -60,14 +60,14 @@ docker-compose --profile zipkin up -d
 
 Once started, access the services at:
 
-| Service | URL | Credentials | Purpose |
-|---------|-----|-------------|---------|
-| **Prometheus** | http://localhost:9090 | - | Metrics collection & queries |
-| **Grafana** | http://localhost:3001 | admin/admin | Dashboards & visualization |
-| **Jaeger UI** | http://localhost:16686 | - | Distributed tracing |
-| **Zipkin UI** | http://localhost:9411 | - | Alternative tracing (zipkin profile) |
-| **Alertmanager** | http://localhost:9093 | - | Alert management (advanced profile) |
-| **OTLP Health** | http://localhost:13133 | - | Collector health (advanced profile) |
+| Service          | URL                    | Credentials | Purpose                              |
+| ---------------- | ---------------------- | ----------- | ------------------------------------ |
+| **Prometheus**   | http://localhost:9090  | -           | Metrics collection & queries         |
+| **Grafana**      | http://localhost:3001  | admin/admin | Dashboards & visualization           |
+| **Jaeger UI**    | http://localhost:16686 | -           | Distributed tracing                  |
+| **Zipkin UI**    | http://localhost:9411  | -           | Alternative tracing (zipkin profile) |
+| **Alertmanager** | http://localhost:9093  | -           | Alert management (advanced profile)  |
+| **OTLP Health**  | http://localhost:13133 | -           | Collector health (advanced profile)  |
 
 ---
 
@@ -95,6 +95,7 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 ### Grafana Datasources
 
 Datasources are automatically provisioned on startup:
+
 - **Prometheus**: http://prometheus:9090 (default)
 - **Jaeger**: http://jaeger:16686
 
@@ -103,6 +104,7 @@ The dashboard at `grafana/erp-steinmetz-dashboard.json` is automatically loaded.
 ### Prometheus Scraping
 
 Prometheus is configured to scrape metrics from:
+
 - Backend: http://host.docker.internal:3000/api/metrics
 - Scrape interval: 15 seconds
 
