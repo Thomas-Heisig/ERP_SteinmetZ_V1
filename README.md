@@ -23,7 +23,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - **Deterministische Basis**: Kernzahlen werden ausschließlich deterministisch berechnet
 - **RAG für Wissensmanagement**: Retrieval Augmented Generation nur für Text-/Webquellen
 
-## ✅ Aktueller Status (Stand: 7. Dezember 2025)
+## ✅ Aktueller Status (Stand: 9. Dezember 2025)
 
 > 📊 **System-Übersicht**: [Detaillierter System-Status](docs/SYSTEM_STATUS.md) mit Performance-Metriken, Operational-Readiness und bekannten Einschränkungen
 
