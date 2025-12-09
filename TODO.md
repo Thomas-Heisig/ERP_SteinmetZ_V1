@@ -317,6 +317,25 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
     - Compliance-Audit-Checkliste
   - **Aufwand**: 2 Stunden → 2 Stunden erledigt ✅ KOMPLETT
 
+### Code Dokumentation
+
+- [x] **JSDoc & TypeDoc** ✅ INFRASTRUKTUR ERLEDIGT (9. Dez 2025)
+  - [x] JSDoc Style Guide erstellt (JSDOC_GUIDE.md)
+    - Dokumentations-Standards definiert
+    - Best Practices für Functions, Classes, Types
+    - Migration Plan (3-Phasen-Ansatz)
+    - Beispiele für alle gängigen Patterns
+  - [x] TypeDoc Konfiguration optimiert
+    - Erfolgreiche Generierung von API-Dokumentation
+    - Output: docs/api/index.html
+    - npm run docs funktioniert
+    - npm run docs:serve für lokale Ansicht
+  - [ ] Graduelle Migration: JSDoc für alle öffentlichen APIs hinzufügen
+    - Phase 1: Critical APIs (Services, Middleware, Core Utils)
+    - Phase 2: Routes
+    - Phase 3: Supporting Code
+  - **Aufwand**: 2-3 Stunden → 2 Stunden erledigt (Infrastruktur ✅), 10-15 Stunden für Migration verbleibend
+
 ### UI/UX Enhancements
 
 - [x] **Accessibility (a11y)** ✅ GRUNDLAGEN ERLEDIGT (2025-12-06)

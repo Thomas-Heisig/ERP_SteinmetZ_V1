@@ -12,31 +12,31 @@ Diese Richtlinie definiert, wie lange verschiedene Log-Arten gespeichert werden,
 
 ### Production
 
-| Log-Typ | Retention | Grund | Storage-Format |
-|---------|-----------|-------|----------------|
-| **Application Logs** | 90 Tage | Debugging, Compliance | Compressed |
-| **Security Logs** | 1 Jahr | Audit, DSGVO | Encrypted + Compressed |
-| **Access Logs** | 90 Tage | Analytics, Security | Compressed |
-| **Error Logs** | 180 Tage | Root Cause Analysis | Compressed |
-| **Audit Logs** | 7 Jahre | GoBD-Compliance | Encrypted + Compressed |
-| **Performance Metrics** | 30 Tage (raw), 2 Jahre (aggregiert) | Kapazitätsplanung | Aggregated |
+| Log-Typ                 | Retention                           | Grund                 | Storage-Format         |
+| ----------------------- | ----------------------------------- | --------------------- | ---------------------- |
+| **Application Logs**    | 90 Tage                             | Debugging, Compliance | Compressed             |
+| **Security Logs**       | 1 Jahr                              | Audit, DSGVO          | Encrypted + Compressed |
+| **Access Logs**         | 90 Tage                             | Analytics, Security   | Compressed             |
+| **Error Logs**          | 180 Tage                            | Root Cause Analysis   | Compressed             |
+| **Audit Logs**          | 7 Jahre                             | GoBD-Compliance       | Encrypted + Compressed |
+| **Performance Metrics** | 30 Tage (raw), 2 Jahre (aggregiert) | Kapazitätsplanung     | Aggregated             |
 
 ### Staging
 
-| Log-Typ | Retention | Grund | Storage-Format |
-|---------|-----------|-------|----------------|
-| **Application Logs** | 30 Tage | Testing, Debugging | Compressed |
-| **Security Logs** | 90 Tage | Security Testing | Compressed |
-| **Error Logs** | 60 Tage | Bug Investigation | Compressed |
-| **Performance Metrics** | 14 Tage | Load Testing | Raw |
+| Log-Typ                 | Retention | Grund              | Storage-Format |
+| ----------------------- | --------- | ------------------ | -------------- |
+| **Application Logs**    | 30 Tage   | Testing, Debugging | Compressed     |
+| **Security Logs**       | 90 Tage   | Security Testing   | Compressed     |
+| **Error Logs**          | 60 Tage   | Bug Investigation  | Compressed     |
+| **Performance Metrics** | 14 Tage   | Load Testing       | Raw            |
 
 ### Development
 
-| Log-Typ | Retention | Grund | Storage-Format |
-|---------|-----------|-------|----------------|
-| **Application Logs** | 7 Tage | Lokales Debugging | Raw |
-| **Error Logs** | 14 Tage | Bug Fixing | Raw |
-| **Performance Metrics** | 7 Tage | Optimization | Raw |
+| Log-Typ                 | Retention | Grund             | Storage-Format |
+| ----------------------- | --------- | ----------------- | -------------- |
+| **Application Logs**    | 7 Tage    | Lokales Debugging | Raw            |
+| **Error Logs**          | 14 Tage   | Bug Fixing        | Raw            |
+| **Performance Metrics** | 7 Tage    | Optimization      | Raw            |
 
 ## Compliance-Anforderungen
 
@@ -45,7 +45,7 @@ Diese Richtlinie definiert, wie lange verschiedene Log-Arten gespeichert werden,
 **Artikel 5(1)(e)**: Speicherbegrenzung
 
 - Personenbezogene Daten nur so lange speichern, wie für Zweck erforderlich
-- **Unsere Umsetzung**: 
+- **Unsere Umsetzung**:
   - Pseudonymisierung von User-IDs in Logs
   - Automatische Löschung nach 90 Tagen (Application Logs)
   - Exception: Audit Logs für rechtliche Verpflichtungen (7 Jahre)
@@ -85,6 +85,7 @@ Diese Richtlinie definiert, wie lange verschiedene Log-Arten gespeichert werden,
 - Data Changes (CRUD-Operationen auf kritische Daten)
 
 **Eigenschaften**:
+
 - Verschlüsselt
 - Tamper-Proof (WORM Storage)
 - Backup an Off-Site-Location
@@ -99,6 +100,7 @@ Diese Richtlinie definiert, wie lange verschiedene Log-Arten gespeichert werden,
 - Database Slow Queries
 
 **Eigenschaften**:
+
 - Komprimiert
 - Searchable (Loki/Elasticsearch)
 
@@ -111,6 +113,7 @@ Diese Richtlinie definiert, wie lange verschiedene Log-Arten gespeichert werden,
 - Debug Logs (Production)
 
 **Eigenschaften**:
+
 - Komprimiert
 - Archiviert nach 30 Tagen
 
@@ -123,6 +126,7 @@ Diese Richtlinie definiert, wie lange verschiedene Log-Arten gespeichert werden,
 - Test Logs
 
 **Eigenschaften**:
+
 - Unkomprimiert
 - Lokaler Storage
 
@@ -157,11 +161,10 @@ compactor:
 limits_config:
   # Standard: 90 Tage
   retention_period: 2160h
-  
+
   # Per-Tenant Overrides (via Labels)
   per_stream_rate_limit: 3MB
   per_stream_rate_limit_burst: 15MB
-
 # Custom Retention via Tenant Config
 # (In Loki 2.7+, pro-stream retention via labels)
 ```
@@ -180,18 +183,18 @@ scrape_configs:
           job: backend
           environment: production
           retention: standard # 90 Tage
-          
+
     # Audit Logs bekommen längere Retention
     relabel_configs:
       - source_labels: [__meta_filepath]
         target_label: __path__
-        
+
       # Audit Logs
       - source_labels: [module]
         regex: audit
         target_label: retention
         replacement: audit # 7 Jahre
-        
+
       # Security Logs
       - source_labels: [level]
         regex: (ERROR|WARN)
@@ -234,11 +237,12 @@ const createLogStream = (filename: string, retention: number) => {
     maxFiles: retention, // Anzahl Tage
     path: "./logs",
     compress: "gzip",
-    
+
     // Callback nach Rotation
     rotate: (filename: string, index: number) => {
       // Optional: Upload zu S3/Backup-Server
-      if (index > 30) { // Nach 30 Tagen archivieren
+      if (index > 30) {
+        // Nach 30 Tagen archivieren
         uploadToArchive(filename);
       }
     },
@@ -276,7 +280,7 @@ while read logfile; do
   # Upload zu S3 mit Lifecycle Policy
   aws s3 cp "$logfile" "$S3_BUCKET/$(date +%Y/%m/)/" \
     --storage-class GLACIER
-  
+
   # Lokale Kopie löschen nach erfolgreichem Upload
   if [ $? -eq 0 ]; then
     rm "$logfile"
@@ -355,7 +359,7 @@ groups:
         annotations:
           summary: "High log storage usage"
           description: "Loki ingester has {{ $value }} streams. Consider reviewing retention policy."
-          
+
       - alert: RetentionCleanupFailed
         expr: increase(loki_compactor_runs_failed_total[24h]) > 0
         for: 1h
@@ -375,7 +379,7 @@ groups:
 ```typescript
 // Anonymisiere User-IDs in alten Logs
 const anonymizeLogs = (logs: LogEntry[]) => {
-  return logs.map(log => ({
+  return logs.map((log) => ({
     ...log,
     userId: log.userId ? hashUserId(log.userId) : undefined,
     userEmail: "[REDACTED]",
@@ -387,10 +391,12 @@ const anonymizeLogs = (logs: LogEntry[]) => {
 ### Verschlüsselung
 
 **At Rest**:
+
 - Alle Audit Logs verschlüsselt (AES-256)
 - Encryption Key Management: AWS KMS / Azure Key Vault
 
 **In Transit**:
+
 - TLS 1.3 für Log-Shipping
 - mTLS zwischen Promtail und Loki
 
@@ -401,7 +407,7 @@ const anonymizeLogs = (logs: LogEntry[]) => {
 **Annahme**: 10 GB/Tag Log-Volume
 
 | Retention | Storage Needed | Kosten (S3 Standard) | Kosten (S3 Glacier) |
-|-----------|----------------|----------------------|---------------------|
+| --------- | -------------- | -------------------- | ------------------- |
 | 7 Tage    | 70 GB          | $1.61/Monat          | -                   |
 | 30 Tage   | 300 GB         | $6.90/Monat          | -                   |
 | 90 Tage   | 900 GB         | $20.70/Monat         | $3.60/Monat         |
@@ -409,6 +415,7 @@ const anonymizeLogs = (logs: LogEntry[]) => {
 | 7 Jahre   | 25.2 TB        | $579.60/Monat        | $100.80/Monat       |
 
 **Empfehlung**:
+
 - 0-30 Tage: S3 Standard (Hot Storage)
 - 30-365 Tage: S3 Glacier (Cold Storage)
 - 1-7 Jahre: S3 Glacier Deep Archive
@@ -436,12 +443,14 @@ Alle Änderungen an Retention-Policies müssen dokumentiert werden:
 ## Change Log
 
 ### 2025-12-09
+
 - Initial Retention Policy definiert
 - Standard: 90 Tage
 - Audit: 7 Jahre
 - Security: 1 Jahr
 
 ### [Datum]
+
 - [Änderung]
 - [Grund]
 - [Approved by]
