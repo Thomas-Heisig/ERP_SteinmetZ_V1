@@ -28,6 +28,7 @@
     "coverage:open:frontend": "open apps/frontend/coverage/index.html",
     "docs": "typedoc",
     "docs:serve": "npx http-server docs/api -p 8080 -o",
+    "sonar:setup": "bash scripts/sonarqube-setup.sh",
     "clean": "rimraf node_modules **/node_modules **/dist",
     "clean:frontend": "rimraf apps/frontend/dist",
     "clean:backend": "rimraf apps/backend/dist",
