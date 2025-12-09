@@ -123,11 +123,11 @@ SENTRY_AUTH_TOKEN=your-auth-token
 
 Sample rates control how much data is sent to Sentry:
 
-| Sample Rate | Meaning | When to Use |
-|-------------|---------|-------------|
-| 1.0 (100%) | All events | Development, low traffic |
-| 0.1 (10%) | 1 in 10 events | Production, normal traffic |
-| 0.01 (1%) | 1 in 100 events | Production, high traffic |
+| Sample Rate | Meaning         | When to Use                |
+| ----------- | --------------- | -------------------------- |
+| 1.0 (100%)  | All events      | Development, low traffic   |
+| 0.1 (10%)   | 1 in 10 events  | Production, normal traffic |
+| 0.01 (1%)   | 1 in 100 events | Production, high traffic   |
 
 **Note**: Errors are ALWAYS captured regardless of sample rate. Sample rates only affect performance monitoring.
 
@@ -154,11 +154,11 @@ All unhandled errors are automatically captured:
 
 ```typescript
 // This error will be captured automatically
-throw new Error('Something went wrong');
+throw new Error("Something went wrong");
 
 // Async errors are also captured
 async function fetchData() {
-  throw new Error('API error');
+  throw new Error("API error");
 }
 ```
 
@@ -167,29 +167,29 @@ async function fetchData() {
 Capture errors explicitly with context:
 
 ```typescript
-import { errorTrackingService } from './services/errorTrackingService.js';
+import { errorTrackingService } from "./services/errorTrackingService.js";
 
 try {
   await riskyOperation();
 } catch (error) {
   errorTrackingService.captureException(error, {
     user: {
-      id: '123',
-      email: 'user@example.com',
-      username: 'johndoe'
+      id: "123",
+      email: "user@example.com",
+      username: "johndoe",
     },
     tags: {
-      feature: 'checkout',
-      payment_method: 'credit_card'
+      feature: "checkout",
+      payment_method: "credit_card",
     },
     extra: {
-      orderId: '456',
+      orderId: "456",
       amount: 99.99,
-      retryCount: 3
+      retryCount: 3,
     },
-    level: 'error'  // debug, info, warning, error, fatal
+    level: "error", // debug, info, warning, error, fatal
   });
-  
+
   // Handle error gracefully
   return fallbackValue;
 }
@@ -202,23 +202,19 @@ Log important events (not just errors):
 ```typescript
 // Warning message
 errorTrackingService.captureMessage(
-  'User attempted unauthorized access',
-  'warning',
+  "User attempted unauthorized access",
+  "warning",
   {
-    tags: { security: 'true' },
-    extra: { userId: '123', resource: '/admin' }
-  }
+    tags: { security: "true" },
+    extra: { userId: "123", resource: "/admin" },
+  },
 );
 
 // Info message
-errorTrackingService.captureMessage(
-  'Large batch operation started',
-  'info',
-  {
-    tags: { operation: 'batch' },
-    extra: { itemCount: 1000 }
-  }
-);
+errorTrackingService.captureMessage("Large batch operation started", "info", {
+  tags: { operation: "batch" },
+  extra: { itemCount: 1000 },
+});
 ```
 
 ### User Context
@@ -228,9 +224,9 @@ Associate errors with specific users:
 ```typescript
 // Set user context for all subsequent events
 errorTrackingService.setUser({
-  id: '123',
-  email: 'user@example.com',
-  username: 'johndoe'
+  id: "123",
+  email: "user@example.com",
+  username: "johndoe",
 });
 
 // Clear user context (e.g., on logout)
@@ -243,13 +239,13 @@ Add searchable tags for filtering:
 
 ```typescript
 // Single tag
-errorTrackingService.setTag('feature', 'checkout');
+errorTrackingService.setTag("feature", "checkout");
 
 // Multiple tags
 errorTrackingService.setTags({
-  feature: 'checkout',
-  payment_method: 'stripe',
-  user_tier: 'premium'
+  feature: "checkout",
+  payment_method: "stripe",
+  user_tier: "premium",
 });
 ```
 
@@ -258,17 +254,17 @@ errorTrackingService.setTags({
 Add structured context data:
 
 ```typescript
-errorTrackingService.setContext('order', {
-  id: '456',
+errorTrackingService.setContext("order", {
+  id: "456",
   total: 99.99,
   items: 3,
-  shipping_method: 'express'
+  shipping_method: "express",
 });
 
-errorTrackingService.setContext('performance', {
+errorTrackingService.setContext("performance", {
   db_queries: 12,
   cache_hits: 8,
-  external_api_calls: 2
+  external_api_calls: 2,
 });
 ```
 
@@ -279,30 +275,30 @@ Track user actions leading up to an error:
 ```typescript
 // Navigation breadcrumb
 errorTrackingService.addBreadcrumb({
-  message: 'User navigated to checkout',
-  category: 'navigation',
-  level: 'info',
-  data: { from: '/cart', to: '/checkout' }
+  message: "User navigated to checkout",
+  category: "navigation",
+  level: "info",
+  data: { from: "/cart", to: "/checkout" },
 });
 
 // User action breadcrumb
 errorTrackingService.addBreadcrumb({
   message: 'User clicked "Place Order"',
-  category: 'user-action',
-  level: 'info',
-  data: { button: 'place-order', orderId: '456' }
+  category: "user-action",
+  level: "info",
+  data: { button: "place-order", orderId: "456" },
 });
 
 // API call breadcrumb
 errorTrackingService.addBreadcrumb({
-  message: 'Payment API called',
-  category: 'http',
-  level: 'info',
+  message: "Payment API called",
+  category: "http",
+  level: "info",
   data: {
-    url: 'https://api.stripe.com/v1/charges',
-    method: 'POST',
-    status: 200
-  }
+    url: "https://api.stripe.com/v1/charges",
+    method: "POST",
+    status: 200,
+  },
 });
 ```
 
@@ -311,34 +307,34 @@ errorTrackingService.addBreadcrumb({
 Track slow operations:
 
 ```typescript
-import * as Sentry from '@sentry/node';
+import * as Sentry from "@sentry/node";
 
 // Automatic HTTP request tracking (already configured)
 // Manual transaction tracking
 const transaction = Sentry.startTransaction({
-  op: 'batch.process',
-  name: 'Process Large Batch',
-  tags: { batchSize: '1000' }
+  op: "batch.process",
+  name: "Process Large Batch",
+  tags: { batchSize: "1000" },
 });
 
 try {
   const span1 = transaction.startChild({
-    op: 'db.query',
-    description: 'Fetch items'
+    op: "db.query",
+    description: "Fetch items",
   });
   await fetchItems();
   span1.finish();
 
   const span2 = transaction.startChild({
-    op: 'process',
-    description: 'Transform data'
+    op: "process",
+    description: "Transform data",
   });
   await transformData();
   span2.finish();
 
-  transaction.setStatus('ok');
+  transaction.setStatus("ok");
 } catch (error) {
-  transaction.setStatus('internal_error');
+  transaction.setStatus("internal_error");
   throw error;
 } finally {
   transaction.finish();
@@ -353,13 +349,13 @@ try {
 
 ```typescript
 // ❌ Bad: Everything is an error
-errorTrackingService.captureMessage('User logged in', 'error');
+errorTrackingService.captureMessage("User logged in", "error");
 
 // ✅ Good: Use appropriate levels
-errorTrackingService.captureMessage('User logged in', 'info');
-errorTrackingService.captureMessage('Deprecated API used', 'warning');
-errorTrackingService.captureMessage('Payment failed', 'error');
-errorTrackingService.captureMessage('Database unreachable', 'fatal');
+errorTrackingService.captureMessage("User logged in", "info");
+errorTrackingService.captureMessage("Deprecated API used", "warning");
+errorTrackingService.captureMessage("Payment failed", "error");
+errorTrackingService.captureMessage("Database unreachable", "fatal");
 ```
 
 ### 2. Add Context Before Errors
@@ -367,7 +363,7 @@ errorTrackingService.captureMessage('Database unreachable', 'fatal');
 ```typescript
 // Set context early
 errorTrackingService.setUser({ id: userId });
-errorTrackingService.setTags({ feature: 'checkout' });
+errorTrackingService.setTags({ feature: "checkout" });
 
 // Now all errors have this context automatically
 try {
@@ -385,12 +381,12 @@ Use fingerprinting to group similar errors:
 ```typescript
 errorTrackingService.captureException(error, {
   tags: {
-    error_group: 'payment-processing'  // Groups similar errors
+    error_group: "payment-processing", // Groups similar errors
   },
   extra: {
-    payment_id: '123',  // Specific to this instance
-    fingerprint: ['payment-api-timeout']  // Custom grouping
-  }
+    payment_id: "123", // Specific to this instance
+    fingerprint: ["payment-api-timeout"], // Custom grouping
+  },
 });
 ```
 
@@ -409,10 +405,10 @@ The service automatically redacts sensitive fields:
 // This is safe - sensitive data will be redacted
 errorTrackingService.captureException(error, {
   extra: {
-    password: 'secret123',      // → [REDACTED]
-    apiKey: 'sk_live_abc',      // → [REDACTED]
-    username: 'johndoe'         // → preserved
-  }
+    password: "secret123", // → [REDACTED]
+    apiKey: "sk_live_abc", // → [REDACTED]
+    username: "johndoe", // → preserved
+  },
 });
 ```
 
@@ -427,12 +423,12 @@ beforeSend(event, hint) {
   if (event.request?.data) {
     event.request.data = redactSensitiveData(event.request.data);
   }
-  
+
   // Filter out known non-issues
   if (event.exception?.values?.[0]?.value?.includes('NetworkError')) {
     return null;  // Don't send this error
   }
-  
+
   return event;
 }
 ```
@@ -443,11 +439,12 @@ Prevent flooding Sentry:
 
 ```typescript
 // Set sample rates in .env
-SENTRY_TRACES_SAMPLE_RATE=0.1  // 10% of transactions
+SENTRY_TRACES_SAMPLE_RATE = 0.1; // 10% of transactions
 
 // Or conditionally capture
-if (Math.random() < 0.1) {  // 10% chance
-  errorTrackingService.captureMessage('Periodic health check', 'info');
+if (Math.random() < 0.1) {
+  // 10% chance
+  errorTrackingService.captureMessage("Periodic health check", "info");
 }
 ```
 
@@ -475,11 +472,13 @@ Already configured in `tsconfig.json`:
 #### Option 1: Using Sentry CLI
 
 1. Install Sentry CLI:
+
 ```bash
 npm install -D @sentry/cli
 ```
 
 2. Configure `.sentryclirc`:
+
 ```ini
 [defaults]
 url=https://sentry.io/
@@ -491,6 +490,7 @@ token=your-auth-token
 ```
 
 3. Add to `package.json`:
+
 ```json
 {
   "scripts": {
@@ -501,6 +501,7 @@ token=your-auth-token
 ```
 
 4. Upload after build:
+
 ```bash
 npm run build
 npm run sentry:sourcemaps
@@ -512,15 +513,15 @@ For frontend applications:
 
 ```javascript
 // webpack.config.js
-const SentryWebpackPlugin = require('@sentry/webpack-plugin');
+const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
 module.exports = {
   plugins: [
     new SentryWebpackPlugin({
       authToken: process.env.SENTRY_AUTH_TOKEN,
-      org: 'your-org',
-      project: 'your-project',
-      include: './dist',
+      org: "your-org",
+      project: "your-project",
+      include: "./dist",
       release: process.env.npm_package_version,
     }),
   ],
@@ -649,12 +650,14 @@ Auto-assign issues to responsible teams:
 ### Errors Not Appearing in Sentry
 
 **Check if Sentry is enabled:**
+
 ```bash
 # Check logs on startup
 # Should see: "Sentry error tracking initialized"
 ```
 
 **Verify DSN:**
+
 ```bash
 # Test DSN
 curl -X POST https://sentry.io/api/YOUR_PROJECT/store/ \
@@ -664,6 +667,7 @@ curl -X POST https://sentry.io/api/YOUR_PROJECT/store/ \
 ```
 
 **Check environment variables:**
+
 ```env
 SENTRY_ENABLED=true  # Must be "true" not "1"
 SENTRY_DSN=https://... # Must be valid DSN
@@ -672,16 +676,27 @@ SENTRY_DSN=https://... # Must be valid DSN
 ### Sensitive Data Leaking
 
 **Review redaction list:**
+
 ```typescript
 // apps/backend/src/services/errorTrackingService.ts
 const sensitiveKeys = [
-  'password', 'token', 'apiKey', 'api_key', 'secret',
-  'authorization', 'auth', 'cookie', 'session',
-  'ssn', 'credit_card', 'creditCard'
+  "password",
+  "token",
+  "apiKey",
+  "api_key",
+  "secret",
+  "authorization",
+  "auth",
+  "cookie",
+  "session",
+  "ssn",
+  "credit_card",
+  "creditCard",
 ];
 ```
 
 **Add custom redaction:**
+
 ```typescript
 // Before send hook
 beforeSend(event, hint) {
@@ -696,31 +711,35 @@ beforeSend(event, hint) {
 ### Too Many Events
 
 **Increase sample rate threshold:**
+
 ```env
 SENTRY_TRACES_SAMPLE_RATE=0.01  # 1% instead of 10%
 ```
 
 **Filter noisy errors:**
+
 ```typescript
 // In beforeSend hook
-if (event.exception?.values?.[0]?.value?.includes('Expected error')) {
-  return null;  // Don't send
+if (event.exception?.values?.[0]?.value?.includes("Expected error")) {
+  return null; // Don't send
 }
 ```
 
 **Use fingerprinting:**
+
 ```typescript
 // Group similar errors together
 errorTrackingService.captureException(error, {
   extra: {
-    fingerprint: ['{{ default }}', errorType]
-  }
+    fingerprint: ["{{ default }}", errorType],
+  },
 });
 ```
 
 ### Source Maps Not Working
 
 **Check release configuration:**
+
 ```typescript
 Sentry.init({
   release: process.env.SENTRY_RELEASE || process.env.npm_package_version,
@@ -728,11 +747,13 @@ Sentry.init({
 ```
 
 **Verify upload:**
+
 ```bash
 sentry-cli releases files YOUR_RELEASE list
 ```
 
 **Check file paths match:**
+
 ```bash
 # Source map should reference correct paths
 # dist/index.js.map should match dist/index.js
@@ -747,15 +768,15 @@ sentry-cli releases files YOUR_RELEASE list
 Link errors to traces:
 
 ```typescript
-import { trace } from '@opentelemetry/api';
+import { trace } from "@opentelemetry/api";
 
 const span = trace.getSpan(context.active());
 const traceId = span?.spanContext().traceId;
 
 errorTrackingService.captureException(error, {
   tags: {
-    trace_id: traceId  // Link to OpenTelemetry trace
-  }
+    trace_id: traceId, // Link to OpenTelemetry trace
+  },
 });
 ```
 
@@ -766,10 +787,7 @@ Add Sentry event ID to logs:
 ```typescript
 const eventId = errorTrackingService.captureException(error);
 
-logger.error(
-  { sentryEventId: eventId },
-  'Error captured in Sentry'
-);
+logger.error({ sentryEventId: eventId }, "Error captured in Sentry");
 ```
 
 ### Integration with Metrics
@@ -777,10 +795,10 @@ logger.error(
 Track error rates in Prometheus:
 
 ```typescript
-prometheusMetrics.recordError('payment_api', 'error');
+prometheusMetrics.recordError("payment_api", "error");
 
 errorTrackingService.captureException(error, {
-  tags: { error_type: 'payment_api' }
+  tags: { error_type: "payment_api" },
 });
 ```
 
@@ -790,12 +808,12 @@ errorTrackingService.captureException(error, {
 
 ### Overhead Measurements
 
-| Scenario | Without Sentry | With Sentry | Overhead |
-|----------|----------------|-------------|----------|
-| Successful request | 5ms | 5ms | 0% |
-| Error capture | 5ms | 7ms | 40% (only on errors) |
-| Breadcrumb | - | <0.1ms | Negligible |
-| Transaction tracking (10%) | 5ms | 5.2ms | 4% |
+| Scenario                   | Without Sentry | With Sentry | Overhead             |
+| -------------------------- | -------------- | ----------- | -------------------- |
+| Successful request         | 5ms            | 5ms         | 0%                   |
+| Error capture              | 5ms            | 7ms         | 40% (only on errors) |
+| Breadcrumb                 | -              | <0.1ms      | Negligible           |
+| Transaction tracking (10%) | 5ms            | 5.2ms       | 4%                   |
 
 ### Optimization Tips
 
@@ -810,15 +828,18 @@ errorTrackingService.captureException(error, {
 ## Resources
 
 ### Documentation
+
 - [Sentry Node.js Docs](https://docs.sentry.io/platforms/node/)
 - [Sentry Express Docs](https://docs.sentry.io/platforms/node/guides/express/)
 - [Source Maps Guide](https://docs.sentry.io/platforms/node/sourcemaps/)
 
 ### Tools
+
 - [Sentry CLI](https://docs.sentry.io/cli/)
 - [Sentry Webpack Plugin](https://github.com/getsentry/sentry-webpack-plugin)
 
 ### Internal Documentation
+
 - [Tracing Setup](./TRACING_SETUP.md)
 - [Metrics Setup](../monitoring/README.md)
 - [Database Optimization](./DATABASE_OPTIMIZATION.md)
