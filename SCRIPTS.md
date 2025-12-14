@@ -159,6 +159,7 @@ Checks the status of monitoring infrastructure.
 - Useful for troubleshooting monitoring setup
 
 **Example output:**
+
 ```bash
 $ npm run check:monitoring
 

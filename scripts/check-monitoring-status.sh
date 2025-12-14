@@ -54,10 +54,17 @@ echo ""
 # Check Docker containers
 echo "🐳 Checking Docker Monitoring Stack..."
 
-# Check if docker compose is available
-if command -v docker-compose &> /dev/null || docker compose version &> /dev/null 2>&1; then
+# Check if docker is available
+DOCKER_CMD=""
+if command -v docker-compose &> /dev/null; then
+    DOCKER_CMD="docker-compose"
+elif docker compose version &> /dev/null 2>&1; then
+    DOCKER_CMD="docker compose"
+fi
+
+if [ -n "$DOCKER_CMD" ]; then
     # Get list of monitoring containers
-    CONTAINERS=$(docker ps --filter "name=prometheus\|grafana\|jaeger\|zipkin\|otel-collector" --format "{{.Names}}" 2>/dev/null || echo "")
+    CONTAINERS=$(docker ps --filter "name=prometheus" --filter "name=grafana" --filter "name=jaeger" --filter "name=zipkin" --filter "name=otel-collector" --format "{{.Names}}" 2>/dev/null || echo "")
     
     if [ -z "$CONTAINERS" ]; then
         echo -e "${YELLOW}⚠️  No monitoring containers running${NC}"
@@ -65,8 +72,10 @@ if command -v docker-compose &> /dev/null || docker compose version &> /dev/null
     else
         echo -e "${GREEN}✅ Monitoring containers found:${NC}"
         for container in $CONTAINERS; do
-            STATUS=$(docker inspect -f '{{.State.Status}}' "$container" 2>/dev/null || echo "unknown")
-            if [ "$STATUS" = "running" ]; then
+            STATUS=$(docker inspect -f '{{.State.Status}}' "$container" 2>/dev/null)
+            if [ $? -ne 0 ]; then
+                echo -e "   ${RED}✗${NC} $container (inspection failed)"
+            elif [ "$STATUS" = "running" ]; then
                 echo -e "   ${GREEN}✓${NC} $container (running)"
             else
                 echo -e "   ${RED}✗${NC} $container ($STATUS)"
