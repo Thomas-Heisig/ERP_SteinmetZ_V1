@@ -15,11 +15,11 @@ declare module "node-llama-cpp";
 // Globale Variablen (z. B. app, db, logger)
 // --------------------------------------------------------
 declare global {
-  // eslint-disable-next-line no-var
+   
   var app: import("express").Express | undefined;
-  // eslint-disable-next-line no-var
+   
   var db: any | undefined;
-  // eslint-disable-next-line no-var
+   
   var logger: Console | undefined;
 }
 

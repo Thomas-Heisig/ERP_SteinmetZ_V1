@@ -86,7 +86,7 @@ export class SearchService {
     facets: SearchFacets;
   } {
     // Filter nodes based on criteria
-    let filteredNodes = this.filterNodes(nodes, query);
+    const filteredNodes = this.filterNodes(nodes, query);
 
     // Score and rank results
     const scoredResults = this.scoreNodes(filteredNodes, query);
