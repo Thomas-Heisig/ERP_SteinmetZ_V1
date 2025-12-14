@@ -90,7 +90,7 @@ export async function callVertexAI(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      // @ts-ignore – node-fetch erlaubt timeout, TS definiert es nicht
+      // @ts-expect-error – node-fetch erlaubt timeout, TS definiert es nicht
       timeout: vertexConfig.timeout_ms,
     });
 

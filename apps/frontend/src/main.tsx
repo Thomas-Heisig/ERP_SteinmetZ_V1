@@ -23,8 +23,9 @@ import "./styles/dark.css";
 import "./styles/lcars.css";
 import "./styles/contrast.css";
 
-// Display version info in console
+// Display version info in console (allowed for startup diagnostics)
 const versionInfo = getVersionInfo();
+/* eslint-disable no-console */
 console.info("========================================================");
 console.info("🧱 ERP-SteinmetZ Frontend");
 console.info("========================================================");
@@ -32,6 +33,7 @@ console.info(`📌 Version:           ${versionInfo.version}`);
 console.info(`🕒 Build:             ${versionInfo.buildDate}`);
 console.info(`🔧 Environment:       ${versionInfo.environment}`);
 console.info("========================================================");
+/* eslint-enable no-console */
 
 const container = document.getElementById("root");
 

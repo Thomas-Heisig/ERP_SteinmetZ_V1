@@ -7,7 +7,6 @@
  */
 
 import os from "node:os";
-import fs from "node:fs";
 import path from "node:path";
 import fetch from "node-fetch";
 import { log } from "../utils/logger.js";

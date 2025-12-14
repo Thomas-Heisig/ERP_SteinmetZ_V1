@@ -59,7 +59,7 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}` },
       body: formData as any,
-      // @ts-ignore – node-fetch erlaubt timeout
+      // @ts-expect-error – node-fetch erlaubt timeout
       timeout: audioConfig.timeout_ms,
     });
 
@@ -142,7 +142,7 @@ export async function textToSpeech(
         voice: process.env.TTS_VOICE ?? "alloy",
         input: text,
       }),
-      // @ts-ignore
+      // @ts-expect-error – node-fetch timeout property
       timeout: audioConfig.timeout_ms,
     });
 

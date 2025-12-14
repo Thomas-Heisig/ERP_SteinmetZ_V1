@@ -26,23 +26,13 @@ export function createLogger(moduleName: string) {
       return;
     }
 
-    const timestamp = new Date().toISOString();
-    const logContext = { module: moduleName, ...context };
-
-    // Format log entry
-    const logEntry = {
-      timestamp,
-      level: level.toUpperCase(),
-      module: moduleName,
-      message,
-      ...context,
-    };
-
     // Use appropriate console method
     switch (level) {
       case "trace":
       case "debug":
         if (isDevelopment) {
+          // Development-only debug logging
+          // eslint-disable-next-line no-console
           console.debug(
             `[${level.toUpperCase()}] [${moduleName}] ${message}`,
             context || "",
@@ -50,6 +40,7 @@ export function createLogger(moduleName: string) {
         }
         break;
       case "info":
+        // eslint-disable-next-line no-console
         console.info(`[INFO] [${moduleName}] ${message}`, context || "");
         break;
       case "warn":
