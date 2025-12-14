@@ -55,6 +55,8 @@ import db from "./services/dbService.js";
 import { websocketService } from "./services/websocketService.js";
 import { tracingService } from "./services/tracingService.js";
 import { errorTrackingService } from "./services/errorTrackingService.js";
+import { shutdownManager } from "./services/shutdownManager.js";
+import { redisService } from "./services/redisService.js";
 
 /* ---------------------- Middleware ---------------------- */
 import { metricsMiddleware } from "./middleware/metricsMiddleware.js";
@@ -325,6 +327,10 @@ function startFunctionsWatcher(service: FunctionsCatalogService, dir: string) {
 export async function start() {
   logger.info("Starting backend server...");
   try {
+    // Initialize graceful shutdown manager
+    shutdownManager.initialize();
+    logger.info("Graceful shutdown manager initialized");
+
     await bootstrapFunctionsCatalog();
 
     const server = app.listen(PORT, () => {
@@ -351,6 +357,9 @@ export async function start() {
         { port: PORT },
         `WebSocket initialized: ws://localhost:${PORT}`,
       );
+
+      // Register shutdown handlers
+      registerShutdownHandlers(server);
     });
 
     return server;
@@ -358,6 +367,96 @@ export async function start() {
     logger.error({ err }, "Failed to start server");
     process.exit(1);
   }
+}
+
+/**
+ * Register all components for graceful shutdown
+ */
+function registerShutdownHandlers(server: any) {
+  // Set health status to shutting down
+  shutdownManager.registerComponent(
+    "health-status",
+    async () => {
+      logger.info("Setting health status to shutting down");
+      // Health endpoint will check shutdownManager.isShuttingDown()
+    },
+    { timeout: 1000, critical: false },
+  );
+
+  // Close WebSocket connections
+  shutdownManager.registerComponent(
+    "websocket",
+    async () => {
+      logger.info("Closing WebSocket connections");
+      // WebSocket service should implement graceful close
+      if (websocketService && typeof websocketService.shutdown === "function") {
+        await websocketService.shutdown();
+      }
+    },
+    { timeout: 5000, critical: false },
+  );
+
+  // Stop accepting new HTTP connections, finish existing requests
+  shutdownManager.registerComponent(
+    "http-server",
+    async () => {
+      return new Promise<void>((resolve, reject) => {
+        logger.info("Closing HTTP server");
+        server.close((err: Error | undefined) => {
+          if (err) {
+            logger.error({ err }, "Error closing HTTP server");
+            reject(err);
+          } else {
+            logger.info("HTTP server closed");
+            resolve();
+          }
+        });
+      });
+    },
+    { timeout: 10000, critical: true },
+  );
+
+  // Close Redis connection
+  shutdownManager.registerComponent(
+    "redis",
+    async () => {
+      logger.info("Closing Redis connection");
+      await redisService.disconnect();
+    },
+    { timeout: 5000, critical: false },
+  );
+
+  // Close database connections
+  shutdownManager.registerComponent(
+    "database",
+    async () => {
+      logger.info("Closing database connections");
+      await db.close();
+    },
+    { timeout: 10000, critical: true },
+  );
+
+  // Shutdown tracing service
+  shutdownManager.registerComponent(
+    "tracing",
+    async () => {
+      logger.info("Shutting down tracing service");
+      await tracingService.shutdown();
+    },
+    { timeout: 5000, critical: false },
+  );
+
+  // Shutdown error tracking
+  shutdownManager.registerComponent(
+    "error-tracking",
+    async () => {
+      logger.info("Shutting down error tracking");
+      await errorTrackingService.shutdown();
+    },
+    { timeout: 5000, critical: false },
+  );
+
+  logger.info("All shutdown handlers registered");
 }
 
 /* ---------------------- ESM Guard ---------------------- */

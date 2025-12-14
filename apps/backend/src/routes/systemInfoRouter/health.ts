@@ -1,22 +1,32 @@
 // src/routes/health.ts
 import { Router, Request, Response } from "express";
 import { getVersionInfo } from "../../version.js";
+import { shutdownManager } from "../../services/shutdownManager.js";
 
 const router = Router();
 
-type LogicalStatus = "healthy" | "degraded" | "unhealthy";
+type LogicalStatus = "healthy" | "degraded" | "unhealthy" | "shutting_down";
 
-function computeStatus(details: Record<string, boolean>): LogicalStatus {
+function computeStatus(
+  details: Record<string, boolean>,
+  isShuttingDown: boolean,
+): LogicalStatus {
+  if (isShuttingDown) return "shutting_down";
   const vals = Object.values(details);
   if (vals.every(Boolean)) return "healthy";
   if (vals.some(Boolean)) return "degraded";
   return "unhealthy";
 }
 
-function basePayload(status: LogicalStatus, details: Record<string, boolean>) {
+function basePayload(
+  status: LogicalStatus,
+  details: Record<string, boolean>,
+  isShuttingDown: boolean,
+) {
   const versionInfo = getVersionInfo();
   return {
     status,
+    shuttingDown: isShuttingDown,
     timestamp: new Date().toISOString(),
     version: versionInfo.version,
     buildDate: versionInfo.buildDate,
@@ -37,19 +47,22 @@ function basePayload(status: LogicalStatus, details: Record<string, boolean>) {
  */
 router.get("/", (_req: Request, res: Response) => {
   try {
+    const isShuttingDown = shutdownManager.isShuttingDown();
     const details = {
-      processUp: true,
+      processUp: !isShuttingDown,
       hasOpenAIKey: !!process.env.OPENAI_API_KEY,
       hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
       hasOllamaUrl: !!process.env.OLLAMA_BASE_URL,
     };
-    const status = computeStatus(details);
+    const status = computeStatus(details, isShuttingDown);
     res.setHeader("Cache-Control", "no-store");
-    return res.status(200).json(basePayload(status, details));
+    return res.status(200).json(basePayload(status, details, isShuttingDown));
   } catch (error) {
     console.error("Health (liveness) error:", error);
     res.setHeader("Cache-Control", "no-store");
-    return res.status(200).json(basePayload("degraded", { processUp: true })); // liveness bleibt 200
+    return res
+      .status(200)
+      .json(basePayload("degraded", { processUp: true }, false)); // liveness bleibt 200
   }
 });
 
@@ -59,21 +72,25 @@ router.get("/", (_req: Request, res: Response) => {
  */
 router.get("/readiness", async (_req: Request, res: Response) => {
   try {
+    const isShuttingDown = shutdownManager.isShuttingDown();
     const details = {
-      processUp: true,
+      processUp: !isShuttingDown,
       hasOpenAIKey: !!process.env.OPENAI_API_KEY,
       hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
       hasOllamaUrl: !!process.env.OLLAMA_BASE_URL,
       // hier optional kurze Pings mit kleinem Timeout einbauen
     };
-    const status = computeStatus(details);
+    const status = computeStatus(details, isShuttingDown);
+    // Return 503 during shutdown or if unhealthy
     const http = status === "healthy" ? 200 : 503;
     res.setHeader("Cache-Control", "no-store");
-    return res.status(http).json(basePayload(status, details));
+    return res.status(http).json(basePayload(status, details, isShuttingDown));
   } catch (error) {
     console.error("Health (readiness) error:", error);
     res.setHeader("Cache-Control", "no-store");
-    return res.status(503).json(basePayload("unhealthy", { processUp: false }));
+    return res
+      .status(503)
+      .json(basePayload("unhealthy", { processUp: false }, false));
   }
 });
 
