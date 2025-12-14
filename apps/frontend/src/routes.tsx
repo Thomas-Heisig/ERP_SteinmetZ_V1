@@ -30,6 +30,7 @@ const CustomerList = lazy(() => import("./features/crm/CustomerList"));
 const InventoryList = lazy(() => import("./features/inventory/InventoryList"));
 const ProjectList = lazy(() => import("./features/projects/ProjectList"));
 const IdeaBoard = lazy(() => import("./features/innovation/IdeaBoard"));
+const DocumentList = lazy(() => import("./features/documents/DocumentList"));
 
 // AI Annotator features - lazy loaded
 const BatchProcessingPage = lazy(
@@ -179,6 +180,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedPage>
             <IdeaBoard />
+          </ProtectedPage>
+        ),
+      },
+      {
+        path: "documents",
+        element: (
+          <ProtectedPage>
+            <DocumentList />
           </ProtectedPage>
         ),
       },

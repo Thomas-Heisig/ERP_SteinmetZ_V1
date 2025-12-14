@@ -15,11 +15,10 @@ declare module "node-llama-cpp";
 // Globale Variablen (z. B. app, db, logger)
 // --------------------------------------------------------
 declare global {
-   
   var app: import("express").Express | undefined;
-   
+
   var db: any | undefined;
-   
+
   var logger: Console | undefined;
 }
 
