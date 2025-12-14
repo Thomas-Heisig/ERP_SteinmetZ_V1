@@ -25,6 +25,8 @@ export default [
         ...globals.browser,
         ...globals.es2021,
         __BUILD_DATE__: "readonly",
+        React: "readonly",
+        process: "readonly",
       },
     },
     plugins: {

@@ -18,6 +18,9 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useSystemInfo } from "../../../hooks/useSystemInfo";
 import { safeGet } from "../utils/safeFetch";
+import { createLogger } from "../../../utils/logger";
+
+const logger = createLogger("DashboardProvider");
 
 export interface DashboardProviderProps {
   backendUrl?: string; // aktuell nicht mehr für Health genutzt
@@ -184,7 +187,7 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
     const start = performance.now();
     return () => {
       const duration = performance.now() - start;
-      console.debug("DashboardProvider active for:", duration, "ms");
+      logger.debug(`DashboardProvider active for: ${duration}ms`);
     };
   }, []);
 

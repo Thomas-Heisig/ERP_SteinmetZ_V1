@@ -4,6 +4,9 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { UseDashboardShortcuts } from "../types";
 import { useDashboardContext } from "../core/DashboardContext";
+import { createLogger } from "../../../utils/logger";
+
+const logger = createLogger("DashboardShortcuts");
 
 /**
  * useDashboardShortcuts – verwaltet Tastenkombinationen.
@@ -34,13 +37,15 @@ export function useDashboardShortcuts(): UseDashboardShortcuts {
   }, []);
 
   const showHelp = useCallback(() => {
-    // einfache Ausgabe, später erweiterbar
-    console.table(
-      Array.from(shortcutsRef.current.entries()).map(([key, v]) => ({
-        key,
-        description: v.description,
-      })),
-    );
+    // Log shortcuts for debugging (only in development)
+    if (import.meta.env.DEV) {
+      console.table(
+        Array.from(shortcutsRef.current.entries()).map(([key, v]) => ({
+          key,
+          description: v.description,
+        })),
+      );
+    }
   }, []);
 
   useEffect(() => {

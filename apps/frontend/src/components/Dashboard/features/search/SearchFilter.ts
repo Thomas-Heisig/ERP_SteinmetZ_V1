@@ -16,6 +16,8 @@
  * Pure business logic - no UI, no side effects
  */
 
+import { createLogger } from "../../../../utils/logger";
+
 import type {
   SearchResult,
   SearchFilters,
@@ -527,7 +529,8 @@ export function advancedSearch(
     import.meta.env.DEV;
 
   if (isDev) {
-    console.debug("Search Filter Performance:", {
+    const logger = createLogger("SearchFilter");
+    logger.debug("Search Filter Performance", {
       initialResults: results.length,
       filteredResults: filterResult.results.length,
       executionTime: `${filterResult.context.executionTime.toFixed(2)}ms`,

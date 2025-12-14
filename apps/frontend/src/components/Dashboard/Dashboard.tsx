@@ -180,7 +180,10 @@ const DashboardView: React.FC = () => {
     !catalog.nodeLoading &&
     !catalog.rootsLoading;
 
-  const showNodeError = catalog.nodeError !== null && catalog.nodeError !== undefined && !search.active;
+  const showNodeError =
+    catalog.nodeError !== null &&
+    catalog.nodeError !== undefined &&
+    !search.active;
 
   const showNodeLoading = catalog.nodeLoading && !search.active;
 

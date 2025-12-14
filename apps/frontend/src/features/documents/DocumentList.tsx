@@ -47,7 +47,6 @@ export const DocumentList: React.FC = () => {
         setLoading(false);
       })
       .catch((error) => {
-         
         console.error("Failed to load documents:", error);
         setLoading(false);
       });
