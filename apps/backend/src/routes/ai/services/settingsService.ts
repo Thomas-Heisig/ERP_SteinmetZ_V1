@@ -15,7 +15,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { log } from "../utils/logger.js";
-import type { AIModuleConfig, Provider } from "../types/types.js";
+import type { Provider } from "../types/types.js";
 
 /* ========================================================================== */
 /* ⚙️ Pfade & Standardwerte                                                  */

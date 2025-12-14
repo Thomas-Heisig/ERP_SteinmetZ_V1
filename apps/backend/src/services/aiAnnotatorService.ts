@@ -1758,8 +1758,8 @@ export class AiAnnotatorService extends EventEmitter {
 - Titel: ${node.title}
 - Typ: ${node.kind}
 - Pfad: ${node.path.join(" → ")}
-- Schema vorhanden: ${!!node.schema_json ? "Ja" : "Nein"}
-- Workflow (aa_json) vorhanden: ${!!node.aa_json ? "Ja" : "Nein"}
+- Schema vorhanden: ${node.schema_json ? "Ja" : "Nein"}
+- Workflow (aa_json) vorhanden: ${node.aa_json ? "Ja" : "Nein"}
 
 ## ANFORDERUNG:
 Erstelle ein umfassendes JSON‑Objekt mit:

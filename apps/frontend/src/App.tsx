@@ -187,8 +187,8 @@ export default function App() {
         {/* ---------- Footer + QuickChat ---------- */}
         <footer className="app-footer">
           <small>
-            © {new Date().getFullYear()} ERP SteinmetZ | v
-            {VERSION_INFO.version} ({VERSION_INFO.environment})
+            © {new Date().getFullYear()} ERP SteinmetZ | v{VERSION_INFO.version}{" "}
+            ({VERSION_INFO.environment})
           </small>
 
           <QuickChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />

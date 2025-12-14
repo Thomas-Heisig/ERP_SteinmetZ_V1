@@ -27,9 +27,8 @@ export class WorkflowEngine {
   private context!: ConversationContext; // erst später gesetzt
 
   async initialize() {
-    const { ConversationContext } = await import(
-      "../context/conversationContext.js"
-    );
+    const { ConversationContext } =
+      await import("../context/conversationContext.js");
     this.context = new ConversationContext();
   }
 

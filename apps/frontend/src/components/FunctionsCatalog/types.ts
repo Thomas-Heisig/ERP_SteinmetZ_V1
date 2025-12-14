@@ -204,10 +204,7 @@ export interface TechnicalMetadata {
 }
 
 export interface NodeMetadata
-  extends BaseMetadata,
-    SecurityMetadata,
-    BusinessMetadata,
-    TechnicalMetadata {
+  extends BaseMetadata, SecurityMetadata, BusinessMetadata, TechnicalMetadata {
   // Zusätzliche dynamische Felder
   [key: string]: unknown;
 }

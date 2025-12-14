@@ -167,7 +167,7 @@ router.get(
       ? await service.refreshFunctionsIndex() // ⬅ geändert
       : await service.getFunctionsIndex();
 
-    let nodes = result.nodes ?? [];
+    const nodes = result.nodes ?? [];
 
     // ---------------------------------------------------------------
     // Auf Kind-Filter anwenden (optional)

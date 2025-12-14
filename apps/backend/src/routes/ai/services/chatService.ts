@@ -206,9 +206,10 @@ async function isProviderAvailable(provider: string): Promise<boolean> {
     switch (provider) {
       case "openai":
         return !!process.env.OPENAI_API_KEY;
-      case "ollama":
+      case "ollama": {
         const res = await fetch("http://localhost:11434/api/tags");
         return res.ok;
+      }
       case "vertex":
         return !!process.env.VERTEX_API_KEY;
       case "huggingface":

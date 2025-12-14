@@ -202,7 +202,7 @@ async function detectAndRunTools(
 
     for (const match of matches) {
       const toolName = match[1]?.trim();
-      let paramString = match[2]?.trim() || "{}";
+      const paramString = match[2]?.trim() || "{}";
 
       if (!toolName) continue;
 
