@@ -7,7 +7,7 @@ import type { NodeDetail } from "../../types";
  * Konvertiert beliebige Werte nach Markdown-kompatiblem Text.
  */
 function mdValue(input: unknown): string {
-  if (input == null) return "`null`";
+  if (input === null || input === undefined) return "`null`";
 
   if (typeof input === "string") return input;
 

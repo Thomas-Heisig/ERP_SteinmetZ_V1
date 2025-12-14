@@ -154,7 +154,7 @@ const DashboardView: React.FC = () => {
     return <LoadingScreen message={t("dashboard.loading.categories")} />;
   }
 
-  if (catalog.rootsError != null) {
+  if (catalog.rootsError !== null && catalog.rootsError !== undefined) {
     return (
       <ErrorScreen
         error={catalog.rootsError}
@@ -170,7 +170,7 @@ const DashboardView: React.FC = () => {
 
   const showNode =
     !catalog.nodeLoading &&
-    catalog.nodeError == null &&
+    catalog.nodeError === null &&
     catalog.node !== null &&
     !search.active;
 
@@ -180,7 +180,7 @@ const DashboardView: React.FC = () => {
     !catalog.nodeLoading &&
     !catalog.rootsLoading;
 
-  const showNodeError = catalog.nodeError != null && !search.active;
+  const showNodeError = catalog.nodeError !== null && catalog.nodeError !== undefined && !search.active;
 
   const showNodeLoading = catalog.nodeLoading && !search.active;
 

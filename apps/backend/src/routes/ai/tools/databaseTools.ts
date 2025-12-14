@@ -18,16 +18,24 @@ let pg: any = null;
 let mysql: any = null;
 try {
   betterSqlite3 = require("better-sqlite3");
-} catch {}
+} catch {
+  // Optional dependency - ignore if not available
+}
 try {
   sqlite3 = require("sqlite3");
-} catch {}
+} catch {
+  // Optional dependency - ignore if not available
+}
 try {
   pg = require("pg");
-} catch {}
+} catch {
+  // Optional dependency - ignore if not available
+}
 try {
   mysql = require("mysql2/promise");
-} catch {}
+} catch {
+  // Optional dependency - ignore if not available
+}
 
 /* ─────────────────────────────────────────────
  * Hilfsfunktionen

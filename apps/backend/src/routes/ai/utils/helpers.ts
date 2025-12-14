@@ -228,7 +228,7 @@ export function isObject(val: any): val is Record<string, any> {
  * Prüft, ob ein Wert leer ist.
  */
 export function isEmpty(value: any): boolean {
-  if (value == null) return true;
+  if (value === null || value === undefined) return true;
   if (typeof value === "string") return value.trim() === "";
   if (Array.isArray(value)) return value.length === 0;
   if (isObject(value)) return Object.keys(value).length === 0;

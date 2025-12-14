@@ -47,7 +47,7 @@ export const DocumentList: React.FC = () => {
         setLoading(false);
       })
       .catch((error) => {
-        // eslint-disable-next-line no-console
+         
         console.error("Failed to load documents:", error);
         setLoading(false);
       });

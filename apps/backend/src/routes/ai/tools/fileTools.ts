@@ -238,7 +238,9 @@ export function registerTools(toolRegistry: {
         try {
           data = JSON.parse(content);
           type = "json";
-        } catch {}
+        } catch {
+          // Not JSON, will check other formats
+        }
       } else if (/,|;/.test(content.split("\n")[0])) {
         type = "csv_like";
       }

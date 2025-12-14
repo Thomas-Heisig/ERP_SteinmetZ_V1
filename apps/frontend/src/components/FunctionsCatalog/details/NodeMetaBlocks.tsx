@@ -27,9 +27,9 @@ function toDisplay(value: unknown): string {
 }
 
 export default function NodeMetaBlocks({ node }: Props) {
-  const hasMeta = node.meta != null;
-  const hasAa = node.aa != null;
-  const hasSchema = node.schema != null;
+  const hasMeta = node.meta !== null && node.meta !== undefined;
+  const hasAa = node.aa !== null && node.aa !== undefined;
+  const hasSchema = node.schema !== null && node.schema !== undefined;
   const hasWarnings = Array.isArray(node.warnings) && node.warnings.length > 0;
 
   return (

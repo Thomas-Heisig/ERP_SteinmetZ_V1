@@ -148,7 +148,7 @@ export function parseOutline(
     if (allowPlainHeadings && stack.length > 0) {
       // Nur am Zeilenanfang, ohne Branch-/Bullet-Präfixe
       const looksPlain =
-        /^[^\s#*+\-].+/.test(line) &&
+        /^[^\s#*+-].+/.test(line) &&
         !/^(?:[│|] ?|[ \t]{1,4})*(?:├|└)/.test(line);
       if (looksPlain && nextLineLooksLikeChild(i)) {
         stack = [];

@@ -85,7 +85,7 @@ export async function callHuggingFace(
       method: "POST",
       headers: buildHeaders(),
       body: JSON.stringify(payload),
-      // @ts-ignore – node-fetch unterstützt timeout, aber TS kennt das Attribut nicht offiziell
+      // @ts-expect-error – node-fetch unterstützt timeout, aber TS kennt das Attribut nicht offiziell
       timeout: 60000,
     });
 

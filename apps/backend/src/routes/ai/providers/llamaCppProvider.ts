@@ -72,7 +72,7 @@ export async function callLlamaCpp(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-      // @ts-ignore
+      // @ts-expect-error
       timeout: 120000, // 2 Minuten
     });
 

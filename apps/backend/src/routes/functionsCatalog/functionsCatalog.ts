@@ -2,7 +2,7 @@
 // ---------------------------------------------------------------------
 // Router: /api/functions/*
 // ---------------------------------------------------------------------
-// Dieser Router verwendet die neu refaktorierte
+// Dieser Router verwendet die neu refaktorierte
 // `FunctionsCatalogService`.  Dabei werden die neuen
 // Features (Streaming‑Parsing, Cache‑TTL, Pagination, Validierung …)
 // ausgenutzt.
@@ -217,7 +217,7 @@ router.get(
 );
 
 /* ------------------------------------------------------------------- */
-/* 4️⃣  Menü‑Erstellung (RBAC + Feature + Area‑Filter)                  */
+/* 4️⃣  Menü‑Erstellung (RBAC + Feature + Area‑Filter)                  */
 /* ------------------------------------------------------------------- */
 router.post(
   "/menu",
