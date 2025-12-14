@@ -52,9 +52,9 @@ export const aiRateLimiter = rateLimit({
     // Skip rate limiting in development if configured
     return process.env.SKIP_RATE_LIMIT === "true";
   },
-  // Request weight: Allow burst by not counting every request equally
+  // Note: Failed requests don't count against the limit
   skipSuccessfulRequests: false,
-  skipFailedRequests: true, // Don't count failed requests
+  skipFailedRequests: true,
 });
 
 /**

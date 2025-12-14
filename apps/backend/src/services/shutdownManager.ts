@@ -269,15 +269,23 @@ class ShutdownManager {
     timeoutMs: number,
     name: string,
   ): Promise<T> {
-    return Promise.race([
-      promise,
-      new Promise<T>((_, reject) =>
-        setTimeout(
-          () => reject(new Error(`Timeout: ${name} exceeded ${timeoutMs}ms`)),
-          timeoutMs,
-        ),
-      ),
-    ]);
+    let timeoutHandle: NodeJS.Timeout;
+    
+    const timeoutPromise = new Promise<T>((_, reject) => {
+      timeoutHandle = setTimeout(
+        () => reject(new Error(`Timeout: ${name} exceeded ${timeoutMs}ms`)),
+        timeoutMs,
+      );
+    });
+    
+    try {
+      const result = await Promise.race([promise, timeoutPromise]);
+      clearTimeout(timeoutHandle!);
+      return result;
+    } catch (error) {
+      clearTimeout(timeoutHandle!);
+      throw error;
+    }
   }
 
   /**
