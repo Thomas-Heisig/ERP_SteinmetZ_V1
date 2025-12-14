@@ -47,6 +47,7 @@ export const DocumentList: React.FC = () => {
         setLoading(false);
       })
       .catch((error) => {
+        // eslint-disable-next-line no-console
         console.error("Failed to load documents:", error);
         setLoading(false);
       });
@@ -92,15 +93,13 @@ export const DocumentList: React.FC = () => {
   };
 
   const getStatusBadge = (status: DocumentStatus) => {
-    const config: Record<
-      DocumentStatus,
-      { label: string; className: string }
-    > = {
-      active: { label: "Aktiv", className: "info" },
-      approved: { label: "Genehmigt", className: "success" },
-      pending: { label: "Ausstehend", className: "warning" },
-      archived: { label: "Archiviert", className: "secondary" },
-    };
+    const config: Record<DocumentStatus, { label: string; className: string }> =
+      {
+        active: { label: "Aktiv", className: "info" },
+        approved: { label: "Genehmigt", className: "success" },
+        pending: { label: "Ausstehend", className: "warning" },
+        archived: { label: "Archiviert", className: "secondary" },
+      };
     return config[status];
   };
 
@@ -212,10 +211,7 @@ export const DocumentList: React.FC = () => {
                       </td>
                       <td>
                         <div className="documents-action-buttons">
-                          <button
-                            className="btn btn-secondary"
-                            title="Ansehen"
-                          >
+                          <button className="btn btn-secondary" title="Ansehen">
                             👁️
                           </button>
                           <button
