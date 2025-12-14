@@ -322,9 +322,13 @@ class RedisService {
         this.isConnected = false;
         log("info", "✅ Redis client disconnected gracefully");
       } catch (error) {
-        log("error", "Failed to gracefully disconnect Redis client, forcing close", {
-          error: error instanceof Error ? error.message : String(error),
-        });
+        log(
+          "error",
+          "Failed to gracefully disconnect Redis client, forcing close",
+          {
+            error: error instanceof Error ? error.message : String(error),
+          },
+        );
         // Force close if graceful quit fails
         await this.client?.disconnect();
         this.isConnected = false;
