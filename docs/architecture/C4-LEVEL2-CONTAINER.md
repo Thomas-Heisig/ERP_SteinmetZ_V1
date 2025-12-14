@@ -36,15 +36,15 @@ C4Container
 
     Rel(user, web_app, "Nutzt", "HTTPS")
     Rel(admin, web_app, "Administriert", "HTTPS")
-    
+
     Rel(web_app, api, "Macht API-Calls", "HTTPS/REST, JSON")
     Rel(web_app, ws, "Verbindet zu", "WebSocket")
-    
+
     Rel(api, db, "Liest/Schreibt", "SQL")
     Rel(api, redis, "Liest/Schreibt", "Redis Protocol")
     Rel(api, ai_providers, "Sendet AI-Anfragen", "HTTPS/REST")
     Rel(api, monitoring, "Sendet Telemetrie", "HTTPS/OTLP")
-    
+
     Rel(ws, redis, "Publishes Events", "Redis PubSub")
     Rel(ws, db, "Liest Status", "SQL")
 
@@ -58,6 +58,7 @@ C4Container
 ### Frontend Container
 
 #### Web Application
+
 - **Technologie**: React 18, TypeScript, Vite
 - **Zweck**: Single-Page-Application (SPA) für alle UI-Interaktionen
 - **Features**:
@@ -71,6 +72,7 @@ C4Container
 - **Port**: 5173 (dev), wird von Reverse Proxy bereitgestellt (prod)
 
 **Key Components**:
+
 ```
 /src
   /components
@@ -91,6 +93,7 @@ C4Container
 ### Backend Containers
 
 #### API Application
+
 - **Technologie**: Node.js 18+, Express 5, TypeScript
 - **Zweck**: REST API für alle Backend-Operationen
 - **Port**: 3000
@@ -104,6 +107,7 @@ C4Container
   - Health Checks
 
 **Router-Struktur**:
+
 ```
 /api
   /auth             - Login, Register, Token Refresh
@@ -121,6 +125,7 @@ C4Container
 ```
 
 **Services**:
+
 - `authService` - User Authentication
 - `dbService` - Database Abstraction
 - `aiProviderHealthService` - AI Provider Health Checks
@@ -132,6 +137,7 @@ C4Container
 ---
 
 #### WebSocket Server
+
 - **Technologie**: Socket.IO 4
 - **Zweck**: Real-time bidirektionale Kommunikation
 - **Port**: 3000 (same as API, Socket.IO upgrade)
@@ -146,6 +152,7 @@ C4Container
     - `catalog:update` - Functions-Catalog-Changes
 
 **Event-Flow**:
+
 ```
 Client → WebSocket → Server
          (connect, auth)
@@ -158,6 +165,7 @@ Server → WebSocket → Client
 ### Data Storage Containers
 
 #### Database
+
 - **Technologie**: SQLite (dev), PostgreSQL (prod)
 - **Zweck**: Persistente Speicherung aller Geschäftsdaten
 - **Port**: 5432 (PostgreSQL)
@@ -173,6 +181,7 @@ Server → WebSocket → Client
   - `audit_trail` - Audit-Logs für Compliance
 
 **Migrations**:
+
 - Automatisch bei Startup (dbService.init())
 - Versioniert mit Schema-Checksums
 - Rollback-fähig
@@ -180,6 +189,7 @@ Server → WebSocket → Client
 ---
 
 #### Redis
+
 - **Technologie**: Redis 7+
 - **Zweck**: Distributed Cache, Session Store, PubSub
 - **Port**: 6379
@@ -191,6 +201,7 @@ Server → WebSocket → Client
 - **Fallback**: In-Memory Store wenn Redis nicht verfügbar
 
 **Key-Patterns**:
+
 ```
 sess:*              - Sessions (TTL: 7 days)
 rl:*                - Rate Limit Counters (TTL: 15 min)
@@ -279,6 +290,7 @@ sequenceDiagram
 ## 🔐 Security
 
 ### API Security
+
 - **Authentication**: JWT (Bearer Token)
 - **Authorization**: Role-based (User, Admin)
 - **Rate Limiting**: IP-based, differenziert nach Endpoint
@@ -286,11 +298,13 @@ sequenceDiagram
 - **CORS**: Configured für Frontend-Origin
 
 ### WebSocket Security
+
 - **Authentication**: JWT in Handshake
 - **Room Authorization**: Server-seitig geprüft
 - **Rate Limiting**: Connection Limits
 
 ### Database Security
+
 - **Prepared Statements**: SQL-Injection-Prevention
 - **Encryption**: TLS für PostgreSQL
 - **Access Control**: Dedizierter DB-User mit minimalen Rechten
@@ -300,6 +314,7 @@ sequenceDiagram
 ## 📊 Monitoring
 
 ### Metrics (Prometheus)
+
 - API Request Counts & Latencies
 - Database Query Performance
 - WebSocket Connection Count
@@ -307,12 +322,14 @@ sequenceDiagram
 - AI Provider Response Times
 
 ### Traces (OpenTelemetry)
+
 - Request-to-Response Flow
 - Database Query Traces
 - External API Calls
 - Error Propagation
 
 ### Errors (Sentry)
+
 - Uncaught Exceptions
 - API Errors
 - Frontend Errors
@@ -323,6 +340,7 @@ sequenceDiagram
 ## 🚀 Deployment
 
 ### Development
+
 ```
 Frontend: npm run dev        (Port 5173)
 Backend:  npm run dev        (Port 3000)
@@ -331,6 +349,7 @@ DB:       SQLite (./data/dev.sqlite3)
 ```
 
 ### Production
+
 ```
 Frontend: Static Build → CDN/Nginx
 Backend:  Node.js → Docker → Kubernetes

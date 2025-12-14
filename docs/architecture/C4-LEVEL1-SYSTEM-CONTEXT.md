@@ -54,14 +54,16 @@ C4Context
 ### Benutzer
 
 #### Business User
+
 - **Rolle**: Mitarbeiter im Steinmetz-Betrieb
-- **Interaktion**: 
+- **Interaktion**:
   - Tägliche Arbeit mit dem ERP System
   - Verwaltung von Kunden, Aufträgen, Rechnungen
   - Nutzung der AI-Features für Dokumentverarbeitung
 - **Zugriff**: Web-Browser (Frontend), HTTPS verschlüsselt
 
 #### System Administrator
+
 - **Rolle**: IT-Verantwortlicher
 - **Interaktion**:
   - System-Konfiguration und -Wartung
@@ -70,6 +72,7 @@ C4Context
 - **Zugriff**: Admin-Dashboard, System-APIs
 
 #### Developer
+
 - **Rolle**: Software-Entwickler
 - **Interaktion**:
   - Entwicklung neuer Features
@@ -84,6 +87,7 @@ C4Context
 #### AI-Provider
 
 **OpenAI API**
+
 - **Zweck**: Advanced AI für Text-Generation und -Analyse
 - **Modelle**: GPT-4, GPT-4-Turbo, GPT-3.5-Turbo
 - **Nutzung**: AI-Annotator, QuickChat, Dokumentenverarbeitung
@@ -91,6 +95,7 @@ C4Context
 - **Fallback**: Bei Ausfall → Anthropic oder Ollama
 
 **Anthropic Claude API**
+
 - **Zweck**: Alternative AI mit hoher Qualität
 - **Modelle**: Claude-3-Opus, Claude-3-Sonnet
 - **Nutzung**: Komplexe Analysen, lange Kontexte
@@ -98,6 +103,7 @@ C4Context
 - **Fallback**: Bei Ausfall → OpenAI oder Ollama
 
 **Ollama (Local)**
+
 - **Zweck**: Lokale AI ohne externe Abhängigkeiten
 - **Modelle**: Qwen2.5, Llama, Mistral
 - **Nutzung**: Privacy-sensitive Daten, Offline-Betrieb
@@ -107,12 +113,14 @@ C4Context
 #### Monitoring & Observability
 
 **Sentry**
+
 - **Zweck**: Error Tracking und Performance Monitoring
 - **Daten**: Exception-Logs, Performance-Traces, User-Feedback
 - **Protokoll**: HTTPS
 - **Optional**: Kann deaktiviert werden (SENTRY_ENABLED=false)
 
 **Jaeger / OpenTelemetry**
+
 - **Zweck**: Distributed Tracing für Anfragen über Services
 - **Daten**: Spans, Traces, Metriken
 - **Protokoll**: OTLP/HTTP (Port 4318)
@@ -121,8 +129,9 @@ C4Context
 #### Communication
 
 **E-Mail Service**
+
 - **Zweck**: Benachrichtigungen an Benutzer
-- **Nutzung**: 
+- **Nutzung**:
   - Passwort-Reset
   - Batch-Job-Completion
   - System-Warnungen
@@ -135,7 +144,7 @@ C4Context
 
 ### Externe Verbindungen
 
-1. **AI-Provider**: 
+1. **AI-Provider**:
    - API-Keys über ENV-Variablen
    - HTTPS verschlüsselt
    - Rate Limiting zum Kostenschutz
@@ -160,11 +169,13 @@ C4Context
 ## 🚀 Deployment-Kontext
 
 ### Development
+
 - Alle externen Services optional
 - Ollama als Standard-AI-Provider
 - Lokales Monitoring (optional)
 
 ### Production
+
 - Redundante AI-Provider mit Fallback
 - Sentry und Jaeger aktiviert
 - E-Mail-Service konfiguriert

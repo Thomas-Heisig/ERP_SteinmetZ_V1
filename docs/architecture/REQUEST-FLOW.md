@@ -33,7 +33,7 @@ sequenceDiagram
     Browser->>React: Event Handler
     React->>React: Update Local State
     React->>API: HTTP Request<br/>(fetch/axios)
-    
+
     Note over API,MW: Middleware Chain
     API->>MW: CORS Check
     MW->>MW: Session Middleware
@@ -53,7 +53,7 @@ sequenceDiagram
             React-->>Browser: Redirect to Login
         else Valid Token
             MW->>Router: Forward Request
-            
+
             Note over Router,Service: Business Logic
             Router->>Router: Route Matching
             Router->>Router: Input Validation (Zod)
@@ -75,7 +75,7 @@ sequenceDiagram
             end
         end
     end
-    
+
     MW->>MW: Error Tracking
     MW->>MW: Logging
     API-->>React: HTTP Response (JSON)
@@ -91,33 +91,36 @@ sequenceDiagram
 ### Phase 1: Frontend (1-3)
 
 #### 1. User Interaction
+
 - **Trigger**: Click, Input, Submit, Navigation
 - **Example**: User klickt "Create Document" Button
 - **Action**: Event Handler wird aufgerufen
 
 #### 2. React State Update
+
 - **Optimistic UI**: Lokaler State wird sofort aktualisiert
 - **Loading State**: Spinner/Skeleton wird angezeigt
-- **Example**: 
+- **Example**:
   ```typescript
   const [loading, setLoading] = useState(false);
   setLoading(true);
   ```
 
 #### 3. HTTP Request
+
 - **Method**: GET, POST, PUT, DELETE, PATCH
-- **Headers**: 
+- **Headers**:
   - `Authorization: Bearer <token>`
   - `Content-Type: application/json`
   - `X-Request-ID: <uuid>` (für Tracing)
 - **Body**: JSON-Payload (bei POST/PUT/PATCH)
 - **Example**:
   ```typescript
-  const response = await fetch('/api/documents', {
-    method: 'POST',
+  const response = await fetch("/api/documents", {
+    method: "POST",
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ title, content }),
   });
@@ -128,44 +131,50 @@ sequenceDiagram
 ### Phase 2: Middleware Chain (4-10)
 
 #### 4. CORS Check
+
 - **Middleware**: `cors()`
 - **Prüfung**: Origin-Header gegen erlaubte Origins
 - **Config**: `CORS_ORIGIN` ENV-Variable
-- **Action**: 
+- **Action**:
   - OK: Weiter
   - Fehler: 403 Forbidden
 
 #### 5. Session Middleware
+
 - **Middleware**: `express-session` mit `connect-redis`
 - **Prüfung**: Session-Cookie
-- **Action**: 
+- **Action**:
   - Load Session aus Redis
   - Attach `req.session`
 - **Fallback**: In-Memory Store (dev)
 
 #### 6. Cookie Parser
+
 - **Middleware**: `cookie-parser()`
 - **Action**: Parse Cookies aus Request-Header
 - **Attach**: `req.cookies`
 
 #### 7. JSON Body Parser
+
 - **Middleware**: `express.json()`
 - **Action**: Parse JSON-Body
 - **Limit**: 10MB (konfigurierbar)
 - **Attach**: `req.body`
 
 #### 8. Metrics Collection
+
 - **Middleware**: `metricsMiddleware`
-- **Action**: 
+- **Action**:
   - Request Counter erhöhen
   - Request Duration starten
-- **Prometheus**: 
+- **Prometheus**:
   ```
   http_requests_total{method="POST",route="/api/documents"}
   http_request_duration_seconds{method="POST",route="/api/documents"}
   ```
 
 #### 9. Rate Limiter
+
 - **Middleware**: `express-rate-limit`
 - **Storage**: Redis (distributed)
 - **Limits**:
@@ -183,6 +192,7 @@ sequenceDiagram
   ```
 
 #### 10. Auth Middleware
+
 - **Middleware**: `authenticateToken()`
 - **Action**:
   - Extract Token aus `Authorization` Header
@@ -199,28 +209,33 @@ sequenceDiagram
 ### Phase 3: Router & Business Logic (11-18)
 
 #### 11-12. Route Matching
+
 - **Router**: Express Router per Modul
 - **Example**: `POST /api/documents` → `documentsRouter`
 - **Path Parameters**: Extracted und verfügbar in `req.params`
 - **Query Parameters**: Verfügbar in `req.query`
 
 #### 13. Input Validation
+
 - **Library**: Zod
 - **Action**: Validate `req.body` gegen Schema
 - **Example**:
+
   ```typescript
   const schema = z.object({
     title: z.string().min(1).max(200),
     content: z.string().optional(),
   });
-  
+
   const validated = schema.parse(req.body);
   ```
+
 - **Fehler**: 400 Bad Request mit detailliertem Error-Message
 
 #### 14. Service Call
+
 - **Pattern**: Router → Service → Database
-- **Separation**: 
+- **Separation**:
   - Router: HTTP-Logik, Validation
   - Service: Business Logic
   - Database: Data Access
@@ -229,11 +244,12 @@ sequenceDiagram
   const document = await documentsService.create(
     req.user.id,
     validated.title,
-    validated.content
+    validated.content,
   );
   ```
 
 #### 15-16. Cache Check
+
 - **Service**: Check Redis Cache zuerst
 - **Key Pattern**: `cache:documents:list:${userId}`
 - **TTL**: 5-15 Minuten (je nach Datentyp)
@@ -242,6 +258,7 @@ sequenceDiagram
   - Cache Miss: Query Database
 
 #### 17-18. Database Query
+
 - **Service**: `dbService` (Abstraction Layer)
 - **Driver**: SQLite (dev) oder PostgreSQL (prod)
 - **Action**:
@@ -252,8 +269,8 @@ sequenceDiagram
 - **Example**:
   ```typescript
   const result = await db.run(
-    'INSERT INTO documents (title, content, user_id) VALUES (?, ?, ?)',
-    [title, content, userId]
+    "INSERT INTO documents (title, content, user_id) VALUES (?, ?, ?)",
+    [title, content, userId],
   );
   ```
 
@@ -262,6 +279,7 @@ sequenceDiagram
 ### Phase 4: Response (19-23)
 
 #### 19. Transform Data
+
 - **Service**: Format Data für API-Response
 - **Example**:
   ```typescript
@@ -275,6 +293,7 @@ sequenceDiagram
   ```
 
 #### 20. Success Response
+
 - **Router**: Send Response
 - **Format**: JSON
 - **Status Codes**:
@@ -290,13 +309,15 @@ sequenceDiagram
   ```
 
 #### 21. Error Tracking
+
 - **Middleware**: `errorTrackingMiddleware`
-- **Action**: 
+- **Action**:
   - Bei Fehler: Send zu Sentry
   - Include Stack Trace, Context, User Info
 - **Throttling**: Nicht jeder Fehler (Rate Limiting)
 
 #### 22. Logging
+
 - **Service**: Structured Logger
 - **Format**: JSON
 - **Levels**: trace, debug, info, warn, error, fatal
@@ -315,6 +336,7 @@ sequenceDiagram
   ```
 
 #### 23-26. Frontend Update
+
 - **React**: Receive Response
 - **Action**:
   - Parse JSON
@@ -362,17 +384,20 @@ sequenceDiagram
 ## 🎯 Performance Optimierungen
 
 ### 1. Caching Strategy
+
 - **L1 Cache**: Browser Cache (Static Assets)
 - **L2 Cache**: Redis Cache (API Responses)
 - **L3 Cache**: Database Query Cache
 
 ### 2. Response Time Targets
+
 - **< 100ms**: Cached Responses
 - **< 500ms**: Simple Database Queries
 - **< 2000ms**: Complex Queries / AI Requests
 - **< 5000ms**: Batch Processing
 
 ### 3. Connection Pooling
+
 - **Database**: Max 20 Connections
 - **Redis**: Max 10 Connections
 - **AI Providers**: Max 5 concurrent Requests

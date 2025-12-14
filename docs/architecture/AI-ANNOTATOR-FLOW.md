@@ -54,20 +54,20 @@ graph TB
     UI --> Preview
     Form --> BatchAPI
     Preview --> StatusAPI
-    
+
     BatchAPI --> BatchService
     BatchService --> ValidationService
     ValidationService --> AIService
-    
+
     AIService --> OpenAI
     AIService --> Anthropic
     AIService --> Ollama
     AIService --> Fallback
-    
+
     BatchService --> DB
     BatchService --> Queue
     CacheService --> Redis
-    
+
     StatusAPI --> Queue
     StatusAPI --> Redis
     TemplateAPI --> DB
@@ -93,7 +93,7 @@ sequenceDiagram
     User->>UI: Configure Batch Job
     UI->>UI: Validate Form Schema
     UI->>API: POST /api/ai-annotator/batch
-    
+
     Note over API,Validator: Step 1: Validation
     API->>Validator: Validate Input
     alt Invalid Input
@@ -107,7 +107,7 @@ sequenceDiagram
         Batch-->>API: Job ID
         API-->>UI: 202 Accepted + Job ID
         UI-->>User: Show Progress UI
-        
+
         Note over Batch,AI: Step 2: Processing (Async)
         loop For Each Item
             Batch->>Cache: Check Cache
@@ -128,14 +128,14 @@ sequenceDiagram
                     end
                 end
             end
-            
+
             Batch->>DB: Store Result
             Batch->>Cache: Update Progress
             Batch->>WS: Emit Progress Event
             WS-->>UI: Progress Update
             UI-->>User: Update Progress Bar
         end
-        
+
         Note over Batch,DB: Step 3: Finalization
         Batch->>DB: Mark Job Complete
         Batch->>Cache: Set Progress (100%)
@@ -152,34 +152,39 @@ sequenceDiagram
 ### Phase 1: Job Configuration
 
 #### 1. User Configuration
+
 **UI Components**:
+
 - Form Schema Builder
 - Field Mapping
 - Sample Data Preview
 - Validation Rules
 
 **Configuration Options**:
+
 ```typescript
 interface BatchConfig {
-  name: string;                    // Job Name
-  description?: string;            // Job Description
-  formSchema: FormSpec;            // Target Schema
-  items: Array<{                   // Items to Process
+  name: string; // Job Name
+  description?: string; // Job Description
+  formSchema: FormSpec; // Target Schema
+  items: Array<{
+    // Items to Process
     id: string;
-    rawData: unknown;              // Unstructured Data
+    rawData: unknown; // Unstructured Data
   }>;
   options: {
-    aiProvider?: 'openai' | 'anthropic' | 'ollama';
+    aiProvider?: "openai" | "anthropic" | "ollama";
     model?: string;
-    temperature?: number;          // 0.0 - 1.0
-    maxRetries?: number;           // Default: 3
-    batchSize?: number;            // Default: 10
-    cacheResults?: boolean;        // Default: true
+    temperature?: number; // 0.0 - 1.0
+    maxRetries?: number; // Default: 3
+    batchSize?: number; // Default: 10
+    cacheResults?: boolean; // Default: true
   };
 }
 ```
 
 **Example Configuration**:
+
 ```typescript
 {
   name: "Customer Data Import",
@@ -210,7 +215,9 @@ interface BatchConfig {
 ### Phase 2: Validation
 
 #### Input Validation
+
 **Checks**:
+
 1. **Schema Validation**: FormSpec gegen Zod-Schema
 2. **Item Count**: Max 100 Items per Batch (konfigurierbar)
 3. **Data Size**: Max 10MB per Item
@@ -218,6 +225,7 @@ interface BatchConfig {
 5. **User Permissions**: User hat Zugriff auf AI-Features
 
 **Validation Errors**:
+
 ```typescript
 {
   success: false,
@@ -233,6 +241,7 @@ interface BatchConfig {
 ### Phase 3: Job Creation
 
 #### Database Schema
+
 ```sql
 CREATE TABLE ai_batch_jobs (
   id TEXT PRIMARY KEY,
@@ -243,12 +252,12 @@ CREATE TABLE ai_batch_jobs (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   started_at TIMESTAMP,
   completed_at TIMESTAMP,
-  
+
   total_items INTEGER NOT NULL,
   processed_items INTEGER DEFAULT 0,
   successful_items INTEGER DEFAULT 0,
   failed_items INTEGER DEFAULT 0,
-  
+
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -261,29 +270,30 @@ CREATE TABLE ai_batch_items (
   error TEXT,
   status TEXT NOT NULL,  -- pending, processing, success, failed
   processed_at TIMESTAMP,
-  
+
   FOREIGN KEY (job_id) REFERENCES ai_batch_jobs(id)
 );
 ```
 
 #### Job Status
+
 ```typescript
 interface JobStatus {
   id: string;
   name: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: "pending" | "processing" | "completed" | "failed";
   progress: {
     total: number;
     processed: number;
     successful: number;
     failed: number;
-    percentage: number;  // 0-100
+    percentage: number; // 0-100
   };
   timing: {
     createdAt: string;
     startedAt?: string;
     completedAt?: string;
-    duration?: number;   // milliseconds
+    duration?: number; // milliseconds
   };
 }
 ```
@@ -293,6 +303,7 @@ interface JobStatus {
 ### Phase 4: AI Processing
 
 #### Request Structure
+
 ```typescript
 // AI Prompt Template
 const prompt = `
@@ -309,63 +320,65 @@ Return ONLY valid JSON matching the schema. Do not include explanations.
 
 // AI Request
 const request = {
-  model: 'gpt-4o-mini',
+  model: "gpt-4o-mini",
   messages: [
-    { role: 'system', content: 'You are a data extraction assistant.' },
-    { role: 'user', content: prompt }
+    { role: "system", content: "You are a data extraction assistant." },
+    { role: "user", content: prompt },
   ],
   temperature: 0.1,
-  response_format: { type: 'json_object' }
+  response_format: { type: "json_object" },
 };
 ```
 
 #### Provider Selection & Fallback
+
 ```mermaid
 graph TD
     Start[AI Request] --> CheckPrimary{Primary Provider<br/>Available?}
     CheckPrimary -->|Yes| Primary[OpenAI/Anthropic]
     CheckPrimary -->|No| CheckOllama{Ollama<br/>Available?}
-    
+
     Primary --> PrimarySuccess{Success?}
     PrimarySuccess -->|Yes| Done[Return Result]
     PrimarySuccess -->|No| CheckOllama
-    
+
     CheckOllama -->|Yes| Ollama[Ollama Local]
     CheckOllama -->|No| Fallback[Simple Fallback]
-    
+
     Ollama --> OllamaSuccess{Success?}
     OllamaSuccess -->|Yes| Done
     OllamaSuccess -->|No| Fallback
-    
+
     Fallback --> Done
 ```
 
 #### Retry Logic
+
 ```typescript
 async function processWithRetry(
   item: BatchItem,
-  maxRetries: number = 3
+  maxRetries: number = 3,
 ): Promise<AnnotationResult> {
   let lastError: Error;
-  
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const result = await aiProvider.annotate(item);
       return result;
     } catch (error) {
       lastError = error;
-      
+
       if (attempt < maxRetries) {
         // Exponential backoff
         const delay = Math.pow(2, attempt) * 1000;
         await sleep(delay);
-        
+
         // Try next provider on error
         aiProvider = getNextProvider();
       }
     }
   }
-  
+
   throw lastError;
 }
 ```
@@ -375,12 +388,15 @@ async function processWithRetry(
 ### Phase 5: Caching
 
 #### Cache Strategy
+
 **Cache Key Pattern**:
+
 ```
 cache:ai-annotator:{schemaHash}:{dataHash}
 ```
 
 **Cache Logic**:
+
 1. Hash FormSchema → `schemaHash`
 2. Hash rawData → `dataHash`
 3. Check Cache: `GET cache:ai-annotator:{schemaHash}:{dataHash}`
@@ -390,6 +406,7 @@ cache:ai-annotator:{schemaHash}:{dataHash}
 **TTL**: 24 hours (konfigurierbar)
 
 **Cache Stats**:
+
 ```typescript
 {
   hits: 42,
@@ -404,43 +421,45 @@ cache:ai-annotator:{schemaHash}:{dataHash}
 ### Phase 6: Progress Tracking
 
 #### WebSocket Events
+
 ```typescript
 // Progress Update
-socket.emit('batch:progress', {
-  jobId: 'job-123',
+socket.emit("batch:progress", {
+  jobId: "job-123",
   progress: {
     total: 100,
     processed: 45,
     successful: 42,
     failed: 3,
-    percentage: 45
+    percentage: 45,
   },
   currentItem: {
-    id: 'item-45',
-    status: 'processing'
-  }
+    id: "item-45",
+    status: "processing",
+  },
 });
 
 // Job Complete
-socket.emit('batch:complete', {
-  jobId: 'job-123',
-  status: 'completed',
+socket.emit("batch:complete", {
+  jobId: "job-123",
+  status: "completed",
   results: {
     successful: 97,
     failed: 3,
-    duration: 125000  // ms
+    duration: 125000, // ms
   },
-  downloadUrl: '/api/ai-annotator/batch/job-123/export'
+  downloadUrl: "/api/ai-annotator/batch/job-123/export",
 });
 
 // Job Failed
-socket.emit('batch:error', {
-  jobId: 'job-123',
-  error: 'All AI providers unavailable'
+socket.emit("batch:error", {
+  jobId: "job-123",
+  error: "All AI providers unavailable",
 });
 ```
 
 #### UI Progress Display
+
 ```typescript
 <ProgressBar
   value={progress.percentage}
@@ -462,17 +481,20 @@ socket.emit('batch:error', {
 ### Phase 7: Result Export
 
 #### Export Formats
+
 1. **JSON**: Structured Data as JSON Array
 2. **CSV**: Flattened Table Format
 3. **Excel**: With Formatting and Validation
 4. **SQL**: INSERT Statements
 
 **Export Endpoint**:
+
 ```
 GET /api/ai-annotator/batch/:jobId/export?format=json
 ```
 
 **Response**:
+
 ```typescript
 {
   success: true,
@@ -510,12 +532,14 @@ GET /api/ai-annotator/batch/:jobId/export?format=json
 ## 🔐 Security & Compliance
 
 ### Data Privacy
+
 - **Option**: Lokale AI (Ollama) für sensitive Daten
 - **Encryption**: Data at rest (Database)
 - **Audit Trail**: Alle Annotationen geloggt
 - **User Consent**: Disclaimer bei externen AI-Providern
 
 ### Rate Limiting
+
 - **Batch Jobs**: 5 Jobs pro 15 Minuten
 - **AI Requests**: 20 Requests pro 15 Minuten
 - **Cost Control**: Max Budget per User/Job
@@ -525,6 +549,7 @@ GET /api/ai-annotator/batch/:jobId/export?format=json
 ## 📊 Monitoring
 
 ### Metrics
+
 ```prometheus
 # Batch Job Metrics
 ai_batch_jobs_total{status="completed"}
@@ -548,6 +573,7 @@ ai_annotator_cache_hit_rate
 ```
 
 ### Alerts
+
 - **High Failure Rate**: > 10% Items failed
 - **Slow Processing**: > 5s per Item P95
 - **AI Provider Down**: > 50% Error Rate
