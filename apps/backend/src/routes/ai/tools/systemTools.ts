@@ -166,7 +166,9 @@ const systemPermissionsTool: ToolFunction = async () => {
     fs.writeFileSync(testPath, "test");
     fs.unlinkSync(testPath);
     canWriteTmp = true;
-  } catch {}
+  } catch {
+    // Cannot write to temp directory
+  }
 
   return {
     user: user.username,

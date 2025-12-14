@@ -74,7 +74,7 @@ const config: Config = {
   functionsJsonDir:
     process.env.FUNCTIONS_JSON_DIR ||
     path.join(REPO_ROOT, "data", "functions", "output"),
-  cacheTtlMs: Number(process.env.FUNCTIONS_INDEX_TTL_MS) || 5 * 60 * 1000, // 5 min
+  cacheTtlMs: Number(process.env.FUNCTIONS_INDEX_TTL_MS) || 5 * 60 * 1000, // 5 min
   logLevel: process.env.LOG_LEVEL || "info",
 };
 
@@ -586,12 +586,12 @@ function buildTreeFromFlatNodes(flatNodes: CatalogNode[]): CatalogNode[] {
   const nodeMap = new Map<string, CatalogNode>();
   const roots: CatalogNode[] = [];
 
-  // 1️⃣ Knoten kopieren (ohne Kinder) → Map
+  // 1️⃣ Knoten kopieren (ohne Kinder) → Map
   for (const n of flatNodes) {
     nodeMap.set(n.id, { ...n, children: [] });
   }
 
-  // 2️⃣ Parent‑/Child‑Beziehungen herstellen
+  // 2️⃣ Parent‑/Child‑Beziehungen herstellen
   for (const n of flatNodes) {
     const cur = nodeMap.get(n.id)!;
     if (n.parent_id && nodeMap.has(n.parent_id)) {
@@ -602,7 +602,7 @@ function buildTreeFromFlatNodes(flatNodes: CatalogNode[]): CatalogNode[] {
     }
   }
 
-  // 3️⃣ Kategorien‑Wrapper (nach fileCategory)
+  // 3️⃣ Kategorien‑Wrapper (nach fileCategory)
   const catMap = new Map<string, CatalogNode>();
   const organized: CatalogNode[] = [];
 
@@ -638,7 +638,7 @@ function buildTreeFromFlatNodes(flatNodes: CatalogNode[]): CatalogNode[] {
     catNode.children.push(root);
   }
 
-  // 4️⃣ rekursive Sortierung (Gewicht → Titel)
+  // 4️⃣ rekursive Sortierung (Gewicht → Titel)
   const sortRecursively = (nodes: CatalogNode[]) => {
     nodes.sort((a, b) => {
       if (a.weight !== b.weight) return a.weight - b.weight;
@@ -660,12 +660,12 @@ function lintTree(allFiles: ParsedFile[], rules: GlobalRules): LintFinding[] {
   const idMap = new Map<string, { file: string; path: string }[]>();
 
   const walk = (node: CatalogNode, file: string) => {
-    // – Duplikat‑ID‑Check –
+    // – Duplikat‑ID‑Check –
     const list = idMap.get(node.id) ?? [];
     list.push({ file, path: node.path.join(" / ") });
     idMap.set(node.id, list);
 
-    // – Fehlende Pflicht‑Felder –
+    // – Fehlende Pflicht‑Felder –
     if (!node.id) {
       findings.push({
         code: "MISSING_ID",
@@ -694,7 +694,7 @@ function lintTree(allFiles: ParsedFile[], rules: GlobalRules): LintFinding[] {
     pf.nodes.forEach((n) => walk(n, pf.file));
   }
 
-  // – Duplikate melden –
+  // – Duplikate melden –
   for (const [id, locations] of idMap.entries()) {
     if (locations.length > 1) {
       const details = locations.map((l) => `${l.file} @ ${l.path}`).join("; ");

@@ -345,7 +345,7 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
                 <div className="empty-icon">🔍</div>
                 <div className="empty-title">Keine Ergebnisse</div>
                 <div className="empty-description">
-                  Keine Unterhaltungen gefunden für "{searchTerm}"
+                  Keine Unterhaltungen gefunden für &quot;{searchTerm}&quot;
                 </div>
               </>
             ) : (

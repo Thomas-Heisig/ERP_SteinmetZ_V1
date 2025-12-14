@@ -16,8 +16,9 @@
  * Pure business logic - no UI, no global state management
  */
 
-// SPDX-License-Identifier: MIT
-// ERP_SteinmetZ_V1/apps/frontend/src/components/Dashboard/features/search/SearchManager.ts
+import { createLogger } from "../../../../utils/logger";
+
+const logger = createLogger("SearchManager");
 
 import type {
   SearchResult,
@@ -273,7 +274,7 @@ export class SearchManager implements SearchManagerInterface {
       const filterResult = advancedSearch(results, filters, options);
 
       if (process.env.NODE_ENV === "development") {
-        console.debug("Filter Performance:", {
+        logger.debug("Filter Performance", {
           inputCount: results.length,
           outputCount: filterResult.results.length,
           executionTime: `${filterResult.context.executionTime.toFixed(2)}ms`,

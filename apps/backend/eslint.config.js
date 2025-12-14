@@ -19,6 +19,9 @@ export default [
         ...globals.node,
         ...globals.es2021,
         NodeJS: "readonly",
+        BufferEncoding: "readonly",
+        RequestInit: "readonly",
+        Console: "readonly",
       },
     },
     plugins: {

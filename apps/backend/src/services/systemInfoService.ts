@@ -11,6 +11,9 @@ import type { Express, Application } from "express";
 
 import os from "os";
 import process from "process";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
 import db from "./dbService.js";
 
 const isPostgres = (process.env.DB_DRIVER || "").toLowerCase() === "postgres";
@@ -117,11 +120,11 @@ class SystemInfoService {
       const raw = layer.regexp.source;
       let path = raw
         .replace(/\\\//g, "/") // \/ -> /
-        .replace(/(\(\?:\(\?\=\\\/\|\$\)\)\?)?\$$/, "") // Endmuster raus
+        .replace(/(\(\?:\(\?=\\\/\|\$\)\)\?)?\$$/, "") // Endmuster raus
         .replace(/^\\\^/, "") // ^ entfernen
         .replace(/\$$/, ""); // $ entfernen
       if (!path.startsWith("/")) path = "/" + path;
-      return path.replace(/\(\?:\(\?\=\/\|\$\)\)\?/g, "").replace(/\/\?$/, "");
+      return path.replace(/\(\?:\(\?=\/\|\$\)\)\?/g, "").replace(/\/\?$/, "");
     };
 
     const walkStack = (stack: any[], base = "") => {
@@ -515,8 +518,10 @@ class SystemInfoService {
 
   getDependenciesSummary(): Record<string, any> {
     try {
-      const pkgPath = require.resolve("../../../package.json");
-      const pkg = require(pkgPath);
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = dirname(__filename);
+      const pkgPath = resolve(__dirname, "../../../package.json");
+      const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
       return {
         name: pkg.name,
         version: pkg.version,

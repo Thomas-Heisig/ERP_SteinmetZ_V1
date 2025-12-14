@@ -145,7 +145,9 @@ class CatalogLogger {
   }
 
   debug(message: string, data?: any) {
-    if (this.enabled) {
+    if (this.enabled && import.meta.env.DEV) {
+      // Development-only debug logging
+      // eslint-disable-next-line no-console
       console.debug(`${this.prefix} ${message}`, data || "");
     }
   }

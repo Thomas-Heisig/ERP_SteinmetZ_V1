@@ -120,7 +120,7 @@ export async function callOllama(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      // @ts-ignore — node-fetch akzeptiert Timeout
+      // @ts-expect-error — node-fetch akzeptiert Timeout
       timeout: ollamaConfig.timeout_ms,
     });
 

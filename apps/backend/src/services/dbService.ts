@@ -1076,7 +1076,9 @@ class PostgresApi implements SqlApi {
     } catch (e) {
       try {
         await client.query("ROLLBACK");
-      } catch {}
+      } catch {
+        // Rollback failed, but original error is more important
+      }
       throw e;
     } finally {
       this.txClient = undefined;
@@ -1447,7 +1449,7 @@ class DatabaseService {
     let correctedCount = 0;
 
     const toJsonParam = (obj: unknown): string | object | null => {
-      if (obj == null) return null;
+      if (obj === null || obj === undefined) return null;
       return this.config.driver === "postgres"
         ? (obj as object)
         : JSON.stringify(obj);

@@ -121,7 +121,7 @@ export function push(
 ): NavigationStackState {
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
   let history = state.history;
-  let index = state.index;
+  const index = state.index;
 
   // Validate the new entry
   const validation = validateNavigationEntry(entry);

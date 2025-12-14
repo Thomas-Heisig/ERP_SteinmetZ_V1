@@ -210,7 +210,7 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
           {variant === "funny" && (
             <footer className="error-screen__footer">
               <p className="error-screen__footer-text">
-                "Fehler sind wie Katzen - sie machen was sie wollen!"
+                &quot;Fehler sind wie Katzen - sie machen was sie wollen!&quot;
                 <span role="img" aria-label="cat">
                   {" "}
                   😼

@@ -78,7 +78,7 @@ export default function ProtectedRoute({
       >
         <h1>Zugriff verweigert</h1>
         <p>
-          Sie benötigen die Rolle '{requiredRole}', um auf diese Seite
+          Sie benötigen die Rolle &apos;{requiredRole}&apos;, um auf diese Seite
           zuzugreifen.
         </p>
       </div>

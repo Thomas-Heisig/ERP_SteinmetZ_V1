@@ -308,16 +308,19 @@ export class ToolRegistry {
       },
       "Registered tools",
     );
-    console.table(
-      defs.map((t) => ({
-        Name: t.name,
-        Kategorie: t.category ?? "—",
-        Beschreibung: t.description ?? "—",
-        Parameter: Object.keys(t.parameters || {}).join(", ") || "–",
-        Version: t.version ?? "—",
-        Eingeschränkt: t.restricted ? "Ja" : "Nein",
-      })),
-    );
+    // Log tool table for debugging (only in development)
+    if (process.env.NODE_ENV !== "production") {
+      console.table(
+        defs.map((t) => ({
+          Name: t.name,
+          Kategorie: t.category ?? "—",
+          Beschreibung: t.description ?? "—",
+          Parameter: Object.keys(t.parameters || {}).join(", ") || "–",
+          Version: t.version ?? "—",
+          Eingeschränkt: t.restricted ? "Ja" : "Nein",
+        })),
+      );
+    }
   }
 
   getRegistryInfo() {
