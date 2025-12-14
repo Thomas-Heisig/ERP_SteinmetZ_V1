@@ -408,6 +408,47 @@ class WebSocketService {
   }
 
   /**
+   * Graceful shutdown of WebSocket server
+   *
+   * Notifies all connected clients about shutdown, waits for acknowledgment,
+   * then closes all connections and the server.
+   *
+   * @example
+   * ```typescript
+   * // During graceful shutdown
+   * await websocketService.shutdown();
+   * ```
+   */
+  async shutdown(): Promise<void> {
+    if (!this.io) {
+      log("info", "WebSocket server not initialized, skipping shutdown");
+      return;
+    }
+
+    log("info", "Starting graceful WebSocket shutdown");
+
+    // Notify all connected clients about shutdown
+    this.broadcast("system:shutdown", {
+      message: "Server is shutting down",
+      timestamp: Date.now(),
+    });
+
+    // Wait a moment for messages to be delivered
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Disconnect all clients gracefully
+    const sockets = await this.io.fetchSockets();
+    for (const socket of sockets) {
+      socket.disconnect(true);
+    }
+
+    log("info", `Disconnected ${sockets.length} WebSocket clients`);
+
+    // Close the server
+    this.close();
+  }
+
+  /**
    * Close WebSocket server
    */
   close(): void {

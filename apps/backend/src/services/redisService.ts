@@ -307,14 +307,36 @@ class RedisService {
   }
 
   /**
-   * Close Redis connection
+   * Gracefully disconnect from Redis
+   */
+  async disconnect(): Promise<void> {
+    if (this.useInMemoryFallback) {
+      log("info", "Using in-memory fallback, clearing store");
+      this.inMemoryStore.clear();
+      return;
+    }
+
+    if (this.client && this.isConnected) {
+      try {
+        await this.client.quit();
+        this.isConnected = false;
+        log("info", "✅ Redis client disconnected gracefully");
+      } catch (error) {
+        log("error", "Error disconnecting Redis client", {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        // Force close if graceful quit fails
+        await this.client?.disconnect();
+        this.isConnected = false;
+      }
+    }
+  }
+
+  /**
+   * Close Redis connection (alias for disconnect)
    */
   async close(): Promise<void> {
-    if (this.client && this.isConnected) {
-      await this.client.quit();
-      this.isConnected = false;
-      log("info", "Redis client closed");
-    }
+    await this.disconnect();
   }
 
   /**

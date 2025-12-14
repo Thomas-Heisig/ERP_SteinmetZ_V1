@@ -176,3 +176,94 @@ export function validateProviderConfig(env: Env): void {
     );
   }
 }
+
+/**
+ * Validate production configuration
+ *
+ * Performs additional validation for production environments including:
+ * - JWT secret strength
+ * - Database configuration
+ * - Security settings
+ * - Warning on development defaults
+ *
+ * @param env - Environment configuration
+ * @throws Error if critical production requirements are not met
+ */
+export function validateProductionConfig(env: Env): void {
+  if (env.NODE_ENV !== "production") {
+    return; // Skip production validation in dev/test
+  }
+
+  // Note: Using console for validation messages as logger may not be initialized yet
+  // These are startup messages that should always be visible
+
+  // Critical: JWT Secret must be strong in production
+  if (!env.JWT_SECRET) {
+    throw new Error(
+      "JWT_SECRET is required in production environment. Generate a strong random secret.",
+    );
+  }
+
+  if (env.JWT_SECRET.length < 32) {
+    throw new Error(
+      "JWT_SECRET must be at least 32 characters long in production for security.",
+    );
+  }
+
+  // Warn on weak/default JWT secrets
+  const weakSecrets = [
+    "change-me-in-production",
+    "secret",
+    "your-secret-key",
+    "jwt-secret",
+  ];
+  if (
+    weakSecrets.some((weak) =>
+      env.JWT_SECRET?.toLowerCase().includes(weak.toLowerCase()),
+    )
+  ) {
+    throw new Error(
+      "JWT_SECRET contains a default/weak value. Use a cryptographically secure random string.",
+    );
+  }
+
+  // Database: Warn if using SQLite in production
+  if (env.DB_DRIVER === "sqlite") {
+    console.warn(
+      "⚠️  WARNING: Using SQLite in production. Consider PostgreSQL for better scalability and reliability.",
+    );
+  }
+
+  // Database: PostgreSQL should have proper connection string
+  if (env.DB_DRIVER === "postgresql" && !env.DATABASE_URL) {
+    throw new Error("DATABASE_URL is required for PostgreSQL in production");
+  }
+
+  // CORS: Warn on overly permissive CORS
+  if (
+    env.CORS_ORIGIN === "*" ||
+    env.CORS_ORIGIN.includes("localhost") ||
+    env.CORS_ORIGIN.includes("127.0.0.1")
+  ) {
+    console.warn(
+      "⚠️  WARNING: CORS_ORIGIN contains localhost or wildcard in production. This may be a security risk.",
+    );
+  }
+
+  // AI Provider: Ensure proper configuration
+  validateProviderConfig(env);
+}
+
+/**
+ * Comprehensive environment validation
+ *
+ * Validates both general and production-specific configuration.
+ * Should be called at application startup.
+ *
+ * @throws Error if validation fails
+ */
+export function validateEnvironment(): Env {
+  const env = validateEnv();
+  validateProductionConfig(env);
+  return env;
+}
