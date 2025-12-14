@@ -3,7 +3,10 @@
 
 import React, { useState, useEffect } from "react";
 import { Card } from "../../components/ui";
+import { createLogger } from "../../utils/logger";
 import "./DocumentList.css";
+
+const logger = createLogger("DocumentList");
 
 type DocumentCategory =
   | "invoice"
@@ -47,7 +50,7 @@ export const DocumentList: React.FC = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Failed to load documents:", error);
+        logger.error("Failed to load documents", { error });
         setLoading(false);
       });
   }, []);

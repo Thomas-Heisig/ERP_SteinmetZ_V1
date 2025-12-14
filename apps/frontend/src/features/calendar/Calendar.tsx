@@ -111,7 +111,7 @@ export const Calendar: React.FC<CalendarProps> = ({
     const days: Date[] = [];
     const { start, end } = getDateRange();
 
-    const current = new Date(start);
+    let current = new Date(start);
     while (current <= end) {
       days.push(new Date(current));
       current.setDate(current.getDate() + 1);

@@ -518,7 +518,7 @@ function expandRecurringEvents(
       ? new Date(event.recurrenceEndDate)
       : rangeEnd;
 
-    const current = new Date(eventStart);
+    let current = new Date(eventStart);
     let instanceCount = 0;
     const maxInstances = 365; // Limit
 
