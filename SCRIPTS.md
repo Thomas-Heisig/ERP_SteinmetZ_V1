@@ -129,6 +129,76 @@ Automatically runs `format` after package installation (Git hook).
 - Ensures code is formatted before committing
 - Part of the pre-install process
 
+## Utility Scripts
+
+### `npm run sonar:setup`
+
+Prepares the project for SonarQube analysis.
+
+- Sets up SonarQube configuration
+- Generates necessary metadata
+- See [SONARQUBE.md](docs/SONARQUBE.md) for details
+
+### `npm run check:console`
+
+Checks for console.log statements in source code.
+
+- Scans all TypeScript/JavaScript files
+- Reports console.log usage
+- Part of pre-commit hook
+- Helps maintain production-ready code
+
+### `npm run check:monitoring`
+
+Checks the status of monitoring infrastructure.
+
+- Verifies backend health
+- Checks monitoring endpoints (metrics, prometheus)
+- Validates Docker monitoring stack (Prometheus, Grafana, Jaeger)
+- Provides quick links and recommendations
+- Useful for troubleshooting monitoring setup
+
+**Example output:**
+
+```bash
+$ npm run check:monitoring
+
+🔍 ERP SteinmetZ - Monitoring Status Check
+==========================================
+
+✅ Backend is running
+✅ Metrics endpoint (JSON) available
+✅ Prometheus endpoint available
+✅ Monitoring health endpoint available
+
+🐳 Monitoring containers:
+   ✓ prometheus (running)
+   ✓ grafana (running)
+   ✓ jaeger (running)
+
+Quick Links:
+  - Backend Health:    http://localhost:3000/api/health
+  - Metrics (JSON):    http://localhost:3000/api/monitoring/metrics
+  - Prometheus:        http://localhost:9090
+  - Grafana:           http://localhost:3001 (admin/admin)
+  - Jaeger:            http://localhost:16686
+```
+
+### `npm run docs`
+
+Generates API documentation using TypeDoc.
+
+- Creates HTML documentation from JSDoc comments
+- Output: `docs/api/`
+- Includes all exported types and functions
+
+### `npm run docs:serve`
+
+Serves generated API documentation on http://localhost:8080.
+
+- Requires docs to be generated first
+- Uses http-server for serving
+
 ## Workspace Commands
 
 All scripts support workspace-specific execution using the `-w` flag:

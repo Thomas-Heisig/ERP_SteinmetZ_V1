@@ -105,8 +105,7 @@ describe("validateProductionConfig", () => {
       MAX_BATCH_OPERATION_SIZE: 100,
       LOG_LEVEL: "info",
       LOG_REQUESTS: true,
-      JWT_SECRET:
-        "a-very-strong-secret-key-that-is-at-least-32-characters-long",
+      JWT_SECRET: "TEST_JWT_TOKEN_FOR_VALIDATION_PURPOSES_ONLY_1234567890",
       JWT_EXPIRES_IN: "24h",
       REFRESH_TOKEN_EXPIRES_IN: "7d",
     };
