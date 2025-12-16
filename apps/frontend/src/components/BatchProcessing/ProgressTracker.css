@@ -1,0 +1,176 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/components/BatchProcessing/ProgressTracker.css */
+
+.progress-tracker-container {
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.progress-tracker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.progress-tracker-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-tracker-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-weight: bold;
+  color: white;
+}
+
+.progress-tracker-status-icon.progress-tracker-status-completed {
+  background-color: #28a745;
+}
+
+.progress-tracker-status-icon.progress-tracker-status-failed {
+  background-color: #dc3545;
+}
+
+.progress-tracker-status-icon.progress-tracker-status-cancelled {
+  background-color: #6c757d;
+}
+
+.progress-tracker-status-icon.progress-tracker-status-running {
+  background-color: #007bff;
+}
+
+.progress-tracker-status-icon.progress-tracker-status-pending {
+  background-color: #ffc107;
+}
+
+.progress-tracker-status-text {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.progress-tracker-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.progress-tracker-button:hover {
+  opacity: 0.8;
+}
+
+.progress-tracker-danger-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Progress Bar */
+.progress-tracker-progress-container {
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.progress-tracker-progress-bar {
+  width: 100%;
+  height: 1.5rem;
+  background-color: #e9ecef;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.progress-tracker-progress-fill {
+  height: 100%;
+  /* Width is set dynamically via inline style due to API data */
+  transition: width 0.5s ease;
+  border-radius: 0.75rem;
+  background-color: #007bff;
+}
+
+.progress-tracker-progress-fill.progress-tracker-status-completed {
+  background-color: #28a745;
+}
+
+.progress-tracker-progress-fill.progress-tracker-status-failed {
+  background-color: #dc3545;
+}
+
+.progress-tracker-progress-fill.progress-tracker-status-cancelled {
+  background-color: #6c757d;
+}
+
+.progress-tracker-progress-fill.progress-tracker-status-running {
+  background-color: #007bff;
+}
+
+.progress-tracker-progress-fill.progress-tracker-status-pending {
+  background-color: #ffc107;
+}
+
+.progress-tracker-progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+/* Statistics */
+.progress-tracker-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.progress-tracker-stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.progress-tracker-stat-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.progress-tracker-stat-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.progress-tracker-stat-success {
+  color: #28a745;
+}
+
+.progress-tracker-stat-error {
+  color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .progress-tracker-container {
+    padding: 1rem;
+  }
+
+  .progress-tracker-stats {
+    grid-template-columns: 1fr;
+  }
+}

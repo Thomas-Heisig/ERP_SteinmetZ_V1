@@ -1,0 +1,127 @@
+/* FaxInbox Styles */
+
+.container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.headerText {
+  color: var(--text-secondary);
+}
+
+.statusBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.classificationBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: var(--primary-50);
+  color: var(--primary-700);
+  font-size: 0.75rem;
+}
+
+.phoneNumber {
+  font-family: monospace;
+}
+
+.actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.infoItem {
+}
+
+.infoItem strong {
+  display: block;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.infoItem p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.classificationBox {
+  padding: 1rem;
+  background: var(--primary-50);
+  border-radius: 8px;
+}
+
+.classificationBox strong {
+  display: block;
+  color: var(--primary-700);
+  margin-bottom: 0.5rem;
+}
+
+.classificationBox p {
+  margin: 0.5rem 0 0;
+  color: var(--text-secondary);
+}
+
+.classificationRecommendation {
+  margin: 0;
+  color: var(--primary-600);
+}
+
+.ocrSection {
+}
+
+.ocrSection strong {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.ocrText {
+  margin: 0;
+  padding: 1rem;
+  background: var(--gray-50);
+  border-radius: 8px;
+  white-space: pre-wrap;
+  font-size: 0.875rem;
+  max-height: 200px;
+  overflow: auto;
+  font-family: monospace;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .classificationBox {
+    background: var(--primary-900, #1e3a5f);
+  }
+  
+  .ocrText {
+    background: var(--gray-800, #1f2937);
+  }
+}

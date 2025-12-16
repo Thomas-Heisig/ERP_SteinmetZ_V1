@@ -1,0 +1,125 @@
+/* apps/frontend/src/components/ui/Card.module.css */
+
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.card.clickable {
+  cursor: pointer;
+}
+
+.card.clickable:hover {
+  transform: translateY(-2px);
+}
+
+/* Variants */
+.default {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.elevated {
+  background: var(--surface);
+  border: none;
+  box-shadow: var(--shadow-lg);
+}
+
+.outlined {
+  background: transparent;
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon {
+  font-size: 1.5rem;
+  color: var(--primary-500);
+  flex-shrink: 0;
+}
+
+.headerText {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.actions {
+  flex-shrink: 0;
+}
+
+/* Content */
+.content {
+  /* Padding will be set via data attributes */
+}
+
+/* Padding variants */
+[data-padding="none"] > .header,
+[data-padding="none"] > .content {
+  padding: 0;
+}
+
+[data-padding="sm"] > .header,
+[data-padding="sm"] > .content {
+  padding: 0.75rem;
+}
+
+[data-padding="md"] > .header,
+[data-padding="md"] > .content {
+  padding: 1.25rem;
+}
+
+[data-padding="lg"] > .header,
+[data-padding="lg"] > .content {
+  padding: 2rem;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .default {
+    background: var(--surface-dark, #1f2937);
+    border-color: var(--border-dark, #374151);
+  }
+
+  .elevated {
+    background: var(--surface-dark, #1f2937);
+  }
+
+  .glass {
+    background: rgba(31, 41, 55, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}

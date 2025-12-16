@@ -1,0 +1,132 @@
+/* Calendar.css */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.calendar-header-left,
+.calendar-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.calendar-header-center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+}
+
+.calendar-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.view-switcher {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--surface-alt);
+  padding: 0.25rem;
+  border-radius: 8px;
+}
+
+.calendar-container {
+  flex: 1;
+  padding: 1rem;
+  min-height: 600px;
+}
+
+.calendar-legend {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.calendar-event-content {
+  padding: 0.25rem;
+  font-size: 0.75rem;
+  overflow: hidden;
+}
+
+.event-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-time {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+}
+
+.event-attendees,
+.event-priority {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin-top: 0.125rem;
+}
+
+.filter-dropdown {
+  padding: 1rem;
+  min-width: 250px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.category-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .calendar-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .calendar-header-left,
+  .calendar-header-center,
+  .calendar-header-right {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Animation für kritische Events */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}

@@ -1,0 +1,186 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/components/AdvancedFilters/FilterBuilder.css */
+
+.filter-builder-container {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.filter-builder-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+/* Form Fields */
+.filter-builder-field {
+  margin-bottom: 1.5rem;
+}
+
+.filter-builder-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.filter-builder-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.filter-builder-input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.filter-builder-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* Select Fields */
+.filter-builder-select-multiple {
+  min-height: 120px;
+}
+
+.filter-builder-select-annotation {
+  min-height: 100px;
+}
+
+/* Range Inputs */
+.filter-builder-range-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.filter-builder-range-input {
+  flex: 1;
+}
+
+.filter-builder-range-separator {
+  color: #666;
+  font-weight: 500;
+}
+
+.filter-builder-sort-select,
+.filter-builder-order-select {
+  flex: 1;
+}
+
+/* Actions */
+.filter-builder-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e0e0e0;
+}
+
+.filter-builder-button {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-builder-button-primary {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.filter-builder-button-primary:hover {
+  background-color: #357abd;
+}
+
+.filter-builder-button-secondary {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.filter-builder-button-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+.filter-builder-button-danger {
+  background-color: #fff;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+}
+
+.filter-builder-button-danger:hover {
+  background-color: #e74c3c;
+  color: white;
+}
+
+/* Modal */
+.filter-builder-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.filter-builder-modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  min-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.filter-builder-modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.filter-builder-modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filter-builder-container {
+    padding: 1rem;
+  }
+
+  .filter-builder-actions {
+    flex-direction: column;
+  }
+
+  .filter-builder-range-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-builder-modal-content {
+    min-width: 90%;
+    margin: 1rem;
+  }
+}

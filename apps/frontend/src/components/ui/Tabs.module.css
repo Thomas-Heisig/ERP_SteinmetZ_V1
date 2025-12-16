@@ -1,0 +1,120 @@
+/* apps/frontend/src/components/ui/Tabs.module.css */
+
+.tabs {
+  width: 100%;
+}
+
+.tabList {
+  display: flex;
+  gap: 0;
+}
+
+.tabList.pills {
+  gap: 0.5rem;
+}
+
+.tabList.default {
+  background: var(--gray-100);
+  border-radius: 8px;
+  padding: 0.25rem;
+}
+
+.tabList.underline {
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.tab.fullWidth {
+  flex: 1;
+}
+
+/* Default variant */
+.default .tab {
+  border-radius: 6px;
+}
+
+.default .tab.active {
+  background: var(--surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Pills variant */
+.pills .tab {
+  border-radius: 6px;
+}
+
+.pills .tab.active {
+  background: var(--primary-100);
+  color: var(--primary-600);
+}
+
+.pills .tab:hover:not(:disabled) {
+  background: var(--gray-100);
+}
+
+/* Underline variant */
+.underline .tab {
+  border-radius: 0;
+}
+
+.underline .tab.active {
+  color: var(--primary-600);
+  border-bottom-color: var(--primary-500);
+}
+
+.underline .tab:hover:not(:disabled) {
+  background: var(--gray-50);
+}
+
+.tabIcon {
+  font-size: 1rem;
+}
+
+.tabContent {
+  padding: 1rem 0;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .tabList.default {
+    background: var(--gray-800);
+  }
+
+  .default .tab.active {
+    background: var(--surface-dark, #1f2937);
+  }
+
+  .pills .tab.active {
+    background: var(--primary-900);
+    color: var(--primary-300);
+  }
+
+  .pills .tab:hover:not(:disabled) {
+    background: var(--gray-800);
+  }
+
+  .underline .tab:hover:not(:disabled) {
+    background: var(--gray-800);
+  }
+}

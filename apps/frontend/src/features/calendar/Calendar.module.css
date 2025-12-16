@@ -1,0 +1,323 @@
+/* Calendar.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  background: var(--surface, #ffffff);
+}
+
+.headerLeft,
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.headerCenter {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.viewSwitcher {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--surface-alt, #f3f4f6);
+  padding: 0.25rem;
+  border-radius: 8px;
+}
+
+.calendarWrapper {
+  flex: 1;
+  padding: 1rem;
+  min-height: 600px;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-top: 1px solid var(--border, #e5e7eb);
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.eventContent {
+  padding: 0.25rem;
+  font-size: 0.75rem;
+  overflow: hidden;
+}
+
+.eventTitle {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eventTime {
+  font-size: 0.625rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.eventAttendees,
+.eventPriority {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin-top: 0.125rem;
+}
+
+.filterDropdown {
+  padding: 1rem;
+  min-width: 250px;
+}
+
+.filterOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.filterOption:hover {
+  background: var(--gray-50, #f9fafb);
+}
+
+.categoryColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.loadingText {
+  color: var(--text-secondary, #6b7280);
+}
+
+/* Modal Content */
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.infoLabel {
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #9ca3af);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.infoValue {
+  color: var(--text-primary, #111827);
+}
+
+.attendeesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.attendeeItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--gray-50, #f9fafb);
+  border-radius: 6px;
+}
+
+.statusBadge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 500;
+}
+
+.statusBadge.accepted {
+  background: var(--success-50, #f0fdf4);
+  color: var(--success-600, #16a34a);
+}
+
+.statusBadge.declined {
+  background: var(--error-50, #fef2f2);
+  color: var(--error-600, #dc2626);
+}
+
+.statusBadge.tentative {
+  background: var(--warning-50, #fffbeb);
+  color: var(--warning-600, #d97706);
+}
+
+.statusBadge.pending {
+  background: var(--gray-100, #f3f4f6);
+  color: var(--gray-600, #4b5563);
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .header {
+    background: var(--surface-dark, #1f2937);
+    border-bottom-color: var(--border-dark, #374151);
+  }
+
+  .title,
+  .infoValue {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .viewSwitcher {
+    background: var(--surface-alt-dark, #374151);
+  }
+
+  .legend {
+    border-top-color: var(--border-dark, #374151);
+  }
+
+  .attendeeItem {
+    background: var(--gray-800, #1f2937);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .headerLeft,
+  .headerCenter,
+  .headerRight {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .calendarWrapper {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .legend {
+    flex-direction: column;
+  }
+
+  .modalFooter {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modalActions {
+    width: 100%;
+  }
+}
+
+/* Animation für kritische Events */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.priorityCritical {
+  animation: pulse 2s infinite;
+}
+
+/* Simple Calendar View Styles */
+.simpleCalendarView {
+  padding: 1rem;
+}
+
+.simpleCalendarHeader {
+  text-align: center;
+  color: var(--text-secondary, #6b7280);
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.simpleCalendarEvents {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.simpleEventCard {
+  padding: 0.75rem;
+  background: var(--gray-50, #f9fafb);
+  border-radius: 8px;
+  border-left: 4px solid #4f46e5; /* Fallback, wird durch data-color überschrieben */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.simpleEventCard:hover {
+  background: var(--gray-100, #f3f4f6);
+  transform: translateX(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

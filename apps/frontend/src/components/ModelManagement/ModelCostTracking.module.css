@@ -1,0 +1,254 @@
+/* ModelCostTracking.module.css */
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.loading {
+  padding: 60px;
+  text-align: center;
+  color: #888;
+}
+
+.error {
+  padding: 60px;
+  text-align: center;
+  color: #dc3545;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+.select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.totalCard {
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.totalLabel {
+  font-size: 14px;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+.totalValue {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.totalPeriod {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.section {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+  padding: 20px;
+}
+
+.modelList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modelItem {
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.modelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.modelName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.modelProvider {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.modelCost {
+  font-size: 20px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.modelBar {
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.modelBarFill {
+  height: 100%;
+  background-color: #007bff;
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* Dynamic width from data attribute - use JS to set CSS variable */
+.modelBarFill[data-bar-width] {
+  width: calc(attr(data-bar-width number) * 1%);
+}
+
+.modelStats {
+  font-size: 12px;
+  color: #888;
+}
+
+.pieContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.pieItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pieDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* Dynamic colors from data attribute */
+.pieDot[data-color-index="0"] {
+  background-color: #007bff;
+}
+
+.pieDot[data-color-index="1"] {
+  background-color: #28a745;
+}
+
+.pieDot[data-color-index="2"] {
+  background-color: #ffc107;
+}
+
+.pieDot[data-color-index="3"] {
+  background-color: #dc3545;
+}
+
+.pieDot[data-color-index="4"] {
+  background-color: #17a2b8;
+}
+
+.pieDot[data-color-index="5"] {
+  background-color: #6f42c1;
+}
+
+.pieLabel {
+  font-size: 13px;
+  color: #666;
+}
+
+.suggestionList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.suggestion {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background-color: #fff3cd;
+  border-radius: 6px;
+  border: 1px solid #ffc107;
+}
+
+.suggestionIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.suggestionText {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.exportButton {
+  padding: 12px 24px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.exportButton:hover {
+  background-color: #218838;
+}

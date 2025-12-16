@@ -1,0 +1,294 @@
+/* SPDX-License-Identifier: MIT */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.criteriaGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.criteriaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+}
+
+.select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.input {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: #888;
+}
+
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: #888;
+}
+
+.recommendationList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.recommendationCard {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  position: relative;
+}
+
+.topRecommendation {
+  background-color: #e7f3ff;
+  border-color: #007bff;
+}
+
+.badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  background-color: #ffc107;
+  color: #333;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.recommendationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.recommendationName {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.recommendationProvider {
+  font-size: 13px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.overallScore {
+  font-size: 32px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.metricBar {
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.metricBarFill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Dynamic width from data attribute */
+.metricBarFill[data-metric-width] {
+  width: calc(attr(data-metric-width number) * 1%);
+}
+
+/* Dynamic colors based on metric type */
+.metricBarFill[data-metric-type="speed"] {
+  background-color: #17a2b8;
+}
+
+.metricBarFill[data-metric-type="accuracy"] {
+  background-color: #28a745;
+}
+
+.metricBarFill[data-metric-type="cost"] {
+  background-color: #ffc107;
+}
+
+.metricBarFill[data-metric-type="reliability"] {
+  background-color: #6f42c1;
+}
+
+.metricValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.selectButton {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.selectButton:hover {
+  background-color: #0056b3;
+}
+
+.selectedButton {
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.selectedButton:hover {
+  background-color: #218838;
+}
+
+.modelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.modelCard {
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.unavailableCard {
+  opacity: 0.6;
+}
+
+.modelCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.modelCardName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.statusBadge {
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Dynamic colors based on status */
+.statusBadge[data-status="available"] {
+  background-color: #28a745;
+}
+
+.statusBadge[data-status="unavailable"] {
+  background-color: #dc3545;
+}
+
+.modelCardProvider {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.modelCardDescription {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.capabilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.capabilityTag {
+  padding: 3px 8px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+.modelCardInfo {
+  font-size: 12px;
+  color: #888;
+}

@@ -1,0 +1,48 @@
+/* SPDX-License-Identifier: MIT */
+/* src/components/Dashboard/features/health/HealthStatusBadge.css */
+
+.health-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.health-status-badge--clickable {
+  cursor: pointer;
+}
+
+.health-status-badge__indicator {
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.health-status-badge__indicator--small {
+  width: 10px;
+  height: 10px;
+}
+
+.health-status-badge__indicator--medium {
+  width: 14px;
+  height: 14px;
+}
+
+.health-status-badge__indicator--large {
+  width: 18px;
+  height: 18px;
+}
+
+.health-status-badge__indicator--healthy {
+  background-color: #4caf50;
+}
+
+.health-status-badge__indicator--degraded {
+  background-color: #ff9800;
+}
+
+.health-status-badge__indicator--unhealthy {
+  background-color: #f44336;
+}
+
+.health-status-badge__indicator--unknown {
+  background-color: #9e9e9e;
+}

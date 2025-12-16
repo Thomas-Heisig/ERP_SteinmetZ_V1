@@ -1,0 +1,229 @@
+/* apps/frontend/src/components/QuickChatAlt/QuickChatWidget.module.css */
+
+/* Floating Button */
+.floatingButton {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--primary-500);
+  border: none;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 1000;
+}
+
+.floatingButton:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-xl);
+}
+
+.floatingButton:active {
+  transform: scale(0.95);
+}
+
+/* Widget Container */
+.widget {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 400px;
+  height: 500px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-2xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.widget.minimized {
+  width: 300px;
+  height: 50px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--primary-500);
+  color: white;
+  cursor: pointer;
+}
+
+.headerTitle {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.loadingIndicator {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.headerButton {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 0.875rem;
+  transition: opacity 0.15s ease;
+}
+
+.headerButton:hover {
+  opacity: 0.8;
+}
+
+/* Messages Area */
+.messagesArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--text-tertiary);
+  padding: 2rem;
+}
+
+.emptyStateText {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.messageWrapper {
+  display: flex;
+}
+
+.messageWrapper.user {
+  justify-content: flex-end;
+}
+
+.messageWrapper.assistant {
+  justify-content: flex-start;
+}
+
+.message {
+  max-width: 85%;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+}
+
+.message.user {
+  background: var(--primary-500);
+  color: white;
+  border-radius: 12px 12px 0 12px;
+}
+
+.message.assistant {
+  background: var(--gray-100);
+  color: var(--text-primary);
+  border-radius: 12px 12px 12px 0;
+}
+
+.messageContent {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.messageCommand {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.125rem 0.375rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-family: monospace;
+}
+
+.loadingMessage {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.loadingBubble {
+  padding: 0.75rem 1rem;
+  border-radius: 12px 12px 12px 0;
+  background: var(--gray-100);
+  color: var(--text-secondary);
+}
+
+.loadingDots {
+  animation: pulse 1s infinite;
+}
+
+/* Input Area */
+.inputArea {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .widget {
+    background: var(--surface-dark, #1f2937);
+    border-color: var(--border-dark);
+  }
+
+  .message.assistant {
+    background: var(--gray-800);
+  }
+
+  .loadingBubble {
+    background: var(--gray-800);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .widget {
+    width: calc(100vw - 2rem);
+    height: calc(100vh - 2rem);
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .widget.minimized {
+    width: calc(100vw - 2rem);
+    height: 50px;
+  }
+}

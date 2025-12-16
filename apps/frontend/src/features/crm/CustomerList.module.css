@@ -1,0 +1,528 @@
+/* apps/frontend/src/features/crm/CustomerList.module.css */
+
+.container {
+  /* Card uses its own styling */
+}
+
+.header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Status Badge */
+.statusBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.statusBadge.lead {
+  background: var(--primary-50, #eff6ff);
+  color: var(--primary-600, #2563eb);
+}
+
+.statusBadge.prospect {
+  background: var(--warning-50, #fffbeb);
+  color: var(--warning-600, #d97706);
+}
+
+.statusBadge.customer {
+  background: var(--success-50, #f0fdf4);
+  color: var(--success-600, #16a34a);
+}
+
+.statusBadge.inactive {
+  background: var(--gray-100, #f3f4f6);
+  color: var(--gray-600, #4b5563);
+}
+
+/* Company Cell */
+.companyCell {
+  display: flex;
+  flex-direction: column;
+}
+
+.companyName {
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+}
+
+.contactPerson {
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #9ca3af);
+}
+
+/* Modal Content */
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.infoField {
+  display: flex;
+  flex-direction: column;
+}
+
+.infoLabel {
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #9ca3af);
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.infoValue {
+  margin: 0;
+  color: var(--text-primary, #111827);
+}
+
+.modalActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, #e5e7eb);
+}
+
+/* Header Top */
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  padding: 0 1.5rem 1rem;
+}
+
+.statCard {
+  background: var(--background, #f9fafb);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border, #e5e7eb);
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #9ca3af);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+}
+
+/* Tabs */
+.tabsContainer {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+}
+
+.tabBtn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tabBtn:hover {
+  color: var(--primary-600, #2563eb);
+  background-color: var(--primary-50, #eff6ff);
+}
+
+.tabBtnActive {
+  color: var(--primary-600, #2563eb);
+  border-bottom-color: var(--primary-600, #2563eb);
+}
+
+/* Bulk Selection */
+.bulkSelection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background-color: var(--primary-50, #eff6ff);
+  border-bottom: 1px solid var(--primary-200, #bfdbfe);
+}
+
+.selectionCount {
+  font-weight: 600;
+  color: var(--primary-700, #1d4ed8);
+}
+
+.bulkActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Filter Bar */
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: var(--gray-50, #f9fafb);
+  border-bottom: 1px solid var(--border, #e5e7eb);
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.filterSelect {
+  padding: 0.5rem;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 0.375rem;
+  background-color: white;
+  cursor: pointer;
+}
+
+.activeFilters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filterTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--primary-100, #dbeafe);
+  color: var(--primary-700, #1d4ed8);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.filterTag button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.25rem;
+  color: var(--primary-600, #2563eb);
+}
+
+/* Row Checkbox */
+.rowCheckbox {
+  cursor: pointer;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Type Badge */
+.typeBadge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: 0.5rem;
+}
+
+.typeB2b {
+  background: var(--blue-100, #dbeafe);
+  color: var(--blue-700, #1d4ed8);
+}
+
+.typeB2c {
+  background: var(--purple-100, #f3e8ff);
+  color: var(--purple-700, #7c3aed);
+}
+
+.typePartner {
+  background: var(--green-100, #dcfce7);
+  color: var(--green-700, #15803d);
+}
+
+.typeDistributor {
+  background: var(--orange-100, #ffedd5);
+  color: var(--orange-700, #c2410c);
+}
+
+/* Contact Cell */
+.contactCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.phone {
+  color: var(--text-tertiary, #9ca3af);
+  font-size: 0.75rem;
+}
+
+.industry {
+  color: var(--text-tertiary, #9ca3af);
+  font-size: 0.75rem;
+  margin-top: 0.125rem;
+}
+
+/* Date Cells */
+.dateNormal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.dateWarning {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  color: var(--warning-600, #d97706);
+}
+
+.dateDanger {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  color: var(--error-600, #dc2626);
+}
+
+.daysAgo {
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #9ca3af);
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Modal Header */
+.modalHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+}
+
+.modalStatus {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--gray-100, #f3f4f6);
+  color: var(--gray-700, #374151);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+/* Info Section */
+.infoSection {
+  margin-bottom: 1.5rem;
+}
+
+.infoSection h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+}
+
+.infoSection .infoValue a {
+  color: var(--primary-600, #2563eb);
+  text-decoration: none;
+}
+
+.infoSection .infoValue a:hover {
+  text-decoration: underline;
+}
+
+/* Create Form */
+.createForm {
+  padding: 1rem 0;
+}
+
+.placeholder {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary, #6b7280);
+  background-color: var(--gray-50, #f9fafb);
+  border-radius: 0.5rem;
+  border: 2px dashed var(--border, #e5e7eb);
+  margin-bottom: 1rem;
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.spinner {
+  font-size: 2rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Development Banner */
+.devBanner {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--blue-50, #eff6ff);
+  border-bottom: 1px solid var(--blue-200, #bfdbfe);
+  color: var(--blue-700, #1d4ed8);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Error Banner */
+.errorBanner {
+  padding: 1rem 1.5rem;
+  background-color: var(--error-50, #fef2f2);
+  border-bottom: 1px solid var(--error-200, #fecaca);
+  color: var(--error-700, #b91c1c);
+}
+
+/* Error State */
+.errorState {
+  padding: 2rem;
+  text-align: center;
+  color: var(--error-600, #dc2626);
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .title {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .header {
+    border-bottom-color: var(--border-dark, #374151);
+  }
+
+  .companyName,
+  .infoValue {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+
+  .contactPerson,
+  .infoLabel {
+    color: var(--text-tertiary-dark, #9ca3af);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .headerTop {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .headerActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tabsContainer {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bulkSelection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .filterBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+}

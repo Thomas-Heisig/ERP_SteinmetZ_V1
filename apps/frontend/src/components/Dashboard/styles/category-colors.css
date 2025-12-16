@@ -1,0 +1,20 @@
+/* ==================== CATEGORY COLOR STYLES ==================== */
+/* apps/frontend/src/components/Dashboard/styles/category-colors.css */
+
+/* Category color styling using CSS custom properties */
+.search-overlay__result-icon,
+.search-overlay__result-category,
+.node-details__icon.node-details__icon--category-color,
+.node-details__category.node-details__category--color {
+  color: var(--category-color, var(--text-primary));
+}
+
+/* Search result item with category color */
+.search-overlay__result-item {
+  --category-color: inherit;
+}
+
+/* Node details with category color */
+.node-details__title-section {
+  --category-color: inherit;
+}

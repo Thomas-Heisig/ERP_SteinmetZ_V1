@@ -1,0 +1,21 @@
+/* SPDX-License-Identifier: MIT */
+/* src/components/Dashboard/features/widgets/BasicCardWidget.css */
+
+.basic-card-widget {
+  padding: 1rem;
+  background-color: var(--widget-bg-color, #ffffff);
+  color: var(--widget-text-color, #000000);
+  border-radius: var(--widget-border-radius, 6px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.basic-card-widget__title {
+  margin: 0;
+}
+
+.basic-card-widget__content {
+  font-size: 0.9rem;
+}

@@ -1,0 +1,51 @@
+/* CallLog Styles */
+
+.container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.filterGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.directionIcon {
+  font-size: 1.25rem;
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.contactName {
+  font-weight: 500;
+}
+
+.phoneNumber {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.statusText {
+  font-size: 0.875rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .phoneNumber {
+    color: var(--text-tertiary-dark, #9ca3af);
+  }
+}

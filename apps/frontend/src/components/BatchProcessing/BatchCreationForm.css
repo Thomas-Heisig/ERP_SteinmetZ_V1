@@ -1,0 +1,122 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/components/BatchProcessing/BatchCreationForm.css */
+
+.batch-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.batch-form-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.batch-form-field {
+  margin-bottom: 1.5rem;
+}
+
+.batch-form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.batch-form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.batch-form-input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.batch-form-textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.batch-form-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* Advanced Options Section */
+.batch-form-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e0e0e0;
+}
+
+.batch-form-section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Form Actions */
+.batch-form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #e0e0e0;
+}
+
+.batch-form-button {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.batch-form-button-primary {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.batch-form-button-primary:hover {
+  background-color: #357abd;
+}
+
+.batch-form-button-primary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.batch-form-button-secondary {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.batch-form-button-secondary:hover {
+  background-color: #d0d0d0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .batch-form-container {
+    padding: 1rem;
+  }
+
+  .batch-form-actions {
+    flex-direction: column;
+  }
+}

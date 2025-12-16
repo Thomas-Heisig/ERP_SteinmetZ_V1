@@ -1,0 +1,127 @@
+/* apps/frontend/src/components/ui/Toast.module.css */
+
+.toastContainer {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 400px;
+  width: 100%;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+  pointer-events: auto;
+  border-left: 4px solid;
+}
+
+.toastIcon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.toastMessage {
+  margin: 0;
+  flex: 1;
+  color: var(--text-primary, #1f2937);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.toastClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+  color: var(--text-secondary, #6b7280);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.toastClose:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Toast types */
+.success {
+  background: var(--success-50, #f0fdf4);
+  border-left-color: var(--success-500, #22c55e);
+}
+
+.error {
+  background: var(--error-50, #fef2f2);
+  border-left-color: var(--error-500, #ef4444);
+}
+
+.warning {
+  background: var(--warning-50, #fffbeb);
+  border-left-color: var(--warning-500, #f59e0b);
+}
+
+.info {
+  background: var(--info-50, #eff6ff);
+  border-left-color: var(--primary-500, #3b82f6);
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .toast {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .success {
+    background: rgba(34, 197, 94, 0.1);
+  }
+
+  .error {
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .warning {
+    background: rgba(245, 158, 11, 0.1);
+  }
+
+  .info {
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  .toastClose:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .toastContainer {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
+}

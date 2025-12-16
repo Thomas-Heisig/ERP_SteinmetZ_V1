@@ -1,0 +1,55 @@
+/* SPDX-License-Identifier: MIT */
+/* src/components/FunctionsCatalog/features/contextMenu/ContextMenu.css */
+
+.fc-context-menu {
+  position: absolute;
+  z-index: 9999;
+  min-width: 180px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 4px 0;
+}
+
+.fc-context-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  transition: background-color 0.15s;
+}
+
+.fc-context-item:hover:not(.disabled) {
+  background-color: #f3f4f6;
+}
+
+.fc-context-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fc-context-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.fc-context-label {
+  flex: 1;
+}
+
+.fc-context-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 4px 0;
+}
