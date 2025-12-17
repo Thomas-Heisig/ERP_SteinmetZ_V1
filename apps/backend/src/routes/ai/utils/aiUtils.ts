@@ -76,7 +76,7 @@ export async function withTimeout<T>(
   ms = 10000,
   label = "Operation",
 ): Promise<T> {
-  let timer: NodeJS.Timeout;
+  let timer: NodeJS.Timeout | undefined;
   const timeout = new Promise<never>((_, reject) => {
     timer = setTimeout(
       () => reject(new Error(`${label} Timeout nach ${ms} ms`)),
@@ -87,7 +87,9 @@ export async function withTimeout<T>(
   try {
     return await Promise.race([promise, timeout]);
   } finally {
-    clearTimeout(timer!);
+    if (timer !== undefined) {
+      clearTimeout(timer);
+    }
   }
 }
 

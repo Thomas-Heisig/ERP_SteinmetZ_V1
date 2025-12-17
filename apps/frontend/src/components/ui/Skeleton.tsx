@@ -1,4 +1,5 @@
 // apps/frontend/src/components/ui/Skeleton.tsx
+import { useRef, useEffect } from "react";
 import styles from "./Skeleton.module.css";
 
 export interface SkeletonProps {
@@ -28,15 +29,20 @@ export function Skeleton({
   animation = "pulse",
   className = "",
 }: SkeletonProps) {
-  const style: React.CSSProperties = {};
+  const ref = useRef<HTMLDivElement>(null);
 
-  if (width) {
-    style.width = typeof width === "number" ? `${width}px` : width;
-  }
-
-  if (height) {
-    style.height = typeof height === "number" ? `${height}px` : height;
-  }
+  useEffect(() => {
+    if (ref.current) {
+      if (width) {
+        ref.current.style.width =
+          typeof width === "number" ? `${width}px` : width;
+      }
+      if (height) {
+        ref.current.style.height =
+          typeof height === "number" ? `${height}px` : height;
+      }
+    }
+  }, [width, height]);
 
   const classes = [
     styles.skeleton,
@@ -47,7 +53,7 @@ export function Skeleton({
     .filter(Boolean)
     .join(" ");
 
-  return <div className={classes} style={style} aria-busy="true" />;
+  return <div ref={ref} className={classes} aria-busy="true" />;
 }
 
 /**

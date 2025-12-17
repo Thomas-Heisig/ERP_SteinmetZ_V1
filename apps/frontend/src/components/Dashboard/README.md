@@ -1,11 +1,3 @@
-Unten steht eine vollständige, nüchterne und technisch klare **überarbeitete Version** deiner Datei
-`README_DASHBOARD.md`.
-
-Der Text ist so formuliert, dass er im Projekt als interne technische Dokumentation verwendbar ist.
-Er vermeidet Übertreibungen und gibt nachvollziehbare Begründungen.
-
----
-
 # 📘 **Dashboard-Modul – Technische Übersicht**
 
 Dieses Dokument beschreibt die Struktur, die Funktionsweise und die wesentlichen Komponenten des Dashboard-Moduls innerhalb der Anwendung.
@@ -13,7 +5,7 @@ Ziel ist eine klare Darstellung der Architektur und der internen Abhängigkeiten
 
 ---
 
-# 1. Zweck des Moduls
+## 1. Zweck des Moduls
 
 Das Dashboard stellt eine zentrale Oberfläche bereit, um:
 
@@ -28,7 +20,7 @@ Das Modul ist in logische Schichten unterteilt und folgt einem strukturierenden 
 
 ---
 
-# 2. Architekturüberblick
+## 2. Architekturüberblick
 
 Das Dashboard-Modul besteht aus fünf Kernbereichen:
 
@@ -42,7 +34,7 @@ Diese Aufteilung dient der Wartbarkeit und verhindert, dass UI-Komponenten Veran
 
 ---
 
-# 3. Kernmodule im Detail
+## 3. Kernmodule im Detail
 
 ## 3.1 core
 
@@ -169,7 +161,7 @@ Diese Funktionen sind unabhängig von React.
 
 ---
 
-# 4. Datenmodell und Node-Struktur
+## 4. Datenmodell und Node-Struktur
 
 Das Dashboard nutzt Nodes aus der Backend-Datenbank (`functions_nodes`).
 Jeder Node enthält mindestens:
@@ -184,7 +176,7 @@ Builder, Widgets und Navigation greifen darauf zurück.
 
 ---
 
-# 5. Integration mit Backend
+## 5. Integration mit Backend
 
 Das Modul verwendet verschiedene Schnittstellen:
 
@@ -196,7 +188,7 @@ Die Verarbeitung erfolgt ausschließlich über Hooks oder Features, nicht über 
 
 ---
 
-# 6. Erweiterbarkeit
+## 6. Erweiterbarkeit
 
 Die Struktur ermöglicht:
 
@@ -211,7 +203,7 @@ Die Architektur ist auf nachvollziehbare Erweiterungen ausgelegt, ohne tiefgreif
 
 ---
 
-# 7. Entwicklungsrichtlinien
+## 7. Entwicklungsrichtlinien
 
 - UI-Komponenten bleiben ohne Geschäftslogik
 - Reducer enthalten keinerlei Seiteneffekte
@@ -222,7 +214,7 @@ Die Architektur ist auf nachvollziehbare Erweiterungen ausgelegt, ohne tiefgreif
 
 ---
 
-# 8. Abhängigkeiten
+## 8. Abhängigkeiten
 
 Das Modul nutzt:
 
@@ -236,14 +228,14 @@ Diese Abhängigkeiten werden klar im Provider geführt, um sie später austausch
 
 ---
 
-# 9. Status
+## 9. Status
 
 Der Aufbau ist funktionsfähig und modular.
 Er befindet sich technisch in einem Zustand, der weitere Arbeit in Bereichen wie Widgets, komplexeren Formularen oder erweiterten Suchmechanismen ermöglicht.
 
 ---
 
-# 10. Zusammenfassung
+## 10. Zusammenfassung
 
 Das Dashboard-Modul ist in mehrere unabhängige Ebenen unterteilt, um eine klar nachvollziehbare Trennung von Aufgaben zu erreichen.
 Die vorgesehene Architektur unterstützt Wartbarkeit und Erweiterbarkeit, ohne einzelne Komponenten zu überladen oder Abhängigkeiten unnötig zu verflechten.

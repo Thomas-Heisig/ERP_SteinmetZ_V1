@@ -10,11 +10,7 @@ import { NodeBuilder } from "../features/builder/NodeBuilder";
 import { WidgetResolver } from "../features/builder/WidgetResolver";
 import LoadingScreen from "./LoadingScreen";
 import ErrorScreen from "./ErrorScreen";
-import {
-  getNodeIcon,
-  getNodeTypeLabel,
-  getCategoryColor,
-} from "../utils/mapping";
+import { getNodeIcon, getNodeTypeLabel } from "../utils/mapping";
 import cls from "../utils/cls";
 
 import type { DashboardNode, NodeDetail, WidgetInstance } from "../types";
@@ -117,7 +113,6 @@ interface NodeHeaderProps {
 const NodeHeader: React.FC<NodeHeaderProps> = React.memo(
   ({ node, onBack, onEdit, onDelete, isEditing }) => {
     const { t } = useTranslation();
-    const categoryColor = getCategoryColor(node.category);
 
     return (
       <header className="node-details__header">
@@ -135,10 +130,7 @@ const NodeHeader: React.FC<NodeHeaderProps> = React.memo(
 
         {/* Main Header Content */}
         <div className="node-details__title-section">
-          <div
-            className="node-details__icon"
-            style={{ color: categoryColor.primary }}
-          >
+          <div className="node-details__icon">
             {getNodeIcon(node.type, "emoji")}
           </div>
 
@@ -155,10 +147,7 @@ const NodeHeader: React.FC<NodeHeaderProps> = React.memo(
               {node.category && (
                 <>
                   <span className="node-details__meta-separator">•</span>
-                  <span
-                    className="node-details__category"
-                    style={{ color: categoryColor.primary }}
-                  >
+                  <span className="node-details__category">
                     {node.category}
                   </span>
                 </>
@@ -313,7 +302,10 @@ const NodeDetails: React.FC<NodeDetailsProps> = ({
   const { goBack } = useDashboardNavigation();
 
   const { node, nodeLoading, nodeError } = state.catalog;
-  const widgetRegistry = state.builder?.widgets ?? {};
+  const widgetRegistry = useMemo(
+    () => state.builder?.widgets ?? {},
+    [state.builder?.widgets],
+  );
 
   const [localState, setLocalState] = useState<NodeDetailsState>({
     activeTab: "content",
@@ -355,10 +347,12 @@ const NodeDetails: React.FC<NodeDetailsProps> = ({
           );
         }
 
+        if (!node) return null;
+
         return (
           <div key={widgetInstance.id} className="node-details__widget">
             <WidgetComponent
-              node={mapNodeDetailToDashboardNode(node!)}
+              node={mapNodeDetailToDashboardNode(node)}
               config={widgetInstance.config}
             />
           </div>

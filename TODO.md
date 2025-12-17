@@ -253,7 +253,130 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 
 ---
 
-## 🟢 Niedrige Priorität / Nice-to-Have
+## � Neue Aufgaben - Hauptfunktionen-Integration
+
+### Backend - Hauptmodule (Status: ✅ ERLEDIGT 17. Dez 2025)
+
+- [x] **Geschäftsverwaltung Router** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] `/api/business` - Unternehmen, Prozesse, Risiko & Compliance
+  - [x] Endpoints für Stammdaten, Prozess-Management, Audits
+  - [x] Zod-Validierung für alle Input-Daten
+  - **Datei**: `apps/backend/src/routes/business/businessRouter.ts`
+
+- [x] **Vertrieb Router** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] `/api/sales` - Pipeline, Angebote, Aufträge, Leads, Kampagnen
+  - [x] CRM-Funktionen, Marketing-Automation
+  - [x] Vollständiges Lead-to-Cash Process-Mapping
+  - **Datei**: `apps/backend/src/routes/sales/salesRouter.ts`
+
+- [x] **Einkauf Router** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] `/api/procurement` - Bestellungen, Lieferanten, Wareneingang
+  - [x] Bedarfsplanung und -berechnung
+  - [x] Lieferantenbewertung
+  - **Datei**: `apps/backend/src/routes/procurement/procurementRouter.ts`
+
+- [x] **Produktions Router** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] `/api/production` - Planung, Steuerung, QM, Wartung
+  - [x] Maschinen-Management, Rückmeldungen
+  - [x] Qualitätsprüfungen und -kontrollen
+  - **Datei**: `apps/backend/src/routes/production/productionRouter.ts`
+
+- [x] **Lager Router** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] `/api/warehouse` - Bestand, Kommissionierung, Versand
+  - [x] Lagerplätze, Inventur
+  - [x] Sendungsverfolgung
+  - **Datei**: `apps/backend/src/routes/warehouse/warehouseRouter.ts`
+
+- [x] **Reporting Router** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] `/api/reporting` - Standard-Reports, Ad-hoc, KI-Analytics
+  - [x] Finanz-, Vertriebs-, Produktionsberichte
+  - [x] KI-Vorhersagen, Insights, Trends
+  - **Datei**: `apps/backend/src/routes/reporting/reportingRouter.ts`
+
+- [x] **Backend-Integration** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] Alle Router in index.ts registriert
+  - [x] Standardisiertes Error-Handling
+  - [x] Zod-Validierung konsistent implementiert
+
+### Frontend - Hauptfunktionen (Status: ⏳ IN ARBEIT)
+
+- [x] **Dashboard-Widgets** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] ModuleWidgets für alle 11 Hauptmodule
+  - [x] KPI-Anzeigen mit Echtzeit-Daten
+  - [x] Navigations-Integration
+  - **Datei**: `apps/frontend/src/components/Dashboard/widgets/ModuleWidgets.tsx`
+
+- [x] **Hauptnavigation** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] Hierarchische Menüstruktur
+  - [x] Kollapsible Untermenüs
+  - [x] Dark Mode Support
+  - **Datei**: `apps/frontend/src/components/Navigation/MainNavigation.tsx`
+
+- [x] **Dashboard-Integration** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] Widgets in Dashboard.tsx integriert
+  - [x] Navigation zu Modulen implementiert
+
+- [ ] **Modul-Seiten erstellen** ⏳ NÄCHSTER SCHRITT
+  - [ ] Business-Management-Seiten
+  - [ ] Sales & CRM-Seiten
+  - [ ] Procurement-Seiten
+  - [ ] Production-Seiten
+  - [ ] Warehouse-Seiten
+  - [ ] Reporting-Seiten
+  - **Aufwand**: 2-3 Wochen
+
+### Dokumentation (Status: ✅ ERLEDIGT)
+
+- [x] **Menüsystem-Dokumentation** ✅ ERLEDIGT (17. Dez 2025)
+  - [x] Vollständige Modulübersicht
+  - [x] API-Endpoint-Dokumentation
+  - [x] Prozess-Integrationen beschrieben
+  - [x] Frontend-Komponenten dokumentiert
+  - **Datei**: `docs/MENU_SYSTEM.md`
+
+### Tests & Qualitätssicherung (Status: ⏳ AUSSTEHEND)
+
+- [ ] **Backend-Tests für neue Router**
+  - [ ] Business Router Tests
+  - [ ] Sales Router Tests
+  - [ ] Procurement Router Tests
+  - [ ] Production Router Tests
+  - [ ] Warehouse Router Tests
+  - [ ] Reporting Router Tests
+  - **Aufwand**: 1 Woche
+
+- [ ] **Frontend-Tests für Widgets**
+  - [ ] ModuleWidgets Tests
+  - [ ] MainNavigation Tests
+  - [ ] Integration Tests
+  - **Aufwand**: 3-4 Tage
+
+### Datenbank-Integration (Status: ⏳ AUSSTEHEND)
+
+- [ ] **Datenbank-Schema für neue Module**
+  - [ ] Business-Tabellen (company, processes, risks, audits)
+  - [ ] Sales-Tabellen (quotes, orders, leads, campaigns)
+  - [ ] Procurement-Tabellen (purchase_orders, suppliers, goods_receipts)
+  - [ ] Production-Tabellen (production_orders, machines, quality_inspections)
+  - [ ] Warehouse-Tabellen (stock, locations, shipments, inventory)
+  - **Aufwand**: 1 Woche
+
+- [ ] **Migrations erstellen**
+  - [ ] Initial-Schema für alle Module
+  - [ ] Seed-Daten für Demo/Test
+  - **Aufwand**: 2-3 Tage
+
+### Authentifizierung & Autorisierung (Status: ⏳ AUSSTEHEND)
+
+- [ ] **Rollenbasierte Zugriffskontrolle**
+  - [ ] Rollen definieren (Admin, Manager, User, etc.)
+  - [ ] Berechtigungen pro Modul
+  - [ ] Middleware für Route-Protection
+  - **Aufwand**: 1 Woche
+
+---
+
+## �🟢 Niedrige Priorität / Nice-to-Have
 
 ### Developer Experience
 

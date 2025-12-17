@@ -24,6 +24,16 @@ export default function ContextMenu({
 }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
+  // Set dynamic position via CSS custom properties
+  useEffect(() => {
+    if (menuRef.current && visible) {
+      const xPos = Number.isFinite(x) ? x : 0;
+      const yPos = Number.isFinite(y) ? y : 0;
+      menuRef.current.style.setProperty("--context-menu-x", `${xPos}px`);
+      menuRef.current.style.setProperty("--context-menu-y", `${yPos}px`);
+    }
+  }, [visible, x, y]);
+
   // Outside Click / ESC
   useEffect(() => {
     if (!visible) return;
@@ -50,18 +60,7 @@ export default function ContextMenu({
   if (!visible) return null;
 
   return (
-    <div
-      ref={menuRef}
-      className="fc-context-menu"
-      role="menu"
-      style={{
-        top: Number.isFinite(y) ? y : 0,
-        left: Number.isFinite(x) ? x : 0,
-        position: "absolute",
-        zIndex: 9999,
-        minWidth: 180,
-      }}
-    >
+    <div ref={menuRef} className="fc-context-menu" role="menu">
       {items.map((item) =>
         item.divider ? (
           <div key={item.id} className="fc-context-divider" role="separator" />

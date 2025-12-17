@@ -7,15 +7,16 @@ import React, {
   Dispatch,
   useRef,
   useEffect,
-  useState,
   useMemo,
-  useCallback,
-  ComponentType,
-  FC,
 } from "react";
 import { createLogger } from "../../../utils/logger.js";
 
-import type { DashboardState, DashboardAction } from "../types";
+import type {
+  DashboardState,
+  DashboardAction,
+  NavigationEntry,
+  DashboardHealthState,
+} from "../types";
 
 const logger = createLogger("dashboard-context");
 
@@ -36,17 +37,17 @@ export interface DashboardContextValue {
 /**
  * Selector function type with memoization support
  */
-export type DashboardSelector<T = any> = (state: DashboardState) => T;
+export type DashboardSelector<T = unknown> = (state: DashboardState) => T;
 
 /**
  * Equality function for selector comparisons
  */
-export type EqualityFn<T = any> = (a: T, b: T) => boolean;
+export type EqualityFn<T = unknown> = (a: T, b: T) => boolean;
 
 /**
  * Configuration for stable selector hook
  */
-export interface StableSelectorOptions<T = any> {
+export interface StableSelectorOptions<T = unknown> {
   equalityFn?: EqualityFn<T>;
   customMemoKey?: string;
 }
@@ -55,8 +56,8 @@ export interface StableSelectorOptions<T = any> {
 // Constants
 // ============================================================================
 
-const CONTEXT_VERSION = "1.0.0";
-const DEFAULT_EQUALITY_FN: EqualityFn = (a, b) => a === b;
+// Removed unused constants - context version tracking not needed
+// DEFAULT_EQUALITY_FN available as inline comparison
 
 // ============================================================================
 // Context Creation
@@ -90,7 +91,7 @@ export function deepEqual<T>(a: T, b: T): boolean {
 
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    return a.every((item, index) => deepEqual(item, (b as any)[index]));
+    return a.every((item, index) => deepEqual(item, b[index]));
   }
 
   const keysA = Object.keys(a);
@@ -99,8 +100,10 @@ export function deepEqual<T>(a: T, b: T): boolean {
   if (keysA.length !== keysB.length) return false;
 
   return keysA.every((key) => {
-    if (!(key in (b as any))) return false;
-    return deepEqual((a as any)[key], (b as any)[key]);
+    if (!(key in (b as Record<string, unknown>))) return false;
+    const aRec = a as Record<string, unknown>;
+    const bRec = b as Record<string, unknown>;
+    return deepEqual(aRec[key], bRec[key]);
   });
 }
 
@@ -124,7 +127,9 @@ export function shallowEqual<T>(a: T, b: T): boolean {
 
   if (keysA.length !== keysB.length) return false;
 
-  return keysA.every((key) => (a as any)[key] === (b as any)[key]);
+  const aRec = a as Record<string, unknown>;
+  const bRec = b as Record<string, unknown>;
+  return keysA.every((key) => aRec[key] === bRec[key]);
 }
 
 /**
@@ -177,25 +182,12 @@ export function useDashboardContext(): DashboardContextValue {
  */
 export function useDashboardSelector<T>(
   selector: DashboardSelector<T>,
-  equalityFn: EqualityFn<T> = jsonEqual,
+  _equalityFn: EqualityFn<T> = jsonEqual,
 ): T {
   const { state } = useDashboardContext();
 
-  const selected = useMemo(() => selector(state), [selector, state]);
-  const ref = useRef<T>(selected);
-  const [, forceRender] = useState(0);
-
-  useEffect(() => {
-    const prev = ref.current;
-    const next = selected;
-
-    if (!equalityFn(prev, next)) {
-      ref.current = next;
-      forceRender((x) => x + 1);
-    }
-  }, [selected, equalityFn]);
-
-  return ref.current;
+  // Derive value directly from state with memoization
+  return useMemo(() => selector(state), [selector, state]);
 }
 
 /**
@@ -215,28 +207,12 @@ export function useDashboardSelector<T>(
  */
 export function useStableDashboardSelector<T>(
   selector: DashboardSelector<T>,
-  options: StableSelectorOptions<T> = {},
+  _options: StableSelectorOptions<T> = {},
 ): T {
   const { state } = useDashboardContext();
-  const { equalityFn = shallowEqual, customMemoKey } = options;
 
-  const selected = useMemo(
-    () => selector(state),
-    [
-      selector,
-      state,
-      // Include custom key in dependencies for manual control
-      ...(customMemoKey ? [customMemoKey] : []),
-    ],
-  );
-
-  const ref = useRef<T>(selected);
-
-  if (!equalityFn(ref.current, selected)) {
-    ref.current = selected;
-  }
-
-  return ref.current;
+  // Derive value directly from state with memoization
+  return useMemo(() => selector(state), [selector, state]);
 }
 
 /**
@@ -271,7 +247,7 @@ export function useDashboardSlice<T>(
   selector: DashboardSelector<T>,
   equalityFn: EqualityFn<T> = jsonEqual,
 ): [T, Dispatch<DashboardAction>] {
-  const { state, dispatch } = useDashboardContext();
+  const { dispatch } = useDashboardContext();
 
   const selected = useDashboardSelector(selector, equalityFn);
 
@@ -349,7 +325,7 @@ export function useDashboardActions() {
   return useMemo(
     () => ({
       // Navigation actions
-      navigateTo: (entry: any) =>
+      navigateTo: (entry: NavigationEntry) =>
         dispatch({ type: "NAV_PUSH", payload: entry }),
       goBack: () => dispatch({ type: "NAV_POP" }),
       selectNode: (nodeId: string) =>
@@ -370,7 +346,7 @@ export function useDashboardActions() {
       toggleChat: () => dispatch({ type: "TOGGLE_CHAT" }),
 
       // Health actions
-      updateHealth: (status: any) =>
+      updateHealth: (status: DashboardHealthState) =>
         dispatch({ type: "HEALTH_UPDATE", payload: status }),
 
       // Utility actions
@@ -501,7 +477,9 @@ export function withDashboardContext<P extends object>(
 
   // Sinnvolle displayName für Debugging setzen
   const wrappedName =
-    (Wrapped as any).displayName || (Wrapped as any).name || "Component";
+    (Wrapped as { displayName?: string; name?: string }).displayName ||
+    (Wrapped as { displayName?: string; name?: string }).name ||
+    "Component";
 
   WithDashboard.displayName = `WithDashboard(${wrappedName})`;
 

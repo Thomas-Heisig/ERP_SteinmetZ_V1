@@ -169,7 +169,7 @@ Siehe [SonarQube Integration Guide](docs/SONARQUBE.md) für Details.
 
 **Komponentenstruktur:**
 
-```
+```tree
 apps/frontend/src/components/
 ├── ui/              # Wiederverwendbare UI-Komponenten
 ├── features/        # Feature-spezifische Komponenten
@@ -362,7 +362,7 @@ logger.error({ err, context }, "Operation failed");
 
 Folge den Conventional Commits:
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -385,7 +385,7 @@ Folge den Conventional Commits:
 
 **Beispiele:**
 
-```
+```text
 feat(hr): add employee time tracking endpoint
 fix(frontend): resolve theme toggle bug in dark mode
 docs(api): update finance module documentation

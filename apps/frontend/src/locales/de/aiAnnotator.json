@@ -1,0 +1,125 @@
+{
+  "title": "KI-Annotator",
+  "subtitle": "KI-gestützte Metadaten-Annotation und Qualitätssicherung für Funktionskatalog",
+  "tabs": {
+    "dashboard": "Dashboard",
+    "nodes": "Knoten",
+    "quality": "Qualität",
+    "batch": "Batch-Operationen"
+  },
+  "dashboard": {
+    "title": "System-Status",
+    "systemStatus": {
+      "title": "System-Status",
+      "loading": "Status wird geladen...",
+      "error": "Fehler beim Laden des Status",
+      "healthy": "System ist gesund",
+      "unhealthy": "System hat Probleme"
+    },
+    "health": {
+      "title": "System-Zustand",
+      "loading": "Zustand wird geladen...",
+      "error": "Fehler beim Laden des Zustands",
+      "healthy": "Gesund",
+      "unhealthy": "Ungesund",
+      "aiAvailable": "KI verfügbar",
+      "aiUnavailable": "KI nicht verfügbar",
+      "databaseConnected": "Datenbank verbunden",
+      "databaseDisconnected": "Datenbank nicht verbunden"
+    },
+    "database": {
+      "title": "Datenbank-Statistiken",
+      "loading": "Statistiken werden geladen...",
+      "error": "Fehler beim Laden der Statistiken",
+      "totalNodes": "Gesamt-Knoten",
+      "annotatedNodes": "Annotierte Knoten",
+      "pendingNodes": "Ausstehende Knoten",
+      "completionRate": "Abschlussrate"
+    }
+  },
+  "nodes": {
+    "title": "Funktionsknoten",
+    "search": "Knoten suchen...",
+    "searchButton": "Suchen",
+    "refreshButton": "Aktualisieren",
+    "limit": "Limit",
+    "loading": "Knoten werden geladen...",
+    "error": "Fehler",
+    "noNodes": "Keine Knoten gefunden. Versuchen Sie, die Filter anzupassen.",
+    "pagination": {
+      "showing": "Zeige",
+      "of": "von",
+      "nodes": "Knoten"
+    },
+    "card": {
+      "id": "ID",
+      "status": "Status",
+      "annotationStatus": "Annotations-Status",
+      "valid": "Gültig",
+      "invalid": "Ungültig"
+    },
+    "actions": {
+      "generateMeta": "Meta generieren",
+      "generateRule": "Regel generieren",
+      "generateForm": "Formular generieren"
+    }
+  },
+  "quality": {
+    "title": "Qualitätsbericht",
+    "loading": "Qualitätsbericht wird geladen...",
+    "error": "Fehler",
+    "generateButton": "Qualitätsbericht generieren",
+    "noReport": "Noch kein Qualitätsbericht verfügbar. Klicken Sie auf 'Generieren', um einen zu erstellen.",
+    "annotationStatus": {
+      "title": "Annotations-Status",
+      "pending": "Ausstehend",
+      "annotated": "Annotiert",
+      "reviewed": "Überprüft"
+    },
+    "modelQuality": {
+      "title": "Modell-Qualität",
+      "confidence": "Durchschnittliche Konfidenz",
+      "accuracy": "Genauigkeit"
+    },
+    "batchStats": {
+      "title": "Batch-Statistiken",
+      "total": "Gesamt-Batches",
+      "failed": "Fehlgeschlagen"
+    },
+    "recommendations": {
+      "title": "Empfehlungen",
+      "noRecommendations": "Keine Empfehlungen verfügbar"
+    }
+  },
+  "batch": {
+    "title": "Batch-Operationen",
+    "loading": "Batch-Operationen werden geladen...",
+    "error": "Fehler",
+    "noBatches": "Keine Batch-Operationen gefunden. Erstellen Sie eine neue Batch-Operation, um zu beginnen.",
+    "refreshButton": "Aktualisieren",
+    "cleanupButton": "Alte Batches bereinigen",
+    "card": {
+      "operation": "Operation",
+      "status": "Status",
+      "created": "Erstellt",
+      "progress": "Fortschritt"
+    },
+    "status": {
+      "pending": "Ausstehend",
+      "processing": "In Bearbeitung",
+      "completed": "Abgeschlossen",
+      "failed": "Fehlgeschlagen"
+    }
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "confirm": "Bestätigen"
+  }
+}

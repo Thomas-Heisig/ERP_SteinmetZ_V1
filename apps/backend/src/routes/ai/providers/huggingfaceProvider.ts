@@ -94,35 +94,57 @@ export async function callHuggingFace(
       throw new Error(`HTTP ${res.status}: ${errText}`);
     }
 
-    const data: any = await res.json();
+    const data: unknown = await res.json();
     const duration = Date.now() - start;
 
     /* ─────────────────────────────────────────────
      * 🔍 Ausgabe interpretieren
      * ───────────────────────────────────────────── */
+    type HFArrayResponse = Array<{
+      generated_text?: string;
+      translation_text?: string;
+      summary_text?: string;
+    }>;
+    
+    type HFObjectResponse = {
+      generated_text?: string;
+      outputs?: string | unknown;
+      usage?: {
+        total_tokens?: number;
+      };
+    };
+    
     let output = "";
     if (Array.isArray(data)) {
       // Standard-Textmodelle
+      const arrayData = data as HFArrayResponse;
       output =
-        data[0]?.generated_text ??
-        data[0]?.translation_text ??
-        data[0]?.summary_text ??
+        arrayData[0]?.generated_text ??
+        arrayData[0]?.translation_text ??
+        arrayData[0]?.summary_text ??
         "";
-    } else if (data?.generated_text) {
-      output = data.generated_text;
-    } else if (data?.outputs) {
-      // z. B. Embedding- oder generische Modelle
-      output =
-        typeof data.outputs === "string"
-          ? data.outputs
-          : JSON.stringify(data.outputs);
+    } else if (typeof data === "object" && data !== null) {
+      const objData = data as HFObjectResponse;
+      if (objData.generated_text) {
+        output = objData.generated_text;
+      } else if (objData.outputs) {
+        // z. B. Embedding- oder generische Modelle
+        output =
+          typeof objData.outputs === "string"
+            ? objData.outputs
+            : JSON.stringify(objData.outputs);
+      }
     }
 
+    const objData = typeof data === "object" && data !== null 
+      ? (data as HFObjectResponse) 
+      : undefined;
+    
     log("info", "HuggingFace Antwort empfangen", {
       model: usedModel,
       endpoint,
       duration_ms: duration,
-      tokens: data?.usage?.total_tokens,
+      tokens: objData?.usage?.total_tokens,
     });
 
     return {
@@ -131,20 +153,22 @@ export async function callHuggingFace(
       meta: {
         provider: "huggingface",
         model: usedModel,
-        tokens_used: data?.usage?.total_tokens,
+        tokens_used: objData?.usage?.total_tokens,
         time_ms: duration,
         source: endpoint,
       },
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    
     log("error", "HuggingFace Fehler", {
       model: model || hfConfig.model,
-      error: err?.message ?? String(err),
+      error: errorMessage,
     });
 
     return {
-      text: `❌ HuggingFace Fehler: ${err?.message ?? "Unbekannter Fehler"}`,
-      errors: [String(err)],
+      text: `❌ HuggingFace Fehler: ${errorMessage}`,
+      errors: [errorMessage],
       meta: {
         provider: "huggingface",
         model: usedModel,

@@ -3,6 +3,18 @@
 
 import React, { useState, useEffect } from "react";
 import { Card, Table, Button, Input } from "../../components/ui";
+import styles from "./InventoryList.module.css";
+
+interface InventoryApiResponse {
+  id: string;
+  sku: string;
+  name: string;
+  category?: string;
+  quantity: number;
+  min_stock: number;
+  price?: number;
+  location?: string;
+}
 
 interface InventoryItem {
   id: string;
@@ -34,26 +46,28 @@ export const InventoryList: React.FC = () => {
         const data = await response.json();
 
         // Map database format to component format
-        const mappedItems: InventoryItem[] = data.data.map((item: any) => {
-          let status: InventoryItem["status"] = "in_stock";
-          if (item.quantity === 0) {
-            status = "out_of_stock";
-          } else if (item.quantity <= item.min_stock) {
-            status = "low_stock";
-          }
+        const mappedItems: InventoryItem[] = data.data.map(
+          (item: InventoryApiResponse) => {
+            let status: InventoryItem["status"] = "in_stock";
+            if (item.quantity === 0) {
+              status = "out_of_stock";
+            } else if (item.quantity <= item.min_stock) {
+              status = "low_stock";
+            }
 
-          return {
-            id: item.id,
-            sku: item.sku,
-            name: item.name,
-            category: item.category || "",
-            quantity: item.quantity,
-            minQuantity: item.min_stock,
-            price: item.price || 0,
-            location: item.location || "",
-            status,
-          };
-        });
+            return {
+              id: item.id,
+              sku: item.sku,
+              name: item.name,
+              category: item.category || "",
+              quantity: item.quantity,
+              minQuantity: item.min_stock,
+              price: item.price || 0,
+              location: item.location || "",
+              status,
+            };
+          },
+        );
 
         setItems(mappedItems);
       } catch (error) {
@@ -77,41 +91,24 @@ export const InventoryList: React.FC = () => {
     );
   });
 
-  const getStatusBadge = (
-    status: InventoryItem["status"],
-    quantity: number,
-    minQuantity: number,
-  ) => {
-    const config: Record<string, { label: string; bg: string; color: string }> =
-      {
-        in_stock: {
-          label: "Auf Lager",
-          bg: "var(--success-50)",
-          color: "var(--success-600)",
-        },
-        low_stock: {
-          label: "Niedrig",
-          bg: "var(--warning-50)",
-          color: "var(--warning-600)",
-        },
-        out_of_stock: {
-          label: "Nicht verfügbar",
-          bg: "var(--error-50)",
-          color: "var(--error-600)",
-        },
-      };
+  const getStatusBadge = (status: InventoryItem["status"]) => {
+    const config: Record<string, { label: string; className: string }> = {
+      in_stock: {
+        label: "Auf Lager",
+        className: styles.statusBadgeInStock,
+      },
+      low_stock: {
+        label: "Niedrig",
+        className: styles.statusBadgeLowStock,
+      },
+      out_of_stock: {
+        label: "Nicht verfügbar",
+        className: styles.statusBadgeOutOfStock,
+      },
+    };
     const c = config[status];
     return (
-      <span
-        style={{
-          padding: "0.25rem 0.5rem",
-          borderRadius: "4px",
-          background: c.bg,
-          color: c.color,
-          fontSize: "0.75rem",
-          fontWeight: 500,
-        }}
-      >
+      <span className={`${styles.statusBadge} ${c.className}`}>
         {c.label}
       </span>
     );
@@ -130,10 +127,8 @@ export const InventoryList: React.FC = () => {
       header: "Artikel",
       render: (value: unknown, row: InventoryItem) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{value as string}</div>
-          <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
-            {row.category}
-          </div>
+          <div className={styles.itemName}>{value as string}</div>
+          <div className={styles.itemCategory}>{row.category}</div>
         </div>
       ),
     },
@@ -143,10 +138,7 @@ export const InventoryList: React.FC = () => {
       width: "100px",
       render: (value: unknown, row: InventoryItem) => (
         <span
-          style={{
-            color:
-              row.status === "out_of_stock" ? "var(--error-500)" : "inherit",
-          }}
+          className={`${styles.quantityText} ${row.status === "out_of_stock" ? styles.quantityTextOutOfStock : ""}`}
         >
           {value as number} / {row.minQuantity}
         </span>
@@ -163,12 +155,8 @@ export const InventoryList: React.FC = () => {
       key: "status",
       header: "Status",
       width: "130px",
-      render: (value: unknown, row: InventoryItem) =>
-        getStatusBadge(
-          value as InventoryItem["status"],
-          row.quantity,
-          row.minQuantity,
-        ),
+      render: (value: unknown) =>
+        getStatusBadge(value as InventoryItem["status"]),
     },
     {
       key: "actions",
@@ -184,19 +172,9 @@ export const InventoryList: React.FC = () => {
 
   return (
     <Card variant="elevated" padding="none">
-      <div
-        style={{
-          padding: "1rem 1.5rem",
-          borderBottom: "1px solid var(--border)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-          📦 Lagerbestand
-        </h2>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div className={styles.header}>
+        <h2 className={styles.headerTitle}>📦 Lagerbestand</h2>
+        <div className={styles.headerActions}>
           <Input
             placeholder="Suchen..."
             value={search}

@@ -27,8 +27,9 @@ export default function NodeHeader({ node }: Props) {
   if (ui.isAction) uiBadges.push("Aktion");
 
   /** Tags: optional, da nicht in NodeDetail definiert */
-  const tags = Array.isArray((node as any).tags)
-    ? ((node as any).tags as string[])
+  const nodeWithTags = node as NodeDetail & { tags?: unknown };
+  const tags = Array.isArray(nodeWithTags.tags)
+    ? (nodeWithTags.tags as string[])
     : [];
 
   return (

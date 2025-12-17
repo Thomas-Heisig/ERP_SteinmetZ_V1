@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // src/components/Dashboard/hooks/useDashboardSearch.ts
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useDashboardContext } from "../core/DashboardContext";
 import { SearchManager } from "../features/search/SearchManager";
 import type { UseDashboardSearch, SearchFilters } from "../types";
@@ -17,15 +17,7 @@ const DEFAULT_FILTERS: SearchFilters = {
 export function useDashboardSearch(): UseDashboardSearch {
   const { state, dispatch } = useDashboardContext();
 
-  const manager = new SearchManager();
-
-  /** Query setzen */
-  const setQuery = useCallback(
-    (query: string) => {
-      dispatch({ type: "SET_SEARCH_QUERY", payload: query });
-    },
-    [dispatch],
-  );
+  const manager = useMemo(() => new SearchManager(), []);
 
   /** Filter setzen */
   const setFilters = useCallback(

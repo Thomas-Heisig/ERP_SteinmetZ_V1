@@ -1,8 +1,3 @@
-Nachfolgend erhältst du eine **README.md**, die sachlich formuliert ist, keine Übertreibungen enthält und den Funktionsumfang nüchtern beschreibt.
-Sie basiert ausschließlich auf den vorhandenen Dateien und deren tatsächlichen Funktionen.
-
----
-
 # **README – FunctionsCatalog Component**
 
 Die `FunctionsCatalog`-Komponente stellt eine clientseitige Oberfläche zur Verfügung, mit der Funktionen, Workflows, Datensätze und ähnliche Knotenstrukturen angezeigt, durchsucht und analysiert werden können.
@@ -76,7 +71,7 @@ Die Komponente akzeptiert Konfigurationsparameter, u. a.:
 
 Die Struktur ist in Hauptbereiche unterteilt:
 
-```
+```text
 FunctionsCatalog/
  ├─ FunctionsCatalog.tsx
  ├─ details/

@@ -578,10 +578,10 @@ export interface RuleExample {
 
 export interface BuildResult {
   // Basis (Kompatibel)
-  nodes: any[];
-  findings: any[];
+  nodes: unknown[];
+  findings: unknown[];
   warnings: string[];
-  rules: any;
+  rules: unknown;
   loadedAt: string;
 
   // Erweiterte Build-Informationen

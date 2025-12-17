@@ -6,7 +6,7 @@ Das Frontend folgt einer klaren, modularen Struktur mit Trennung von Belangen (S
 
 ## Verzeichnisstruktur
 
-```
+```tree
 apps/frontend/
 ├── src/
 │   ├── components/          # Wiederverwendbare React-Komponenten
@@ -148,7 +148,9 @@ export const router = createBrowserRouter([
 - React Context für Theme-Umschaltung
 - Automatische Theme-Erkennung basierend auf System-Präferenz
 
-#### Best Practice Beispiel:
+#### Best Practice Beispiel
+
+**Component.tsx:**
 
 ```typescript
 // Component.tsx
@@ -184,7 +186,7 @@ export const Component = () => (
 - Props-Interfaces für Komponenten
 - Type-Inference wo möglich
 
-#### Beispiel:
+#### Beispiel
 
 ```typescript
 interface ComponentProps {

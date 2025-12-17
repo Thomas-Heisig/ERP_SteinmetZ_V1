@@ -28,6 +28,7 @@
     "@sentry/profiling-node": "^8.49.0",
     "bcrypt": "^6.0.0",
     "connect-redis": "^9.0.0",
+    "connect-sqlite3": "^0.9.16",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

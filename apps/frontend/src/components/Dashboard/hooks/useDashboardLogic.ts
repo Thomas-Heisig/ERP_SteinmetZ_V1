@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // src/components/Dashboard/hooks/useDashboardLogic.ts
 
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 
 import { useDashboardContext } from "../core/DashboardContext";
 
@@ -48,17 +48,17 @@ export function useDashboardLogic() {
   /* --------------------------------------------
    * UI Helper
    * -------------------------------------------- */
-  function toggleChat(): void {
+  const toggleChat = useCallback(() => {
     dispatch({ type: "TOGGLE_CHAT" });
-  }
+  }, [dispatch]);
 
-  function openSearchOverlay(): void {
+  const openSearchOverlay = useCallback(() => {
     dispatch({ type: "SET_SEARCH_ACTIVE", payload: true });
-  }
+  }, [dispatch]);
 
-  function closeSearchOverlay(): void {
+  const closeSearchOverlay = useCallback(() => {
     dispatch({ type: "SET_SEARCH_ACTIVE", payload: false });
-  }
+  }, [dispatch]);
 
   /* --------------------------------------------
    * Aggregiertes Interface
@@ -74,7 +74,16 @@ export function useDashboardLogic() {
       openSearchOverlay,
       closeSearchOverlay,
     }),
-    [state, navigation, search, health, layout],
+    [
+      state,
+      navigation,
+      search,
+      health,
+      layout,
+      toggleChat,
+      openSearchOverlay,
+      closeSearchOverlay,
+    ],
   );
 }
 

@@ -19,7 +19,9 @@ export type { Tab, TabsProps } from "./Tabs";
 export { Select } from "./Select";
 export type { SelectOption, SelectProps } from "./Select";
 
-export { ToastProvider, useToast, toast } from "./Toast";
+export { ToastProvider } from "./Toast";
+export { useToast } from "./useToast";
+export { toast } from "./toast.utils";
 export type { Toast, ToastType } from "./Toast";
 
 export { Table } from "./Table";

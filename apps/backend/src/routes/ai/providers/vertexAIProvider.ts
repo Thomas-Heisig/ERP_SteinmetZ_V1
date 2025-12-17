@@ -47,19 +47,26 @@ export let vertexConfig: AIModuleConfig = {
 export async function callVertexAI(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {},
+  options: Record<string, unknown> = {},
 ): Promise<AIResponse> {
-  const apiKey = process.env[vertexConfig.api_key_env ?? ""] ?? "";
+  const apiKeyEnv = vertexConfig.api_key_env || "VERTEX_API_KEY";
+  const apiKey = process.env[apiKeyEnv] ?? "";
   if (!apiKey) {
-    throw new Error("VERTEX_API_KEY fehlt in den Umgebungsvariablen.");
+    throw new Error(`${apiKeyEnv} fehlt in den Umgebungsvariablen.`);
   }
 
   const usedModel = model || vertexConfig.model;
 
   const endpoint = `${vertexConfig.endpoint}/${usedModel}:generateContent?key=${apiKey}`;
 
+  const opts = options as {
+    systemPrompt?: string;
+    temperature?: number;
+    max_tokens?: number;
+  };
+  
   const sysPrompt =
-    options.systemPrompt ?? "Du bist ein präziser, sachlicher Assistent.";
+    opts.systemPrompt ?? "Du bist ein präziser, sachlicher Assistent.";
 
   /* ----------------------------------------------------------------------
      Eingabestruktur für Vertex AI erzeugen
@@ -78,8 +85,8 @@ export async function callVertexAI(
   const body = {
     contents: parts,
     generationConfig: {
-      temperature: options.temperature ?? vertexConfig.temperature,
-      maxOutputTokens: options.max_tokens ?? vertexConfig.max_tokens,
+      temperature: opts.temperature ?? vertexConfig.temperature,
+      maxOutputTokens: opts.max_tokens ?? vertexConfig.max_tokens,
     },
   };
 
@@ -114,20 +121,24 @@ export async function callVertexAI(
     if (
       typeof rawData === "object" &&
       rawData !== null &&
-      "candidates" in rawData &&
-      Array.isArray((rawData as any).candidates)
+      "candidates" in rawData
     ) {
-      const cand = (rawData as any).candidates[0];
+      const data = rawData as { candidates?: unknown[] };
+      if (Array.isArray(data.candidates) && data.candidates.length > 0) {
+        const cand = data.candidates[0] as Record<string, unknown>;
 
-      if (
-        cand &&
-        typeof cand === "object" &&
-        "content" in cand &&
-        cand.content?.parts?.[0]?.text
-      ) {
-        reply = String(cand.content.parts[0].text);
-      } else if (cand && typeof cand === "object" && "output" in cand) {
-        reply = String(cand.output);
+        if (
+          cand &&
+          typeof cand === "object" &&
+          "content" in cand
+        ) {
+          const content = cand.content as { parts?: Array<{ text?: string }> };
+          if (content?.parts?.[0]?.text) {
+            reply = String(content.parts[0].text);
+          }
+        } else if (cand && typeof cand === "object" && "output" in cand) {
+          reply = String(cand.output);
+        }
       }
     }
 
@@ -137,10 +148,12 @@ export async function callVertexAI(
     if (
       typeof rawData === "object" &&
       rawData !== null &&
-      "usageMetadata" in rawData &&
-      (rawData as any).usageMetadata?.totalTokenCount !== undefined
+      "usageMetadata" in rawData
     ) {
-      totalTokens = Number((rawData as any).usageMetadata.totalTokenCount) || 0;
+      const data = rawData as { usageMetadata?: { totalTokenCount?: number } };
+      if (data.usageMetadata?.totalTokenCount !== undefined) {
+        totalTokens = Number(data.usageMetadata.totalTokenCount) || 0;
+      }
     }
 
     /* ----------------------------------------------------------------------
@@ -173,15 +186,16 @@ export async function callVertexAI(
         confidence: 0.95,
       },
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
     log("error", "VertexAI Fehler", {
       model: model || vertexConfig.model,
-      error: err.message,
+      error: errorMessage,
     });
 
     return {
-      text: `VertexAI Fehler: ${err.message}`,
-      errors: [err.message],
+      text: `VertexAI Fehler: ${errorMessage}`,
+      errors: [errorMessage],
       meta: {
         provider: "vertexAI",
         model: usedModel,
@@ -199,18 +213,22 @@ export async function callVertexAI(
 /**
  * Erkennt Tool-Aufrufe im Text, z. B. [TOOL: system_info {"verbose":true}]
  */
-function detectToolCalls(text: string): { name: string; parameters: any }[] {
+function detectToolCalls(text: string): Array<{ name: string; parameters: Record<string, unknown> }> {
   const matches = [...text.matchAll(/\[TOOL:\s*([a-zA-Z0-9_]+)(.*?)\]/g)];
   return matches.map((m) => ({
-    name: m[1],
-    parameters: safeJsonParse(m[2]),
+    name: m[1] || "",
+    parameters: safeJsonParse(m[2] || ""),
   }));
 }
 
 /** Sicheres JSON-Parsing */
-function safeJsonParse(s: string): any {
+function safeJsonParse(s: string): Record<string, unknown> {
   try {
-    return s && s.trim().length > 0 ? JSON.parse(s) : {};
+    const parsed: unknown = s && s.trim().length > 0 ? JSON.parse(s) : {};
+    if (typeof parsed === "object" && parsed !== null) {
+      return parsed as Record<string, unknown>;
+    }
+    return {};
   } catch {
     return {};
   }
@@ -218,7 +236,7 @@ function safeJsonParse(s: string): any {
 
 /** Führt erkannte Tool-Calls aus */
 async function handleToolCalls(
-  calls: { name: string; parameters: any }[],
+  calls: Array<{ name: string; parameters: Record<string, unknown> }>,
 ): Promise<string[]> {
   const results: string[] = [];
   for (const call of calls) {
@@ -228,8 +246,9 @@ async function handleToolCalls(
       results.push(
         `✅ Tool "${call.name}" erfolgreich ausgeführt.\nAntwort: ${JSON.stringify(res)}`,
       );
-    } catch (err: any) {
-      results.push(`❌ Tool "${call.name}" Fehler: ${err.message}`);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      results.push(`❌ Tool "${call.name}" Fehler: ${errorMessage}`);
     }
   }
   return results;
@@ -250,11 +269,12 @@ export function updateVertexConfig(
 
 /** Gibt aktuellen Providerstatus zurück */
 export async function getVertexStatus() {
+  const apiKeyEnv = vertexConfig.api_key_env || "VERTEX_API_KEY";
   return {
     provider: "vertexAI",
     model: vertexConfig.model,
     endpoint: vertexConfig.endpoint,
-    api_key_set: !!process.env[vertexConfig.api_key_env ?? ""],
+    api_key_set: !!process.env[apiKeyEnv],
     active_config: vertexConfig,
   };
 }

@@ -1,0 +1,275 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "business": "Geschäftsverwaltung",
+    "finance": "Finanzen & Controlling",
+    "sales": "Vertrieb & Marketing",
+    "procurement": "Einkauf & Beschaffung",
+    "production": "Produktion & Fertigung",
+    "warehouse": "Lager & Logistik",
+    "hr": "Personal & HR",
+    "reporting": "Reporting & Analytics",
+    "aiAnnotator": "KI-Annotator",
+    "communication": "Kommunikation & Social",
+    "system": "System & Administration"
+  },
+
+  "dashboard": {
+    "title": "Dashboard",
+    "executiveOverview": "Executive Overview",
+    "notifications": "Benachrichtigungen",
+    "realtimeKpis": "Echtzeit-KPIs",
+    "tasksAndPriorities": "Aufgaben & Prioritäten",
+    "kpis": {
+      "revenue": "Umsatz",
+      "orders": "Aufträge",
+      "production": "Produktion",
+      "liquidity": "Liquidität"
+    }
+  },
+
+  "business": {
+    "title": "Geschäftsverwaltung",
+    "company": {
+      "title": "Unternehmen",
+      "masterData": "Stammdaten",
+      "organization": "Organisation",
+      "documentManagement": "Dokumentenmanagement"
+    },
+    "processes": {
+      "title": "Prozess-Management",
+      "workflowDesigner": "Workflow-Designer",
+      "processMining": "Prozess-Mining",
+      "complianceChecker": "Compliance-Checker"
+    },
+    "risks": {
+      "title": "Risiko & Compliance",
+      "riskManagement": "Risikomanagement",
+      "auditManagement": "Audit-Management",
+      "complianceMonitoring": "Compliance-Monitoring"
+    }
+  },
+
+  "finance": {
+    "title": "Finanzen & Controlling",
+    "accounting": {
+      "title": "Buchhaltung",
+      "generalLedger": "Hauptbuch",
+      "debtors": "Debitoren",
+      "creditors": "Kreditoren",
+      "assetAccounting": "Anlagenbuchhaltung"
+    },
+    "controlling": {
+      "title": "Controlling",
+      "costAccounting": "Kostenrechnung",
+      "budgeting": "Budgetierung",
+      "kpis": "Kennzahlen"
+    },
+    "treasury": {
+      "title": "Treasury",
+      "liquidityManagement": "Liquiditätsmanagement",
+      "paymentTransactions": "Zahlungsverkehr",
+      "riskManagement": "Risikomanagement"
+    },
+    "taxes": {
+      "title": "Steuern",
+      "vat": "Umsatzsteuer",
+      "advanceReturns": "Voranmeldungen",
+      "taxReturns": "Steuererklärungen"
+    }
+  },
+
+  "sales": {
+    "title": "Vertrieb & Marketing",
+    "crm": {
+      "title": "CRM",
+      "customerDatabase": "Kundenstamm",
+      "contactManagement": "Kontaktverwaltung",
+      "activityManagement": "Aktivitätsverwaltung"
+    },
+    "marketing": {
+      "title": "Marketing",
+      "campaignManagement": "Kampagnenmanagement",
+      "leadGeneration": "Lead-Generierung",
+      "marketingAutomation": "Marketing-Automation"
+    },
+    "orders": {
+      "title": "Vertrieb",
+      "quoteCreation": "Angebotserstellung",
+      "orderManagement": "Auftragsverwaltung",
+      "pipelineManagement": "Pipeline-Management"
+    },
+    "fulfillment": {
+      "title": "Fulfillment",
+      "shippingManagement": "Versandmanagement",
+      "invoicing": "Rechnungsstellung",
+      "returnManagement": "Retourenmanagement"
+    }
+  },
+
+  "procurement": {
+    "title": "Einkauf & Beschaffung",
+    "orders": {
+      "title": "Beschaffung",
+      "demandPlanning": "Bedarfsplanung",
+      "ordering": "Bestellwesen",
+      "supplierManagement": "Lieferantenmanagement"
+    },
+    "goodsReceipt": {
+      "title": "Wareneingang",
+      "incomingInspection": "Eingangskontrolle",
+      "qualityCheck": "Qualitätsprüfung",
+      "invoiceVerification": "Rechnungsprüfung"
+    },
+    "suppliers": {
+      "title": "Lieferanten",
+      "masterData": "Stammdaten",
+      "ratingSystem": "Bewertungssystem",
+      "contractManagement": "Vertragsmanagement"
+    }
+  },
+
+  "production": {
+    "title": "Produktion & Fertigung",
+    "planning": {
+      "title": "Produktionsplanung",
+      "capacityPlanning": "Kapazitätsplanung",
+      "materialRequirements": "Materialbedarf",
+      "scheduling": "Terminplanung"
+    },
+    "control": {
+      "title": "Fertigungssteuerung",
+      "workInstructions": "Arbeitspläne",
+      "machineData": "Maschinendaten",
+      "feedback": "Rückmeldungen"
+    },
+    "quality": {
+      "title": "Qualitätsmanagement",
+      "testPlans": "Prüfpläne",
+      "qualityControls": "Qualitätskontrollen",
+      "certificateManagement": "Zertifikatsmanagement"
+    },
+    "maintenance": {
+      "title": "Wartung",
+      "maintenancePlans": "Wartungspläne",
+      "upkeep": "Instandhaltung",
+      "sparePartsManagement": "Ersatzteilmanagement"
+    }
+  },
+
+  "warehouse": {
+    "title": "Lager & Logistik",
+    "stock": {
+      "title": "Lagerverwaltung",
+      "inventoryManagement": "Bestandsführung",
+      "storageLocations": "Lagerplätze",
+      "stocktaking": "Inventur"
+    },
+    "picking": {
+      "title": "Kommissionierung",
+      "pickingLists": "Kommissionierlisten",
+      "pickByVoice": "Pick-by-Voice",
+      "routeOptimization": "Wegoptimierung"
+    },
+    "shipping": {
+      "title": "Logistik",
+      "shippingManagement": "Versandmanagement",
+      "transportPlanning": "Transportplanung",
+      "tracking": "Tracking"
+    }
+  },
+
+  "hr": {
+    "title": "Personal & HR",
+    "employees": {
+      "title": "Personalverwaltung",
+      "masterData": "Stammdaten",
+      "contractManagement": "Vertragsmanagement",
+      "documentArchive": "Dokumentenarchiv"
+    },
+    "timeTracking": {
+      "title": "Zeiterfassung",
+      "workingHours": "Arbeitszeiten",
+      "vacationPlanning": "Urlaubsplanung",
+      "projectTime": "Projektzeiten"
+    },
+    "development": {
+      "title": "Personalentwicklung",
+      "qualifications": "Qualifikationen",
+      "training": "Schulungen",
+      "careerPlanning": "Karriereplanung"
+    },
+    "recruiting": {
+      "title": "Recruiting",
+      "jobPostings": "Stellenausschreibungen",
+      "applicantManagement": "Bewerbermanagement",
+      "onboarding": "Onboarding"
+    }
+  },
+
+  "reporting": {
+    "title": "Reporting & Analytics",
+    "standard": {
+      "title": "Standard-Reports",
+      "financialReports": "Finanzberichte",
+      "salesReports": "Vertriebsberichte",
+      "productionReports": "Produktionsberichte"
+    },
+    "adhoc": {
+      "title": "Ad-hoc-Analysen",
+      "dataExplorer": "Daten-Explorer",
+      "pivotTables": "Pivot-Tabellen",
+      "visualizations": "Visualisierungen"
+    },
+    "ai": {
+      "title": "KI-Analytics",
+      "predictiveAnalytics": "Predictive Analytics",
+      "trendAnalyses": "Trend-Analysen",
+      "recommendationSystem": "Empfehlungssystem"
+    }
+  },
+
+  "communication": {
+    "title": "Kommunikation & Social",
+    "email": {
+      "title": "E-Mail-Management",
+      "unifiedInbox": "Unified Inbox",
+      "smartResponse": "Smart Response",
+      "campaignTracking": "Kampagnen-Tracking"
+    },
+    "messaging": {
+      "title": "Messaging",
+      "chatSystem": "Chat-System",
+      "videoConferences": "Video-Konferenzen",
+      "teamCollaboration": "Team-Collaboration"
+    },
+    "social": {
+      "title": "Social Media",
+      "multiChannelManagement": "Multi-Channel-Management",
+      "contentCalendar": "Content-Kalender",
+      "sentimentAnalysis": "Sentiment-Analyse"
+    }
+  },
+
+  "system": {
+    "title": "System & Administration",
+    "users": {
+      "title": "Benutzerverwaltung",
+      "rolesAndRights": "Rollen & Rechte",
+      "accessControl": "Zugriffskontrolle",
+      "auditLog": "Audit-Log"
+    },
+    "settings": {
+      "title": "Systemeinstellungen",
+      "clientManagement": "Mandantenverwaltung",
+      "databaseManagement": "Datenbank-Management",
+      "backupRestore": "Backup/Restore"
+    },
+    "integrations": {
+      "title": "Integrationen",
+      "apiManagement": "API-Management",
+      "interfaces": "Schnittstellen",
+      "pluginSystem": "Plugin-System"
+    }
+  }
+}

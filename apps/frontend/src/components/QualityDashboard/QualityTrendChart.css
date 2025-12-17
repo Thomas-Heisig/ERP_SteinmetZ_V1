@@ -1,0 +1,245 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/components/QualityDashboard/QualityTrendChart.css */
+
+.quality-trend-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quality-trend-loading {
+  padding: 40px;
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}
+
+.quality-trend-empty {
+  padding: 40px;
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}
+
+.quality-trend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.quality-trend-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.quality-trend-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.quality-trend-select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.quality-trend-select:hover {
+  border-color: #007bff;
+}
+
+.quality-trend-select:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  border-color: #007bff;
+}
+
+.quality-trend-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.quality-trend-stat-item {
+  text-align: center;
+}
+
+.quality-trend-stat-label {
+  font-size: 12px;
+  color: #888;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.quality-trend-stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.quality-trend-chart-container {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.quality-trend-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-right: 10px;
+  font-size: 12px;
+  color: #888;
+  min-width: 40px;
+}
+
+.quality-trend-y-axis-label {
+  text-align: right;
+}
+
+.quality-trend-chart {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 200px;
+  border-left: 2px solid #ddd;
+  border-bottom: 2px solid #ddd;
+  padding: 0 10px 10px 10px;
+}
+
+.quality-trend-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.quality-trend-bar-fill {
+  width: 100%;
+  height: var(--bar-height, 0%);
+  background-color: #28a745;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.3s;
+  cursor: pointer;
+  min-height: 2px;
+}
+
+.quality-trend-bar-fill:hover {
+  background-color: #218838;
+  transform: scaleY(1.02);
+}
+
+.quality-trend-bar-label {
+  font-size: 10px;
+  color: #666;
+  text-align: center;
+  margin-top: 5px;
+  white-space: nowrap;
+  transform: rotate(-45deg);
+  transform-origin: center;
+}
+
+.quality-trend-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #e9ecef;
+}
+
+.quality-trend-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.quality-trend-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #28a745;
+}
+
+.quality-trend-legend-dot.medium {
+  background-color: #ffc107;
+}
+
+.quality-trend-legend-dot.low {
+  background-color: #dc3545;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .quality-trend-container {
+    background-color: #1f2937;
+  }
+
+  .quality-trend-title,
+  .quality-trend-stat-value {
+    color: #e5e7eb;
+  }
+
+  .quality-trend-select {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .quality-trend-stats {
+    background-color: #374151;
+  }
+
+  .quality-trend-chart {
+    border-left-color: #4b5563;
+    border-bottom-color: #4b5563;
+  }
+
+  .quality-trend-legend {
+    border-top-color: #4b5563;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .quality-trend-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .quality-trend-stats {
+    flex-wrap: wrap;
+  }
+
+  .quality-trend-stat-item {
+    flex: 1 1 45%;
+  }
+
+  .quality-trend-bar-label {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quality-trend-chart {
+    height: 150px;
+  }
+
+  .quality-trend-stat-item {
+    flex: 1 1 100%;
+  }
+}

@@ -54,7 +54,7 @@ function getClient(): OpenAI {
 export async function callOpenAI(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {},
+  options: Record<string, unknown> = {},
 ): Promise<AIResponse> {
   const client = getClient();
   const usedModel = model || openaiConfig.model;
@@ -68,21 +68,24 @@ export async function callOpenAI(
 
   const request = {
     model: usedModel,
-    messages: formattedMessages as any,
-    temperature: options.temperature ?? openaiConfig.temperature,
-    max_tokens: options.max_tokens ?? openaiConfig.max_tokens,
-    stream: false,
-    response_format: options.response_format ?? "text",
+    messages: formattedMessages,
+    temperature: (typeof options.temperature === "number" ? options.temperature : openaiConfig.temperature) as number,
+    max_tokens: (typeof options.max_tokens === "number" ? options.max_tokens : openaiConfig.max_tokens) as number,
+    stream: false as const,
   };
 
   try {
     const start = Date.now();
-    const completion: any = await client.chat.completions.create(request);
+    const completionResponse = await client.chat.completions.create(request as Parameters<typeof client.chat.completions.create>[0]);
     const duration = Date.now() - start;
 
-    const reply =
-      completion?.choices?.[0]?.message?.content?.trim?.() ?? "(keine Antwort)";
-    const usage = completion?.usage ?? {};
+    // Type guard: we know it's not a stream because stream: false
+    const completion = completionResponse as OpenAI.Chat.Completions.ChatCompletion;
+    
+    const firstChoice = completion?.choices?.[0];
+    const messageContent = firstChoice?.message?.content;
+    const reply = typeof messageContent === "string" ? messageContent.trim() : "(keine Antwort)";
+    const usage = completion?.usage ?? { total_tokens: 0 };
 
     // Tool-Aufrufe erkennen und ausführen
     const toolCalls = detectToolCalls(reply);
@@ -99,7 +102,12 @@ export async function callOpenAI(
     return {
       text: [reply, ...toolResults].filter(Boolean).join("\n\n"),
       action: "openai_chat",
-      tool_calls: toolCalls,
+      tool_calls: toolCalls.map(tc => ({
+        name: tc.name,
+        parameters: typeof tc.parameters === "object" && tc.parameters !== null 
+          ? tc.parameters as Record<string, unknown>
+          : {},
+      })),
       meta: {
         model: usedModel,
         tokens_used: usage.total_tokens ?? 0,
@@ -108,12 +116,13 @@ export async function callOpenAI(
         confidence: 0.97,
       },
     };
-  } catch (err: any) {
-    log("error", "OpenAI-Fehler", { model: usedModel, error: err.message });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    log("error", "OpenAI-Fehler", { model: usedModel, error: errorMsg });
 
     return {
-      text: `❌ OpenAI-Fehler: ${err.message}`,
-      errors: [err.message],
+      text: `❌ OpenAI-Fehler: ${errorMsg}`,
+      errors: [errorMsg],
       meta: {
         model: usedModel,
         source: "openaiProvider",
@@ -130,7 +139,7 @@ export async function callOpenAI(
 /**
  * Erkennt Tool-Aufrufe im Text, z. B. [TOOL: weather {"city":"Berlin"}]
  */
-function detectToolCalls(text: string): { name: string; parameters: any }[] {
+function detectToolCalls(text: string): { name: string; parameters: unknown }[] {
   const matches = [...text.matchAll(/\[TOOL:\s*([a-zA-Z0-9_]+)(.*?)\]/g)];
   return matches.map((m) => ({
     name: m[1],
@@ -139,7 +148,7 @@ function detectToolCalls(text: string): { name: string; parameters: any }[] {
 }
 
 /** Sichere JSON-Deserialisierung */
-function safeJsonParse(s: string): any {
+function safeJsonParse(s: string): unknown {
   try {
     return s && s.trim().length > 0 ? JSON.parse(s) : {};
   } catch {
@@ -151,17 +160,21 @@ function safeJsonParse(s: string): any {
  * Führt erkannte Tool-Calls über die zentrale Registry aus.
  */
 async function handleToolCalls(
-  calls: { name: string; parameters: any }[],
+  calls: { name: string; parameters: unknown }[],
 ): Promise<string[]> {
   const results: string[] = [];
   for (const call of calls) {
     try {
-      const res = await toolRegistry.call(call.name, call.parameters);
+      const parameters = typeof call.parameters === "object" && call.parameters !== null
+        ? call.parameters as Record<string, unknown>
+        : {};
+      const res = await toolRegistry.call(call.name, parameters);
       results.push(
         `✅ Tool "${call.name}" erfolgreich ausgeführt.\nErgebnis: ${JSON.stringify(res)}`,
       );
-    } catch (err: any) {
-      results.push(`❌ Tool "${call.name}" Fehler: ${err.message}`);
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      results.push(`❌ Tool "${call.name}" Fehler: ${errorMsg}`);
     }
   }
   return results;

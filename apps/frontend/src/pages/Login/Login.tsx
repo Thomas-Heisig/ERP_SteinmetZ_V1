@@ -1,11 +1,31 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/pages/Login/Login.tsx
 
+/**
+ * Login and registration page component
+ * 
+ * Features:
+ * - User authentication (login)
+ * - User registration
+ * - Form validation
+ * - Error handling
+ * - Loading states
+ * - Accessibility support
+ * 
+ * @example
+ * ```tsx
+ * <Login />
+ * ```
+ */
+
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import "./Login.css";
+import styles from "./Login.module.css";
 
+/**
+ * Login page component with authentication and registration
+ */
 export default function Login() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [username, setUsername] = useState("");
@@ -19,7 +39,9 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as any)?.from?.pathname || "/";
+  // Get redirect location from navigation state
+  type LocationState = { from?: { pathname: string } };
+  const from = (location.state as LocationState)?.from?.pathname || "/";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,32 +68,32 @@ export default function Login() {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className="login-header">
-          <div className="login-brand">
-            <span className="brand-icon" aria-hidden="true">
+    <div className={styles.page}>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.brand}>
+            <span className={styles.brandIcon} aria-hidden="true">
               🧱
             </span>
-            <h1>ERP SteinmetZ</h1>
+            <h1 className={styles.brandTitle}>ERP SteinmetZ</h1>
           </div>
-          <p className="login-subtitle">
+          <p className={styles.subtitle}>
             {mode === "login"
               ? "Melden Sie sich an, um fortzufahren"
               : "Erstellen Sie ein neues Konto"}
           </p>
         </div>
 
-        <form className="login-form" onSubmit={handleSubmit} noValidate>
+        <form className={styles.form} onSubmit={handleSubmit} noValidate>
           {error && (
-            <div className="login-error" role="alert" aria-live="polite">
+            <div className={styles.error} role="alert" aria-live="polite">
               {error}
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="username">
-              Benutzername <span aria-label="erforderlich">*</span>
+          <div className={styles.formGroup}>
+            <label htmlFor="username" className={styles.label}>
+              Benutzername <span className={styles.required} aria-label="erforderlich">*</span>
             </label>
             <input
               type="text"
@@ -81,17 +103,17 @@ export default function Login() {
               onChange={(e) => setUsername(e.target.value)}
               required
               autoComplete="username"
-              aria-required="true"
-              aria-invalid={error ? "true" : "false"}
               disabled={isLoading}
+              className={error ? `${styles.input} ${styles.inputInvalid}` : styles.input}
+              {...{ "aria-required": "true" as const, "aria-invalid": error ? ("true" as const) : ("false" as const) }}
             />
           </div>
 
           {mode === "register" && (
             <>
-              <div className="form-group">
-                <label htmlFor="email">
-                  E-Mail <span aria-label="erforderlich">*</span>
+              <div className={styles.formGroup}>
+                <label htmlFor="email" className={styles.label}>
+                  E-Mail <span className={styles.required} aria-label="erforderlich">*</span>
                 </label>
                 <input
                   type="email"
@@ -101,14 +123,14 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
-                  aria-required="true"
-                  aria-invalid={error ? "true" : "false"}
                   disabled={isLoading}
+                  className={error ? `${styles.input} ${styles.inputInvalid}` : styles.input}
+                  {...{ "aria-required": "true" as const, "aria-invalid": error ? ("true" as const) : ("false" as const) }}
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="fullName">Vollständiger Name</label>
+              <div className={styles.formGroup}>
+                <label htmlFor="fullName" className={styles.label}>Vollständiger Name</label>
                 <input
                   type="text"
                   id="fullName"
@@ -117,14 +139,15 @@ export default function Login() {
                   onChange={(e) => setFullName(e.target.value)}
                   autoComplete="name"
                   disabled={isLoading}
+                  className={styles.input}
                 />
               </div>
             </>
           )}
 
-          <div className="form-group">
-            <label htmlFor="password">
-              Passwort <span aria-label="erforderlich">*</span>
+          <div className={styles.formGroup}>
+            <label htmlFor="password" className={styles.label}>
+              Passwort <span className={styles.required} aria-label="erforderlich">*</span>
             </label>
             <input
               type="password"
@@ -136,13 +159,13 @@ export default function Login() {
               autoComplete={
                 mode === "login" ? "current-password" : "new-password"
               }
-              aria-required="true"
-              aria-invalid={error ? "true" : "false"}
               disabled={isLoading}
               minLength={8}
+              className={error ? `${styles.input} ${styles.inputInvalid}` : styles.input}
+              {...{ "aria-required": "true" as const, "aria-invalid": error ? ("true" as const) : ("false" as const) }}
             />
             {mode === "register" && (
-              <small className="form-hint">
+              <small className={styles.hint}>
                 Mindestens 8 Zeichen, mit Groß- und Kleinbuchstaben sowie einer
                 Zahl
               </small>
@@ -151,9 +174,9 @@ export default function Login() {
 
           <button
             type="submit"
-            className="login-button"
+            className={styles.submitButton}
             disabled={isLoading}
-            aria-busy={isLoading}
+            {...{ "aria-busy": isLoading ? ("true" as const) : ("false" as const) }}
           >
             {isLoading
               ? "Bitte warten..."
@@ -163,10 +186,10 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="login-footer">
+        <div className={styles.footer}>
           <button
             type="button"
-            className="toggle-mode-button"
+            className={styles.toggleButton}
             onClick={toggleMode}
             disabled={isLoading}
           >

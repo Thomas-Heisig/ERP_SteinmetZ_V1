@@ -106,7 +106,7 @@ export function validateEnv(): Env {
       console.error("❌ Environment variable validation failed:");
       // Zod 4.x uses 'issues' instead of 'errors'
       if ("issues" in error && Array.isArray(error.issues)) {
-        error.issues.forEach((issue: any) => {
+        error.issues.forEach((issue: z.ZodIssue) => {
           const path = issue.path ? issue.path.join(".") : "unknown";
           console.error(`  - ${path}: ${issue.message || "Validation failed"}`);
         });

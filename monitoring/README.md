@@ -60,14 +60,14 @@ docker-compose --profile zipkin up -d
 
 Once started, access the services at:
 
-| Service          | URL                    | Credentials | Purpose                              |
-| ---------------- | ---------------------- | ----------- | ------------------------------------ |
-| **Prometheus**   | http://localhost:9090  | -           | Metrics collection & queries         |
-| **Grafana**      | http://localhost:3001  | admin/admin | Dashboards & visualization           |
-| **Jaeger UI**    | http://localhost:16686 | -           | Distributed tracing                  |
-| **Zipkin UI**    | http://localhost:9411  | -           | Alternative tracing (zipkin profile) |
-| **Alertmanager** | http://localhost:9093  | -           | Alert management (advanced profile)  |
-| **OTLP Health**  | http://localhost:13133 | -           | Collector health (advanced profile)  |
+| Service          | URL                      | Credentials | Purpose                              |
+| ---------------- | ------------------------ | ----------- | ------------------------------------ |
+| **Prometheus**   | <http://localhost:9090>  | -           | Metrics collection & queries         |
+| **Grafana**      | <http://localhost:3001>  | admin/admin | Dashboards & visualization           |
+| **Jaeger UI**    | <http://localhost:16686> | -           | Distributed tracing                  |
+| **Zipkin UI**    | <http://localhost:9411>  | -           | Alternative tracing (zipkin profile) |
+| **Alertmanager** | <http://localhost:9093>  | -           | Alert management (advanced profile)  |
+| **OTLP Health**  | <http://localhost:13133> | -           | Collector health (advanced profile)  |
 
 ---
 
@@ -96,8 +96,8 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 
 Datasources are automatically provisioned on startup:
 
-- **Prometheus**: http://prometheus:9090 (default)
-- **Jaeger**: http://jaeger:16686
+- **Prometheus**: <http://prometheus:9090> (default)
+- **Jaeger**: <http://jaeger:16686>
 
 The dashboard at `grafana/erp-steinmetz-dashboard.json` is automatically loaded.
 
@@ -105,7 +105,7 @@ The dashboard at `grafana/erp-steinmetz-dashboard.json` is automatically loaded.
 
 Prometheus is configured to scrape metrics from:
 
-- Backend: http://host.docker.internal:3000/api/metrics
+- Backend: <http://host.docker.internal:3000/api/metrics>
 - Scrape interval: 15 seconds
 
 Edit `prometheus/prometheus.yml` to add more targets.
@@ -271,10 +271,11 @@ Or create dashboards directly in Grafana UI and export them.
    ```
 
 2. Check Prometheus targets status:
-   - Open http://localhost:9090/targets
+   - Open <http://localhost:9090/targets>
    - Ensure all targets are "UP"
 
 3. Check Prometheus logs:
+
    ```bash
    docker logs prometheus
    ```
@@ -287,7 +288,7 @@ Or create dashboards directly in Grafana UI and export them.
 
 ### Alerts not firing
 
-1. Check alert rules are loaded in Prometheus (http://localhost:9090/alerts)
+1. Check alert rules are loaded in Prometheus (<http://localhost:9090/alerts>)
 2. Verify Alertmanager is reachable
 3. Check alert rule syntax in `alert-rules.yml`
 
@@ -304,4 +305,4 @@ For questions or issues, please check:
 
 - Project documentation in `/docs`
 - Issue tracker on GitHub
-- Contact: maintainer@erp-steinmetz.local
+- Contact: <maintainer@erp-steinmetz.local>

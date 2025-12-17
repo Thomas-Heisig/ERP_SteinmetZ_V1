@@ -25,7 +25,10 @@ export function useDashboardNavigation(): UseDashboardNavigation {
           view,
           params,
           timestamp: new Date(),
-          title: params?.title ?? view,
+          title:
+            params?.title && typeof params.title === "string"
+              ? params.title
+              : view,
         },
       });
     },

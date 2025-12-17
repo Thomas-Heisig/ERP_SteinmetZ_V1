@@ -7,9 +7,8 @@ import type {
   NodeDetail,
   SearchResult,
   SearchFilters,
-  DashboardHealthState,
   DashboardConfig,
-  SystemInfoState,
+  NodeType,
 } from "../../Dashboard/types";
 
 /**
@@ -422,44 +421,61 @@ export function dashboardReducer(
 // ─── HELPER ─────────────────────────────────────────────────────────────
 //
 
-function normalizeNode(node: any): NodeDetail {
+function normalizeNode(node: unknown): NodeDetail {
+  const n = node as Record<string, unknown>;
   return {
-    ...node,
-    id: String(node.id),
-    tags: Array.isArray(node.tags) ? node.tags : [],
+    ...n,
+    id: String(n.id),
+    tags: Array.isArray(n.tags) ? n.tags : [],
     metadata: {
-      ...node.metadata,
-      createdAt: node.metadata?.createdAt || new Date(),
-      updatedAt: node.metadata?.updatedAt || new Date(),
+      ...(n.metadata as Record<string, unknown>),
+      createdAt:
+        (n.metadata as Record<string, unknown>)?.createdAt || new Date(),
+      updatedAt:
+        (n.metadata as Record<string, unknown>)?.updatedAt || new Date(),
     },
-    createdAt: node.createdAt || new Date(),
-    updatedAt: node.updatedAt || new Date(),
-  };
+    createdAt: n.createdAt || new Date(),
+    updatedAt: n.updatedAt || new Date(),
+  } as NodeDetail;
 }
 
-function normalizeNodes(nodes: any[]): NodeDetail[] {
+function normalizeNodes(nodes: unknown[]): NodeDetail[] {
   return Array.isArray(nodes) ? nodes.map(normalizeNode) : [];
 }
 
-function normalizeSearchFilters(filters: any): SearchFilters {
+function normalizeSearchFilters(filters: unknown): SearchFilters {
+  const f = filters as Record<string, unknown>;
+  const dateRangeRaw = f?.dateRange as Record<string, unknown> | undefined;
+  const dateRange = dateRangeRaw
+    ? {
+        from: new Date(dateRangeRaw.from as string | number | Date),
+        to: new Date(dateRangeRaw.to as string | number | Date),
+      }
+    : undefined;
+
   return {
-    categories: filters?.categories ?? [],
-    nodeTypes: filters?.nodeTypes ?? [],
-    tags: filters?.tags ?? [],
-    dateRange: filters?.dateRange ?? undefined,
+    categories: (f?.categories as string[]) ?? [],
+    nodeTypes: (f?.nodeTypes as NodeType[]) ?? [],
+    tags: (f?.tags as string[]) ?? [],
+    dateRange,
   };
 }
 
-function normalizeSearchResults(results: any[]): SearchResult[] {
+function normalizeSearchResults(results: unknown[]): SearchResult[] {
   return Array.isArray(results)
-    ? results.map((r) => ({
-        ...r,
-        id: String(r.id),
-        relevance: r.relevance ?? 1,
-        metadata: {
-          ...r.metadata,
-          lastModified: r.metadata?.lastModified || new Date(),
-        },
-      }))
+    ? results.map((r) => {
+        const result = r as Record<string, unknown>;
+        return {
+          ...result,
+          id: String(result.id),
+          relevance: (result.relevance as number) ?? 1,
+          metadata: {
+            ...(result.metadata as Record<string, unknown>),
+            lastModified:
+              (result.metadata as Record<string, unknown>)?.lastModified ||
+              new Date(),
+          },
+        } as SearchResult;
+      })
     : [];
 }

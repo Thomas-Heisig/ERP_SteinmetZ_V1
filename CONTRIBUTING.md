@@ -58,6 +58,7 @@ Before you begin, ensure you have the following installed:
    ```
 
 6. **Start development servers**:
+
    ```bash
    npm run dev
    ```
@@ -98,6 +99,7 @@ git checkout -b bugfix/issue-description
 3. **Write or update tests** for your changes
 4. **Update documentation** as needed
 5. **Test your changes**:
+
    ```bash
    npm run lint           # Linting and formatting
    npm run build          # TypeScript compilation
@@ -109,7 +111,7 @@ git checkout -b bugfix/issue-description
 
 We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
-```
+```bash
 <type>[optional scope]: <description>
 
 [optional body]

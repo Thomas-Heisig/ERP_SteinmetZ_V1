@@ -31,7 +31,8 @@ interface SearchResult {
   id: string;
   title: string;
   kind: string;
-  [key: string]: any;
+  description?: string;
+  [key: string]: unknown;
 }
 
 export const AdvancedFilters: React.FC = () => {
@@ -171,13 +172,13 @@ export const AdvancedFilters: React.FC = () => {
   ];
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Advanced Filters</h1>
-        <div style={styles.actions}>
+    <div className="advanced-filters-container">
+      <div className="advanced-filters-header">
+        <h1 className="advanced-filters-title">Advanced Filters</h1>
+        <div className="advanced-filters-actions">
           <button
             onClick={() => setShowSaved(!showSaved)}
-            style={styles.button}
+            className="advanced-filters-button"
           >
             📁 Saved Filters ({savedFilters.length})
           </button>
@@ -186,30 +187,32 @@ export const AdvancedFilters: React.FC = () => {
 
       {/* Saved Filters Panel */}
       {showSaved && (
-        <div style={styles.savedPanel}>
-          <h3 style={styles.panelTitle}>Saved Filters</h3>
+        <div className="advanced-filters-saved-panel">
+          <h3 className="advanced-filters-panel-title">Saved Filters</h3>
           {savedFilters.length === 0 ? (
-            <p style={styles.emptyText}>No saved filters yet</p>
+            <p className="advanced-filters-empty-text">No saved filters yet</p>
           ) : (
-            <div style={styles.savedList}>
+            <div className="advanced-filters-saved-list">
               {savedFilters.map((saved) => (
-                <div key={saved.id} style={styles.savedItem}>
+                <div key={saved.id} className="advanced-filters-saved-item">
                   <div>
-                    <div style={styles.savedName}>{saved.name}</div>
-                    <div style={styles.savedDate}>
+                    <div className="advanced-filters-saved-name">
+                      {saved.name}
+                    </div>
+                    <div className="advanced-filters-saved-date">
                       {new Date(saved.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <div style={styles.savedActions}>
+                  <div className="advanced-filters-saved-actions">
                     <button
                       onClick={() => handleLoadFilter(saved)}
-                      style={styles.smallButton}
+                      className="advanced-filters-small-button"
                     >
                       Load
                     </button>
                     <button
                       onClick={() => handleDeleteFilter(saved.id)}
-                      style={{ ...styles.smallButton, ...styles.deleteButton }}
+                      className="advanced-filters-small-button advanced-filters-delete-button"
                     >
                       Delete
                     </button>
@@ -222,14 +225,14 @@ export const AdvancedFilters: React.FC = () => {
       )}
 
       {/* Filter Presets */}
-      <div style={styles.presetsSection}>
-        <h3 style={styles.sectionTitle}>Quick Filters</h3>
-        <div style={styles.presetGrid}>
+      <div className="advanced-filters-presets-section">
+        <h3 className="advanced-filters-section-title">Quick Filters</h3>
+        <div className="advanced-filters-preset-grid">
           {presets.map((preset) => (
             <button
               key={preset.name}
               onClick={() => handleApplyFilter(preset.filter)}
-              style={styles.presetButton}
+              className="advanced-filters-preset-button"
             >
               {preset.name}
             </button>
@@ -245,17 +248,23 @@ export const AdvancedFilters: React.FC = () => {
       />
 
       {/* Results Section */}
-      <div style={styles.resultsSection}>
-        <div style={styles.resultsHeader}>
-          <h3 style={styles.sectionTitle}>
-            Results {results.length > 0 && `(${results.length})`}
+      <div className="advanced-filters-results-section">
+        <div className="advanced-filters-results-header">
+          <h3 className="advanced-filters-section-title">
+            Results ({results.length})
           </h3>
           {results.length > 0 && (
-            <div style={styles.exportButtons}>
-              <button onClick={handleExportResults} style={styles.button}>
-                📥 Export JSON
+            <div className="advanced-filters-export-buttons">
+              <button
+                onClick={handleExportResults}
+                className="advanced-filters-button"
+              >
+                Export JSON
               </button>
-              <button onClick={handleExportCSV} style={styles.button}>
+              <button
+                onClick={handleExportCSV}
+                className="advanced-filters-button"
+              >
                 📊 Export CSV
               </button>
             </div>
@@ -263,25 +272,33 @@ export const AdvancedFilters: React.FC = () => {
         </div>
 
         {loading ? (
-          <div style={styles.loading}>Loading results...</div>
+          <div className="advanced-filters-loading">Loading results...</div>
         ) : results.length === 0 ? (
-          <div style={styles.emptyResults}>
+          <div className="advanced-filters-empty-results">
             No results. Apply a filter to see results.
           </div>
         ) : (
-          <div style={styles.resultsGrid}>
+          <div className="advanced-filters-results-grid">
             {results.map((result) => (
-              <div key={result.id} style={styles.resultCard}>
-                <div style={styles.resultHeader}>
-                  <span style={styles.resultKind}>{result.kind}</span>
-                  <span style={styles.resultId}>{result.id}</span>
+              <div key={result.id} className="advanced-filters-result-card">
+                <div className="advanced-filters-result-header">
+                  <span className="advanced-filters-result-kind">
+                    {result.kind}
+                  </span>
+                  <span className="advanced-filters-result-id">
+                    {result.id}
+                  </span>
                 </div>
-                <h4 style={styles.resultTitle}>{result.title || "Untitled"}</h4>
-                {result.meta?.description && (
-                  <p style={styles.resultDescription}>
-                    {String(result.meta.description).substring(0, 150)}...
-                  </p>
-                )}
+                <h4 className="advanced-filters-result-title">
+                  {result.title || "Untitled"}
+                </h4>
+                {typeof result.meta === "object" &&
+                  result.meta !== null &&
+                  "description" in result.meta && (
+                    <p className="advanced-filters-result-description">
+                      {String(result.meta.description).substring(0, 150)}...
+                    </p>
+                  )}
               </div>
             ))}
           </div>
@@ -289,183 +306,6 @@ export const AdvancedFilters: React.FC = () => {
       </div>
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    padding: "2rem",
-    maxWidth: "1400px",
-    margin: "0 auto",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "2rem",
-  },
-  title: {
-    fontSize: "2rem",
-    fontWeight: "bold",
-    margin: 0,
-  },
-  actions: {
-    display: "flex",
-    gap: "1rem",
-  },
-  button: {
-    padding: "0.5rem 1rem",
-    backgroundColor: "#4a90e2",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    fontSize: "0.9rem",
-    fontWeight: "500",
-  },
-  savedPanel: {
-    backgroundColor: "#f5f5f5",
-    padding: "1.5rem",
-    borderRadius: "8px",
-    marginBottom: "2rem",
-  },
-  panelTitle: {
-    marginTop: 0,
-    marginBottom: "1rem",
-    fontSize: "1.2rem",
-  },
-  emptyText: {
-    color: "#666",
-    fontStyle: "italic",
-  },
-  savedList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.75rem",
-  },
-  savedItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "1rem",
-    backgroundColor: "white",
-    borderRadius: "4px",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-  },
-  savedName: {
-    fontWeight: "600",
-    marginBottom: "0.25rem",
-  },
-  savedDate: {
-    fontSize: "0.8rem",
-    color: "#666",
-  },
-  savedActions: {
-    display: "flex",
-    gap: "0.5rem",
-  },
-  smallButton: {
-    padding: "0.25rem 0.75rem",
-    fontSize: "0.85rem",
-    backgroundColor: "#4a90e2",
-    color: "white",
-    border: "none",
-    borderRadius: "3px",
-    cursor: "pointer",
-  },
-  deleteButton: {
-    backgroundColor: "#e74c3c",
-  },
-  presetsSection: {
-    marginBottom: "2rem",
-  },
-  sectionTitle: {
-    fontSize: "1.2rem",
-    marginBottom: "1rem",
-  },
-  presetGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-    gap: "0.75rem",
-  },
-  presetButton: {
-    padding: "0.75rem",
-    backgroundColor: "white",
-    border: "2px solid #e0e0e0",
-    borderRadius: "4px",
-    cursor: "pointer",
-    fontSize: "0.9rem",
-    fontWeight: "500",
-    transition: "all 0.2s",
-  },
-  resultsSection: {
-    marginTop: "2rem",
-  },
-  resultsHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "1rem",
-  },
-  exportButtons: {
-    display: "flex",
-    gap: "0.5rem",
-  },
-  loading: {
-    textAlign: "center",
-    padding: "3rem",
-    color: "#666",
-    fontSize: "1.1rem",
-  },
-  emptyResults: {
-    textAlign: "center",
-    padding: "3rem",
-    color: "#999",
-    fontStyle: "italic",
-  },
-  resultsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-    gap: "1rem",
-  },
-  resultCard: {
-    backgroundColor: "white",
-    padding: "1.5rem",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    border: "1px solid #e0e0e0",
-  },
-  resultHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "0.75rem",
-  },
-  resultKind: {
-    display: "inline-block",
-    padding: "0.25rem 0.5rem",
-    backgroundColor: "#e3f2fd",
-    color: "#1976d2",
-    borderRadius: "3px",
-    fontSize: "0.75rem",
-    fontWeight: "600",
-    textTransform: "uppercase",
-  },
-  resultId: {
-    fontSize: "0.75rem",
-    color: "#999",
-    fontFamily: "monospace",
-  },
-  resultTitle: {
-    margin: "0 0 0.5rem 0",
-    fontSize: "1.1rem",
-    fontWeight: "600",
-  },
-  resultDescription: {
-    margin: 0,
-    fontSize: "0.9rem",
-    color: "#666",
-    lineHeight: "1.4",
-  },
 };
 
 export default AdvancedFilters;

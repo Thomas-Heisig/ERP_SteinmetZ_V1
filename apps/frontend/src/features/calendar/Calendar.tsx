@@ -1,11 +1,28 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/features/calendar/Calendar.tsx
 
-import React, { useState, useEffect, useMemo } from "react";
+/**
+ * Calendar component with month, week, and day views
+ * 
+ * @example
+ * ```tsx
+ * <Calendar
+ *   onEventClick={(event) => console.log(event)}
+ *   onDateClick={(date) => console.log(date)}
+ *   onEventCreate={(start, end) => createEvent(start, end)}
+ * />
+ * ```
+ */
+
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Button, Card, Modal } from "../../components/ui";
+import styles from "./Calendar.module.css";
 
 type ViewMode = "month" | "week" | "day";
 
+/**
+ * Calendar event interface
+ */
 interface CalendarEvent {
   id: string;
   title: string;
@@ -17,9 +34,15 @@ interface CalendarEvent {
   category?: string;
 }
 
+/**
+ * Calendar component props
+ */
 interface CalendarProps {
+  /** Callback when an event is clicked */
   onEventClick?: (event: CalendarEvent) => void;
+  /** Callback when a date is clicked */
   onDateClick?: (date: Date) => void;
+  /** Callback when a new event should be created */
   onEventCreate?: (start: Date, end: Date) => void;
 }
 
@@ -39,44 +62,21 @@ const MONTHS = [
   "Dezember",
 ];
 
+/**
+ * Calendar component with multiple view modes
+ */
 export const Calendar: React.FC<CalendarProps> = ({
   onEventClick,
   onDateClick,
-  onEventCreate,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null,
   );
 
-  useEffect(() => {
-    fetchEvents();
-  }, [currentDate, viewMode]);
-
-  const fetchEvents = async () => {
-    const { start, end } = getDateRange();
-
-    try {
-      const response = await fetch(
-        `/api/calendar/events?start=${start.toISOString()}&end=${end.toISOString()}`,
-      );
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setEvents(data.data);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to fetch events:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getDateRange = () => {
+  const getDateRange = useCallback(() => {
     const start = new Date(currentDate);
     const end = new Date(currentDate);
 
@@ -91,9 +91,31 @@ export const Calendar: React.FC<CalendarProps> = ({
     }
 
     return { start, end };
-  };
+  }, [currentDate, viewMode]);
 
-  const navigatePeriod = (direction: number) => {
+  useEffect(() => {
+    const fetchEvents = async () => {
+      const { start, end } = getDateRange();
+
+      try {
+        const response = await fetch(
+          `/api/calendar/events?start=${start.toISOString()}&end=${end.toISOString()}`,
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setEvents(data.data);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, [getDateRange]);
+
+  const navigatePeriod = useCallback((direction: number) => {
     const newDate = new Date(currentDate);
     if (viewMode === "month") {
       newDate.setMonth(newDate.getMonth() + direction);
@@ -103,9 +125,9 @@ export const Calendar: React.FC<CalendarProps> = ({
       newDate.setDate(newDate.getDate() + direction);
     }
     setCurrentDate(newDate);
-  };
+  }, [currentDate, viewMode]);
 
-  const goToToday = () => setCurrentDate(new Date());
+  const goToToday = useCallback(() => setCurrentDate(new Date()), []);
 
   const monthDays = useMemo(() => {
     const days: Date[] = [];
@@ -118,7 +140,7 @@ export const Calendar: React.FC<CalendarProps> = ({
     }
 
     return days;
-  }, [currentDate, viewMode]);
+  }, [getDateRange]);
 
   const getEventsForDate = (date: Date) => {
     return events.filter((event) => {
@@ -161,16 +183,8 @@ export const Calendar: React.FC<CalendarProps> = ({
   return (
     <Card variant="elevated" padding="none">
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "1rem 1.5rem",
-          borderBottom: "1px solid var(--border)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div className={styles.headerWrapper}>
+        <div className={styles.headerControls}>
           <Button
             variant="outline"
             size="sm"
@@ -184,12 +198,12 @@ export const Calendar: React.FC<CalendarProps> = ({
           <Button variant="outline" size="sm" onClick={() => navigatePeriod(1)}>
             →
           </Button>
-          <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
+          <h2 className={styles.headerTitle}>
             {formatTitle()}
           </h2>
         </div>
 
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div className={styles.viewButtons}>
           {(["month", "week", "day"] as ViewMode[]).map((mode) => (
             <Button
               key={mode}
@@ -205,77 +219,42 @@ export const Calendar: React.FC<CalendarProps> = ({
 
       {/* Calendar Grid */}
       {viewMode === "month" && (
-        <div style={{ padding: "1rem" }}>
+        <div className={styles.monthView}>
           {/* Weekday Headers */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(7, 1fr)",
-              gap: "1px",
-              marginBottom: "0.5rem",
-            }}
-          >
+          <div className={styles.weekdayHeader}>
             {WEEKDAYS.map((day) => (
-              <div
-                key={day}
-                style={{
-                  padding: "0.5rem",
-                  textAlign: "center",
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  color: "var(--text-secondary)",
-                }}
-              >
+              <div key={day} className={styles.weekdayCell}>
                 {day}
               </div>
             ))}
           </div>
 
           {/* Days Grid */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(7, 1fr)",
-              gap: "1px",
-              background: "var(--border)",
-            }}
-          >
+          <div className={styles.daysGrid}>
             {monthDays.map((date, index) => {
               const dayEvents = getEventsForDate(date);
+              const cellClasses = [
+                styles.dayCell,
+                !isCurrentMonth(date) && styles.dayCellOtherMonth,
+              ].filter(Boolean).join(" ");
+              const numberClasses = [
+                styles.dayNumber,
+                isToday(date) && styles.dayNumberToday,
+              ].filter(Boolean).join(" ");
 
               return (
                 <div
                   key={index}
                   onClick={() => onDateClick?.(date)}
-                  style={{
-                    background: "var(--surface)",
-                    minHeight: "100px",
-                    padding: "0.5rem",
-                    cursor: "pointer",
-                    opacity: isCurrentMonth(date) ? 1 : 0.5,
-                  }}
+                  className={cellClasses}
                 >
-                  <div
-                    style={{
-                      width: "28px",
-                      height: "28px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: "50%",
-                      fontSize: "0.875rem",
-                      fontWeight: isToday(date) ? 600 : 400,
-                      background: isToday(date)
-                        ? "var(--primary-500)"
-                        : "transparent",
-                      color: isToday(date) ? "white" : "var(--text-primary)",
-                    }}
-                  >
+                  <div className={numberClasses}>
                     {date.getDate()}
                   </div>
 
-                  <div style={{ marginTop: "0.25rem" }}>
+                  <div className={styles.eventsContainer}>
                     {dayEvents.slice(0, 3).map((event) => (
+                      // Dynamic CSS variable for custom event colors - CSS Modules cannot handle dynamic colors
                       <div
                         key={event.id}
                         onClick={(e) => {
@@ -283,30 +262,18 @@ export const Calendar: React.FC<CalendarProps> = ({
                           setSelectedEvent(event);
                           onEventClick?.(event);
                         }}
-                        style={{
-                          padding: "0.125rem 0.375rem",
-                          marginBottom: "0.125rem",
-                          background: event.color || "var(--primary-100)",
-                          color: "var(--primary-700)",
-                          borderRadius: "4px",
-                          fontSize: "0.625rem",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          cursor: "pointer",
-                        }}
+                        className={styles.eventItem}
+                        style={
+                          event.color
+                            ? ({ "--event-bg": event.color } as React.CSSProperties)
+                            : undefined
+                        }
                       >
                         {event.title}
                       </div>
                     ))}
                     {dayEvents.length > 3 && (
-                      <div
-                        style={{
-                          fontSize: "0.625rem",
-                          color: "var(--text-tertiary)",
-                          textAlign: "center",
-                        }}
-                      >
+                      <div className={styles.moreEvents}>
                         +{dayEvents.length - 3} mehr
                       </div>
                     )}
@@ -319,8 +286,8 @@ export const Calendar: React.FC<CalendarProps> = ({
       )}
 
       {viewMode === "week" && (
-        <div style={{ padding: "1rem" }}>
-          <p style={{ color: "var(--text-secondary)", textAlign: "center" }}>
+        <div className={styles.viewPlaceholder}>
+          <p className={styles.placeholderText}>
             Wochenansicht - Drag &amp; Drop verfügbar
           </p>
           {/* Week view implementation would go here */}
@@ -328,8 +295,8 @@ export const Calendar: React.FC<CalendarProps> = ({
       )}
 
       {viewMode === "day" && (
-        <div style={{ padding: "1rem" }}>
-          <p style={{ color: "var(--text-secondary)", textAlign: "center" }}>
+        <div className={styles.viewPlaceholder}>
+          <p className={styles.placeholderText}>
             Tagesansicht - Detaillierte Zeitplanung
           </p>
           {/* Day view implementation would go here */}
@@ -344,9 +311,7 @@ export const Calendar: React.FC<CalendarProps> = ({
         size="md"
       >
         {selectedEvent && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
+          <div className={styles.eventDetails}>
             <div>
               <strong>Beschreibung:</strong>
               <p>{selectedEvent.description || "Keine Beschreibung"}</p>

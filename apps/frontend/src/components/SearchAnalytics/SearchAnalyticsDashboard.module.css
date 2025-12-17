@@ -73,12 +73,7 @@
   background-color: var(--surface, #ffffff);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Dynamic border color via JavaScript for now - data-attributes can't directly set border-top-color */
-.card[data-color] {
-  border-top-width: 4px;
-  border-top-style: solid;
+  border-top: 4px solid var(--card-color, #007bff);
 }
 
 .cardTitle {
@@ -154,7 +149,7 @@
   flex-shrink: 0;
 }
 
-.queryRank.danger {
+.danger {
   background-color: var(--error-500, #dc3545);
 }
 

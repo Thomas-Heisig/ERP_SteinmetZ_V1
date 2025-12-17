@@ -59,7 +59,7 @@ export default function NodeMetaBlocks({ node }: Props) {
         <section>
           <div className="fc-section-title">Warnungen</div>
           <ul className="fc-warnings">
-            {node.warnings!.map((w, index) => (
+            {(node.warnings ?? []).map((w, index) => (
               <li key={index}>{w}</li>
             ))}
           </ul>

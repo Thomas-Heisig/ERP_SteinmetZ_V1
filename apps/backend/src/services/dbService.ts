@@ -1825,10 +1825,8 @@ class DatabaseService {
 // Standard-Instanz erstellen
 const db = new DatabaseService();
 
-// Automatische Initialisierung
-db.init().catch((err: unknown) => {
-  console.error("❌ [DB] Initialization failed:", err);
-});
+// Automatische Initialisierung entfernt - wird in index.ts manuell aufgerufen
+// db.init() wird in apps/backend/src/index.ts:bootstrapFunctionsCatalog() ausgeführt
 
 // Graceful shutdown
 const shutdown = async () => {

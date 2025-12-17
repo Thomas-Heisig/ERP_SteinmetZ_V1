@@ -458,7 +458,8 @@ export function getNodeTypeLabel(
 ): string {
   const label = nodeTypeLabelMap[type];
   const supportedLanguages = ["de", "en", "fr", "es"] as const;
-  const lang = supportedLanguages.includes(language as any)
+  type SupportedLang = (typeof supportedLanguages)[number];
+  const lang = supportedLanguages.includes(language as SupportedLang)
     ? (language as keyof I18nLabel)
     : "de";
 

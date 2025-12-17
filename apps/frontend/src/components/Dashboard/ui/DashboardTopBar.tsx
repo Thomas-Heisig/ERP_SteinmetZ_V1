@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // ERP_SteinmetZ_V1/apps/frontend/src/components/Dashboard/ui/DashboardTopBar.tsx
 
-import React, { useCallback, useState, useRef } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDashboardLogic } from "../hooks/useDashboardLogic";
 import { useDashboardNavigation } from "../hooks/useDashboardNavigation";
@@ -81,14 +81,15 @@ const DashboardTopBar: React.FC<DashboardTopBarProps> = ({
   });
 
   // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      search.search(query);
-    }, 300),
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((query: string) => {
+        search.search(query);
+      }, 300),
     [search],
   );
 
-  const handleSearchChange = useCallback(
+  const handleSearchChange = React.useCallback(
     (ev: React.ChangeEvent<HTMLInputElement>) => {
       const query = ev.target.value;
       debouncedSearch(query);
@@ -277,157 +278,182 @@ const DashboardTopBar: React.FC<DashboardTopBarProps> = ({
       {/* Right Section - Controls */}
       <div className="dashboard-top-bar__right">
         {/* View Mode Switcher */}
-        {showViewModes && (
-          <div className="dashboard-top-bar__view-buttons">
-            <button
-              className={cls(
+        {showViewModes &&
+          (() => {
+            const gridButtonProps = {
+              className: cls(
                 "dashboard-top-bar__view-button",
                 {
                   "dashboard-top-bar__view-button--active":
                     state.activeViewMode === "grid",
                 },
                 undefined,
-              )}
-              onClick={() => handleViewModeChange("grid")}
-              aria-label={t("dashboard.topBar.viewMode.grid")}
-              aria-pressed={state.activeViewMode === "grid"}
-            >
-              {getNodeIcon("CUSTOM", "emoji")}
-            </button>
-            <button
-              className={cls(
+              ),
+              onClick: () => handleViewModeChange("grid"),
+              "aria-label": t("dashboard.topBar.viewMode.grid"),
+              ...(state.activeViewMode === "grid"
+                ? { "aria-pressed": "true" as const }
+                : { "aria-pressed": "false" as const }),
+            };
+
+            const listButtonProps = {
+              className: cls(
                 "dashboard-top-bar__view-button",
                 {
                   "dashboard-top-bar__view-button--active":
                     state.activeViewMode === "list",
                 },
                 undefined,
-              )}
-              onClick={() => handleViewModeChange("list")}
-              aria-label={t("dashboard.topBar.viewMode.list")}
-              aria-pressed={state.activeViewMode === "list"}
-            >
-              {getNodeIcon("CUSTOM", "emoji")}
-            </button>
-            <button
-              className={cls(
+              ),
+              onClick: () => handleViewModeChange("list"),
+              "aria-label": t("dashboard.topBar.viewMode.list"),
+              ...(state.activeViewMode === "list"
+                ? { "aria-pressed": "true" as const }
+                : { "aria-pressed": "false" as const }),
+            };
+
+            const tableButtonProps = {
+              className: cls(
                 "dashboard-top-bar__view-button",
                 {
                   "dashboard-top-bar__view-button--active":
                     state.activeViewMode === "table",
                 },
                 undefined,
-              )}
-              onClick={() => handleViewModeChange("table")}
-              aria-label={t("dashboard.topBar.viewMode.table")}
-              aria-pressed={state.activeViewMode === "table"}
-            >
-              {getNodeIcon("CUSTOM", "emoji")}
-            </button>
-          </div>
-        )}
+              ),
+              onClick: () => handleViewModeChange("table"),
+              "aria-label": t("dashboard.topBar.viewMode.table"),
+              ...(state.activeViewMode === "table"
+                ? { "aria-pressed": "true" as const }
+                : { "aria-pressed": "false" as const }),
+            };
+
+            return (
+              <div className="dashboard-top-bar__view-buttons">
+                <button {...gridButtonProps}>
+                  {getNodeIcon("CUSTOM", "emoji")}
+                </button>
+                <button {...listButtonProps}>
+                  {getNodeIcon("CUSTOM", "emoji")}
+                </button>
+                <button {...tableButtonProps}>
+                  {getNodeIcon("CUSTOM", "emoji")}
+                </button>
+              </div>
+            );
+          })()}
 
         {/* Filter Controls */}
-        {showFilters && (
-          <>
-            <button
-              className={cls(
+        {showFilters &&
+          (() => {
+            const filterButtonProps = {
+              className: cls(
                 "dashboard-top-bar__filter-button",
                 {
                   "dashboard-top-bar__filter-button--active":
                     state.isFiltersOpen || !!state.activeFilter,
                 },
                 undefined,
-              )}
-              onClick={toggleFilters}
-              aria-label={t("dashboard.topBar.filters.toggle")}
-              aria-expanded={state.isFiltersOpen}
-              aria-haspopup="true"
-            >
-              <span className="dashboard-top-bar__filter-icon">
-                {getNodeIcon("CUSTOM", "emoji")}
-              </span>
-              <span className="dashboard-top-bar__filter-text">
-                {t("dashboard.search.filter")}
-              </span>
-              {state.activeFilter && (
-                <span
-                  className="dashboard-top-bar__filter-badge"
-                  aria-label={t("dashboard.topBar.filters.active", {
-                    filter: state.activeFilter,
-                  })}
-                >
-                  1
-                </span>
-              )}
-            </button>
+              ),
+              onClick: toggleFilters,
+              "aria-label": t("dashboard.topBar.filters.toggle"),
+              ...(state.isFiltersOpen
+                ? { "aria-expanded": "true" as const }
+                : { "aria-expanded": "false" as const }),
+              "aria-haspopup": "true" as const,
+            };
 
-            {/* Filter Dropdown */}
-            {state.isFiltersOpen && (
-              <div className="dashboard-top-bar__filter-dropdown" role="menu">
-                <button
-                  className={cls(
-                    "dashboard-top-bar__filter-option",
-                    {
-                      "dashboard-top-bar__filter-option--active":
-                        state.activeFilter === "category",
-                    },
-                    undefined,
+            return (
+              <>
+                <button {...filterButtonProps}>
+                  <span className="dashboard-top-bar__filter-icon">
+                    {getNodeIcon("CUSTOM", "emoji")}
+                  </span>
+                  <span className="dashboard-top-bar__filter-text">
+                    {t("dashboard.search.filter")}
+                  </span>
+                  {state.activeFilter && (
+                    <span
+                      className="dashboard-top-bar__filter-badge"
+                      aria-label={t("dashboard.topBar.filters.active", {
+                        filter: state.activeFilter,
+                      })}
+                    >
+                      1
+                    </span>
                   )}
-                  onClick={() => handleFilterSelect("category")}
-                  role="menuitem"
-                >
-                  {t("dashboard.filters.category")}
                 </button>
 
-                <button
-                  className={cls(
-                    "dashboard-top-bar__filter-option",
-                    {
-                      "dashboard-top-bar__filter-option--active":
-                        state.activeFilter === "type",
-                    },
-                    undefined,
-                  )}
-                  onClick={() => handleFilterSelect("type")}
-                  role="menuitem"
-                >
-                  {t("dashboard.filters.type")}
-                </button>
+                {/* Filter Dropdown */}
+                {state.isFiltersOpen && (
+                  <div
+                    className="dashboard-top-bar__filter-dropdown"
+                    role="menu"
+                  >
+                    <button
+                      className={cls(
+                        "dashboard-top-bar__filter-option",
+                        {
+                          "dashboard-top-bar__filter-option--active":
+                            state.activeFilter === "category",
+                        },
+                        undefined,
+                      )}
+                      onClick={() => handleFilterSelect("category")}
+                      role="menuitem"
+                    >
+                      {t("dashboard.filters.category")}
+                    </button>
 
-                <button
-                  className={cls(
-                    "dashboard-top-bar__filter-option",
-                    {
-                      "dashboard-top-bar__filter-option--active":
-                        state.activeFilter === "date",
-                    },
-                    undefined,
-                  )}
-                  onClick={() => handleFilterSelect("date")}
-                  role="menuitem"
-                >
-                  {t("dashboard.filters.date")}
-                </button>
+                    <button
+                      className={cls(
+                        "dashboard-top-bar__filter-option",
+                        {
+                          "dashboard-top-bar__filter-option--active":
+                            state.activeFilter === "type",
+                        },
+                        undefined,
+                      )}
+                      onClick={() => handleFilterSelect("type")}
+                      role="menuitem"
+                    >
+                      {t("dashboard.filters.type")}
+                    </button>
 
-                <button
-                  className={cls(
-                    "dashboard-top-bar__filter-option",
-                    {
-                      "dashboard-top-bar__filter-option--active":
-                        state.activeFilter === "tag",
-                    },
-                    undefined,
-                  )}
-                  onClick={() => handleFilterSelect("tag")}
-                  role="menuitem"
-                >
-                  {t("dashboard.filters.tag")}
-                </button>
-              </div>
-            )}
-          </>
-        )}
+                    <button
+                      className={cls(
+                        "dashboard-top-bar__filter-option",
+                        {
+                          "dashboard-top-bar__filter-option--active":
+                            state.activeFilter === "date",
+                        },
+                        undefined,
+                      )}
+                      onClick={() => handleFilterSelect("date")}
+                      role="menuitem"
+                    >
+                      {t("dashboard.filters.date")}
+                    </button>
+
+                    <button
+                      className={cls(
+                        "dashboard-top-bar__filter-option",
+                        {
+                          "dashboard-top-bar__filter-option--active":
+                            state.activeFilter === "tag",
+                        },
+                        undefined,
+                      )}
+                      onClick={() => handleFilterSelect("tag")}
+                      role="menuitem"
+                    >
+                      {t("dashboard.filters.tag")}
+                    </button>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         <button
           className="dashboard-top-bar__action-button"
           aria-label={t("dashboard.topBar.actions.more")}

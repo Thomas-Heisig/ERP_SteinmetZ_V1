@@ -1,19 +1,15 @@
 // SPDX-License-Identifier: MIT
 // ERP_SteinmetZ_V1/apps/frontend/src/components/Dashboard/ui/SearchOverlay.tsx
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useDashboardSearch } from "../hooks/useDashboardSearch";
 import { useDashboardShortcuts } from "../hooks/useDashboardShortcuts";
-import {
-  getNodeIcon,
-  getNodeTypeLabel,
-  getCategoryColor,
-} from "../utils/mapping";
+import { getNodeIcon, getNodeTypeLabel } from "../utils/mapping";
 import { debounce } from "../utils/debounce";
 import cls from "../utils/cls";
 
-import type { SearchOverlayProps, SearchResult } from "../types";
+import type { SearchOverlayProps, SearchResult, NodeType } from "../types";
 
 // ============================================================================
 // Type Definitions
@@ -42,7 +38,6 @@ const SearchResultItem: React.FC<SearchResultItemProps> = React.memo(
   ({ result, isSelected, onSelect, index }) => {
     const { t } = useTranslation();
     const itemRef = useRef<HTMLDivElement>(null);
-    const categoryColor = getCategoryColor(result.category || "default");
 
     useEffect(() => {
       if (isSelected && itemRef.current) {
@@ -84,19 +79,16 @@ const SearchResultItem: React.FC<SearchResultItemProps> = React.memo(
         role="button"
         tabIndex={0}
         aria-label={t("searchOverlay.selectResult", { title: result.title })}
-        aria-selected={isSelected}
+        aria-current={isSelected ? "true" : "false"}
         data-index={index}
       >
         {/* Result Icon */}
-        <div
-          className="search-overlay__result-icon"
-          style={{ color: categoryColor.primary }}
-        >
+        <div className="search-overlay__result-icon">
           {getNodeIcon(
             result.type === "CATEGORY"
               ? "CATEGORY"
               : result.type === "NODE"
-                ? (result.metadata?.nodeType as any) || "CUSTOM"
+                ? (result.metadata?.nodeType as NodeType) || "CUSTOM"
                 : "CUSTOM",
             "emoji",
           )}
@@ -113,7 +105,7 @@ const SearchResultItem: React.FC<SearchResultItemProps> = React.memo(
                   result.type === "CATEGORY"
                     ? "CATEGORY"
                     : result.type === "NODE"
-                      ? (result.metadata?.nodeType as any) || "CUSTOM"
+                      ? (result.metadata?.nodeType as NodeType) || "CUSTOM"
                       : "CUSTOM",
                 )}
               </span>
@@ -121,10 +113,7 @@ const SearchResultItem: React.FC<SearchResultItemProps> = React.memo(
               {result.category && (
                 <>
                   <span className="search-overlay__meta-separator">•</span>
-                  <span
-                    className="search-overlay__result-category"
-                    style={{ color: categoryColor.primary }}
-                  >
+                  <span className="search-overlay__result-category">
                     {result.category}
                   </span>
                 </>
@@ -224,7 +213,6 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
 }) => {
   const { t } = useTranslation();
   const {
-    query,
     results,
     search,
     clearSearch,
@@ -243,11 +231,37 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
     activeFilter: null,
   });
 
+  // Pre-calculate displayResults so it's available in keyboard handler
+  const displayResults = externalResults.length > 0 ? externalResults : results;
+  const isLoadingState = isLoading || searchLoading;
+
+  // Declare functions before they're used in keyboard handler
+  const handleClose = React.useCallback(() => {
+    setState({
+      selectedIndex: -1,
+      searchQuery: "",
+      isInputFocused: false,
+      showFilters: false,
+      activeFilter: null,
+    });
+    clearSearch();
+    onClose();
+  }, [clearSearch, onClose]);
+
+  const handleResultSelect = React.useCallback(
+    (result: SearchResult) => {
+      onResultSelect(result);
+      handleClose();
+    },
+    [onResultSelect, handleClose],
+  );
+
   // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce((searchQuery: string) => {
-      search(searchQuery);
-    }, 300),
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((searchQuery: string) => {
+        search(searchQuery);
+      }, 300),
     [search],
   );
 
@@ -310,7 +324,14 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [isOpen, state.selectedIndex, results.length]);
+  }, [
+    isOpen,
+    state.selectedIndex,
+    displayResults.length,
+    handleClose,
+    handleResultSelect,
+    displayResults,
+  ]);
 
   // Register keyboard shortcuts
   useEffect(() => {
@@ -327,10 +348,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
       unregisterShortcut("escape");
       unregisterShortcut("ctrl+/");
     };
-  }, [isOpen, registerShortcut, unregisterShortcut, t]);
-
-  const displayResults = externalResults.length > 0 ? externalResults : results;
-  const isLoadingState = isLoading || searchLoading;
+  }, [isOpen, registerShortcut, unregisterShortcut, t, handleClose]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = e.target.value;
@@ -344,23 +362,6 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
   const handleInputBlur = () => {
     setState((prev) => ({ ...prev, isInputFocused: false }));
-  };
-
-  const handleClose = () => {
-    setState({
-      selectedIndex: -1,
-      searchQuery: "",
-      isInputFocused: false,
-      showFilters: false,
-      activeFilter: null,
-    });
-    clearSearch();
-    onClose();
-  };
-
-  const handleResultSelect = (result: SearchResult) => {
-    onResultSelect(result);
-    handleClose();
   };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -390,6 +391,16 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
     },
     undefined,
   );
+
+  // Filter button props with proper ARIA attributes
+  const filterButtonProps = {
+    className: "search-overlay__filter-button",
+    onClick: toggleFilters,
+    "aria-label": t("searchOverlay.toggleFilters"),
+    ...(state.showFilters
+      ? { "aria-expanded": "true" as const }
+      : { "aria-expanded": "false" as const }),
+  };
 
   return (
     <div
@@ -447,12 +458,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
           {/* Action Buttons */}
           <div className="search-overlay__actions">
-            <button
-              className="search-overlay__filter-button"
-              onClick={toggleFilters}
-              aria-label={t("searchOverlay.toggleFilters")}
-              aria-expanded={state.showFilters}
-            >
+            <button {...filterButtonProps}>
               {getNodeIcon("CUSTOM", "emoji")}
             </button>
 
@@ -503,7 +509,11 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
           )}
 
           {/* Results List */}
-          <div className="search-overlay__results" role="listbox">
+          <div
+            className="search-overlay__results"
+            role="region"
+            aria-label={t("searchOverlay.resultsLabel")}
+          >
             {displayResults.map((result, index) => (
               <SearchResultItem
                 key={result.id}

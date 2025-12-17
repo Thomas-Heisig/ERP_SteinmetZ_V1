@@ -3,6 +3,7 @@
 
 import React, { useState } from "react";
 import { Button, Input, Card } from "../../components/ui";
+import styles from "./IdeaCapture.module.css";
 
 interface IdeaCaptureProps {
   onSubmit?: (idea: {
@@ -52,7 +53,7 @@ export const IdeaCapture: React.FC<IdeaCaptureProps> = ({
       });
 
       if (response.ok) {
-        const data = await response.json();
+        await response.json();
         onSubmit?.({ title, description, tags });
         setTitle("");
         setDescription("");
@@ -72,7 +73,7 @@ export const IdeaCapture: React.FC<IdeaCaptureProps> = ({
       variant="elevated"
     >
       <form onSubmit={handleSubmit}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div className={styles.formContainer}>
           <Input
             label="Titel *"
             value={title}
@@ -81,46 +82,20 @@ export const IdeaCapture: React.FC<IdeaCaptureProps> = ({
             autoFocus
           />
 
-          <div>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-              }}
-            >
-              Beschreibung (optional)
-            </label>
+          <div className={styles.textareaWrapper}>
+            <label className={styles.label}>Beschreibung (optional)</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Kurze Beschreibung..."
               rows={3}
-              style={{
-                width: "100%",
-                padding: "0.5rem 0.75rem",
-                border: "1px solid var(--border)",
-                borderRadius: "8px",
-                fontSize: "1rem",
-                fontFamily: "inherit",
-                resize: "vertical",
-              }}
+              className={styles.textarea}
             />
           </div>
 
-          <div>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-              }}
-            >
-              Tags
-            </label>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className={styles.tagSection}>
+            <label className={styles.label}>Tags</label>
+            <div className={styles.tagInputRow}>
               <Input
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
@@ -137,40 +112,14 @@ export const IdeaCapture: React.FC<IdeaCaptureProps> = ({
               </Button>
             </div>
             {tags.length > 0 && (
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: "0.5rem",
-                  marginTop: "0.5rem",
-                }}
-              >
+              <div className={styles.tagList}>
                 {tags.map((tag) => (
-                  <span
-                    key={tag}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "0.25rem",
-                      padding: "0.25rem 0.5rem",
-                      background: "var(--primary-100)",
-                      color: "var(--primary-700)",
-                      borderRadius: "9999px",
-                      fontSize: "0.75rem",
-                    }}
-                  >
+                  <span key={tag} className={styles.tag}>
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: 0,
-                        fontSize: "1rem",
-                        lineHeight: 1,
-                      }}
+                      className={styles.tagRemoveButton}
                     >
                       ×
                     </button>
@@ -180,13 +129,7 @@ export const IdeaCapture: React.FC<IdeaCaptureProps> = ({
             )}
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              gap: "0.5rem",
-              justifyContent: "flex-end",
-            }}
-          >
+          <div className={styles.formActions}>
             {onClose && (
               <Button type="button" variant="ghost" onClick={onClose}>
                 Abbrechen

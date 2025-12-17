@@ -1,12 +1,3 @@
-Unten steht eine **präzise, sachliche und vollständig neu formulierte Version** von
-**`README_DASHBOARD_ADMIN.md`** – speziell für **Entwickler und Administratoren**.
-
-Die Datei ist darauf ausgelegt, technische Hintergründe zu vermitteln, Abläufe nachvollziehbar zu machen und typische Wartungs- bzw. Fehleranalyse-Szenarien abzudecken.
-
-Sie ist so geschrieben, dass sie direkt in deinem Repository abgelegt werden kann.
-
----
-
 # 📘 **Dashboard-Modul – Technische Dokumentation für Entwickler und Administratoren**
 
 Dieses Dokument beschreibt wesentliche technische Aspekte des Dashboard-Moduls, relevante Abläufe, interne Datenflüsse und Hinweise zur Wartung.
@@ -14,7 +5,7 @@ Es richtet sich an Personen, die das System erweitern, Fehler analysieren oder d
 
 ---
 
-# 1. Systemübersicht
+## 1. Systemübersicht
 
 Das Dashboard ist ein Bestandteil der Frontend-Anwendung.
 Es dient der Anzeige von Informationen über:
@@ -29,7 +20,7 @@ Es enthält keine Hardcodierung von Daten.
 
 ---
 
-# 2. Technische Architektur
+## 2. Technische Architektur
 
 ## 2.1 Gliederung des Moduls
 
@@ -47,7 +38,7 @@ Diese Aufteilung verhindert gegenseitige Abhängigkeiten und ermöglicht gezielt
 
 ---
 
-# 3. Globaler Dashboard-State
+## 3. Globaler Dashboard-State
 
 Der Zustand des Dashboards wird zentral im **dashboardReducer** verwaltet.
 Zu den wichtigsten State-Bereichen gehören:
@@ -64,7 +55,7 @@ State-Änderungen erfolgen ausschließlich über definierte Actions, um unkontro
 
 ---
 
-# 4. Backend-Kommunikation
+## 4. Backend-Kommunikation
 
 Das Dashboard nutzt verschiedene Endpunkte:
 
@@ -79,7 +70,7 @@ Die Daten werden über spezialisierte Hooks oder Features abgerufen.
 
 ---
 
-# 5. Health-Monitoring
+## 5. Health-Monitoring
 
 Das Gesundheitsmonitoring besteht aus zwei Komponenten:
 
@@ -97,7 +88,7 @@ Falls der Backend-Check fehlschlägt, erzeugt das System automatisch einen konsi
 
 ---
 
-# 6. Navigation
+## 6. Navigation
 
 Die Navigation basiert auf zwei Dateien:
 
@@ -117,7 +108,7 @@ UI-Komponenten greifen nur indirekt über Hooks darauf zu.
 
 ---
 
-# 7. Suche
+## 7. Suche
 
 Das Suchsystem ist getrennt aufgebaut:
 
@@ -130,7 +121,7 @@ Das verhindert redundante Berechnungen im UI.
 
 ---
 
-# 8. Dynamische Widgets
+## 8. Dynamische Widgets
 
 Widgets basieren auf der WidgetRegistry.
 Der Builder erzeugt aus Grundlage der Node-Metadaten:
@@ -145,7 +136,7 @@ Die Zuordnung erfolgt deterministisch durch den **WidgetResolver**, der anhand v
 
 ---
 
-# 9. Logging und Fehleranalyse
+## 9. Logging und Fehleranalyse
 
 ### 9.1 Frontend
 
@@ -173,7 +164,7 @@ Diese Informationen sind nützlich, wenn das Dashboard inkonsistente Daten anzei
 
 ---
 
-# 10. Wartung & typische Problemursachen
+## 10. Wartung & typische Problemursachen
 
 ## 10.1 Health zeigt „unhealthy“
 
@@ -210,7 +201,7 @@ Mögliche Ursachen:
 
 ---
 
-# 11. Anpassungen und Erweiterungen
+## 11. Anpassungen und Erweiterungen
 
 Änderungen sollten folgende Schritte berücksichtigen:
 
@@ -224,7 +215,7 @@ Dieser Ablauf stellt sicher, dass Erweiterungen nachvollziehbar bleiben.
 
 ---
 
-# 12. Hinweise zur Zukunftsentwicklung
+## 12. Hinweise zur Zukunftsentwicklung
 
 Folgende Punkte sind gut erweiterbar:
 
@@ -239,7 +230,7 @@ Die aktuelle Architektur sieht solche Erweiterungen ausdrücklich vor.
 
 ---
 
-# 13. Zusammenfassung
+## 13. Zusammenfassung
 
 Dieses Dokument bietet eine Übersicht über technische Abläufe des Dashboard-Moduls.
 Die Struktur ist darauf ausgelegt, Fehler effizient zu analysieren und Erweiterungen nachvollziehbar umzusetzen.

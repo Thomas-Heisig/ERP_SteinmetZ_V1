@@ -12,9 +12,9 @@
 
 import type {
   ChatMessage,
-  AIResponse,
   AIModuleConfig,
 } from "../types/types.js";
+import type { AIResponse } from "../types/types.js";
 import { log } from "../utils/logger.js";
 import { toolRegistry } from "../tools/registry.js";
 import os from "node:os";
@@ -61,20 +61,24 @@ export async function listOllamaModels(): Promise<
       typeof data !== "object" ||
       data === null ||
       !("models" in data) ||
-      !Array.isArray((data as any).models)
+      !Array.isArray((data as Record<string, unknown>).models)
     ) {
       throw new Error("Ungültiges Ollama-API Format: 'models' fehlt");
     }
 
-    const models = (data as { models: any[] }).models;
+    const models = (data as { models: unknown[] }).models;
 
-    return models.map((m) => ({
-      name: String(m.name ?? ""),
-      modified: String(m.modified_at ?? ""),
-    }));
-  } catch (err: any) {
+    return models.map((m) => {
+      const model = typeof m === "object" && m !== null ? m as Record<string, unknown> : {};
+      return {
+        name: String(model.name ?? ""),
+        modified: String(model.modified_at ?? ""),
+      };
+    });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
     log("error", "Fehler beim Laden der Ollama-Modelle", {
-      error: err.message,
+      error: errorMsg,
     });
     return [];
   }
@@ -91,7 +95,7 @@ export async function listOllamaModels(): Promise<
 export async function callOllama(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {},
+  options: Record<string, unknown> = {},
 ): Promise<AIResponse> {
   const apiUrl =
     process.env.OLLAMA_API_URL ?? "http://localhost:11434/api/chat";
@@ -129,13 +133,16 @@ export async function callOllama(
       throw new Error(`Ollama antwortete mit HTTP ${res.status}: ${errTxt}`);
     }
 
-    const data: any = await res.json();
+    const data: unknown = await res.json();
     const duration = Date.now() - start;
 
+    const dataObj = typeof data === "object" && data !== null ? data as Record<string, unknown> : {};
+    const message = typeof dataObj.message === "object" && dataObj.message !== null ? dataObj.message as Record<string, unknown> : {};
+    const messageContent = message.content;
     const replyText =
-      data?.message?.content?.trim?.() ??
-      data?.response ??
-      data?.output ??
+      (typeof messageContent === "string" ? messageContent.trim() : "") ||
+      (typeof dataObj.response === "string" ? dataObj.response : "") ||
+      (typeof dataObj.output === "string" ? dataObj.output : "") ||
       "(keine Antwort von Ollama erhalten)";
 
     // Prüfe auf Toolaufrufe im Text
@@ -145,7 +152,7 @@ export async function callOllama(
 
     log("info", "Ollama-Antwort empfangen", {
       model: usedModel,
-      tokens: data?.eval_count,
+      tokens: typeof dataObj.eval_count === "number" ? dataObj.eval_count : 0,
       duration_ms: duration,
       tools_used: toolCalls.length,
     });
@@ -153,21 +160,27 @@ export async function callOllama(
     return {
       text: [replyText, ...toolResults].join("\n\n"),
       action: "ollama_chat",
-      tool_calls: toolCalls,
+      tool_calls: toolCalls.map(tc => ({
+        name: tc.name,
+        parameters: typeof tc.parameters === "object" && tc.parameters !== null
+          ? tc.parameters as Record<string, unknown>
+          : {},
+      })),
       meta: {
         model: usedModel,
-        tokens_used: data?.eval_count ?? 0,
+        tokens_used: typeof dataObj.eval_count === "number" ? dataObj.eval_count : 0,
         time_ms: duration,
         source: "ollamaProvider",
         confidence: 0.95,
       },
     };
-  } catch (err: any) {
-    log("error", "Ollama-Provider Fehler", { error: err.message });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    log("error", "Ollama-Provider Fehler", { error: errorMsg });
 
     return {
-      text: `❌ Ollama-Fehler: ${err.message}`,
-      errors: [err.message],
+      text: `❌ Ollama-Fehler: ${errorMsg}`,
+      errors: [errorMsg],
       meta: {
         model: model || ollamaConfig.model,
         source: "ollamaProvider",
@@ -184,7 +197,7 @@ export async function callOllama(
 /**
  * Erkennt einfache Tool-Aufrufe im Text, z. B. [TOOL: system_info {"verbose":true}]
  */
-function detectToolCalls(text: string): { name: string; parameters: any }[] {
+function detectToolCalls(text: string): { name: string; parameters: unknown }[] {
   const matches = [...text.matchAll(/\[TOOL:\s*([a-zA-Z0-9_]+)(.*?)\]/g)];
   return matches.map((m) => ({
     name: m[1],
@@ -196,17 +209,21 @@ function detectToolCalls(text: string): { name: string; parameters: any }[] {
  * Führt erkannte Tool-Calls aus und liefert Textantworten zurück.
  */
 async function handleToolCalls(
-  toolCalls: { name: string; parameters: any }[],
+  toolCalls: { name: string; parameters: unknown }[],
 ): Promise<string[]> {
   const results: string[] = [];
   for (const call of toolCalls) {
     try {
-      const res = await toolRegistry.call(call.name, call.parameters);
+      const parameters = typeof call.parameters === "object" && call.parameters !== null
+        ? call.parameters as Record<string, unknown>
+        : {};
+      const res = await toolRegistry.call(call.name, parameters);
       results.push(
         `✅ Tool "${call.name}" erfolgreich ausgeführt.\nAntwort: ${JSON.stringify(res)}`,
       );
-    } catch (err: any) {
-      results.push(`❌ Tool "${call.name}" Fehler: ${err.message}`);
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      results.push(`❌ Tool "${call.name}" Fehler: ${errorMsg}`);
     }
   }
   return results;
@@ -215,7 +232,7 @@ async function handleToolCalls(
 /**
  * Sicheres JSON-Parsing für Tool-Parameter.
  */
-function safeParseJSON(str: string): any {
+function safeParseJSON(str: string): unknown {
   try {
     return str && str.trim().length > 0 ? JSON.parse(str) : {};
   } catch {

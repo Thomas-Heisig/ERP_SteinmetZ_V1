@@ -2,7 +2,7 @@
 // apps/frontend/src/features/innovation/IdeaBoard.tsx
 
 import React, { useState, useEffect } from "react";
-import { Card, Button } from "../../components/ui";
+import styles from "./IdeaBoard.module.css";
 
 type IdeaPhase =
   | "parked"
@@ -141,174 +141,60 @@ export const IdeaBoard: React.FC<IdeaBoardProps> = ({
 
   if (loading) {
     return (
-      <div
-        style={{ display: "flex", justifyContent: "center", padding: "3rem" }}
-      >
-        <div
-          style={{
-            width: "40px",
-            height: "40px",
-            border: "3px solid var(--gray-200)",
-            borderTopColor: "var(--primary-500)",
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-          }}
-        />
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner} />
       </div>
     );
   }
 
   return (
-    <div
-      className="idea-board"
-      style={{
-        display: "flex",
-        gap: "1rem",
-        overflowX: "auto",
-        padding: "1rem 0",
-      }}
-    >
+    <div className={styles.ideaBoard}>
       {PHASES.map((phase) => (
         <div
           key={phase.key}
-          className="idea-column"
+          className={styles.ideaColumn}
           onDragOver={handleDragOver}
           onDrop={(e) => handleDrop(e, phase.key)}
-          style={{
-            minWidth: "280px",
-            maxWidth: "320px",
-            flex: "1",
-            display: "flex",
-            flexDirection: "column",
-            background: "var(--gray-50)",
-            borderRadius: "12px",
-            padding: "1rem",
-          }}
         >
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              marginBottom: "1rem",
-              padding: "0.5rem",
-              borderBottom: `3px solid ${phase.color}`,
-            }}
+            className={styles.columnHeader}
+            data-phase-color={phase.color}
           >
-            <span style={{ fontSize: "1.25rem" }}>{phase.icon}</span>
-            <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 600 }}>
-              {phase.label}
-            </h3>
-            <span
-              style={{
-                marginLeft: "auto",
-                padding: "0.125rem 0.5rem",
-                background: "var(--gray-200)",
-                borderRadius: "9999px",
-                fontSize: "0.75rem",
-                fontWeight: 600,
-              }}
-            >
+            <span className={styles.phaseIcon}>{phase.icon}</span>
+            <h3 className={styles.phaseTitle}>{phase.label}</h3>
+            <span className={styles.ideaCount}>
               {ideas[phase.key]?.length || 0}
             </span>
           </div>
 
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.5rem",
-              minHeight: "200px",
-            }}
-          >
+          <div className={styles.ideasContainer}>
             {ideas[phase.key]?.map((idea) => (
               <div
                 key={idea.id}
                 draggable
                 onDragStart={(e) => handleDragStart(e, idea)}
                 onClick={() => onIdeaClick?.(idea)}
-                style={{
-                  padding: "1rem",
-                  background: "var(--surface)",
-                  borderRadius: "8px",
-                  boxShadow: "var(--shadow-sm)",
-                  cursor: "grab",
-                  border: "1px solid var(--border)",
-                  transition: "all 0.2s ease",
-                }}
+                className={styles.ideaCard}
               >
-                <h4
-                  style={{
-                    margin: "0 0 0.5rem",
-                    fontSize: "0.875rem",
-                    fontWeight: 600,
-                  }}
-                >
-                  {idea.title}
-                </h4>
+                <h4 className={styles.ideaTitle}>{idea.title}</h4>
                 {idea.description && (
-                  <p
-                    style={{
-                      margin: "0 0 0.5rem",
-                      fontSize: "0.75rem",
-                      color: "var(--text-secondary)",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                    }}
-                  >
-                    {idea.description}
-                  </p>
+                  <p className={styles.ideaDescription}>{idea.description}</p>
                 )}
                 {idea.tags.length > 0 && (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "0.25rem",
-                    }}
-                  >
+                  <div className={styles.ideaTags}>
                     {idea.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        style={{
-                          padding: "0.125rem 0.375rem",
-                          background: "var(--primary-50)",
-                          color: "var(--primary-700)",
-                          borderRadius: "4px",
-                          fontSize: "0.625rem",
-                        }}
-                      >
+                      <span key={tag} className={styles.ideaTag}>
                         {tag}
                       </span>
                     ))}
                     {idea.tags.length > 3 && (
-                      <span
-                        style={{
-                          padding: "0.125rem 0.375rem",
-                          background: "var(--gray-100)",
-                          color: "var(--text-tertiary)",
-                          borderRadius: "4px",
-                          fontSize: "0.625rem",
-                        }}
-                      >
+                      <span className={styles.moreTagsBadge}>
                         +{idea.tags.length - 3}
                       </span>
                     )}
                   </div>
                 )}
-                <div
-                  style={{
-                    marginTop: "0.5rem",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    fontSize: "0.625rem",
-                    color: "var(--text-tertiary)",
-                  }}
-                >
+                <div className={styles.ideaFooter}>
                   <span>👤 {idea.author}</span>
                   <span>
                     {new Date(idea.createdAt).toLocaleDateString("de-DE")}

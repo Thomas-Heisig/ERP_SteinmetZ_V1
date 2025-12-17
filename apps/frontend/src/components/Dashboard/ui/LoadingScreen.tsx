@@ -86,11 +86,19 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
     "Loading... mit Stil! 💃",
   ];
 
+  const [randomFunnyMessage] = React.useState(
+    () => funnyMessages[Math.floor(Math.random() * funnyMessages.length)],
+  );
+
   const displayMessage =
     message ||
     (variant === "funny"
-      ? funnyMessages[Math.floor(Math.random() * funnyMessages.length)]
+      ? randomFunnyMessage
       : t("loadingScreen.defaultMessage"));
+
+  const [randomFunnyEmoji] = React.useState(
+    () => ["🐹", "⚡", "🎪", "🚀", "🌈"][Math.floor(Math.random() * 5)],
+  );
 
   const screenClasses = cls(
     "loading-screen",
@@ -141,7 +149,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
               role="img"
               aria-label="Loading"
             >
-              {["🐹", "⚡", "🎪", "🚀", "🌈"][Math.floor(Math.random() * 5)]}
+              {randomFunnyEmoji}
             </div>
             <div className="loading-screen__funny-animation"></div>
           </div>
@@ -181,23 +189,31 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
           <p className="loading-screen__message">{displayMessage}</p>
 
           {/* Progress Bar */}
-          {progress !== undefined && (
-            <div className="loading-screen__progress">
-              <div className="loading-screen__progress-bar">
+          {progress !== undefined &&
+            (() => {
+              const progressBarProps = {
+                className: "loading-screen__progress-fill",
+                role: "progressbar" as const,
+                "aria-label": t("loadingScreen.progress", { progress }),
+                "aria-valuenow": progress,
+                "aria-valuemin": 0,
+                "aria-valuemax": 100,
+              };
+
+              return (
                 <div
-                  className="loading-screen__progress-fill"
-                  style={{ width: `${progress}%` }}
-                  role="progressbar"
-                  aria-valuenow={progress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                />
-              </div>
-              <div className="loading-screen__progress-text">
-                {t("loadingScreen.progress", { progress })}
-              </div>
-            </div>
-          )}
+                  className="loading-screen__progress"
+                  data-progress={progress}
+                >
+                  <div className="loading-screen__progress-bar">
+                    <div {...progressBarProps} />
+                  </div>
+                  <div className="loading-screen__progress-text">
+                    {t("loadingScreen.progress", { progress })}
+                  </div>
+                </div>
+              );
+            })()}
 
           {/* Estimated Time */}
           {estimatedTime && (

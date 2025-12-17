@@ -286,7 +286,7 @@ See [COMPLIANCE.md](docs/COMPLIANCE.md) for detailed compliance documentation.
 
 We thank the following security researchers for their responsible disclosure:
 
-_(No security researchers to acknowledge yet)_
+- _(No security researchers to acknowledge yet)_
 
 ---
 

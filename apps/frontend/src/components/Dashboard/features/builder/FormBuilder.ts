@@ -13,14 +13,14 @@ export interface BuiltFormField {
   type: FormField["type"];
   label: string;
   required: boolean;
-  defaultValue?: any;
+  defaultValue?: unknown;
   options?: string[];
   validation: ValidationRule;
 }
 
 export interface BuiltForm {
   fields: BuiltFormField[];
-  values: Record<string, any>;
+  values: Record<string, unknown>;
   valid: boolean;
 }
 
@@ -69,7 +69,10 @@ export class FormBuilder {
   /**
    * Validiert alle Felder eines Formulars.
    */
-  validateAll(fields: BuiltFormField[], values: Record<string, any>): boolean {
+  validateAll(
+    fields: BuiltFormField[],
+    values: Record<string, unknown>,
+  ): boolean {
     for (const field of fields) {
       if (!this.validateField(field, values[field.id])) {
         return false;
@@ -81,7 +84,7 @@ export class FormBuilder {
   /**
    * Validiert ein einzelnes Feld.
    */
-  validateField(field: BuiltFormField, value: any): boolean {
+  validateField(field: BuiltFormField, value: unknown): boolean {
     const rule = field.validation;
 
     if (
@@ -114,7 +117,7 @@ export class FormBuilder {
   /**
    * Setzt einen Formularwert und gibt ein neues Formmodell zurück.
    */
-  updateValue(form: BuiltForm, fieldId: string, newValue: any): BuiltForm {
+  updateValue(form: BuiltForm, fieldId: string, newValue: unknown): BuiltForm {
     const values = { ...form.values, [fieldId]: newValue };
     const valid = this.validateAll(form.fields, values);
     return { ...form, values, valid };

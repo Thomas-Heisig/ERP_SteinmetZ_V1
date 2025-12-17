@@ -1,0 +1,77 @@
+/* ProjectList.module.css */
+
+.header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Status Badge */
+.statusBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--badge-bg);
+  color: var(--badge-color);
+}
+
+/* Project Name Cell */
+.projectName {
+  font-weight: 500;
+}
+
+.projectClient {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* Progress Bar */
+.progressContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progressBar {
+  flex: 1;
+  height: 8px;
+  background: var(--gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.3s ease;
+  width: var(--progress-width);
+  background: var(--progress-color);
+}
+
+.progressText {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Budget Cell */
+.budgetValue {
+  font-weight: 500;
+}
+
+.budgetSpent {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}

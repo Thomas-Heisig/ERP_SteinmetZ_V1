@@ -18,14 +18,15 @@ export interface SystemHealth {
  * Enthält Timeout, Abort-Handling und Schutz vor Race Conditions.
  */
 export function useHealth(backendUrl: string): SystemHealth {
-  const [health, setHealth] = useState<SystemHealth>({ status: "checking" });
+  const [health, setHealth] = useState<SystemHealth>(() =>
+    !backendUrl ? { status: "error" } : { status: "checking" },
+  );
 
   /** Verhindert State-Updates, wenn eine alte Anfrage später zurückkommt */
   const lastRequestId = useRef(0);
 
   useEffect(() => {
     if (!backendUrl) {
-      setHealth({ status: "error" });
       return;
     }
 
@@ -92,7 +93,9 @@ export function useHealth(backendUrl: string): SystemHealth {
     const interval = window.setInterval(checkHealth, 30000);
 
     return () => {
-      lastRequestId.current++;
+      // Increment to invalidate any in-flight requests
+      const currentId = lastRequestId.current;
+      lastRequestId.current = currentId + 1;
       clearInterval(interval);
     };
   }, [backendUrl]);

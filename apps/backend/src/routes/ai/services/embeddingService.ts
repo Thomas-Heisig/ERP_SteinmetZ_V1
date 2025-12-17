@@ -30,12 +30,18 @@ export const embeddingConfig: AIModuleConfig = {
 /* 🧠 Hauptfunktion: Embeddings generieren                                   */
 /* ========================================================================== */
 
+interface EmbeddingOptions {
+  provider?: string;
+  model?: string;
+  [key: string]: string | number | boolean | undefined;
+}
+
 /**
  * Erzeugt einen Vektor (Array<number>) für einen oder mehrere Texte.
  */
 export async function generateEmbeddings(
   input: string | string[],
-  options: Record<string, any> = {},
+  options: EmbeddingOptions = {},
 ): Promise<AIResponse> {
   const provider = (options.provider ?? embeddingConfig.provider).toLowerCase();
   const model = options.model ?? embeddingConfig.model;
@@ -59,11 +65,12 @@ export async function generateEmbeddings(
       default:
         throw new Error(`Unbekannter Embedding-Provider: ${provider}`);
     }
-  } catch (err: any) {
-    log("error", "Embedding-Service Fehler", { error: err.message });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    log("error", "Embedding-Service Fehler", { error: errorMessage });
     return {
-      text: `❌ Fehler bei Embedding: ${err.message}`,
-      errors: [err.message],
+      text: `❌ Fehler bei Embedding: ${errorMessage}`,
+      errors: [errorMessage],
       meta: { provider, model },
     };
   }

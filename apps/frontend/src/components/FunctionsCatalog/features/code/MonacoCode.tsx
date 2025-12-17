@@ -24,6 +24,13 @@ export interface MonacoCodeProps {
   language?: MonacoLanguage;
   height?: string | number;
   theme?: InternalTheme;
+  readOnly?: boolean;
+  onChange?: (value: string) => void;
+  minimap?: boolean;
+  lineNumbers?: boolean;
+  wordWrap?: boolean;
+  formatOnPaste?: boolean;
+  formatOnType?: boolean;
 }
 
 /**
@@ -35,16 +42,30 @@ export default function MonacoCode({
   language = "json",
   height = 360,
   theme = "dark",
+  readOnly = true,
+  onChange,
+  minimap = false,
+  lineNumbers = true,
+  wordWrap = true,
+  formatOnPaste = true,
+  formatOnType = false,
 }: MonacoCodeProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const fallbackRef = useRef<HTMLPreElement | null>(null);
   const editorRef = useRef<
     import("monaco-editor").editor.IStandaloneCodeEditor | null
   >(null);
 
   const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
+  const onChangeRef = useRef(onChange);
 
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+
+  // Keep onChange ref up to date
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   /* --------------------------------------------------------------
      Monaco lazy load + initial editor creation
@@ -62,15 +83,34 @@ export default function MonacoCode({
         editorRef.current = monaco.editor.create(containerRef.current, {
           value,
           language,
-          readOnly: true,
+          readOnly,
           theme: resolveMonacoTheme(theme),
           fontSize: 13,
           automaticLayout: true,
-          minimap: { enabled: false },
-          wordWrap: "on",
-          lineNumbers: "on",
+          minimap: { enabled: minimap },
+          wordWrap: wordWrap ? "on" : "off",
+          lineNumbers: lineNumbers ? "on" : "off",
           scrollBeyondLastLine: false,
+          formatOnPaste,
+          formatOnType,
+          tabSize: 2,
+          insertSpaces: true,
+          detectIndentation: true,
+          folding: true,
+          bracketPairColorization: { enabled: true },
+          suggest: {
+            showKeywords: true,
+            showSnippets: true,
+          },
         });
+
+        // onChange Handler für Bearbeitungen
+        if (!readOnly) {
+          editorRef.current.onDidChangeModelContent(() => {
+            const currentValue = editorRef.current?.getValue() ?? "";
+            onChangeRef.current?.(currentValue);
+          });
+        }
 
         setLoaded(true);
       } catch (err) {
@@ -88,7 +128,17 @@ export default function MonacoCode({
         editorRef.current = null;
       }
     };
-  }, []);
+  }, [
+    value,
+    language,
+    theme,
+    readOnly,
+    minimap,
+    lineNumbers,
+    wordWrap,
+    formatOnPaste,
+    formatOnType,
+  ]);
 
   /* --------------------------------------------------------------
      Code aktualisieren
@@ -112,22 +162,39 @@ export default function MonacoCode({
   }, [theme]);
 
   /* --------------------------------------------------------------
+     ReadOnly Modus aktualisieren
+  -------------------------------------------------------------- */
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.updateOptions({ readOnly });
+    }
+  }, [readOnly]);
+
+  /* --------------------------------------------------------------
+     Dynamische Höhe für Fallback und Container
+  -------------------------------------------------------------- */
+  useEffect(() => {
+    const heightValue =
+      typeof height === "number" ? `${height}px` : String(height);
+
+    if (fallbackRef.current) {
+      fallbackRef.current.style.setProperty(
+        "--monaco-fallback-height",
+        heightValue,
+      );
+    }
+
+    if (containerRef.current) {
+      containerRef.current.style.setProperty("--monaco-height", heightValue);
+    }
+  }, [height]);
+
+  /* --------------------------------------------------------------
      Fallback: kein Monaco verfügbar
   -------------------------------------------------------------- */
   if (error) {
     return (
-      <pre
-        style={{
-          background: "#1e1e1e",
-          color: "#fff",
-          padding: 12,
-          borderRadius: 8,
-          fontSize: 13,
-          overflow: "auto",
-          height,
-          whiteSpace: "pre-wrap",
-        }}
-      >
+      <pre ref={fallbackRef} className="monaco-code-fallback">
         {value}
       </pre>
     );
@@ -137,33 +204,11 @@ export default function MonacoCode({
      Rendering
   -------------------------------------------------------------- */
   return (
-    <div
-      style={{
-        border: "1px solid #e5e7eb",
-        borderRadius: 8,
-        position: "relative",
-      }}
-    >
-      {!loaded && (
-        <div
-          style={{
-            padding: 12,
-            textAlign: "center",
-            color: "#6b7280",
-            fontSize: 13,
-          }}
-        >
-          Lade Code-Viewer…
-        </div>
-      )}
-
+    <div className="monaco-code-wrapper">
+      {!loaded && <div className="monaco-code-loading">Lade Code-Viewer…</div>}
       <div
         ref={containerRef}
-        style={{
-          height,
-          width: "100%",
-          display: loaded ? "block" : "none",
-        }}
+        className={`monaco-code-editor ${loaded ? "loaded" : "hidden"}`}
       />
     </div>
   );

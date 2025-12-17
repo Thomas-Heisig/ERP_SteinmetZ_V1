@@ -14,7 +14,6 @@
  */
 
 import type {
-  HealthStatus,
   HealthLevel,
   ComponentHealth,
   HealthMetrics,
@@ -40,9 +39,9 @@ export interface RawHealthResponse {
         message?: string;
         lastUpdate?: string | Date;
         dependencies?: string[];
-        details?: Record<string, any>;
+        details?: Record<string, unknown>;
       }>
-    | Record<string, any>;
+    | Record<string, unknown>;
 
   // Metriken
   metrics?: {
@@ -52,7 +51,7 @@ export interface RawHealthResponse {
     memoryUsage?: number;
     cpuUsage?: number;
     diskUsage?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 
   // Version & Timestamps
@@ -61,7 +60,7 @@ export interface RawHealthResponse {
   lastChecked?: string | Date;
 
   // Erweiterte Informationen
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   environment?: string;
   instance?: string;
 }
@@ -170,20 +169,25 @@ export class HealthMapper {
    * Normalisiert Komponenten in ein einheitliches Format
    */
   private normalizeComponents(
-    components: any,
+    components: unknown,
   ): Array<RawHealthResponse["components"]> {
     if (!components) return [];
 
     // Wenn Komponenten als Objekt kommen (z.B. { database: { status: 'up' } })
     if (!Array.isArray(components) && typeof components === "object") {
-      return Object.entries(components).map(([name, data]: [string, any]) => ({
-        name,
-        status: data.status || data.health || "unknown",
-        message: data.message || data.details,
-        lastUpdate: data.lastUpdate,
-        dependencies: data.dependencies,
-        details: data,
-      }));
+      return Object.entries(components).map(
+        ([name, data]: [string, unknown]) => {
+          const d = data as Record<string, unknown>;
+          return {
+            name,
+            status: (d.status || d.health || "unknown") as string,
+            message: d.message,
+            lastUpdate: d.lastUpdate,
+            dependencies: d.dependencies,
+            details: d,
+          };
+        },
+      );
     }
 
     // Wenn bereits Array
@@ -227,14 +231,21 @@ export class HealthMapper {
   /**
    * Prüft auf degradierte Metriken
    */
-  private hasDegradedMetrics(metrics: any): boolean {
-    const thresholds = this.config.componentThresholds!;
+  private hasDegradedMetrics(metrics: unknown): boolean {
+    const thresholds = this.config.componentThresholds;
+    if (!thresholds || typeof metrics !== "object" || !metrics) return false;
 
+    const m = metrics as Record<string, unknown>;
     return (
-      (metrics.responseTime &&
-        metrics.responseTime > thresholds.responseTime!) ||
-      (metrics.errorRate && metrics.errorRate > thresholds.errorRate!) ||
-      (metrics.memoryUsage && metrics.memoryUsage > thresholds.memoryUsage!)
+      (typeof m.responseTime === "number" &&
+        thresholds.responseTime !== undefined &&
+        m.responseTime > thresholds.responseTime) ||
+      (typeof m.errorRate === "number" &&
+        thresholds.errorRate !== undefined &&
+        m.errorRate > thresholds.errorRate) ||
+      (typeof m.memoryUsage === "number" &&
+        thresholds.memoryUsage !== undefined &&
+        m.memoryUsage > thresholds.memoryUsage)
     );
   }
 
@@ -276,32 +287,48 @@ export class HealthMapper {
   /**
    * Mappt die Liste der Komponenten mit erweiterter Validierung.
    */
-  private mapComponents(rawComponents: any[]): ComponentHealth[] {
+  private mapComponents(rawComponents: unknown[]): ComponentHealth[] {
     if (!rawComponents || !Array.isArray(rawComponents)) {
       return [];
     }
 
     return rawComponents
-      .filter((component) => component && component.name)
+      .filter(
+        (component): component is Record<string, unknown> =>
+          component !== null &&
+          typeof component === "object" &&
+          "name" in component,
+      )
       .map((component) => ({
         name: String(component.name),
-        status: this.mapLevel(component.status),
-        message: component.message || this.generateComponentMessage(component),
+        status: this.mapLevel(
+          typeof component.status === "string" ? component.status : undefined,
+        ),
+        message:
+          (typeof component.message === "string"
+            ? component.message
+            : undefined) || this.generateComponentMessage(component),
         lastUpdate: this.parseTimestamp(component.lastUpdate),
         dependencies: Array.isArray(component.dependencies)
           ? component.dependencies
           : [],
-        details: component.details || component,
+        details: (typeof component.details === "object" &&
+        component.details !== null
+          ? component.details
+          : component) as Record<string, unknown>,
       }));
   }
 
   /**
    * Generiert eine aussagekräftige Komponenten-Nachricht
    */
-  private generateComponentMessage(component: any): string {
-    if (component.message) return component.message;
+  private generateComponentMessage(component: unknown): string {
+    const comp = component as Record<string, unknown>;
+    if (comp.message && typeof comp.message === "string") return comp.message;
 
-    const status = this.mapLevel(component.status);
+    const status = this.mapLevel(
+      typeof comp.status === "string" ? comp.status : undefined,
+    );
     switch (status) {
       case "HEALTHY":
         return "Component is operating normally";
@@ -331,11 +358,12 @@ export class HealthMapper {
 
     return {
       responseTime:
-        componentMetrics.avgResponseTime || baseMetrics.responseTime!,
-      errorRate: componentMetrics.maxErrorRate || baseMetrics.errorRate!,
-      uptime: baseMetrics.uptime!,
-      memoryUsage: componentMetrics.maxMemoryUsage || baseMetrics.memoryUsage!,
-      cpuUsage: componentMetrics.maxCpuUsage || baseMetrics.cpuUsage!,
+        componentMetrics.avgResponseTime || baseMetrics.responseTime || 0,
+      errorRate: componentMetrics.maxErrorRate || baseMetrics.errorRate || 0,
+      uptime: baseMetrics.uptime || 0,
+      memoryUsage:
+        componentMetrics.maxMemoryUsage || baseMetrics.memoryUsage || 0,
+      cpuUsage: componentMetrics.maxCpuUsage || baseMetrics.cpuUsage || 0,
       diskUsage: baseMetrics.diskUsage || 0,
       ...componentMetrics,
     };
@@ -357,21 +385,27 @@ export class HealthMapper {
     };
 
     components.forEach((component) => {
-      const details = component.details as any;
+      const details = component.details as Record<string, unknown>;
 
-      if (details?.responseTime) {
+      if (typeof details?.responseTime === "number") {
         metrics.avgResponseTime += details.responseTime;
       }
-      if (details?.errorRate && details.errorRate > metrics.maxErrorRate) {
+      if (
+        typeof details?.errorRate === "number" &&
+        details.errorRate > metrics.maxErrorRate
+      ) {
         metrics.maxErrorRate = details.errorRate;
       }
       if (
-        details?.memoryUsage &&
+        typeof details?.memoryUsage === "number" &&
         details.memoryUsage > metrics.maxMemoryUsage
       ) {
         metrics.maxMemoryUsage = details.memoryUsage;
       }
-      if (details?.cpuUsage && details.cpuUsage > metrics.maxCpuUsage) {
+      if (
+        typeof details?.cpuUsage === "number" &&
+        details.cpuUsage > metrics.maxCpuUsage
+      ) {
         metrics.maxCpuUsage = details.cpuUsage;
       }
       if (component.status === "HEALTHY") {
@@ -389,7 +423,7 @@ export class HealthMapper {
   /**
    * Parset Timestamps mit Fallback
    */
-  private parseTimestamp(timestamp: any): Date {
+  private parseTimestamp(timestamp: unknown): Date {
     try {
       if (timestamp instanceof Date) return timestamp;
       if (typeof timestamp === "string" || typeof timestamp === "number") {
@@ -432,13 +466,13 @@ export class HealthMapper {
  */
 interface NormalizedHealthResponse {
   status: string;
-  components: any[];
-  metrics: Record<string, any>;
+  components: unknown[];
+  metrics: Record<string, unknown>;
   version?: string;
-  timestamp: any;
+  timestamp: unknown;
   environment?: string;
   instance?: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
 }
 
 export default HealthMapper;

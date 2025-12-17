@@ -4,7 +4,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import type { CategoryGridProps, Category } from "../types";
-import { getCategoryColor, getNodeIcon } from "../utils/mapping";
+import { getNodeIcon } from "../utils/mapping";
 import cls from "../utils/cls";
 
 // ============================================================================
@@ -19,11 +19,6 @@ interface CategoryCardProps {
   displayMode?: "grid" | "list";
 }
 
-interface CategoryGridState {
-  hoveredCategory: string | null;
-  activeCategory: string | null;
-}
-
 // ============================================================================
 // Category Card Component
 // ============================================================================
@@ -36,7 +31,6 @@ const CategoryCard: React.FC<CategoryCardProps> = React.memo(
     const { t } = useTranslation();
     const [isHovered, setIsHovered] = React.useState(false);
 
-    const categoryColor = getCategoryColor(category.id);
     const hasActions = !!(onEdit || onDelete);
     const itemCount = category.nodeIds?.length || 0;
 
@@ -68,21 +62,12 @@ const CategoryCard: React.FC<CategoryCardProps> = React.memo(
       undefined, // <-- Options-Parameter (Pflicht laut Fehlermeldung)
     );
 
-    const cardStyle: React.CSSProperties = {
-      borderColor: categoryColor.primary,
-      backgroundColor: "#ffffff",
-      color: categoryColor.text,
-    };
-
     return (
       <article
         className={cardClasses}
-        style={cardStyle}
         onClick={handleClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        role="button"
-        tabIndex={0}
         aria-label={t("dashboard.categories.selectCategory", {
           name: category.name,
         })}
@@ -95,10 +80,7 @@ const CategoryCard: React.FC<CategoryCardProps> = React.memo(
       >
         {/* Header Section */}
         <header className="category-card__header">
-          <div
-            className="category-card__icon"
-            style={{ color: categoryColor.primary }}
-          >
+          <div className="category-card__icon">
             {getNodeIcon("CATEGORY", "emoji")}
           </div>
 
@@ -218,23 +200,6 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [state, setState] = React.useState<CategoryGridState>({
-    hoveredCategory: null,
-    activeCategory: null,
-  });
-
-  // Handle keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent, category: Category) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      onCategorySelect(category);
-    }
-
-    if (e.key === "Escape") {
-      setState((prev) => ({ ...prev, activeCategory: null }));
-    }
-  };
-
   // Build CSS classes
   const gridClasses = cls(
     "category-grid",
@@ -280,7 +245,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({
     <section
       className={gridClasses}
       aria-label={t("dashboard.categories.gridLabel")}
-      role="grid"
+      role="region"
       {...rest}
     >
       {categories.map((category) => (

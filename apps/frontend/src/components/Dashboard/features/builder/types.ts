@@ -35,14 +35,14 @@ export interface BuiltFormField {
   type: FormField["type"];
   label: string;
   required: boolean;
-  defaultValue?: any;
+  defaultValue?: unknown;
   options?: string[];
   validation: ValidationRule;
 }
 
 export interface BuiltForm {
   fields: BuiltFormField[];
-  values: Record<string, any>;
+  values: Record<string, unknown>;
   valid: boolean;
 }
 
@@ -80,8 +80,11 @@ export interface NodeBuilderInterface {
 export interface FormBuilderInterface {
   fromNode(node: DashboardNode): BuiltForm;
   fromFieldList(fields: FormField[]): BuiltForm;
-  updateValue(form: BuiltForm, fieldId: string, newValue: any): BuiltForm;
-  validateAll(fields: BuiltFormField[], values: Record<string, any>): boolean;
+  updateValue(form: BuiltForm, fieldId: string, newValue: unknown): BuiltForm;
+  validateAll(
+    fields: BuiltFormField[],
+    values: Record<string, unknown>,
+  ): boolean;
 }
 
 export interface LayoutEngineInterface {

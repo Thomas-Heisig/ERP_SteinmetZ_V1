@@ -39,7 +39,7 @@ export interface ChatSession {
   createdAt: string;
   updatedAt: string;
   tokensUsed?: number;
-  meta?: Record<string, any>;
+  meta?: Record<string, unknown>;
 }
 
 /* ========================================================================== */
@@ -130,10 +130,10 @@ export function saveSessionToFile(session: ChatSession): void {
   try {
     const filePath = path.join(SESSION_DIR, `${session.id}.json`);
     fs.writeFileSync(filePath, JSON.stringify(session, null, 2), "utf8");
-  } catch (err: any) {
+  } catch (err: unknown) {
     log("error", "Fehler beim Speichern der Session", {
       id: session.id,
-      error: err.message,
+      error: err instanceof Error ? err.message : String(err),
     });
   }
 }
@@ -150,10 +150,10 @@ export function loadAllSessions(): number {
         fs.readFileSync(path.join(SESSION_DIR, f), "utf8"),
       ) as ChatSession;
       chatSessions.set(data.id, data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       log("warn", "Konnte Session-Datei nicht laden", {
         file: f,
-        error: err.message,
+        error: err instanceof Error ? err.message : String(err),
       });
     }
   }

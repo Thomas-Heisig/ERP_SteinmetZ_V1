@@ -87,7 +87,10 @@ export class LayoutEngine {
     const grouped: Record<string, DashboardNode[]> = {};
 
     for (const n of nodes) {
-      const cat = n.metadata.category ?? "uncategorized";
+      const cat =
+        typeof n.metadata.category === "string"
+          ? n.metadata.category
+          : "uncategorized";
       if (!grouped[cat]) grouped[cat] = [];
       grouped[cat].push(n);
     }

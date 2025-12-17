@@ -292,3 +292,29 @@
   font-size: 12px;
   color: #888;
 }
+
+/* Metric bar fill colors */
+.metricSpeed {
+  background-color: #17a2b8;
+}
+
+.metricAccuracy {
+  background-color: #28a745;
+}
+
+.metricCost {
+  background-color: #ffc107;
+}
+
+.metricReliability {
+  background-color: #007bff;
+}
+
+/* Status badge colors */
+.statusAvailable {
+  background-color: #28a745;
+}
+
+.statusUnavailable {
+  background-color: #dc3545;
+}

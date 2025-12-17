@@ -194,7 +194,7 @@ Generates API documentation using TypeDoc.
 
 ### `npm run docs:serve`
 
-Serves generated API documentation on http://localhost:8080.
+- Serves generated API documentation on localhost:8080.
 
 - Requires docs to be generated first
 - Uses http-server for serving

@@ -18,7 +18,7 @@ export interface HealthMonitorOptions {
   interval?: number; // Standard: 5 Sekunden
   timeout?: number; // Standard: 4 Sekunden
   onUpdate?: (status: HealthStatusDetailed) => void;
-  fetcher?: (url: string, timeout: number) => Promise<any>;
+  fetcher?: (url: string, timeout: number) => Promise<unknown>;
 }
 
 export class HealthMonitor {
@@ -27,8 +27,8 @@ export class HealthMonitor {
   private timeout: number;
   private onUpdate?: (status: HealthStatusDetailed) => void;
   private mapper: HealthMapper;
-  private timer: any = null;
-  private fetcher: (url: string, timeout: number) => Promise<any>;
+  private timer: ReturnType<typeof setInterval> | null = null;
+  private fetcher: (url: string, timeout: number) => Promise<unknown>;
 
   constructor(options: HealthMonitorOptions) {
     this.url = options.url;
@@ -92,7 +92,7 @@ export class HealthMonitor {
   /**
    * Default Fetcher (mit Timeout).
    */
-  private async defaultFetch(url: string, timeout: number): Promise<any> {
+  private async defaultFetch(url: string, timeout: number): Promise<unknown> {
     const ctrl = new AbortController();
     const id = setTimeout(() => ctrl.abort(), timeout);
 

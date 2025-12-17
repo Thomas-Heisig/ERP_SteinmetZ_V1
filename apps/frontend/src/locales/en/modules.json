@@ -1,0 +1,275 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "business": "Business Management",
+    "finance": "Finance & Controlling",
+    "sales": "Sales & Marketing",
+    "procurement": "Procurement",
+    "production": "Production & Manufacturing",
+    "warehouse": "Warehouse & Logistics",
+    "hr": "Human Resources",
+    "reporting": "Reporting & Analytics",
+    "aiAnnotator": "AI Annotator",
+    "communication": "Communication & Social",
+    "system": "System & Administration"
+  },
+
+  "dashboard": {
+    "title": "Dashboard",
+    "executiveOverview": "Executive Overview",
+    "notifications": "Notifications",
+    "realtimeKpis": "Real-time KPIs",
+    "tasksAndPriorities": "Tasks & Priorities",
+    "kpis": {
+      "revenue": "Revenue",
+      "orders": "Orders",
+      "production": "Production",
+      "liquidity": "Liquidity"
+    }
+  },
+
+  "business": {
+    "title": "Business Management",
+    "company": {
+      "title": "Company",
+      "masterData": "Master Data",
+      "organization": "Organization",
+      "documentManagement": "Document Management"
+    },
+    "processes": {
+      "title": "Process Management",
+      "workflowDesigner": "Workflow Designer",
+      "processMining": "Process Mining",
+      "complianceChecker": "Compliance Checker"
+    },
+    "risks": {
+      "title": "Risk & Compliance",
+      "riskManagement": "Risk Management",
+      "auditManagement": "Audit Management",
+      "complianceMonitoring": "Compliance Monitoring"
+    }
+  },
+
+  "finance": {
+    "title": "Finance & Controlling",
+    "accounting": {
+      "title": "Accounting",
+      "generalLedger": "General Ledger",
+      "debtors": "Accounts Receivable",
+      "creditors": "Accounts Payable",
+      "assetAccounting": "Fixed Assets"
+    },
+    "controlling": {
+      "title": "Controlling",
+      "costAccounting": "Cost Accounting",
+      "budgeting": "Budgeting",
+      "kpis": "Key Performance Indicators"
+    },
+    "treasury": {
+      "title": "Treasury",
+      "liquidityManagement": "Liquidity Management",
+      "paymentTransactions": "Payment Transactions",
+      "riskManagement": "Risk Management"
+    },
+    "taxes": {
+      "title": "Taxes",
+      "vat": "VAT",
+      "advanceReturns": "Advance Returns",
+      "taxReturns": "Tax Returns"
+    }
+  },
+
+  "sales": {
+    "title": "Sales & Marketing",
+    "crm": {
+      "title": "CRM",
+      "customerDatabase": "Customer Database",
+      "contactManagement": "Contact Management",
+      "activityManagement": "Activity Management"
+    },
+    "marketing": {
+      "title": "Marketing",
+      "campaignManagement": "Campaign Management",
+      "leadGeneration": "Lead Generation",
+      "marketingAutomation": "Marketing Automation"
+    },
+    "orders": {
+      "title": "Sales",
+      "quoteCreation": "Quote Creation",
+      "orderManagement": "Order Management",
+      "pipelineManagement": "Pipeline Management"
+    },
+    "fulfillment": {
+      "title": "Fulfillment",
+      "shippingManagement": "Shipping Management",
+      "invoicing": "Invoicing",
+      "returnManagement": "Return Management"
+    }
+  },
+
+  "procurement": {
+    "title": "Procurement",
+    "orders": {
+      "title": "Purchasing",
+      "demandPlanning": "Demand Planning",
+      "ordering": "Ordering",
+      "supplierManagement": "Supplier Management"
+    },
+    "goodsReceipt": {
+      "title": "Goods Receipt",
+      "incomingInspection": "Incoming Inspection",
+      "qualityCheck": "Quality Check",
+      "invoiceVerification": "Invoice Verification"
+    },
+    "suppliers": {
+      "title": "Suppliers",
+      "masterData": "Master Data",
+      "ratingSystem": "Rating System",
+      "contractManagement": "Contract Management"
+    }
+  },
+
+  "production": {
+    "title": "Production & Manufacturing",
+    "planning": {
+      "title": "Production Planning",
+      "capacityPlanning": "Capacity Planning",
+      "materialRequirements": "Material Requirements",
+      "scheduling": "Scheduling"
+    },
+    "control": {
+      "title": "Manufacturing Control",
+      "workInstructions": "Work Instructions",
+      "machineData": "Machine Data",
+      "feedback": "Feedback"
+    },
+    "quality": {
+      "title": "Quality Management",
+      "testPlans": "Test Plans",
+      "qualityControls": "Quality Controls",
+      "certificateManagement": "Certificate Management"
+    },
+    "maintenance": {
+      "title": "Maintenance",
+      "maintenancePlans": "Maintenance Plans",
+      "upkeep": "Upkeep",
+      "sparePartsManagement": "Spare Parts Management"
+    }
+  },
+
+  "warehouse": {
+    "title": "Warehouse & Logistics",
+    "stock": {
+      "title": "Warehouse Management",
+      "inventoryManagement": "Inventory Management",
+      "storageLocations": "Storage Locations",
+      "stocktaking": "Stocktaking"
+    },
+    "picking": {
+      "title": "Order Picking",
+      "pickingLists": "Picking Lists",
+      "pickByVoice": "Pick-by-Voice",
+      "routeOptimization": "Route Optimization"
+    },
+    "shipping": {
+      "title": "Logistics",
+      "shippingManagement": "Shipping Management",
+      "transportPlanning": "Transport Planning",
+      "tracking": "Tracking"
+    }
+  },
+
+  "hr": {
+    "title": "Human Resources",
+    "employees": {
+      "title": "Employee Management",
+      "masterData": "Master Data",
+      "contractManagement": "Contract Management",
+      "documentArchive": "Document Archive"
+    },
+    "timeTracking": {
+      "title": "Time Tracking",
+      "workingHours": "Working Hours",
+      "vacationPlanning": "Vacation Planning",
+      "projectTime": "Project Time"
+    },
+    "development": {
+      "title": "Personnel Development",
+      "qualifications": "Qualifications",
+      "training": "Training",
+      "careerPlanning": "Career Planning"
+    },
+    "recruiting": {
+      "title": "Recruiting",
+      "jobPostings": "Job Postings",
+      "applicantManagement": "Applicant Management",
+      "onboarding": "Onboarding"
+    }
+  },
+
+  "reporting": {
+    "title": "Reporting & Analytics",
+    "standard": {
+      "title": "Standard Reports",
+      "financialReports": "Financial Reports",
+      "salesReports": "Sales Reports",
+      "productionReports": "Production Reports"
+    },
+    "adhoc": {
+      "title": "Ad-hoc Analysis",
+      "dataExplorer": "Data Explorer",
+      "pivotTables": "Pivot Tables",
+      "visualizations": "Visualizations"
+    },
+    "ai": {
+      "title": "AI Analytics",
+      "predictiveAnalytics": "Predictive Analytics",
+      "trendAnalyses": "Trend Analyses",
+      "recommendationSystem": "Recommendation System"
+    }
+  },
+
+  "communication": {
+    "title": "Communication & Social",
+    "email": {
+      "title": "Email Management",
+      "unifiedInbox": "Unified Inbox",
+      "smartResponse": "Smart Response",
+      "campaignTracking": "Campaign Tracking"
+    },
+    "messaging": {
+      "title": "Messaging",
+      "chatSystem": "Chat System",
+      "videoConferences": "Video Conferences",
+      "teamCollaboration": "Team Collaboration"
+    },
+    "social": {
+      "title": "Social Media",
+      "multiChannelManagement": "Multi-Channel Management",
+      "contentCalendar": "Content Calendar",
+      "sentimentAnalysis": "Sentiment Analysis"
+    }
+  },
+
+  "system": {
+    "title": "System & Administration",
+    "users": {
+      "title": "User Management",
+      "rolesAndRights": "Roles & Rights",
+      "accessControl": "Access Control",
+      "auditLog": "Audit Log"
+    },
+    "settings": {
+      "title": "System Settings",
+      "clientManagement": "Client Management",
+      "databaseManagement": "Database Management",
+      "backupRestore": "Backup/Restore"
+    },
+    "integrations": {
+      "title": "Integrations",
+      "apiManagement": "API Management",
+      "interfaces": "Interfaces",
+      "pluginSystem": "Plugin System"
+    }
+  }
+}

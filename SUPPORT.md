@@ -77,7 +77,7 @@ What actually happened
 
 Paste error messages or logs here
 
-```
+```text
 
 ## Screenshots
 If applicable, add screenshots
@@ -111,7 +111,7 @@ For questions, ideas, and discussions:
 
 ### Chat & Community
 
-_(Future community channels will be listed here)_
+- _(Future community channels will be listed here)_
 
 ## 🚀 Feature Requests
 
@@ -149,7 +149,7 @@ Mockups, examples, or references
 
 ### Installation & Setup
 
-**Q: I get "Module not found" errors when running npm install**
+**Q: I get "Module not found" errors when running npm install!**
 
 ```bash
 # Try clearing cache and reinstalling
@@ -158,7 +158,7 @@ npm cache clean --force
 npm install
 ```
 
-**Q: Backend won't start - "Port 3000 already in use"**
+**Q: Backend won't start - "Port 3000 already in use"!**
 
 ```bash
 # Find and kill the process using port 3000
@@ -171,7 +171,7 @@ netstat -ano | findstr :3000
 taskkill /PID <PID> /F
 ```
 
-**Q: Frontend shows CORS errors**
+**Q: Frontend shows CORS errors!**
 
 ```bash
 # Ensure backend is running and CORS is configured
@@ -197,7 +197,7 @@ rm data/dev.db
 npm run dev:backend
 ```
 
-**Q: TypeScript errors during build**
+**Q: TypeScript errors during build!**
 
 ```bash
 # Ensure types are installed

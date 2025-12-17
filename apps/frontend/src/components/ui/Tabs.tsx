@@ -1,25 +1,63 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/ui/Tabs.tsx
 
-import React, { useState } from "react";
+/**
+ * Accessible tabbed interface component
+ *
+ * @example
+ * ```tsx
+ * const tabs = [
+ *   { id: 'tab1', label: 'Tab 1', content: <div>Content 1</div> },
+ *   { id: 'tab2', label: 'Tab 2', content: <div>Content 2</div>, icon: <Icon /> },
+ * ];
+ *
+ * <Tabs tabs={tabs} defaultTab="tab1" onChange={(id) => console.log(id)} />
+ * ```
+ */
 
+import React, { useState } from "react";
+import styles from "./Tabs.module.css";
+
+/**
+ * Tab configuration
+ */
 export interface Tab {
+  /** Unique identifier for the tab */
   id: string;
+  /** Label text displayed on the tab */
   label: string;
+  /** Optional icon displayed before the label */
   icon?: React.ReactNode;
+  /** Whether the tab is disabled */
   disabled?: boolean;
+  /** Content to display when the tab is active */
   content: React.ReactNode;
 }
 
+/**
+ * Tabs component props
+ */
 export interface TabsProps {
+  /** Array of tab configurations */
   tabs: Tab[];
+  /** ID of the initially active tab */
   defaultTab?: string;
+  /** Callback fired when active tab changes */
   onChange?: (tabId: string) => void;
+  /** Visual style variant */
   variant?: "default" | "pills" | "underline";
+  /** Whether tabs should take full width */
   fullWidth?: boolean;
+  /** Additional CSS classes */
   className?: string;
 }
 
+/**
+ * Tabs component with keyboard navigation and ARIA support
+ *
+ * @param props - Tabs properties
+ * @returns Rendered tabs component
+ */
 export const Tabs: React.FC<TabsProps> = ({
   tabs,
   defaultTab,
@@ -37,83 +75,54 @@ export const Tabs: React.FC<TabsProps> = ({
 
   const activeContent = tabs.find((tab) => tab.id === activeTab)?.content;
 
+  const tabsClasses = [styles.tabs, className].filter(Boolean).join(" ");
+  const tabListClasses = [styles.tabList, styles[variant]]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className={`ui-tabs ${className}`}>
-      <div
-        className="ui-tabs__list"
-        role="tablist"
-        style={{
-          display: "flex",
-          gap: variant === "pills" ? "0.5rem" : "0",
-          borderBottom:
-            variant === "underline" ? "1px solid var(--border)" : "none",
-          background: variant === "default" ? "var(--gray-100)" : "transparent",
-          borderRadius: variant === "default" ? "8px" : "0",
-          padding: variant === "default" ? "0.25rem" : "0",
-        }}
-      >
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            aria-controls={`tabpanel-${tab.id}`}
-            onClick={() => !tab.disabled && handleTabClick(tab.id)}
-            disabled={tab.disabled}
-            style={{
-              flex: fullWidth ? 1 : "none",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "0.5rem",
-              padding: "0.5rem 1rem",
-              fontSize: "0.875rem",
-              fontWeight: 500,
-              color:
-                activeTab === tab.id
-                  ? variant === "underline"
-                    ? "var(--primary-600)"
-                    : "var(--text-primary)"
-                  : "var(--text-secondary)",
-              background:
-                activeTab === tab.id
-                  ? variant === "pills"
-                    ? "var(--primary-100)"
-                    : variant === "default"
-                      ? "var(--surface)"
-                      : "transparent"
-                  : "transparent",
-              border: "none",
-              borderBottom:
-                variant === "underline"
-                  ? activeTab === tab.id
-                    ? "2px solid var(--primary-500)"
-                    : "2px solid transparent"
-                  : "none",
-              borderRadius:
-                variant === "pills"
-                  ? "6px"
-                  : variant === "default"
-                    ? "6px"
-                    : "0",
-              cursor: tab.disabled ? "not-allowed" : "pointer",
-              opacity: tab.disabled ? 0.5 : 1,
-              transition: "all 0.2s ease",
-            }}
-          >
-            {tab.icon && <span>{tab.icon}</span>}
-            {tab.label}
-          </button>
-        ))}
+    <div className={tabsClasses}>
+      <div className={tabListClasses} role="tablist">
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          const tabClasses = [
+            styles.tab,
+            isActive && styles.active,
+            fullWidth && styles.fullWidth,
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          // ARIA attributes with explicit string values to satisfy ESLint
+          const ariaProps = {
+            "aria-selected": isActive ? ("true" as const) : ("false" as const),
+            "aria-controls": `tabpanel-${tab.id}`,
+          };
+
+          return (
+            <button
+              key={tab.id}
+              role="tab"
+              {...ariaProps}
+              onClick={() => !tab.disabled && handleTabClick(tab.id)}
+              disabled={tab.disabled}
+              className={tabClasses}
+            >
+              {tab.icon && (
+                <span className={styles.tabIcon} aria-hidden="true">
+                  {tab.icon}
+                </span>
+              )}
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
       <div
         id={`tabpanel-${activeTab}`}
         role="tabpanel"
         aria-labelledby={activeTab}
-        className="ui-tabs__content"
-        style={{
-          padding: "1rem 0",
-        }}
+        className={styles.tabContent}
       >
         {activeContent}
       </div>

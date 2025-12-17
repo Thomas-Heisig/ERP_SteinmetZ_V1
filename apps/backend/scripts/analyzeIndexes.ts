@@ -342,7 +342,6 @@ function main() {
 }
 
 // Run if called directly
-import { fileURLToPath } from "url";
 if (
   import.meta.url === `file://${process.argv[1]}` ||
   fileURLToPath(import.meta.url) === process.argv[1]

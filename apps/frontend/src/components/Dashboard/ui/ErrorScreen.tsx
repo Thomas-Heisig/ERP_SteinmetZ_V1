@@ -5,6 +5,23 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import cls from "../utils/cls";
 
+// Fake progress component to avoid Math.random during render
+const FakeProgress: React.FC = () => {
+  const [progress] = React.useState(() => Math.floor(Math.random() * 30 + 10));
+  const [percentage] = React.useState(() => Math.floor(Math.random() * 100));
+
+  return (
+    <div className="error-screen__progress" data-progress={progress}>
+      <div className="error-screen__progress-bar">
+        <div className="error-screen__progress-fill" />
+      </div>
+      <div className="error-screen__progress-text">
+        Fehleranalyse läuft... {percentage}%
+      </div>
+    </div>
+  );
+};
+
 export interface ErrorScreenProps {
   error: unknown;
   title?: string;
@@ -31,8 +48,9 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
 
   // Lustige Fehler-Emojis und Icons
   const errorEmojis = ["😵", "🤦", "💥", "🐛", "🦄", "👾", "🎪", "🎭"];
-  const randomEmoji =
-    errorEmojis[Math.floor(Math.random() * errorEmojis.length)];
+  const [randomEmoji] = React.useState(
+    () => errorEmojis[Math.floor(Math.random() * errorEmojis.length)],
+  );
 
   // Lustige Error-Messages
   const funnyTitles = [
@@ -57,10 +75,12 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
     "Das war Absicht! Wir testen deine Geduld! ✨",
   ];
 
-  const randomTitle =
-    funnyTitles[Math.floor(Math.random() * funnyTitles.length)];
-  const randomMessage =
-    funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+  const [randomTitle] = React.useState(
+    () => funnyTitles[Math.floor(Math.random() * funnyTitles.length)],
+  );
+  const [randomMessage] = React.useState(
+    () => funnyMessages[Math.floor(Math.random() * funnyMessages.length)],
+  );
 
   const displayTitle =
     title ||
@@ -100,8 +120,9 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
     "Das schaffen wir! 💪",
   ];
 
-  const randomRetryText =
-    retryButtonTexts[Math.floor(Math.random() * retryButtonTexts.length)];
+  const [randomRetryText] = React.useState(
+    () => retryButtonTexts[Math.floor(Math.random() * retryButtonTexts.length)],
+  );
 
   const handleRetry = () => {
     // Kleine Verzögerung für bessere UX
@@ -139,19 +160,7 @@ const ErrorScreen: React.FC<ErrorScreenProps> = ({
           <p className="error-screen__message">{displayMessage}</p>
 
           {/* Lustiger Fortschrittsbalken (fake) */}
-          {variant === "funny" && (
-            <div className="error-screen__progress">
-              <div className="error-screen__progress-bar">
-                <div
-                  className="error-screen__progress-fill"
-                  style={{ width: `${Math.random() * 30 + 10}%` }}
-                />
-              </div>
-              <div className="error-screen__progress-text">
-                Fehleranalyse läuft... {Math.floor(Math.random() * 100)}%
-              </div>
-            </div>
-          )}
+          {variant === "funny" && <FakeProgress />}
 
           {/* Error-Details (ausklappbar) */}
           {showDetails && errorDetails && (

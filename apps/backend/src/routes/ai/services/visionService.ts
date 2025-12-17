@@ -166,11 +166,12 @@ export async function analyzeImage(
         engine,
       },
     };
-  } catch (err: any) {
-    log("error", "VisionService Fehler", { error: err.message });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    log("error", "VisionService Fehler", { error: errorMessage });
     return {
-      text: `❌ Fehler bei Analyse: ${err.message}`,
-      errors: [err.message],
+      text: `❌ Fehler bei Analyse: ${errorMessage}`,
+      errors: [errorMessage],
     };
   }
 }

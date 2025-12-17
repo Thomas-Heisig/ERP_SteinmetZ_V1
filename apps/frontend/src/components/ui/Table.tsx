@@ -2,6 +2,7 @@
 // apps/frontend/src/components/ui/Table.tsx
 
 import React from "react";
+import styles from "./Table.module.css";
 
 export interface Column<T> {
   key: keyof T | string;
@@ -40,7 +41,7 @@ export function Table<T extends object>({
   onRowClick,
   selectedRows,
   striped = true,
-  hoverable = true,
+  hoverable: _hoverable = true,
   compact = false,
   className = "",
 }: TableProps<T>) {
@@ -75,142 +76,89 @@ export function Table<T extends object>({
     return String(value);
   };
 
-  const cellPadding = compact ? "0.5rem 0.75rem" : "0.75rem 1rem";
+  const wrapperClasses = [styles.wrapper, className].filter(Boolean).join(" ");
+  const tableClasses = [styles.table, compact && styles.compact]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div
-      className={`ui-table-wrapper ${className}`}
-      style={{
-        overflowX: "auto",
-        border: "1px solid var(--border)",
-        borderRadius: "8px",
-      }}
-    >
-      <table
-        className="ui-table"
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          fontSize: compact ? "0.875rem" : "1rem",
-        }}
-      >
-        <thead>
+    <div className={wrapperClasses}>
+      <table className={tableClasses}>
+        <thead className={styles.thead}>
           <tr>
-            {columns.map((column) => (
-              <th
-                key={column.key as string}
-                onClick={() =>
-                  column.sortable && onSort?.(column.key as string)
-                }
-                style={{
-                  padding: cellPadding,
-                  textAlign: "left",
-                  fontWeight: 600,
-                  color: "var(--text-secondary)",
-                  background: "var(--gray-50)",
-                  borderBottom: "1px solid var(--border)",
-                  cursor: column.sortable ? "pointer" : "default",
-                  whiteSpace: "nowrap",
-                  width: column.width,
-                }}
-              >
-                <span
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
+            {columns.map((column) => {
+              const thClasses = [styles.th, column.sortable && styles.sortable]
+                .filter(Boolean)
+                .join(" ");
+
+              return (
+                <th
+                  key={column.key as string}
+                  onClick={() =>
+                    column.sortable && onSort?.(column.key as string)
+                  }
+                  className={thClasses}
+                  ref={(el) => {
+                    if (el && column.width) {
+                      el.style.width = column.width;
+                    }
                   }}
                 >
-                  {column.header}
-                  {column.sortable && sortColumn === column.key && (
-                    <span>{sortDirection === "asc" ? "↑" : "↓"}</span>
-                  )}
-                </span>
-              </th>
-            ))}
+                  <span className={styles.sortIcon}>
+                    {column.header}
+                    {column.sortable && sortColumn === column.key && (
+                      <span>{sortDirection === "asc" ? "↑" : "↓"}</span>
+                    )}
+                  </span>
+                </th>
+              );
+            })}
           </tr>
         </thead>
-        <tbody>
+        <tbody className={styles.tbody}>
           {loading ? (
-            <tr>
-              <td
-                colSpan={columns.length}
-                style={{
-                  padding: "2rem",
-                  textAlign: "center",
-                  color: "var(--text-tertiary)",
-                }}
-              >
-                <div
-                  style={{
-                    display: "inline-block",
-                    width: "24px",
-                    height: "24px",
-                    border: "3px solid var(--gray-200)",
-                    borderTopColor: "var(--primary-500)",
-                    borderRadius: "50%",
-                    animation: "spin 0.8s linear infinite",
-                  }}
-                />
-                <p style={{ marginTop: "0.5rem" }}>Laden...</p>
+            <tr className={styles.loadingRow}>
+              <td colSpan={columns.length}>
+                <div className={styles.loadingContent}>
+                  <div className={styles.spinner} />
+                  <p className={styles.loadingText}>Laden...</p>
+                </div>
               </td>
             </tr>
           ) : data.length === 0 ? (
-            <tr>
-              <td
-                colSpan={columns.length}
-                style={{
-                  padding: "2rem",
-                  textAlign: "center",
-                  color: "var(--text-tertiary)",
-                }}
-              >
-                {emptyMessage}
+            <tr className={styles.emptyRow}>
+              <td colSpan={columns.length}>
+                <div className={styles.emptyContent}>
+                  <span className={styles.emptyIcon}>📭</span>
+                  <p className={styles.emptyText}>{emptyMessage}</p>
+                </div>
               </td>
             </tr>
           ) : (
-            data.map((row, index) => (
-              <tr
-                key={keyField ? String(row[keyField]) : index}
-                onClick={() => onRowClick?.(row, index)}
-                style={{
-                  background: selectedRows?.has(index)
-                    ? "var(--primary-50)"
-                    : striped && index % 2 === 1
-                      ? "var(--gray-50)"
-                      : "transparent",
-                  cursor: onRowClick ? "pointer" : "default",
-                  transition: "background 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  if (hoverable) {
-                    e.currentTarget.style.background = "var(--gray-100)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (hoverable) {
-                    e.currentTarget.style.background = selectedRows?.has(index)
-                      ? "var(--primary-50)"
-                      : striped && index % 2 === 1
-                        ? "var(--gray-50)"
-                        : "transparent";
-                  }
-                }}
-              >
-                {columns.map((column) => (
-                  <td
-                    key={column.key as string}
-                    style={{
-                      padding: cellPadding,
-                      borderBottom: "1px solid var(--border-light)",
-                      color: "var(--text-primary)",
-                    }}
-                  >
-                    {renderCell(column, row, index)}
-                  </td>
-                ))}
-              </tr>
-            ))
+            data.map((row, index) => {
+              const rowClasses = [
+                styles.tr,
+                selectedRows?.has(index) && styles.selected,
+                striped && index % 2 === 1 && styles.striped,
+                onRowClick && styles.clickable,
+              ]
+                .filter(Boolean)
+                .join(" ");
+
+              return (
+                <tr
+                  key={keyField ? String(row[keyField]) : index}
+                  onClick={() => onRowClick?.(row, index)}
+                  className={rowClasses}
+                >
+                  {columns.map((column) => (
+                    <td key={column.key as string} className={styles.td}>
+                      {renderCell(column, row, index)}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>

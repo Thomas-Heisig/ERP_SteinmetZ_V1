@@ -1,14 +1,10 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/ui/Toast.tsx
 
-import React, {
-  useEffect,
-  useState,
-  createContext,
-  useContext,
-  useCallback,
-} from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import styles from "./Toast.module.css";
+import { ToastContext } from "./useToast";
 
 export type ToastType = "success" | "error" | "warning" | "info";
 
@@ -18,22 +14,6 @@ export interface Toast {
   message: string;
   duration?: number;
 }
-
-interface ToastContextValue {
-  toasts: Toast[];
-  addToast: (type: ToastType, message: string, duration?: number) => void;
-  removeToast: (id: string) => void;
-}
-
-const ToastContext = createContext<ToastContextValue | null>(null);
-
-export const useToast = () => {
-  const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
-  }
-  return context;
-};
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -67,19 +47,7 @@ const ToastContainer: React.FC<{
   if (toasts.length === 0) return null;
 
   return createPortal(
-    <div
-      className="ui-toast-container"
-      style={{
-        position: "fixed",
-        top: "1rem",
-        right: "1rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.5rem",
-        zIndex: 9999,
-        maxWidth: "400px",
-      }}
-    >
+    <div className={styles.toastContainer}>
       {toasts.map((toast) => (
         <ToastItem key={toast.id} toast={toast} onRemove={removeToast} />
       ))}
@@ -99,92 +67,30 @@ const ToastItem: React.FC<{
     }
   }, [toast.id, toast.duration, onRemove]);
 
-  const typeStyles: Record<
-    ToastType,
-    { bg: string; border: string; icon: string }
-  > = {
-    success: {
-      bg: "var(--success-50)",
-      border: "var(--success-500)",
-      icon: "✓",
-    },
-    error: {
-      bg: "var(--error-50)",
-      border: "var(--error-500)",
-      icon: "✕",
-    },
-    warning: {
-      bg: "var(--warning-50)",
-      border: "var(--warning-500)",
-      icon: "⚠",
-    },
-    info: {
-      bg: "var(--info-50)",
-      border: "var(--primary-500)",
-      icon: "ℹ",
-    },
+  const typeIcons: Record<ToastType, string> = {
+    success: "✓",
+    error: "✕",
+    warning: "⚠",
+    info: "ℹ",
   };
 
-  const styles = typeStyles[toast.type];
+  const toastClasses = [styles.toast, styles[toast.type]]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div
-      className="ui-toast"
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "0.75rem",
-        padding: "1rem",
-        background: styles.bg,
-        borderLeft: `4px solid ${styles.border}`,
-        borderRadius: "8px",
-        boxShadow: "var(--shadow-lg)",
-        animation: "slideInRight 0.3s ease-out",
-      }}
-    >
-      <span style={{ fontSize: "1.25rem" }}>{styles.icon}</span>
-      <p style={{ margin: 0, flex: 1, color: "var(--text-primary)" }}>
-        {toast.message}
-      </p>
+    <div className={toastClasses}>
+      <span className={styles.toastIcon}>{typeIcons[toast.type]}</span>
+      <p className={styles.toastMessage}>{toast.message}</p>
       <button
         onClick={() => onRemove(toast.id)}
-        style={{
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          fontSize: "1rem",
-          color: "var(--text-tertiary)",
-          padding: "0.25rem",
-        }}
+        className={styles.toastClose}
+        aria-label="Schließen"
       >
         ✕
       </button>
     </div>
   );
-};
-
-// Convenience functions
-export const toast = {
-  success: (message: string, duration?: number) => ({
-    type: "success" as const,
-    message,
-    duration,
-  }),
-  error: (message: string, duration?: number) => ({
-    type: "error" as const,
-    message,
-    duration,
-  }),
-  warning: (message: string, duration?: number) => ({
-    type: "warning" as const,
-    message,
-    duration,
-  }),
-  info: (message: string, duration?: number) => ({
-    type: "info" as const,
-    message,
-    duration,
-  }),
 };
 
 export default ToastProvider;

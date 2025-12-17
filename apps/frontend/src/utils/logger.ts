@@ -11,7 +11,7 @@ type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
 
 interface LogContext {
   module?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 const isDevelopment = import.meta.env.DEV;

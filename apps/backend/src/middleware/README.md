@@ -118,6 +118,7 @@ All middleware uses the standardized error response format defined in `utils/err
 2. **Apply rate limiting** to expensive or abuse-prone endpoints
 3. **Use authentication middleware** before protected routes
 4. **Combine middleware** for layered security:
+
    ```typescript
    router.post(
      "/ai/generate",

@@ -138,12 +138,12 @@ export type IconMode = "emoji" | "lucide";
 
 export type NodeIcon = string | React.ReactNode;
 
-export function getNodeIcon(type: NodeType, mode: IconMode): NodeIcon {
+export function getNodeIcon(_type: NodeType, _mode: IconMode): NodeIcon {
   // Implementation placeholder
   return "";
 }
 
-export function getCategoryColor(categoryId: string): CategoryColor {
+export function getCategoryColor(_categoryId: string): CategoryColor {
   // Implementation placeholder
   return { primary: "", text: "" };
 }
@@ -265,7 +265,7 @@ export interface SystemInfoState {
   timezone?: string;
   screenResolution?: string;
   online?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // ==================== NODE & CATALOG TYPES ====================
@@ -301,13 +301,13 @@ export type NodeType =
 
 export interface NodeData {
   title: string;
-  content?: any;
+  content?: unknown;
   dataSource?: DataSource;
   refreshInterval?: number;
   fields?: FormField[];
   chartConfig?: ChartConfig;
   tableConfig?: TableConfig;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface NodeConfig {
@@ -316,7 +316,7 @@ export interface NodeConfig {
   isCollapsible: boolean;
   isEditable: boolean;
   visibility: "VISIBLE" | "HIDDEN" | "MINIMIZED";
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface NodeMetadata {
@@ -327,7 +327,7 @@ export interface NodeMetadata {
   updatedAt?: Date;
   createdBy?: string;
   version?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // ==================== SEARCH TYPES ====================
@@ -339,7 +339,7 @@ export interface SearchResult {
   category?: string;
   relevance: number;
   metadata: SearchMetadata;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface SearchMetadata {
@@ -347,7 +347,7 @@ export interface SearchMetadata {
   tags: string[];
   category: string;
   nodeType: NodeType;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type SearchFilter = "category" | "type" | "tag" | "date" | string;
@@ -357,7 +357,7 @@ export interface SearchFilters {
   nodeTypes: NodeType[];
   dateRange?: DateRange;
   tags: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface DateRange {
@@ -383,11 +383,11 @@ export interface NavigationEntry {
   params: NavigationParams;
   timestamp: Date;
   title: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface NavigationParams {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface NavigationManager {
@@ -415,7 +415,7 @@ export interface HealthStatusDetailed {
   version?: string;
   environment?: string;
   instance?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export type HealthLevel = "HEALTHY" | "DEGRADED" | "UNHEALTHY" | "UNKNOWN";
@@ -426,7 +426,7 @@ export interface ComponentHealth {
   message?: string;
   lastUpdate: Date;
   dependencies?: string[];
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 export interface HealthMetrics {
@@ -442,7 +442,7 @@ export interface HealthMetrics {
   maxCpuUsage?: number;
   healthyComponents?: number;
   totalComponents?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Health Mapper Types
@@ -450,15 +450,15 @@ export interface RawHealthResponse {
   status?: string;
   health?: string;
   state?: string;
-  components?: any;
-  metrics?: any;
+  components?: unknown;
+  metrics?: unknown;
   version?: string;
   timestamp?: string | Date;
   lastChecked?: string | Date;
   environment?: string;
   instance?: string;
-  details?: Record<string, any>;
-  [key: string]: any;
+  details?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 export interface HealthMapperConfig {
@@ -479,7 +479,7 @@ export interface WidgetInstance {
   position: NodePosition;
   size: NodeSize;
   config: WidgetConfig;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface DashboardNode {
@@ -537,7 +537,7 @@ export interface Category {
 export interface NodeBuilderOptions {
   validate?: boolean;
   normalize?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // ==================== UI & THEME TYPES ====================
@@ -585,8 +585,8 @@ export interface FormField {
   required: boolean;
   options?: string[];
   validation?: ValidationRule;
-  defaultValue?: any;
-  [key: string]: any;
+  defaultValue?: unknown;
+  [key: string]: unknown;
 }
 
 export type FieldType =
@@ -602,19 +602,19 @@ export interface ValidationRule {
   min?: number;
   max?: number;
   required?: boolean;
-  custom?: (value: any) => boolean;
-  [key: string]: any;
+  custom?: (value: unknown) => boolean;
+  [key: string]: unknown;
 }
 
 export interface ChartConfig {
   type: ChartType;
-  data: any[];
+  data: unknown[];
   xKey: string;
   yKey: string;
   colors: string[];
   showLegend: boolean;
   animation: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type ChartType = "BAR" | "LINE" | "PIE" | "AREA" | "SCATTER";
@@ -626,7 +626,7 @@ export interface TableConfig {
   sortable: boolean;
   filterable: boolean;
   selectable: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface TableColumn {
@@ -635,14 +635,14 @@ export interface TableColumn {
   sortable: boolean;
   filterable: boolean;
   width?: number;
-  render?: (value: any) => React.ReactNode;
-  [key: string]: any;
+  render?: (value: unknown) => React.ReactNode;
+  [key: string]: unknown;
 }
 
 export interface WidgetProps {
   node: DashboardNode;
   config: WidgetConfig;
-  onUpdate?: (data: any) => void;
+  onUpdate?: (data: unknown) => void;
   onDelete?: () => void;
 }
 
@@ -651,7 +651,7 @@ export interface WidgetConfig {
   animations: boolean;
   responsive: boolean;
   errorHandling: ErrorHandlingConfig;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface WidgetTheme {
@@ -660,14 +660,14 @@ export interface WidgetTheme {
   backgroundColor: string;
   textColor: string;
   borderRadius: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ErrorHandlingConfig {
   retryCount: number;
   fallbackMessage: string;
   showErrors: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface WidgetRegistry {
@@ -741,14 +741,14 @@ export interface DashboardConfig {
   features: FeatureFlags;
   dataSources: DataSource[];
   security: SecurityConfig;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface Permission {
   role: string;
   actions: Action[];
   constraints: Constraint[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type Action = "READ" | "WRITE" | "DELETE" | "CREATE" | "ADMIN";
@@ -756,8 +756,8 @@ export type Action = "READ" | "WRITE" | "DELETE" | "CREATE" | "ADMIN";
 export interface Constraint {
   field: string;
   operator: "EQ" | "NEQ" | "GT" | "LT" | "IN";
-  value: any;
-  [key: string]: any;
+  value: unknown;
+  [key: string]: unknown;
 }
 
 export interface FeatureFlags {
@@ -766,7 +766,7 @@ export interface FeatureFlags {
   customWidgets: boolean;
   advancedLayout: boolean;
   realTimeUpdates: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface DataSource {
@@ -776,7 +776,7 @@ export interface DataSource {
   authentication?: AuthConfig;
   cacheTimeout: number;
   retryPolicy: RetryPolicy;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type DataSourceType = "REST" | "WEBSOCKET" | "GRAPHQL" | "DATABASE";
@@ -787,14 +787,14 @@ export interface AuthConfig {
   username?: string;
   password?: string;
   apiKey?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface RetryPolicy {
   maxRetries: number;
   timeout: number;
   backoff: "LINEAR" | "EXPONENTIAL";
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface SecurityConfig {
@@ -802,33 +802,33 @@ export interface SecurityConfig {
   sessionTimeout: number;
   allowedOrigins: string[];
   cors: CorsConfig;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface EncryptionConfig {
   algorithm: string;
   key: string;
   enabled: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface CorsConfig {
   allowedOrigins: string[];
   allowedMethods: string[];
   allowedHeaders: string[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // ==================== UTILITY TYPES ====================
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   status: number;
   message: string;
   timestamp: Date;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
-export interface PaginatedResponse<T = any> extends ApiResponse<T[]> {
+export interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
   pagination: PaginationInfo;
 }
 
@@ -837,15 +837,15 @@ export interface PaginationInfo {
   pageSize: number;
   total: number;
   totalPages: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ErrorResponse {
   error: string;
   code: string;
-  details?: any;
+  details?: unknown;
   timestamp: Date;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // ==================== COMPONENT PROPS ====================
@@ -879,7 +879,7 @@ export interface DashboardHeaderProps {
   className?: string;
 
   /** Beliebige weitere HTML-Attribute für <header> */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface CategoryGridProps {

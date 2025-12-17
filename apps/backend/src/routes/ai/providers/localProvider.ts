@@ -107,7 +107,7 @@ export function scanLocalModels(): LocalModelInfo[] {
 export async function callLocalModel(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {},
+  options: Record<string, unknown> = {},
 ): Promise<AIResponse> {
   const localModels = scanLocalModels();
   const selected = localModels.find((m) =>

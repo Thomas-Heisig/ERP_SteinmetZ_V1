@@ -2,10 +2,13 @@
 // apps/frontend/src/components/AIAnnotator/AIAnnotator.tsx
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import useAiAnnotator from "../../hooks/useAiAnnotator";
 import "./AIAnnotator.css";
 
 export const AIAnnotator: React.FC = () => {
+  const { t } = useTranslation("aiAnnotator");
+
   const {
     // Status & Config
     status,
@@ -87,17 +90,22 @@ export const AIAnnotator: React.FC = () => {
 
   const renderDashboard = () => (
     <div className="ai-section">
-      <h2 className="ai-section-title">System Status</h2>
+      <h2 className="ai-section-title">{t("dashboard.title")}</h2>
       <div className="ai-grid">
         {/* API Status Card */}
         <div className="ai-card">
           <h3 className="ai-card-title">
-            API Status {status && getStatusIndicator(status.available)}
+            {t("dashboard.systemStatus.title")}{" "}
+            {status && getStatusIndicator(status.available)}
           </h3>
           {statusLoading ? (
-            <p className="loading-text">Loading...</p>
+            <p className="loading-text">
+              {t("dashboard.systemStatus.loading")}
+            </p>
           ) : statusError ? (
-            <p className="error-text">Error: {statusError}</p>
+            <p className="error-text">
+              {t("dashboard.systemStatus.error")}: {statusError}
+            </p>
           ) : status ? (
             <>
               <div className="status-details">
@@ -128,7 +136,7 @@ export const AIAnnotator: React.FC = () => {
                 className="btn btn-primary"
                 disabled={statusLoading}
               >
-                Refresh Status
+                {t("nodes.refreshButton")}
               </button>
             </>
           ) : (
@@ -139,13 +147,15 @@ export const AIAnnotator: React.FC = () => {
         {/* System Health Card */}
         <div className="ai-card">
           <h3 className="ai-card-title">
-            System Health{" "}
+            {t("dashboard.health.title")}{" "}
             {health && getStatusIndicator(health.overall === "healthy")}
           </h3>
           {healthLoading ? (
-            <p className="loading-text">Loading...</p>
+            <p className="loading-text">{t("dashboard.health.loading")}</p>
           ) : healthError ? (
-            <p className="error-text">Error: {healthError}</p>
+            <p className="error-text">
+              {t("dashboard.health.error")}: {healthError}
+            </p>
           ) : health ? (
             <>
               <div className="health-details">
@@ -175,7 +185,7 @@ export const AIAnnotator: React.FC = () => {
                 className="btn btn-primary"
                 disabled={healthLoading}
               >
-                Refresh Health
+                {t("nodes.refreshButton")}
               </button>
             </>
           ) : (
@@ -185,16 +195,18 @@ export const AIAnnotator: React.FC = () => {
 
         {/* Database Statistics Card */}
         <div className="ai-card">
-          <h3 className="ai-card-title">📊 Database Statistics</h3>
+          <h3 className="ai-card-title">📊 {t("dashboard.database.title")}</h3>
           {databaseStatsLoading ? (
-            <p className="loading-text">Loading...</p>
+            <p className="loading-text">{t("dashboard.database.loading")}</p>
           ) : databaseStatsError ? (
-            <p className="error-text">Error: {databaseStatsError}</p>
+            <p className="error-text">
+              {t("dashboard.database.error")}: {databaseStatsError}
+            </p>
           ) : databaseStats ? (
             <>
               <div className="db-stats">
                 <p className="stat-main">
-                  Total Nodes:{" "}
+                  {t("dashboard.database.totalNodes")}:{" "}
                   <strong>
                     {(databaseStats as unknown as Record<string, number>)
                       .total || 0}
@@ -241,7 +253,7 @@ export const AIAnnotator: React.FC = () => {
                 className="btn btn-primary"
                 disabled={databaseStatsLoading}
               >
-                Refresh Stats
+                {t("nodes.refreshButton")}
               </button>
             </>
           ) : (
@@ -254,12 +266,12 @@ export const AIAnnotator: React.FC = () => {
 
   const renderNodes = () => (
     <div className="ai-section">
-      <h2 className="ai-section-title">Function Nodes</h2>
+      <h2 className="ai-section-title">{t("nodes.title")}</h2>
 
       {/* Filters */}
       <div className="filter-row">
         <div className="filter-group">
-          <label className="filter-label">Search:</label>
+          <label className="filter-label">{t("nodes.search")}</label>
           <input
             type="text"
             className="filter-input"
@@ -267,11 +279,11 @@ export const AIAnnotator: React.FC = () => {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
-            placeholder="Search nodes..."
+            placeholder={t("nodes.search")}
           />
         </div>
         <div className="filter-group">
-          <label className="filter-label">Limit:</label>
+          <label className="filter-label">{t("nodes.limit")}</label>
           <input
             type="number"
             className="filter-input"
@@ -292,29 +304,31 @@ export const AIAnnotator: React.FC = () => {
           className="btn btn-primary"
           disabled={nodesLoading}
         >
-          Search
+          {t("nodes.searchButton")}
         </button>
         <button
           onClick={handleRefreshNodes}
           className="btn btn-secondary"
           disabled={nodesLoading}
         >
-          Refresh
+          {t("nodes.refreshButton")}
         </button>
       </div>
 
       {nodesLoading ? (
-        <div className="loading-state">Loading nodes...</div>
+        <div className="loading-state">{t("nodes.loading")}</div>
       ) : nodesError ? (
-        <div className="error-state">Error: {nodesError}</div>
-      ) : !nodes || nodes.length === 0 ? (
-        <div className="empty-state">
-          No nodes found. Try adjusting filters.
+        <div className="error-state">
+          {t("nodes.error")}: {nodesError}
         </div>
+      ) : !nodes || nodes.length === 0 ? (
+        <div className="empty-state">{t("nodes.noNodes")}</div>
       ) : (
         <>
           <div className="pagination-info">
-            Showing {nodes.length} of {pagination.total} nodes
+            {t("nodes.pagination.showing")} {nodes.length}{" "}
+            {t("nodes.pagination.of")} {pagination.total}{" "}
+            {t("nodes.pagination.nodes")}
           </div>
           <div className="ai-grid">
             {nodes.map(
@@ -355,7 +369,7 @@ export const AIAnnotator: React.FC = () => {
                         }}
                         className="btn btn-primary"
                       >
-                        Generate Meta
+                        {t("nodes.actions.generateMeta")}
                       </button>
                       <button
                         onClick={(e: React.MouseEvent) => {
@@ -364,7 +378,7 @@ export const AIAnnotator: React.FC = () => {
                         }}
                         className="btn btn-secondary"
                       >
-                        Generate Form
+                        {t("nodes.actions.generateForm")}
                       </button>
                       <button
                         onClick={(e: React.MouseEvent) => {
@@ -373,7 +387,7 @@ export const AIAnnotator: React.FC = () => {
                         }}
                         className="btn btn-success"
                       >
-                        Generate Rule
+                        {t("nodes.actions.generateRule")}
                       </button>
                     </div>
                   )}
@@ -388,12 +402,14 @@ export const AIAnnotator: React.FC = () => {
 
   const renderQuality = () => (
     <div className="ai-section">
-      <h2 className="ai-section-title">Quality Report</h2>
+      <h2 className="ai-section-title">{t("quality.title")}</h2>
 
       {qualityReportLoading ? (
-        <div className="loading-state">Loading quality report...</div>
+        <div className="loading-state">{t("quality.loading")}</div>
       ) : qualityReportError ? (
-        <div className="error-state">Error: {qualityReportError}</div>
+        <div className="error-state">
+          {t("quality.error")}: {qualityReportError}
+        </div>
       ) : qualityReport ? (
         <div className="ai-grid">
           <div className="ai-card">
@@ -437,7 +453,7 @@ export const AIAnnotator: React.FC = () => {
         </div>
       ) : (
         <div className="empty-state">
-          <p>No quality report available</p>
+          <p>{t("quality.noReport")}</p>
         </div>
       )}
 
@@ -446,19 +462,21 @@ export const AIAnnotator: React.FC = () => {
         className="btn btn-primary"
         disabled={qualityReportLoading}
       >
-        Generate Quality Report
+        {t("quality.generateButton")}
       </button>
     </div>
   );
 
   const renderBatch = () => (
     <div className="ai-section">
-      <h2 className="ai-section-title">Batch Operations</h2>
+      <h2 className="ai-section-title">{t("batch.title")}</h2>
 
       {batchOperationsLoading ? (
-        <div className="loading-state">Loading batch operations...</div>
+        <div className="loading-state">{t("batch.loading")}</div>
       ) : batchOperationsError ? (
-        <div className="error-state">Error: {batchOperationsError}</div>
+        <div className="error-state">
+          {t("batch.error")}: {batchOperationsError}
+        </div>
       ) : batchOperations && batchOperations.length > 0 ? (
         <div className="batch-list">
           {batchOperations.map(
@@ -504,7 +522,7 @@ export const AIAnnotator: React.FC = () => {
         </div>
       ) : (
         <div className="empty-state">
-          <p>No batch operations found</p>
+          <p>{t("batch.noBatches")}</p>
         </div>
       )}
 
@@ -514,14 +532,14 @@ export const AIAnnotator: React.FC = () => {
           className="btn btn-secondary"
           disabled={batchOperationsLoading}
         >
-          Refresh Batches
+          {t("batch.refreshButton")}
         </button>
         <button
           onClick={() => void cleanupOldBatches()}
           className="btn btn-danger"
           disabled={batchOperationsLoading}
         >
-          Cleanup Old Batches
+          {t("batch.cleanupButton")}
         </button>
       </div>
     </div>
@@ -530,10 +548,8 @@ export const AIAnnotator: React.FC = () => {
   return (
     <div className="ai-annotator-container">
       <header className="ai-annotator-header">
-        <h1 className="ai-annotator-title">🤖 AI Annotator</h1>
-        <p className="ai-annotator-subtitle">
-          AI-powered metadata generation and annotation system
-        </p>
+        <h1 className="ai-annotator-title">🤖 {t("title")}</h1>
+        <p className="ai-annotator-subtitle">{t("subtitle")}</p>
       </header>
 
       <div className="ai-annotator-tabs">
@@ -541,25 +557,25 @@ export const AIAnnotator: React.FC = () => {
           className={`tab-button ${activeTab === "dashboard" ? "active" : ""}`}
           onClick={() => setActiveTab("dashboard")}
         >
-          Dashboard
+          {t("tabs.dashboard")}
         </button>
         <button
           className={`tab-button ${activeTab === "nodes" ? "active" : ""}`}
           onClick={() => setActiveTab("nodes")}
         >
-          Nodes
+          {t("tabs.nodes")}
         </button>
         <button
           className={`tab-button ${activeTab === "quality" ? "active" : ""}`}
           onClick={() => setActiveTab("quality")}
         >
-          Quality
+          {t("tabs.quality")}
         </button>
         <button
           className={`tab-button ${activeTab === "batch" ? "active" : ""}`}
           onClick={() => setActiveTab("batch")}
         >
-          Batch Operations
+          {t("tabs.batch")}
         </button>
       </div>
 

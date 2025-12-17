@@ -4,7 +4,7 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) t
 
 ## Format
 
-```
+```bash
 <type>(<scope>): <subject>
 
 <body>
@@ -43,7 +43,7 @@ The scope provides additional contextual information and is contained within par
 
 Examples:
 
-```
+```text
 feat(backend): add user authentication
 fix(frontend): resolve navigation bug
 docs(api): update endpoint documentation
@@ -78,13 +78,13 @@ The footer should contain any information about Breaking Changes and reference G
 
 ### Simple feature
 
-```
+```text
 feat(backend): add rate limiting to API endpoints
 ```
 
 ### Bug fix with scope
 
-```
+```text
 fix(frontend): correct theme toggle persistence
 
 The theme toggle state was not being saved to localStorage correctly.
@@ -95,7 +95,7 @@ Fixes #234
 
 ### Breaking change
 
-```
+```text
 feat(api): redesign authentication flow
 
 Implement JWT-based authentication replacing session cookies.
@@ -109,7 +109,7 @@ Closes #456
 
 ### Documentation update
 
-```
+```text
 docs: update developer onboarding guide
 
 Add instructions for setting up the development environment on Windows.
@@ -117,7 +117,7 @@ Add instructions for setting up the development environment on Windows.
 
 ### Dependency update
 
-```
+```text
 chore(deps): upgrade react to v19.2.0
 
 Update React and React DOM to latest stable version.
@@ -125,7 +125,7 @@ Update React and React DOM to latest stable version.
 
 ### Performance improvement
 
-```
+```text
 perf(backend): optimize database queries
 
 Reduce N+1 queries in user data fetching by implementing eager loading.
@@ -149,7 +149,7 @@ The `commit-msg` hook validates your commit message format using commitlint.
 
 #### Error: "type may not be empty"
 
-```
+```info
 # ❌ Bad
 update documentation
 
@@ -159,7 +159,7 @@ docs: update documentation
 
 #### Error: "subject may not be empty"
 
-```
+```info
 # ❌ Bad
 feat:
 
@@ -169,7 +169,7 @@ feat: add new feature
 
 #### Error: "type must be one of [feat, fix, docs, ...]"
 
-```
+```info
 # ❌ Bad
 feature: add login
 
@@ -179,7 +179,7 @@ feat: add login
 
 #### Error: "header must not be longer than 100 characters"
 
-```
+```info
 # ❌ Bad
 feat: add a very long description that exceeds the maximum allowed length for commit message headers
 
@@ -216,7 +216,7 @@ git config --local commit.template .gitmessage
 
 Create `.gitmessage` file:
 
-```
+```bash
 # <type>(<scope>): <subject>
 # |<----  Using a Maximum Of 100 Characters  ---->|
 

@@ -152,7 +152,7 @@ export function push(
 
   // Apply size limits if needed
   const finalHistory = mergedOptions.autoPrune
-    ? pruneHistory(newHistory, mergedOptions.maxSize!)
+    ? pruneHistory(newHistory, mergedOptions.maxSize || 50)
     : newHistory;
   const finalIndex = Math.min(newIndex, finalHistory.length - 1);
 
@@ -541,9 +541,9 @@ export function deserializeStack(serialized: string): NavigationStackState {
 
     return {
       ...parsed,
-      history: parsed.history.map((entry: any) => ({
+      history: parsed.history.map((entry: Record<string, unknown>) => ({
         ...entry,
-        timestamp: new Date(entry.timestamp),
+        timestamp: new Date(entry.timestamp as string | number | Date),
       })),
     };
   } catch (error) {

@@ -16,7 +16,7 @@ export interface DebounceOptions {
   maxWait?: number | undefined;
 }
 
-export interface DebouncedFunction<T extends (...args: any[]) => any> {
+export interface DebouncedFunction<T extends (...args: never[]) => unknown> {
   /** The debounced function */
   (...args: Parameters<T>): void;
   /** Cancel pending execution */
@@ -53,7 +53,7 @@ export interface DebouncedFunction<T extends (...args: any[]) => any> {
  * debouncedSearch.cancel();
  * ```
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: never[]) => unknown>(
   fn: T,
   options: number | DebounceOptions = {},
 ): DebouncedFunction<T> {
@@ -169,7 +169,7 @@ export function debounce<T extends (...args: any[]) => any>(
  * window.addEventListener('scroll', throttledScroll);
  * ```
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: never[]) => unknown>(
   fn: T,
   delay: number = 300,
 ): DebouncedFunction<T> {
@@ -188,7 +188,7 @@ export function throttle<T extends (...args: any[]) => any>(
 /**
  * Debounce with immediate execution on first call
  */
-export function debounceLeading<T extends (...args: any[]) => any>(
+export function debounceLeading<T extends (...args: never[]) => unknown>(
   fn: T,
   delay: number = 300,
 ): DebouncedFunction<T> {
@@ -198,7 +198,7 @@ export function debounceLeading<T extends (...args: any[]) => any>(
 /**
  * Debounce with execution only after delay (no immediate execution)
  */
-export function debounceTrailing<T extends (...args: any[]) => any>(
+export function debounceTrailing<T extends (...args: never[]) => unknown>(
   fn: T,
   delay: number = 300,
 ): DebouncedFunction<T> {
@@ -208,7 +208,7 @@ export function debounceTrailing<T extends (...args: any[]) => any>(
 /**
  * Debounce with both leading and trailing execution
  */
-export function debounceBoth<T extends (...args: any[]) => any>(
+export function debounceBoth<T extends (...args: never[]) => unknown>(
   fn: T,
   delay: number = 300,
 ): DebouncedFunction<T> {
@@ -223,7 +223,7 @@ export function debounceBoth<T extends (...args: any[]) => any>(
  * Create a debounced function that returns a promise
  * Useful for async operations like API calls
  */
-export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
+export function debounceAsync<T extends (...args: never[]) => Promise<unknown>>(
   fn: T,
   options: number | DebounceOptions = {},
 ): {
@@ -234,14 +234,14 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
 } {
   let pendingPromise: Promise<ReturnType<T>> | null = null;
   let resolvePending: ((value: ReturnType<T>) => void) | null = null;
-  let rejectPending: ((reason?: any) => void) | null = null;
+  let rejectPending: ((reason?: unknown) => void) | null = null;
 
   const debounced = debounce((...args: Parameters<T>) => {
     if (pendingPromise) {
       fn(...args)
         .then((result) => {
           if (resolvePending) {
-            resolvePending(result);
+            resolvePending(result as ReturnType<T>);
             resolvePending = null;
             rejectPending = null;
             pendingPromise = null;
@@ -301,7 +301,7 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
  * Create a memoized debounced function that returns cached results
  * for same arguments during the debounce period
  */
-export function memoizedDebounce<T extends (...args: any[]) => any>(
+export function memoizedDebounce<T extends (...args: never[]) => unknown>(
   fn: T,
   options: number | DebounceOptions = {},
 ): {
@@ -315,7 +315,7 @@ export function memoizedDebounce<T extends (...args: any[]) => any>(
   let cachedArgs: Parameters<T> | null = null;
 
   const debounced = debounce((...args: Parameters<T>) => {
-    cachedResult = fn(...args);
+    cachedResult = fn(...args) as ReturnType<T>;
     cachedArgs = args;
   }, options);
 

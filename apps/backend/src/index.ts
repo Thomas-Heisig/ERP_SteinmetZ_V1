@@ -47,6 +47,12 @@ import crmRouter from "./routes/crm/crmRouter.js";
 import inventoryRouter from "./routes/inventory/inventoryRouter.js";
 import projectsRouter from "./routes/projects/projectsRouter.js";
 import communicationRouter from "./routes/communication/communicationRouter.js";
+import businessRouter from "./routes/business/businessRouter.js";
+import salesRouter from "./routes/sales/salesRouter.js";
+import procurementRouter from "./routes/procurement/procurementRouter.js";
+import productionRouter from "./routes/production/productionRouter.js";
+import warehouseRouter from "./routes/warehouse/warehouseRouter.js";
+import reportingRouter from "./routes/reporting/reportingRouter.js";
 
 import { toolRegistry } from "./tools/registry.js";
 import { listRoutesTool } from "./tools/listRoutesTool.js";
@@ -124,9 +130,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Session middleware with Redis support
-import { createSessionMiddleware } from "./middleware/sessionMiddleware.js";
+import {
+  createSessionMiddleware,
+  startSessionCleanup,
+} from "./middleware/sessionMiddleware.js";
 app.use(createSessionMiddleware());
 logger.info("Session middleware configured with Redis support");
+
+// Start automatic session cleanup (every hour)
+startSessionCleanup();
+logger.info("Session cleanup scheduler started");
 
 // Metrics middleware - must be early to capture all requests
 app.use(metricsMiddleware);
@@ -183,6 +196,14 @@ app.use("/api/inventory", inventoryRouter);
 app.use("/api/projects", projectsRouter);
 app.use("/api/communication", communicationRouter);
 
+// Neue Hauptfunktions-Module
+app.use("/api/business", businessRouter);
+app.use("/api/sales", salesRouter);
+app.use("/api/procurement", procurementRouter);
+app.use("/api/production", productionRouter);
+app.use("/api/warehouse", warehouseRouter);
+app.use("/api/reporting", reportingRouter);
+
 // WebSocket statistics endpoint
 app.get("/api/ws/stats", (_req: Request, res: Response) => {
   res.json({
@@ -209,19 +230,25 @@ logger.info("API routes activated");
 
 app.get("/_router_init", (_req, res) => res.json({ ok: true }));
 
-logger.debug("Checking router structure after global registration...");
-const stack = (app as any)?._router?.stack;
-if (Array.isArray(stack)) {
-  logger.debug({ stackLength: stack.length }, "Router stack registered");
-  const routeNames = stack
-    .map(
-      (layer: any) => layer?.route?.path || layer?.name || layer?.handle?.name,
-    )
-    .filter(Boolean);
-  logger.debug({ routes: routeNames.slice(0, 20) }, "Known router entries");
-} else {
-  logger.warn("No _router stack found in Express app");
-}
+// Router stack verification - use setTimeout to check after app initialization
+setTimeout(() => {
+  logger.debug("Checking router structure after global registration...");
+  const stack = (app as any)?._router?.stack;
+  if (Array.isArray(stack)) {
+    logger.debug({ stackLength: stack.length }, "Router stack registered");
+    const routeNames = stack
+      .map(
+        (layer: any) =>
+          layer?.route?.path || layer?.name || layer?.handle?.name,
+      )
+      .filter(Boolean);
+    logger.debug({ routes: routeNames.slice(0, 20) }, "Known router entries");
+  } else {
+    logger.debug(
+      "Router stack not yet available - this is normal during initialization",
+    );
+  }
+}, 100);
 
 /* ---------------------- Debug-/Hilfsroute ---------------------- */
 app.get("/api/debug/routes", (_req, res) => {

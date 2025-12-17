@@ -4,16 +4,18 @@
 /**
  * Session Middleware
  *
- * Provides HTTP session management with Redis backend for distributed applications.
- * Falls back to in-memory storage in development when Redis is unavailable.
+ * Provides HTTP session management with Redis or SQLite backend.
+ * Uses Redis for production and SQLite for development with persistent sessions.
  *
  * @remarks
  * This middleware offers:
  * - Persistent sessions with Redis backend (production)
- * - In-memory fallback for development
+ * - SQLite session store for development (persistent across restarts)
  * - Secure cookie configuration
  * - Automatic session expiration (24 hours)
  * - CSRF protection via SameSite cookies
+ * - Automatic cleanup of expired sessions
+ * - Session statistics endpoint
  *
  * Session Configuration:
  * - Cookie name: 'erp.sid'
@@ -34,21 +36,35 @@
  *   res.json({ sessionId: req.sessionID });
  * });
  * ```
+ *
+ * @module sessionMiddleware
  */
 
 import session from "express-session";
+import type { RequestHandler } from "express";
 import { RedisStore } from "connect-redis";
+import connectSqlite3 from "connect-sqlite3";
 import { redisService } from "../services/redisService.js";
 import { log } from "../routes/ai/utils/logger.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Create SQLite session store
+const SQLiteStore = connectSqlite3(session);
 
 /**
- * Creates session middleware with Redis store or in-memory fallback
+ * Creates session middleware with Redis or SQLite store
  *
- * Automatically selects Redis store if available, otherwise uses in-memory store
- * (not recommended for production). Session secret is read from SESSION_SECRET
+ * Automatically selects Redis store if available, otherwise uses SQLite store
+ * for persistent sessions. Session secret is read from SESSION_SECRET
  * environment variable.
  *
- * @returns Express session middleware
+ * @returns Express session middleware with type-safe configuration
+ * @throws {Error} If session store initialization fails
  *
  * @example
  * ```typescript
@@ -56,7 +72,7 @@ import { log } from "../routes/ai/utils/logger.js";
  * app.use(sessionMiddleware);
  * ```
  */
-export function createSessionMiddleware() {
+export function createSessionMiddleware(): RequestHandler {
   const sessionSecret =
     process.env.SESSION_SECRET || "dev-secret-key-change-in-production";
 
@@ -77,36 +93,82 @@ export function createSessionMiddleware() {
     },
   };
 
-  // Use Redis store if available
-  if (redisClient && redisService.isReady()) {
-    log("info", "📦 Using Redis session store");
-    sessionConfig.store = new RedisStore({
-      client: redisClient,
-      prefix: "sess:",
-      ttl: 86400, // 24 hours in seconds
+  // Use Redis store if available, otherwise SQLite store
+  try {
+    if (redisClient && redisService.isReady()) {
+      log("info", "📦 Using Redis session store");
+      sessionConfig.store = new RedisStore({
+        client: redisClient,
+        prefix: "sess:",
+        ttl: 86400, // 24 hours in seconds
+      });
+    } else {
+      // Use SQLite session store for persistent sessions in development
+      const sessionDbPath = path.resolve(
+        __dirname,
+        "../../data/sessions.sqlite3",
+      );
+      log("info", `📦 Using SQLite session store: ${sessionDbPath}`);
+      sessionConfig.store = new SQLiteStore({
+        db: "sessions.sqlite3",
+        dir: path.resolve(__dirname, "../../data"),
+        table: "sessions",
+      });
+    }
+  } catch (error) {
+    log("error", "Failed to initialize session store", {
+      error: error instanceof Error ? error.message : String(error),
     });
-  } else {
-    log(
-      "warn",
-      "⚠️ Using in-memory session store (not recommended for production)",
-    );
-    // Default MemoryStore is used when no store is specified
+    // Fallback to default memory store (will warn automatically)
+    log("warn", "⚠️ Falling back to memory session store (not recommended for production)");
   }
 
   return session(sessionConfig);
 }
 
 /**
- * Session statistics middleware
- * Adds endpoint to get session stats
+ * Session store type
  */
-export async function getSessionStats() {
+type SessionStore = "redis" | "sqlite" | "memory";
+
+/**
+ * Session statistics interface
+ */
+interface SessionStats {
+  /** Type of session store being used */
+  store: SessionStore;
+  /** Total number of active sessions (Redis only) */
+  totalSessions?: number;
+  /** Redis service statistics */
+  redisStats?: ReturnType<typeof redisService.getStats>;
+  /** Status message */
+  message?: string;
+  /** Error message if stats retrieval failed */
+  error?: string;
+}
+
+/**
+ * Get session statistics
+ *
+ * Returns information about the current session store and active sessions.
+ * For Redis store, includes total session count and Redis statistics.
+ * For SQLite store, returns basic information.
+ *
+ * @returns Session statistics object
+ *
+ * @example
+ * ```typescript
+ * const stats = await getSessionStats();
+ * console.log(`Using ${stats.store} store with ${stats.totalSessions} sessions`);
+ * ```
+ */
+export async function getSessionStats(): Promise<SessionStats> {
   const redisClient = redisService.getClient();
 
   if (!redisClient || !redisService.isReady()) {
     return {
-      store: "memory",
-      message: "Using in-memory session store - statistics not available",
+      store: "sqlite",
+      message: "Using SQLite session store for persistent sessions",
     };
   }
 
@@ -132,6 +194,24 @@ export async function getSessionStats() {
 
 /**
  * Clean up expired sessions
+ *
+ * Removes expired sessions from the session store. For Redis, this is
+ * handled automatically by TTL. For SQLite, expired sessions are manually
+ * removed based on timestamp.
+ *
+ * @returns Number of sessions cleaned up
+ *
+ * @example
+ * ```typescript
+ * // Manual cleanup
+ * const cleaned = await cleanupExpiredSessions();
+ * console.log(`Cleaned ${cleaned} expired sessions`);
+ *
+ * // Scheduled cleanup (every hour)
+ * setInterval(async () => {
+ *   await cleanupExpiredSessions();
+ * }, 60 * 60 * 1000);
+ * ```
  */
 export async function cleanupExpiredSessions(): Promise<number> {
   const redisClient = redisService.getClient();
@@ -163,6 +243,41 @@ export async function cleanupExpiredSessions(): Promise<number> {
     });
     return 0;
   }
+}
+
+/**
+ * Start automatic session cleanup scheduler
+ *
+ * Schedules periodic cleanup of expired sessions. Only active for Redis store.
+ * SQLite sessions are cleaned up automatically by the store.
+ *
+ * @param intervalMs - Cleanup interval in milliseconds (default: 1 hour)
+ * @returns Timer ID that can be used to stop the scheduler
+ *
+ * @example
+ * ```typescript
+ * // Start cleanup every hour
+ * const timerId = startSessionCleanup();
+ *
+ * // Stop cleanup
+ * clearInterval(timerId);
+ * ```
+ */
+export function startSessionCleanup(intervalMs = 60 * 60 * 1000): NodeJS.Timeout {
+  log("info", `Starting session cleanup scheduler (interval: ${intervalMs}ms)`);
+
+  return setInterval(async () => {
+    try {
+      const cleaned = await cleanupExpiredSessions();
+      if (cleaned > 0) {
+        log("info", `Scheduled cleanup removed ${cleaned} expired sessions`);
+      }
+    } catch (error) {
+      log("error", "Scheduled session cleanup failed", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }, intervalMs);
 }
 
 export default createSessionMiddleware;

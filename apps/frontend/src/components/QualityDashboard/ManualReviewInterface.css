@@ -1,0 +1,335 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/components/QualityDashboard/ManualReviewInterface.css */
+
+.manual-review-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.manual-review-loading {
+  padding: 60px 20px;
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}
+
+.manual-review-empty {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.manual-review-empty-icon {
+  font-size: 64px;
+  color: #28a745;
+  margin-bottom: 20px;
+}
+
+.manual-review-refresh-button {
+  margin-top: 20px;
+  padding: 10px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.manual-review-refresh-button:hover {
+  background-color: #0056b3;
+}
+
+.manual-review-refresh-button:active {
+  background-color: #004085;
+}
+
+.manual-review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.manual-review-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.manual-review-progress {
+  font-size: 14px;
+  color: #888;
+  padding: 6px 12px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.manual-review-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.manual-review-section {
+  margin-bottom: 24px;
+}
+
+.manual-review-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.manual-review-info-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.manual-review-info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.manual-review-info-label {
+  font-size: 14px;
+  color: #888;
+  font-weight: 500;
+  min-width: 120px;
+}
+
+.manual-review-info-value {
+  font-size: 14px;
+  color: #333;
+}
+
+.manual-review-quality-score {
+  padding: 4px 12px;
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+}
+
+.manual-review-quality-score.high {
+  background-color: #28a745;
+}
+
+.manual-review-quality-score.medium {
+  background-color: #ffc107;
+}
+
+.manual-review-quality-score.low {
+  background-color: #dc3545;
+}
+
+.manual-review-textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.manual-review-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.manual-review-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.manual-review-button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.manual-review-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.manual-review-button:active {
+  transform: translateY(0);
+}
+
+.manual-review-button-approve {
+  background-color: #28a745;
+  color: white;
+}
+
+.manual-review-button-approve:hover {
+  background-color: #218838;
+}
+
+.manual-review-button-revision {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.manual-review-button-revision:hover {
+  background-color: #e0a800;
+}
+
+.manual-review-button-reject {
+  background-color: #dc3545;
+  color: white;
+}
+
+.manual-review-button-reject:hover {
+  background-color: #c82333;
+}
+
+.manual-review-button-skip {
+  background-color: #6c757d;
+  color: white;
+}
+
+.manual-review-button-skip:hover {
+  background-color: #5a6268;
+}
+
+.manual-review-queue {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.manual-review-queue-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.manual-review-queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manual-review-queue-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.manual-review-queue-item:hover {
+  background-color: #e9ecef;
+}
+
+.manual-review-queue-node-id {
+  font-size: 13px;
+  color: #666;
+}
+
+.manual-review-queue-score {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 500;
+}
+
+.manual-review-queue-score.high {
+  background-color: #28a745;
+}
+
+.manual-review-queue-score.medium {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.manual-review-queue-score.low {
+  background-color: #dc3545;
+}
+
+.manual-review-queue-more {
+  font-size: 13px;
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  padding: 8px;
+}
+
+.manual-review-queue-node-id {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .manual-review-card,
+  .manual-review-empty,
+  .manual-review-queue {
+    background-color: #1f2937;
+    color: #e5e7eb;
+  }
+
+  .manual-review-title,
+  .manual-review-section-title,
+  .manual-review-queue-title,
+  .manual-review-info-value {
+    color: #e5e7eb;
+  }
+
+  .manual-review-textarea {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  .manual-review-queue-item {
+    background-color: #374151;
+  }
+
+  .manual-review-queue-item:hover {
+    background-color: #4b5563;
+  }
+}
+
+/* Accessibility */
+.manual-review-button:focus,
+.manual-review-textarea:focus,
+.manual-review-refresh-button:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .manual-review-actions {
+    flex-direction: column;
+  }
+
+  .manual-review-button {
+    width: 100%;
+  }
+}

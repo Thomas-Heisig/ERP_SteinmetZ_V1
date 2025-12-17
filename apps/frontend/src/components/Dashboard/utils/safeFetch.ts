@@ -24,7 +24,7 @@ export interface SafeFetchOptions extends RequestInit {
   errorMessages?: Record<number, string>;
 }
 
-export interface SafeFetchResponse<T = any> {
+export interface SafeFetchResponse<T = unknown> {
   /** Whether the request was successful (status 200-299) */
   ok: boolean;
   /** HTTP status code */
@@ -85,7 +85,7 @@ const DEFAULT_ERROR_MESSAGES: Record<number, string> = {
  * }
  * ```
  */
-export async function safeFetch<T = any>(
+export async function safeFetch<T = unknown>(
   url: string,
   options: SafeFetchOptions = {},
 ): Promise<SafeFetchResponse<T>> {
@@ -122,7 +122,7 @@ export async function safeFetch<T = any>(
     const isJson = contentType?.includes("application/json") ?? false;
     const isText = contentType?.includes("text/") ?? false;
 
-    let payload: any;
+    let payload: unknown;
 
     if (isJson) {
       payload = await response.json();
@@ -178,7 +178,7 @@ export async function safeFetch<T = any>(
 function getErrorMessage(
   status: number,
   customMessages: Record<number, string>,
-  payload: any,
+  payload: unknown,
 ): string {
   // Priority: custom message → default message → payload message → generic message
   if (customMessages[status]) {
@@ -193,11 +193,21 @@ function getErrorMessage(
     return payload;
   }
 
-  if (payload?.message) {
+  if (
+    payload &&
+    typeof payload === "object" &&
+    "message" in payload &&
+    typeof payload.message === "string"
+  ) {
     return payload.message;
   }
 
-  if (payload?.error) {
+  if (
+    payload &&
+    typeof payload === "object" &&
+    "error" in payload &&
+    typeof payload.error === "string"
+  ) {
     return payload.error;
   }
 
@@ -252,19 +262,19 @@ function handleFetchError(
 /**
  * GET request convenience method
  */
-export async function safeGet<T = any>(
+export async function safeGet<T = unknown>(
   url: string,
-  options: Omit<SafeFetchOptions, "method"> = {},
+  options: Omit<SafeFetchOptions, "method" | "body"> = {},
 ): Promise<SafeFetchResponse<T>> {
   return safeFetch<T>(url, { ...options, method: "GET" });
 }
 
 /**
- * POST request convenience method
+ * POST request helper
  */
-export async function safePost<T = any>(
+export async function safePost<T = unknown>(
   url: string,
-  data?: any,
+  data?: unknown,
   options: Omit<SafeFetchOptions, "method" | "body"> = {},
 ): Promise<SafeFetchResponse<T>> {
   return safeFetch<T>(url, {
@@ -277,9 +287,9 @@ export async function safePost<T = any>(
 /**
  * PUT request convenience method
  */
-export async function safePut<T = any>(
+export async function safePut<T = unknown>(
   url: string,
-  data?: any,
+  data?: unknown,
   options: Omit<SafeFetchOptions, "method" | "body"> = {},
 ): Promise<SafeFetchResponse<T>> {
   return safeFetch<T>(url, {
@@ -292,7 +302,7 @@ export async function safePut<T = any>(
 /**
  * DELETE request convenience method
  */
-export async function safeDelete<T = any>(
+export async function safeDelete<T = unknown>(
   url: string,
   options: Omit<SafeFetchOptions, "method"> = {},
 ): Promise<SafeFetchResponse<T>> {

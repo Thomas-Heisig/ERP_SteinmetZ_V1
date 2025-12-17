@@ -5,11 +5,18 @@ import { useState, useCallback, useMemo } from "react";
    Typen
 ------------------------------------------------------- */
 
+interface SystemData {
+  name?: string;
+  version?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
 export interface SystemOverview {
-  system: any;
-  ai: any;
-  erp: any;
-  version: any;
+  system: SystemData;
+  ai: SystemData;
+  erp: SystemData;
+  version: SystemData;
   timestamp: string;
 }
 
@@ -50,19 +57,23 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     error: null,
   });
 
-  const [database, setDatabase] = useState<FetchState<any>>({
+  const [database, setDatabase] = useState<FetchState<Record<string, unknown>>>(
+    {
+      data: null,
+      loading: false,
+      error: null,
+    },
+  );
+
+  const [systemInfo, setSystemInfo] = useState<
+    FetchState<Record<string, unknown>>
+  >({
     data: null,
     loading: false,
     error: null,
   });
 
-  const [systemInfo, setSystemInfo] = useState<FetchState<any>>({
-    data: null,
-    loading: false,
-    error: null,
-  });
-
-  const [status, setStatus] = useState<FetchState<any>>({
+  const [status, setStatus] = useState<FetchState<Record<string, unknown>>>({
     data: null,
     loading: false,
     error: null,
@@ -74,37 +85,49 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     error: null,
   });
 
-  const [environment, setEnvironment] = useState<FetchState<any>>({
+  const [environment, setEnvironment] = useState<
+    FetchState<Record<string, unknown>>
+  >({
     data: null,
     loading: false,
     error: null,
   });
 
-  const [dependencies, setDependencies] = useState<FetchState<any>>({
+  const [dependencies, setDependencies] = useState<
+    FetchState<Record<string, unknown>>
+  >({
     data: null,
     loading: false,
     error: null,
   });
 
-  const [diagnostics, setDiagnostics] = useState<FetchState<any>>({
+  const [diagnostics, setDiagnostics] = useState<
+    FetchState<Record<string, unknown>>
+  >({
     data: null,
     loading: false,
     error: null,
   });
 
-  const [features, setFeatures] = useState<FetchState<any>>({
+  const [features, setFeatures] = useState<FetchState<Record<string, unknown>>>(
+    {
+      data: null,
+      loading: false,
+      error: null,
+    },
+  );
+
+  const [resources, setResources] = useState<
+    FetchState<Record<string, unknown>>
+  >({
     data: null,
     loading: false,
     error: null,
   });
 
-  const [resources, setResources] = useState<FetchState<any>>({
-    data: null,
-    loading: false,
-    error: null,
-  });
-
-  const [functionsSummary, setFunctionsSummary] = useState<FetchState<any>>({
+  const [functionsSummary, setFunctionsSummary] = useState<
+    FetchState<Record<string, unknown>>
+  >({
     data: null,
     loading: false,
     error: null,
@@ -150,7 +173,7 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     try {
       const result = await fetchFromBackend<SystemOverview>("/");
       setOverview({ data: result, loading: false, error: null });
-    } catch (err: any) {
+    } catch (err) {
       setOverview({
         data: {
           system: { error: true },
@@ -160,7 +183,7 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
           timestamp: new Date().toISOString(),
         },
         loading: false,
-        error: err.message,
+        error: err instanceof Error ? err.message : String(err),
       });
     }
   }, [fetchFromBackend]);
@@ -170,8 +193,12 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     try {
       const result = await fetchFromBackend<SystemRouteInfo>("/routes");
       setRoutes({ data: result, loading: false, error: null });
-    } catch (err: any) {
-      setRoutes({ data: null, loading: false, error: err.message });
+    } catch (err) {
+      setRoutes({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -179,9 +206,17 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     setDatabase((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/database");
-      setDatabase({ data, loading: false, error: null });
-    } catch (err: any) {
-      setDatabase({ data: null, loading: false, error: err.message });
+      setDatabase({
+        data: data as Record<string, unknown>,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      setDatabase({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -189,9 +224,17 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     setSystemInfo((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/system");
-      setSystemInfo({ data, loading: false, error: null });
-    } catch (err: any) {
-      setSystemInfo({ data: null, loading: false, error: err.message });
+      setSystemInfo({
+        data: data as Record<string, unknown>,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      setSystemInfo({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -199,9 +242,17 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     setStatus((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/status");
-      setStatus({ data, loading: false, error: null });
-    } catch (err: any) {
-      setStatus({ data: null, loading: false, error: err.message });
+      setStatus({
+        data: data as Record<string, unknown>,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      setStatus({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -210,8 +261,12 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     try {
       const data = await fetchFromBackend<HealthStatus>("/health");
       setHealth({ data, loading: false, error: null });
-    } catch (err: any) {
-      setHealth({ data: null, loading: false, error: err.message });
+    } catch (err) {
+      setHealth({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -219,9 +274,17 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     setEnvironment((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/environment");
-      setEnvironment({ data, loading: false, error: null });
-    } catch (err: any) {
-      setEnvironment({ data: null, loading: false, error: err.message });
+      setEnvironment({
+        data: data as Record<string, unknown>,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      setEnvironment({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -229,9 +292,17 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     setDependencies((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/dependencies");
-      setDependencies({ data, loading: false, error: null });
-    } catch (err: any) {
-      setDependencies({ data: null, loading: false, error: err.message });
+      setDependencies({
+        data: data as Record<string, unknown>,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      setDependencies({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -239,9 +310,17 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     setDiagnostics((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/diagnostics");
-      setDiagnostics({ data, loading: false, error: null });
-    } catch (err: any) {
-      setDiagnostics({ data: null, loading: false, error: err.message });
+      setDiagnostics({
+        data: data as Record<string, unknown>,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      setDiagnostics({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -249,9 +328,17 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     setFeatures((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/features");
-      setFeatures({ data, loading: false, error: null });
-    } catch (err: any) {
-      setFeatures({ data: null, loading: false, error: err.message });
+      setFeatures({
+        data: data as Record<string, unknown>,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      setFeatures({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -259,9 +346,17 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     setResources((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/resources");
-      setResources({ data, loading: false, error: null });
-    } catch (err: any) {
-      setResources({ data: null, loading: false, error: err.message });
+      setResources({
+        data: data as Record<string, unknown>,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      setResources({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -269,9 +364,17 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     setFunctionsSummary((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const data = await fetchFromBackend("/functions");
-      setFunctionsSummary({ data, loading: false, error: null });
-    } catch (err: any) {
-      setFunctionsSummary({ data: null, loading: false, error: err.message });
+      setFunctionsSummary({
+        data: data as Record<string, unknown>,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      setFunctionsSummary({
+        data: null,
+        loading: false,
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   }, [fetchFromBackend]);
 
@@ -310,17 +413,29 @@ export const useSystemInfo = (backendUrl: string = "http://localhost:3000") => {
     }),
     [
       overview,
+      loadOverview,
       routes,
+      loadRoutes,
       database,
+      loadDatabase,
       systemInfo,
+      loadSystem,
       status,
+      loadStatus,
       health,
+      loadHealth,
       environment,
+      loadEnvironment,
       dependencies,
+      loadDependencies,
       diagnostics,
+      loadDiagnostics,
       features,
+      loadFeatures,
       resources,
+      loadResources,
       functionsSummary,
+      loadFunctions,
     ],
   );
 };

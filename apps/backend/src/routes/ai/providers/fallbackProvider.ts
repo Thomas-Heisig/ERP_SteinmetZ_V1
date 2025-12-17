@@ -19,7 +19,7 @@ const FALLBACK_RESPONSES: string[] = [
  */
 export async function callFallback(
   model: string,
-  messages: ChatMessage[],
+  _messages: ChatMessage[],
 ): Promise<AIResponse> {
   const response =
     FALLBACK_RESPONSES[Math.floor(Math.random() * FALLBACK_RESPONSES.length)];

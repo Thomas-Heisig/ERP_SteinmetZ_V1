@@ -1,7 +1,19 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/ModelManagement/ModelComparison.tsx
 
+/**
+ * Model Comparison Component
+ * 
+ * Compares performance and cost metrics across different AI models:
+ * - Success rates and request counts
+ * - Cost efficiency analysis
+ * - Performance benchmarking
+ * 
+ * @module ModelComparison
+ */
+
 import React, { useState, useEffect } from "react";
+import styles from "./ModelComparison.module.css";
 
 interface ModelStats {
   modelName: string;
@@ -26,6 +38,7 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
 
   useEffect(() => {
     fetchModelStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDays]);
 
   const fetchModelStats = async () => {
@@ -47,20 +60,22 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
   };
 
   if (loading) {
-    return <div style={styles.loading}>Loading model statistics...</div>;
+    return <div className={styles.loading}>Loading model statistics...</div>;
   }
 
   const totalCost = models.reduce((sum, m) => sum + m.totalCost, 0);
   const totalRequests = models.reduce((sum, m) => sum + m.totalRequests, 0);
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Model Comparison</h1>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Model Comparison</h1>
         <select
+          id="days-select"
+          aria-label="Select time range for comparison"
           value={selectedDays}
           onChange={(e) => setSelectedDays(Number(e.target.value))}
-          style={styles.select}
+          className={styles.select}
         >
           <option value={7}>Last 7 days</option>
           <option value={30}>Last 30 days</option>
@@ -69,74 +84,72 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
       </div>
 
       {/* Summary Cards */}
-      <div style={styles.summaryGrid}>
-        <div style={styles.summaryCard}>
-          <div style={styles.summaryLabel}>Total Models</div>
-          <div style={styles.summaryValue}>{models.length}</div>
+      <div className={styles.summaryGrid}>
+        <div className={styles.summaryCard}>
+          <div className={styles.summaryLabel}>Total Models</div>
+          <div className={styles.summaryValue}>{models.length}</div>
         </div>
-        <div style={styles.summaryCard}>
-          <div style={styles.summaryLabel}>Total Requests</div>
-          <div style={styles.summaryValue}>
+        <div className={styles.summaryCard}>
+          <div className={styles.summaryLabel}>Total Requests</div>
+          <div className={styles.summaryValue}>
             {totalRequests.toLocaleString()}
           </div>
         </div>
-        <div style={styles.summaryCard}>
-          <div style={styles.summaryLabel}>Total Cost</div>
-          <div style={styles.summaryValue}>${totalCost.toFixed(2)}</div>
+        <div className={styles.summaryCard}>
+          <div className={styles.summaryLabel}>Total Cost</div>
+          <div className={styles.summaryValue}>${totalCost.toFixed(2)}</div>
         </div>
       </div>
 
       {/* Model Comparison Table */}
-      <div style={styles.section}>
+      <div className={styles.section}>
         {models.length === 0 ? (
-          <p style={styles.emptyState}>No model usage data available</p>
+          <p className={styles.emptyState}>No model usage data available</p>
         ) : (
-          <div style={styles.table}>
-            <div style={styles.tableHeader}>
-              <div style={styles.tableCell}>Model</div>
-              <div style={styles.tableCell}>Provider</div>
-              <div style={styles.tableCell}>Requests</div>
-              <div style={styles.tableCell}>Success Rate</div>
-              <div style={styles.tableCell}>Avg Duration</div>
-              <div style={styles.tableCell}>Total Cost</div>
+          <div className={styles.table}>
+            <div className={styles.tableHeader}>
+              <div className={styles.tableCell}>Model</div>
+              <div className={styles.tableCell}>Provider</div>
+              <div className={styles.tableCell}>Requests</div>
+              <div className={styles.tableCell}>Success Rate</div>
+              <div className={styles.tableCell}>Avg Duration</div>
+              <div className={styles.tableCell}>Total Cost</div>
             </div>
             {models.map((model) => (
               <div
                 key={`${model.modelName}-${model.provider}`}
-                style={styles.tableRow}
+                className={styles.tableRow}
               >
-                <div style={styles.tableCell}>
+                <div className={styles.tableCell}>
                   <strong>{model.modelName}</strong>
                 </div>
-                <div style={styles.tableCell}>
-                  <span style={styles.providerBadge}>{model.provider}</span>
+                <div className={styles.tableCell}>
+                  <span className={styles.providerBadge}>{model.provider}</span>
                 </div>
-                <div style={styles.tableCell}>
+                <div className={styles.tableCell}>
                   {model.totalRequests.toLocaleString()}
                 </div>
-                <div style={styles.tableCell}>
-                  <div style={styles.progressContainer}>
+                <div className={styles.tableCell}>
+                  <div className={styles.progressContainer}>
                     <div
-                      style={{
-                        ...styles.progressBar,
-                        width: `${model.successRate * 100}%`,
-                        backgroundColor:
-                          model.successRate >= 0.9
-                            ? "#28a745"
-                            : model.successRate >= 0.7
-                              ? "#ffc107"
-                              : "#dc3545",
-                      }}
+                      className={`${styles.progressBar} ${
+                        model.successRate >= 0.9
+                          ? styles.progressSuccess
+                          : model.successRate >= 0.7
+                            ? styles.progressWarning
+                            : styles.progressDanger
+                      }`}
+                      style={{ width: `${model.successRate * 100}%` }}
                     />
-                    <span style={styles.progressText}>
+                    <span className={styles.progressText}>
                       {(model.successRate * 100).toFixed(1)}%
                     </span>
                   </div>
                 </div>
-                <div style={styles.tableCell}>
+                <div className={styles.tableCell}>
                   {Math.round(model.averageDuration)}ms
                 </div>
-                <div style={styles.tableCell}>
+                <div className={styles.tableCell}>
                   <strong>${model.totalCost.toFixed(2)}</strong>
                 </div>
               </div>
@@ -146,9 +159,9 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
       </div>
 
       {/* Cost per Request Comparison */}
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Cost Efficiency</h2>
-        <div style={styles.chartContainer}>
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>Cost Efficiency</h2>
+        <div className={styles.chartContainer}>
           {models.map((model) => {
             const costPerRequest =
               model.totalRequests > 0
@@ -164,19 +177,17 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
             return (
               <div
                 key={`${model.modelName}-${model.provider}`}
-                style={styles.chartRow}
+                className={styles.chartRow}
               >
-                <div style={styles.chartLabel}>
+                <div className={styles.chartLabel}>
                   {model.modelName} ({model.provider})
                 </div>
-                <div style={styles.chartBarContainer}>
+                <div className={styles.chartBarContainer}>
                   <div
-                    style={{
-                      ...styles.chartBar,
-                      width: `${barWidth}%`,
-                    }}
+                    className={styles.chartBar}
+                    style={{ width: `${barWidth}%` }}
                   />
-                  <span style={styles.chartValue}>
+                  <span className={styles.chartValue}>
                     ${costPerRequest.toFixed(4)} / request
                   </span>
                 </div>
@@ -186,10 +197,10 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
         </div>
       </div>
 
-      <div style={styles.actions}>
+      <div className={styles.actions}>
         <button
           onClick={fetchModelStats}
-          style={{ ...styles.button, ...styles.primaryButton }}
+          className={`${styles.button} ${styles.primaryButton}`}
         >
           Refresh
         </button>
@@ -198,171 +209,4 @@ export const ModelComparison: React.FC<ModelComparisonProps> = ({
   );
 };
 
-const styles = {
-  container: {
-    padding: "20px",
-    maxWidth: "1400px",
-    margin: "0 auto",
-  } as React.CSSProperties,
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "30px",
-  } as React.CSSProperties,
-  title: {
-    fontSize: "32px",
-    fontWeight: "bold" as const,
-    color: "#333",
-  } as React.CSSProperties,
-  select: {
-    padding: "8px 12px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    fontSize: "14px",
-  } as React.CSSProperties,
-  loading: {
-    padding: "40px",
-    textAlign: "center" as const,
-    fontSize: "18px",
-    color: "#888",
-  } as React.CSSProperties,
-  summaryGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: "20px",
-    marginBottom: "30px",
-  } as React.CSSProperties,
-  summaryCard: {
-    padding: "20px",
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  } as React.CSSProperties,
-  summaryLabel: {
-    fontSize: "14px",
-    color: "#888",
-    marginBottom: "8px",
-  } as React.CSSProperties,
-  summaryValue: {
-    fontSize: "28px",
-    fontWeight: "bold" as const,
-    color: "#333",
-  } as React.CSSProperties,
-  section: {
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    padding: "20px",
-    marginBottom: "20px",
-  } as React.CSSProperties,
-  sectionTitle: {
-    fontSize: "20px",
-    fontWeight: "600" as const,
-    marginBottom: "20px",
-    color: "#333",
-  } as React.CSSProperties,
-  emptyState: {
-    textAlign: "center" as const,
-    color: "#888",
-    padding: "20px",
-  } as React.CSSProperties,
-  table: {
-    width: "100%",
-  } as React.CSSProperties,
-  tableHeader: {
-    display: "grid",
-    gridTemplateColumns: "2fr 1fr 1fr 2fr 1fr 1fr",
-    padding: "10px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "4px",
-    fontWeight: "600" as const,
-    marginBottom: "5px",
-  } as React.CSSProperties,
-  tableRow: {
-    display: "grid",
-    gridTemplateColumns: "2fr 1fr 1fr 2fr 1fr 1fr",
-    padding: "10px",
-    borderBottom: "1px solid #e9ecef",
-    alignItems: "center",
-  } as React.CSSProperties,
-  tableCell: {
-    display: "flex",
-    alignItems: "center",
-  } as React.CSSProperties,
-  providerBadge: {
-    padding: "4px 12px",
-    borderRadius: "12px",
-    fontSize: "12px",
-    fontWeight: "500" as const,
-    backgroundColor: "#007bff",
-    color: "white",
-  } as React.CSSProperties,
-  progressContainer: {
-    flex: 1,
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  } as React.CSSProperties,
-  progressBar: {
-    height: "8px",
-    borderRadius: "4px",
-    transition: "width 0.3s ease",
-  } as React.CSSProperties,
-  progressText: {
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    minWidth: "50px",
-  } as React.CSSProperties,
-  chartContainer: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "15px",
-  } as React.CSSProperties,
-  chartRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: "15px",
-  } as React.CSSProperties,
-  chartLabel: {
-    flex: "0 0 200px",
-    fontSize: "14px",
-    color: "#555",
-  } as React.CSSProperties,
-  chartBarContainer: {
-    flex: 1,
-    position: "relative" as const,
-    display: "flex",
-    alignItems: "center",
-  } as React.CSSProperties,
-  chartBar: {
-    height: "24px",
-    backgroundColor: "#007bff",
-    borderRadius: "4px",
-    transition: "width 0.3s ease",
-  } as React.CSSProperties,
-  chartValue: {
-    marginLeft: "10px",
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    color: "#333",
-  } as React.CSSProperties,
-  actions: {
-    display: "flex",
-    gap: "10px",
-    marginTop: "20px",
-  } as React.CSSProperties,
-  button: {
-    padding: "10px 20px",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    cursor: "pointer",
-    transition: "all 0.2s",
-  } as React.CSSProperties,
-  primaryButton: {
-    backgroundColor: "#007bff",
-    color: "white",
-  } as React.CSSProperties,
-};
+export default ModelComparison;

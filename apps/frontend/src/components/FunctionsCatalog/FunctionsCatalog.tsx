@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // src/components/FunctionsCatalog/FunctionsCatalog.tsx
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 
 import { useFunctionsCatalog } from "../../hooks/useFunctionsCatalog";
 import type { FunctionsCatalogProps } from "./types";
@@ -17,15 +17,15 @@ export default function FunctionsCatalog({
   roles,
   features,
   baseUrl,
-  theme = "auto",
-  locale,
-  permissions,
-  config,
-  onNodeSelect,
+  theme: _theme = "auto",
+  locale: _locale,
+  permissions: _permissions,
+  config: _config,
+  onNodeSelect: _onNodeSelect,
   onSearch,
-  onError,
-  onExport,
-  customActions,
+  onError: _onError,
+  onExport: _onExport,
+  customActions: _customActions,
 }: FunctionsCatalogProps) {
   const {
     rules,
@@ -35,7 +35,6 @@ export default function FunctionsCatalog({
     menuError,
 
     // Node Handling
-    selectedId,
     selectNode,
 
     node,

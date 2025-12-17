@@ -3,6 +3,20 @@
 
 import React, { useState, useEffect } from "react";
 import { Card, Table, Button, Input } from "../../components/ui";
+import styles from "./ProjectList.module.css";
+
+interface ProjectApiResponse {
+  id: string;
+  name: string;
+  client?: string;
+  start_date?: string;
+  end_date?: string;
+  status: ProjectStatus;
+  progress?: number;
+  budget?: number;
+  spent?: number;
+  manager?: string;
+}
 
 type ProjectStatus =
   | "planning"
@@ -40,18 +54,20 @@ export const ProjectList: React.FC = () => {
         const data = await response.json();
 
         // Map database format to component format
-        const mappedProjects: Project[] = data.data.map((p: any) => ({
-          id: p.id,
-          name: p.name,
-          client: p.client || "",
-          startDate: p.start_date || "",
-          endDate: p.end_date,
-          status: p.status as ProjectStatus,
-          progress: p.progress || 0,
-          budget: p.budget || 0,
-          spent: p.spent || 0,
-          manager: p.manager || "",
-        }));
+        const mappedProjects: Project[] = data.data.map(
+          (p: ProjectApiResponse) => ({
+            id: p.id,
+            name: p.name,
+            client: p.client || "",
+            startDate: p.start_date || "",
+            endDate: p.end_date,
+            status: p.status as ProjectStatus,
+            progress: p.progress || 0,
+            budget: p.budget || 0,
+            spent: p.spent || 0,
+            manager: p.manager || "",
+          }),
+        );
 
         setProjects(mappedProjects);
       } catch (error) {
@@ -109,14 +125,7 @@ export const ProjectList: React.FC = () => {
     const c = config[status];
     return (
       <span
-        style={{
-          padding: "0.25rem 0.5rem",
-          borderRadius: "4px",
-          background: c.bg,
-          color: c.color,
-          fontSize: "0.75rem",
-          fontWeight: 500,
-        }}
+        className={`${styles.statusBadge} ${styles[`status_${status}`]}`}
       >
         {c.label}
       </span>
@@ -135,10 +144,8 @@ export const ProjectList: React.FC = () => {
       header: "Projekt",
       render: (value: unknown, row: Project) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{value as string}</div>
-          <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
-            {row.client}
-          </div>
+          <div className={styles.projectName}>{value as string}</div>
+          <div className={styles.projectClient}>{row.client}</div>
         </div>
       ),
     },
@@ -150,31 +157,14 @@ export const ProjectList: React.FC = () => {
       render: (value: unknown) => {
         const progress = value as number;
         return (
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <div
-              style={{
-                flex: 1,
-                height: "8px",
-                background: "var(--gray-200)",
-                borderRadius: "4px",
-                overflow: "hidden",
-              }}
-            >
+          <div className={styles.progressContainer}>
+            <div className={styles.progressBar}>
               <div
-                style={{
-                  width: `${progress}%`,
-                  height: "100%",
-                  background:
-                    progress === 100
-                      ? "var(--success-500)"
-                      : "var(--primary-500)",
-                  transition: "width 0.3s ease",
-                }}
+                className={`${styles.progressFill} ${progress === 100 ? styles.progressComplete : ''}`}
+                data-progress={progress}
               />
             </div>
-            <span style={{ fontSize: "0.75rem", fontWeight: 500 }}>
-              {progress}%
-            </span>
+            <span className={styles.progressText}>{progress}%</span>
           </div>
         );
       },
@@ -185,10 +175,10 @@ export const ProjectList: React.FC = () => {
       width: "140px",
       render: (value: unknown, row: Project) => (
         <div>
-          <div style={{ fontWeight: 500 }}>
+          <div className={styles.budgetValue}>
             {formatCurrency(value as number)}
           </div>
-          <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+          <div className={styles.budgetSpent}>
             {formatCurrency(row.spent)} verbraucht
           </div>
         </div>
@@ -214,19 +204,9 @@ export const ProjectList: React.FC = () => {
 
   return (
     <Card variant="elevated" padding="none">
-      <div
-        style={{
-          padding: "1rem 1.5rem",
-          borderBottom: "1px solid var(--border)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-          📋 Projekte
-        </h2>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div className={styles.header}>
+        <h2 className={styles.headerTitle}>📋 Projekte</h2>
+        <div className={styles.headerActions}>
           <Input
             placeholder="Suchen..."
             value={search}

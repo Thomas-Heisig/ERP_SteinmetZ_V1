@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/BatchProcessing/ProgressTracker.tsx
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+import "./ProgressTracker.css";
 
 interface BatchProgress {
   batchId: string;
@@ -22,27 +23,6 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
   batch,
   onCancel,
 }) => {
-  const [animated, setAnimated] = useState(false);
-
-  useEffect(() => {
-    setAnimated(true);
-  }, [batch.progress]);
-
-  const getStatusColor = () => {
-    switch (batch.status) {
-      case "completed":
-        return "#28a745";
-      case "failed":
-        return "#dc3545";
-      case "cancelled":
-        return "#6c757d";
-      case "running":
-        return "#007bff";
-      default:
-        return "#ffc107";
-    }
-  };
-
   const getStatusIcon = () => {
     switch (batch.status) {
       case "completed":
@@ -59,22 +39,22 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <div style={styles.statusBadge}>
+    <div className="progress-tracker-container">
+      <div className="progress-tracker-header">
+        <div className="progress-tracker-status-badge">
           <span
-            style={{ ...styles.statusIcon, backgroundColor: getStatusColor() }}
+            className={`progress-tracker-status-icon progress-tracker-status-${batch.status}`}
           >
             {getStatusIcon()}
           </span>
-          <span style={styles.statusText}>
+          <span className="progress-tracker-status-text">
             {batch.status.charAt(0).toUpperCase() + batch.status.slice(1)}
           </span>
         </div>
         {batch.status === "running" && onCancel && (
           <button
             onClick={() => onCancel(batch.batchId)}
-            style={{ ...styles.button, ...styles.dangerButton }}
+            className="progress-tracker-button progress-tracker-danger-button"
           >
             Cancel
           </button>
@@ -82,47 +62,70 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
       </div>
 
       {/* Progress Bar */}
-      <div style={styles.progressContainer}>
-        <div style={styles.progressBar}>
+      <div className="progress-tracker-progress-container">
+        <div
+          {...((): React.HTMLAttributes<HTMLDivElement> & {
+            style?: React.CSSProperties;
+          } => {
+            const props: React.HTMLAttributes<HTMLDivElement> & {
+              "aria-valuenow"?: number;
+              "aria-valuemin"?: number;
+              "aria-valuemax"?: number;
+              "aria-label"?: string;
+              style?: React.CSSProperties;
+            } = {
+              className: "progress-tracker-progress-bar",
+              role: "progressbar",
+              "aria-valuenow": Math.round(batch.progress),
+              "aria-valuemin": 0,
+              "aria-valuemax": 100,
+              "aria-label": `Batch progress: ${Math.round(batch.progress)}%`,
+              style: {
+                // Using CSS custom property for dynamic progress value
+                "--progress-width": `${batch.progress}%`,
+              } as React.CSSProperties,
+            };
+            return props;
+          })()}
+        >
           <div
-            style={{
-              ...styles.progressFill,
-              width: `${batch.progress}%`,
-              backgroundColor: getStatusColor(),
-              transition: animated ? "width 0.5s ease-in-out" : "none",
-            }}
+            className={`progress-tracker-progress-fill progress-tracker-status-${batch.status}`}
           />
         </div>
-        <span style={styles.progressText}>{Math.round(batch.progress)}%</span>
+        <span className="progress-tracker-progress-text">
+          {Math.round(batch.progress)}%
+        </span>
       </div>
 
       {/* Statistics */}
       {(batch.total !== undefined || batch.processed !== undefined) && (
-        <div style={styles.stats}>
+        <div className="progress-tracker-stats">
           {batch.total !== undefined && (
-            <div style={styles.statItem}>
-              <span style={styles.statLabel}>Total:</span>
-              <span style={styles.statValue}>{batch.total}</span>
+            <div className="progress-tracker-stat-item">
+              <span className="progress-tracker-stat-label">Total:</span>
+              <span className="progress-tracker-stat-value">{batch.total}</span>
             </div>
           )}
           {batch.processed !== undefined && (
-            <div style={styles.statItem}>
-              <span style={styles.statLabel}>Processed:</span>
-              <span style={styles.statValue}>{batch.processed}</span>
+            <div className="progress-tracker-stat-item">
+              <span className="progress-tracker-stat-label">Processed:</span>
+              <span className="progress-tracker-stat-value">
+                {batch.processed}
+              </span>
             </div>
           )}
           {batch.successful !== undefined && (
-            <div style={styles.statItem}>
-              <span style={styles.statLabel}>Successful:</span>
-              <span style={{ ...styles.statValue, color: "#28a745" }}>
+            <div className="progress-tracker-stat-item">
+              <span className="progress-tracker-stat-label">Successful:</span>
+              <span className="progress-tracker-stat-value progress-tracker-stat-success">
                 {batch.successful}
               </span>
             </div>
           )}
           {batch.failed !== undefined && batch.failed > 0 && (
-            <div style={styles.statItem}>
-              <span style={styles.statLabel}>Failed:</span>
-              <span style={{ ...styles.statValue, color: "#dc3545" }}>
+            <div className="progress-tracker-stat-item">
+              <span className="progress-tracker-stat-label">Failed:</span>
+              <span className="progress-tracker-stat-value progress-tracker-stat-error">
                 {batch.failed}
               </span>
             </div>
@@ -131,99 +134,4 @@ export const ProgressTracker: React.FC<ProgressTrackerProps> = ({
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: "20px",
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    marginBottom: "20px",
-  } as React.CSSProperties,
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "15px",
-  } as React.CSSProperties,
-  statusBadge: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  } as React.CSSProperties,
-  statusIcon: {
-    width: "32px",
-    height: "32px",
-    borderRadius: "50%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "white",
-    fontWeight: "bold" as const,
-  } as React.CSSProperties,
-  statusText: {
-    fontSize: "18px",
-    fontWeight: "600" as const,
-    color: "#333",
-  } as React.CSSProperties,
-  progressContainer: {
-    display: "flex",
-    alignItems: "center",
-    gap: "15px",
-    marginBottom: "15px",
-  } as React.CSSProperties,
-  progressBar: {
-    flex: 1,
-    height: "20px",
-    backgroundColor: "#e9ecef",
-    borderRadius: "10px",
-    overflow: "hidden",
-  } as React.CSSProperties,
-  progressFill: {
-    height: "100%",
-    borderRadius: "10px",
-  } as React.CSSProperties,
-  progressText: {
-    fontSize: "16px",
-    fontWeight: "600" as const,
-    color: "#555",
-    minWidth: "50px",
-    textAlign: "right" as const,
-  } as React.CSSProperties,
-  stats: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
-    gap: "15px",
-    paddingTop: "15px",
-    borderTop: "1px solid #e9ecef",
-  } as React.CSSProperties,
-  statItem: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "5px",
-  } as React.CSSProperties,
-  statLabel: {
-    fontSize: "12px",
-    color: "#888",
-    textTransform: "uppercase" as const,
-  } as React.CSSProperties,
-  statValue: {
-    fontSize: "18px",
-    fontWeight: "600" as const,
-    color: "#333",
-  } as React.CSSProperties,
-  button: {
-    padding: "8px 16px",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    cursor: "pointer",
-    transition: "all 0.2s",
-  } as React.CSSProperties,
-  dangerButton: {
-    backgroundColor: "#dc3545",
-    color: "white",
-  } as React.CSSProperties,
 };

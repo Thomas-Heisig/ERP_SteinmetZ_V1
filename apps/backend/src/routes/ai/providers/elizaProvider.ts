@@ -17,7 +17,6 @@ import type {
   ConversationState,
   Provider,
   ToolResult,
-  WorkflowDefinition,
 } from "../types/types.js";
 import { toolRegistry } from "../tools/registry.js";
 import { workflowEngine } from "../workflows/workflowEngine.js";
@@ -41,7 +40,7 @@ function pickFromPool(pool?: string[][]): string {
   return pick(group as string[]) ?? "";
 }
 
-function isValidString(str: any): str is string {
+function isValidString(str: unknown): str is string {
   return typeof str === "string" && str.trim().length > 0;
 }
 
@@ -168,14 +167,17 @@ function loadElizaConfig(): ElizaConfig {
               );
             }
             if (part.metadata && typeof part.metadata === "object") {
-              Object.assign(combined.metadata!, part.metadata);
+              if (combined.metadata) {
+                Object.assign(combined.metadata, part.metadata);
+              }
             }
 
             configFound = true;
           }
-        } catch (err: any) {
+        } catch (err: unknown) {
+          const errorMsg = err instanceof Error ? err.message : String(err);
           logger.warn(
-            { file, error: err.message },
+            { file, error: errorMsg },
             "Failed to read/parse configuration file",
           );
         }
@@ -204,7 +206,9 @@ function loadElizaConfig(): ElizaConfig {
             Object.assign(combined.reflections, cfg.reflections);
           }
           if (cfg.metadata && typeof cfg.metadata === "object") {
-            Object.assign(combined.metadata!, cfg.metadata);
+            if (combined.metadata) {
+              Object.assign(combined.metadata, cfg.metadata);
+            }
           }
 
           CONFIG_SOURCE = "json";
@@ -214,8 +218,9 @@ function loadElizaConfig(): ElizaConfig {
             "context.json loaded",
           );
         }
-      } catch (err: any) {
-        logger.warn({ error: err.message }, "Failed to load context.json");
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        logger.warn({ error: errorMsg }, "Failed to load context.json");
       }
     }
 
@@ -240,27 +245,29 @@ function loadElizaConfig(): ElizaConfig {
     }
 
     return combined; // <- regulärer Rückgabepfad
-  } catch (err: any) {
+  } catch (err: unknown) {
     logger.error({ err }, "Critical error loading configuration");
     return defaultConfig; // <- Fallback bei Exceptions
   }
 }
 
 // Konfigurations-Validierung
-function validateConfigPart(part: any, filename: string): boolean {
+function validateConfigPart(part: unknown, filename: string): boolean {
   if (typeof part !== "object" || part === null) {
     logger.warn({ filename }, "Invalid configuration: Not an object");
     return false;
   }
 
+  const config = part as Record<string, unknown>;
+
   // Validiere Pools
-  if (part.pools && typeof part.pools !== "object") {
+  if ("pools" in config && typeof config.pools !== "object") {
     logger.warn({ filename }, "Invalid pools in configuration");
     return false;
   }
 
   // Validiere Regeln
-  if (part.eliza_rules && !Array.isArray(part.eliza_rules)) {
+  if ("eliza_rules" in config && !Array.isArray(config.eliza_rules)) {
     logger.warn(
       { filename },
       "Invalid eliza_rules in configuration: Not an array",
@@ -269,7 +276,7 @@ function validateConfigPart(part: any, filename: string): boolean {
   }
 
   // Validiere Reflections
-  if (part.reflections && typeof part.reflections !== "object") {
+  if ("reflections" in config && typeof config.reflections !== "object") {
     logger.warn({ filename }, "Invalid reflections in configuration");
     return false;
   }
@@ -324,9 +331,10 @@ class ElizaEngine {
             priority: rule.priority ?? 1,
             enabled: rule.enabled !== false,
           };
-        } catch (err: any) {
+        } catch (err: unknown) {
+          const errorMsg = err instanceof Error ? err.message : String(err);
           logger.warn(
-            { pattern: rule.pattern, error: err.message },
+            { pattern: rule.pattern, error: errorMsg },
             "Failed to compile rule",
           );
           return null;
@@ -398,9 +406,10 @@ class ElizaEngine {
         // Antwort generieren
         const response = await this.generateResponse(rule, match, context);
         return response;
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
         logger.warn(
-          { pattern: rule.pattern, error: err.message },
+          { pattern: rule.pattern, error: errorMsg },
           "Error evaluating rule",
         );
       }
@@ -476,8 +485,8 @@ class ElizaEngine {
   private extractToolParameters(
     rule: ElizaRule,
     match: RegExpMatchArray,
-  ): Record<string, any> {
-    const params: Record<string, any> = {};
+  ): Record<string, unknown> {
+    const params: Record<string, unknown> = {};
 
     if (rule.params && Array.isArray(rule.params)) {
       rule.params.forEach((param, index) => {
@@ -507,9 +516,10 @@ class ElizaEngine {
           source: "tool_call",
         },
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
       return {
-        text: `Fehler bei Wikipedia-Suche für "${query}": ${err.message ?? err}`,
+        text: `Fehler bei Wikipedia-Suche für "${query}": ${errorMsg}`,
         errors: [String(err)],
         meta: {
           provider: "eliza",
@@ -553,8 +563,9 @@ class ElizaEngine {
       this.rules.push(compiledRule);
       this.rules.sort((a, b) => b.priority - a.priority);
       logger.info({ pattern: rule.pattern }, "New rule added");
-    } catch (err: any) {
-      logger.warn({ error: err.message }, "Failed to add rule");
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      logger.warn({ error: errorMsg }, "Failed to add rule");
     }
   }
 }
@@ -641,16 +652,17 @@ export class ElizaProvider {
 
       // 3️⃣ Kategorie-Fallback
       return this.createFallbackResponse();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
       logger.error({ err: error }, "Error in respond method");
-      return this.createErrorResponse(`Interner Fehler: ${error.message}`);
+      return this.createErrorResponse(`Interner Fehler: ${errorMsg}`);
     }
   }
 
   /* ====================================================================== */
   /* 🧰 Tool-Aufrufe - VERBESSERT                                          */
   /* ====================================================================== */
-  private async executeToolCalls(tool_calls: any[]): Promise<ToolResult[]> {
+  private async executeToolCalls(tool_calls: unknown[]): Promise<ToolResult[]> {
     if (!this.config.enableToolCalls) {
       return [{ success: false, error: "Tool calls are disabled" }];
     }
@@ -661,24 +673,39 @@ export class ElizaProvider {
       const startTime = Date.now();
 
       try {
-        if (!call.name || typeof call.name !== "string") {
+        // Type guard for call object
+        if (typeof call !== "object" || call === null) {
+          throw new Error("Ungültiges Tool-Call-Objekt");
+        }
+
+        const toolCall = call as { name?: unknown; parameters?: unknown };
+
+        if (!toolCall.name || typeof toolCall.name !== "string") {
           throw new Error("Ungültiger Tool-Name");
         }
 
-        const res = await toolRegistry.call(call.name, call.parameters || {});
+        const parameters = typeof toolCall.parameters === "object" && toolCall.parameters !== null
+          ? toolCall.parameters
+          : {};
+
+        const res = await toolRegistry.call(toolCall.name, parameters);
         results.push({
           success: true,
           data: res,
           runtime_ms: Date.now() - startTime,
-          source_tool: call.name,
+          source_tool: toolCall.name,
           timestamp: new Date().toISOString(),
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        const toolName = typeof call === "object" && call !== null 
+          ? (call as { name?: unknown }).name
+          : "unknown";
         results.push({
           success: false,
-          error: err.message,
+          error: errorMsg,
           runtime_ms: Date.now() - startTime,
-          source_tool: call.name,
+          source_tool: typeof toolName === "string" ? toolName : "unknown",
           timestamp: new Date().toISOString(),
         });
       }
@@ -763,10 +790,13 @@ Der Eliza Provider verarbeitet natürliche Sprache und führt automatisch Tools 
     }
 
     const output = defs
-      .map(
-        (w: any) =>
-          `• **${w.name || w.id}** – ${w.description || "Keine Beschreibung"} (${Array.isArray(w.steps) ? w.steps.length : w.steps || 0} Schritte)`,
-      )
+      .map((w: unknown) => {
+        if (typeof w === "object" && w !== null) {
+          const workflow = w as { name?: string; id?: string; description?: string; steps?: unknown[] | number };
+          return `• **${workflow.name || workflow.id}** – ${workflow.description || "Keine Beschreibung"} (${Array.isArray(workflow.steps) ? workflow.steps.length : workflow.steps || 0} Schritte)`;
+        }
+        return "• Ungültiger Workflow";
+      })
       .join("\n");
 
     return { text: `## Aktive Workflows\n\n${output}` };
@@ -873,7 +903,7 @@ ${Object.entries(stats.rules_by_priority)
   /* ====================================================================== */
   private createFallbackResponse(): AIResponse {
     const fallbackText =
-      pick(this.config.fallbackResponses!) ||
+      pick(this.config.fallbackResponses || []) ||
       pickFromPool(ELIZA_CONFIG.pools["unknown"]) ||
       "Entschuldigung, ich bin mir nicht sicher, was Sie meinen.";
 

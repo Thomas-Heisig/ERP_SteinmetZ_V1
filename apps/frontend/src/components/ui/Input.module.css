@@ -70,6 +70,29 @@
   color: var(--text-tertiary);
 }
 
+.suffix {
+  position: absolute;
+  right: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+  user-select: none;
+}
+
+.hasSuffix {
+  padding-right: 3rem;
+}
+
+.required {
+  color: var(--error-500, #ef4444);
+  margin-left: 0.125rem;
+  font-weight: 600;
+}
+
+.inputError {
+  border-color: var(--error-500, #ef4444);
+}
+
 .helperText {
   font-size: 0.75rem;
   color: var(--text-secondary);

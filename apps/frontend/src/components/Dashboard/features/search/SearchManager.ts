@@ -27,11 +27,9 @@ import type {
   SortCriteria,
   NodeDetail,
   SearchMetadata,
-  PaginatedResponse,
 } from "../../types";
 
 import {
-  applySearchFilters,
   advancedSearch,
   type FilterResult,
   type FilterOptions,
@@ -186,7 +184,7 @@ export class SearchManager implements SearchManagerInterface {
         }
       }
 
-      const totalStart = performance.now();
+      // const totalStart = performance.now();
 
       // -----------------------------------------------------
       // 2) Pre-Processing
@@ -196,46 +194,46 @@ export class SearchManager implements SearchManagerInterface {
       // -----------------------------------------------------
       // 3) Data Fetching
       // -----------------------------------------------------
-      const fetchStart = performance.now();
+      // const fetchStart = performance.now();
       const baseResults = await this.fetchResults(processedQuery, context);
-      const fetchTime = performance.now() - fetchStart;
+      // const fetchTime = performance.now() - fetchStart;
 
       // -----------------------------------------------------
       // 4) Filtering
       // -----------------------------------------------------
-      const filterStart = performance.now();
+      // const filterStart = performance.now();
       const filtered = this.applyFiltering(
         baseResults,
         processedQuery,
         filters,
         mergedOptions,
       );
-      const filterTime = performance.now() - filterStart;
+      // const filterTime = performance.now() - filterStart;
 
       // -----------------------------------------------------
       // 5) Scoring
       // -----------------------------------------------------
-      const scoreStart = performance.now();
+      // const scoreStart = performance.now();
       const scored = await this.applyScoring(
         filtered.results,
         processedQuery,
         context,
       );
-      const scoreTime = performance.now() - scoreStart;
+      // const scoreTime = performance.now() - scoreStart;
 
       // -----------------------------------------------------
       // 6) Sorting
       // -----------------------------------------------------
-      const sortStart = performance.now();
+      // const sortStart = performance.now();
       const sorted = this.applySorting(scored, context);
-      const sortTime = performance.now() - sortStart;
+      // const sortTime = performance.now() - sortStart;
 
       // -----------------------------------------------------
       // 7) Post-Processing
       // -----------------------------------------------------
       const finalResults = await this.postProcessResults(sorted, context);
 
-      const totalTime = performance.now() - totalStart;
+      // const totalTime = performance.now() - totalStart;
 
       // -----------------------------------------------------
       // 8) Cache Results
@@ -310,14 +308,14 @@ export class SearchManager implements SearchManagerInterface {
    */
   private async preProcessQuery(
     query: string,
-    context: SearchContext,
+    _context: SearchContext,
   ): Promise<string> {
     let processedQuery = query.trim();
 
     // Apply plugin pre-processing
     for (const plugin of this.plugins) {
       if (plugin.preProcess) {
-        const result = await plugin.preProcess(processedQuery, context);
+        const result = await plugin.preProcess(processedQuery, _context);
         if (result) {
           processedQuery = result;
         }
@@ -326,7 +324,7 @@ export class SearchManager implements SearchManagerInterface {
 
     // Apply search strategy adjustments
     const strategy =
-      SEARCH_STRATEGIES[context.options.searchStrategy || "standard"];
+      SEARCH_STRATEGIES[_context.options.searchStrategy || "standard"];
     if (strategy) {
       // Could apply strategy-specific query transformations here
     }
@@ -361,7 +359,7 @@ export class SearchManager implements SearchManagerInterface {
   private async applyScoring(
     results: SearchResult[],
     query: string,
-    context: SearchContext,
+    _context: SearchContext,
   ): Promise<WeightedSearchResult[]> {
     let scoredResults: WeightedSearchResult[] = applyScoring(
       results,
@@ -370,17 +368,17 @@ export class SearchManager implements SearchManagerInterface {
 
     // Apply field boosts
     // Apply field boosts
-    if (context.options.fieldBoosts) {
+    if (_context.options.fieldBoosts) {
       scoredResults = scoredResults.map((result) => ({
         ...result,
         computedRelevance:
           result.computedRelevance *
-          (context.options.fieldBoosts?.[result.metadata.nodeType] || 1),
+          (_context.options.fieldBoosts?.[result.metadata.nodeType] || 1),
       }));
     }
     // Apply recency boosting
     // Apply recency boosting
-    if (context.options.boostRecent) {
+    if (_context.options.boostRecent) {
       const now = Date.now();
       scoredResults = scoredResults.map((result) => ({
         ...result,
@@ -400,7 +398,7 @@ export class SearchManager implements SearchManagerInterface {
     // Apply plugin score enhancements
     for (const plugin of this.plugins) {
       if (plugin.scoreEnhancer) {
-        scoredResults = await plugin.scoreEnhancer(scoredResults, context);
+        scoredResults = await plugin.scoreEnhancer(scoredResults, _context);
       }
     }
 
@@ -412,7 +410,7 @@ export class SearchManager implements SearchManagerInterface {
    */
   private applySorting(
     results: WeightedSearchResult[],
-    context: SearchContext,
+    _context: SearchContext,
   ): SearchResult[] {
     // For weighted results, sort by computed relevance
     return results.sort((a, b) => b.computedRelevance - a.computedRelevance);
@@ -423,23 +421,23 @@ export class SearchManager implements SearchManagerInterface {
    */
   private async postProcessResults(
     results: SearchResult[],
-    context: SearchContext,
+    _context: SearchContext,
   ): Promise<SearchResult[]> {
     let processedResults = results;
 
     // Apply plugin post-processing
     for (const plugin of this.plugins) {
       if (plugin.postProcess) {
-        processedResults = await plugin.postProcess(processedResults, context);
+        processedResults = await plugin.postProcess(processedResults, _context);
       }
     }
 
     // Apply result limit
     if (
-      context.options.maxResults &&
-      processedResults.length > context.options.maxResults
+      _context.options.maxResults &&
+      processedResults.length > _context.options.maxResults
     ) {
-      processedResults = processedResults.slice(0, context.options.maxResults);
+      processedResults = processedResults.slice(0, _context.options.maxResults);
     }
 
     return processedResults;
@@ -454,7 +452,7 @@ export class SearchManager implements SearchManagerInterface {
    */
   private async fetchResults(
     query: string,
-    context: SearchContext,
+    _context: SearchContext,
   ): Promise<SearchResult[]> {
     // Convert NodeDetail[] to SearchResult[]
     const searchResults: SearchResult[] = this.dataSource.map((node) => ({
@@ -555,13 +553,13 @@ export class SearchManager implements SearchManagerInterface {
     filters: SearchFilters | undefined,
     options: SearchOptions,
     results: SearchResult[],
-    context: SearchContext,
+    _context: SearchContext,
   ): void {
     const cacheKey = this.generateCacheKey(query, filters, options);
     this.cache.set(cacheKey, {
       results,
       timestamp: Date.now(),
-      context,
+      context: _context,
     });
 
     // Limit cache size
@@ -699,7 +697,7 @@ export class SearchManager implements SearchManagerInterface {
    */
   private createSearchResponse(
     results: SearchResult[],
-    context: SearchContext,
+    _context: SearchContext,
     totalTime: number,
     fromCache: boolean,
     stageTimings?: {
@@ -708,7 +706,7 @@ export class SearchManager implements SearchManagerInterface {
       scoreTime: number;
       sortTime: number;
     },
-    filterContext?: FilterResult,
+    _filterContext?: FilterResult,
   ): SearchResponse {
     const resultBreakdown: Record<string, number> = {};
     results.forEach((result) => {
@@ -720,7 +718,7 @@ export class SearchManager implements SearchManagerInterface {
       results,
       totalCount: results.length,
       hasMore: false, // Could be implemented with pagination
-      context,
+      context: _context,
       performance: {
         totalTime,
         fetchTime: stageTimings?.fetchTime || 0,
@@ -730,7 +728,7 @@ export class SearchManager implements SearchManagerInterface {
       },
       metadata: {
         appliedFilters: [],
-        searchStrategy: context.options.searchStrategy || "standard",
+        searchStrategy: _context.options.searchStrategy || "standard",
         resultBreakdown,
       },
     };

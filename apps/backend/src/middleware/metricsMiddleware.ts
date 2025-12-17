@@ -34,7 +34,12 @@ export function metricsMiddleware(
 
   // Override res.end to capture metrics when response is sent
   const originalEnd = res.end.bind(res);
-  res.end = function (this: Response, ...args: any[]): Response {
+  res.end = function (
+    this: Response,
+    chunk?: unknown,
+    encoding?: BufferEncoding | (() => void),
+    cb?: () => void,
+  ): Response {
     const duration = Date.now() - startTime;
     const statusCode = res.statusCode;
 
@@ -42,8 +47,14 @@ export function metricsMiddleware(
     metricsService.recordHttpRequest(method, route, statusCode, duration);
     metricsService.endHttpRequest(method, route);
 
-    // Call original end
-    return originalEnd(...args);
+    // Call original end with proper argument handling
+    if (typeof encoding === "function") {
+      return originalEnd(chunk, encoding);
+    }
+    if (encoding === undefined) {
+      return originalEnd(chunk);
+    }
+    return originalEnd(chunk, encoding, cb);
   };
 
   next();

@@ -6,7 +6,7 @@ Das Frontend verwendet ein zentralisiertes Theme-System mit CSS-Variablen, das e
 
 ## Projektstruktur
 
-```
+```tree
 apps/frontend/src/
 ├── styles/
 │   ├── theme/
@@ -48,11 +48,13 @@ Das Theme kann auf drei Arten gewechselt werden:
 
 1. **Theme Toggle Button im Header** - Zykliert durch alle Themes
 2. **Programmatisch** - Über den `useTheme()` Hook:
+
    ```typescript
    const { theme, setTheme, toggleTheme } = useTheme();
    setTheme("dark"); // Setzt spezifisches Theme
    toggleTheme(); // Wechselt zum nächsten Theme
    ```
+
 3. **Automatisch** - Erkennt System-Präferenz beim ersten Laden
 
 ### CSS-Variablen
@@ -220,7 +222,7 @@ Das Theme-System nutzt CSS-Variablen für maximale Flexibilität:
 
 Für größere Komponenten sollte eine separate CSS-Datei angelegt werden:
 
-```
+```tree
 MyComponent/
 ├── MyComponent.tsx
 └── MyComponent.css

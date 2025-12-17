@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/QualityDashboard/ManualReviewInterface.tsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import "./ManualReviewInterface.css";
 
-interface QAReview {
+export interface QAReview {
   id: string;
   nodeId: string;
   reviewer?: string;
@@ -19,7 +20,7 @@ interface QAReview {
   };
 }
 
-interface ManualReviewInterfaceProps {
+export interface ManualReviewInterfaceProps {
   apiBaseUrl?: string;
   onReviewComplete?: (review: QAReview) => void;
 }
@@ -33,11 +34,7 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
   const [comments, setComments] = useState("");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchPendingReviews();
-  }, []);
-
-  const fetchPendingReviews = async () => {
+  const fetchPendingReviews = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(
@@ -54,7 +51,11 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiBaseUrl]);
+
+  useEffect(() => {
+    fetchPendingReviews();
+  }, [fetchPendingReviews]);
 
   const handleReviewAction = async (
     action: "approved" | "rejected" | "needs_revision",
@@ -92,17 +93,26 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
     }
   };
 
+  const getScoreClass = (score: number): string => {
+    if (score >= 80) return "high";
+    if (score >= 60) return "medium";
+    return "low";
+  };
+
   if (loading) {
-    return <div style={styles.loading}>Loading reviews...</div>;
+    return <div className="manual-review-loading">Loading reviews...</div>;
   }
 
   if (!currentReview) {
     return (
-      <div style={styles.empty}>
-        <div style={styles.emptyIcon}>✓</div>
+      <div className="manual-review-empty">
+        <div className="manual-review-empty-icon">✓</div>
         <h3>All Caught Up!</h3>
         <p>No pending reviews at the moment.</p>
-        <button onClick={fetchPendingReviews} style={styles.refreshButton}>
+        <button
+          onClick={fetchPendingReviews}
+          className="manual-review-refresh-button"
+        >
           Refresh
         </button>
       </div>
@@ -110,41 +120,45 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h2 style={styles.title}>Manual Review</h2>
-        <div style={styles.progress}>
+    <div className="manual-review-container">
+      <div className="manual-review-header">
+        <h2 className="manual-review-title">Manual Review</h2>
+        <div className="manual-review-progress">
           Review {reviews.indexOf(currentReview) + 1} of {reviews.length}
         </div>
       </div>
 
-      <div style={styles.reviewCard}>
+      <div className="manual-review-card">
         {/* Node Information */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Node Information</h3>
-          <div style={styles.infoGrid}>
-            <div style={styles.infoItem}>
-              <span style={styles.infoLabel}>Node ID:</span>
-              <span style={styles.infoValue}>{currentReview.nodeId}</span>
+        <div className="manual-review-section">
+          <h3 className="manual-review-section-title">Node Information</h3>
+          <div className="manual-review-info-grid">
+            <div className="manual-review-info-item">
+              <span className="manual-review-info-label">Node ID:</span>
+              <span className="manual-review-info-value">
+                {currentReview.nodeId}
+              </span>
             </div>
             {currentReview.nodeData && (
               <>
-                <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Name:</span>
-                  <span style={styles.infoValue}>
+                <div className="manual-review-info-item">
+                  <span className="manual-review-info-label">Name:</span>
+                  <span className="manual-review-info-value">
                     {currentReview.nodeData.name}
                   </span>
                 </div>
-                <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Kind:</span>
-                  <span style={styles.infoValue}>
+                <div className="manual-review-info-item">
+                  <span className="manual-review-info-label">Kind:</span>
+                  <span className="manual-review-info-value">
                     {currentReview.nodeData.kind}
                   </span>
                 </div>
                 {currentReview.nodeData.description && (
-                  <div style={styles.infoItem}>
-                    <span style={styles.infoLabel}>Description:</span>
-                    <span style={styles.infoValue}>
+                  <div className="manual-review-info-item">
+                    <span className="manual-review-info-label">
+                      Description:
+                    </span>
+                    <span className="manual-review-info-value">
                       {currentReview.nodeData.description}
                     </span>
                   </div>
@@ -152,14 +166,10 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
               </>
             )}
             {currentReview.qualityScore !== undefined && (
-              <div style={styles.infoItem}>
-                <span style={styles.infoLabel}>Quality Score:</span>
+              <div className="manual-review-info-item">
+                <span className="manual-review-info-label">Quality Score:</span>
                 <span
-                  style={{
-                    ...styles.infoValue,
-                    ...styles.qualityScore,
-                    backgroundColor: getScoreColor(currentReview.qualityScore),
-                  }}
+                  className={`manual-review-quality-score ${getScoreClass(currentReview.qualityScore)}`}
                 >
                   {currentReview.qualityScore.toFixed(1)}%
                 </span>
@@ -169,34 +179,34 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
         </div>
 
         {/* Review Comments */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Review Comments</h3>
+        <div className="manual-review-section">
+          <h3 className="manual-review-section-title">Review Comments</h3>
           <textarea
             value={comments}
             onChange={(e) => setComments(e.target.value)}
             placeholder="Add your review comments here..."
-            style={styles.textarea}
+            className="manual-review-textarea"
             rows={5}
           />
         </div>
 
         {/* Action Buttons */}
-        <div style={styles.actions}>
+        <div className="manual-review-actions">
           <button
             onClick={() => handleReviewAction("approved")}
-            style={{ ...styles.button, ...styles.approveButton }}
+            className="manual-review-button manual-review-button-approve"
           >
             ✓ Approve
           </button>
           <button
             onClick={() => handleReviewAction("needs_revision")}
-            style={{ ...styles.button, ...styles.revisionButton }}
+            className="manual-review-button manual-review-button-revision"
           >
             ⚠ Needs Revision
           </button>
           <button
             onClick={() => handleReviewAction("rejected")}
-            style={{ ...styles.button, ...styles.rejectButton }}
+            className="manual-review-button manual-review-button-reject"
           >
             ✗ Reject
           </button>
@@ -209,7 +219,7 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
               setCurrentReview(remainingReviews[0] || null);
               setComments("");
             }}
-            style={{ ...styles.button, ...styles.skipButton }}
+            className="manual-review-button manual-review-button-skip"
           >
             → Skip
           </button>
@@ -218,22 +228,21 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
 
       {/* Queue Preview */}
       {reviews.length > 1 && (
-        <div style={styles.queue}>
-          <h3 style={styles.queueTitle}>Upcoming Reviews</h3>
-          <div style={styles.queueList}>
+        <div className="manual-review-queue">
+          <h3 className="manual-review-queue-title">Upcoming Reviews</h3>
+          <div className="manual-review-queue-list">
             {reviews.slice(1, 6).map((review) => (
               <div
                 key={review.id}
-                style={styles.queueItem}
+                className="manual-review-queue-item"
                 onClick={() => setCurrentReview(review)}
               >
-                <span style={styles.queueNodeId}>{review.nodeId}</span>
+                <span className="manual-review-queue-node-id">
+                  {review.nodeId}
+                </span>
                 {review.qualityScore !== undefined && (
                   <span
-                    style={{
-                      ...styles.queueScore,
-                      backgroundColor: getScoreColor(review.qualityScore),
-                    }}
+                    className={`manual-review-queue-score ${getScoreClass(review.qualityScore)}`}
                   >
                     {review.qualityScore.toFixed(0)}%
                   </span>
@@ -241,198 +250,13 @@ export const ManualReviewInterface: React.FC<ManualReviewInterfaceProps> = ({
               </div>
             ))}
             {reviews.length > 6 && (
-              <div style={styles.queueMore}>+{reviews.length - 6} more...</div>
+              <div className="manual-review-queue-more">
+                +{reviews.length - 6} more...
+              </div>
             )}
           </div>
         </div>
       )}
     </div>
   );
-};
-
-const getScoreColor = (score: number): string => {
-  if (score >= 80) return "#28a745";
-  if (score >= 60) return "#ffc107";
-  return "#dc3545";
-};
-
-const styles = {
-  container: {
-    maxWidth: "800px",
-    margin: "0 auto",
-  } as React.CSSProperties,
-  loading: {
-    padding: "60px 20px",
-    textAlign: "center" as const,
-    fontSize: "18px",
-    color: "#888",
-  } as React.CSSProperties,
-  empty: {
-    padding: "60px 20px",
-    textAlign: "center" as const,
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  } as React.CSSProperties,
-  emptyIcon: {
-    fontSize: "64px",
-    color: "#28a745",
-    marginBottom: "20px",
-  } as React.CSSProperties,
-  refreshButton: {
-    marginTop: "20px",
-    padding: "10px 24px",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    cursor: "pointer",
-  } as React.CSSProperties,
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "20px",
-  } as React.CSSProperties,
-  title: {
-    fontSize: "24px",
-    fontWeight: "600" as const,
-    color: "#333",
-    margin: 0,
-  } as React.CSSProperties,
-  progress: {
-    fontSize: "14px",
-    color: "#888",
-    padding: "6px 12px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "4px",
-  } as React.CSSProperties,
-  reviewCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    padding: "24px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    marginBottom: "20px",
-  } as React.CSSProperties,
-  section: {
-    marginBottom: "24px",
-  } as React.CSSProperties,
-  sectionTitle: {
-    fontSize: "16px",
-    fontWeight: "600" as const,
-    color: "#333",
-    marginBottom: "12px",
-  } as React.CSSProperties,
-  infoGrid: {
-    display: "grid",
-    gap: "12px",
-  } as React.CSSProperties,
-  infoItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  } as React.CSSProperties,
-  infoLabel: {
-    fontSize: "14px",
-    color: "#888",
-    fontWeight: "500" as const,
-    minWidth: "120px",
-  } as React.CSSProperties,
-  infoValue: {
-    fontSize: "14px",
-    color: "#333",
-  } as React.CSSProperties,
-  qualityScore: {
-    padding: "4px 12px",
-    borderRadius: "12px",
-    color: "white",
-    fontWeight: "bold" as const,
-  } as React.CSSProperties,
-  textarea: {
-    width: "100%",
-    padding: "12px",
-    fontSize: "14px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    resize: "vertical" as const,
-    fontFamily: "inherit",
-  } as React.CSSProperties,
-  actions: {
-    display: "flex",
-    gap: "12px",
-    marginTop: "24px",
-  } as React.CSSProperties,
-  button: {
-    flex: 1,
-    padding: "12px 20px",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    cursor: "pointer",
-    transition: "all 0.2s",
-  } as React.CSSProperties,
-  approveButton: {
-    backgroundColor: "#28a745",
-    color: "white",
-  } as React.CSSProperties,
-  revisionButton: {
-    backgroundColor: "#ffc107",
-    color: "#333",
-  } as React.CSSProperties,
-  rejectButton: {
-    backgroundColor: "#dc3545",
-    color: "white",
-  } as React.CSSProperties,
-  skipButton: {
-    backgroundColor: "#6c757d",
-    color: "white",
-  } as React.CSSProperties,
-  queue: {
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    padding: "20px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  } as React.CSSProperties,
-  queueTitle: {
-    fontSize: "16px",
-    fontWeight: "600" as const,
-    color: "#333",
-    marginBottom: "12px",
-  } as React.CSSProperties,
-  queueList: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "8px",
-  } as React.CSSProperties,
-  queueItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "10px 12px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "4px",
-    cursor: "pointer",
-    transition: "background-color 0.2s",
-  } as React.CSSProperties,
-  queueNodeId: {
-    fontSize: "13px",
-    color: "#666",
-  } as React.CSSProperties,
-  queueScore: {
-    fontSize: "12px",
-    padding: "3px 8px",
-    borderRadius: "10px",
-    color: "white",
-    fontWeight: "500" as const,
-  } as React.CSSProperties,
-  queueMore: {
-    fontSize: "13px",
-    color: "#888",
-    fontStyle: "italic" as const,
-    textAlign: "center" as const,
-    padding: "8px",
-  } as React.CSSProperties,
 };

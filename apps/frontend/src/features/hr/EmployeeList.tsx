@@ -17,51 +17,46 @@ interface Employee {
 }
 
 export const EmployeeList: React.FC = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Mock data
+  const mockEmployees: Employee[] = [
+    {
+      id: "1",
+      firstName: "Max",
+      lastName: "Mustermann",
+      email: "max.mustermann@company.de",
+      department: "Entwicklung",
+      position: "Senior Developer",
+      startDate: "2020-03-15",
+      status: "active",
+    },
+    {
+      id: "2",
+      firstName: "Anna",
+      lastName: "Schmidt",
+      email: "anna.schmidt@company.de",
+      department: "Vertrieb",
+      position: "Sales Manager",
+      startDate: "2019-07-01",
+      status: "active",
+    },
+    {
+      id: "3",
+      firstName: "Thomas",
+      lastName: "Müller",
+      email: "thomas.mueller@company.de",
+      department: "Marketing",
+      position: "Marketing Specialist",
+      startDate: "2021-01-10",
+      status: "on_leave",
+    },
+  ];
+
+  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null,
   );
-
-  useEffect(() => {
-    // Mock data
-    const mockEmployees: Employee[] = [
-      {
-        id: "1",
-        firstName: "Max",
-        lastName: "Mustermann",
-        email: "max.mustermann@company.de",
-        department: "Entwicklung",
-        position: "Senior Developer",
-        startDate: "2020-03-15",
-        status: "active",
-      },
-      {
-        id: "2",
-        firstName: "Anna",
-        lastName: "Schmidt",
-        email: "anna.schmidt@company.de",
-        department: "Vertrieb",
-        position: "Sales Manager",
-        startDate: "2019-07-01",
-        status: "active",
-      },
-      {
-        id: "3",
-        firstName: "Thomas",
-        lastName: "Müller",
-        email: "thomas.mueller@company.de",
-        department: "Marketing",
-        position: "Marketing Specialist",
-        startDate: "2021-01-10",
-        status: "on_leave",
-      },
-    ];
-
-    setEmployees(mockEmployees);
-    setLoading(false);
-  }, []);
 
   const filteredEmployees = employees.filter((emp) => {
     if (!search) return true;

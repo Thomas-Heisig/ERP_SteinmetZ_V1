@@ -2,10 +2,11 @@
 // apps/frontend/src/components/BatchProcessing/BatchCreationForm.tsx
 
 import React, { useState } from "react";
+import "./BatchCreationForm.css";
 
 interface BatchFormData {
   operation: string;
-  filters: any;
+  filters: unknown;
   options?: {
     chunkSize?: number;
     parallelRequests?: number;
@@ -39,7 +40,7 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
     onSubmit(formData);
   };
 
-  const updateOptions = (key: string, value: any) => {
+  const updateOptions = (key: string, value: unknown) => {
     setFormData((prev) => ({
       ...prev,
       options: {
@@ -50,18 +51,19 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} style={styles.container}>
-      <h2 style={styles.title}>Create Batch Operation</h2>
+    <form onSubmit={handleSubmit} className="batch-form-container">
+      <h2 className="batch-form-title">Create Batch Operation</h2>
 
       {/* Operation Type */}
-      <div style={styles.field}>
-        <label style={styles.label}>Operation Type *</label>
+      <div className="batch-form-field">
+        <label className="batch-form-label">Operation Type *</label>
         <select
           value={formData.operation}
           onChange={(e) =>
             setFormData({ ...formData, operation: e.target.value })
           }
-          style={styles.input}
+          className="batch-form-input"
+          aria-label="Operation Type"
           required
         >
           <option value="generate_meta">Generate Metadata</option>
@@ -74,51 +76,52 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
       </div>
 
       {/* Batch Name */}
-      <div style={styles.field}>
-        <label style={styles.label}>Batch Name</label>
+      <div className="batch-form-field">
+        <label className="batch-form-label">Batch Name</label>
         <input
           type="text"
           value={formData.name || ""}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Optional batch name"
-          style={styles.input}
+          className="batch-form-input"
         />
       </div>
 
       {/* Description */}
-      <div style={styles.field}>
-        <label style={styles.label}>Description</label>
+      <div className="batch-form-field">
+        <label className="batch-form-label">Description</label>
         <textarea
           value={formData.description || ""}
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
           placeholder="Optional description"
-          style={{ ...styles.input, minHeight: "80px" }}
+          className="batch-form-input batch-form-textarea"
         />
       </div>
 
       {/* Advanced Options */}
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Advanced Options</h3>
+      <div className="batch-form-section">
+        <h3 className="batch-form-section-title">Advanced Options</h3>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Chunk Size</label>
+        <div className="batch-form-field">
+          <label className="batch-form-label">Chunk Size</label>
           <input
             type="number"
             min="1"
             max="100"
             value={formData.options?.chunkSize || 10}
             onChange={(e) => updateOptions("chunkSize", Number(e.target.value))}
-            style={styles.input}
+            className="batch-form-input"
+            aria-label="Chunk Size"
           />
-          <small style={styles.hint}>
+          <small className="batch-form-hint">
             Number of nodes to process per batch
           </small>
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Parallel Requests</label>
+        <div className="batch-form-field">
+          <label className="batch-form-label">Parallel Requests</label>
           <input
             type="number"
             min="1"
@@ -127,17 +130,21 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
             onChange={(e) =>
               updateOptions("parallelRequests", Number(e.target.value))
             }
-            style={styles.input}
+            className="batch-form-input"
+            aria-label="Parallel Requests"
           />
-          <small style={styles.hint}>Number of concurrent API requests</small>
+          <small className="batch-form-hint">
+            Number of concurrent API requests
+          </small>
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Model Preference</label>
+        <div className="batch-form-field">
+          <label className="batch-form-label">Model Preference</label>
           <select
             value={formData.options?.modelPreference || "balanced"}
             onChange={(e) => updateOptions("modelPreference", e.target.value)}
-            style={styles.input}
+            className="batch-form-input"
+            aria-label="Model Preference"
           >
             <option value="fast">Fast (Lower quality, faster results)</option>
             <option value="balanced">Balanced (Good quality and speed)</option>
@@ -147,93 +154,21 @@ export const BatchCreationForm: React.FC<BatchCreationFormProps> = ({
       </div>
 
       {/* Actions */}
-      <div style={styles.actions}>
+      <div className="batch-form-actions">
         <button
           type="submit"
-          style={{ ...styles.button, ...styles.primaryButton }}
+          className="batch-form-button batch-form-button-primary"
         >
           Create Batch
         </button>
         <button
           type="button"
           onClick={onCancel}
-          style={{ ...styles.button, ...styles.secondaryButton }}
+          className="batch-form-button batch-form-button-secondary"
         >
           Cancel
         </button>
       </div>
     </form>
   );
-};
-
-const styles = {
-  container: {
-    padding: "20px",
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    maxWidth: "600px",
-  } as React.CSSProperties,
-  title: {
-    fontSize: "24px",
-    fontWeight: "bold" as const,
-    marginBottom: "20px",
-    color: "#333",
-  } as React.CSSProperties,
-  section: {
-    marginTop: "30px",
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "4px",
-  } as React.CSSProperties,
-  sectionTitle: {
-    fontSize: "18px",
-    fontWeight: "600" as const,
-    marginBottom: "15px",
-    color: "#444",
-  } as React.CSSProperties,
-  field: {
-    marginBottom: "20px",
-  } as React.CSSProperties,
-  label: {
-    display: "block",
-    marginBottom: "8px",
-    fontWeight: "500" as const,
-    color: "#555",
-  } as React.CSSProperties,
-  input: {
-    width: "100%",
-    padding: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    fontSize: "14px",
-  } as React.CSSProperties,
-  hint: {
-    display: "block",
-    marginTop: "4px",
-    fontSize: "12px",
-    color: "#888",
-  } as React.CSSProperties,
-  actions: {
-    display: "flex",
-    gap: "10px",
-    marginTop: "30px",
-  } as React.CSSProperties,
-  button: {
-    padding: "10px 20px",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    cursor: "pointer",
-    transition: "all 0.2s",
-  } as React.CSSProperties,
-  primaryButton: {
-    backgroundColor: "#007bff",
-    color: "white",
-  } as React.CSSProperties,
-  secondaryButton: {
-    backgroundColor: "#6c757d",
-    color: "white",
-  } as React.CSSProperties,
 };

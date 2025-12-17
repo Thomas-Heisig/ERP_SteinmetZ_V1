@@ -2,6 +2,7 @@
 // apps/frontend/src/components/AdvancedFilters/FilterBuilder.tsx
 
 import React, { useState } from "react";
+import "./FilterBuilder.css";
 
 interface FilterConfig {
   query?: string;
@@ -41,29 +42,29 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
     }
   };
 
-  const updateFilter = (key: keyof FilterConfig, value: any) => {
+  const updateFilter = (key: keyof FilterConfig, value: unknown) => {
     setFilter((prev) => ({ ...prev, [key]: value }));
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Filter Builder</h2>
+    <div className="filter-builder-container">
+      <h2 className="filter-builder-title">Filter Builder</h2>
 
       {/* Text Search */}
-      <div style={styles.field}>
-        <label style={styles.label}>Search Query</label>
+      <div className="filter-builder-field">
+        <label className="filter-builder-label">Search Query</label>
         <input
           type="text"
           value={filter.query || ""}
           onChange={(e) => updateFilter("query", e.target.value)}
           placeholder="Search by title, id, or content..."
-          style={styles.input}
+          className="filter-builder-input"
         />
       </div>
 
       {/* Node Kinds */}
-      <div style={styles.field}>
-        <label style={styles.label}>Node Types</label>
+      <div className="filter-builder-field">
+        <label className="filter-builder-label">Node Types</label>
         <select
           multiple
           value={filter.kinds || []}
@@ -74,7 +75,8 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
             );
             updateFilter("kinds", selected);
           }}
-          style={{ ...styles.input, height: "100px" }}
+          className="filter-builder-input filter-builder-select-multiple"
+          aria-label="Node Types"
         >
           <option value="category">Category</option>
           <option value="section">Section</option>
@@ -83,12 +85,14 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
           <option value="record">Record</option>
           <option value="report">Report</option>
         </select>
-        <small style={styles.hint}>Hold Ctrl/Cmd to select multiple</small>
+        <small className="filter-builder-hint">
+          Hold Ctrl/Cmd to select multiple
+        </small>
       </div>
 
       {/* Annotation Status */}
-      <div style={styles.field}>
-        <label style={styles.label}>Annotation Status</label>
+      <div className="filter-builder-field">
+        <label className="filter-builder-label">Annotation Status</label>
         <select
           multiple
           value={filter.annotationStatus || []}
@@ -99,7 +103,8 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
             );
             updateFilter("annotationStatus", selected);
           }}
-          style={{ ...styles.input, height: "80px" }}
+          className="filter-builder-input filter-builder-select-annotation"
+          aria-label="Annotation Status"
         >
           <option value="pending">Pending</option>
           <option value="processing">Processing</option>
@@ -110,9 +115,9 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
       </div>
 
       {/* Complexity Score Range */}
-      <div style={styles.field}>
-        <label style={styles.label}>Complexity Score Range</label>
-        <div style={styles.rangeContainer}>
+      <div className="filter-builder-field">
+        <label className="filter-builder-label">Complexity Score Range</label>
+        <div className="filter-builder-range-container">
           <input
             type="number"
             min="0"
@@ -125,9 +130,9 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
               })
             }
             placeholder="Min"
-            style={{ ...styles.input, width: "80px" }}
+            className="filter-builder-input filter-builder-range-input"
           />
-          <span style={{ margin: "0 10px" }}>to</span>
+          <span className="filter-builder-range-separator">to</span>
           <input
             type="number"
             min="0"
@@ -140,21 +145,22 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
               })
             }
             placeholder="Max"
-            style={{ ...styles.input, width: "80px" }}
+            className="filter-builder-input filter-builder-range-input"
           />
         </div>
       </div>
 
       {/* Sort Options */}
-      <div style={styles.field}>
-        <label style={styles.label}>Sort By</label>
-        <div style={styles.rangeContainer}>
+      <div className="filter-builder-field">
+        <label className="filter-builder-label">Sort By</label>
+        <div className="filter-builder-range-container">
           <select
             value={filter.sortBy || ""}
             onChange={(e) =>
               updateFilter("sortBy", e.target.value || undefined)
             }
-            style={{ ...styles.input, flex: 1 }}
+            className="filter-builder-input filter-builder-sort-select"
+            aria-label="Sort By"
           >
             <option value="">-- No sorting --</option>
             <option value="created_at">Created Date</option>
@@ -167,8 +173,9 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
             onChange={(e) =>
               updateFilter("sortOrder", e.target.value as "asc" | "desc")
             }
-            style={{ ...styles.input, width: "120px", marginLeft: "10px" }}
+            className="filter-builder-input filter-builder-order-select"
             disabled={!filter.sortBy}
+            aria-label="Sort Order"
           >
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
@@ -177,24 +184,24 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
       </div>
 
       {/* Actions */}
-      <div style={styles.actions}>
+      <div className="filter-builder-actions">
         <button
           onClick={handleApply}
-          style={{ ...styles.button, ...styles.primaryButton }}
+          className="filter-builder-button filter-builder-button-primary"
         >
           Apply Filter
         </button>
         {onSave && (
           <button
             onClick={() => setShowSaveDialog(true)}
-            style={{ ...styles.button, ...styles.secondaryButton }}
+            className="filter-builder-button filter-builder-button-secondary"
           >
             Save Filter
           </button>
         )}
         <button
           onClick={() => setFilter({})}
-          style={{ ...styles.button, ...styles.dangerButton }}
+          className="filter-builder-button filter-builder-button-danger"
         >
           Clear All
         </button>
@@ -202,27 +209,27 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
 
       {/* Save Dialog */}
       {showSaveDialog && (
-        <div style={styles.modal}>
-          <div style={styles.modalContent}>
+        <div className="filter-builder-modal">
+          <div className="filter-builder-modal-content">
             <h3>Save Filter</h3>
             <input
               type="text"
               value={filterName}
               onChange={(e) => setFilterName(e.target.value)}
               placeholder="Enter filter name..."
-              style={styles.input}
+              className="filter-builder-input"
               autoFocus
             />
-            <div style={styles.modalActions}>
+            <div className="filter-builder-modal-actions">
               <button
                 onClick={handleSave}
-                style={{ ...styles.button, ...styles.primaryButton }}
+                className="filter-builder-button filter-builder-button-primary"
               >
                 Save
               </button>
               <button
                 onClick={() => setShowSaveDialog(false)}
-                style={{ ...styles.button, ...styles.secondaryButton }}
+                className="filter-builder-button filter-builder-button-secondary"
               >
                 Cancel
               </button>
@@ -232,95 +239,4 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    padding: "20px",
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  } as React.CSSProperties,
-  title: {
-    fontSize: "24px",
-    fontWeight: "bold" as const,
-    marginBottom: "20px",
-    color: "#333",
-  } as React.CSSProperties,
-  field: {
-    marginBottom: "20px",
-  } as React.CSSProperties,
-  label: {
-    display: "block",
-    marginBottom: "8px",
-    fontWeight: "500" as const,
-    color: "#555",
-  } as React.CSSProperties,
-  input: {
-    width: "100%",
-    padding: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    fontSize: "14px",
-  } as React.CSSProperties,
-  hint: {
-    display: "block",
-    marginTop: "4px",
-    fontSize: "12px",
-    color: "#888",
-  } as React.CSSProperties,
-  rangeContainer: {
-    display: "flex",
-    alignItems: "center",
-  } as React.CSSProperties,
-  actions: {
-    display: "flex",
-    gap: "10px",
-    marginTop: "30px",
-  } as React.CSSProperties,
-  button: {
-    padding: "10px 20px",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    cursor: "pointer",
-    transition: "all 0.2s",
-  } as React.CSSProperties,
-  primaryButton: {
-    backgroundColor: "#007bff",
-    color: "white",
-  } as React.CSSProperties,
-  secondaryButton: {
-    backgroundColor: "#6c757d",
-    color: "white",
-  } as React.CSSProperties,
-  dangerButton: {
-    backgroundColor: "#dc3545",
-    color: "white",
-  } as React.CSSProperties,
-  modal: {
-    position: "fixed" as const,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-  } as React.CSSProperties,
-  modalContent: {
-    backgroundColor: "white",
-    padding: "30px",
-    borderRadius: "8px",
-    minWidth: "400px",
-  } as React.CSSProperties,
-  modalActions: {
-    display: "flex",
-    gap: "10px",
-    marginTop: "20px",
-    justifyContent: "flex-end",
-  } as React.CSSProperties,
 };

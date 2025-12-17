@@ -8,7 +8,6 @@
 import OpenAI from "openai";
 import type {
   ChatMessage,
-  AIResponse,
   AIModuleConfig,
   AIOptions,
   ModelResponse,
@@ -17,7 +16,6 @@ import type {
 } from "../types/types.js";
 import { log } from "../utils/logger.js";
 import { toolRegistry } from "../tools/registry.js";
-import { workflowEngine } from "../workflows/workflowEngine.js";
 import { ConversationContext } from "../context/conversationContext.js";
 
 /* ========================================================================== */
@@ -96,10 +94,11 @@ async function initializeAzureClient(): Promise<OpenAI> {
         });
 
         return azureClient;
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMsg = error instanceof Error ? error.message : String(error);
         clientInitialization = null;
         throw new Error(
-          `Fehler bei Azure OpenAI Client Initialisierung: ${error.message}`,
+          `Fehler bei Azure OpenAI Client Initialisierung: ${errorMsg}`,
         );
       }
     })();
@@ -131,9 +130,10 @@ function getAzureClientConfig(): AzureClientConfig {
 async function getAzureClient(): Promise<OpenAI> {
   try {
     return await initializeAzureClient();
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
     log("error", "Fehler beim Holen des Azure OpenAI Clients", {
-      error: error.message,
+      error: errorMsg,
     });
     throw error;
   }
@@ -173,7 +173,7 @@ export async function callAzureOpenAI(
     );
 
     // Request Body vorbereiten
-    const requestBody: any = {
+    const requestBody: Record<string, unknown> = {
       model: usedModel,
       temperature: config.temperature,
       max_tokens: config.maxTokens,
@@ -193,14 +193,14 @@ export async function callAzureOpenAI(
 
     // API Call mit Timeout
     const result = (await Promise.race([
-      client.chat.completions.create(requestBody),
+      client.chat.completions.create(requestBody as unknown as Parameters<typeof client.chat.completions.create>[0]),
       new Promise((_, reject) =>
         setTimeout(
           () => reject(new Error("Azure OpenAI API Timeout")),
-          config.timeoutMs!,
+          config.timeoutMs || 30000,
         ),
       ),
-    ])) as any;
+    ])) as OpenAI.Chat.Completions.ChatCompletion;
 
     const duration = Date.now() - startTime;
 
@@ -235,7 +235,21 @@ export async function callAzureOpenAI(
       tokens_in: result?.usage?.prompt_tokens,
       tokens_out: result?.usage?.completion_tokens,
       duration_ms: duration,
-      tool_calls: toolCalls,
+      tool_calls: toolCalls.map(tc => {
+        const toolCallAny = tc as OpenAI.Chat.Completions.ChatCompletionMessageToolCall & { function?: { name?: string; arguments?: string } };
+        return {
+          name: toolCallAny.function?.name || "unknown",
+          parameters: (() => {
+            try {
+              return JSON.parse(toolCallAny.function?.arguments || "{}") as Record<string, unknown>;
+            } catch {
+              return {};
+            }
+          })(),
+          id: tc.id,
+          type: "function" as const,
+        };
+      }),
       success: true,
       meta: {
         finish_reason: result?.choices?.[0]?.finish_reason,
@@ -251,22 +265,24 @@ export async function callAzureOpenAI(
     }
 
     return modelResponse;
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = Date.now() - startTime;
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
 
     log("error", "Azure OpenAI Fehler", {
       model: model || azureConfig.model,
-      error: error.message,
+      error: errorMsg,
       duration_ms: duration,
-      stack: config.fallbackOnError ? error.stack : undefined,
+      stack: config.fallbackOnError ? errorStack : undefined,
     });
 
     // Fallback Response bei aktiviertem Fallback
     if (config.fallbackOnError) {
-      return createFallbackResponse(model, error, duration);
+      return createFallbackResponse(model, errorMsg, duration);
     }
 
-    throw new Error(`Azure OpenAI Provider Fehler: ${error.message}`);
+    throw new Error(`Azure OpenAI Provider Fehler: ${errorMsg}`);
   }
 }
 
@@ -279,8 +295,8 @@ function prepareOpenAIMessages(
   config: AzureOpenAIProviderConfig,
 ): {
   systemPrompt?: string;
-  chatMessages: any[];
-  tools?: any[];
+  chatMessages: Array<{ role: string; content: string; metadata?: unknown }>;
+  tools?: Array<{ type: "function"; function: { name: string; description: string; parameters: unknown } }>;
 } {
   if (!Array.isArray(messages) || messages.length === 0) {
     return { systemPrompt: undefined, chatMessages: [] };
@@ -306,7 +322,7 @@ function prepareOpenAIMessages(
     .filter((m) => m.content.trim().length > 0);
 
   // Tools vorbereiten falls aktiviert
-  let tools: any[] | undefined;
+  let tools: Array<{ type: "function"; function: { name: string; description: string; parameters: unknown } }> | undefined;
   if (config.enableToolCalls) {
     tools = prepareToolsForOpenAI();
   }
@@ -314,7 +330,7 @@ function prepareOpenAIMessages(
   return { systemPrompt, chatMessages, tools };
 }
 
-function prepareToolsForOpenAI(): any[] {
+function prepareToolsForOpenAI(): Array<{ type: "function"; function: { name: string; description: string; parameters: unknown } }> {
   const tools = toolRegistry.getToolDefinitions();
   return tools
     .map((tool) => ({
@@ -336,19 +352,22 @@ function prepareToolsForOpenAI(): any[] {
     .filter((tool) => tool.function.name && tool.function.description);
 }
 
-async function executeToolCalls(toolCalls: any[]): Promise<ToolResult[]> {
+async function executeToolCalls(toolCalls: unknown[]): Promise<ToolResult[]> {
   const results: ToolResult[] = [];
 
   for (const toolCall of toolCalls) {
+    if (typeof toolCall !== "object" || toolCall === null) continue;
+    
+    const call = toolCall as { function?: { name?: string; arguments?: string } };
     const startTime = Date.now();
 
     try {
-      const toolName = toolCall.function?.name;
-      let parameters = {};
+      const toolName = call.function?.name;
+      let parameters: Record<string, unknown> = {};
 
       try {
-        parameters = JSON.parse(toolCall.function?.arguments || "{}");
-      } catch (parseError) {
+        parameters = JSON.parse(call.function?.arguments || "{}") as Record<string, unknown>;
+      } catch {
         parameters = {};
       }
 
@@ -370,12 +389,13 @@ async function executeToolCalls(toolCalls: any[]): Promise<ToolResult[]> {
         source_tool: toolName,
         timestamp: new Date().toISOString(),
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
       results.push({
         success: false,
-        error: error.message,
+        error: errorMsg,
         runtime_ms: Date.now() - startTime,
-        source_tool: toolCall.function?.name || "unknown",
+        source_tool: call.function?.name || "unknown",
         timestamp: new Date().toISOString(),
       });
     }
@@ -404,10 +424,10 @@ function formatToolResults(results: ToolResult[]): string {
 
 function createFallbackResponse(
   model: string,
-  error: any,
+  error: string,
   duration: number,
 ): ModelResponse {
-  const fallbackText = `Entschuldigung, es gab einen Verbindungsfehler zu Azure OpenAI (${error.message}). 
+  const fallbackText = `Entschuldigung, es gab einen Verbindungsfehler zu Azure OpenAI (${error}). 
 Bitte versuchen Sie es später erneut oder verwenden Sie einen anderen Provider.`;
 
   return {
@@ -416,10 +436,10 @@ Bitte versuchen Sie es später erneut oder verwenden Sie einen anderen Provider.
     text: fallbackText,
     duration_ms: duration,
     success: false,
-    errors: [error.message],
+    errors: [error],
     meta: {
       source: "fallback",
-      error_type: error.name || "API_ERROR",
+      error_type: "API_ERROR",
     },
   };
 }
@@ -498,7 +518,7 @@ export const azureOpenAIProvider = {
   config: azureConfig,
 
   // Erweiterte Methoden
-  async healthCheck(): Promise<{ healthy: boolean; details?: any }> {
+  async healthCheck(): Promise<{ healthy: boolean; details?: unknown }> {
     try {
       const configCheck = validateAzureConfig();
       if (!configCheck.valid) {
@@ -510,10 +530,11 @@ export const azureOpenAIProvider = {
 
       await callAzureOpenAI(azureConfig.model, testMessages);
       return { healthy: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
       return {
         healthy: false,
-        details: { error: error.message },
+        details: { error: errorMsg },
       };
     }
   },

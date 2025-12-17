@@ -2,7 +2,7 @@
 // src/components/Dashboard/hooks/useDashboardLayout.ts
 
 import { useDashboardContext } from "../core/DashboardContext";
-import type { DashboardLayout, Category, UseDashboardLayout } from "../types";
+import type { Category, UseDashboardLayout } from "../types";
 
 export function useDashboardLayout(): UseDashboardLayout {
   const { state, dispatch } = useDashboardContext();

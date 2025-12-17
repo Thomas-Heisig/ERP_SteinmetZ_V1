@@ -43,7 +43,6 @@ import {
   isEmpty,
   isFull,
   validateNavigationEntry,
-  sanitizeNavigationEntry,
   createNavigationEntry,
   calculateMetrics,
   serializeStack,

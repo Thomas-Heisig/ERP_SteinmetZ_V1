@@ -38,6 +38,7 @@
  * ```
  */
 
+import type { Request, Response } from "express";
 import { log } from "../routes/ai/utils/logger.js";
 
 /**
@@ -51,7 +52,7 @@ interface QueryMetrics {
   /** Unix timestamp when query was executed */
   timestamp: number;
   /** Query parameters (sanitized for logging) */
-  params?: any[];
+  params?: unknown[];
 }
 
 /**
@@ -115,7 +116,7 @@ class QueryMonitor {
    */
   async trackQuery<T>(
     query: string,
-    params: any[] | undefined,
+    params: unknown[] | undefined,
     executor: () => Promise<T>,
   ): Promise<T> {
     const startTime = performance.now();
@@ -155,7 +156,7 @@ class QueryMonitor {
   /**
    * Records query metrics in history
    */
-  private recordQuery(query: string, duration: number, params?: any[]): void {
+  private recordQuery(query: string, duration: number, params?: unknown[]): void {
     const metrics: QueryMetrics = {
       query: this.sanitizeQuery(query),
       duration,
@@ -182,7 +183,7 @@ class QueryMonitor {
   /**
    * Sanitizes query parameters for logging
    */
-  private sanitizeParams(params: any[]): any[] {
+  private sanitizeParams(params: unknown[]): unknown[] {
     const sensitiveKeywords = [
       "password",
       "token",
@@ -298,7 +299,7 @@ export const queryMonitor = new QueryMonitor({
 /**
  * Express middleware for query monitoring endpoint
  */
-export function queryMonitorStatsHandler(req: any, res: any): void {
+export function queryMonitorStatsHandler(req: Request, res: Response): void {
   const action = req.query.action;
 
   switch (action) {

@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/contexts/AuthContext.tsx
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 
 // Types
 export interface User {
@@ -73,6 +79,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading: true,
   });
 
+  const tryRefreshToken = useCallback(async (refreshToken: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const newToken = data.token;
+        localStorage.setItem("token", newToken);
+
+        // Get user info with new token
+        const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${newToken}`,
+          },
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setState({
+            user: userData.user,
+            roles: userData.roles || [],
+            permissions: userData.permissions || [],
+            token: newToken,
+            refreshToken,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } else {
+          clearAuthState();
+        }
+      } else {
+        clearAuthState();
+      }
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+      clearAuthState();
+    }
+  }, []);
+
   // Load auth state from localStorage on mount
   useEffect(() => {
     const loadAuthState = async () => {
@@ -117,52 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     loadAuthState();
-  }, []);
-
-  const tryRefreshToken = async (refreshToken: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const newToken = data.token;
-        localStorage.setItem("token", newToken);
-
-        // Get user info with new token
-        const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${newToken}`,
-          },
-        });
-
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setState({
-            user: userData.user,
-            roles: userData.roles || [],
-            permissions: userData.permissions || [],
-            token: newToken,
-            refreshToken,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } else {
-          clearAuthState();
-        }
-      } else {
-        clearAuthState();
-      }
-    } catch (error) {
-      console.error("Failed to refresh token:", error);
-      clearAuthState();
-    }
-  };
+  }, [tryRefreshToken]);
 
   const clearAuthState = () => {
     localStorage.removeItem("token");

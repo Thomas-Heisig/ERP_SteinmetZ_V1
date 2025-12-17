@@ -2,7 +2,8 @@
 // apps/frontend/src/features/settings/Settings.tsx
 
 import React, { useState } from "react";
-import { Card, Tabs, Button, Input, Select } from "../../components/ui";
+import { Card, Tabs, Button, Select } from "../../components/ui";
+import styles from "./Settings.module.css";
 
 export const Settings: React.FC = () => {
   const [theme, setTheme] = useState("auto");
@@ -47,11 +48,9 @@ export const Settings: React.FC = () => {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <div className={styles.container}>
       <Card variant="elevated" padding="md">
-        <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 600 }}>
-          ⚙️ Einstellungen
-        </h1>
+        <h1 className={styles.header}>⚙️ Einstellungen</h1>
       </Card>
 
       <Card variant="elevated" padding="none">
@@ -67,18 +66,9 @@ const GeneralSettings: React.FC<{
   setTheme: (t: string) => void;
 }> = ({ theme, setTheme }) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.5rem",
-        padding: "1rem",
-      }}
-    >
+    <div className={styles.generalSettings}>
       <div>
-        <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 600 }}>
-          Erscheinungsbild
-        </h3>
+        <h3 className={styles.sectionTitle}>Erscheinungsbild</h3>
         <Select
           label="Theme"
           value={theme}
@@ -94,16 +84,8 @@ const GeneralSettings: React.FC<{
       </div>
 
       <div>
-        <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 600 }}>
-          Sprache & Region
-        </h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "1rem",
-          }}
-        >
+        <h3 className={styles.sectionTitle}>Sprache & Region</h3>
+        <div className={styles.gridTwo}>
           <Select
             label="Sprache"
             value="de"
@@ -125,7 +107,7 @@ const GeneralSettings: React.FC<{
         </div>
       </div>
 
-      <Button variant="primary" style={{ alignSelf: "flex-start" }}>
+      <Button variant="primary" className={styles.saveButton}>
         💾 Speichern
       </Button>
     </div>
@@ -135,35 +117,19 @@ const GeneralSettings: React.FC<{
 // User Settings (RBAC)
 const UserSettings: React.FC = () => {
   return (
-    <div style={{ padding: "1rem" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-        }}
-      >
-        <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 600 }}>
-          Benutzer & Rollen (RBAC)
-        </h3>
+    <div className={styles.settingsContent}>
+      <div className={styles.settingsHeader}>
+        <h3 className={styles.settingsHeaderTitle}>Benutzer & Rollen (RBAC)</h3>
         <Button variant="primary" size="sm">
           + Benutzer hinzufügen
         </Button>
       </div>
 
-      <div
-        style={{
-          background: "var(--gray-50)",
-          borderRadius: "8px",
-          padding: "2rem",
-          textAlign: "center",
-        }}
-      >
-        <p style={{ color: "var(--text-secondary)" }}>
+      <div className={styles.placeholder}>
+        <p className={styles.placeholderText}>
           Benutzerverwaltung mit rollenbasierter Zugriffskontrolle (RBAC)
         </p>
-        <p style={{ color: "var(--text-tertiary)", fontSize: "0.875rem" }}>
+        <p className={styles.placeholderSubtext}>
           Verwalten Sie Benutzer, Rollen und Berechtigungen
         </p>
       </div>
@@ -174,35 +140,17 @@ const UserSettings: React.FC = () => {
 // Tenant Settings (Multi-tenancy)
 const TenantSettings: React.FC = () => {
   return (
-    <div style={{ padding: "1rem" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-        }}
-      >
-        <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 600 }}>
-          Mandantenverwaltung
-        </h3>
+    <div className={styles.settingsContent}>
+      <div className={styles.settingsHeader}>
+        <h3 className={styles.settingsHeaderTitle}>Mandantenverwaltung</h3>
         <Button variant="primary" size="sm">
           + Mandant hinzufügen
         </Button>
       </div>
 
-      <div
-        style={{
-          background: "var(--gray-50)",
-          borderRadius: "8px",
-          padding: "2rem",
-          textAlign: "center",
-        }}
-      >
-        <p style={{ color: "var(--text-secondary)" }}>
-          Multi-Tenant-Konfiguration
-        </p>
-        <p style={{ color: "var(--text-tertiary)", fontSize: "0.875rem" }}>
+      <div className={styles.placeholder}>
+        <p className={styles.placeholderText}>Multi-Tenant-Konfiguration</p>
+        <p className={styles.placeholderSubtext}>
           Verwalten Sie separate Mandanten mit eigenen Daten und Einstellungen
         </p>
       </div>
@@ -213,29 +161,15 @@ const TenantSettings: React.FC = () => {
 // API Settings
 const ApiSettings: React.FC = () => {
   return (
-    <div style={{ padding: "1rem" }}>
-      <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 600 }}>
-        API-Schlüssel & Integrationen
-      </h3>
+    <div className={styles.apiSection}>
+      <h3 className={styles.sectionTitle}>API-Schlüssel & Integrationen</h3>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <div className={styles.apiList}>
         <Card variant="outlined" padding="md">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>
+          <div className={styles.apiCard}>
+            <div className={styles.apiCardInfo}>
               <strong>OpenAI API</strong>
-              <p
-                style={{
-                  margin: "0.25rem 0 0",
-                  fontSize: "0.875rem",
-                  color: "var(--text-secondary)",
-                }}
-              >
+              <p className={styles.apiCardDescription}>
                 GPT-4 für KI-Funktionen
               </p>
             </div>
@@ -246,22 +180,10 @@ const ApiSettings: React.FC = () => {
         </Card>
 
         <Card variant="outlined" padding="md">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>
+          <div className={styles.apiCard}>
+            <div className={styles.apiCardInfo}>
               <strong>Sipgate</strong>
-              <p
-                style={{
-                  margin: "0.25rem 0 0",
-                  fontSize: "0.875rem",
-                  color: "var(--text-secondary)",
-                }}
-              >
+              <p className={styles.apiCardDescription}>
                 Telefonie, SMS und Fax
               </p>
             </div>
@@ -272,24 +194,10 @@ const ApiSettings: React.FC = () => {
         </Card>
 
         <Card variant="outlined" padding="md">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>
+          <div className={styles.apiCard}>
+            <div className={styles.apiCardInfo}>
               <strong>DATEV</strong>
-              <p
-                style={{
-                  margin: "0.25rem 0 0",
-                  fontSize: "0.875rem",
-                  color: "var(--text-secondary)",
-                }}
-              >
-                Buchhaltungsexport
-              </p>
+              <p className={styles.apiCardDescription}>Buchhaltungsexport</p>
             </div>
             <Button variant="outline" size="sm">
               Konfigurieren
@@ -304,38 +212,23 @@ const ApiSettings: React.FC = () => {
 // Backup Settings
 const BackupSettings: React.FC = () => {
   return (
-    <div style={{ padding: "1rem" }}>
-      <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 600 }}>
-        Backup & Wiederherstellung
-      </h3>
+    <div className={styles.backupSection}>
+      <h3 className={styles.sectionTitle}>Backup & Wiederherstellung</h3>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gap: "1rem",
-          marginBottom: "1.5rem",
-        }}
-      >
+      <div className={styles.backupGrid}>
         <Card variant="outlined" padding="md">
-          <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.875rem" }}>
-            💾 Letztes Backup
-          </h4>
-          <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
+          <h4 className={styles.backupStatTitle}>💾 Letztes Backup</h4>
+          <p className={styles.backupStatValue}>
             {new Date().toLocaleDateString("de-DE")}
           </p>
         </Card>
         <Card variant="outlined" padding="md">
-          <h4 style={{ margin: "0 0 0.5rem", fontSize: "0.875rem" }}>
-            📊 Datenbankgröße
-          </h4>
-          <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-            124 MB
-          </p>
+          <h4 className={styles.backupStatTitle}>📊 Datenbankgröße</h4>
+          <p className={styles.backupStatValue}>124 MB</p>
         </Card>
       </div>
 
-      <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div className={styles.buttonGroup}>
         <Button variant="primary">📥 Backup erstellen</Button>
         <Button variant="outline">📤 Backup importieren</Button>
       </div>
@@ -346,71 +239,25 @@ const BackupSettings: React.FC = () => {
 // Diagnostics Settings
 const DiagnosticsSettings: React.FC = () => {
   return (
-    <div style={{ padding: "1rem" }}>
-      <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 600 }}>
-        System-Diagnose & Logs
-      </h3>
+    <div className={styles.diagnosticsSection}>
+      <h3 className={styles.sectionTitle}>System-Diagnose & Logs</h3>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "1rem",
-          marginBottom: "1.5rem",
-        }}
-      >
+      <div className={styles.diagnosticsGrid}>
         <Card variant="outlined" padding="md">
-          <h4
-            style={{
-              margin: "0 0 0.5rem",
-              fontSize: "0.75rem",
-              color: "var(--text-tertiary)",
-            }}
-          >
-            System-Status
-          </h4>
-          <p
-            style={{
-              margin: 0,
-              fontSize: "1.25rem",
-              fontWeight: 600,
-              color: "var(--success-500)",
-            }}
-          >
-            🟢 Gesund
-          </p>
+          <h4 className={styles.diagnosticTitle}>System-Status</h4>
+          <p className={styles.diagnosticValueSuccess}>🟢 Gesund</p>
         </Card>
         <Card variant="outlined" padding="md">
-          <h4
-            style={{
-              margin: "0 0 0.5rem",
-              fontSize: "0.75rem",
-              color: "var(--text-tertiary)",
-            }}
-          >
-            Selbstheilung
-          </h4>
-          <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-            Aktiv
-          </p>
+          <h4 className={styles.diagnosticTitle}>Selbstheilung</h4>
+          <p className={styles.diagnosticValue}>Aktiv</p>
         </Card>
         <Card variant="outlined" padding="md">
-          <h4
-            style={{
-              margin: "0 0 0.5rem",
-              fontSize: "0.75rem",
-              color: "var(--text-tertiary)",
-            }}
-          >
-            Letzter Check
-          </h4>
-          <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
-            03:00
-          </p>
+          <h4 className={styles.diagnosticTitle}>Letzter Check</h4>
+          <p className={styles.diagnosticValue}>03:00</p>
         </Card>
       </div>
 
-      <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div className={styles.buttonGroup}>
         <Button
           variant="primary"
           onClick={() => window.open("/diagnostics", "_blank")}

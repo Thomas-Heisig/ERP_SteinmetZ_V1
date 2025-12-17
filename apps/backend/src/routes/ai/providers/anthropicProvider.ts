@@ -11,15 +11,12 @@ import type {
   ChatMessage,
   ToolResult,
   ToolFunction,
-  AIResponse,
   AIOptions,
   ModelResponse,
   Provider,
-  ConversationState,
 } from "../types/types.js";
 import { log } from "../utils/logger.js";
 import { toolRegistry } from "../tools/registry.js";
-import { workflowEngine } from "../workflows/workflowEngine.js";
 import { ConversationContext } from "../context/conversationContext.js";
 
 /* ========================================================================== */
@@ -56,14 +53,14 @@ interface AnthropicResponse {
 }
 
 // Globale Variablen mit besserer Isolation
-let AnthropicClient: any = null;
-let clientInitialization: Promise<any> | null = null;
+let AnthropicClient: unknown = null;
+let clientInitialization: Promise<unknown> | null = null;
 
 /* ========================================================================== */
 /* 🏗️ Client-Initialisierung - VERBESSERT                                  */
 /* ========================================================================== */
 
-async function initializeAnthropicClient(): Promise<any> {
+async function initializeAnthropicClient(): Promise<unknown> {
   if (AnthropicClient) return AnthropicClient;
 
   // Verhindere parallele Initialisierung
@@ -85,14 +82,15 @@ async function initializeAnthropicClient(): Promise<any> {
         });
 
         log("info", "Anthropic Client erfolgreich initialisiert", {
-          sdkVersion: AnthropicClient?._version || "unknown",
+          sdkVersion: (AnthropicClient as { _version?: string })?._version || "unknown",
         });
 
         return AnthropicClient;
-      } catch (error: any) {
+      } catch (error: unknown) {
         clientInitialization = null;
+        const message = error instanceof Error ? error.message : String(error);
         throw new Error(
-          `Fehler bei Anthropic Client Initialisierung: ${error.message}`,
+          `Fehler bei Anthropic Client Initialisierung: ${message}`,
         );
       }
     })();
@@ -101,12 +99,13 @@ async function initializeAnthropicClient(): Promise<any> {
   return clientInitialization;
 }
 
-async function getAnthropicClient(): Promise<any> {
+async function getAnthropicClient(): Promise<unknown> {
   try {
     return await initializeAnthropicClient();
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     log("error", "Fehler beim Holen des Anthropic Clients", {
-      error: error.message,
+      error: message,
     });
     throw error;
   }
@@ -119,7 +118,7 @@ async function getAnthropicClient(): Promise<any> {
 function mapMessages(messages: ChatMessage[]): {
   systemPrompt?: string;
   messageHistory: AnthropicMessage[];
-  tools?: any[];
+  tools?: Array<Record<string, unknown>>;
 } {
   if (!Array.isArray(messages) || messages.length === 0) {
     return { systemPrompt: undefined, messageHistory: [] };
@@ -156,7 +155,7 @@ function mapMessages(messages: ChatMessage[]): {
   };
 }
 
-function prepareToolsForAnthropic(): any[] {
+function prepareToolsForAnthropic(): Array<Record<string, unknown>> {
   const tools = toolRegistry.getToolDefinitions();
   return tools
     .map((tool) => ({
@@ -211,10 +210,11 @@ async function detectAndRunTools(
         const params = parseToolParams(paramString, pattern);
         const result = await executeToolCall(toolName, params);
         results.push(result);
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
         results.push({
           success: false,
-          error: error.message,
+          error: message,
           source_tool: toolName,
           timestamp: new Date().toISOString(),
         });
@@ -234,7 +234,7 @@ async function detectAndRunTools(
 function parseToolParams(
   paramString: string,
   pattern: RegExp,
-): Record<string, any> {
+): Record<string, unknown> {
   // Versuche JSON zu parsen falls vorhanden
   if (pattern.source.includes("{")) {
     try {
@@ -248,7 +248,7 @@ function parseToolParams(
   }
 
   // Key=Value Parsing für einfache Syntax
-  const params: Record<string, any> = {};
+  const params: Record<string, unknown> = {};
   const parts = paramString
     .split(",")
     .map((p) => p.trim())
@@ -283,7 +283,7 @@ function parseToolParams(
  */
 async function executeToolCall(
   toolName: string,
-  params: Record<string, any>,
+  params: Record<string, unknown>,
 ): Promise<ToolResult> {
   const startTime = Date.now();
 
@@ -306,10 +306,11 @@ async function executeToolCall(
       source_tool: toolName,
       timestamp: new Date().toISOString(),
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     return {
       success: false,
-      error: error.message,
+      error: message,
       runtime_ms: Date.now() - startTime,
       source_tool: toolName,
       timestamp: new Date().toISOString(),
@@ -318,24 +319,28 @@ async function executeToolCall(
 }
 
 function validateToolParameters(
-  tool: any,
-  params: Record<string, any>,
-): Record<string, any> {
+  tool: unknown,
+  params: Record<string, unknown>,
+): Record<string, unknown> {
   // Hole alle Tool-Definitionen (Plural)
   const allDefs = toolRegistry.getToolDefinitions?.() ?? [];
 
   // Finde das passende Tool anhand des Namens
-  const toolDef = allDefs.find((t: any) => t.name === (tool.name || "unknown"));
+  const toolObj = tool as { name?: string };
+  const toolDef = allDefs.find((t: unknown) => {
+    const tObj = t as { name?: string };
+    return tObj.name === (toolObj.name || "unknown");
+  });
 
   if (!toolDef?.parameters) return params;
 
-  const validated: Record<string, any> = {};
+  const validated: Record<string, unknown> = {};
 
   // Iteriere sicher über Parameterdefinitionen
   for (const [key, rawSchema] of Object.entries(
-    toolDef.parameters as Record<string, any>,
+    toolDef.parameters as Record<string, unknown>,
   )) {
-    const schema = rawSchema ?? {};
+    const schema = (rawSchema as Record<string, unknown>) ?? {};
 
     if (params[key] !== undefined) {
       validated[key] = params[key];
@@ -375,7 +380,7 @@ export async function callAnthropic(
     const { systemPrompt, messageHistory, tools } = mapMessages(messages);
 
     // Bereite Request vor
-    const requestPayload: any = {
+    const requestPayload: Record<string, unknown> = {
       model,
       max_tokens: config.maxTokens,
       temperature: config.temperature,
@@ -392,8 +397,14 @@ export async function callAnthropic(
     });
 
     // API Call mit Timeout
+    const anthropicClient = client as {
+      messages: {
+        create: (payload: Record<string, unknown>) => Promise<AnthropicResponse>;
+      };
+    };
+    
     const response = (await Promise.race([
-      client.messages.create(requestPayload),
+      anthropicClient.messages.create(requestPayload),
       new Promise((_, reject) =>
         setTimeout(
           () => reject(new Error("Anthropic API Timeout")),
@@ -406,7 +417,7 @@ export async function callAnthropic(
 
     // Verarbeite Response
     let output = "";
-    const toolCalls: Array<{ name: string; parameters: Record<string, any> }> =
+    const toolCalls: Array<{ name: string; parameters: Record<string, unknown> }> =
       [];
 
     for (const part of response.content) {
@@ -457,22 +468,24 @@ export async function callAnthropic(
     };
 
     return modelResponse;
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = Date.now() - startTime;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
 
     log("error", "Anthropic Provider Fehler", {
       model,
-      error: error.message,
+      error: errorMessage,
       duration_ms: duration,
-      stack: config.debugMode ? error.stack : undefined,
+      stack: config.debugMode ? errorStack : undefined,
     });
 
     // Fallback Response bei aktiviertem Fallback
     if (config.fallbackOnError) {
-      return createFallbackResponse(model, error, duration);
+      return createFallbackResponse(model, errorMessage, duration);
     }
 
-    throw new Error(`Anthropic Provider Fehler: ${error.message}`);
+    throw new Error(`Anthropic Provider Fehler: ${errorMessage}`);
   }
 }
 
@@ -482,10 +495,10 @@ export async function callAnthropic(
 
 function createFallbackResponse(
   model: string,
-  error: any,
+  errorMessage: string,
   duration: number,
 ): ModelResponse {
-  const fallbackText = `Entschuldigung, es gab einen Verbindungsfehler zur KI-API (${error.message}). 
+  const fallbackText = `Entschuldigung, es gab einen Verbindungsfehler zur KI-API (${errorMessage}). 
 Bitte versuchen Sie es später erneut oder verwenden Sie einen anderen Provider.`;
 
   return {
@@ -494,10 +507,10 @@ Bitte versuchen Sie es später erneut oder verwenden Sie einen anderen Provider.
     text: fallbackText,
     duration_ms: duration,
     success: false,
-    errors: [error.message],
+    errors: [errorMessage],
     meta: {
       source: "fallback",
-      error_type: error.name || "API_ERROR",
+      error_type: "API_ERROR",
     },
   };
 }
@@ -577,7 +590,7 @@ export const anthropicProvider = {
   validateConfig: validateAnthropicConfig,
 
   // Erweiterte Methoden
-  async healthCheck(): Promise<{ healthy: boolean; details?: any }> {
+  async healthCheck(): Promise<{ healthy: boolean; details?: Record<string, unknown> }> {
     try {
       const configCheck = validateAnthropicConfig();
       if (!configCheck.valid) {
@@ -589,10 +602,11 @@ export const anthropicProvider = {
 
       await callAnthropic("claude-3-haiku-20240307", testMessages);
       return { healthy: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
       return {
         healthy: false,
-        details: { error: error.message },
+        details: { error: message },
       };
     }
   },

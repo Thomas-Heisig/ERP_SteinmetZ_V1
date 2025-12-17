@@ -1,0 +1,237 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/components/Sidebar/Sidebar.module.css */
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: var(--header-height, 60px);
+  bottom: 0;
+  width: 280px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition:
+    width 0.3s ease,
+    transform 0.3s ease;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+/* Sidebar Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  min-height: 60px;
+}
+
+.toggle {
+  background: var(--primary-500);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.toggle:hover {
+  background: var(--primary-600);
+  transform: scale(1.05);
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+/* Navigation */
+.nav {
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+  padding: 0 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.link:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.link.active {
+  background: var(--primary-50);
+  color: var(--primary-700);
+  font-weight: 500;
+}
+
+.link.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--primary-500);
+}
+
+.icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.label {
+  flex: 1;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge {
+  background: var(--error-500);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Collapsed State */
+.sidebar.collapsed .link {
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.sidebar.collapsed .sectionTitle {
+  display: none;
+}
+
+.sidebar.collapsed .label,
+.sidebar.collapsed .badge {
+  display: none;
+}
+
+/* Sidebar Footer */
+.footer {
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+}
+
+.sidebar.collapsed .info {
+  display: none;
+}
+
+/* Scrollbar Styling */
+.nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nav::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.nav::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* Dark Theme Adjustments */
+[data-theme="dark"] .link.active {
+  background: var(--primary-900);
+  color: var(--primary-100);
+}
+
+/* LCARS Theme */
+[data-theme="lcars"] .sidebar {
+  background: #000000;
+  border-right-color: var(--lcars-orange);
+}
+
+[data-theme="lcars"] .link.active {
+  background: rgba(255, 153, 0, 0.2);
+  color: var(--lcars-orange);
+}
+
+[data-theme="lcars"] .link.active::before {
+  background: var(--lcars-orange);
+}

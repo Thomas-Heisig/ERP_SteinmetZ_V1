@@ -2,7 +2,7 @@
 
 ## 🎯 Hauptnavigation & Menüstruktur
 
-```
+```Text
 🏠 DASHBOARD
 ├── 📊 Executive Overview
 ├── 🔔 Benachrichtigungen

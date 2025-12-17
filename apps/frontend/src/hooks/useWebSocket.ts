@@ -23,9 +23,9 @@ interface UseWebSocketOptions {
   reconnectionDelay?: number;
 }
 
+type WebSocketData = Record<string, unknown>;
+
 interface UseWebSocketReturn {
-  /** Socket instance */
-  socket: Socket | null;
   /** Connection status */
   isConnected: boolean;
   /** Connect manually */
@@ -33,15 +33,17 @@ interface UseWebSocketReturn {
   /** Disconnect */
   disconnect: () => void;
   /** Emit event */
-  emit: (event: string, data?: any) => void;
+  emit: (event: string, data?: WebSocketData) => void;
   /** Join a room */
   joinRoom: (room: string) => void;
   /** Leave a room */
   leaveRoom: (room: string) => void;
   /** Subscribe to an event */
-  on: (event: string, handler: (data: any) => void) => void;
+  on: <T = WebSocketData>(event: string, handler: (data: T) => void) => void;
   /** Unsubscribe from an event */
-  off: (event: string, handler: (data: any) => void) => void;
+  off: <T = WebSocketData>(event: string, handler: (data: T) => void) => void;
+  /** Get socket instance (use with caution) */
+  getSocket: () => Socket | null;
 }
 
 /**
@@ -106,7 +108,7 @@ export function useWebSocket(
     }
   }, []);
 
-  const emit = useCallback((event: string, data?: any) => {
+  const emit = useCallback((event: string, data?: WebSocketData) => {
     if (socketRef.current?.connected) {
       socketRef.current.emit(event, data);
     } else {
@@ -116,29 +118,37 @@ export function useWebSocket(
 
   const joinRoom = useCallback(
     (room: string) => {
-      emit("join-room", room);
+      emit("join-room", { room });
     },
     [emit],
   );
 
   const leaveRoom = useCallback(
     (room: string) => {
-      emit("leave-room", room);
+      emit("leave-room", { room });
     },
     [emit],
   );
 
-  const on = useCallback((event: string, handler: (data: any) => void) => {
-    if (socketRef.current) {
-      socketRef.current.on(event, handler);
-    }
-  }, []);
+  const on = useCallback(
+    <T = WebSocketData>(event: string, handler: (data: T) => void) => {
+      if (socketRef.current) {
+        socketRef.current.on(event, handler);
+      }
+    },
+    [],
+  );
 
-  const off = useCallback((event: string, handler: (data: any) => void) => {
-    if (socketRef.current) {
-      socketRef.current.off(event, handler);
-    }
-  }, []);
+  const off = useCallback(
+    <T = WebSocketData>(event: string, handler: (data: T) => void) => {
+      if (socketRef.current) {
+        socketRef.current.off(event, handler);
+      }
+    },
+    [],
+  );
+
+  const getSocket = useCallback(() => socketRef.current, []);
 
   // Auto-connect on mount if enabled
   useEffect(() => {
@@ -153,7 +163,6 @@ export function useWebSocket(
   }, [autoConnect, connect, disconnect]);
 
   return {
-    socket: socketRef.current,
     isConnected,
     connect,
     disconnect,
@@ -162,42 +171,53 @@ export function useWebSocket(
     leaveRoom,
     on,
     off,
+    getSocket,
   };
 }
 
 /**
  * Hook for subscribing to specific WebSocket events
  */
-export function useWebSocketEvent<T = any>(
+export function useWebSocketEvent<T = WebSocketData>(
   event: string,
   handler: (data: T) => void,
-  deps: any[] = [],
+  deps: React.DependencyList = [],
 ) {
-  const { socket, isConnected } = useWebSocket({ autoConnect: true });
+  const { getSocket, isConnected, on, off } = useWebSocket({
+    autoConnect: true,
+  });
 
   useEffect(() => {
+    const socket = getSocket();
     if (socket && isConnected) {
-      socket.on(event, handler);
+      on<T>(event, handler);
 
       return () => {
-        socket.off(event, handler);
+        off<T>(event, handler);
       };
     }
-  }, [socket, isConnected, event, ...deps]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getSocket, isConnected, event, handler, ...deps]);
+}
+
+interface DashboardUpdate {
+  type: string;
+  payload: WebSocketData;
 }
 
 /**
  * Hook for dashboard real-time updates
  */
 export function useDashboardUpdates(
-  onUpdate: (data: any) => void,
-  onWidgetUpdate?: (data: any) => void,
+  onUpdate: (data: DashboardUpdate) => void,
+  onWidgetUpdate?: (data: DashboardUpdate) => void,
 ) {
-  const { socket, isConnected, joinRoom, leaveRoom } = useWebSocket({
+  const { getSocket, isConnected, joinRoom, leaveRoom } = useWebSocket({
     autoConnect: true,
   });
 
   useEffect(() => {
+    const socket = getSocket();
     if (socket && isConnected) {
       // Join dashboard room
       joinRoom("dashboard");
@@ -217,23 +237,36 @@ export function useDashboardUpdates(
         leaveRoom("dashboard");
       };
     }
-  }, [socket, isConnected, onUpdate, onWidgetUpdate, joinRoom, leaveRoom]);
+  }, [getSocket, isConnected, onUpdate, onWidgetUpdate, joinRoom, leaveRoom]);
 
   return { isConnected };
+}
+
+interface ChatMessage {
+  id: string;
+  content: string;
+  sender: string;
+  timestamp: number;
+}
+
+interface TypingStatus {
+  userId: string;
+  isTyping: boolean;
 }
 
 /**
  * Hook for chat real-time updates
  */
 export function useChatUpdates(
-  onMessage: (data: any) => void,
-  onTyping?: (data: any) => void,
+  onMessage: (data: ChatMessage) => void,
+  onTyping?: (data: TypingStatus) => void,
 ) {
-  const { socket, isConnected, joinRoom, leaveRoom } = useWebSocket({
+  const { getSocket, isConnected, joinRoom, leaveRoom } = useWebSocket({
     autoConnect: true,
   });
 
   useEffect(() => {
+    const socket = getSocket();
     if (socket && isConnected) {
       // Join chat room
       joinRoom("chat");
@@ -253,9 +286,25 @@ export function useChatUpdates(
         leaveRoom("chat");
       };
     }
-  }, [socket, isConnected, onMessage, onTyping, joinRoom, leaveRoom]);
+  }, [getSocket, isConnected, onMessage, onTyping, joinRoom, leaveRoom]);
 
   return { isConnected };
+}
+
+interface BatchProgress {
+  progress: number;
+  total: number;
+  message?: string;
+}
+
+interface BatchComplete {
+  batchId: string;
+  results: WebSocketData;
+}
+
+interface BatchError {
+  batchId: string;
+  error: string;
 }
 
 /**
@@ -263,15 +312,16 @@ export function useChatUpdates(
  */
 export function useBatchUpdates(
   batchId: string | null,
-  onProgress?: (data: any) => void,
-  onComplete?: (data: any) => void,
-  onError?: (data: any) => void,
+  onProgress?: (data: BatchProgress) => void,
+  onComplete?: (data: BatchComplete) => void,
+  onError?: (data: BatchError) => void,
 ) {
-  const { socket, isConnected, joinRoom, leaveRoom } = useWebSocket({
+  const { getSocket, isConnected, joinRoom, leaveRoom } = useWebSocket({
     autoConnect: true,
   });
 
   useEffect(() => {
+    const socket = getSocket();
     if (socket && isConnected && batchId) {
       // Join batch-specific room
       joinRoom(`batch:${batchId}`);
@@ -295,7 +345,7 @@ export function useBatchUpdates(
       };
     }
   }, [
-    socket,
+    getSocket,
     isConnected,
     batchId,
     onProgress,

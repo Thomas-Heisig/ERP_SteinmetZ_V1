@@ -1,187 +1,231 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/Sidebar/Sidebar.tsx
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { NavLink } from "react-router-dom";
-import "./Sidebar.css";
+import { useTranslation } from "react-i18next";
+import styles from "./Sidebar.module.css";
 
-interface NavItem {
+export interface NavItem {
   path: string;
-  label: string;
+  labelKey: string;
   icon: string;
   badge?: number;
 }
 
-interface NavSection {
-  title: string;
+export interface NavSection {
+  titleKey: string;
   items: NavItem[];
 }
 
-interface SystemStatus {
-  cpu: number;
-  memory: string;
-  uptime: number;
-}
-
-interface QuickAction {
-  label: string;
-  icon: string;
-  action: () => void;
-  color?: string;
-}
-
-const navigationSections: NavSection[] = [
+/**
+ * Navigation structure based on ERP SteinmetZ function overview
+ * Organized by business domains according to docs/concept/_ERP SteinmetZ_FUNKTIONEN.md
+ */
+const getNavigationSections = (): NavSection[] => [
   {
-    title: "Hauptbereich",
+    titleKey: "sidebar.main",
     items: [
-      { path: "/", label: "Dashboard", icon: "🏠" },
-      { path: "/catalog", label: "Funktionskatalog", icon: "🧭" },
-      { path: "/calendar", label: "Kalender", icon: "📅" },
-      { path: "/communication", label: "Kommunikation", icon: "📡" },
+      { path: "/", labelKey: "sidebar.dashboard", icon: "🏠" },
+      { path: "/catalog", labelKey: "sidebar.catalog", icon: "🧭" },
+      { path: "/calendar", labelKey: "sidebar.calendar", icon: "📅" },
     ],
   },
   {
-    title: "Geschäftsprozesse",
+    titleKey: "sidebar.business",
     items: [
-      { path: "/crm", label: "Kunden (CRM)", icon: "🤝" },
-      { path: "/finance", label: "Finanzen", icon: "💰" },
-      { path: "/hr", label: "Personal", icon: "👥" },
-      { path: "/inventory", label: "Lager", icon: "📦" },
-      { path: "/projects", label: "Projekte", icon: "🎯" },
-      { path: "/documents", label: "Dokumente", icon: "📄" },
+      { path: "/company", labelKey: "sidebar.company", icon: "🏢" },
+      { path: "/processes", labelKey: "sidebar.processes", icon: "📋" },
+      { path: "/risk", labelKey: "sidebar.risk", icon: "🛡️" },
     ],
   },
   {
-    title: "KI & Automatisierung",
+    titleKey: "sidebar.finance",
     items: [
-      { path: "/ai", label: "AI-Annotator", icon: "🤖" },
-      { path: "/batch-processing", label: "Batch-Verarbeitung", icon: "⚙️" },
-      { path: "/quality-dashboard", label: "Qualität", icon: "✅" },
-      { path: "/model-management", label: "Modelle", icon: "🎯" },
-      { path: "/advanced-filters", label: "Filter", icon: "🔍" },
+      { path: "/accounting", labelKey: "sidebar.accounting", icon: "💳" },
+      { path: "/controlling", labelKey: "sidebar.controlling", icon: "📊" },
+      { path: "/treasury", labelKey: "sidebar.treasury", icon: "🏦" },
+      { path: "/taxes", labelKey: "sidebar.taxes", icon: "📋" },
     ],
   },
   {
-    title: "Sonstiges",
+    titleKey: "sidebar.sales",
     items: [
-      { path: "/innovation", label: "Innovation", icon: "💡" },
-      { path: "/help", label: "Hilfe", icon: "❓" },
-      { path: "/settings", label: "Einstellungen", icon: "⚙️" },
+      { path: "/crm", labelKey: "sidebar.crm", icon: "🤝" },
+      { path: "/marketing", labelKey: "sidebar.marketing", icon: "📈" },
+      { path: "/sales", labelKey: "sidebar.sales", icon: "💰" },
+      { path: "/fulfillment", labelKey: "sidebar.fulfillment", icon: "🚚" },
+    ],
+  },
+  {
+    titleKey: "sidebar.procurement",
+    items: [
+      { path: "/purchasing", labelKey: "sidebar.purchasing", icon: "📋" },
+      { path: "/receiving", labelKey: "sidebar.receiving", icon: "📦" },
+      { path: "/suppliers", labelKey: "sidebar.suppliers", icon: "🤝" },
+    ],
+  },
+  {
+    titleKey: "sidebar.production",
+    items: [
+      { path: "/planning", labelKey: "sidebar.planning", icon: "🏗️" },
+      { path: "/manufacturing", labelKey: "sidebar.manufacturing", icon: "⚙️" },
+      { path: "/quality", labelKey: "sidebar.quality", icon: "✅" },
+      { path: "/maintenance", labelKey: "sidebar.maintenance", icon: "🔧" },
+    ],
+  },
+  {
+    titleKey: "sidebar.warehouse",
+    items: [
+      { path: "/inventory", labelKey: "sidebar.inventory", icon: "🏪" },
+      { path: "/picking", labelKey: "sidebar.picking", icon: "📦" },
+      { path: "/logistics", labelKey: "sidebar.logistics", icon: "🚛" },
+    ],
+  },
+  {
+    titleKey: "sidebar.hr",
+    items: [
+      { path: "/personnel", labelKey: "sidebar.personnel", icon: "👤" },
+      { path: "/time-tracking", labelKey: "sidebar.timeTracking", icon: "⏱️" },
+      { path: "/development", labelKey: "sidebar.development", icon: "📈" },
+      { path: "/recruiting", labelKey: "sidebar.recruiting", icon: "💼" },
+    ],
+  },
+  {
+    titleKey: "sidebar.reporting",
+    items: [
+      { path: "/reports", labelKey: "sidebar.reports", icon: "📈" },
+      { path: "/adhoc", labelKey: "sidebar.adhoc", icon: "🔍" },
+      { path: "/ai-analytics", labelKey: "sidebar.aiAnalytics", icon: "🤖" },
+    ],
+  },
+  {
+    titleKey: "sidebar.communication",
+    items: [
+      { path: "/email", labelKey: "sidebar.email", icon: "📧" },
+      { path: "/messaging", labelKey: "sidebar.messaging", icon: "💬" },
+      { path: "/social", labelKey: "sidebar.social", icon: "📱" },
+    ],
+  },
+  {
+    titleKey: "sidebar.ai",
+    items: [
+      { path: "/ai", labelKey: "sidebar.aiAnnotator", icon: "🤖" },
+      {
+        path: "/batch-processing",
+        labelKey: "sidebar.batchProcessing",
+        icon: "⚙️",
+      },
+      {
+        path: "/quality-dashboard",
+        labelKey: "sidebar.qualityDashboard",
+        icon: "✅",
+      },
+      {
+        path: "/model-management",
+        labelKey: "sidebar.modelManagement",
+        icon: "🎯",
+      },
+      {
+        path: "/advanced-filters",
+        labelKey: "sidebar.advancedFilters",
+        icon: "🔍",
+      },
+    ],
+  },
+  {
+    titleKey: "sidebar.system",
+    items: [
+      { path: "/users", labelKey: "sidebar.users", icon: "👥" },
+      {
+        path: "/system-settings",
+        labelKey: "sidebar.systemSettings",
+        icon: "⚙️",
+      },
+      { path: "/integrations", labelKey: "sidebar.integrations", icon: "🔌" },
+    ],
+  },
+  {
+    titleKey: "sidebar.misc",
+    items: [
+      { path: "/projects", labelKey: "sidebar.projects", icon: "🎯" },
+      { path: "/documents", labelKey: "sidebar.documents", icon: "📄" },
+      { path: "/innovation", labelKey: "sidebar.innovation", icon: "💡" },
+      { path: "/help", labelKey: "sidebar.help", icon: "❓" },
+      { path: "/settings", labelKey: "sidebar.settings", icon: "⚙️" },
     ],
   },
 ];
 
-interface SidebarProps {
+export interface SidebarProps {
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  isOpen?: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed = false,
   onToggleCollapse,
+  isOpen = false,
 }) => {
-  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
-  const [recentItems] = useState<string[]>([
-    "Rechnung #1234",
-    "Kunde Schmidt GmbH",
-    "Projekt Alpha",
-  ]);
+  const { t } = useTranslation();
+  const navigationSections = getNavigationSections();
 
-  useEffect(() => {
-    const fetchSystemStatus = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/dashboard/health`,
-        );
-        const data = await response.json();
-        setSystemStatus({
-          cpu: data.loadavg?.[0] || 0,
-          memory: data.memory?.free || "N/A",
-          uptime: data.uptime || 0,
-        });
-      } catch (error) {
-        console.error("Failed to fetch system status:", error);
-      }
-    };
+  const handleToggle = useCallback(() => {
+    if (onToggleCollapse) {
+      onToggleCollapse();
+    }
+  }, [onToggleCollapse]);
 
-    fetchSystemStatus();
-    const interval = setInterval(fetchSystemStatus, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const quickActions: QuickAction[] = [
-    {
-      label: "Neue Rechnung",
-      icon: "📄",
-      action: () => (window.location.href = "/finance"),
-      color: "#4CAF50",
-    },
-    {
-      label: "Neuer Kunde",
-      icon: "👤",
-      action: () => (window.location.href = "/crm"),
-      color: "#2196F3",
-    },
-    {
-      label: "Schnellsuche",
-      icon: "🔍",
-      action: () => {
-        const searchInput = document.querySelector<HTMLInputElement>(
-          'input[type="search"]',
-        );
-        searchInput?.focus();
-      },
-      color: "#FF9800",
-    },
-  ];
-
-  const formatUptime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}m`;
-  };
+  const sidebarClasses = [
+    styles.sidebar,
+    isCollapsed && styles.collapsed,
+    isOpen && styles.open,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <aside className={`app-sidebar ${isCollapsed ? "collapsed" : ""}`}>
+    <aside className={sidebarClasses}>
       {/* Sidebar Header */}
-      <div className="sidebar-header">
+      <div className={styles.header}>
         <button
-          className="sidebar-toggle"
-          onClick={onToggleCollapse}
-          aria-label={isCollapsed ? "Sidebar ausklappen" : "Sidebar einklappen"}
-          title={isCollapsed ? "Sidebar ausklappen" : "Sidebar einklappen"}
+          className={styles.toggle}
+          onClick={handleToggle}
+          aria-label={t(isCollapsed ? "sidebar.expand" : "sidebar.collapse")}
+          title={t(isCollapsed ? "sidebar.expand" : "sidebar.collapse")}
         >
           {isCollapsed ? "▶" : "◀"}
         </button>
-        {!isCollapsed && <h2 className="sidebar-title">Navigation</h2>}
+        {!isCollapsed && <h2 className={styles.title}>{t("sidebar.title")}</h2>}
       </div>
 
       {/* Navigation Sections */}
-      <nav className="sidebar-nav" aria-label="Sidebar Navigation">
+      <nav className={styles.nav} aria-label={t("sidebar.title")}>
         {navigationSections.map((section) => (
-          <div key={section.title} className="sidebar-section">
+          <div key={section.titleKey} className={styles.section}>
             {!isCollapsed && (
-              <h3 className="sidebar-section-title">{section.title}</h3>
+              <h3 className={styles.sectionTitle}>{t(section.titleKey)}</h3>
             )}
-            <ul className="sidebar-items">
+            <ul className={styles.items}>
               {section.items.map((item) => (
                 <li key={item.path}>
                   <NavLink
                     to={item.path}
                     end={item.path === "/"}
                     className={({ isActive }) =>
-                      `sidebar-link ${isActive ? "active" : ""}`
+                      `${styles.link} ${isActive ? styles.active : ""}`
                     }
-                    title={isCollapsed ? item.label : undefined}
+                    title={isCollapsed ? t(item.labelKey) : undefined}
                   >
-                    <span className="sidebar-icon" aria-hidden="true">
+                    <span className={styles.icon} aria-hidden="true">
                       {item.icon}
                     </span>
                     {!isCollapsed && (
                       <>
-                        <span className="sidebar-label">{item.label}</span>
+                        <span className={styles.label}>{t(item.labelKey)}</span>
                         {item.badge !== undefined && (
-                          <span className="sidebar-badge">{item.badge}</span>
+                          <span className={styles.badge}>{item.badge}</span>
                         )}
                       </>
                     )}
@@ -193,73 +237,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ))}
       </nav>
 
-      {/* Quick Actions Section */}
-      {!isCollapsed && (
-        <div className="sidebar-section sidebar-quick-actions">
-          <h3 className="sidebar-section-title">Schnellaktionen</h3>
-          <div className="quick-actions-grid">
-            {quickActions.map((action, index) => (
-              <button
-                key={index}
-                className="quick-action-btn"
-                onClick={action.action}
-                style={{ borderLeftColor: action.color }}
-                title={action.label}
-              >
-                <span className="quick-action-icon">{action.icon}</span>
-                <span className="quick-action-label">{action.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Recent Items Section */}
-      {!isCollapsed && recentItems.length > 0 && (
-        <div className="sidebar-section sidebar-recent">
-          <h3 className="sidebar-section-title">Kürzlich verwendet</h3>
-          <ul className="recent-items-list">
-            {recentItems.map((item, index) => (
-              <li key={index} className="recent-item">
-                <span className="recent-item-icon">📌</span>
-                <span className="recent-item-text">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* System Status Section */}
-      {!isCollapsed && systemStatus && (
-        <div className="sidebar-section sidebar-system-status">
-          <h3 className="sidebar-section-title">Systemstatus</h3>
-          <div className="system-status-grid">
-            <div className="status-item">
-              <span className="status-label">CPU Last</span>
-              <span className="status-value">
-                {systemStatus.cpu.toFixed(2)}
-              </span>
-            </div>
-            <div className="status-item">
-              <span className="status-label">RAM frei</span>
-              <span className="status-value">{systemStatus.memory}</span>
-            </div>
-            <div className="status-item">
-              <span className="status-label">Laufzeit</span>
-              <span className="status-value">
-                {formatUptime(systemStatus.uptime)}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Sidebar Footer */}
       {!isCollapsed && (
-        <div className="sidebar-footer">
-          <div className="sidebar-info">
+        <div className={styles.footer}>
+          <div className={styles.info}>
             <small>ERP SteinmetZ</small>
-            <small>Version 2.0.0</small>
+            <small>{t("sidebar.version")} 2.0.0</small>
           </div>
         </div>
       )}

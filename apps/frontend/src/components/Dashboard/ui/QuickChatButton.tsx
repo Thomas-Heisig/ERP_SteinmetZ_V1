@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // ERP_SteinmetZ_V1/apps/frontend/src/components/Dashboard/ui/QuickChatButton.tsx
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useDashboardContext } from "../core/DashboardContext";
 import cls from "../utils/cls";
@@ -46,8 +46,8 @@ const QuickChatButton: React.FC<QuickChatButtonProps> = ({
     notificationCount,
   });
 
-  // Sync props → local state
-  useEffect(() => {
+  // Sync props → local state (using layout effect to avoid setState warning)
+  React.useLayoutEffect(() => {
     setLocalState((prev) => ({
       ...prev,
       showNotification,
@@ -96,28 +96,6 @@ const QuickChatButton: React.FC<QuickChatButtonProps> = ({
 
   const handleBlur = () =>
     setLocalState((prev) => ({ ...prev, isFocused: false }));
-
-  // ---------------------------------------------------------------------------
-  // Position Styles
-  // ---------------------------------------------------------------------------
-
-  const positionStyles: React.CSSProperties =
-    variant === "FLOATING"
-      ? {
-          position: "fixed",
-          zIndex: 1000,
-          ...(position === "BOTTOM_RIGHT" && {
-            bottom: "1.5rem",
-            right: "1.5rem",
-          }),
-          ...(position === "BOTTOM_LEFT" && {
-            bottom: "1.5rem",
-            left: "1.5rem",
-          }),
-          ...(position === "TOP_RIGHT" && { top: "1.5rem", right: "1.5rem" }),
-          ...(position === "TOP_LEFT" && { top: "1.5rem", left: "1.5rem" }),
-        }
-      : {};
 
   // ---------------------------------------------------------------------------
   // Classnames für cls() – nur Strings, keine Objekte
@@ -193,26 +171,33 @@ const QuickChatButton: React.FC<QuickChatButtonProps> = ({
   };
 
   // ---------------------------------------------------------------------------
+  // Button props with proper ARIA attributes
+  // ---------------------------------------------------------------------------
+
+  const buttonProps = {
+    ref: buttonRef,
+    className: buttonClasses,
+    onClick: handleClick,
+    onKeyDown: handleKeyDown,
+    onMouseEnter: handleMouseEnter,
+    onMouseLeave: handleMouseLeave,
+    onMouseDown: handleMouseDown,
+    onMouseUp: handleMouseUp,
+    onFocus: handleFocus,
+    onBlur: handleBlur,
+    "aria-label": isOpen ? t("quickChat.closeChat") : t("quickChat.openChat"),
+    ...(isOpen
+      ? { "aria-expanded": "true" as const }
+      : { "aria-expanded": "false" as const }),
+    ...rest,
+  };
+
+  // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
 
   return (
-    <button
-      ref={buttonRef}
-      className={buttonClasses}
-      style={positionStyles}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      aria-label={isOpen ? t("quickChat.closeChat") : t("quickChat.openChat")}
-      aria-expanded={isOpen}
-      {...rest}
-    >
+    <button {...buttonProps}>
       {renderContent()}
 
       {localState.showNotification && (

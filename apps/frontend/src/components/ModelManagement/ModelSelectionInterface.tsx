@@ -1,7 +1,19 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/ModelManagement/ModelSelectionInterface.tsx
 
+/**
+ * Model Selection Interface Component
+ * 
+ * Provides an intelligent interface for selecting AI models based on:
+ * - Performance criteria (speed, accuracy, cost, reliability)
+ * - Model recommendations with scoring
+ * - Real-time model availability
+ * 
+ * @module ModelSelectionInterface
+ */
+
 import React, { useState, useEffect } from "react";
+import styles from "./ModelSelectionInterface.module.css";
 
 interface ModelConfig {
   name: string;
@@ -41,6 +53,7 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
   useEffect(() => {
     fetchModels();
     fetchRecommendations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [criteria]);
 
   const fetchModels = async () => {
@@ -82,22 +95,24 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
   };
 
   return (
-    <div style={styles.container}>
+    <div className={styles.container}>
       {/* Selection Criteria */}
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Selection Criteria</h3>
-        <div style={styles.criteriaGrid}>
-          <div style={styles.criteriaItem}>
-            <label style={styles.label}>Prioritize:</label>
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>Selection Criteria</h3>
+        <div className={styles.criteriaGrid}>
+          <div className={styles.criteriaItem}>
+            <label className={styles.label} htmlFor="prioritize-select">Prioritize:</label>
             <select
+              id="prioritize-select"
+              aria-label="Prioritize selection criteria"
               value={criteria.prioritize}
               onChange={(e) =>
                 setCriteria({
                   ...criteria,
-                  prioritize: e.target.value as any,
+                  prioritize: e.target.value as "balanced" | "speed" | "accuracy" | "cost",
                 })
               }
-              style={styles.select}
+              className={styles.select}
             >
               <option value="balanced">Balanced</option>
               <option value="speed">Speed</option>
@@ -106,8 +121,8 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
             </select>
           </div>
 
-          <div style={styles.criteriaItem}>
-            <label style={styles.label}>Max Cost (per 1K tokens):</label>
+          <div className={styles.criteriaItem}>
+            <label className={styles.label}>Max Cost (per 1K tokens):</label>
             <input
               type="number"
               value={criteria.maxCost || ""}
@@ -118,13 +133,13 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
                 })
               }
               placeholder="No limit"
-              style={styles.input}
+              className={styles.input}
               step="0.001"
             />
           </div>
 
-          <div style={styles.criteriaItem}>
-            <label style={styles.label}>Min Accuracy (%):</label>
+          <div className={styles.criteriaItem}>
+            <label className={styles.label}>Min Accuracy (%):</label>
             <input
               type="number"
               value={
@@ -141,7 +156,7 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
                 })
               }
               placeholder="No minimum"
-              style={styles.input}
+              className={styles.input}
               min="0"
               max="100"
             />
@@ -150,96 +165,81 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
       </div>
 
       {/* Recommended Models */}
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Recommended Models</h3>
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>Recommended Models</h3>
         {loading ? (
-          <div style={styles.loading}>Loading recommendations...</div>
+          <div className={styles.loading}>Loading recommendations...</div>
         ) : recommendations.length === 0 ? (
-          <div style={styles.empty}>
+          <div className={styles.empty}>
             No models match your criteria. Try relaxing the constraints.
           </div>
         ) : (
-          <div style={styles.recommendationList}>
+          <div className={styles.recommendationList}>
             {recommendations.map((rec, index) => (
               <div
                 key={index}
-                style={{
-                  ...styles.recommendationCard,
-                  ...(index === 0 ? styles.topRecommendation : {}),
-                }}
+                className={`${styles.recommendationCard} ${index === 0 ? styles.topRecommendation : ""}`}
               >
-                {index === 0 && <div style={styles.badge}>🏆 Best Match</div>}
-                <div style={styles.recommendationHeader}>
+                {index === 0 && <div className={styles.badge}>🏆 Best Match</div>}
+                <div className={styles.recommendationHeader}>
                   <div>
-                    <div style={styles.recommendationName}>{rec.modelName}</div>
-                    <div style={styles.recommendationProvider}>
+                    <div className={styles.recommendationName}>{rec.modelName}</div>
+                    <div className={styles.recommendationProvider}>
                       {rec.provider}
                     </div>
                   </div>
-                  <div style={styles.overallScore}>{rec.overallScore}</div>
+                  <div className={styles.overallScore}>{rec.overallScore}</div>
                 </div>
 
-                <div style={styles.metricsGrid}>
-                  <div style={styles.metric}>
-                    <div style={styles.metricLabel}>Speed</div>
-                    <div style={styles.metricBar}>
+                <div className={styles.metricsGrid}>
+                  <div className={styles.metric}>
+                    <div className={styles.metricLabel}>Speed</div>
+                    <div className={styles.metricBar}>
                       <div
-                        style={{
-                          ...styles.metricBarFill,
-                          width: `${(1 - rec.speed / 5000) * 100}%`,
-                          backgroundColor: "#17a2b8",
-                        }}
+                        className={`${styles.metricBarFill} ${styles.metricSpeed}`}
+                        style={{ width: `${(1 - rec.speed / 5000) * 100}%` }}
                       />
                     </div>
-                    <div style={styles.metricValue}>
+                    <div className={styles.metricValue}>
                       {rec.speed.toFixed(0)}ms
                     </div>
                   </div>
 
-                  <div style={styles.metric}>
-                    <div style={styles.metricLabel}>Accuracy</div>
-                    <div style={styles.metricBar}>
+                  <div className={styles.metric}>
+                    <div className={styles.metricLabel}>Accuracy</div>
+                    <div className={styles.metricBar}>
                       <div
-                        style={{
-                          ...styles.metricBarFill,
-                          width: `${rec.accuracy * 100}%`,
-                          backgroundColor: "#28a745",
-                        }}
+                        className={`${styles.metricBarFill} ${styles.metricAccuracy}`}
+                        style={{ width: `${rec.accuracy * 100}%` }}
                       />
                     </div>
-                    <div style={styles.metricValue}>
+                    <div className={styles.metricValue}>
                       {(rec.accuracy * 100).toFixed(1)}%
                     </div>
                   </div>
 
-                  <div style={styles.metric}>
-                    <div style={styles.metricLabel}>Cost</div>
-                    <div style={styles.metricBar}>
+                  <div className={styles.metric}>
+                    <div className={styles.metricLabel}>Cost</div>
+                    <div className={styles.metricBar}>
                       <div
-                        style={{
-                          ...styles.metricBarFill,
-                          width: `${Math.min(rec.cost * 100, 100)}%`,
-                          backgroundColor: "#ffc107",
-                        }}
+                        className={`${styles.metricBarFill} ${styles.metricCost}`}
+                        style={{ width: `${rec.cost * 100}%` }}
                       />
                     </div>
-                    <div style={styles.metricValue}>
+                    <div className={styles.metricValue}>
                       ${rec.cost.toFixed(4)}/1K
                     </div>
                   </div>
 
-                  <div style={styles.metric}>
-                    <div style={styles.metricLabel}>Reliability</div>
-                    <div style={styles.metricBar}>
+                  <div className={styles.metric}>
+                    <div className={styles.metricLabel}>Reliability</div>
+                    <div className={styles.metricBar}>
                       <div
-                        style={{
-                          ...styles.metricBarFill,
-                          width: `${rec.reliability * 100}%`,
-                          backgroundColor: "#6f42c1",
-                        }}
+                        className={`${styles.metricBarFill} ${styles.metricReliability}`}
+                        style={{ width: `${rec.reliability * 100}%` }}
                       />
                     </div>
-                    <div style={styles.metricValue}>
+                    <div className={styles.metricValue}>
                       {(rec.reliability * 100).toFixed(1)}%
                     </div>
                   </div>
@@ -247,7 +247,7 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
 
                 <button
                   onClick={() => setSelectedModel(rec.modelName)}
-                  style={
+                  className={
                     selectedModel === rec.modelName
                       ? styles.selectedButton
                       : styles.selectButton
@@ -264,45 +264,39 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
       </div>
 
       {/* Available Models */}
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>All Available Models</h3>
-        <div style={styles.modelGrid}>
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>All Available Models</h3>
+        <div className={styles.modelGrid}>
           {models.map((model, index) => (
             <div
               key={index}
-              style={{
-                ...styles.modelCard,
-                ...(model.available ? {} : styles.unavailableCard),
-              }}
+              className={`${styles.modelCard} ${!model.available ? styles.unavailableCard : ""}`}
             >
-              <div style={styles.modelCardHeader}>
-                <div style={styles.modelCardName}>{model.name}</div>
+              <div className={styles.modelCardHeader}>
+                <div className={styles.modelCardName}>{model.name}</div>
                 <div
-                  style={{
-                    ...styles.statusBadge,
-                    backgroundColor: model.available ? "#28a745" : "#dc3545",
-                  }}
+                  className={`${styles.statusBadge} ${model.available ? styles.statusAvailable : styles.statusUnavailable}`}
                 >
                   {model.available ? "Available" : "Unavailable"}
                 </div>
               </div>
-              <div style={styles.modelCardProvider}>{model.provider}</div>
+              <div className={styles.modelCardProvider}>{model.provider}</div>
               {model.description && (
-                <div style={styles.modelCardDescription}>
+                <div className={styles.modelCardDescription}>
                   {model.description}
                 </div>
               )}
               {model.capabilities && model.capabilities.length > 0 && (
-                <div style={styles.capabilities}>
+                <div className={styles.capabilities}>
                   {model.capabilities.map((cap, idx) => (
-                    <span key={idx} style={styles.capabilityTag}>
+                    <span key={idx} className={styles.capabilityTag}>
                       {cap}
                     </span>
                   ))}
                 </div>
               )}
               {model.maxTokens && (
-                <div style={styles.modelCardInfo}>
+                <div className={styles.modelCardInfo}>
                   Max Tokens: {model.maxTokens.toLocaleString()}
                 </div>
               )}
@@ -314,221 +308,4 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
   );
 };
 
-const styles = {
-  container: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-  } as React.CSSProperties,
-  section: {
-    backgroundColor: "#ffffff",
-    borderRadius: "8px",
-    padding: "20px",
-    marginBottom: "20px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  } as React.CSSProperties,
-  sectionTitle: {
-    fontSize: "18px",
-    fontWeight: "600" as const,
-    color: "#333",
-    marginBottom: "20px",
-  } as React.CSSProperties,
-  criteriaGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "16px",
-  } as React.CSSProperties,
-  criteriaItem: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "8px",
-  } as React.CSSProperties,
-  label: {
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    color: "#666",
-  } as React.CSSProperties,
-  select: {
-    padding: "8px 12px",
-    fontSize: "14px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    backgroundColor: "white",
-  } as React.CSSProperties,
-  input: {
-    padding: "8px 12px",
-    fontSize: "14px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-  } as React.CSSProperties,
-  loading: {
-    padding: "40px",
-    textAlign: "center" as const,
-    color: "#888",
-  } as React.CSSProperties,
-  empty: {
-    padding: "40px",
-    textAlign: "center" as const,
-    color: "#888",
-  } as React.CSSProperties,
-  recommendationList: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "16px",
-  } as React.CSSProperties,
-  recommendationCard: {
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "8px",
-    border: "2px solid #e9ecef",
-    position: "relative" as const,
-  } as React.CSSProperties,
-  topRecommendation: {
-    backgroundColor: "#e7f3ff",
-    borderColor: "#007bff",
-  } as React.CSSProperties,
-  badge: {
-    position: "absolute" as const,
-    top: "12px",
-    right: "12px",
-    padding: "4px 12px",
-    backgroundColor: "#ffc107",
-    color: "#333",
-    borderRadius: "12px",
-    fontSize: "12px",
-    fontWeight: "600" as const,
-  } as React.CSSProperties,
-  recommendationHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: "16px",
-  } as React.CSSProperties,
-  recommendationName: {
-    fontSize: "18px",
-    fontWeight: "600" as const,
-    color: "#333",
-  } as React.CSSProperties,
-  recommendationProvider: {
-    fontSize: "13px",
-    color: "#888",
-    marginTop: "2px",
-  } as React.CSSProperties,
-  overallScore: {
-    fontSize: "32px",
-    fontWeight: "bold" as const,
-    color: "#007bff",
-  } as React.CSSProperties,
-  metricsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-    gap: "16px",
-    marginBottom: "16px",
-  } as React.CSSProperties,
-  metric: {
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: "6px",
-  } as React.CSSProperties,
-  metricLabel: {
-    fontSize: "12px",
-    color: "#888",
-    textTransform: "uppercase" as const,
-  } as React.CSSProperties,
-  metricBar: {
-    height: "8px",
-    backgroundColor: "#e9ecef",
-    borderRadius: "4px",
-    overflow: "hidden",
-  } as React.CSSProperties,
-  metricBarFill: {
-    height: "100%",
-    borderRadius: "4px",
-  } as React.CSSProperties,
-  metricValue: {
-    fontSize: "14px",
-    fontWeight: "600" as const,
-    color: "#333",
-  } as React.CSSProperties,
-  selectButton: {
-    width: "100%",
-    padding: "10px",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    cursor: "pointer",
-  } as React.CSSProperties,
-  selectedButton: {
-    width: "100%",
-    padding: "10px",
-    backgroundColor: "#28a745",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "14px",
-    fontWeight: "500" as const,
-    cursor: "pointer",
-  } as React.CSSProperties,
-  modelGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "16px",
-  } as React.CSSProperties,
-  modelCard: {
-    padding: "16px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "6px",
-    border: "1px solid #e9ecef",
-  } as React.CSSProperties,
-  unavailableCard: {
-    opacity: 0.6,
-  } as React.CSSProperties,
-  modelCardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: "8px",
-  } as React.CSSProperties,
-  modelCardName: {
-    fontSize: "16px",
-    fontWeight: "600" as const,
-    color: "#333",
-  } as React.CSSProperties,
-  statusBadge: {
-    padding: "3px 10px",
-    borderRadius: "10px",
-    fontSize: "11px",
-    fontWeight: "600" as const,
-    color: "white",
-  } as React.CSSProperties,
-  modelCardProvider: {
-    fontSize: "13px",
-    color: "#888",
-    marginBottom: "8px",
-  } as React.CSSProperties,
-  modelCardDescription: {
-    fontSize: "13px",
-    color: "#666",
-    marginBottom: "12px",
-    lineHeight: "1.4",
-  } as React.CSSProperties,
-  capabilities: {
-    display: "flex",
-    flexWrap: "wrap" as const,
-    gap: "6px",
-    marginBottom: "8px",
-  } as React.CSSProperties,
-  capabilityTag: {
-    padding: "3px 8px",
-    backgroundColor: "#007bff",
-    color: "white",
-    borderRadius: "10px",
-    fontSize: "11px",
-  } as React.CSSProperties,
-  modelCardInfo: {
-    fontSize: "12px",
-    color: "#888",
-  } as React.CSSProperties,
-};
+export default ModelSelectionInterface;

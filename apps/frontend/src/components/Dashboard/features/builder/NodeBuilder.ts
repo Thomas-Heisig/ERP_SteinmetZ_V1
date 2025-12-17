@@ -9,6 +9,7 @@
  */
 
 import type { DashboardNode, WidgetRegistry, WidgetProps } from "../../types";
+import type { LayoutItem } from "./types";
 
 import { LayoutEngine } from "./LayoutEngine";
 
@@ -65,7 +66,7 @@ export class NodeBuilder {
   /**
    * Baut ein einzelnes Node-Widget basierend auf Node-Metadaten.
    */
-  buildSingleNode(node: DashboardNode, layoutItem?: any): BuiltNodeUI {
+  buildSingleNode(node: DashboardNode, layoutItem?: LayoutItem): BuiltNodeUI {
     const widgetType = this.resolveWidgetType(node);
 
     return {

@@ -1,0 +1,125 @@
+{
+  "title": "AI Annotator",
+  "subtitle": "AI-powered metadata annotation and quality assurance for function catalog",
+  "tabs": {
+    "dashboard": "Dashboard",
+    "nodes": "Nodes",
+    "quality": "Quality",
+    "batch": "Batch Operations"
+  },
+  "dashboard": {
+    "title": "System Status",
+    "systemStatus": {
+      "title": "System Status",
+      "loading": "Loading status...",
+      "error": "Error loading status",
+      "healthy": "System is healthy",
+      "unhealthy": "System has issues"
+    },
+    "health": {
+      "title": "System Health",
+      "loading": "Loading health...",
+      "error": "Error loading health",
+      "healthy": "Healthy",
+      "unhealthy": "Unhealthy",
+      "aiAvailable": "AI available",
+      "aiUnavailable": "AI unavailable",
+      "databaseConnected": "Database connected",
+      "databaseDisconnected": "Database disconnected"
+    },
+    "database": {
+      "title": "Database Statistics",
+      "loading": "Loading statistics...",
+      "error": "Error loading statistics",
+      "totalNodes": "Total Nodes",
+      "annotatedNodes": "Annotated Nodes",
+      "pendingNodes": "Pending Nodes",
+      "completionRate": "Completion Rate"
+    }
+  },
+  "nodes": {
+    "title": "Function Nodes",
+    "search": "Search nodes...",
+    "searchButton": "Search",
+    "refreshButton": "Refresh",
+    "limit": "Limit",
+    "loading": "Loading nodes...",
+    "error": "Error",
+    "noNodes": "No nodes found. Try adjusting filters.",
+    "pagination": {
+      "showing": "Showing",
+      "of": "of",
+      "nodes": "nodes"
+    },
+    "card": {
+      "id": "ID",
+      "status": "Status",
+      "annotationStatus": "Annotation Status",
+      "valid": "Valid",
+      "invalid": "Invalid"
+    },
+    "actions": {
+      "generateMeta": "Generate Meta",
+      "generateRule": "Generate Rule",
+      "generateForm": "Generate Form"
+    }
+  },
+  "quality": {
+    "title": "Quality Report",
+    "loading": "Loading quality report...",
+    "error": "Error",
+    "generateButton": "Generate Quality Report",
+    "noReport": "No quality report available yet. Click 'Generate' to create one.",
+    "annotationStatus": {
+      "title": "Annotation Status",
+      "pending": "Pending",
+      "annotated": "Annotated",
+      "reviewed": "Reviewed"
+    },
+    "modelQuality": {
+      "title": "Model Quality",
+      "confidence": "Average Confidence",
+      "accuracy": "Accuracy"
+    },
+    "batchStats": {
+      "title": "Batch Statistics",
+      "total": "Total Batches",
+      "failed": "Failed"
+    },
+    "recommendations": {
+      "title": "Recommendations",
+      "noRecommendations": "No recommendations available"
+    }
+  },
+  "batch": {
+    "title": "Batch Operations",
+    "loading": "Loading batch operations...",
+    "error": "Error",
+    "noBatches": "No batch operations found. Create a new batch operation to get started.",
+    "refreshButton": "Refresh",
+    "cleanupButton": "Cleanup Old Batches",
+    "card": {
+      "operation": "Operation",
+      "status": "Status",
+      "created": "Created",
+      "progress": "Progress"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm"
+  }
+}

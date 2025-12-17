@@ -14,7 +14,7 @@ export default function NodeInfoGrid({ node }: Props) {
   const path = Array.isArray(node.path) ? node.path.join(" / ") : "—";
 
   // Erweiterte optionale Felder (nicht im NodeDetail-Typ enthalten)
-  const extra = node as any;
+  const extra = node as NodeDetail & { [key: string]: unknown };
 
   return (
     <div className="fc-grid">
@@ -37,11 +37,11 @@ export default function NodeInfoGrid({ node }: Props) {
 
       {/* Status */}
       <div className="fc-grid-label">Status</div>
-      <div className="fc-grid-value">{extra.status ?? "—"}</div>
+      <div className="fc-grid-value">{String(extra.status ?? "—")}</div>
 
       {/* Priorität */}
       <div className="fc-grid-label">Priorität</div>
-      <div className="fc-grid-value">{extra.priority ?? "—"}</div>
+      <div className="fc-grid-value">{String(extra.priority ?? "—")}</div>
 
       {/* Tags */}
       <div className="fc-grid-label">Tags</div>
@@ -61,23 +61,23 @@ export default function NodeInfoGrid({ node }: Props) {
 
       {/* Erstellt */}
       <div className="fc-grid-label">Erstellt am</div>
-      <div className="fc-grid-value">{extra.createdAt ?? "—"}</div>
+      <div className="fc-grid-value">{String(extra.createdAt ?? "—")}</div>
 
       {/* Aktualisiert */}
       <div className="fc-grid-label">Aktualisiert am</div>
-      <div className="fc-grid-value">{extra.updatedAt ?? "—"}</div>
+      <div className="fc-grid-value">{String(extra.updatedAt ?? "—")}</div>
 
       {/* Letzter Zugriff */}
       <div className="fc-grid-label">Letzter Zugriff</div>
-      <div className="fc-grid-value">{extra.lastAccessed ?? "—"}</div>
+      <div className="fc-grid-value">{String(extra.lastAccessed ?? "—")}</div>
 
       {/* Aufrufe */}
       <div className="fc-grid-label">Aufrufe</div>
-      <div className="fc-grid-value">{extra.viewCount ?? "—"}</div>
+      <div className="fc-grid-value">{String(extra.viewCount ?? "—")}</div>
 
       {/* Favoriten */}
       <div className="fc-grid-label">Favorisiert</div>
-      <div className="fc-grid-value">{extra.favoriteCount ?? "—"}</div>
+      <div className="fc-grid-value">{String(extra.favoriteCount ?? "—")}</div>
     </div>
   );
 }

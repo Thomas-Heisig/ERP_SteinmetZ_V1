@@ -38,22 +38,10 @@ function mapStatusToLevel(status: HealthStatus): HealthLevel {
   return statusMap[status] || "UNKNOWN";
 }
 
-/**
- * Format last updated timestamp
- */
-function formatLastUpdated(timestamp?: string | Date): string {
-  if (!timestamp) return "";
-
-  const date = typeof timestamp === "string" ? new Date(timestamp) : timestamp;
-  return new Intl.DateTimeFormat("de-DE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  }).format(date);
-}
-
+// ============================================================================
 // ============================================================================
 // Main Component
+// ============================================================================
 // ============================================================================
 
 /**
@@ -86,7 +74,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onSearchToggle,
   onMenuToggle,
   showHealthStatus = true,
-  showLastUpdated = false,
+  _showLastUpdated = false,
   className,
   ...rest
 }) => {

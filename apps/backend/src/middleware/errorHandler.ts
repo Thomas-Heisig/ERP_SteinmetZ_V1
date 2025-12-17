@@ -3,6 +3,11 @@ import { Request, Response, NextFunction } from "express";
 import { APIError, ErrorCode, ErrorDetails } from "../types/errors.js";
 import { log } from "../routes/ai/utils/logger.js";
 
+interface ValidationError {
+  issues?: unknown[];
+  errors?: unknown[];
+}
+
 /**
  * Enhanced error handler middleware with standardized error responses and logging
  *
@@ -104,11 +109,12 @@ export function errorHandler(
   // Handle validation errors from Zod or other validators
   else if (err && typeof err === "object" && "issues" in err) {
     statusCode = 422;
+    const validationErr = err as ValidationError;
     errorDetails = {
       code: ErrorCode.VALIDATION_ERROR,
       message: "Validation failed",
       statusCode,
-      details: (err as any).issues || (err as any).errors,
+      details: validationErr.issues || validationErr.errors,
       timestamp: new Date().toISOString(),
       path: req.path,
       requestId,
@@ -118,7 +124,7 @@ export function errorHandler(
       path: req.path,
       method: req.method,
       requestId,
-      issues: (err as any).issues || (err as any).errors,
+      issues: validationErr.issues || validationErr.errors,
     });
   }
   // Handle standard JavaScript errors

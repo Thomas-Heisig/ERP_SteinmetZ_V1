@@ -3,6 +3,7 @@
 
 import React from "react";
 import type { HealthLevel } from "../../types";
+import "./HealthStatusBadge.css";
 
 export interface HealthStatusBadgeProps {
   status: HealthLevel;
@@ -20,29 +21,15 @@ const HealthStatusBadge: React.FC<HealthStatusBadgeProps> = ({
   showText = true,
   onClick,
 }) => {
-  const color = mapColor(status);
   const text = mapLabel(status);
-
-  const dimension = sizeToPx(size);
+  const sizeClass = `health-status-badge__indicator--${size.toLowerCase()}`;
+  const statusClass = `health-status-badge__indicator--${status.toLowerCase()}`;
+  const clickableClass = onClick ? "health-status-badge--clickable" : "";
 
   return (
-    <div
-      onClick={onClick}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "0.5rem",
-        cursor: onClick ? "pointer" : "default",
-      }}
-    >
+    <div onClick={onClick} className={`health-status-badge ${clickableClass}`}>
       <span
-        style={{
-          display: "inline-block",
-          width: dimension,
-          height: dimension,
-          borderRadius: "50%",
-          backgroundColor: color,
-        }}
+        className={`health-status-badge__indicator ${sizeClass} ${statusClass}`}
       />
 
       {showText && <span>{text}</span>}
@@ -53,20 +40,6 @@ const HealthStatusBadge: React.FC<HealthStatusBadgeProps> = ({
 /* ------------------------------------------------------------
    Hilfsfunktionen
 ------------------------------------------------------------ */
-function mapColor(level: HealthLevel): string {
-  switch (level) {
-    case "HEALTHY":
-      return "#4caf50";
-    case "DEGRADED":
-      return "#ff9800";
-    case "UNHEALTHY":
-      return "#f44336";
-    case "UNKNOWN":
-    default:
-      return "#9e9e9e";
-  }
-}
-
 function mapLabel(level: HealthLevel): string {
   switch (level) {
     case "HEALTHY":
@@ -78,19 +51,6 @@ function mapLabel(level: HealthLevel): string {
     case "UNKNOWN":
     default:
       return "Unknown";
-  }
-}
-
-function sizeToPx(size: "SMALL" | "MEDIUM" | "LARGE"): number {
-  switch (size) {
-    case "SMALL":
-      return 10;
-    case "MEDIUM":
-      return 14;
-    case "LARGE":
-      return 18;
-    default:
-      return 14;
   }
 }
 

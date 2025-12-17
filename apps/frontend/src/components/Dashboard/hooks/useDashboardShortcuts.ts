@@ -3,10 +3,6 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import type { UseDashboardShortcuts } from "../types";
-import { useDashboardContext } from "../core/DashboardContext";
-import { createLogger } from "../../../utils/logger";
-
-const logger = createLogger("DashboardShortcuts");
 
 /**
  * useDashboardShortcuts – verwaltet Tastenkombinationen.
@@ -18,8 +14,6 @@ const logger = createLogger("DashboardShortcuts");
  * - Bereitstellung einer einfachen API
  */
 export function useDashboardShortcuts(): UseDashboardShortcuts {
-  const { state } = useDashboardContext();
-
   // lokale Registry
   const shortcutsRef = useRef<
     Map<string, { handler: () => void; description: string }>

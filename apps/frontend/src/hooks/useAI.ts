@@ -20,9 +20,9 @@ export interface AIResponse {
   action?: string;
   tool_calls?: Array<{
     name: string;
-    parameters: Record<string, any>;
+    parameters: Record<string, unknown>;
   }>;
-  context_update?: Record<string, any>;
+  context_update?: Record<string, unknown>;
   meta?: {
     model?: string;
     provider?: string;
@@ -37,7 +37,7 @@ export interface AIResponse {
 export interface ToolMetadata {
   name: string;
   description?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   category?: string;
   version?: string;
   restricted?: boolean;
@@ -62,7 +62,7 @@ export interface ChatSession {
   createdAt: string;
   updatedAt: string;
   tokensUsed?: number;
-  meta?: Record<string, any>;
+  meta?: Record<string, unknown>;
 }
 
 export interface ConversationState {
@@ -77,7 +77,7 @@ export interface ConversationState {
     | "diagnose"
     | "informational";
   confidence?: "low" | "medium" | "high";
-  preferences: Record<string, any>;
+  preferences: Record<string, unknown>;
   history_length: number;
   updated_at?: string;
   stats: {
@@ -105,7 +105,7 @@ export const useAI = () => {
 
   // Generic API Call Function
   const apiCall = useCallback(
-    async <T = any>(
+    async <T = unknown>(
       endpoint: string,
       options: RequestInit = {},
       timeoutMs: number = 60000,
@@ -143,14 +143,15 @@ export const useAI = () => {
         }
 
         return await response.json();
-      } catch (err: any) {
+      } catch (err) {
         clearTimeout(timeoutId);
 
-        if (err.name === "AbortError") {
+        if (err instanceof Error && err.name === "AbortError") {
           throw new Error("Request timeout");
         }
 
-        const errorMessage = err.message || "An unexpected error occurred";
+        const errorMessage =
+          err instanceof Error ? err.message : "An unexpected error occurred";
         setError(errorMessage);
         throw err;
       } finally {
@@ -225,8 +226,8 @@ export const useAI = () => {
           const chunk = decoder.decode(value);
           onChunk(chunk);
         }
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
         throw err;
       } finally {
         setLoading(false);
@@ -250,14 +251,14 @@ export const useAI = () => {
   );
 
   const getSession = useCallback(
-    async (sessionId: string): Promise<ChatSession> => {
+    async (_sessionId: string): Promise<ChatSession> => {
       // Sessions werden über den SessionStore verwaltet
       // Direkter Session-Zugriff über Backend nicht verfügbar
       throw new Error(
         "Direct session access not available. Use listSessions instead.",
       );
     },
-    [apiCall],
+    [],
   );
 
   const updateSession = useCallback(
@@ -289,8 +290,8 @@ export const useAI = () => {
   const executeTool = useCallback(
     async (
       toolName: string,
-      params: Record<string, any> = {},
-    ): Promise<any> => {
+      params: Record<string, unknown> = {},
+    ): Promise<Record<string, unknown>> => {
       return apiCall(`/tools/${toolName}/run`, {
         method: "POST",
         body: JSON.stringify(params),
@@ -321,7 +322,7 @@ export const useAI = () => {
       audioFile: File,
     ): Promise<{
       text: string;
-      meta: any;
+      meta: Record<string, unknown>;
     }> => {
       const formData = new FormData();
       formData.append("audio", audioFile);
@@ -340,8 +341,8 @@ export const useAI = () => {
         }
 
         return await response.json();
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
         throw err;
       } finally {
         setLoading(false);
@@ -367,8 +368,8 @@ export const useAI = () => {
         }
 
         return await response.blob();
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
         throw err;
       } finally {
         setLoading(false);
@@ -403,8 +404,8 @@ export const useAI = () => {
         }
 
         return await response.json();
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
         throw err;
       } finally {
         setLoading(false);
@@ -427,7 +428,7 @@ export const useAI = () => {
     console.warn(
       "Context reset not directly available. Create a new session instead.",
     );
-  }, [apiCall]);
+  }, []);
 
   // Translation Functions - Angepasst an Backend-API
   const translateText = useCallback(
@@ -449,18 +450,25 @@ export const useAI = () => {
     return apiCall<SystemStatus>("/status");
   }, [apiCall]);
 
-  const getDiagnostics = useCallback(async (): Promise<any> => {
+  const getDiagnostics = useCallback(async (): Promise<SystemStatus> => {
     return apiCall("/status");
   }, [apiCall]);
 
   // Workflow Functions - Angepasst an Backend-API
-  const listWorkflows = useCallback(async (): Promise<any[]> => {
-    const response = await apiCall<{ workflows: any[] }>("/workflows");
+  const listWorkflows = useCallback(async (): Promise<
+    Record<string, unknown>[]
+  > => {
+    const response = await apiCall<{ workflows: Record<string, unknown>[] }>(
+      "/workflows",
+    );
     return response.workflows || [];
   }, [apiCall]);
 
   const executeWorkflow = useCallback(
-    async (workflowName: string, input: any = {}): Promise<any> => {
+    async (
+      workflowName: string,
+      input: Record<string, unknown> = {},
+    ): Promise<Record<string, unknown>> => {
       return apiCall(`/workflow/${workflowName}/run`, {
         method: "POST",
         body: JSON.stringify(input),
@@ -470,12 +478,16 @@ export const useAI = () => {
   );
 
   // Settings Management - Neu hinzugefügt
-  const getSettings = useCallback(async (): Promise<any> => {
+  const getSettings = useCallback(async (): Promise<
+    Record<string, unknown>
+  > => {
     return apiCall("/settings");
   }, [apiCall]);
 
   const updateSettings = useCallback(
-    async (settings: any): Promise<any> => {
+    async (
+      settings: Record<string, unknown>,
+    ): Promise<Record<string, unknown>> => {
       return apiCall("/settings", {
         method: "PUT",
         body: JSON.stringify(settings),
@@ -485,7 +497,7 @@ export const useAI = () => {
   );
 
   const updateSetting = useCallback(
-    async (key: string, value: any): Promise<any> => {
+    async (key: string, value: unknown): Promise<Record<string, unknown>> => {
       return apiCall(`/settings/${key}`, {
         method: "PATCH",
         body: JSON.stringify({ value }),
@@ -496,7 +508,10 @@ export const useAI = () => {
 
   // Knowledge Base Functions - Neu hinzugefügt
   const queryKnowledge = useCallback(
-    async (query: string, limit: number = 5): Promise<any> => {
+    async (
+      query: string,
+      limit: number = 5,
+    ): Promise<Record<string, unknown>> => {
       return apiCall("/knowledge/query", {
         method: "POST",
         body: JSON.stringify({ query, limit }),

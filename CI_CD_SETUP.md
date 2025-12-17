@@ -124,7 +124,7 @@ The CI/CD pipeline consists of four main workflows:
 
 ## Workflow Diagram
 
-```
+```grafik
 ┌─────────────┐
 │  Push/PR    │
 └──────┬──────┘
@@ -209,6 +209,7 @@ See [COMMIT_CONVENTIONS.md](COMMIT_CONVENTIONS.md) for commit message standards.
    ```
 
 7. **Build the application:**
+
    ```bash
    npm run build
    ```
@@ -439,7 +440,7 @@ open apps/frontend/coverage/index.html
 
 ### Deployment Pipeline (Planned)
 
-```
+```grafik
 ┌──────────┐     ┌──────────┐     ┌──────────┐
 │   Dev    │ ──> │  Staging │ ──> │   Prod   │
 └──────────┘     └──────────┘     └──────────┘

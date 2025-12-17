@@ -3,6 +3,7 @@
 // Accessibility: Skip navigation link for keyboard users
 
 import React from "react";
+import styles from "./SkipLink.module.css";
 
 export interface SkipLinkProps {
   href: string;
@@ -15,29 +16,7 @@ export interface SkipLinkProps {
  */
 export const SkipLink: React.FC<SkipLinkProps> = ({ href, children }) => {
   return (
-    <a
-      href={href}
-      className="skip-link"
-      style={{
-        position: "absolute",
-        left: "-9999px",
-        zIndex: 999,
-        padding: "1rem",
-        background: "var(--primary-500, #3b82f6)",
-        color: "white",
-        textDecoration: "none",
-        borderRadius: "4px",
-        fontSize: "1rem",
-        fontWeight: "600",
-      }}
-      onFocus={(e) => {
-        e.currentTarget.style.left = "1rem";
-        e.currentTarget.style.top = "1rem";
-      }}
-      onBlur={(e) => {
-        e.currentTarget.style.left = "-9999px";
-      }}
-    >
+    <a href={href} className={styles.skipLink}>
       {children}
     </a>
   );

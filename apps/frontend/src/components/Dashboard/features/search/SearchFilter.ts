@@ -23,7 +23,6 @@ import type {
   SearchFilters,
   NodeType,
   DateRange,
-  SearchMetadata,
 } from "../../types";
 
 // ============================================================================
@@ -274,7 +273,7 @@ export function filterByCategories(
 export function filterByNodeTypes(
   results: SearchResult[],
   types: NodeType[],
-  options: FilterOptions = {},
+  _options: FilterOptions = {},
 ): SearchResult[] {
   if (!types.length) return results;
 
@@ -288,11 +287,11 @@ export function filterByNodeTypes(
 export function filterByTags(
   results: SearchResult[],
   tags: string[],
-  options: FilterOptions = {},
+  _options: FilterOptions = {},
 ): SearchResult[] {
   if (!tags.length) return results;
 
-  const mergedOptions = { ...DEFAULT_FILTER_OPTIONS, ...options };
+  const mergedOptions = { ...DEFAULT_FILTER_OPTIONS, ..._options };
   const tagSet = new Set(
     tags.map((tag) => (mergedOptions.caseSensitive ? tag : normalizeText(tag))),
   );
@@ -313,7 +312,7 @@ export function filterByTags(
 export function filterByDate(
   results: SearchResult[],
   range: DateRange | undefined,
-  options: FilterOptions = {},
+  _options: FilterOptions = {},
 ): SearchResult[] {
   if (!range?.from || !range?.to) return results;
 
@@ -444,7 +443,7 @@ export function applySearchFilters(
   let filteredResults: (SearchResult | WeightedSearchResult)[] = [...results];
 
   // Apply query filter first (for relevance scoring)
-  if (filters.query) {
+  if (filters.query && typeof filters.query === "string") {
     filteredResults = filterByQuery(filteredResults, filters.query, options);
     appliedFilters.push("query");
   }
@@ -506,7 +505,8 @@ export function applySearchFilters(
   return {
     results: filteredResults as SearchResult[],
     context: {
-      originalQuery: filters.query,
+      originalQuery:
+        typeof filters.query === "string" ? filters.query : undefined,
       appliedFilters,
       executionTime,
     },

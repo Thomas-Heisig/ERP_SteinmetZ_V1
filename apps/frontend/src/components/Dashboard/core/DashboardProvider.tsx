@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // src/components/Dashboard/core/DashboardProvider.tsx
 
-import React, { useReducer, useEffect, useMemo } from "react";
+import React, { useReducer, useEffect, useMemo, useCallback } from "react";
 
 import { DashboardContext } from "./DashboardContext";
 import { dashboardReducer } from "./dashboardReducer";
@@ -59,15 +59,18 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
   // ---------------------------------------------------------------
   // Fehlerbehandlung
   // ---------------------------------------------------------------
-  const handleError = (error: Error, context: string) => {
-    console.error(`DashboardProvider Error [${context}]:`, error);
-    onError?.(error);
+  const handleError = useCallback(
+    (error: Error, context: string) => {
+      console.error(`DashboardProvider Error [${context}]:`, error);
+      onError?.(error);
 
-    dispatch({
-      type: "SET_ERROR",
-      payload: { key: "provider", value: error.message },
-    } as DashboardAction);
-  };
+      dispatch({
+        type: "SET_ERROR",
+        payload: { key: "provider", value: error.message },
+      } as DashboardAction);
+    },
+    [onError, dispatch],
+  );
 
   // ---------------------------------------------------------------
   // Theme-Integration
@@ -92,9 +95,10 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
         payload: i18n.language || "de",
       } as DashboardAction);
     } catch (err) {
-      handleError(err as Error, "i18n");
+      console.error("DashboardProvider Error [i18n]:", err);
+      onError?.(err as Error);
     }
-  }, [ready, i18n.language]);
+  }, [ready, i18n.language, dispatch, onError]);
 
   // ---------------------------------------------------------------
   // Systeminformationen (für Debug/Monitoring)
@@ -172,7 +176,7 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
     };
 
     void fetchRoots();
-  }, [initialNodes, backendUrl]);
+  }, [initialNodes, backendUrl, dispatch, handleError]);
 
   // ---------------------------------------------------------------
   // Performance-Marking (einmalig)
@@ -192,6 +196,19 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
   }, []);
 
   // ---------------------------------------------------------------
+  // FINALER CONTEXT-WERT (Must be before conditional return)
+  // ---------------------------------------------------------------
+  const contextValue = useMemo(
+    () => ({
+      state,
+      dispatch,
+      version: "1.0.0",
+      isInitialized: !state.loading.provider,
+    }),
+    [state, dispatch],
+  );
+
+  // ---------------------------------------------------------------
   // Provider Error Boundary UI
   // ---------------------------------------------------------------
   if (state.errors && state.errors.provider) {
@@ -204,19 +221,6 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
     );
   }
 
-  // ---------------------------------------------------------------
-  // FINALER CONTEXT-WERT
-  // ---------------------------------------------------------------
-  const contextValue = useMemo(
-    () => ({
-      state,
-      dispatch,
-      version: "1.0.0",
-      isInitialized: !state.loading.provider,
-    }),
-    [state, dispatch],
-  );
-
   return (
     <DashboardContext.Provider value={contextValue}>
       {children}
@@ -226,12 +230,3 @@ const DashboardProvider: React.FC<DashboardProviderProps> = ({
 
 export default DashboardProvider;
 export { DashboardProvider };
-
-// Convenience Hook
-export const useDashboard = () => {
-  const context = React.useContext(DashboardContext);
-  if (!context) {
-    throw new Error("useDashboard must be used within a DashboardProvider");
-  }
-  return context;
-};

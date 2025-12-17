@@ -3,6 +3,7 @@
 
 import React, { useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import styles from "./Modal.module.css";
 
 export interface ModalProps {
   isOpen: boolean;
@@ -48,102 +49,29 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  const sizeStyles: Record<string, string> = {
-    sm: "400px",
-    md: "560px",
-    lg: "800px",
-    xl: "1140px",
-    full: "calc(100vw - 2rem)",
-  };
+  const modalClasses = [styles.modal, styles[size]].filter(Boolean).join(" ");
 
   const modalContent = (
     <div
-      className="ui-modal-overlay"
+      className={styles.overlay}
       onClick={closeOnOverlayClick ? onClose : undefined}
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: "rgba(0, 0, 0, 0.6)",
-        backdropFilter: "blur(4px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1040,
-        padding: "1rem",
-        animation: "fadeIn 0.2s ease-out",
-      }}
     >
-      <div
-        className="ui-modal"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "100%",
-          maxWidth: sizeStyles[size],
-          maxHeight: "calc(100vh - 2rem)",
-          background: "var(--surface)",
-          borderRadius: "12px",
-          boxShadow: "var(--shadow-2xl)",
-          display: "flex",
-          flexDirection: "column",
-          animation: "slideUp 0.3s ease-out",
-        }}
-      >
+      <div className={modalClasses} onClick={(e) => e.stopPropagation()}>
         {(title || showCloseButton) && (
-          <div
-            className="ui-modal__header"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "1rem 1.5rem",
-              borderBottom: "1px solid var(--border)",
-            }}
-          >
-            {title && (
-              <h2
-                style={{
-                  margin: 0,
-                  fontSize: "1.25rem",
-                  fontWeight: 600,
-                  color: "var(--text-primary)",
-                }}
-              >
-                {title}
-              </h2>
-            )}
+          <div className={styles.header}>
+            {title && <h2 className={styles.title}>{title}</h2>}
             {showCloseButton && (
               <button
                 onClick={onClose}
                 aria-label="Schließen"
-                style={{
-                  background: "none",
-                  border: "none",
-                  padding: "0.5rem",
-                  cursor: "pointer",
-                  fontSize: "1.5rem",
-                  color: "var(--text-tertiary)",
-                  borderRadius: "6px",
-                  transition: "background 0.2s ease",
-                }}
+                className={styles.closeButton}
               >
                 ✕
               </button>
             )}
           </div>
         )}
-        <div
-          className="ui-modal__content"
-          style={{
-            flex: 1,
-            padding: "1.5rem",
-            overflowY: "auto",
-          }}
-        >
-          {children}
-        </div>
+        <div className={styles.content}>{children}</div>
       </div>
     </div>
   );

@@ -19,9 +19,14 @@ export default function SearchItem({ item, onSelect }: Props) {
     }
   };
 
+  const itemExtended = item as SearchResult & {
+    highlight?: { content?: unknown };
+    description?: unknown;
+  };
+
   const hasPath = Array.isArray(item.path) && item.path.length > 0;
-  const hasHighlight = Array.isArray((item as any).highlight?.content);
-  const hasDescription = typeof (item as any).description === "string";
+  const hasHighlight = Array.isArray(itemExtended.highlight?.content);
+  const hasDescription = typeof itemExtended.description === "string";
 
   return (
     <div
@@ -47,7 +52,7 @@ export default function SearchItem({ item, onSelect }: Props) {
       {/* Beschreibung (optional, da im aktuellen Modell nicht enthalten) */}
       {hasDescription && (
         <div className="fc-search-item-description">
-          {(item as any).description}
+          {String(itemExtended.description)}
         </div>
       )}
 
@@ -59,7 +64,7 @@ export default function SearchItem({ item, onSelect }: Props) {
       {/* Highlight Treffer (optional) */}
       {hasHighlight && (
         <div className="fc-search-item-highlight">
-          {(item as any).highlight.content.join(" ")}
+          {(itemExtended.highlight?.content as string[]).join(" ")}
         </div>
       )}
 

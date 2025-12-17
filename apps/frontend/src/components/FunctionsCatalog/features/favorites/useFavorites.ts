@@ -31,6 +31,11 @@ export function useFavorites() {
    * - defensive Checks, da NodeDetail KEINE Pflichtfelder "tags" oder "categories" hat
    */
   const addFromNode = (node: NodeDetail): void => {
+    const nodeExtended = node as NodeDetail & {
+      tags?: unknown;
+      categories?: unknown;
+    };
+
     store.add({
       id: node.id,
       title: node.title,
@@ -39,12 +44,14 @@ export function useFavorites() {
       addedAt: new Date().toISOString(),
 
       // Nur setzen, wenn vorhanden → verhindert Typfehler
-      tags: Array.isArray((node as any).tags) ? (node as any).tags : undefined,
+      tags: Array.isArray(nodeExtended.tags)
+        ? (nodeExtended.tags as string[])
+        : undefined,
 
       category:
-        Array.isArray((node as any).categories) &&
-        (node as any).categories.length > 0
-          ? (node as any).categories[0]
+        Array.isArray(nodeExtended.categories) &&
+        (nodeExtended.categories as unknown[]).length > 0
+          ? (nodeExtended.categories as string[])[0]
           : undefined,
     });
   };

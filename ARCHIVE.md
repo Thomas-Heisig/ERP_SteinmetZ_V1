@@ -113,26 +113,26 @@ Abschluss von Sprint 1 (Phase 1) - AI-Annotator Production-Ready.
 
 Alle geplanten Features für Sprint 1 wurden erfolgreich implementiert und sind produktionsbereit:
 
-**1. AI-Annotator Frontend-Integration**
+##### 1. AI-Annotator Frontend-Integration
 
 - `apps/frontend/src/components/aiAnnotatorRouter/aiAnnotatorRouter.tsx` - Haupt-Router-Komponente
 - `apps/frontend/src/hooks/useAiAnnotatorRouter.ts` - Custom Hook für State Management
 - Vollständige Integration in Frontend-Routing
 
-**2. Batch-Processing-UI**
+##### 2. Batch-Processing-UI
 
 - `apps/frontend/src/components/BatchProcessing/BatchProcessingPage.tsx` - Haupt-UI mit Tabs
 - `apps/frontend/src/components/BatchProcessing/BatchCreationForm.tsx` - Formular für neue Batches
 - `apps/frontend/src/components/BatchProcessing/ProgressTracker.tsx` - Real-Time Progress-Anzeige
 - WebSocket-Integration für Live-Updates (aus WebSocket-Dokumentation)
 
-**3. Quality-Dashboard**
+##### 3. Quality-Dashboard
 
 - `apps/frontend/src/components/QualityDashboard/QADashboard.tsx` - Dashboard mit Metriken
 - API-Integration: `/api/ai-annotator/qa/dashboard`
 - Anzeige von: Total Reviews, Pending, Approved, Rejected, Quality Score, Review Time
 
-**4. Model-Management-Interface**
+##### 4. Model-Management-Interface
 
 - `apps/frontend/src/components/ModelManagement/ModelComparison.tsx` - Modell-Vergleich mit Stats
 - `apps/frontend/src/components/QuickChat/components/ModelsTab.tsx` - Model-Selection
@@ -227,7 +227,7 @@ Implementierung der nächsten 5 priorisierten TODO-Punkte mit umfassenden Tests 
 
 #### 🔴 Abend: Kritischer Build-Fehler behoben
 
-**ISSUE-017: Build-Fehler durch fehlende @testing-library/dom**
+##### ISSUE-017: Build-Fehler durch fehlende @testing-library/dom
 
 **Problem:**
 
@@ -572,7 +572,7 @@ Umfassende Dokumentation in SCRIPTS.md erstellt mit:
 
 **Beispiel** (nun enforced):
 
-```
+```text
 feat(backend): add rate limiting to AI endpoints
 fix(frontend): resolve theme toggle bug
 docs(readme): update installation instructions

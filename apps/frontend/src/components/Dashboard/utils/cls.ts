@@ -117,9 +117,10 @@ export function cls(
 /**
  * Check if an object is a class condition object
  */
-function isClassObject(obj: any): boolean {
-  if (Array.isArray(obj)) return false;
-  if (obj === null) return false;
+function isClassObject(obj: unknown): boolean {
+  if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
+    return false;
+  }
 
   // Exclude ClsOptions by checking for known option keys
   if ("separator" in obj || "dedupe" in obj || "filter" in obj) {

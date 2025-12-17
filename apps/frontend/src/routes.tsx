@@ -1,80 +1,134 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/routes.tsx
 
-import React, { Suspense, lazy } from "react";
+/**
+ * Application routing configuration using React Router v6
+ *
+ * This file defines all routes and lazy-loaded components for the application.
+ * All route components are lazy-loaded to improve initial load performance.
+ *
+ * @module routes
+ */
+
+import React, { Suspense, lazy, ComponentType } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import App from "./App";
-import ProtectedRoute from "./components/Auth/ProtectedRoute";
-import { ErrorBoundary } from "./components/ui/ErrorBoundary";
+import { LoadingFallback } from "./components/ui/LoadingFallback";
+import { ProtectedPage } from "./components/ui/ProtectedPage";
 
-// Lazy load components for better performance
-const Dashboard = lazy(() => import("./components/Dashboard/Dashboard"));
+/**
+ * Helper function to wrap lazy-loaded components with Suspense and error boundary
+ * @param Component - The lazy-loaded component to wrap
+ * @param isProtected - Whether the route requires authentication
+ * @returns Wrapped component with Suspense and optional protection
+ */
+const lazyLoad = (
+  Component: React.LazyExoticComponent<ComponentType>,
+  isProtected = true,
+): React.ReactElement => {
+  const element = (
+    <Suspense fallback={<LoadingFallback />}>
+      <Component />
+    </Suspense>
+  );
+
+  return isProtected ? <ProtectedPage>{element}</ProtectedPage> : element;
+};
+
+// ============================================================================
+// Core Components
+// ============================================================================
+
+/** Simple dashboard with executive overview only (4 KPIs, tasks, notifications) */
+const SimpleDashboard = lazy(() => import("./components/Dashboard/SimpleDashboard"));
+
+/** Functions catalog for browsing and managing available functions */
 const FunctionsCatalog = lazy(
   () => import("./components/FunctionsCatalog/FunctionsCatalog"),
 );
+
+/** Login page for user authentication */
 const Login = lazy(() => import("./pages/Login/Login"));
-const AiAnnotatorRouter = lazy(
-  () => import("./components/aiAnnotatorRouter/aiAnnotatorRouter"),
-);
+
+/** AI Annotator main interface */
+const AIAnnotator = lazy(() => import("./components/AIAnnotator/AIAnnotator"));
+
+/** Help center with documentation and support */
 const HelpCenter = lazy(() => import("./components/HelpCenter/HelpCenter"));
 
-// Features - lazy loaded
+// ============================================================================
+// Feature Modules
+// ============================================================================
+
+/** Calendar for scheduling and appointments */
 const Calendar = lazy(() => import("./features/calendar/Calendar"));
+
+/** Application settings and preferences */
 const Settings = lazy(() => import("./features/settings/Settings"));
+
+/** Communication center for calls, SMS, and fax */
 const CommunicationCenter = lazy(
   () => import("./features/communication/CommunicationCenter"),
 );
+
+/** HR: Employee management and records */
 const EmployeeList = lazy(() => import("./features/hr/EmployeeList"));
+
+/** Finance: Invoice management and billing */
 const InvoiceList = lazy(() => import("./features/finance/InvoiceList"));
+
+/** CRM: Customer relationship management */
 const CustomerList = lazy(() => import("./features/crm/CustomerList"));
+
+/** Inventory: Stock and warehouse management */
 const InventoryList = lazy(() => import("./features/inventory/InventoryList"));
+
+/** Projects: Project planning and tracking */
 const ProjectList = lazy(() => import("./features/projects/ProjectList"));
+
+/** Innovation: Idea board and innovation management */
 const IdeaBoard = lazy(() => import("./features/innovation/IdeaBoard"));
+
+/** Documents: Document management system */
 const DocumentList = lazy(() => import("./features/documents/DocumentList"));
 
-// AI Annotator features - lazy loaded
+// ============================================================================
+// AI & ML Features
+// ============================================================================
+
+/** Batch processing for bulk AI operations */
 const BatchProcessingPage = lazy(
   () => import("./components/BatchProcessing/BatchProcessingPage"),
 );
+
+/** Quality dashboard for AI annotation metrics */
 const QualityDashboard = lazy(() => import("./components/QualityDashboard"));
+
+/** Model management for AI/ML models */
 const ModelManagement = lazy(() => import("./components/ModelManagement"));
+
+/** Advanced filters UI for data filtering */
 const AdvancedFiltersUI = lazy(
   () => import("./components/AdvancedFilters/AdvancedFilters"),
 );
 
-// Loading fallback component - uses CSS from components.css
-const LoadingFallback = () => (
-  <div className="loading-state" style={{ height: "100vh" }}>
-    <div className="loading-spinner" style={{ fontSize: "2rem" }}>
-      🧱
-    </div>
-    <div style={{ fontSize: "1rem", fontWeight: 500 }}>
-      ERP SteinmetZ lädt...
-    </div>
-  </div>
-);
+// ============================================================================
+// Router Configuration
+// ============================================================================
 
-// Wrapped component with Suspense and Error Boundary
-const ProtectedPage = ({ children }: { children: React.ReactNode }) => (
-  <ProtectedRoute>
-    <ErrorBoundary>
-      <Suspense fallback={<LoadingFallback />}>{children}</Suspense>
-    </ErrorBoundary>
-  </ProtectedRoute>
-);
-
-// Router configuration
+/**
+ * Application router with lazy-loaded routes
+ *
+ * Route structure:
+ * - /login: Public authentication page
+ * - /: Protected application routes (requires authentication)
+ * - /*: Catch-all redirect to home
+ */
 export const router = createBrowserRouter([
   {
     path: "/login",
-    element: (
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingFallback />}>
-          <Login />
-        </Suspense>
-      </ErrorBoundary>
-    ),
+    element: lazyLoad(Login, false),
   },
   {
     path: "/",
@@ -82,155 +136,79 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <ProtectedPage>
-            <Dashboard />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(SimpleDashboard),
       },
       {
         path: "dashboard",
-        element: (
-          <ProtectedPage>
-            <Dashboard />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(SimpleDashboard),
       },
       {
         path: "catalog",
-        element: (
-          <ProtectedPage>
-            <FunctionsCatalog />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(FunctionsCatalog),
       },
       {
         path: "ai",
-        element: (
-          <ProtectedPage>
-            <AiAnnotatorRouter />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(AIAnnotator),
       },
       {
         path: "calendar",
-        element: (
-          <ProtectedPage>
-            <Calendar />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(Calendar),
       },
       {
         path: "settings",
-        element: (
-          <ProtectedPage>
-            <Settings />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(Settings),
       },
       {
         path: "communication",
-        element: (
-          <ProtectedPage>
-            <CommunicationCenter />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(CommunicationCenter),
       },
       {
         path: "hr",
-        element: (
-          <ProtectedPage>
-            <EmployeeList />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(EmployeeList),
       },
       {
         path: "finance",
-        element: (
-          <ProtectedPage>
-            <InvoiceList />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(InvoiceList),
       },
       {
         path: "crm",
-        element: (
-          <ProtectedPage>
-            <CustomerList />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(CustomerList),
       },
       {
         path: "inventory",
-        element: (
-          <ProtectedPage>
-            <InventoryList />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(InventoryList),
       },
       {
         path: "projects",
-        element: (
-          <ProtectedPage>
-            <ProjectList />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(ProjectList),
       },
       {
         path: "innovation",
-        element: (
-          <ProtectedPage>
-            <IdeaBoard />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(IdeaBoard),
       },
       {
         path: "documents",
-        element: (
-          <ProtectedPage>
-            <DocumentList />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(DocumentList),
       },
       {
         path: "batch-processing",
-        element: (
-          <ProtectedPage>
-            <BatchProcessingPage />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(BatchProcessingPage),
       },
       {
         path: "quality-dashboard",
-        element: (
-          <ProtectedPage>
-            <QualityDashboard />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(QualityDashboard),
       },
       {
         path: "model-management",
-        element: (
-          <ProtectedPage>
-            <ModelManagement />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(ModelManagement),
       },
       {
         path: "advanced-filters",
-        element: (
-          <ProtectedPage>
-            <AdvancedFiltersUI />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(AdvancedFiltersUI),
       },
       {
         path: "help",
-        element: (
-          <ProtectedPage>
-            <HelpCenter />
-          </ProtectedPage>
-        ),
+        element: lazyLoad(HelpCenter),
       },
     ],
   },

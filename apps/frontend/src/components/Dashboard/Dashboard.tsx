@@ -38,6 +38,7 @@ import QuickChatButton from "./ui/QuickChatButton";
 
 // Widgets
 import { DashboardWidgets } from "../DashboardWidgets";
+import { AllModuleWidgets } from "./widgets/ModuleWidgets";
 
 // Layout Hook
 import { useDashboardLayout } from "./hooks/useDashboardLayout";
@@ -88,11 +89,9 @@ const DashboardView: React.FC = () => {
   useDashboardLayout();
 
   // Global state selection with memoization
-  const { navigation, search, catalog, ui } = useDashboardSelector((state) => ({
-    navigation: state.navigation,
+  const { search, catalog } = useDashboardSelector((state) => ({
     search: state.search,
     catalog: state.catalog,
-    ui: state.ui,
   }));
 
   // ============================================================================
@@ -215,9 +214,22 @@ const DashboardView: React.FC = () => {
         {/* Categories Grid View */}
         {showCategories && (
           <>
-            {/* Dashboard Widgets Section */}
+            {/* Main Module Widgets Section */}
             <section
               className="dashboard-widgets-section"
+              aria-labelledby="modules-title"
+            >
+              <h2 id="modules-title" className="section-title">
+                {t("dashboard.modules", "Hauptfunktionen")}
+              </h2>
+              <AllModuleWidgets
+                onNavigate={(path) => (window.location.href = path)}
+              />
+            </section>
+
+            {/* Additional Dashboard Widgets Section */}
+            <section
+              className="dashboard-widgets-section mt-6"
               aria-labelledby="widgets-title"
             >
               <h2 id="widgets-title" className="section-title">

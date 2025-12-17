@@ -59,9 +59,9 @@ interface TopicPattern {
 /* ========================================================================== */
 
 export class ConversationContext {
-  private context = new Map<string, any>();
+  private context = new Map<string, unknown>();
   private history: ChatMessage[] = [];
-  private userPreferences = new Map<string, any>();
+  private userPreferences = new Map<string, unknown>();
   private stats: ContextStats = {
     messageCount: 0,
     topicSwitches: 0,
@@ -74,7 +74,7 @@ export class ConversationContext {
 
   private reflections: Record<string, string> = {};
   private rules: ElizaRule[] = [];
-  private metadata: Record<string, any> = {};
+  private metadata: Record<string, unknown> = {};
 
   // Erweiterte Themenanalyse mit Kategorien
   private topicPatterns: TopicPattern[] = [
@@ -195,16 +195,26 @@ export class ConversationContext {
       const baseDir = __dirname;
       const dataDir = path.join(baseDir, "data");
 
-      logger.info({ baseDir, dataDir }, "Loading context data from /data/");
+      logger.info(
+        { baseDir, dataDir },
+        "[ConversationContext] Starting to load context data from /data/"
+      );
 
       const combined: Required<LoadedContextData> = {
         reflections: {},
         eliza_rules: [],
-        metadata: {},
+        metadata: {
+          version: "1.0.0",
+          last_updated: new Date().toISOString(),
+          description: "Combined context data from multiple sources",
+        },
       };
 
       if (!fs.existsSync(dataDir)) {
-        logger.warn({ dataDir }, "Directory not found, using fallback context");
+        logger.warn(
+          { dataDir },
+          "[ConversationContext] Data directory not found, using fallback context"
+        );
         this.initializeFallbackContext();
         return;
       }
@@ -214,25 +224,33 @@ export class ConversationContext {
         .filter((f) => f.toLowerCase().endsWith(".json"))
         .sort((a, b) => {
           // Sortiere nach Nummerierung für konsistente Ladereihenfolge
-          const numA = parseInt(a.split("_")[0]) || 0;
-          const numB = parseInt(b.split("_")[0]) || 0;
+          const numA = Number.parseInt(a.split("_")[0], 10) || 0;
+          const numB = Number.parseInt(b.split("_")[0], 10) || 0;
           return numA - numB;
         });
 
       if (files.length === 0) {
         logger.warn(
           { dataDir },
-          "No JSON files found in directory, using fallback context",
+          "[ConversationContext] No JSON files found in directory, using fallback context"
         );
         this.initializeFallbackContext();
         return;
       }
 
-      logger.info({ fileCount: files.length }, "Found JSON context files");
+      logger.info(
+        { fileCount: files.length, files: files.slice(0, 5) },
+        "[ConversationContext] Found JSON context files"
+      );
+
+      let successfullyLoaded = 0;
+      let failedFiles = 0;
 
       for (const file of files) {
         const fullPath = path.join(dataDir, file);
         try {
+          logger.debug({ file }, "[ConversationContext] Loading file");
+          
           const raw = fs.readFileSync(fullPath, "utf8");
           const parsed = JSON.parse(raw) as LoadedContextData;
 
@@ -246,7 +264,7 @@ export class ConversationContext {
               Object.assign(combined.reflections, reflections);
               logger.debug(
                 { file, reflectionCount: Object.keys(reflections).length },
-                "Loaded reflections from file",
+                "[ConversationContext] Loaded reflections"
               );
             }
 
@@ -254,16 +272,26 @@ export class ConversationContext {
               combined.eliza_rules.push(...rules);
               logger.debug(
                 { file, ruleCount: rules.length },
-                "Loaded rules from file",
+                "[ConversationContext] Loaded rules"
               );
             }
 
             if (Object.keys(metadata).length > 0) {
               Object.assign(combined.metadata, metadata);
             }
+
+            successfullyLoaded++;
+          } else {
+            failedFiles++;
+            logger.warn({ file }, "[ConversationContext] Validation failed");
           }
-        } catch (err: any) {
-          console.warn(`   ⚠️ Fehler beim Laden von ${file}: ${err.message}`);
+        } catch (err: unknown) {
+          failedFiles++;
+          const message = err instanceof Error ? err.message : String(err);
+          logger.error(
+            { file, error: message },
+            "[ConversationContext] Error loading file"
+          );
         }
       }
 
@@ -273,56 +301,129 @@ export class ConversationContext {
 
       const totalRules = this.rules.length;
       const totalReflections = Object.keys(this.reflections).length;
+      const activeRules = this.rules.filter((rule) => rule.enabled !== false);
+
+      logger.info(
+        {
+          filesProcessed: files.length,
+          successfullyLoaded,
+          failedFiles,
+          totalRules,
+          activeRules: activeRules.length,
+          totalReflections,
+        },
+        "[ConversationContext] Context data loading completed"
+      );
 
       if (totalRules === 0 && totalReflections === 0) {
         logger.warn(
-          "No valid rules or reflections loaded, using fallback context",
+          "[ConversationContext] No valid rules or reflections loaded, using fallback context"
         );
         this.initializeFallbackContext();
       } else {
-        logger.info(
-          { totalRules, totalReflections },
-          "Context data loaded successfully",
-        );
-
-        // Aktive Regeln für Debugging loggen
-        const activeRules = this.rules.filter((rule) => rule.enabled !== false);
-        logger.debug(
-          { activeRules: activeRules.length, totalRules },
-          "Active rules count",
-        );
+        // Setze erfolgreich geladene Metadaten
+        this.set("context.loaded_files", successfullyLoaded);
+        this.set("context.total_rules", totalRules);
+        this.set("context.active_rules", activeRules.length);
+        this.set("context.reflections", totalReflections);
+        this.set("context.load_timestamp", new Date().toISOString());
       }
-    } catch (err: any) {
-      console.error(
-        "❌ [CONTEXT] Kritischer Fehler beim Laden der Kontextdaten:",
-        err.message,
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.error(
+        { error: message },
+        "[ConversationContext] Critical error loading context data"
       );
       this.initializeFallbackContext();
     }
   }
 
-  private validateContextData(data: any, filename: string): boolean {
+  private validateContextData(data: unknown, filename: string): boolean {
     if (typeof data !== "object" || data === null) {
-      console.warn(`   ⚠️ Ungültige Daten in ${filename}: Kein Objekt`);
+      logger.warn(
+        { filename },
+        "[ConversationContext] Invalid data: Not an object"
+      );
       return false;
     }
 
-    // Validiere reflections
-    if (data.reflections && typeof data.reflections !== "object") {
-      console.warn(`   ⚠️ Ungültige reflections in ${filename}`);
+    const typedData = data as Partial<LoadedContextData>;
+
+    // Datei muss mindestens reflections oder eliza_rules enthalten
+    if (!typedData.reflections && !typedData.eliza_rules) {
+      logger.warn(
+        { filename },
+        "[ConversationContext] File contains neither reflections nor rules"
+      );
       return false;
     }
 
-    // Validiere rules
-    if (data.eliza_rules && !Array.isArray(data.eliza_rules)) {
-      console.warn(`   ⚠️ Ungültige eliza_rules in ${filename}: Kein Array`);
-      return false;
+    // Validiere reflections wenn vorhanden
+    if (typedData.reflections) {
+      if (typeof typedData.reflections !== "object" || Array.isArray(typedData.reflections)) {
+        logger.warn(
+          { filename },
+          "[ConversationContext] Invalid reflections: Must be an object"
+        );
+        return false;
+      }
+
+      // Prüfe ob mindestens eine Reflexion vorhanden ist
+      if (Object.keys(typedData.reflections).length === 0) {
+        logger.debug(
+          { filename },
+          "[ConversationContext] Reflections object is empty"
+        );
+      }
     }
 
-    if (data.eliza_rules) {
-      for (const rule of data.eliza_rules) {
-        if (!rule.pattern || !Array.isArray(rule.replies)) {
-          console.warn(`   ⚠️ Ungültige Regelstruktur in ${filename}`);
+    // Validiere rules wenn vorhanden
+    if (typedData.eliza_rules) {
+      if (!Array.isArray(typedData.eliza_rules)) {
+        logger.warn(
+          { filename },
+          "[ConversationContext] Invalid eliza_rules: Must be an array"
+        );
+        return false;
+      }
+
+      // Validiere jede einzelne Regel
+      for (let i = 0; i < typedData.eliza_rules.length; i++) {
+        const rule = typedData.eliza_rules[i];
+        
+        if (!rule.pattern || typeof rule.pattern !== "string") {
+          logger.warn(
+            { filename, ruleIndex: i },
+            "[ConversationContext] Invalid rule: Missing or invalid pattern"
+          );
+          return false;
+        }
+
+        if (!Array.isArray(rule.replies) || rule.replies.length === 0) {
+          logger.warn(
+            { filename, ruleIndex: i, pattern: rule.pattern },
+            "[ConversationContext] Invalid rule: Missing or empty replies array"
+          );
+          return false;
+        }
+
+        // Prüfe ob alle Antworten Strings sind
+        if (!rule.replies.every(r => typeof r === "string")) {
+          logger.warn(
+            { filename, ruleIndex: i, pattern: rule.pattern },
+            "[ConversationContext] Invalid rule: All replies must be strings"
+          );
+          return false;
+        }
+
+        // Validiere RegEx Pattern
+        try {
+          new RegExp(rule.pattern);
+        } catch {
+          logger.warn(
+            { filename, ruleIndex: i, pattern: rule.pattern },
+            "[ConversationContext] Invalid rule: Pattern is not a valid regex"
+          );
           return false;
         }
       }
@@ -332,40 +433,76 @@ export class ConversationContext {
   }
 
   private initializeFallbackContext(): void {
-    logger.info("Initializing fallback context");
+    logger.warn(
+      "[ConversationContext] Initializing fallback context (minimal functionality)"
+    );
 
     this.reflections = {
-      ich: "du",
-      mir: "dir",
-      mich: "dich",
-      mein: "dein",
-      meine: "deine",
-      bin: "bist",
+      ich: "Sie",
+      mir: "Ihnen",
+      mich: "Sie",
+      mein: "Ihr",
+      meine: "Ihre",
+      bin: "sind",
+      du: "Sie",
+      dir: "Ihnen",
+      dein: "Ihr",
+      deine: "Ihre",
     };
 
     this.rules = [
       {
-        pattern: "hallo|guten tag|hello",
+        pattern: "\\b(hallo|guten tag|hello|hi|hey)\\b",
         replies: [
           "Hallo! Wie kann ich Ihnen helfen?",
           "Guten Tag! Was kann ich für Sie tun?",
+          "Willkommen! Worum geht es?",
         ],
         enabled: true,
         priority: 1,
       },
       {
-        pattern: "danke|vielen dank|thanks",
-        replies: ["Gern geschehen!", "Keine Ursache!", "Immer wieder gerne!"],
+        pattern: "\\b(danke|vielen dank|thanks|dankeschön)\\b",
+        replies: [
+          "Gern geschehen!",
+          "Keine Ursache!",
+          "Immer wieder gerne!",
+          "Das freut mich!",
+        ],
         enabled: true,
         priority: 1,
+      },
+      {
+        pattern: "\\b(tschüss|auf wiedersehen|bye|goodbye)\\b",
+        replies: [
+          "Auf Wiedersehen!",
+          "Bis bald!",
+          "Schönen Tag noch!",
+        ],
+        enabled: true,
+        priority: 1,
+      },
+      {
+        pattern: "\\b(hilfe|help|was kannst du)\\b",
+        replies: [
+          "Ich bin Ihr Assistent. Stellen Sie mir Fragen zum ERP-System!",
+          "Ich helfe bei Datenbankabfragen, Systemüberwachung und mehr.",
+          "Fragen Sie mich nach Bestellungen, Kunden, Lagerbeständen und mehr!",
+        ],
+        enabled: true,
+        priority: 2,
       },
     ];
 
     this.metadata = {
       version: "1.0.0-fallback",
-      description: "Fallback-Kontext für Notfälle",
+      description: "Fallback-Kontext mit minimaler Funktionalität",
       last_updated: new Date().toISOString(),
+      source: "fallback",
     };
+
+    this.set("context.fallback_mode", true);
+    this.set("context.load_timestamp", new Date().toISOString());
   }
 
   private initializeDefaultContext(): void {
@@ -399,13 +536,13 @@ export class ConversationContext {
   /* 💬 Grundlegende Kontextverwaltung - VERBESSERT                          */
   /* ======================================================================== */
 
-  set(key: string, value: any): void {
+  set(key: string, value: unknown): void {
     if (key && typeof key === "string") {
       this.context.set(key, value);
     }
   }
 
-  get(key: string): any {
+  get(key: string): unknown {
     return this.context.get(key);
   }
 
@@ -670,7 +807,13 @@ export class ConversationContext {
     const activeRules = this.rules.filter((rule) => rule.enabled !== false);
     if (activeRules.length === 0) return null;
 
-    let bestMatch: any = null;
+    let bestMatch: {
+      reply: string;
+      action?: string;
+      params?: string[];
+      rule: ElizaRule;
+      confidence: number;
+    } | null = null;
     let highestPriority = -1;
 
     for (const rule of activeRules) {
@@ -728,8 +871,8 @@ export class ConversationContext {
 
   async executeAction(
     action: string,
-    params?: Record<string, any>,
-  ): Promise<any> {
+    params?: Record<string, unknown>,
+  ): Promise<unknown> {
     if (!action) {
       return { success: false, error: "Keine Aktion angegeben" };
     }
@@ -737,7 +880,7 @@ export class ConversationContext {
     const startTime = Date.now();
 
     try {
-      let result: any;
+      let result: unknown;
 
       // Tool-Execution
       if (toolRegistry.has(action)) {
@@ -766,14 +909,14 @@ export class ConversationContext {
       this.set(`last_execution_time.${action}`, executionTime);
 
       return {
-        ...result,
+        ...(typeof result === 'object' && result !== null ? result : {}),
         metadata: {
           execution_time_ms: executionTime,
           action_type: this.getActionType(action),
           timestamp: new Date().toISOString(),
         },
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(
         `❌ [CONTEXT] Fehler bei Aktionsausführung "${action}":`,
         error,
@@ -781,7 +924,7 @@ export class ConversationContext {
 
       return {
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         execution_time_ms: Date.now() - startTime,
       };
     }
@@ -798,14 +941,15 @@ export class ConversationContext {
     const tools = (() => {
       try {
         // Falls listTools nicht existiert, Fallback verwenden
+        const registry = toolRegistry as { listTools?: () => unknown[] };
         const allTools =
-          typeof (toolRegistry as any).listTools === "function"
-            ? (toolRegistry as any).listTools()
+          typeof registry.listTools === "function"
+            ? registry.listTools()
             : [];
 
         // Sichere Extraktion von Namen
         return Array.isArray(allTools)
-          ? allTools.map((t: any) => t?.name ?? "Unbekanntes Tool")
+          ? allTools.map((t: unknown) => (t as { name?: string })?.name ?? "Unbekanntes Tool")
           : [];
       } catch {
         return [];
@@ -816,7 +960,7 @@ export class ConversationContext {
       try {
         const defs = workflowEngine.getWorkflowDefinitions?.() ?? [];
         return Array.isArray(defs)
-          ? defs.map((w: any) => w?.name ?? "Unbenannter Workflow")
+          ? defs.map((w: unknown) => (w as { name?: string })?.name ?? "Unbenannter Workflow")
           : [];
       } catch {
         return [];
@@ -835,12 +979,12 @@ export class ConversationContext {
       ...Object.fromEntries(this.context),
       preferences: Object.fromEntries(this.userPreferences),
       history_length: this.history.length,
-      sentiment: this.get("sentiment"),
-      intent: this.get("intent"),
-      current_topic: this.get("current_topic"),
-      current_category: this.get("current_category"),
-      confidence: this.get("context_confidence"),
-      updated_at: this.get("last_updated"),
+      sentiment: this.get("sentiment") as ConversationState["sentiment"],
+      intent: this.get("intent") as string | undefined,
+      current_topic: this.get("current_topic") as string | undefined,
+      current_category: this.get("current_category") as MessageCategory | undefined,
+      confidence: this.get("context_confidence") as "low" | "medium" | "high" | undefined,
+      updated_at: this.get("last_updated") as string | undefined,
       stats: this.stats,
       metadata: this.metadata,
     };
@@ -856,11 +1000,11 @@ export class ConversationContext {
     return baseContext;
   }
 
-  getPreferences(): Record<string, any> {
+  getPreferences(): Record<string, unknown> {
     return Object.fromEntries(this.userPreferences);
   }
 
-  mergeInto(target: Record<string, any>): Record<string, any> {
+  mergeInto(target: Record<string, unknown>): Record<string, unknown> {
     return {
       ...target,
       ...Object.fromEntries(this.context),
@@ -872,21 +1016,75 @@ export class ConversationContext {
   /* 📊 Erweiterte Diagnose-Funktionen                                       */
   /* ======================================================================== */
 
-  getDiagnostics(): any {
+  getDiagnostics(): {
+    context_size: number;
+    history_length: number;
+    preferences_size: number;
+    rules_loaded: number;
+    active_rules: number;
+    disabled_rules: number;
+    reflections_loaded: number;
+    topic_patterns: number;
+    response_times: {
+      current: number | undefined;
+      average: number;
+      samples: number;
+      min?: number;
+      max?: number;
+    };
+    stats: ContextStats;
+    metadata: Record<string, unknown>;
+    loading_info: {
+      fallback_mode: boolean;
+      loaded_files: unknown;
+      load_timestamp: unknown;
+    };
+    system_info: {
+      uptime_ms: number;
+      initialized: boolean;
+    };
+  } {
+    const activeRules = this.rules.filter((r) => r.enabled !== false).length;
+    const disabledRules = this.rules.length - activeRules;
+    const startTime = this.get("system.start_time") as string | undefined;
+    const uptimeMs = startTime
+      ? Date.now() - new Date(startTime).getTime()
+      : 0;
+
+    const responseTimeStats =
+      this.responseTimes.length > 0
+        ? {
+            min: Math.min(...this.responseTimes),
+            max: Math.max(...this.responseTimes),
+          }
+        : {};
+
     return {
       context_size: this.context.size,
       history_length: this.history.length,
       preferences_size: this.userPreferences.size,
       rules_loaded: this.rules.length,
+      active_rules: activeRules,
+      disabled_rules: disabledRules,
       reflections_loaded: Object.keys(this.reflections).length,
       topic_patterns: this.topicPatterns.length,
       response_times: {
         current: this.responseTimes.slice(-1)[0],
         average: this.stats.averageResponseTime,
         samples: this.responseTimes.length,
+        ...responseTimeStats,
       },
       stats: this.stats,
       metadata: this.metadata,
+      loading_info: {
+        fallback_mode: Boolean(this.get("context.fallback_mode")),
+        loaded_files: this.get("context.loaded_files"),
+        load_timestamp: this.get("context.load_timestamp"),
+      },
+      system_info: {
+        uptime_ms: uptimeMs,
+        initialized: Boolean(this.get("system.initialized")),
+      },
     };
   }
 

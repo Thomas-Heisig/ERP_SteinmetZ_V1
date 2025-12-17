@@ -75,6 +75,7 @@ function toYAML(value: unknown, indent = 0): string {
 /* -------------------------------------------------------------------------- */
 
 function buildExportPayload(node: NodeDetail): ExportPayload {
+  const nodeExtended = node as NodeDetail & { version?: unknown };
   return {
     id: node.id,
     title: node.title,
@@ -88,7 +89,7 @@ function buildExportPayload(node: NodeDetail): ExportPayload {
 
     exportDate: new Date().toISOString(),
     format: "yaml",
-    version: (node as any).version,
+    version: nodeExtended.version,
     includes: ["meta", "schema", "aa", "source", "breadcrumbs"],
 
     metadata: {

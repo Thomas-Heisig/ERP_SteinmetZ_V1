@@ -48,7 +48,7 @@ export const aiRateLimiter = rateLimit({
       retryAfter,
     );
   },
-  skip: (req) => {
+  skip: (_req) => {
     // Skip rate limiting in development if configured
     return process.env.SKIP_RATE_LIMIT === "true";
   },
@@ -88,7 +88,7 @@ export const strictAiRateLimiter = rateLimit({
       retryAfter,
     );
   },
-  skip: (req) => {
+  skip: (_req) => {
     return process.env.SKIP_RATE_LIMIT === "true";
   },
   skipSuccessfulRequests: false,
@@ -123,7 +123,7 @@ export const audioRateLimiter = rateLimit({
       retryAfter,
     );
   },
-  skip: (req) => {
+  skip: (_req) => {
     return process.env.SKIP_RATE_LIMIT === "true";
   },
   skipSuccessfulRequests: false,
@@ -157,7 +157,7 @@ export const generalRateLimiter = rateLimit({
       retryAfter,
     );
   },
-  skip: (req) => {
+  skip: (_req) => {
     return process.env.SKIP_RATE_LIMIT === "true";
   },
   skipSuccessfulRequests: false,

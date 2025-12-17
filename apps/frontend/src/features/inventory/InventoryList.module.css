@@ -1,0 +1,45 @@
+/* InventoryList.module.css */
+
+.header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Status Badge */
+.statusBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--badge-bg);
+  color: var(--badge-color);
+}
+
+/* Item Name Cell */
+.itemName {
+  font-weight: 500;
+}
+
+.itemCategory {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* Quantity Cell */
+.quantityText {
+  color: var(--quantity-color, inherit);
+}

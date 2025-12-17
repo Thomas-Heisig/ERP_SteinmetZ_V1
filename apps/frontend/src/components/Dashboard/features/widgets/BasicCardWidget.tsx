@@ -3,29 +3,38 @@
 
 import React from "react";
 import type { WidgetProps } from "../../types";
+import "./BasicCardWidget.css";
+
+/**
+ * Convert unknown content to a safe React node
+ */
+function toReactNode(content: unknown): React.ReactNode {
+  if (typeof content === "string" || typeof content === "number") {
+    return content;
+  }
+  if (typeof content === "boolean") {
+    return content ? "true" : "false";
+  }
+  // Safely convert any other type to string
+  return String(content);
+}
 
 /**
  * BasicCardWidget – einfache Informationskarte.
  * Präsentationskomponente ohne Geschäftslogik.
  */
-const BasicCardWidget: React.FC<WidgetProps> = ({ node, config }) => {
+const BasicCardWidget: React.FC<WidgetProps> = ({ node }) => {
   const { title, content } = node.data;
+  const renderedContent: React.ReactNode = content
+    ? toReactNode(content)
+    : null;
 
   return (
-    <div
-      style={{
-        padding: "1rem",
-        backgroundColor: config.theme.backgroundColor,
-        color: config.theme.textColor,
-        borderRadius: config.theme.borderRadius ?? 6,
-        boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.5rem",
-      }}
-    >
-      <h3 style={{ margin: 0 }}>{title}</h3>
-      {content && <div style={{ fontSize: "0.9rem" }}>{String(content)}</div>}
+    <div className="basic-card-widget">
+      <h3 className="basic-card-widget__title">{title}</h3>
+      {renderedContent && (
+        <div className="basic-card-widget__content">{renderedContent}</div>
+      )}
     </div>
   );
 };

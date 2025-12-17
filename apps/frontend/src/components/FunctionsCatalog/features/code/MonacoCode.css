@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /* src/components/FunctionsCatalog/features/code/MonacoCode.css */
 
-.monaco-code-container {
+.monaco-code-wrapper {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   position: relative;
@@ -16,6 +16,7 @@
   overflow: auto;
   white-space: pre-wrap;
   font-family: "Courier New", Courier, monospace;
+  height: var(--monaco-fallback-height, 360px);
 }
 
 .monaco-code-loading {
@@ -27,4 +28,13 @@
 
 .monaco-code-editor {
   width: 100%;
+  height: var(--monaco-height, 360px);
+}
+
+.monaco-code-editor.hidden {
+  display: none;
+}
+
+.monaco-code-editor.loaded {
+  display: block;
 }

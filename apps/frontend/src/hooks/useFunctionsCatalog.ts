@@ -97,10 +97,10 @@ export interface FunctionsRulesSnapshot {
 }
 
 export interface BuildResult {
-  nodes: any[];
-  findings: any[];
+  nodes: MenuNode[];
+  findings: LintFinding[];
   warnings: string[];
-  rules: any;
+  rules: FunctionsRulesSnapshot;
   loadedAt: string;
 }
 
@@ -117,34 +117,44 @@ export type ExpandedMap = Record<string, boolean>;
 
 /* ---------- Logger ---------- */
 
+interface ImportMetaEnv {
+  NODE_ENV?: string;
+  DEV?: boolean;
+  VITE_BACKEND_URL?: string;
+}
+
+interface ImportMeta {
+  env: ImportMetaEnv;
+}
+
 class CatalogLogger {
   private readonly enabled: boolean;
   private readonly prefix = "[FunctionsCatalog]";
 
   constructor(enabled: boolean = true) {
     this.enabled =
-      enabled && (import.meta as any)?.env?.NODE_ENV !== "production";
+      enabled && (import.meta as ImportMeta)?.env?.NODE_ENV !== "production";
   }
 
-  info(message: string, data?: any) {
+  info(message: string, data?: Record<string, unknown>) {
     if (this.enabled) {
       logger.info(message, data);
     }
   }
 
-  warn(message: string, data?: any) {
+  warn(message: string, data?: Record<string, unknown>) {
     if (this.enabled) {
       logger.warn(message, data);
     }
   }
 
-  error(message: string, error?: any) {
+  error(message: string, error?: unknown) {
     if (this.enabled) {
       console.error(`${this.prefix} ${message}`, error || "");
     }
   }
 
-  debug(message: string, data?: any) {
+  debug(message: string, data?: unknown) {
     if (this.enabled && import.meta.env.DEV) {
       // Development-only debug logging
       // eslint-disable-next-line no-console
@@ -185,7 +195,7 @@ function sanitizeContext(context: MenuContext): MenuContext {
 }
 
 function getDefaultBaseUrl(): string {
-  return (import.meta as any)?.env?.VITE_BACKEND_URL || "";
+  return (import.meta as ImportMeta)?.env?.VITE_BACKEND_URL || "";
 }
 
 /* ---------- Haupt-Hook ---------- */
@@ -292,7 +302,7 @@ export function useFunctionsCatalog(
 
   /* ----- Sichere Fetch-Funktion ----- */
   const jsonFetch = useCallback(
-    async <T = any>(
+    async <T = unknown>(
       endpoint: string,
       init?: RequestInit,
       signal?: AbortSignal,
@@ -329,8 +339,8 @@ export function useFunctionsCatalog(
         });
 
         return data;
-      } catch (error: any) {
-        if (error.name === "AbortError") {
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
           logger.current.debug("Request abgebrochen", url);
           throw error;
         }
@@ -367,8 +377,8 @@ export function useFunctionsCatalog(
           "Regeln konnten nicht geladen werden - success=false",
         );
       }
-    } catch (error: any) {
-      if (error.name === "AbortError") return;
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
       logger.current.error("Fehler beim Laden der Regeln", error);
     } finally {
       setRulesLoading(false);
@@ -417,12 +427,15 @@ export function useFunctionsCatalog(
             "Menü konnte nicht geladen werden - success=false",
           );
         }
-      } catch (error: any) {
-        if (error?.name === "AbortError") {
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
           logger.current.debug("Menü-Request abgebrochen");
           return;
         }
-        const errorMsg = error?.message || "Menü konnte nicht geladen werden";
+        const errorMsg =
+          error instanceof Error
+            ? error.message
+            : "Menü konnte nicht geladen werden";
         setMenuError(errorMsg);
         setMenu([]);
         logger.current.error("Fehler beim Laden des Menüs", error);
@@ -470,13 +483,16 @@ export function useFunctionsCatalog(
             `Node ${sanitizedId} nicht gefunden - success=false`,
           );
         }
-      } catch (error: any) {
-        if (error?.name === "AbortError") {
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
           logger.current.debug(`Node-Request für ${sanitizedId} abgebrochen`);
           return;
         }
         setNode(null);
-        const errorMsg = error?.message || "Knoten konnte nicht geladen werden";
+        const errorMsg =
+          error instanceof Error
+            ? error.message
+            : "Knoten konnte nicht geladen werden";
         setNodeError(errorMsg);
         logger.current.error(
           `Fehler beim Laden von Node ${sanitizedId}`,
@@ -510,8 +526,8 @@ export function useFunctionsCatalog(
           findingCount: data.findings?.length || 0,
         });
       }
-    } catch (error: any) {
-      if (error?.name === "AbortError") return;
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
       logger.current.error("Fehler beim Laden der Lint-Ergebnisse", error);
     } finally {
       setLintLoading(false);
@@ -552,13 +568,16 @@ export function useFunctionsCatalog(
           "Roots konnten nicht geladen werden - success=false",
         );
       }
-    } catch (error: any) {
-      if (error?.name === "AbortError") {
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
         logger.current.debug("Roots-Request abgebrochen");
         return;
       }
       setRoots([]);
-      const errorMsg = error?.message || "Roots konnten nicht geladen werden";
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : "Roots konnten nicht geladen werden";
       setRootsError(errorMsg);
       logger.current.error("Fehler beim Laden der Roots", error);
     } finally {
@@ -584,7 +603,7 @@ export function useFunctionsCatalog(
       }
 
       logger.current.info("Index-Reload abgeschlossen");
-    } catch (error: any) {
+    } catch (error) {
       logger.current.error("Fehler beim Index-Reload", error);
       throw error;
     }
@@ -647,8 +666,8 @@ export function useFunctionsCatalog(
               resultCount: data.results?.length || 0,
             });
           }
-        } catch (error: any) {
-          if (error?.name === "AbortError") return;
+        } catch (error) {
+          if (error instanceof Error && error.name === "AbortError") return;
           logger.current.error("Fehler bei der Suche", error);
         } finally {
           setSearchLoading(false);
@@ -662,7 +681,7 @@ export function useFunctionsCatalog(
   const selectNode = useCallback(
     (id: string) => {
       if (!id || typeof id !== "string") {
-        logger.current.warn("Ungültige Node-ID für Auswahl", id);
+        logger.current.warn("Ungültige Node-ID für Auswahl", { id });
         return;
       }
 
@@ -699,8 +718,9 @@ export function useFunctionsCatalog(
 
   /* ----- Aufräumen ----- */
   useEffect(() => {
+    const loggerInstance = logger.current;
     return () => {
-      logger.current.debug("Cleanup: Breche alle laufenden Requests ab");
+      loggerInstance.debug("Cleanup: Breche alle laufenden Requests ab");
 
       abortMenu.current?.abort();
       abortNode.current?.abort();

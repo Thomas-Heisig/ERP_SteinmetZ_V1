@@ -25,7 +25,6 @@
   font-size: 0.875rem;
   color: var(--text-primary);
   white-space: nowrap;
-  width: var(--column-width);
 }
 
 .th.sortable {
@@ -54,11 +53,23 @@
 }
 
 .tr:hover {
-  background: var(--gray-50);
+  background: var(--gray-100);
 }
 
 .tr.selected {
   background: var(--primary-50);
+}
+
+.tr.striped {
+  background: var(--gray-50);
+}
+
+.tr.clickable {
+  cursor: pointer;
+}
+
+.table.compact .tr {
+  font-size: 0.875rem;
 }
 
 .td {

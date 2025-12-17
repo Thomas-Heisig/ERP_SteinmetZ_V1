@@ -3,6 +3,8 @@
 
 .fc-context-menu {
   position: absolute;
+  top: var(--context-menu-y, 0);
+  left: var(--context-menu-x, 0);
   z-index: 9999;
   min-width: 180px;
   background: white;

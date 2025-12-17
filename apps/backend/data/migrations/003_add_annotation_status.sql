@@ -1,9 +1,9 @@
 -- SPDX-License-Identifier: MIT
 -- Migration 003: Annotation-Status hinzufügen
 
-PRAGMA foreign_keys = off;
-
+-- SQL Server syntax (remove PRAGMA statements and COLUMN keyword)
 -- Nur ausführen, wenn Tabelle "nodes" existiert und Spalte fehlt
-ALTER TABLE nodes ADD COLUMN annotation_status TEXT DEFAULT 'unannotated';
-
-PRAGMA foreign_keys = on;
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'nodes') AND name = 'annotation_status')
+BEGIN
+	ALTER TABLE nodes ADD annotation_status NVARCHAR(50) DEFAULT 'unannotated';
+END

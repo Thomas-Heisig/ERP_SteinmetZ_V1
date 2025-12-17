@@ -63,15 +63,15 @@
  * ```
  */
 
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { z } from "zod";
 import aiAnnotatorService, {
   BatchOperation,
   NodeForAnnotation,
+  DatabaseTool,
+  FormSpec,
   GeneratedMeta,
   DashboardRule,
-  FormSpec,
-  DatabaseTool,
 } from "../../services/aiAnnotatorService.js";
 import { strictAiRateLimiter } from "../../middleware/rateLimiters.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
@@ -115,36 +115,6 @@ function toInt(v: unknown, def: number): number {
   const n = typeof v === "string" ? parseInt(v, 10) : NaN;
   return Number.isFinite(n) ? n : def;
 }
-
-function toArray<T>(v: unknown, validator: (x: any) => x is T): T[] {
-  if (Array.isArray(v)) return v.filter(validator);
-  if (typeof v === "string") {
-    try {
-      const parsed = JSON.parse(v);
-      return Array.isArray(parsed) ? parsed.filter(validator) : [];
-    } catch {
-      return v
-        .split(",")
-        .map((x) => x.trim())
-        .filter((x) => x.length > 0) as T[];
-    }
-  }
-  return [];
-}
-
-/** Erweiterte Query-Parameter Typen */
-type NodesQuery = {
-  kinds?: string | string[];
-  missingOnly?: string;
-  limit?: string;
-  offset?: string;
-  search?: string;
-  status?: string | string[];
-  businessArea?: string | string[];
-  complexity?: string | string[];
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-};
 
 /** Helper function to find node by ID */
 async function findNodeById(id: string): Promise<NodeForAnnotation> {
@@ -224,21 +194,10 @@ const modelSelectionTestSchema = z.object({
   priority: z.string().optional().default("balanced"),
 });
 
-// TODO: Define proper validation schemas based on service interfaces
-// Currently using passthrough validation to maintain backward compatibility
-// These should be updated to match SavedFilter interface from filterService
-const createFilterSchema = z.any();
-const updateFilterSchema = z.any();
-
 const exportFilterSchema = z.object({
-  nodes: z.array(z.any()).min(1),
+  nodes: z.array(z.unknown()).min(1),
   format: z.enum(["json", "csv"]).optional().default("json"),
 });
-
-// TODO: Define proper validation schemas based on QAReview interface
-// These should be updated to match QAReview from qualityAssuranceService
-const createReviewSchema = z.any();
-const updateReviewSchema = z.any();
 
 const approveRejectReviewSchema = z.object({
   reviewer: z.string().min(1),
@@ -250,15 +209,11 @@ const compareModelsSchema = z.object({
   days: z.number().int().positive().optional().default(30),
 });
 
-// TODO: Define proper validation schema based on BatchCreationRequest interface
-// This should be updated to match BatchCreationRequest from batchProcessingService
-const createBatchSchema = z.any();
-
 // ============ SYSTEM STATUS & HEALTH ============
 
 router.get(
   "/status",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const status = await aiAnnotatorService.getStatus();
     res.json({ success: true, data: status });
   }),
@@ -266,7 +221,7 @@ router.get(
 
 router.get(
   "/health",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const health = await aiAnnotatorService.getHealthStatus();
     res.json({ success: true, data: health });
   }),
@@ -276,7 +231,7 @@ router.get(
 
 router.get(
   "/database/stats",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const stats = await databaseTool.getNodeStatistics();
     res.json({ success: true, data: stats });
   }),
@@ -284,7 +239,7 @@ router.get(
 
 router.get(
   "/database/batches",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const limit = toInt(req.query.limit, 50);
     const batches = await databaseTool.getBatchOperations(limit);
 
@@ -298,7 +253,7 @@ router.get(
 
 router.delete(
   "/database/batches/cleanup",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     if (process.env.NODE_ENV === "production" && req.query.force !== "true") {
       throw new ForbiddenError("Cleanup in Production erfordert force=true");
     }
@@ -350,7 +305,7 @@ router.get(
 
 router.get(
   "/nodes/:id",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     res.json({
       success: true,
@@ -361,7 +316,7 @@ router.get(
 
 router.post(
   "/nodes/:id/validate",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     const validation = await aiAnnotatorService.validateNode(node);
 
@@ -377,7 +332,7 @@ router.post(
 router.post(
   "/nodes/:id/generate-meta",
   strictAiRateLimiter,
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     const meta = await aiAnnotatorService.generateMeta(node);
     await aiAnnotatorService.saveMeta(req.params.id, meta);
@@ -393,7 +348,7 @@ router.post(
 router.post(
   "/nodes/:id/generate-rule",
   strictAiRateLimiter,
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     const rule = await aiAnnotatorService.generateRule(node);
     await aiAnnotatorService.saveRule(req.params.id, rule);
@@ -409,7 +364,7 @@ router.post(
 router.post(
   "/nodes/:id/generate-form",
   strictAiRateLimiter,
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     const formSpec = await aiAnnotatorService.generateFormSpec(node);
     await aiAnnotatorService.saveFormSpec(req.params.id, formSpec);
@@ -424,7 +379,7 @@ router.post(
 
 router.post(
   "/nodes/:id/enhance-schema",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     const enhancedSchema = await aiAnnotatorService.enhanceSchema(node);
 
@@ -438,15 +393,15 @@ router.post(
 
 router.post(
   "/nodes/:id/full-annotation",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const validated = fullAnnotationSchema.parse(req.body);
     const { includeValidation, parallel } = validated;
     const node = await findNodeById(req.params.id);
 
-    let meta: any,
-      rule: any,
-      form: any,
-      validation: any = null;
+    let meta: unknown,
+      rule: unknown,
+      form: unknown,
+      validation: unknown = null;
 
     if (parallel) {
       [meta, rule, form, validation] = await Promise.all([
@@ -466,9 +421,17 @@ router.post(
         : null;
     }
 
-    if (meta)
-      await aiAnnotatorService.saveMeta(req.params.id, { ...meta, rule });
-    if (form) await aiAnnotatorService.saveFormSpec(req.params.id, form);
+    if (
+      meta &&
+      typeof meta === "object" &&
+      "description" in meta &&
+      "tags" in meta
+    )
+      await aiAnnotatorService.saveMeta(req.params.id, meta as GeneratedMeta);
+    if (rule && typeof rule === "object" && "type" in rule)
+      await aiAnnotatorService.saveRule(req.params.id, rule as DashboardRule);
+    if (form && typeof form === "object" && "title" in form)
+      await aiAnnotatorService.saveFormSpec(req.params.id, form as FormSpec);
 
     res.json({
       success: true,
@@ -483,7 +446,7 @@ router.post(
 router.post(
   "/batch",
   strictAiRateLimiter,
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const validated = batchOperationSchema.parse(req.body);
     const operation = {
       ...validated,
@@ -508,7 +471,7 @@ router.post(
 
 router.get(
   "/batch/:id",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const batches = await databaseTool.getBatchOperations(100);
     const batch = batches.find((b) => b.id === req.params.id);
 
@@ -525,7 +488,7 @@ router.get(
 
 router.post(
   "/batch/:id/cancel",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     await databaseTool.updateBatchProgress(req.params.id, 0, "cancelled");
 
     res.json({
@@ -537,7 +500,7 @@ router.post(
 
 router.post(
   "/classify-pii",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const validated = classifyPiiSchema.parse(req.body);
     const { nodeIds } = validated;
 
@@ -561,7 +524,7 @@ router.post(
 
 router.post(
   "/validate-batch",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const validated = validateBatchSchema.parse(req.body);
     const { nodeIds } = validated;
 
@@ -602,7 +565,7 @@ router.post(
 
 router.get(
   "/quality/report",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const stats = await databaseTool.getNodeStatistics();
     const batches = await databaseTool.getBatchOperations(50);
 
@@ -644,7 +607,7 @@ router.get(
 
 router.get(
   "/rules",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { type, widget, includeNodes = true } = req.query;
 
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
@@ -702,7 +665,7 @@ router.get(
 
 router.get(
   "/ai/models",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const modelStats = await aiAnnotatorService.getModelStatistics();
     res.json({
       success: true,
@@ -713,7 +676,7 @@ router.get(
 
 router.post(
   "/ai/optimize",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const optimization = await aiAnnotatorService.optimizeConfiguration();
     res.json({
       success: true,
@@ -726,7 +689,7 @@ router.post(
 
 router.get(
   "/error-correction/config",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const status = await aiAnnotatorService.getStatus();
     res.json({
       success: true,
@@ -737,7 +700,7 @@ router.get(
 
 router.put(
   "/error-correction/config",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     if (process.env.NODE_ENV === "production") {
       throw new ForbiddenError(
         "Konfigurationsänderungen nicht in Production verfügbar",
@@ -765,38 +728,53 @@ router.put(
 
 router.post(
   "/debug/prompt",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     if (process.env.NODE_ENV === "production") {
       throw new ForbiddenError("Debug endpoints nicht in Production verfügbar");
     }
 
     const validated = debugPromptSchema.parse(req.body);
-    const { nodeId, promptType, options } = validated;
+    const { nodeId, promptType } = validated;
 
     const node = await findNodeById(nodeId);
 
     let prompt: string;
     switch (promptType) {
       case "meta":
-        prompt = (aiAnnotatorService as any).buildEnhancedMetaPrompt(node);
+        prompt = (
+          (aiAnnotatorService as unknown as Record<string, unknown>)
+            .buildEnhancedMetaPrompt as (node: NodeForAnnotation) => string
+        )(node);
         break;
       case "rule":
-        prompt = (aiAnnotatorService as any).buildRulePrompt(node);
+        prompt = (
+          (aiAnnotatorService as unknown as Record<string, unknown>)
+            .buildRulePrompt as (node: NodeForAnnotation) => string
+        )(node);
         break;
       case "form":
-        prompt = (aiAnnotatorService as any).buildFormPrompt(node);
+        prompt = (
+          (aiAnnotatorService as unknown as Record<string, unknown>)
+            .buildFormPrompt as (node: NodeForAnnotation) => string
+        )(node);
         break;
       case "simple":
-        prompt = (aiAnnotatorService as any).buildSimpleMetaPrompt(node);
+        prompt = (
+          (aiAnnotatorService as unknown as Record<string, unknown>)
+            .buildSimpleMetaPrompt as (node: NodeForAnnotation) => string
+        )(node);
         break;
       case "correction": {
         const mockMeta = { description: "Test", tags: [] };
         const mockErrors = ["Description too short", "No tags provided"];
-        prompt = (aiAnnotatorService as any).buildCorrectionPrompt(
-          node,
-          mockMeta,
-          mockErrors,
-        );
+        prompt = (
+          (aiAnnotatorService as unknown as Record<string, unknown>)
+            .buildCorrectionPrompt as (
+            node: NodeForAnnotation,
+            meta: unknown,
+            errors: string[],
+          ) => string
+        )(node, mockMeta, mockErrors);
         break;
       }
       default:
@@ -812,7 +790,7 @@ router.post(
 
 router.post(
   "/debug/ai-test",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     if (process.env.NODE_ENV === "production") {
       throw new ForbiddenError(
         "Debug endpoints sind in Production deaktiviert",
@@ -820,7 +798,7 @@ router.post(
     }
 
     const validated = debugAiTestSchema.parse(req.body);
-    const { prompt, model, provider } = validated;
+    const { prompt } = validated;
 
     const testPrompt =
       prompt ||
@@ -830,12 +808,14 @@ router.post(
   "message": "Verbindung erfolgreich"
 }`;
 
-    const response = await (aiAnnotatorService as any).callAI(
-      testPrompt,
-      "debug",
-    );
+    const response = await (
+      (aiAnnotatorService as unknown as Record<string, unknown>).callAI as (
+        prompt: string,
+        operation: string,
+      ) => Promise<string>
+    )(testPrompt, "debug");
 
-    let parsed: any = null;
+    let parsed: unknown = null;
     try {
       parsed = JSON.parse(response);
     } catch {
@@ -857,7 +837,7 @@ router.post(
 
 router.get(
   "/batch-templates",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const templates = {
       quick_annotation: {
         name: "Schnelle Annotation",
@@ -917,7 +897,7 @@ router.get(
 
 router.get(
   "/nodes/:id/meta",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     res.json({
       success: true,
@@ -930,7 +910,7 @@ router.get(
 
 router.get(
   "/nodes/:id/rule",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     const rule = node.meta_json?.rule;
     res.json({
@@ -944,7 +924,7 @@ router.get(
 
 router.get(
   "/nodes/:id/form",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     const form = node.meta_json?.formSpec;
     res.json({
@@ -958,7 +938,7 @@ router.get(
 
 router.get(
   "/nodes/:id/schema",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     res.json({
       success: true,
@@ -971,16 +951,25 @@ router.get(
 
 router.get(
   "/nodes/:id/analysis",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
 
+    const service = aiAnnotatorService as unknown as Record<string, unknown>;
     const analysis = {
-      technical: (aiAnnotatorService as any).analyzeTechnicalComplexity(node),
-      integrationPoints: (aiAnnotatorService as any).extractIntegrationPoints(
+      technical: (
+        service.analyzeTechnicalComplexity as (
+          node: NodeForAnnotation,
+        ) => unknown
+      )(node),
+      integrationPoints: (
+        service.extractIntegrationPoints as (node: NodeForAnnotation) => unknown
+      )(node),
+      businessArea: (
+        service.guessBusinessArea as (node: NodeForAnnotation) => unknown
+      )(node),
+      piiClass: (service.guessPiiClass as (node: NodeForAnnotation) => unknown)(
         node,
       ),
-      businessArea: (aiAnnotatorService as any).guessBusinessArea(node),
-      piiClass: (aiAnnotatorService as any).guessPiiClass(node),
     };
 
     res.json({
@@ -994,7 +983,7 @@ router.get(
 
 router.get(
   "/nodes/:id/quality",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const node = await findNodeById(req.params.id);
     const quality = node.meta_json?.quality;
     res.json({
@@ -1008,7 +997,7 @@ router.get(
 
 router.post(
   "/system/optimize",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const result = await aiAnnotatorService.optimizeConfiguration();
     res.json({
       success: true,
@@ -1019,7 +1008,7 @@ router.post(
 
 router.get(
   "/ai/model-stats",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const stats = await aiAnnotatorService.getModelStatistics();
     res.json({
       success: true,
@@ -1030,9 +1019,9 @@ router.get(
 
 router.post(
   "/bulk-enhance",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const validated = bulkEnhanceSchema.parse(req.body);
-    const { nodeIds, operations } = validated;
+    const { nodeIds } = validated;
 
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 1000 });
     const nodes = allNodes.filter((n) => nodeIds.includes(n.id));
@@ -1062,7 +1051,7 @@ router.post(
 
 router.get(
   "/system/monitoring",
-  asyncHandler(async (_req, res, next) => {
+  asyncHandler(async (_req, res) => {
     const health = await aiAnnotatorService.getHealthStatus();
     const modelStats = await aiAnnotatorService.getModelStatistics();
     const dbStats = await databaseTool.getNodeStatistics();
@@ -1081,7 +1070,7 @@ router.get(
 
 router.post(
   "/ai/model-selection-test",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     if (process.env.NODE_ENV === "production") {
       throw new ForbiddenError("Test endpoints sind in Production deaktiviert");
     }
@@ -1089,9 +1078,14 @@ router.post(
     const validated = modelSelectionTestSchema.parse(req.body);
     const { operation, priority } = validated;
 
+    const service = aiAnnotatorService as unknown as Record<string, unknown>;
+    const modelSelector = service.modelSelector as Record<string, unknown>;
     const model = await (
-      aiAnnotatorService as any
-    ).modelSelector.selectBestModel(operation, priority);
+      modelSelector.selectBestModel as (
+        operation: string,
+        priority: string,
+      ) => Promise<unknown>
+    )(operation, priority);
 
     res.json({
       success: true,
@@ -1099,7 +1093,7 @@ router.post(
         operation,
         priority,
         selectedModel: model,
-        availableModels: (aiAnnotatorService as any).availableModels,
+        availableModels: service.availableModels,
       },
     });
   }),
@@ -1109,9 +1103,9 @@ router.post(
 
 router.get(
   "/filters",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { type, publicOnly } = req.query;
-    const filters = await filterService.getFilters(
+    const filters = filterService.getFilters(
       type as string | undefined,
       publicOnly === "true",
     );
@@ -1121,9 +1115,9 @@ router.get(
 
 router.get(
   "/filters/presets",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { type } = req.query;
-    const presets = await filterService.getPresets(type as string | undefined);
+    const presets = filterService.getPresets(type as string | undefined);
     const defaultPresets = filterService.getDefaultPresets();
 
     res.json({
@@ -1138,16 +1132,16 @@ router.get(
 
 router.post(
   "/filters",
-  asyncHandler(async (req, res, next) => {
-    const filter = await filterService.createFilter(req.body);
+  asyncHandler(async (req, res) => {
+    const filter = filterService.createFilter(req.body);
     res.json({ success: true, data: filter });
   }),
 );
 
 router.get(
   "/filters/:id",
-  asyncHandler(async (req, res, next) => {
-    const filter = await filterService.getFilter(req.params.id);
+  asyncHandler(async (req, res) => {
+    const filter = filterService.getFilter(req.params.id);
     if (!filter) {
       throw new NotFoundError("Filter nicht gefunden");
     }
@@ -1157,8 +1151,8 @@ router.get(
 
 router.put(
   "/filters/:id",
-  asyncHandler(async (req, res, next) => {
-    const filter = await filterService.updateFilter(req.params.id, req.body);
+  asyncHandler(async (req, res) => {
+    const filter = filterService.updateFilter(req.params.id, req.body);
     if (!filter) {
       throw new NotFoundError("Filter nicht gefunden");
     }
@@ -1168,8 +1162,8 @@ router.put(
 
 router.delete(
   "/filters/:id",
-  asyncHandler(async (req, res, next) => {
-    const deleted = await filterService.deleteFilter(req.params.id);
+  asyncHandler(async (req, res) => {
+    const deleted = filterService.deleteFilter(req.params.id);
     if (!deleted) {
       throw new NotFoundError("Filter nicht gefunden");
     }
@@ -1179,13 +1173,13 @@ router.delete(
 
 router.post(
   "/filters/:id/apply",
-  asyncHandler(async (req, res, next) => {
-    const filter = await filterService.getFilter(req.params.id);
+  asyncHandler(async (req, res) => {
+    const filter = filterService.getFilter(req.params.id);
     if (!filter) {
       throw new NotFoundError("Filter nicht gefunden");
     }
 
-    await filterService.incrementUsageCount(req.params.id);
+    filterService.incrementUsageCount(req.params.id);
 
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 10000 });
     const filtered = filterService.applyFilter(allNodes, filter.filterConfig);
@@ -1203,7 +1197,7 @@ router.post(
 
 router.post(
   "/filters/export",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const validated = exportFilterSchema.parse(req.body);
     const { nodes, format } = validated;
 
@@ -1225,17 +1219,17 @@ router.post(
 
 router.get(
   "/qa/dashboard",
-  asyncHandler(async (_req, res, next) => {
-    const data = await qualityAssuranceService.getDashboardData();
+  asyncHandler(async (_req, res) => {
+    const data = qualityAssuranceService.getDashboardData();
     res.json({ success: true, data });
   }),
 );
 
 router.get(
   "/qa/reviews",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { status, limit = "50", offset = "0" } = req.query;
-    const reviews = await qualityAssuranceService.getReviewsByStatus(
+    const reviews = qualityAssuranceService.getReviewsByStatus(
       (status as string) || "pending",
       parseInt(limit as string),
       parseInt(offset as string),
@@ -1246,26 +1240,24 @@ router.get(
 
 router.get(
   "/qa/reviews/node/:nodeId",
-  asyncHandler(async (req, res, next) => {
-    const reviews = await qualityAssuranceService.getReviewsByNode(
-      req.params.nodeId,
-    );
+  asyncHandler(async (req, res) => {
+    const reviews = qualityAssuranceService.getReviewsByNode(req.params.nodeId);
     res.json({ success: true, data: reviews });
   }),
 );
 
 router.post(
   "/qa/reviews",
-  asyncHandler(async (req, res, next) => {
-    const review = await qualityAssuranceService.createReview(req.body);
+  asyncHandler(async (req, res) => {
+    const review = qualityAssuranceService.createReview(req.body);
     res.json({ success: true, data: review });
   }),
 );
 
 router.put(
   "/qa/reviews/:id",
-  asyncHandler(async (req, res, next) => {
-    const review = await qualityAssuranceService.updateReview(
+  asyncHandler(async (req, res) => {
+    const review = qualityAssuranceService.updateReview(
       req.params.id,
       req.body,
     );
@@ -1278,10 +1270,10 @@ router.put(
 
 router.post(
   "/qa/reviews/:id/approve",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const validated = approveRejectReviewSchema.parse(req.body);
     const { reviewer, comments } = validated;
-    const review = await qualityAssuranceService.updateReview(req.params.id, {
+    const review = qualityAssuranceService.updateReview(req.params.id, {
       reviewStatus: "approved",
       reviewer,
       reviewComments: comments,
@@ -1297,10 +1289,10 @@ router.post(
 
 router.post(
   "/qa/reviews/:id/reject",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const validated = approveRejectReviewSchema.parse(req.body);
     const { reviewer, comments } = validated;
-    const review = await qualityAssuranceService.updateReview(req.params.id, {
+    const review = qualityAssuranceService.updateReview(req.params.id, {
       reviewStatus: "rejected",
       reviewer,
       reviewComments: comments,
@@ -1316,9 +1308,9 @@ router.post(
 
 router.get(
   "/qa/trends",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { metricType, days = "30" } = req.query;
-    const trends = await qualityAssuranceService.getQualityTrends(
+    const trends = qualityAssuranceService.getQualityTrends(
       metricType as string | undefined,
       parseInt(days as string),
     );
@@ -1328,7 +1320,7 @@ router.get(
 
 router.post(
   "/qa/metrics/node/:nodeId",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const allNodes = await aiAnnotatorService.listCandidates({ limit: 10000 });
     const node = allNodes.find((n) => n.id === req.params.nodeId);
 
@@ -1345,9 +1337,9 @@ router.post(
 
 router.get(
   "/models/stats",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { days = "30" } = req.query;
-    const stats = await modelManagementService.getAllModelsStats(
+    const stats = modelManagementService.getAllModelsStats(
       parseInt(days as string),
     );
     res.json({ success: true, data: stats });
@@ -1356,9 +1348,9 @@ router.get(
 
 router.get(
   "/models/stats/:modelName",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { days = "30" } = req.query;
-    const stats = await modelManagementService.getModelStats(
+    const stats = modelManagementService.getModelStats(
       req.params.modelName,
       parseInt(days as string),
     );
@@ -1373,20 +1365,20 @@ router.get(
 
 router.post(
   "/models/compare",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const validated = compareModelsSchema.parse(req.body);
     const { models, days } = validated;
 
-    const comparison = await modelManagementService.compareModels(models, days);
+    const comparison = modelManagementService.compareModels(models, days);
     res.json({ success: true, data: comparison });
   }),
 );
 
 router.get(
   "/models/costs",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { period = "month" } = req.query;
-    const breakdown = await modelManagementService.getCostBreakdown(
+    const breakdown = modelManagementService.getCostBreakdown(
       period as "day" | "week" | "month",
     );
     res.json({ success: true, data: breakdown });
@@ -1395,9 +1387,9 @@ router.get(
 
 router.get(
   "/models/usage-timeline",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { days = "30", granularity = "day" } = req.query;
-    const timeline = await modelManagementService.getUsageOverTime(
+    const timeline = modelManagementService.getUsageOverTime(
       parseInt(days as string),
       granularity as "hour" | "day",
     );
@@ -1407,32 +1399,32 @@ router.get(
 
 router.get(
   "/models/availability",
-  asyncHandler(async (_req, res, next) => {
-    const availability = await modelManagementService.getModelAvailability();
+  asyncHandler(async (_req, res) => {
+    const availability = modelManagementService.getModelAvailability();
     res.json({ success: true, data: availability });
   }),
 );
 
 router.get(
   "/models/recommendations",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const { prioritize, maxCost, minAccuracy } = req.query;
 
-    const criteria: any = {};
+    const criteria: Record<string, unknown> = {};
     if (prioritize) criteria.prioritize = prioritize;
     if (maxCost) criteria.maxCost = parseFloat(maxCost as string);
     if (minAccuracy) criteria.minAccuracy = parseFloat(minAccuracy as string);
 
     const recommendations =
-      await modelManagementService.getModelRecommendations(criteria);
+      modelManagementService.getModelRecommendations(criteria);
     res.json({ success: true, data: recommendations });
   }),
 );
 
 router.get(
   "/models/registered",
-  asyncHandler(async (_req, res, next) => {
-    const models = await modelManagementService.getRegisteredModels();
+  asyncHandler(async (_req, res) => {
+    const models = modelManagementService.getRegisteredModels();
     res.json({ success: true, data: models });
   }),
 );
@@ -1441,15 +1433,15 @@ router.get(
 
 router.post(
   "/batch/create",
-  asyncHandler(async (req, res, next) => {
-    const batch = await batchProcessingService.createBatch(req.body);
+  asyncHandler(async (req, res) => {
+    const batch = batchProcessingService.createBatch(req.body);
     res.json({ success: true, data: batch });
   }),
 );
 
 router.get(
   "/batch/history",
-  asyncHandler(async (req, res, next) => {
+  asyncHandler(async (req, res) => {
     const {
       operation,
       status,
@@ -1459,7 +1451,7 @@ router.get(
       offset = "0",
     } = req.query;
 
-    const filter: any = {};
+    const filter: Record<string, unknown> = {};
     if (operation) filter.operation = operation;
     if (status) filter.status = status;
     if (createdAfter) filter.createdAfter = createdAfter;
@@ -1467,17 +1459,15 @@ router.get(
     filter.limit = parseInt(limit as string);
     filter.offset = parseInt(offset as string);
 
-    const history = await batchProcessingService.getBatchHistory(filter);
+    const history = batchProcessingService.getBatchHistory(filter);
     res.json({ success: true, data: history });
   }),
 );
 
 router.get(
   "/batch/:id/details",
-  asyncHandler(async (req, res, next) => {
-    const batch = await batchProcessingService.getBatchWithResults(
-      req.params.id,
-    );
+  asyncHandler(async (req, res) => {
+    const batch = batchProcessingService.getBatchWithResults(req.params.id);
     if (!batch) {
       throw new NotFoundError("Batch nicht gefunden");
     }
@@ -1487,8 +1477,8 @@ router.get(
 
 router.get(
   "/batch/:id/visualization",
-  asyncHandler(async (req, res, next) => {
-    const visualization = await batchProcessingService.getBatchVisualization(
+  asyncHandler(async (req, res) => {
+    const visualization = batchProcessingService.getBatchVisualization(
       req.params.id,
     );
     if (!visualization) {
@@ -1500,8 +1490,8 @@ router.get(
 
 router.post(
   "/batch/:id/cancel-v2",
-  asyncHandler(async (req, res, next) => {
-    const cancelled = await batchProcessingService.cancelBatch(req.params.id);
+  asyncHandler(async (req, res) => {
+    const cancelled = batchProcessingService.cancelBatch(req.params.id);
     if (!cancelled) {
       throw new BadRequestError("Batch konnte nicht abgebrochen werden");
     }

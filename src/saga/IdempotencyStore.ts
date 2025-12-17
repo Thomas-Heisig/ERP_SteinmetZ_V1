@@ -23,7 +23,7 @@ export class IdempotencyStore {
         `SELECT request_id FROM ${this.table} WHERE request_id = $1 AND operation_hash = $2 AND completed_at IS NOT NULL`,
         [requestId, operationHash],
       );
-      return res.rowCount > 0;
+      return (res.rowCount ?? 0) > 0;
     } finally {
       client.release();
     }

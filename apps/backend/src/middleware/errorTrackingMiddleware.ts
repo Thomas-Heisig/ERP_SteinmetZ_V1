@@ -4,6 +4,14 @@
 import { Request, Response, NextFunction } from "express";
 import { errorTrackingService } from "../services/errorTrackingService.js";
 
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    email: string;
+    username: string;
+  };
+}
+
 /**
  * Middleware to integrate Sentry error tracking with Express error handling.
  * Should be added AFTER all routes and BEFORE error handler middleware.
@@ -16,7 +24,7 @@ import { errorTrackingService } from "../services/errorTrackingService.js";
  * ```
  */
 export function errorTrackingMiddleware(
-  err: any,
+  err: Error,
   req: Request,
   res: Response,
   next: NextFunction,
@@ -26,12 +34,13 @@ export function errorTrackingMiddleware(
   }
 
   // Capture error in Sentry
+  const authReq = req as AuthenticatedRequest;
   errorTrackingService.captureException(err, {
-    user: (req as any).user
+    user: authReq.user
       ? {
-          id: (req as any).user.id,
-          email: (req as any).user.email,
-          username: (req as any).user.username,
+          id: authReq.user.id,
+          email: authReq.user.email,
+          username: authReq.user.username,
         }
       : undefined,
     tags: {

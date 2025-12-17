@@ -77,7 +77,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 
 ## [Unreleased] - 2025-12-07
 
-### 🚀 Features
+### 🚀 Features (7. Dezember 2025)
 
 #### Sprint 1 (Phase 1) Completion: AI-Annotator Production-Ready (2025-12-07)
 
@@ -118,7 +118,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 
 ---
 
-### 📚 Documentation
+### 📚 Documentation (7. Dezember 2025)
 
 #### Issue Management Cleanup (2025-12-07)
 
@@ -130,7 +130,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 - **Updated Issue Statistics**: 6 aktive Issues (von 10), 10 archivierte Issues
 - **ARCHIVE.md Enhanced**: Alle behobenen Issues mit vollständiger Dokumentation
 
-### ✅ Hinzugefügt
+### ✅ Hinzugefügt (7. Dezember 2025)
 
 #### Documentation Restructuring & International Standards
 
@@ -229,7 +229,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 
 ## [0.3.0] - 2025-12-05
 
-### ✅ Hinzugefügt
+### ✅ Hinzugefügt (5. Dezember 2025 - Module)
 
 #### Dokumentation & Standards
 
@@ -268,7 +268,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
   - TypeScript ESLint für Code-Qualität
   - ISO/IEC 25010 für Software-Qualität
 
-### 🔧 Geändert
+### 🔧 Geändert (module)
 
 - **Version**: 0.2.0 → 0.3.0
 - **Datum-Updates**: Alle Dokumentationsdateien auf Dezember 2025 aktualisiert
@@ -276,7 +276,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 - **TODO.md**: Aktualisiert mit 2025-Prioritäten
 - **ISSUES.md**: Datum auf 2025 aktualisiert
 
-### 📚 Dokumentation
+### 📚 Dokumentation (module)
 
 - **82 Markdown-Dateien**: Vollständig überprüft und aktualisiert
 - **API-Dokumentation**: Konsolidiert und erweitert
@@ -287,7 +287,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 
 ## [0.2.0] - 2024-12-05
 
-#### Performance & Infrastructure
+### 🚀 Performance & Infrastructure (module)
 
 - **Frontend Performance-Optimierung**:
   - Lazy Loading für Routes (Dashboard, FunctionsCatalog, Login)
@@ -340,7 +340,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 
 ## [0.2.0] - Dezember 2024
 
-### ✅ Hinzugefügt
+### ✅ Hinzugefügt (Dezember 2024)
 
 #### Backend
 
@@ -373,13 +373,13 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 - **CODE_CONVENTIONS.md**: Code-Style-Guide und Best Practices
 - **Architecture Decision Records (ADR)**: 5 initiale ADRs erstellt
 
-### 🔧 Geändert
+### 🔧 Geändert (v0.2.0)
 
 - **TypeScript-Konfiguration**: Strict Mode temporär deaktiviert für erfolgreichen Build
 - **Error-Responses**: Standardisiertes Format für Auth-Middleware
 - **.env.example**: Aktualisiert und vervollständigt für Backend und Frontend
 
-### 🐛 Behoben
+### 🐛 Behoben (v0.2.0)
 
 - **ISSUE-001**: TypeScript Build-Fehler (Type-Definitionen fehlten)
 - **ISSUE-002**: Fehlende .env Dateien (erstellt und dokumentiert)
@@ -389,7 +389,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 - **ISSUE-014**: Git .gitignore unvollständig (verifiziert als vollständig)
 - **ISSUE-017**: Build-Fehler durch fehlende @testing-library/dom (Peer-Dependency hinzugefügt)
 
-### 📊 Statistiken
+### 📊 Statistiken (v0.2.0)
 
 - **Code-Zeilen**: Backend 28.796, Frontend 18.827
 - **Neue Dateien**: 19 (Tasks 1-5)
@@ -401,9 +401,9 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 
 ## [0.1.0] - November 2024
 
-### ✅ Hinzugefügt
+### ✅ Hinzugefügt (v0.1.0 - November 2024)
 
-#### Backend
+#### Backend (v0.1.0)
 
 - Express 5 Server mit TypeScript
 - 77 TypeScript-Dateien, 28.800 LOC
@@ -414,7 +414,7 @@ Vollständige Phase 1 der Dezember-Session abgeschlossen mit Fokus auf Code-Qual
 - JWT-basierte Authentication mit RBAC
 - Spezial-Services: Sipgate (Telefonie), Self-Healing, System-Diagnostics
 
-#### Frontend
+#### Frontend (v0.1.0)
 
 - React 19 mit TypeScript und Vite
 - 4 Themes: Light, Dark, LCARS, Contrast

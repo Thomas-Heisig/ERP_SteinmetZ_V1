@@ -13,7 +13,7 @@ import crypto from "node:crypto";
 import { log } from "../routes/ai/utils/logger.js";
 
 interface CacheEntry {
-  data: any;
+  data: unknown;
   statusCode: number;
   headers: Record<string, string>;
   createdAt: number;
@@ -61,7 +61,7 @@ class ResponseCache {
 
   set(
     key: string,
-    data: any,
+    data: unknown,
     statusCode: number,
     headers: Record<string, string>,
     ttl: number,
@@ -195,7 +195,7 @@ export function cacheMiddleware(options: CacheOptions = {}) {
     // Cache miss - intercept response
     const originalJson = res.json.bind(res);
 
-    res.json = function (data: any) {
+    res.json = function (data: unknown) {
       // Store in cache
       const headers: Record<string, string> = {};
       Object.entries(res.getHeaders()).forEach(([key, value]) => {

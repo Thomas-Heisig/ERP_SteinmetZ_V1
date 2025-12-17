@@ -6,18 +6,18 @@
  * Integrates real-time updates for dashboard widgets
  */
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useDashboardUpdates } from "../../../hooks/useWebSocket";
 
 interface DashboardUpdate {
   type: "widget_update" | "metrics_update" | "catalog_update";
   timestamp: string;
-  data: any;
+  data: unknown;
 }
 
 interface DashboardWidgetUpdate {
   widgetId: string;
-  data: any;
+  data: unknown;
 }
 
 export function useDashboardWebSocket() {
@@ -27,7 +27,7 @@ export function useDashboardWebSocket() {
     Record<string, DashboardWidgetUpdate>
   >({});
 
-  const handleDashboardUpdate = useCallback((data: any) => {
+  const handleDashboardUpdate = useCallback((data: unknown) => {
     const update: DashboardUpdate = {
       type: "metrics_update",
       timestamp: new Date().toISOString(),
@@ -38,17 +38,23 @@ export function useDashboardWebSocket() {
     setUpdates((prev) => [...prev.slice(-9), update]); // Keep last 10 updates
   }, []);
 
-  const handleWidgetUpdate = useCallback((data: any) => {
-    if (data.widgetId) {
+  const handleWidgetUpdate = useCallback((data: unknown) => {
+    const d = data as Record<string, unknown>;
+    if (d.widgetId && typeof d.widgetId === "string") {
+      const widgetId = String(d.widgetId);
+      const widgetUpdate: DashboardWidgetUpdate = {
+        widgetId,
+        data: d,
+      };
       setWidgetUpdates((prev) => ({
         ...prev,
-        [data.widgetId]: data,
+        [widgetId]: widgetUpdate,
       }));
 
       const update: DashboardUpdate = {
         type: "widget_update",
         timestamp: new Date().toISOString(),
-        data,
+        data: d,
       };
 
       setLastUpdate(update);

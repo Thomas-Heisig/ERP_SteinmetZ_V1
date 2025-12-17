@@ -2,6 +2,7 @@
 // apps/frontend/src/components/ui/Select.tsx
 
 import React, { forwardRef, useState, useRef, useEffect } from "react";
+import styles from "./Select.module.css";
 
 export interface SelectOption {
   value: string;
@@ -70,159 +71,84 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       setSearch("");
     };
 
+    const triggerClasses = [
+      styles.trigger,
+      error && styles.error,
+      isOpen && styles.open,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    const iconClasses = [styles.icon, isOpen && styles.iconOpen]
+      .filter(Boolean)
+      .join(" ");
+
     return (
-      <div ref={containerRef} className={`ui-select ${className}`}>
-        {label && (
-          <label
-            style={{
-              display: "block",
-              marginBottom: "0.5rem",
-              fontSize: "0.875rem",
-              fontWeight: 500,
-              color: "var(--text-primary)",
-            }}
-          >
-            {label}
-          </label>
-        )}
-        <div ref={ref} style={{ position: "relative" }}>
+      <div ref={containerRef} className={`${styles.wrapper} ${className}`}>
+        {label && <label className={styles.label}>{label}</label>}
+        <div ref={ref} className={styles.selectWrapper}>
           <button
             type="button"
             onClick={() => !disabled && setIsOpen(!isOpen)}
             disabled={disabled}
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0.5rem 0.75rem",
-              fontSize: "1rem",
-              color: selectedOption
-                ? "var(--text-primary)"
-                : "var(--text-tertiary)",
-              background: "var(--surface)",
-              border: `1px solid ${error ? "var(--error-500)" : isOpen ? "var(--primary-500)" : "var(--border)"}`,
-              borderRadius: "8px",
-              cursor: disabled ? "not-allowed" : "pointer",
-              opacity: disabled ? 0.5 : 1,
-              transition: "border-color 0.2s ease",
-            }}
+            className={triggerClasses}
           >
-            <span
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-            >
+            <span className={styles.value}>
               {selectedOption?.icon}
-              {selectedOption?.label || placeholder}
+              <span className={selectedOption ? "" : styles.placeholder}>
+                {selectedOption?.label || placeholder}
+              </span>
             </span>
-            <span
-              style={{
-                transition: "transform 0.2s ease",
-                transform: isOpen ? "rotate(180deg)" : "none",
-              }}
-            >
-              ▼
-            </span>
+            <span className={iconClasses}>▼</span>
           </button>
 
           {isOpen && (
-            <div
-              className="ui-select__dropdown"
-              style={{
-                position: "absolute",
-                top: "calc(100% + 4px)",
-                left: 0,
-                right: 0,
-                maxHeight: "200px",
-                overflowY: "auto",
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: "8px",
-                boxShadow: "var(--shadow-lg)",
-                zIndex: 1000,
-              }}
-            >
+            <div className={styles.dropdown}>
               {searchable && (
-                <div
-                  style={{
-                    padding: "0.5rem",
-                    borderBottom: "1px solid var(--border)",
-                  }}
-                >
+                <div className={styles.searchWrapper}>
                   <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Suchen..."
                     autoFocus
-                    style={{
-                      width: "100%",
-                      padding: "0.5rem",
-                      border: "1px solid var(--border)",
-                      borderRadius: "6px",
-                      fontSize: "0.875rem",
-                      outline: "none",
-                    }}
+                    className={styles.searchInput}
                   />
                 </div>
               )}
               {filteredOptions.length === 0 ? (
-                <div
-                  style={{
-                    padding: "1rem",
-                    textAlign: "center",
-                    color: "var(--text-tertiary)",
-                  }}
-                >
-                  Keine Optionen gefunden
-                </div>
+                <div className={styles.noResults}>Keine Optionen gefunden</div>
               ) : (
-                filteredOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() =>
-                      !option.disabled && handleSelect(option.value)
-                    }
-                    disabled={option.disabled}
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                      padding: "0.5rem 0.75rem",
-                      textAlign: "left",
-                      background:
-                        option.value === value
-                          ? "var(--primary-50)"
-                          : "transparent",
-                      border: "none",
-                      color: option.disabled
-                        ? "var(--text-tertiary)"
-                        : "var(--text-primary)",
-                      cursor: option.disabled ? "not-allowed" : "pointer",
-                      transition: "background 0.2s ease",
-                    }}
-                  >
-                    {option.icon}
-                    {option.label}
-                  </button>
-                ))
+                <div className={styles.optionsList}>
+                  {filteredOptions.map((option) => {
+                    const optionClasses = [
+                      styles.option,
+                      option.value === value && styles.optionSelected,
+                    ]
+                      .filter(Boolean)
+                      .join(" ");
+
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() =>
+                          !option.disabled && handleSelect(option.value)
+                        }
+                        disabled={option.disabled}
+                        className={optionClasses}
+                      >
+                        {option.icon}
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
             </div>
           )}
         </div>
-        {error && (
-          <span
-            style={{
-              display: "block",
-              marginTop: "0.25rem",
-              fontSize: "0.75rem",
-              color: "var(--error-500)",
-            }}
-          >
-            {error}
-          </span>
-        )}
+        {error && <span className={styles.errorText}>{error}</span>}
       </div>
     );
   },

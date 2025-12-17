@@ -28,7 +28,7 @@ Das ERP SteinmetZ Repository wurde einer vollständigen Überprüfung unterzogen
 
 **Status**: Gut organisiert
 
-```
+```tree
 ├── apps/
 │   ├── backend/          ✅ Express 5 + TypeScript
 │   └── frontend/         ✅ React 19 + Vite
@@ -87,14 +87,14 @@ npm install --legacy-peer-deps
 
 #### Zusammenfassung
 
-```
+```text
 ✖ 619 problems (90 errors, 529 warnings)
   2 errors and 0 warnings potentially fixable with the `--fix` option.
 ```
 
 #### Kategorisierung
 
-**Backend (apps/backend/)**
+**Backend (apps/backend/)!**
 
 - 529 Warnings: Hauptsächlich `@typescript-eslint/no-explicit-any` (ANY-Types)
 - 83 Errors:
@@ -102,7 +102,7 @@ npm install --legacy-peer-deps
   - `@typescript-eslint/no-unused-vars` (unused imports/vars)
   - `@typescript-eslint/no-non-null-assertion` (non-null assertions)
 
-**Frontend (apps/frontend/)**
+**Frontend (apps/frontend/)!**
 
 - 7 Errors: `console.log` statements in `main.tsx` (nicht erlaubt)
 - Multiple Warnings: `any`-types, unused vars, React Hooks dependencies
@@ -337,7 +337,7 @@ npm audit --audit-level=moderate
 
 #### Dokumentationsstruktur
 
-```
+```Tree
 docs/
 ├── README.md                      ✅ Documentation Hub
 ├── ARCHITECTURE.md                ✅ System-Architektur
@@ -382,26 +382,26 @@ docs/
 
 #### Current Branch
 
-```
+```pfad
 * copilot/review-entire-repository
 ```
 
 #### Remote Tracking
 
-```
+```pfad
 origin/copilot/review-entire-repository (up to date)
 ```
 
 #### Recent Commits
 
-```
+```pfad
 b8d9bdc Initial plan
 292d524 Merge pull request #64 - cleanup-documentation
 ```
 
 #### Working Tree
 
-```
+```pfad
 ✅ On branch copilot/review-entire-repository
 ✅ Your branch is up to date
 ✅ nothing to commit, working tree clean
@@ -488,39 +488,39 @@ npm run check:console
 
 ### 🟡 Niedrige Priorität (Nice to have)
 
-3. **Any-Types reduzieren** (529 Warnings)
+1. **Any-Types reduzieren!** (529 Warnings)
    - Hauptsächlich in AI Provider Files
    - Aktion: Schrittweise proper Types hinzufügen
    - Aufwand: 2-3 Tage (verteilt über mehrere Sprints)
 
-4. **Unused Imports aufräumen**
+2. **Unused Imports aufräumen!**
    - Diverse Files mit unused imports/vars
    - Aktion: `eslint --fix` wo möglich, Rest manuell
    - Aufwand: 1-2 Stunden
 
-5. **Dependencies aktualisieren**
+3. **Dependencies aktualisieren!**
    - 43 Packages mit verfügbaren Updates
    - Aktion: Minor/Patch Updates zeitnah, Major Updates nach Review
    - Aufwand: 2-3 Stunden (inkl. Testing)
 
-6. **Deprecated Packages ersetzen**
+4. **Deprecated Packages ersetzen**
    - `npmlog`, `node-domexception`, `gauge`, `are-we-there-yet`, `fluent-ffmpeg`
    - Aktion: Alternative Packages evaluieren
    - Aufwand: 1 Tag (nicht dringend)
 
 ### ✅ Optional (Langfristige Verbesserungen)
 
-7. **Test Coverage erweitern**
+1. **Test Coverage erweitern**
    - Frontend Coverage: Mehr Component-Tests
    - Backend Coverage: Mehr Integration-Tests
    - Aufwand: Kontinuierlich
 
-8. **Performance Optimierung**
+2. **Performance Optimierung**
    - Bundle Size Analyse (Frontend)
    - Code-Splitting optimieren
    - Aufwand: 1-2 Tage
 
-9. **Monitoring Implementation**
+3. **Monitoring Implementation**
    - OpenTelemetry aktivieren (Dokumentation vorhanden)
    - Sentry aktivieren (Dokumentation vorhanden)
    - Log-Aggregation setup (Dokumentation vorhanden)
@@ -606,7 +606,7 @@ npm run check:console
 
 ## 🎓 Lessons Learned
 
-### Was funktioniert gut:
+### Was funktioniert gut
 
 1. Strukturierte Monorepo-Organisation
 2. Umfassende Dokumentation (Vorbildlich!)
@@ -614,7 +614,7 @@ npm run check:console
 4. Security-First-Mentalität (.gitignore, npm audit)
 5. Modern Stack mit Latest Versions
 
-### Was verbessert werden kann:
+### Was verbessert werden kann
 
 1. TypeScript Any-Types reduzieren
 2. Mehr Frontend Component-Tests
@@ -649,4 +649,4 @@ Die gefundenen Issues sind **nicht kritisch** und beeinträchtigen die Produktio
 
 ---
 
-**Ende des Reports**
+## **Ende des Reports**

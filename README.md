@@ -132,10 +132,10 @@ npm start
 
 ### URLs
 
-- **Frontend:** http://localhost:5173
-- **Backend:** http://localhost:3000
-- **Health Check:** http://localhost:3000/api/health
-- **API Docs:** http://localhost:3000/api/functions
+- **Frontend:** localhost:5173
+- **Backend:** localhost:3000
+- **Health Check:** localhost:3000/api/health
+- **API Docs:** localhost:3000/api/functions
 
 ### Frontend Routes ✨ NEU
 
@@ -156,7 +156,7 @@ Alle Features sind über zentralisierte Routes erreichbar:
 
 ## 📁 Projektstruktur
 
-```
+```tree
 ERP_SteinmetZ_V1/
 ├── apps/
 │   ├── frontend/              # React 19 + Vite Frontend
@@ -266,7 +266,7 @@ ERP_SteinmetZ_V1/
   - Aufbewahrungsrichtlinien nach deutschem Recht
   - Audit-Trail für alle Aktionen
 
-### 🔄 In Entwicklung
+### 🔄 In Entwicklung (Module)
 
 - **HR, Finance & DMS Module** ✅ APIs fertig
   - ✅ 60+ neue API-Endpoints implementiert
@@ -492,7 +492,7 @@ Siehe LICENSE file für Details.
 - Finance-Modul (Basis-APIs)
 - Enhanced Search Service (Full-Text, Fuzzy, Faceted)
 
-### 🔄 In Entwicklung
+### 🔄 In Entwicklung (AI & Transformation)
 
 #### AI-Annotator-System
 
