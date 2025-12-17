@@ -2,24 +2,30 @@
 // apps/frontend/src/App.tsx
 
 import React, { useState } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import { useTheme, type Theme } from "./contexts/ThemeContext";
 import { useAuth } from "./contexts/AuthContext";
 import { LanguageProvider } from "./components/LanguageSwitch/LanguageProvider";
 import { LanguageSwitcher } from "./components/LanguageSwitch/LanguageSwitcher";
+import { Sidebar } from "./components/Sidebar/Sidebar";
 
 import QuickChat from "./components/QuickChat";
 import { VERSION_INFO } from "./version";
 
 export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
+  };
+
+  const handleToggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
   return (
@@ -29,124 +35,20 @@ export default function App() {
         <header className="app-header">
           {/* Branding */}
           <div className="app-brand" aria-label="ERP SteinmetZ Dashboard">
+            <button
+              className="sidebar-menu-button"
+              onClick={handleToggleSidebar}
+              aria-label="Toggle Sidebar"
+              title={isSidebarCollapsed ? "Sidebar ausklappen" : "Sidebar einklappen"}
+            >
+              ☰
+            </button>
             <span className="brand-icon" aria-hidden="true">
               🧱
             </span>
             <strong className="brand-name">ERP SteinmetZ</strong>
             <span className="brand-subtitle">Dashboard</span>
           </div>
-
-          {/* Navigation */}
-          <nav className="main-nav" aria-label="Hauptnavigation">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon" aria-hidden="true">
-                🏠
-              </span>
-              Dashboard
-            </NavLink>
-
-            <NavLink
-              to="/catalog"
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon" aria-hidden="true">
-                🧭
-              </span>
-              Funktionskatalog
-            </NavLink>
-
-            <NavLink
-              to="/ai"
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon" aria-hidden="true">
-                🤖
-              </span>
-              AI-Annotator
-            </NavLink>
-
-            <NavLink
-              to="/batch-processing"
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon" aria-hidden="true">
-                📦
-              </span>
-              Batch
-            </NavLink>
-
-            <NavLink
-              to="/quality-dashboard"
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon" aria-hidden="true">
-                ✅
-              </span>
-              Qualität
-            </NavLink>
-
-            <NavLink
-              to="/model-management"
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon" aria-hidden="true">
-                🎯
-              </span>
-              Modelle
-            </NavLink>
-
-            <NavLink
-              to="/advanced-filters"
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon" aria-hidden="true">
-                🔍
-              </span>
-              Filter
-            </NavLink>
-
-            <NavLink
-              to="/hr"
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon" aria-hidden="true">
-                👥
-              </span>
-              Personal
-            </NavLink>
-
-            <NavLink
-              to="/finance"
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <span className="nav-icon" aria-hidden="true">
-                💰
-              </span>
-              Finanzen
-            </NavLink>
-          </nav>
 
           {/* Controls */}
           <div className="header-controls">
@@ -179,8 +81,18 @@ export default function App() {
           </div>
         </header>
 
+        {/* ---------- Sidebar ---------- */}
+        {isAuthenticated && (
+          <Sidebar 
+            isCollapsed={isSidebarCollapsed} 
+            onToggleCollapse={handleToggleSidebar}
+          />
+        )}
+
         {/* ---------- Main ---------- */}
-        <main className="app-main">
+        <main 
+          className={`app-main ${isAuthenticated ? 'with-sidebar' : ''} ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}
+        >
           <Outlet />
         </main>
 

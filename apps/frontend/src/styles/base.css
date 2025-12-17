@@ -5787,3 +5787,56 @@ a:hover {
     font-size: 18px;
   }
 }
+
+/* ==================== SIDEBAR LAYOUT ==================== */
+
+/* Sidebar menu button in header */
+.sidebar-menu-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  border-radius: var(--radius-sm, 4px);
+  transition: background 0.2s;
+  margin-right: 0.5rem;
+}
+
+.sidebar-menu-button:hover {
+  background: var(--border-light, #f4f4f5);
+}
+
+.sidebar-menu-button:focus {
+  outline: 2px solid var(--primary-500, #0ea5e9);
+  outline-offset: 2px;
+}
+
+/* Adjust main content when sidebar is present */
+.app-main.with-sidebar {
+  margin-left: 280px;
+  transition: margin-left 0.3s ease;
+}
+
+.app-main.with-sidebar.sidebar-collapsed {
+  margin-left: 70px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .app-main.with-sidebar {
+    margin-left: 0;
+  }
+  
+  .app-main.with-sidebar.sidebar-collapsed {
+    margin-left: 0;
+  }
+  
+  .app-sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .app-sidebar:not(.collapsed) {
+    transform: translateX(0);
+  }
+}

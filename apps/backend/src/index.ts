@@ -43,6 +43,10 @@ import financeRouter from "./routes/finance/financeRouter.js";
 import documentsRouter from "./routes/documents/documentsRouter.js";
 import searchAnalyticsRouter from "./routes/searchAnalytics/searchAnalyticsRouter.js";
 import metricsRouter from "./routes/metrics/metricsRouter.js";
+import crmRouter from "./routes/crm/crmRouter.js";
+import inventoryRouter from "./routes/inventory/inventoryRouter.js";
+import projectsRouter from "./routes/projects/projectsRouter.js";
+import communicationRouter from "./routes/communication/communicationRouter.js";
 
 import { toolRegistry } from "./tools/registry.js";
 import { listRoutesTool } from "./tools/listRoutesTool.js";
@@ -174,6 +178,10 @@ app.use("/api/finance", financeRouter);
 app.use("/api/documents", documentsRouter);
 app.use("/api/search", searchAnalyticsRouter);
 app.use("/api/metrics", metricsRouter);
+app.use("/api/crm", crmRouter);
+app.use("/api/inventory", inventoryRouter);
+app.use("/api/projects", projectsRouter);
+app.use("/api/communication", communicationRouter);
 
 // WebSocket statistics endpoint
 app.get("/api/ws/stats", (_req: Request, res: Response) => {
