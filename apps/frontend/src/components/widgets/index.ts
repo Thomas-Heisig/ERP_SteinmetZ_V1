@@ -7,3 +7,5 @@ export type { KPIWidgetProps } from "./KPIWidget";
 export { SystemStatusWidget } from "./SystemStatusWidget";
 export { QuickActionsWidget } from "./QuickActionsWidget";
 export { ActivityFeedWidget } from "./ActivityFeedWidget";
+export { RecentActivitiesWidget } from "./RecentActivitiesWidget";
+export { StatsOverviewWidget } from "./StatsOverviewWidget";

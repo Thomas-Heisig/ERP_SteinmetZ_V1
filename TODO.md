@@ -1,6 +1,6 @@
 # ERP SteinmetZ - TODO Liste
 
-**Stand**: 14. Dezember 2025  
+**Stand**: 17. Dezember 2025  
 **Version**: 0.3.0
 
 Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und Phase.
@@ -677,6 +677,37 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 - ⚠️ **Sprint 2 (Phase 2): Function-Node-Transformation MVP** - TEILWEISE:
   - ✅ Markdown-Parser (outlineParser.ts) vorhanden
   - ❌ Schema-Extractor, Code-Generator, API-Registration, Test-Generator fehlen noch
+
+**Neu Erledigt (17. Dezember 2025)**:
+
+- ✅ **TypeScript Strict Mode Fixes**:
+  - ✅ TypeScript-Fehler in aiAnnotatorRouter.ts behoben
+  - ✅ Request-Type-Inkompatibilität in asyncHandler gelöst
+  - ✅ Inline CSS überprüft - keine Strict-Mode-Fehler
+  - ✅ Alle Builds erfolgreich (Backend + Frontend)
+  - ✅ Alle Tests bestehen: 152/152 (100%)
+
+- ✅ **Dashboard & Sidebar Enhancement**:
+  - ✅ Sidebar mit 3 neuen Sektionen erweitert:
+    - Schnellaktionen (Neue Rechnung, Neuer Kunde, Schnellsuche)
+    - Kürzlich verwendet (letzte 3 Elemente)
+    - Systemstatus (CPU, RAM, Laufzeit mit Auto-Refresh)
+  - ✅ 2 neue Dashboard-Widgets erstellt:
+    - RecentActivitiesWidget (letzte Aktivitäten)
+    - StatsOverviewWidget (Geschäftsstatistiken)
+  - ✅ 3 neue Backend-API-Endpoints:
+    - /api/dashboard/widgets/stats (umfassende Statistiken)
+    - /api/dashboard/activities (letzte Aktivitäten)
+    - /api/dashboard/quick-links (Schnellzugriff-Links)
+  - ✅ Vollständiges Styling mit Glassmorphism-Design
+  - ✅ Responsive Design für alle neuen Komponenten
+  - ✅ Dark-Theme-Unterstützung
+
+- ✅ **Dokumentation**:
+  - ✅ Enhancement Summary erstellt (ENHANCEMENT_SUMMARY_2025_12_17.md)
+  - ✅ Detaillierte Dokumentation aller Änderungen
+  - ✅ API-Endpoint-Dokumentation
+  - ✅ TODO.md auf 17. Dezember 2025 aktualisiert
 
 **Neu Erledigt (14. Dezember 2025)**:
 

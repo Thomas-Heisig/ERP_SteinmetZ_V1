@@ -1,6 +1,6 @@
 # ERP SteinmetZ - Aktive Issues
 
-**Stand**: 14. Dezember 2025
+**Stand**: 17. Dezember 2025
 **Version**: 0.3.0
 
 Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical Debt im Projekt auf.
@@ -224,11 +224,12 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](ARCHIVE.md) verschob
 
 ### System-Status Übersicht
 
-- ✅ **Build & Tests**: 100% erfolgreich (134/134 Tests bestanden)
+- ✅ **Build & Tests**: 100% erfolgreich (152/152 Tests bestanden) - aktualisiert 17.12.2025
 - ✅ **Dependencies**: 0 Vulnerabilities
-- ✅ **TypeScript Strict Mode**: Backend aktiviert und funktional
+- ✅ **TypeScript Strict Mode**: Backend und Frontend vollständig funktional - aktualisiert 17.12.2025
 - ✅ **Console.logs**: 93% Reduktion, Pre-commit Hook aktiv
 - ✅ **Code Quality**: SonarQube konfiguriert, ESLint v9 aktiv
+- ✅ **Dashboard & Sidebar**: Erweitert mit neuen Widgets und Features - NEU 17.12.2025
 - ✅ **Operational**: System läuft stabil und fehlertolerant
 - 🟡 **Verbesserungspotential**: Monitoring-Erweiterung, Code-Dokumentation (JSDoc)
 
@@ -250,6 +251,17 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](ARCHIVE.md) verschob
 - **Niedrige Priorität**: ✅ Komplett erledigt und archiviert!
 
 **Gesamt**: ~1 Woche für verbleibende 3 aktive Issues (1 weitgehend fertig)
+
+**Kürzlich verbessert (17. Dezember 2025)**:
+
+- ✅ **TypeScript Strict Mode**: Letzter verbleibender Fehler in aiAnnotatorRouter.ts behoben
+- ✅ **Dashboard Enhancement**: 2 neue Widgets hinzugefügt (RecentActivities, StatsOverview)
+- ✅ **Sidebar Enhancement**: 3 neue Sektionen hinzugefügt (Quick Actions, Recent Items, System Status)
+- ✅ **Backend APIs**: 3 neue Dashboard-Endpoints implementiert
+- ✅ **Tests**: Alle 152 Tests bestehen (102 Backend + 50 Frontend)
+- ✅ **Dokumentation**: ENHANCEMENT_SUMMARY_2025_12_17.md erstellt
+
+**Details siehe**: [docs/ENHANCEMENT_SUMMARY_2025_12_17.md](docs/ENHANCEMENT_SUMMARY_2025_12_17.md)
 
 **Kürzlich archiviert (9. Dezember 2025)**:
 

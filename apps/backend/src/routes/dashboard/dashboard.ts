@@ -97,4 +97,166 @@ router.get("/context", (_req, res) => {
   }
 });
 
+/* ---------------------------------------------------------
+   Dashboard Widgets Data
+--------------------------------------------------------- */
+router.get(
+  "/widgets/stats",
+  asyncHandler(async (_req, res) => {
+    // Provide comprehensive stats for dashboard widgets
+    const stats = {
+      sales: {
+        today: 15420,
+        yesterday: 12340,
+        thisWeek: 89760,
+        lastWeek: 78450,
+        trend: "+14.4%",
+      },
+      orders: {
+        total: 1248,
+        pending: 14,
+        processing: 23,
+        completed: 1211,
+        trend: "+8.2%",
+      },
+      customers: {
+        total: 328,
+        new: 12,
+        active: 287,
+        inactive: 41,
+        trend: "+3.8%",
+      },
+      inventory: {
+        totalItems: 1240,
+        lowStock: 8,
+        outOfStock: 2,
+        inStock: 1230,
+        trend: "-0.6%",
+      },
+      finance: {
+        revenue: 125340,
+        expenses: 45280,
+        profit: 80060,
+        margin: "63.9%",
+        trend: "+12.5%",
+      },
+    };
+
+    res.json({
+      success: true,
+      data: stats,
+      timestamp: new Date().toISOString(),
+    });
+  }),
+);
+
+/* ---------------------------------------------------------
+   Recent Activities for Dashboard
+--------------------------------------------------------- */
+router.get(
+  "/activities",
+  asyncHandler(async (_req, res) => {
+    const activities = [
+      {
+        id: 1,
+        type: "order",
+        title: "Neue Bestellung #1234",
+        description: "Kunde Schmidt GmbH hat eine Bestellung aufgegeben",
+        timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 min ago
+        icon: "📦",
+        status: "success",
+      },
+      {
+        id: 2,
+        type: "invoice",
+        title: "Rechnung bezahlt #5678",
+        description: "Zahlung von 5.450 € eingegangen",
+        timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15 min ago
+        icon: "💰",
+        status: "success",
+      },
+      {
+        id: 3,
+        type: "customer",
+        title: "Neuer Kunde registriert",
+        description: "Müller AG wurde als Kunde angelegt",
+        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min ago
+        icon: "👤",
+        status: "info",
+      },
+      {
+        id: 4,
+        type: "inventory",
+        title: "Niedriger Lagerbestand",
+        description: "Artikel A123 hat nur noch 5 Einheiten auf Lager",
+        timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), // 45 min ago
+        icon: "⚠️",
+        status: "warning",
+      },
+      {
+        id: 5,
+        type: "system",
+        title: "Backup abgeschlossen",
+        description: "Tägliches Backup erfolgreich durchgeführt",
+        timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(), // 2 hours ago
+        icon: "💾",
+        status: "success",
+      },
+    ];
+
+    res.json({
+      success: true,
+      data: activities,
+      count: activities.length,
+      timestamp: new Date().toISOString(),
+    });
+  }),
+);
+
+/* ---------------------------------------------------------
+   Quick Links for Dashboard
+--------------------------------------------------------- */
+router.get("/quick-links", (_req, res) => {
+  const quickLinks = [
+    {
+      id: 1,
+      title: "Neue Rechnung",
+      description: "Rechnung erstellen",
+      path: "/finance/invoices/new",
+      icon: "📄",
+      color: "#4CAF50",
+    },
+    {
+      id: 2,
+      title: "Neuer Kunde",
+      description: "Kunde anlegen",
+      path: "/crm/customers/new",
+      icon: "👤",
+      color: "#2196F3",
+    },
+    {
+      id: 3,
+      title: "Bestellung erfassen",
+      description: "Neue Bestellung",
+      path: "/orders/new",
+      icon: "🛒",
+      color: "#FF9800",
+    },
+    {
+      id: 4,
+      title: "Berichte",
+      description: "Berichte anzeigen",
+      path: "/reports",
+      icon: "📊",
+      color: "#9C27B0",
+    },
+  ];
+
+  res.json({
+    success: true,
+    data: quickLinks,
+    count: quickLinks.length,
+  });
+});
+
 export default router;
