@@ -106,7 +106,9 @@ export const StatsOverviewWidget: React.FC = () => {
             <div className="stat-icon">📦</div>
             <div className="stat-content">
               <div className="stat-label">Bestellungen</div>
-              <div className="stat-value">{formatNumber(stats.orders.total)}</div>
+              <div className="stat-value">
+                {formatNumber(stats.orders.total)}
+              </div>
               <div className="stat-detail">
                 {stats.orders.pending} ausstehend
               </div>

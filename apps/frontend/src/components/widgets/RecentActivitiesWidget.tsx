@@ -49,8 +49,7 @@ export const RecentActivitiesWidget: React.FC = () => {
 
     if (diffMinutes < 1) return "gerade eben";
     if (diffMinutes < 60) return `vor ${diffMinutes} Min.`;
-    if (diffMinutes < 1440)
-      return `vor ${Math.floor(diffMinutes / 60)} Std.`;
+    if (diffMinutes < 1440) return `vor ${Math.floor(diffMinutes / 60)} Std.`;
     return date.toLocaleDateString("de-DE");
   };
 

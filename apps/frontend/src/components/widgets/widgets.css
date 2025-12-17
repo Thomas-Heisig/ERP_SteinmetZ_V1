@@ -786,17 +786,17 @@
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .stat-card {
     padding: 1rem;
   }
-  
+
   .stat-icon {
     width: 40px;
     height: 40px;
     font-size: 1.5rem;
   }
-  
+
   .stat-value {
     font-size: 1.25rem;
   }
