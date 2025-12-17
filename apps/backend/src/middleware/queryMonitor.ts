@@ -302,13 +302,14 @@ export function queryMonitorStatsHandler(req: any, res: any): void {
   const action = req.query.action;
 
   switch (action) {
-    case "slow":
+    case "slow": {
       const limit = parseInt(req.query.limit as string, 10) || 20;
       res.json({
         success: true,
         slowQueries: queryMonitor.getSlowQueries(limit),
       });
       break;
+    }
 
     case "clear":
       queryMonitor.clearHistory();

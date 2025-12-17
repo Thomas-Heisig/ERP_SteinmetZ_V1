@@ -29,8 +29,6 @@ export function useHealth(backendUrl: string): SystemHealth {
       return;
     }
 
-    let interval: number;
-
     const checkHealth = async () => {
       const requestId = ++lastRequestId.current;
       const controller = new AbortController();
@@ -91,7 +89,7 @@ export function useHealth(backendUrl: string): SystemHealth {
     checkHealth();
 
     // Alle 30s erneut prüfen
-    interval = window.setInterval(checkHealth, 30000);
+    const interval = window.setInterval(checkHealth, 30000);
 
     return () => {
       lastRequestId.current++;

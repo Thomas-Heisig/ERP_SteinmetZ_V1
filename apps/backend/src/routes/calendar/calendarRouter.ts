@@ -538,23 +538,25 @@ function expandRecurringEvents(
       }
 
       // Nächstes Vorkommen berechnen
+      const next = new Date(current);
       switch (event.recurrence) {
         case "daily":
-          current.setDate(current.getDate() + 1);
+          next.setDate(next.getDate() + 1);
           break;
         case "weekly":
-          current.setDate(current.getDate() + 7);
+          next.setDate(next.getDate() + 7);
           break;
         case "biweekly":
-          current.setDate(current.getDate() + 14);
+          next.setDate(next.getDate() + 14);
           break;
         case "monthly":
-          current.setMonth(current.getMonth() + 1);
+          next.setMonth(next.getMonth() + 1);
           break;
         case "yearly":
-          current.setFullYear(current.getFullYear() + 1);
+          next.setFullYear(next.getFullYear() + 1);
           break;
       }
+      current = next;
 
       instanceCount++;
     }

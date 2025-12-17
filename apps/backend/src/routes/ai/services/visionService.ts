@@ -20,7 +20,6 @@ import type {
   AIModuleConfig,
   ChatMessage,
 } from "../types/types.js";
-import { callOpenAI } from "../providers/openaiProvider.js";
 import { callVertexAI } from "../providers/vertexAIProvider.js";
 import { callHuggingFace } from "../providers/huggingfaceProvider.js";
 
@@ -111,7 +110,7 @@ export async function analyzeImage(
         );
         break;
 
-      default:
+      default: {
         /* ============================================================
          * OPENAI VISION (GPT-4o / GPT-4o-mini)
          * ============================================================ */
@@ -154,6 +153,7 @@ export async function analyzeImage(
           meta: { provider: "openai", model: visionConfig.model },
         };
         break;
+      }
     }
 
     log("info", "Bildanalyse abgeschlossen", { fileName, engine });

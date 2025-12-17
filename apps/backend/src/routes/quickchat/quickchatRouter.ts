@@ -359,7 +359,7 @@ async function executeCommand(
         data: { type: "report", name: args || "Standard-Bericht" },
       };
 
-    case "/idee":
+    case "/idee": {
       // Hier würde die Integration mit dem Innovation-Modul sein
       const ideaId = crypto.randomUUID();
       return {
@@ -367,6 +367,7 @@ async function executeCommand(
         message: `Idee geparkt: "${args || "Neue Idee"}"`,
         data: { type: "idea", id: ideaId, title: args, phase: "parked" },
       };
+    }
 
     case "/termin":
       return {
@@ -382,7 +383,7 @@ async function executeCommand(
         data: { type: "search", query: args, results: [] },
       };
 
-    case "/hilfe":
+    case "/hilfe": {
       const helpText = Object.entries(COMMANDS)
         .map(([k, v]) => `**${k}** - ${v.description}`)
         .join("\n");
@@ -391,6 +392,7 @@ async function executeCommand(
         message: `Verfügbare Befehle:\n\n${helpText}`,
         data: { type: "help", commands: Object.keys(COMMANDS) },
       };
+    }
 
     default:
       return {

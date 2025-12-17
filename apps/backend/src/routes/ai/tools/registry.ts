@@ -310,6 +310,7 @@ export class ToolRegistry {
     );
     // Log tool table for debugging (only in development)
     if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
       console.table(
         defs.map((t) => ({
           Name: t.name,
