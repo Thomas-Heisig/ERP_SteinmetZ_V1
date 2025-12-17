@@ -19,6 +19,8 @@ import {
 } from "../../types/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import pino from "pino";
+import db from "../../services/dbService.js";
+import { randomUUID } from "crypto";
 
 const router = Router();
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
@@ -53,12 +55,6 @@ const stockMovementSchema = z.object({
   reference: z.string().optional(),
 });
 
-// In-memory storage
-const items = new Map<string, any>();
-const movements = new Map<string, any>();
-let itemCounter = 0;
-let movementCounter = 0;
-
 /**
  * GET /api/inventory/items
  * List all inventory items
@@ -73,29 +69,33 @@ router.get(
     }
 
     const { category, status, search } = query.data;
-    let results = Array.from(items.values());
+    
+    let sql = "SELECT * FROM inventory_items WHERE 1=1";
+    const params: any[] = [];
 
     // Apply filters
     if (category) {
-      results = results.filter((i) => i.category === category);
+      sql += " AND category = ?";
+      params.push(category);
     }
     if (status) {
-      results = results.filter((i) => {
-        if (status === "out_of_stock") return i.quantity === 0;
-        if (status === "low_stock")
-          return i.quantity > 0 && i.quantity <= i.minStock;
-        return i.quantity > i.minStock;
-      });
+      if (status === "out_of_stock") {
+        sql += " AND quantity = 0";
+      } else if (status === "low_stock") {
+        sql += " AND quantity > 0 AND quantity <= min_stock";
+      } else {
+        sql += " AND quantity > min_stock";
+      }
     }
     if (search) {
-      const searchLower = search.toLowerCase();
-      results = results.filter(
-        (i) =>
-          i.name?.toLowerCase().includes(searchLower) ||
-          i.sku?.toLowerCase().includes(searchLower) ||
-          i.description?.toLowerCase().includes(searchLower),
-      );
+      sql += " AND (name LIKE ? OR sku LIKE ? OR description LIKE ?)";
+      const searchPattern = `%${search}%`;
+      params.push(searchPattern, searchPattern, searchPattern);
     }
+
+    sql += " ORDER BY created_at DESC";
+
+    const results = await db.all(sql, params);
 
     res.json({
       success: true,
@@ -112,7 +112,10 @@ router.get(
 router.get(
   "/items/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const item = items.get(req.params.id);
+    const item = await db.get(
+      "SELECT * FROM inventory_items WHERE id = ?",
+      [req.params.id],
+    );
 
     if (!item) {
       throw new NotFoundError("Item not found");
@@ -138,15 +141,31 @@ router.post(
       throw new ValidationError("Invalid item data", validation.error.issues);
     }
 
-    const id = `item-${++itemCounter}`;
-    const item = {
-      id,
-      ...validation.data,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const id = `item-${randomUUID()}`;
+    const now = new Date().toISOString();
 
-    items.set(id, item);
+    await db.run(
+      `INSERT INTO inventory_items (id, sku, name, description, category, quantity, unit, min_stock, max_stock, price, location, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        validation.data.sku,
+        validation.data.name,
+        validation.data.description || null,
+        validation.data.category || null,
+        validation.data.quantity,
+        validation.data.unit,
+        validation.data.minStock,
+        validation.data.maxStock || null,
+        validation.data.price || null,
+        validation.data.location || null,
+        "active",
+        now,
+        now,
+      ],
+    );
+
+    const item = await db.get("SELECT * FROM inventory_items WHERE id = ?", [id]);
 
     res.status(201).json({
       success: true,
@@ -162,9 +181,12 @@ router.post(
 router.put(
   "/items/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const item = items.get(req.params.id);
+    const existing = await db.get(
+      "SELECT * FROM inventory_items WHERE id = ?",
+      [req.params.id],
+    );
 
-    if (!item) {
+    if (!existing) {
       throw new NotFoundError("Item not found");
     }
 
@@ -174,13 +196,27 @@ router.put(
       throw new ValidationError("Invalid item data", validation.error.issues);
     }
 
-    const updated = {
-      ...item,
-      ...validation.data,
-      updatedAt: new Date().toISOString(),
-    };
+    const now = new Date().toISOString();
+    const updates = validation.data;
 
-    items.set(req.params.id, updated);
+    // Build dynamic UPDATE query
+    const fields = Object.keys(updates);
+    if (fields.length === 0) {
+      return res.json({ success: true, data: existing });
+    }
+
+    const setClause = fields.map((f) => `${f} = ?`).join(", ");
+    const values = [...fields.map((f) => (updates as any)[f]), now, req.params.id];
+
+    await db.run(
+      `UPDATE inventory_items SET ${setClause}, updated_at = ? WHERE id = ?`,
+      values,
+    );
+
+    const updated = await db.get(
+      "SELECT * FROM inventory_items WHERE id = ?",
+      [req.params.id],
+    );
 
     res.json({
       success: true,
@@ -196,11 +232,16 @@ router.put(
 router.delete(
   "/items/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    if (!items.has(req.params.id)) {
+    const existing = await db.get(
+      "SELECT * FROM inventory_items WHERE id = ?",
+      [req.params.id],
+    );
+
+    if (!existing) {
       throw new NotFoundError("Item not found");
     }
 
-    items.delete(req.params.id);
+    await db.run("DELETE FROM inventory_items WHERE id = ?", [req.params.id]);
 
     res.json({
       success: true,
@@ -226,42 +267,60 @@ router.post(
     }
 
     const { itemId, quantity, type } = validation.data;
-    const item = items.get(itemId);
+    const item = await db.get<any>(
+      "SELECT * FROM inventory_items WHERE id = ?",
+      [itemId],
+    );
 
     if (!item) {
       throw new NotFoundError("Item not found");
     }
 
-    // Update item quantity
+    // Calculate new quantity
+    let newQuantity = item.quantity;
     if (type === "in") {
-      item.quantity += quantity;
+      newQuantity += quantity;
     } else if (type === "out") {
       if (item.quantity < quantity) {
         throw new BadRequestError("Insufficient stock");
       }
-      item.quantity -= quantity;
+      newQuantity -= quantity;
     } else {
       // adjustment
-      item.quantity = quantity;
+      newQuantity = quantity;
     }
 
-    item.updatedAt = new Date().toISOString();
-    items.set(itemId, item);
+    const now = new Date().toISOString();
+    
+    // Update item quantity
+    await db.run(
+      "UPDATE inventory_items SET quantity = ?, updated_at = ? WHERE id = ?",
+      [newQuantity, now, itemId],
+    );
 
     // Record movement
-    const movementId = `mov-${++movementCounter}`;
-    const movement = {
-      id: movementId,
-      ...validation.data,
-      timestamp: new Date().toISOString(),
-    };
+    const movementId = `mov-${randomUUID()}`;
+    await db.run(
+      `INSERT INTO inventory_movements (id, item_id, quantity, type, reason, reference, timestamp)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        movementId,
+        itemId,
+        quantity,
+        type,
+        req.body.reason || null,
+        req.body.reference || null,
+        now,
+      ],
+    );
 
-    movements.set(movementId, movement);
+    const movement = await db.get("SELECT * FROM inventory_movements WHERE id = ?", [movementId]);
+    const updatedItem = await db.get("SELECT * FROM inventory_items WHERE id = ?", [itemId]);
 
     res.status(201).json({
       success: true,
       data: movement,
-      updatedItem: item,
+      updatedItem,
     });
   }),
 );
@@ -273,7 +332,7 @@ router.post(
 router.get(
   "/movements",
   asyncHandler(async (req: Request, res: Response) => {
-    const results = Array.from(movements.values());
+    const results = await db.all("SELECT * FROM inventory_movements ORDER BY timestamp DESC");
 
     res.json({
       success: true,
@@ -290,19 +349,32 @@ router.get(
 router.get(
   "/stats",
   asyncHandler(async (req: Request, res: Response) => {
-    const allItems = Array.from(items.values());
+    const totalItems = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM inventory_items"
+    );
+    const inStock = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM inventory_items WHERE quantity > min_stock"
+    );
+    const lowStock = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM inventory_items WHERE quantity > 0 AND quantity <= min_stock"
+    );
+    const outOfStock = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM inventory_items WHERE quantity = 0"
+    );
+    const totalValue = await db.get<{ value: number }>(
+      "SELECT SUM(price * quantity) as value FROM inventory_items WHERE price IS NOT NULL"
+    );
+    const totalMovements = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM inventory_movements"
+    );
+
     const stats = {
-      totalItems: items.size,
-      inStock: allItems.filter((i) => i.quantity > i.minStock).length,
-      lowStock: allItems.filter(
-        (i) => i.quantity > 0 && i.quantity <= i.minStock,
-      ).length,
-      outOfStock: allItems.filter((i) => i.quantity === 0).length,
-      totalValue: allItems.reduce(
-        (sum, i) => sum + (i.price || 0) * i.quantity,
-        0,
-      ),
-      totalMovements: movements.size,
+      totalItems: totalItems?.count || 0,
+      inStock: inStock?.count || 0,
+      lowStock: lowStock?.count || 0,
+      outOfStock: outOfStock?.count || 0,
+      totalValue: totalValue?.value || 0,
+      totalMovements: totalMovements?.count || 0,
     };
 
     res.json({

@@ -19,6 +19,8 @@ import {
 } from "../../types/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import pino from "pino";
+import db from "../../services/dbService.js";
+import { randomUUID } from "crypto";
 
 const router = Router();
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
@@ -64,12 +66,7 @@ const createTaskSchema = z.object({
   estimatedHours: z.number().min(0).optional(),
 });
 
-// In-memory storage
-const projects = new Map<string, any>();
-const tasks = new Map<string, any>();
-const milestones = new Map<string, any>();
-let projectCounter = 0;
-let taskCounter = 0;
+
 
 /**
  * GET /api/projects
@@ -85,21 +82,24 @@ router.get(
     }
 
     const { status, search } = query.data;
-    let results = Array.from(projects.values());
+    
+    let sql = "SELECT * FROM projects WHERE 1=1";
+    const params: any[] = [];
 
     // Apply filters
     if (status) {
-      results = results.filter((p) => p.status === status);
+      sql += " AND status = ?";
+      params.push(status);
     }
     if (search) {
-      const searchLower = search.toLowerCase();
-      results = results.filter(
-        (p) =>
-          p.name?.toLowerCase().includes(searchLower) ||
-          p.description?.toLowerCase().includes(searchLower) ||
-          p.client?.toLowerCase().includes(searchLower),
-      );
+      sql += " AND (name LIKE ? OR description LIKE ? OR client LIKE ?)";
+      const searchPattern = `%${search}%`;
+      params.push(searchPattern, searchPattern, searchPattern);
     }
+
+    sql += " ORDER BY created_at DESC";
+
+    const results = await db.all(sql, params);
 
     res.json({
       success: true,
@@ -116,15 +116,19 @@ router.get(
 router.get(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const project = projects.get(req.params.id);
+    const project = await db.get(
+      "SELECT * FROM projects WHERE id = ?",
+      [req.params.id],
+    );
 
     if (!project) {
       throw new NotFoundError("Project not found");
     }
 
     // Get project tasks
-    const projectTasks = Array.from(tasks.values()).filter(
-      (t) => t.projectId === req.params.id,
+    const projectTasks = await db.all(
+      "SELECT * FROM project_tasks WHERE project_id = ? ORDER BY created_at",
+      [req.params.id],
     );
 
     res.json({
@@ -153,15 +157,28 @@ router.post(
       );
     }
 
-    const id = `proj-${++projectCounter}`;
-    const project = {
-      id,
-      ...validation.data,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const id = `proj-${randomUUID()}`;
+    const now = new Date().toISOString();
 
-    projects.set(id, project);
+    await db.run(
+      `INSERT INTO projects (id, name, description, status, start_date, end_date, budget, client, manager, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        validation.data.name,
+        validation.data.description || null,
+        validation.data.status,
+        validation.data.startDate || null,
+        validation.data.endDate || null,
+        validation.data.budget || null,
+        validation.data.client || null,
+        validation.data.manager || null,
+        now,
+        now,
+      ],
+    );
+
+    const project = await db.get("SELECT * FROM projects WHERE id = ?", [id]);
 
     res.status(201).json({
       success: true,
@@ -177,9 +194,12 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const project = projects.get(req.params.id);
+    const existing = await db.get(
+      "SELECT * FROM projects WHERE id = ?",
+      [req.params.id],
+    );
 
-    if (!project) {
+    if (!existing) {
       throw new NotFoundError("Project not found");
     }
 
@@ -192,13 +212,27 @@ router.put(
       );
     }
 
-    const updated = {
-      ...project,
-      ...validation.data,
-      updatedAt: new Date().toISOString(),
-    };
+    const now = new Date().toISOString();
+    const updates = validation.data;
 
-    projects.set(req.params.id, updated);
+    // Build dynamic UPDATE query
+    const fields = Object.keys(updates);
+    if (fields.length === 0) {
+      return res.json({ success: true, data: existing });
+    }
+
+    const setClause = fields.map((f) => `${f} = ?`).join(", ");
+    const values = [...fields.map((f) => (updates as any)[f]), now, req.params.id];
+
+    await db.run(
+      `UPDATE projects SET ${setClause}, updated_at = ? WHERE id = ?`,
+      values,
+    );
+
+    const updated = await db.get(
+      "SELECT * FROM projects WHERE id = ?",
+      [req.params.id],
+    );
 
     res.json({
       success: true,
@@ -214,18 +248,17 @@ router.put(
 router.delete(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    if (!projects.has(req.params.id)) {
+    const existing = await db.get(
+      "SELECT * FROM projects WHERE id = ?",
+      [req.params.id],
+    );
+
+    if (!existing) {
       throw new NotFoundError("Project not found");
     }
 
-    projects.delete(req.params.id);
-
-    // Also delete associated tasks
-    for (const [taskId, task] of tasks.entries()) {
-      if (task.projectId === req.params.id) {
-        tasks.delete(taskId);
-      }
-    }
+    // Delete project (cascades to tasks)
+    await db.run("DELETE FROM projects WHERE id = ?", [req.params.id]);
 
     res.json({
       success: true,
@@ -241,14 +274,18 @@ router.delete(
 router.get(
   "/:projectId/tasks",
   asyncHandler(async (req: Request, res: Response) => {
-    const project = projects.get(req.params.projectId);
+    const project = await db.get(
+      "SELECT * FROM projects WHERE id = ?",
+      [req.params.projectId],
+    );
 
     if (!project) {
       throw new NotFoundError("Project not found");
     }
 
-    const projectTasks = Array.from(tasks.values()).filter(
-      (t) => t.projectId === req.params.projectId,
+    const projectTasks = await db.all(
+      "SELECT * FROM project_tasks WHERE project_id = ? ORDER BY created_at",
+      [req.params.projectId],
     );
 
     res.json({
@@ -273,19 +310,37 @@ router.post(
     }
 
     const { projectId } = validation.data;
-    if (!projects.has(projectId)) {
+    const project = await db.get(
+      "SELECT * FROM projects WHERE id = ?",
+      [projectId],
+    );
+
+    if (!project) {
       throw new NotFoundError("Project not found");
     }
 
-    const id = `task-${++taskCounter}`;
-    const task = {
-      id,
-      ...validation.data,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const id = `task-${randomUUID()}`;
+    const now = new Date().toISOString();
 
-    tasks.set(id, task);
+    await db.run(
+      `INSERT INTO project_tasks (id, project_id, title, description, status, priority, assignee, due_date, estimated_hours, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        projectId,
+        validation.data.title,
+        validation.data.description || null,
+        validation.data.status,
+        validation.data.priority,
+        validation.data.assignee || null,
+        validation.data.dueDate || null,
+        validation.data.estimatedHours || null,
+        now,
+        now,
+      ],
+    );
+
+    const task = await db.get("SELECT * FROM project_tasks WHERE id = ?", [id]);
 
     res.status(201).json({
       success: true,
@@ -301,19 +356,36 @@ router.post(
 router.put(
   "/tasks/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const task = tasks.get(req.params.id);
+    const existing = await db.get(
+      "SELECT * FROM project_tasks WHERE id = ?",
+      [req.params.id],
+    );
 
-    if (!task) {
+    if (!existing) {
       throw new NotFoundError("Task not found");
     }
 
-    const updated = {
-      ...task,
-      ...req.body,
-      updatedAt: new Date().toISOString(),
-    };
+    const now = new Date().toISOString();
+    const updates = req.body;
 
-    tasks.set(req.params.id, updated);
+    // Build dynamic UPDATE query
+    const fields = Object.keys(updates);
+    if (fields.length === 0) {
+      return res.json({ success: true, data: existing });
+    }
+
+    const setClause = fields.map((f) => `${f} = ?`).join(", ");
+    const values = [...fields.map((f) => updates[f]), now, req.params.id];
+
+    await db.run(
+      `UPDATE project_tasks SET ${setClause}, updated_at = ? WHERE id = ?`,
+      values,
+    );
+
+    const updated = await db.get(
+      "SELECT * FROM project_tasks WHERE id = ?",
+      [req.params.id],
+    );
 
     res.json({
       success: true,
@@ -329,18 +401,32 @@ router.put(
 router.get(
   "/stats",
   asyncHandler(async (req: Request, res: Response) => {
-    const allProjects = Array.from(projects.values());
-    const allTasks = Array.from(tasks.values());
+    const totalProjects = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM projects"
+    );
+    const activeProjects = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM projects WHERE status = 'active'"
+    );
+    const completedProjects = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM projects WHERE status = 'completed'"
+    );
+    const totalTasks = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM project_tasks"
+    );
+    const completedTasks = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'done'"
+    );
+    const inProgressTasks = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'in_progress'"
+    );
 
     const stats = {
-      totalProjects: projects.size,
-      activeProjects: allProjects.filter((p) => p.status === "active").length,
-      completedProjects: allProjects.filter((p) => p.status === "completed")
-        .length,
-      totalTasks: tasks.size,
-      completedTasks: allTasks.filter((t) => t.status === "done").length,
-      inProgressTasks: allTasks.filter((t) => t.status === "in_progress")
-        .length,
+      totalProjects: totalProjects?.count || 0,
+      activeProjects: activeProjects?.count || 0,
+      completedProjects: completedProjects?.count || 0,
+      totalTasks: totalTasks?.count || 0,
+      completedTasks: completedTasks?.count || 0,
+      inProgressTasks: inProgressTasks?.count || 0,
     };
 
     res.json({
