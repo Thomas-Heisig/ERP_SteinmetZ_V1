@@ -22,44 +22,49 @@ export const InventoryList: React.FC = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const mockItems: InventoryItem[] = [
-      {
-        id: "1",
-        sku: "SKU-001",
-        name: "Produkt A",
-        category: "Elektronik",
-        quantity: 150,
-        minQuantity: 50,
-        price: 29.99,
-        location: "Lager A1",
-        status: "in_stock",
-      },
-      {
-        id: "2",
-        sku: "SKU-002",
-        name: "Produkt B",
-        category: "Zubehör",
-        quantity: 25,
-        minQuantity: 30,
-        price: 14.99,
-        location: "Lager B2",
-        status: "low_stock",
-      },
-      {
-        id: "3",
-        sku: "SKU-003",
-        name: "Produkt C",
-        category: "Ersatzteile",
-        quantity: 0,
-        minQuantity: 10,
-        price: 49.99,
-        location: "Lager A3",
-        status: "out_of_stock",
-      },
-    ];
+    const fetchItems = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "http://localhost:3000/api/inventory/items",
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch inventory items");
+        }
+        const data = await response.json();
 
-    setItems(mockItems);
-    setLoading(false);
+        // Map database format to component format
+        const mappedItems: InventoryItem[] = data.data.map((item: any) => {
+          let status: InventoryItem["status"] = "in_stock";
+          if (item.quantity === 0) {
+            status = "out_of_stock";
+          } else if (item.quantity <= item.min_stock) {
+            status = "low_stock";
+          }
+
+          return {
+            id: item.id,
+            sku: item.sku,
+            name: item.name,
+            category: item.category || "",
+            quantity: item.quantity,
+            minQuantity: item.min_stock,
+            price: item.price || 0,
+            location: item.location || "",
+            status,
+          };
+        });
+
+        setItems(mappedItems);
+      } catch (error) {
+        console.error("Error fetching inventory items:", error);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItems();
   }, []);
 
   const filteredItems = items.filter((item) => {
