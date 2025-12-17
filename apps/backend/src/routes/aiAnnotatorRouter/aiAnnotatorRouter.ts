@@ -317,11 +317,7 @@ router.delete(
 
 router.get(
   "/nodes",
-  asyncHandler(
-    async (
-      req: Request<Record<string, never>, unknown, unknown, NodesQuery>,
-      res,
-    ) => {
+  asyncHandler(async (req, res) => {
       const kinds = toStringArray(req.query.kinds);
       const missingOnly = toBool(req.query.missingOnly, false);
       const limit = toInt(req.query.limit, 50);
