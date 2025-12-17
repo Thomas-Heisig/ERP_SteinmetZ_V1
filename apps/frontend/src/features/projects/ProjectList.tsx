@@ -38,7 +38,7 @@ export const ProjectList: React.FC = () => {
           throw new Error("Failed to fetch projects");
         }
         const data = await response.json();
-        
+
         // Map database format to component format
         const mappedProjects: Project[] = data.data.map((p: any) => ({
           id: p.id,
@@ -52,7 +52,7 @@ export const ProjectList: React.FC = () => {
           spent: p.spent || 0,
           manager: p.manager || "",
         }));
-        
+
         setProjects(mappedProjects);
       } catch (error) {
         console.error("Error fetching projects:", error);

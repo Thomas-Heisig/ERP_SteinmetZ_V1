@@ -34,7 +34,7 @@ export const CustomerList: React.FC = () => {
           throw new Error("Failed to fetch customers");
         }
         const data = await response.json();
-        
+
         // Map database format to component format
         const mappedCustomers: Customer[] = data.data.map((c: any) => ({
           id: c.id,
@@ -46,7 +46,7 @@ export const CustomerList: React.FC = () => {
           revenue: 0, // TODO: Add revenue tracking
           lastContact: c.updated_at || c.created_at,
         }));
-        
+
         setCustomers(mappedCustomers);
       } catch (error) {
         console.error("Error fetching customers:", error);

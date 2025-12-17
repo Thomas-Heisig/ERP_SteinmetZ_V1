@@ -25,12 +25,14 @@ export const InventoryList: React.FC = () => {
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:3000/api/inventory/items");
+        const response = await fetch(
+          "http://localhost:3000/api/inventory/items",
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch inventory items");
         }
         const data = await response.json();
-        
+
         // Map database format to component format
         const mappedItems: InventoryItem[] = data.data.map((item: any) => {
           let status: InventoryItem["status"] = "in_stock";
@@ -39,7 +41,7 @@ export const InventoryList: React.FC = () => {
           } else if (item.quantity <= item.min_stock) {
             status = "low_stock";
           }
-          
+
           return {
             id: item.id,
             sku: item.sku,
@@ -52,7 +54,7 @@ export const InventoryList: React.FC = () => {
             status,
           };
         });
-        
+
         setItems(mappedItems);
       } catch (error) {
         console.error("Error fetching inventory items:", error);
