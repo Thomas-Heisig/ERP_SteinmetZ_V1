@@ -72,7 +72,7 @@ export async function callLlamaCpp(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-      // @ts-expect-error
+      // @ts-expect-error - Node.js fetch doesn't officially support timeout in types but it works in practice
       timeout: 120000, // 2 Minuten
     });
 
@@ -81,7 +81,11 @@ export async function callLlamaCpp(
       throw new Error(`HTTP ${response.status}: ${errTxt}`);
     }
 
-    const data: any = await response.json();
+    const data = (await response.json()) as {
+      content?: string;
+      response?: string;
+      choices?: Array<{ text?: string; message?: { content?: string } }>;
+    };
     const duration = Date.now() - start;
 
     /* ─────────────────────────────────────────────
@@ -111,8 +115,9 @@ export async function callLlamaCpp(
         source: apiUrl,
       },
     };
-  } catch (err: any) {
-    const message = err?.message ?? "Unbekannter Fehler";
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Unbekannter Fehler";
     log("error", "llama.cpp Fehler", {
       error: message,
       endpoint: llamaConfig.endpoint,

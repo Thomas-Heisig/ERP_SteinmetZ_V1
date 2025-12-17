@@ -160,7 +160,9 @@ export class AICache {
       for (const f of fs.readdirSync(this.baseDir)) {
         try {
           fs.unlinkSync(path.join(this.baseDir, f));
-        } catch {}
+        } catch {
+          // Ignore errors when clearing cache
+        }
       }
     }
   }

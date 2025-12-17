@@ -148,10 +148,10 @@ export interface ToolResult {
   next_steps?: string[];
 }
 
-export interface ToolFunction extends Function {
-  (params: Record<string, any>): Promise<any> | any;
+export interface ToolFunction {
+  (params: Record<string, unknown>): Promise<unknown> | unknown;
   description?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   category?: string;
   version?: string;
   restricted?: boolean;
@@ -985,16 +985,6 @@ export interface KnowledgeItem {
 /* ========================================================================== */
 
 // Behalten Sie die bestehenden Exporte für Abwärtskompatibilität bei
-export interface ToolMetadata {
-  name: string;
-  description?: string;
-  parameters?: Record<string, any>;
-  category?: string;
-  version?: string;
-  restricted?: boolean;
-  registeredAt?: string | null;
-}
-
 export type { ChatMessage as BaseChatMessage };
 
 /* ========================================================================== */

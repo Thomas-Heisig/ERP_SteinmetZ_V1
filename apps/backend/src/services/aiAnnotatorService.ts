@@ -438,7 +438,7 @@ class SmartModelSelector {
   /**
    * Wählt das beste Modell für die übergebene Operation aus.
    *
-   * @param operation  Der zu erledigende AI‑Task (z. B. "meta", "rule"...)
+   * @param operation  Der zu erledigende AI-Task (z. B. "meta", "rule"...)
    * @param priority   "speed" | "accuracy" | "balanced"
    */
   async selectBestModel(
@@ -821,7 +821,7 @@ export class AiAnnotatorService extends EventEmitter {
   }
 
   private startHealthMonitoring() {
-    // Alle 30 s prüfen
+        // Alle 30s pruefen
     setInterval(() => this.performHealthCheck().catch(console.error), 30000);
     // Sofort beim Start prüfen
     this.performHealthCheck().catch(console.error);
@@ -2227,17 +2227,18 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
             result = await this.enhanceSchema(node);
             break;
 
-          case "classify_pii":
+          case "classify_pii": {
             const pii = await this.classifyPii([node]);
             result = pii[0];
             break;
+          }
 
           case "generate_rule":
             result = await this.generateRule(node);
             await this.saveRule(node.id, result);
             break;
 
-          case "full_annotation":
+          case "full_annotation": {
             // Parallel, um Zeit zu sparen
             const [meta, rule, form] = await Promise.all([
               this.generateMeta(node),
@@ -2252,6 +2253,7 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
             } as unknown as GeneratedMeta);
             await this.saveFormSpec(node.id, form);
             break;
+          }
 
           case "validate_nodes":
             result = await this.validateNode(node);
@@ -2399,7 +2401,7 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
       return fallback;
     }
 
-    // Prioritäten‑Reihenfolge (qwen 8b → qwen 4b → beliebiges Ollama → Cloud → fallback)
+        // Prioritaeten-Reihenfolge (qwen:8b > qwen:4b > beliebiges Ollama)
     const byName = (n: string) => capable.find((m) => m.name === n);
     return (
       byName("qwen3:8b") ||

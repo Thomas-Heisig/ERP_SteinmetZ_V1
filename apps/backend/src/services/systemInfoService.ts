@@ -430,7 +430,9 @@ class SystemInfoService {
       status.functions.nodes = c?.count ?? 0;
       status.functions.loaded = status.functions.nodes > 0;
       status.functions.lastLoad = new Date().toISOString();
-    } catch {}
+    } catch {
+      // Ignore database errors for status check
+    }
 
     const aiProv = process.env.AI_PROVIDER || "none";
     const aiModel = process.env.OPENAI_MODEL || "none";

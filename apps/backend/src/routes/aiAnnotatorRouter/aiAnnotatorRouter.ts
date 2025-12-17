@@ -317,7 +317,8 @@ router.delete(
 
 router.get(
   "/nodes",
-  asyncHandler(async (req: Request<{}, any, any, NodesQuery>, res) => {
+  asyncHandler(
+    async (req: Request<Record<string, never>, unknown, unknown, NodesQuery>, res) => {
     const kinds = toStringArray(req.query.kinds);
     const missingOnly = toBool(req.query.missingOnly, false);
     const limit = toInt(req.query.limit, 50);
@@ -789,7 +790,7 @@ router.post(
       case "simple":
         prompt = (aiAnnotatorService as any).buildSimpleMetaPrompt(node);
         break;
-      case "correction":
+      case "correction": {
         const mockMeta = { description: "Test", tags: [] };
         const mockErrors = ["Description too short", "No tags provided"];
         prompt = (aiAnnotatorService as any).buildCorrectionPrompt(
@@ -798,6 +799,7 @@ router.post(
           mockErrors,
         );
         break;
+      }
       default:
         throw new BadRequestError("Unbekannter Prompt-Typ");
     }

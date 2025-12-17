@@ -70,7 +70,6 @@ const tasks = new Map<string, any>();
 const milestones = new Map<string, any>();
 let projectCounter = 0;
 let taskCounter = 0;
-let milestoneCounter = 0;
 
 /**
  * GET /api/projects

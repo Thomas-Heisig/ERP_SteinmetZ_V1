@@ -137,6 +137,7 @@ export function truncateText(text: string, maxLength = 200): string {
  * Entfernt gefährliche Steuerzeichen oder Sonderzeichen.
  */
 export function sanitizeString(input: string): string {
+  // eslint-disable-next-line no-control-regex
   return input.replace(/[\x00-\x1F\x7F]+/g, "").trim();
 }
 
