@@ -318,35 +318,34 @@ router.delete(
 router.get(
   "/nodes",
   asyncHandler(async (req, res) => {
-      const kinds = toStringArray(req.query.kinds);
-      const missingOnly = toBool(req.query.missingOnly, false);
-      const limit = toInt(req.query.limit, 50);
-      const offset = toInt(req.query.offset, 0);
-      const search =
-        typeof req.query.search === "string" ? req.query.search : undefined;
-      const status = toStringArray(req.query.status);
-      const businessArea = toStringArray(req.query.businessArea);
-      const complexity = toStringArray(req.query.complexity);
+    const kinds = toStringArray(req.query.kinds);
+    const missingOnly = toBool(req.query.missingOnly, false);
+    const limit = toInt(req.query.limit, 50);
+    const offset = toInt(req.query.offset, 0);
+    const search =
+      typeof req.query.search === "string" ? req.query.search : undefined;
+    const status = toStringArray(req.query.status);
+    const businessArea = toStringArray(req.query.businessArea);
+    const complexity = toStringArray(req.query.complexity);
 
-      const nodes = await aiAnnotatorService.listCandidates({
-        kinds,
-        missingOnly,
-        limit,
-        offset,
-        search,
-        status,
-        businessArea,
-        complexity,
-      });
+    const nodes = await aiAnnotatorService.listCandidates({
+      kinds,
+      missingOnly,
+      limit,
+      offset,
+      search,
+      status,
+      businessArea,
+      complexity,
+    });
 
-      res.json({
-        success: true,
-        data: { nodes },
-        pagination: { limit, offset, total: nodes.length },
-        filters: { kinds, status, businessArea, complexity },
-      });
-    },
-  ),
+    res.json({
+      success: true,
+      data: { nodes },
+      pagination: { limit, offset, total: nodes.length },
+      filters: { kinds, status, businessArea, complexity },
+    });
+  }),
 );
 
 router.get(

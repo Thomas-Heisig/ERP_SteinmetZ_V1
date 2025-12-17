@@ -206,10 +206,139 @@
   }
 }
 
+/* Quick Actions */
+.sidebar-quick-actions {
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.quick-actions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quick-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary-500);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.quick-action-btn:hover {
+  background: var(--hover-bg);
+  transform: translateX(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quick-action-icon {
+  font-size: 1.125rem;
+}
+
+.quick-action-label {
+  flex: 1;
+  font-weight: 500;
+}
+
+/* Recent Items */
+.sidebar-recent {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.recent-items-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-elevated);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recent-item:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.recent-item-icon {
+  font-size: 0.875rem;
+  opacity: 0.6;
+}
+
+.recent-item-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* System Status */
+.sidebar-system-status {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.system-status-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-elevated);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+}
+
+.status-label {
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.status-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-family: "Courier New", monospace;
+}
+
 /* Dark Theme Adjustments */
 [data-theme="dark"] .sidebar-link.active {
   background: var(--primary-900);
   color: var(--primary-100);
+}
+
+[data-theme="dark"] .quick-action-btn,
+[data-theme="dark"] .recent-item,
+[data-theme="dark"] .status-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* LCARS Theme */
