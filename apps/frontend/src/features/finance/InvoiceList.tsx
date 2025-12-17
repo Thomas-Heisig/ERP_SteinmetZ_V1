@@ -2,19 +2,13 @@
 // apps/frontend/src/features/finance/InvoiceList.tsx
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import {
-  Card,
-  Table,
-  Button,
-  Input,
-  Modal,
-} from "../../components/ui";
+import { Card, Table, Button, Input, Modal } from "../../components/ui";
 import styles from "./InvoiceList.module.css";
 
 // Toast Hook Fallback
 const useToast = () => {
   const addToast = useCallback((options: { type: string; message: string }) => {
-    if (options.type === 'error' || options.type === 'warning') {
+    if (options.type === "error" || options.type === "warning") {
       console.error(`[${options.type.toUpperCase()}] ${options.message}`);
     }
   }, []);
@@ -47,12 +41,19 @@ const formatDate = (date: string) => {
 };
 
 const getStatusConfig = (status: string) => {
-  const configs: Record<string, { label: string; icon: string; className: string }> = {
+  const configs: Record<
+    string,
+    { label: string; icon: string; className: string }
+  > = {
     draft: { label: "Entwurf", icon: "📝", className: "statusDraft" },
     sent: { label: "Versendet", icon: "📤", className: "statusSent" },
     paid: { label: "Bezahlt", icon: "✅", className: "statusPaid" },
     overdue: { label: "Überfällig", icon: "⚠️", className: "statusOverdue" },
-    partially_paid: { label: "Teilbezahlt", icon: "💰", className: "statusPartiallyPaid" },
+    partially_paid: {
+      label: "Teilbezahlt",
+      icon: "💰",
+      className: "statusPartiallyPaid",
+    },
     cancelled: { label: "Storniert", icon: "❌", className: "statusCancelled" },
   };
   return configs[status] || configs.draft;
@@ -66,8 +67,19 @@ const calculateDaysOverdue = (dueDate: string) => {
 };
 
 // Types
-type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled" | "partially_paid";
-type PaymentMethod = "bank_transfer" | "credit_card" | "paypal" | "sepa_direct_debit" | "cash";
+type InvoiceStatus =
+  | "draft"
+  | "sent"
+  | "paid"
+  | "overdue"
+  | "cancelled"
+  | "partially_paid";
+type PaymentMethod =
+  | "bank_transfer"
+  | "credit_card"
+  | "paypal"
+  | "sepa_direct_debit"
+  | "cash";
 type InvoicePriority = "low" | "medium" | "high" | "critical";
 
 interface Invoice {
@@ -124,16 +136,32 @@ const generateMockInvoices = (count: number): Invoice[] => {
     { id: "2", name: "XYZ AG", email: "contact@xyz.de" },
     { id: "3", name: "Musterfirma KG", email: "office@musterfirma.de" },
     { id: "4", name: "Tech Solutions Inc.", email: "hello@techsol.com" },
-    { id: "5", name: "Digital Ventures Ltd.", email: "info@digitalventures.com" },
+    {
+      id: "5",
+      name: "Digital Ventures Ltd.",
+      email: "info@digitalventures.com",
+    },
   ];
 
-  const statuses: InvoiceStatus[] = ["draft", "sent", "paid", "overdue", "partially_paid", "cancelled"];
-  const paymentMethods: PaymentMethod[] = ["bank_transfer", "credit_card", "paypal", "sepa_direct_debit"];
+  const statuses: InvoiceStatus[] = [
+    "draft",
+    "sent",
+    "paid",
+    "overdue",
+    "partially_paid",
+    "cancelled",
+  ];
+  const paymentMethods: PaymentMethod[] = [
+    "bank_transfer",
+    "credit_card",
+    "paypal",
+    "sepa_direct_debit",
+  ];
   const priorities: InvoicePriority[] = ["low", "medium", "high", "critical"];
 
   const invoices: Invoice[] = [];
   const now = new Date();
-  
+
   for (let i = 0; i < count; i++) {
     const customer = customers[Math.floor(Math.random() * customers.length)];
     const status = statuses[Math.floor(Math.random() * statuses.length)];
@@ -141,15 +169,16 @@ const generateMockInvoices = (count: number): Invoice[] => {
     const taxRate = 0.19;
     const taxAmount = netAmount * taxRate;
     const grossAmount = netAmount + taxAmount;
-    
+
     const issuedDate = new Date(now);
     issuedDate.setDate(issuedDate.getDate() - Math.floor(Math.random() * 60));
-    
+
     const dueDate = new Date(issuedDate);
     dueDate.setDate(dueDate.getDate() + Math.floor(Math.random() * 30) + 7);
-    
-    const isOverdue = status === "overdue" || (status === "sent" && dueDate < now);
-    
+
+    const isOverdue =
+      status === "overdue" || (status === "sent" && dueDate < now);
+
     invoices.push({
       id: `inv_${i + 1}`,
       invoiceNumber: `RE-2024-${String(i + 1).padStart(3, "0")}`,
@@ -164,13 +193,17 @@ const generateMockInvoices = (count: number): Invoice[] => {
       dates: {
         issued: issuedDate.toISOString(),
         due: dueDate.toISOString(),
-        paid: status === "paid" 
-          ? new Date(dueDate.getTime() - Math.floor(Math.random() * 7) * 86400000).toISOString()
-          : undefined,
+        paid:
+          status === "paid"
+            ? new Date(
+                dueDate.getTime() - Math.floor(Math.random() * 7) * 86400000,
+              ).toISOString()
+            : undefined,
       },
       status: isOverdue ? "overdue" : status,
       priority: priorities[Math.floor(Math.random() * priorities.length)],
-      paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
+      paymentMethod:
+        paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
       items: [
         {
           id: "1",
@@ -183,7 +216,7 @@ const generateMockInvoices = (count: number): Invoice[] => {
       ],
     });
   }
-  
+
   return invoices;
 };
 
@@ -202,7 +235,9 @@ export const InvoiceList: React.FC = () => {
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<"overview" | "overdue" | "drafts">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "overdue" | "drafts">(
+    "overview",
+  );
   const [useMockData] = useState(true); // Development mode
 
   // Fetch invoices
@@ -210,13 +245,13 @@ export const InvoiceList: React.FC = () => {
     setLoading(true);
     try {
       if (useMockData) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         throw new Error("Using mock data");
       }
 
       const response = await fetch("/api/finance/invoices");
       if (!response.ok) throw new Error("API error");
-      
+
       const data = await response.json();
       setInvoices(data.invoices || data);
     } catch {
@@ -235,20 +270,25 @@ export const InvoiceList: React.FC = () => {
   // Statistics
   const stats = useMemo(() => {
     const totalOpen = invoices
-      .filter(i => i.status === "sent" || i.status === "overdue" || i.status === "partially_paid")
+      .filter(
+        (i) =>
+          i.status === "sent" ||
+          i.status === "overdue" ||
+          i.status === "partially_paid",
+      )
       .reduce((sum, i) => sum + i.amount.gross, 0);
 
     const totalOverdue = invoices
-      .filter(i => i.status === "overdue")
+      .filter((i) => i.status === "overdue")
       .reduce((sum, i) => sum + i.amount.gross, 0);
 
     return {
       totalOpen,
       totalOverdue,
       totalInvoices: invoices.length,
-      draftCount: invoices.filter(i => i.status === "draft").length,
-      paidCount: invoices.filter(i => i.status === "paid").length,
-      overdueCount: invoices.filter(i => i.status === "overdue").length,
+      draftCount: invoices.filter((i) => i.status === "draft").length,
+      paidCount: invoices.filter((i) => i.status === "paid").length,
+      overdueCount: invoices.filter((i) => i.status === "overdue").length,
     };
   }, [invoices]);
 
@@ -262,7 +302,7 @@ export const InvoiceList: React.FC = () => {
       result = result.filter(
         (inv) =>
           inv.invoiceNumber.toLowerCase().includes(searchLower) ||
-          inv.customer.name.toLowerCase().includes(searchLower)
+          inv.customer.name.toLowerCase().includes(searchLower),
       );
     }
 
@@ -283,9 +323,10 @@ export const InvoiceList: React.FC = () => {
 
   // Handlers
   const handleSort = (field: string) => {
-    setSortConfig(prev => ({
+    setSortConfig((prev) => ({
       field,
-      direction: prev.field === field && prev.direction === "asc" ? "desc" : "asc",
+      direction:
+        prev.field === field && prev.direction === "asc" ? "desc" : "asc",
     }));
   };
 
@@ -303,7 +344,7 @@ export const InvoiceList: React.FC = () => {
     if (window.confirm("Rechnung wirklich löschen?")) {
       try {
         await fetch(`/api/finance/invoices/${invoiceId}`, { method: "DELETE" });
-        setInvoices(prev => prev.filter(i => i.id !== invoiceId));
+        setInvoices((prev) => prev.filter((i) => i.id !== invoiceId));
         toast.success("Rechnung gelöscht");
       } catch {
         toast.error("Löschen fehlgeschlagen");
@@ -313,10 +354,14 @@ export const InvoiceList: React.FC = () => {
 
   const handleMarkAsPaid = async (invoiceId: string) => {
     try {
-      await fetch(`/api/finance/invoices/${invoiceId}/mark-paid`, { method: "POST" });
-      setInvoices(prev => prev.map(i => 
-        i.id === invoiceId ? { ...i, status: "paid" as InvoiceStatus } : i
-      ));
+      await fetch(`/api/finance/invoices/${invoiceId}/mark-paid`, {
+        method: "POST",
+      });
+      setInvoices((prev) =>
+        prev.map((i) =>
+          i.id === invoiceId ? { ...i, status: "paid" as InvoiceStatus } : i,
+        ),
+      );
       toast.success("Als bezahlt markiert");
     } catch {
       toast.error("Aktion fehlgeschlagen");
@@ -324,147 +369,161 @@ export const InvoiceList: React.FC = () => {
   };
 
   // Table columns
-  const columns = useMemo(() => [
-    {
-      key: "select",
-      header: "☑",
-      width: "50px",
-      render: (_: unknown, row: Invoice) => (
-        <input
-          type="checkbox"
-          aria-label="Rechnung auswählen"
-          checked={selectedIds.has(row.id)}
-          onChange={() => handleRowSelect(row.id)}
-          className={styles.rowCheckbox}
-        />
-      ),
-    },
-    {
-      key: "invoiceNumber",
-      header: "Rechnung Nr.",
-      sortable: true,
-      width: "140px",
-      render: (value: unknown, row: Invoice) => (
-        <div className={styles.invoiceNumberCell}>
-          <span className={styles.invoiceIcon}>🧾</span>
-          <strong>{value as string}</strong>
-          {row.priority === "critical" && (
-            <span className={styles.priorityBadge} title="Kritische Priorität">🚨</span>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: "customer",
-      header: "Kunde",
-      sortable: true,
-      render: (value: unknown) => {
-        const customer = value as Invoice["customer"];
-        return (
-          <div className={styles.customerCell}>
-            <div className={styles.customerName}>{customer.name}</div>
-            {customer.email && (
-              <div className={styles.customerEmail}>{customer.email}</div>
+  const columns = useMemo(
+    () => [
+      {
+        key: "select",
+        header: "☑",
+        width: "50px",
+        render: (_: unknown, row: Invoice) => (
+          <input
+            type="checkbox"
+            aria-label="Rechnung auswählen"
+            checked={selectedIds.has(row.id)}
+            onChange={() => handleRowSelect(row.id)}
+            className={styles.rowCheckbox}
+          />
+        ),
+      },
+      {
+        key: "invoiceNumber",
+        header: "Rechnung Nr.",
+        sortable: true,
+        width: "140px",
+        render: (value: unknown, row: Invoice) => (
+          <div className={styles.invoiceNumberCell}>
+            <span className={styles.invoiceIcon}>🧾</span>
+            <strong>{value as string}</strong>
+            {row.priority === "critical" && (
+              <span
+                className={styles.priorityBadge}
+                title="Kritische Priorität"
+              >
+                🚨
+              </span>
             )}
           </div>
-        );
+        ),
       },
-    },
-    {
-      key: "amount",
-      header: "Betrag",
-      sortable: true,
-      width: "120px",
-      render: (_: unknown, row: Invoice) => (
-        <div className={styles.amountCell}>
-          <div className={styles.amountGross}>
-            {formatCurrency(row.amount.gross, row.amount.currency)}
+      {
+        key: "customer",
+        header: "Kunde",
+        sortable: true,
+        render: (value: unknown) => {
+          const customer = value as Invoice["customer"];
+          return (
+            <div className={styles.customerCell}>
+              <div className={styles.customerName}>{customer.name}</div>
+              {customer.email && (
+                <div className={styles.customerEmail}>{customer.email}</div>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        key: "amount",
+        header: "Betrag",
+        sortable: true,
+        width: "120px",
+        render: (_: unknown, row: Invoice) => (
+          <div className={styles.amountCell}>
+            <div className={styles.amountGross}>
+              {formatCurrency(row.amount.gross, row.amount.currency)}
+            </div>
+            <div className={styles.amountNet}>
+              Netto: {formatCurrency(row.amount.net, row.amount.currency)}
+            </div>
           </div>
-          <div className={styles.amountNet}>
-            Netto: {formatCurrency(row.amount.net, row.amount.currency)}
-          </div>
-        </div>
-      ),
-    },
-    {
-      key: "dates",
-      header: "Fällig",
-      sortable: true,
-      width: "110px",
-      render: (_: unknown, row: Invoice) => {
-        const daysOverdue = calculateDaysOverdue(row.dates.due);
-        const isOverdue = row.status === "overdue" || daysOverdue > 0;
-        
-        return (
-          <div className={`${styles.dateCell} ${isOverdue ? styles.overdueDate : ""}`}>
-            <div className={styles.dateFormatted}>{formatDate(row.dates.due)}</div>
-            {isOverdue && (
-              <div className={styles.daysOverdue}>
-                {daysOverdue} Tag{daysOverdue !== 1 ? "e" : ""} überfällig
+        ),
+      },
+      {
+        key: "dates",
+        header: "Fällig",
+        sortable: true,
+        width: "110px",
+        render: (_: unknown, row: Invoice) => {
+          const daysOverdue = calculateDaysOverdue(row.dates.due);
+          const isOverdue = row.status === "overdue" || daysOverdue > 0;
+
+          return (
+            <div
+              className={`${styles.dateCell} ${isOverdue ? styles.overdueDate : ""}`}
+            >
+              <div className={styles.dateFormatted}>
+                {formatDate(row.dates.due)}
               </div>
-            )}
-          </div>
-        );
+              {isOverdue && (
+                <div className={styles.daysOverdue}>
+                  {daysOverdue} Tag{daysOverdue !== 1 ? "e" : ""} überfällig
+                </div>
+              )}
+            </div>
+          );
+        },
       },
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      width: "120px",
-      render: (value: unknown) => {
-        const status = value as InvoiceStatus;
-        const config = getStatusConfig(status);
-        return (
-          <span className={`${styles.statusBadge} ${styles[config.className]}`}>
-            {config.icon} {config.label}
-          </span>
-        );
+      {
+        key: "status",
+        header: "Status",
+        sortable: true,
+        width: "120px",
+        render: (value: unknown) => {
+          const status = value as InvoiceStatus;
+          const config = getStatusConfig(status);
+          return (
+            <span
+              className={`${styles.statusBadge} ${styles[config.className]}`}
+            >
+              {config.icon} {config.label}
+            </span>
+          );
+        },
       },
-    },
-    {
-      key: "actions",
-      header: "Aktionen",
-      width: "150px",
-      render: (_: unknown, row: Invoice) => (
-        <div className={styles.actionButtons}>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setSelectedInvoice(row);
-              setIsDetailModalOpen(true);
-            }}
-            title="Details"
-          >
-            👁️
-          </Button>
-          {(row.status === "sent" || row.status === "overdue") && (
+      {
+        key: "actions",
+        header: "Aktionen",
+        width: "150px",
+        render: (_: unknown, row: Invoice) => (
+          <div className={styles.actionButtons}>
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => handleMarkAsPaid(row.id)}
-              title="Als bezahlt markieren"
+              onClick={() => {
+                setSelectedInvoice(row);
+                setIsDetailModalOpen(true);
+              }}
+              title="Details"
             >
-              ✅
+              👁️
             </Button>
-          )}
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => handleDelete(row.id)}
-            title="Löschen"
-            className={styles.deleteButton}
-          >
-            🗑️
-          </Button>
-        </div>
-      ),
-    },
-  ], [selectedIds, handleRowSelect]);
+            {(row.status === "sent" || row.status === "overdue") && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => handleMarkAsPaid(row.id)}
+                title="Als bezahlt markieren"
+              >
+                ✅
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => handleDelete(row.id)}
+              title="Löschen"
+              className={styles.deleteButton}
+            >
+              🗑️
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [selectedIds, handleRowSelect],
+  );
 
   if (loading) {
     return (
@@ -485,7 +544,7 @@ export const InvoiceList: React.FC = () => {
               💰 Rechnungsverwaltung
               <span className={styles.countBadge}>{stats.totalInvoices}</span>
             </h1>
-            
+
             {/* Development Mode Banner */}
             {useMockData && (
               <div className={styles.devBanner}>
@@ -559,10 +618,12 @@ export const InvoiceList: React.FC = () => {
           <Input
             placeholder="🔍 Rechnungen durchsuchen..."
             value={filters.search}
-            onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, search: e.target.value }))
+            }
             className={styles.searchInput}
           />
-          
+
           <select
             className={styles.filterSelect}
             value=""
@@ -570,17 +631,20 @@ export const InvoiceList: React.FC = () => {
             onChange={(e) => {
               const status = e.target.value as InvoiceStatus;
               if (status) {
-                setFilters(prev => ({
+                setFilters((prev) => ({
                   ...prev,
                   status: prev.status.includes(status)
-                    ? prev.status.filter(s => s !== status)
-                    : [...prev.status, status]
+                    ? prev.status.filter((s) => s !== status)
+                    : [...prev.status, status],
                 }));
                 e.target.value = "";
               }
             }}
           >
-            <option value="">🏷️ Status filtern {filters.status.length > 0 && `(${filters.status.length})`}</option>
+            <option value="">
+              🏷️ Status filtern{" "}
+              {filters.status.length > 0 && `(${filters.status.length})`}
+            </option>
             <option value="draft">📝 Entwurf</option>
             <option value="sent">📤 Versendet</option>
             <option value="paid">✅ Bezahlt</option>
@@ -615,7 +679,12 @@ export const InvoiceList: React.FC = () => {
             <Button type="button" variant="outline" size="sm">
               📧 Erinnerung senden
             </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedIds(new Set())}
+            >
               ✖ Abbrechen
             </Button>
           </div>
@@ -654,12 +723,16 @@ export const InvoiceList: React.FC = () => {
                 <h4>Kundeninformationen</h4>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Name:</span>
-                  <span className={styles.detailValue}>{selectedInvoice.customer.name}</span>
+                  <span className={styles.detailValue}>
+                    {selectedInvoice.customer.name}
+                  </span>
                 </div>
                 {selectedInvoice.customer.email && (
                   <div className={styles.detailItem}>
                     <span className={styles.detailLabel}>E-Mail:</span>
-                    <span className={styles.detailValue}>{selectedInvoice.customer.email}</span>
+                    <span className={styles.detailValue}>
+                      {selectedInvoice.customer.email}
+                    </span>
                   </div>
                 )}
               </div>
@@ -668,16 +741,22 @@ export const InvoiceList: React.FC = () => {
                 <h4>Rechnungsdetails</h4>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Ausgestellt:</span>
-                  <span className={styles.detailValue}>{formatDate(selectedInvoice.dates.issued)}</span>
+                  <span className={styles.detailValue}>
+                    {formatDate(selectedInvoice.dates.issued)}
+                  </span>
                 </div>
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Fällig:</span>
-                  <span className={styles.detailValue}>{formatDate(selectedInvoice.dates.due)}</span>
+                  <span className={styles.detailValue}>
+                    {formatDate(selectedInvoice.dates.due)}
+                  </span>
                 </div>
                 {selectedInvoice.dates.paid && (
                   <div className={styles.detailItem}>
                     <span className={styles.detailLabel}>Bezahlt:</span>
-                    <span className={styles.detailValue}>{formatDate(selectedInvoice.dates.paid)}</span>
+                    <span className={styles.detailValue}>
+                      {formatDate(selectedInvoice.dates.paid)}
+                    </span>
                   </div>
                 )}
               </div>
@@ -686,9 +765,12 @@ export const InvoiceList: React.FC = () => {
                 <h4>Positionen</h4>
                 {selectedInvoice.items.map((item) => (
                   <div key={item.id} className={styles.detailItem}>
-                    <span className={styles.detailLabel}>{item.description}:</span>
+                    <span className={styles.detailLabel}>
+                      {item.description}:
+                    </span>
                     <span className={styles.detailValue}>
-                      {item.quantity} × {formatCurrency(item.unitPrice)} = {formatCurrency(item.total)}
+                      {item.quantity} × {formatCurrency(item.unitPrice)} ={" "}
+                      {formatCurrency(item.total)}
                     </span>
                   </div>
                 ))}
@@ -714,14 +796,23 @@ export const InvoiceList: React.FC = () => {
             </div>
 
             <div className={styles.modalActions}>
-              <Button type="button" variant="outline" onClick={() => setIsDetailModalOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsDetailModalOpen(false)}
+              >
                 Schließen
               </Button>
               <Button type="button" variant="ghost">
                 📄 PDF
               </Button>
-              {(selectedInvoice.status === "sent" || selectedInvoice.status === "overdue") && (
-                <Button type="button" variant="primary" onClick={() => handleMarkAsPaid(selectedInvoice.id)}>
+              {(selectedInvoice.status === "sent" ||
+                selectedInvoice.status === "overdue") && (
+                <Button
+                  type="button"
+                  variant="primary"
+                  onClick={() => handleMarkAsPaid(selectedInvoice.id)}
+                >
                   ✅ Als bezahlt markieren
                 </Button>
               )}

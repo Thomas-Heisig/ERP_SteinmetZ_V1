@@ -406,7 +406,7 @@ export function useDashboardDebug(
   const { enabled = defaultEnabled, logChanges = true, selector } = options;
   const { state, version, isInitialized } = useDashboardContext();
 
-  const prevStateRef = useRef<DashboardState>();
+  const prevStateRef = useRef<DashboardState | undefined>(undefined);
 
   useEffect(() => {
     if (!enabled) return;
@@ -438,7 +438,7 @@ export function useDashboardWatch<T>(
   equalityFn: EqualityFn<T> = jsonEqual,
 ) {
   const value = useDashboardSelector(selector, equalityFn);
-  const prevValueRef = useRef<T>();
+  const prevValueRef = useRef<T | undefined>(undefined);
 
   useEffect(() => {
     if (

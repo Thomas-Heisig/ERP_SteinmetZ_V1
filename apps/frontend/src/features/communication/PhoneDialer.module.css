@@ -121,7 +121,7 @@
   .display {
     background: var(--gray-800, #1f2937);
   }
-  
+
   .dialButton:hover,
   .quickActionButton:hover {
     background: var(--gray-700, #374151);

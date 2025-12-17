@@ -189,9 +189,7 @@ GET /api/innovation/ai/suggestions
     "potentialBlockers": [
       { "id": "idea-uuid", "title": "Complex Feature", "risk": 85 }
     ],
-    "quickWins": [
-      { "id": "idea-uuid", "title": "Simple Fix", "effort": 2 }
-    ]
+    "quickWins": [{ "id": "idea-uuid", "title": "Simple Fix", "effort": 2 }]
   }
 }
 ```

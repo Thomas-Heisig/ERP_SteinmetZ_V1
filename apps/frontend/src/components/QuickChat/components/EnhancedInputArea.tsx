@@ -20,7 +20,7 @@ interface EnhancedInputAreaProps {
   stopRecording: () => void;
   audioLoading: boolean;
   uploadLoading: boolean;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
 
   // ✅ KORRIGIERT: Signatur geändert für direkte File-Übergabe
   handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;

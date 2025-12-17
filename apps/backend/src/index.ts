@@ -451,7 +451,7 @@ function registerShutdownHandlers(server: any) {
     "error-tracking",
     async () => {
       logger.info("Shutting down error tracking");
-      await errorTrackingService.shutdown();
+      await errorTrackingService.close();
     },
     { timeout: 5000, critical: false },
   );

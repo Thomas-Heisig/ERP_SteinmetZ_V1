@@ -4,7 +4,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 /** Zulässige Monaco-Sprachen */
-type MonacoLanguage =
+export type MonacoLanguage =
   | "json"
   | "typescript"
   | "javascript"

@@ -1,12 +1,7 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/ui/useToast.ts
 
-import {
-  useState,
-  useCallback,
-  createContext,
-  useContext,
-} from "react";
+import { useState, useCallback, createContext, useContext } from "react";
 
 export type ToastType = "success" | "error" | "warning" | "info";
 

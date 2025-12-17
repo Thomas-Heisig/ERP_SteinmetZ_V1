@@ -621,7 +621,11 @@ export default function useAiAnnotator({
         if (result.success && result.data) {
           setNodes(result.data.nodes || []);
           setPagination(
-            result.data.pagination as { limit: number; offset: number; total: number } || { limit: 25, offset: 0, total: 0 },
+            (result.data.pagination as {
+              limit: number;
+              offset: number;
+              total: number;
+            }) || { limit: 25, offset: 0, total: 0 },
           );
         } else {
           throw new Error(result.error || "Unknown error");
@@ -1389,7 +1393,11 @@ export default function useAiAnnotator({
 
   // Prompt debuggen
   const debugPrompt = useCallback(
-    async (nodeId: string, promptType: string, options?: Record<string, unknown>) => {
+    async (
+      nodeId: string,
+      promptType: string,
+      options?: Record<string, unknown>,
+    ) => {
       try {
         const result = await fetchApi<{
           node: NodeForAnnotation;

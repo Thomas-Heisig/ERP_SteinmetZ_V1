@@ -133,7 +133,7 @@ Response: {
 typescript
 // Server-zu-Client Events:
 hr:employee-created
-hr:employee-updated  
+hr:employee-updated
 hr:employee-deleted
 hr:attendance-changed
 hr:status-changed
@@ -141,3 +141,4 @@ hr:status-changed
 // Client-zu-Server Events:
 hr:subscribe-department
 hr:unsubscribe-department
+```

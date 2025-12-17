@@ -25,22 +25,30 @@ Da die Datei DocumentList.tsx erfolgreich implementiert wurde, sollte InvoiceLis
 Alle `style={{ backgroundColor: config.color }}` durch CSS-Klassen ersetzen:
 
 ```css
-.statusIndicatorDraft { background-color: var(--gray-500); }
-.statusIndicatorSent { background-color: var(--info-500); }
-.statusIndicatorPaid { background-color: var(--success-500); }
+.statusIndicatorDraft {
+  background-color: var(--gray-500);
+}
+.statusIndicatorSent {
+  background-color: var(--info-500);
+}
+.statusIndicatorPaid {
+  background-color: var(--success-500);
+}
 /* etc. */
 ```
 
 ### 3. DatePicker ersetzen
 
 ```tsx
-<input 
+<input
   type="date"
-  value={filters.dateRange?.start || ''}
-  onChange={(e) => setFilters(prev => ({
-    ...prev,
-    dateRange: { ...prev.dateRange, start: e.target.value }
-  }))}
+  value={filters.dateRange?.start || ""}
+  onChange={(e) =>
+    setFilters((prev) => ({
+      ...prev,
+      dateRange: { ...prev.dateRange, start: e.target.value },
+    }))
+  }
 />
 ```
 

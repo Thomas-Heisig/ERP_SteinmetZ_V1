@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/config/env.test.ts
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { validateProviderConfig, validateProductionConfig } from "./env";
 import type { Env } from "./env";
 

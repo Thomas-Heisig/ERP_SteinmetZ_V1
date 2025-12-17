@@ -2,16 +2,16 @@
 // src/components/FunctionsCatalog/features/index.ts
 
 // Code Editor
-export * from './code';
+export * from "./code";
 
 // Context Menu
-export * from './contextMenu';
+export * from "./contextMenu";
 
 // Export Functionality
-export * from './export';
+export * from "./export";
 
 // Favorites Management
-export * from './favorites';
+export * from "./favorites";
 
 // History Tracking
-export * from './history';
+export * from "./history";

@@ -62,9 +62,9 @@ interface SidebarProps {
   onToggleCollapse?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ 
-  isCollapsed = false, 
-  onToggleCollapse 
+export const Sidebar: React.FC<SidebarProps> = ({
+  isCollapsed = false,
+  onToggleCollapse,
 }) => {
   return (
     <aside className={`app-sidebar ${isCollapsed ? "collapsed" : ""}`}>

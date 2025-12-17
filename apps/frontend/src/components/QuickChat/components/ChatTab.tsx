@@ -24,7 +24,7 @@ interface ChatTabProps {
   uploadLoading: boolean;
   showQuickActions: boolean;
   fallbackEnabled: boolean;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   conversationContext?: ConversationState | null;
   providerStatus?: Array<{ provider: string; available: boolean }>;
   onSessionSelect: (sessionId: string) => void;

@@ -8,7 +8,11 @@
 
 /* Header Styles */
 .board-header {
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--surface) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-50) 0%,
+    var(--surface) 100%
+  );
   border: 1px solid var(--primary-100);
 }
 
@@ -71,7 +75,11 @@
 .ai-recommendations {
   margin-top: 1rem;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, var(--secondary-50) 0%, var(--surface) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--secondary-50) 0%,
+    var(--surface) 100%
+  );
   border: 1px solid var(--secondary-200);
   border-radius: 8px;
   display: flex;
@@ -557,7 +565,12 @@
   height: 8px;
   -webkit-appearance: none;
   appearance: none;
-  background: linear-gradient(to right, var(--success-500), var(--warning-500), var(--error-500));
+  background: linear-gradient(
+    to right,
+    var(--success-500),
+    var(--warning-500),
+    var(--error-500)
+  );
   border-radius: 4px;
   outline: none;
 }
@@ -761,15 +774,15 @@
   background: var(--primary-500);
 }
 
-.effort-bar.active:nth-child(-n+3) {
+.effort-bar.active:nth-child(-n + 3) {
   background: var(--success-500);
 }
 
-.effort-bar.active:nth-child(n+4):nth-child(-n+7) {
+.effort-bar.active:nth-child(n + 4):nth-child(-n + 7) {
   background: var(--warning-500);
 }
 
-.effort-bar.active:nth-child(n+8) {
+.effort-bar.active:nth-child(n + 8) {
   background: var(--error-500);
 }
 
@@ -917,7 +930,7 @@
     height: auto;
     overflow-x: visible;
   }
-  
+
   .idea-column {
     min-width: 100%;
   }
@@ -928,33 +941,33 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .board-stats {
     justify-content: space-between;
   }
-  
+
   .stat {
     align-items: center;
   }
-  
+
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .detail-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .metrics-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .list-header,
   .list-row {
     grid-template-columns: 1fr;
     gap: 0.5rem;
   }
-  
+
   .list-cell {
     justify-content: flex-start;
   }
@@ -962,8 +975,14 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .idea-card {
@@ -985,8 +1004,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Scrollbar Styling */
@@ -1016,44 +1040,52 @@
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .board-header {
-    background: linear-gradient(135deg, var(--primary-900) 0%, var(--surface) 100%);
+    background: linear-gradient(
+      135deg,
+      var(--primary-900) 0%,
+      var(--surface) 100%
+    );
     border-color: var(--primary-800);
   }
-  
+
   .ai-recommendations {
-    background: linear-gradient(135deg, var(--secondary-900) 0%, var(--surface) 100%);
+    background: linear-gradient(
+      135deg,
+      var(--secondary-900) 0%,
+      var(--surface) 100%
+    );
     border-color: var(--secondary-700);
   }
-  
+
   .idea-column {
     background: var(--surface-alt);
   }
-  
+
   .idea-card {
     background: var(--surface);
     border-color: var(--border);
   }
-  
+
   .ai-insights {
     background: var(--surface-alt);
     border-color: var(--border);
   }
-  
+
   .idea-tag {
     background: var(--primary-900);
     color: var(--primary-200);
   }
-  
+
   .priority-button {
     background: var(--surface);
     border-color: var(--border);
   }
-  
+
   .priority-button:hover {
     background: var(--primary-900);
     border-color: var(--primary-600);
   }
-  
+
   .priority-button.active {
     background: var(--primary-800);
     border-color: var(--primary-500);

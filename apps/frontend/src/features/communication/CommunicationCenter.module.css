@@ -146,18 +146,18 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .headerLeft {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .headerRight {
     flex-wrap: wrap;
     justify-content: space-between;
   }
-  
+
   .searchContainer {
     width: 100%;
   }
@@ -168,7 +168,7 @@
   .mainTitle {
     color: var(--text-primary-dark, #f9fafb);
   }
-  
+
   .subtitle,
   .statusText {
     color: var(--text-secondary-dark, #d1d5db);
