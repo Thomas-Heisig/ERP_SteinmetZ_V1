@@ -39,7 +39,9 @@ export default function App() {
               className="sidebar-menu-button"
               onClick={handleToggleSidebar}
               aria-label="Toggle Sidebar"
-              title={isSidebarCollapsed ? "Sidebar ausklappen" : "Sidebar einklappen"}
+              title={
+                isSidebarCollapsed ? "Sidebar ausklappen" : "Sidebar einklappen"
+              }
             >
               ☰
             </button>
@@ -83,15 +85,15 @@ export default function App() {
 
         {/* ---------- Sidebar ---------- */}
         {isAuthenticated && (
-          <Sidebar 
-            isCollapsed={isSidebarCollapsed} 
+          <Sidebar
+            isCollapsed={isSidebarCollapsed}
             onToggleCollapse={handleToggleSidebar}
           />
         )}
 
         {/* ---------- Main ---------- */}
-        <main 
-          className={`app-main ${isAuthenticated ? 'with-sidebar' : ''} ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}
+        <main
+          className={`app-main ${isAuthenticated ? "with-sidebar" : ""} ${isSidebarCollapsed ? "sidebar-collapsed" : ""}`}
         >
           <Outlet />
         </main>

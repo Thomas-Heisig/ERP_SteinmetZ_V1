@@ -35,8 +35,14 @@ const createProjectSchema = z.object({
   status: z
     .enum(["planning", "active", "on_hold", "completed"])
     .default("planning"),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  startDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  endDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   budget: z.number().min(0).optional(),
   client: z.string().optional(),
   manager: z.string().optional(),
@@ -51,7 +57,10 @@ const createTaskSchema = z.object({
   status: z.enum(["todo", "in_progress", "review", "done"]).default("todo"),
   priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
   assignee: z.string().optional(),
-  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  dueDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   estimatedHours: z.number().min(0).optional(),
 });
 
