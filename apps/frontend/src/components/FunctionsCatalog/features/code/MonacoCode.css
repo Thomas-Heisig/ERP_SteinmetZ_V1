@@ -15,7 +15,7 @@
   font-size: 13px;
   overflow: auto;
   white-space: pre-wrap;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .monaco-code-loading {

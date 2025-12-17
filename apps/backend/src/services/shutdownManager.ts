@@ -240,7 +240,11 @@ class ShutdownManager {
 
     try {
       // Execute handler with timeout
-      await this.withTimeout(handler(), componentTimeout, name);
+      await this.withTimeout(
+        Promise.resolve(handler()),
+        componentTimeout,
+        name,
+      );
       logger.info({ name }, `✅ ${name} shut down successfully`);
     } catch (error) {
       const errorMessage =

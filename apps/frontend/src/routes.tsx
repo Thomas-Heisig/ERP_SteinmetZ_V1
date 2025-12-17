@@ -17,6 +17,7 @@ const Login = lazy(() => import("./pages/Login/Login"));
 const AiAnnotatorRouter = lazy(
   () => import("./components/aiAnnotatorRouter/aiAnnotatorRouter"),
 );
+const HelpCenter = lazy(() => import("./components/HelpCenter/HelpCenter"));
 
 // Features - lazy loaded
 const Calendar = lazy(() => import("./features/calendar/Calendar"));
@@ -220,6 +221,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedPage>
             <AdvancedFiltersUI />
+          </ProtectedPage>
+        ),
+      },
+      {
+        path: "help",
+        element: (
+          <ProtectedPage>
+            <HelpCenter />
           </ProtectedPage>
         ),
       },

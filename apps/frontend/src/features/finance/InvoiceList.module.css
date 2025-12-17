@@ -9,7 +9,11 @@
 
 /* Header */
 .managerHeader {
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-50) 0%,
+    var(--primary-100) 100%
+  );
   border-left: 4px solid var(--primary-500);
 }
 
@@ -95,7 +99,9 @@
 }
 
 .statCard {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .statCard:hover {
@@ -234,8 +240,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 /* Customer Cell */
@@ -694,7 +705,7 @@
 }
 
 .wizardSteps::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 20px;
   left: 40px;
@@ -759,15 +770,15 @@
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .analyticsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .detailGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .detailSection:nth-child(3),
   .detailSection:nth-child(4) {
     grid-column: span 1;
@@ -778,55 +789,55 @@
   .headerContent {
     flex-direction: column;
   }
-  
+
   .headerRight {
     align-items: stretch;
     width: 100%;
   }
-  
+
   .statsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .filterBar {
     flex-direction: column;
   }
-  
+
   .filterGroup {
     min-width: 100%;
   }
-  
+
   .wizardSteps {
     flex-direction: column;
     gap: var(--spacing-md);
     align-items: flex-start;
   }
-  
+
   .wizardSteps::before {
     display: none;
   }
-  
+
   .step {
     flex-direction: row;
     gap: var(--spacing-md);
   }
-  
+
   .modalFooter {
     flex-direction: column;
     gap: var(--spacing-sm);
   }
-  
+
   .footerRight {
     width: 100%;
     flex-direction: column;
   }
-  
+
   .itemsHeader,
   .itemRow {
     grid-template-columns: 1fr;
     gap: var(--spacing-xs);
   }
-  
+
   .itemQuantity,
   .itemPrice,
   .itemTotal {
@@ -840,12 +851,12 @@
     align-items: flex-start;
     gap: var(--spacing-sm);
   }
-  
+
   .bulkSelection {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .paginationContainer {
     flex-direction: column;
     gap: var(--spacing-md);

@@ -10,7 +10,11 @@
 
 /* Header */
 .manager-header {
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-50) 0%,
+    var(--primary-100) 100%
+  );
   border-left: 4px solid var(--primary-500);
 }
 
@@ -94,8 +98,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 .alert-content {
@@ -252,8 +261,13 @@
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
 }
 
 .no-metrics {
@@ -538,16 +552,16 @@
   .header-content {
     flex-direction: column;
   }
-  
+
   .header-right {
     align-items: stretch;
     width: 100%;
   }
-  
+
   .analytics-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
   }
@@ -557,16 +571,16 @@
   .filter-bar {
     flex-direction: column;
   }
-  
+
   .filter-group {
     min-width: 100%;
   }
-  
+
   .employee-cell {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .pagination-container {
     flex-direction: column;
     gap: var(--spacing-md);
@@ -578,16 +592,16 @@
     flex-direction: column;
     gap: var(--spacing-md);
   }
-  
+
   .stat-item {
     align-items: flex-start;
   }
-  
+
   .modal-footer {
     flex-direction: column;
     gap: var(--spacing-sm);
   }
-  
+
   .footer-right {
     width: 100%;
     justify-content: space-between;
@@ -601,8 +615,12 @@
 
 /* Animation für Neueinträge */
 @keyframes highlightNew {
-  0% { background-color: var(--primary-50); }
-  100% { background-color: transparent; }
+  0% {
+    background-color: var(--primary-50);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
 
 .highlight-new {

@@ -12,48 +12,49 @@ export const AIAnnotator: React.FC = () => {
     statusLoading,
     statusError,
     getStatus,
-    
+
     // Health
     health,
     healthLoading,
     healthError,
     getHealth,
-    
+
     // Nodes
     nodes,
     nodesLoading,
     nodesError,
     pagination,
     listNodes,
-    
+
     // Database Stats
     databaseStats,
     databaseStatsLoading,
     databaseStatsError,
     getDatabaseStats,
-    
+
     // Batch Operations
     batchOperations,
     batchOperationsLoading,
     batchOperationsError,
     getBatchOperations,
     cleanupOldBatches,
-    
+
     // Quality Report
     qualityReport,
     qualityReportLoading,
     qualityReportError,
     getQualityReport,
-    
+
     // AI Generation
     generateMeta,
     generateRule,
     generateForm,
-    
   } = useAiAnnotator();
 
   // Local state
-  const [activeTab, setActiveTab] = useState<"dashboard" | "nodes" | "quality" | "batch">("dashboard");
+  const [activeTab, setActiveTab] = useState<
+    "dashboard" | "nodes" | "quality" | "batch"
+  >("dashboard");
   const [searchQuery, setSearchQuery] = useState("");
   const [limitValue, setLimitValue] = useState(20);
   const [selectedNodeId, setSelectedNodeId] = useState<string>("");
@@ -79,7 +80,9 @@ export const AIAnnotator: React.FC = () => {
   }, [searchQuery, listNodes, limitValue, handleRefreshNodes]);
 
   const getStatusIndicator = (healthy: boolean) => (
-    <span className={`status-indicator ${healthy ? "status-healthy" : "status-error"}`} />
+    <span
+      className={`status-indicator ${healthy ? "status-healthy" : "status-error"}`}
+    />
   );
 
   const renderDashboard = () => (
@@ -98,9 +101,15 @@ export const AIAnnotator: React.FC = () => {
           ) : status ? (
             <>
               <div className="status-details">
-                <p>Provider: <strong>{status.provider}</strong></p>
-                <p>Model: <strong>{status.model}</strong></p>
-                <p>Available: <strong>{status.available ? "Yes" : "No"}</strong></p>
+                <p>
+                  Provider: <strong>{status.provider}</strong>
+                </p>
+                <p>
+                  Model: <strong>{status.model}</strong>
+                </p>
+                <p>
+                  Available: <strong>{status.available ? "Yes" : "No"}</strong>
+                </p>
                 {status.capabilities && status.capabilities.length > 0 && (
                   <div className="capabilities-list">
                     <strong>Capabilities:</strong>
@@ -130,7 +139,8 @@ export const AIAnnotator: React.FC = () => {
         {/* System Health Card */}
         <div className="ai-card">
           <h3 className="ai-card-title">
-            System Health {health && getStatusIndicator(health.overall === "healthy")}
+            System Health{" "}
+            {health && getStatusIndicator(health.overall === "healthy")}
           </h3>
           {healthLoading ? (
             <p className="loading-text">Loading...</p>
@@ -143,12 +153,22 @@ export const AIAnnotator: React.FC = () => {
                   Overall: <strong>{health.overall}</strong>
                 </p>
                 <p>
-                  Database: <strong className={health.database ? "text-success" : "text-error"}>
+                  Database:{" "}
+                  <strong
+                    className={health.database ? "text-success" : "text-error"}
+                  >
                     {health.database ? "Connected" : "Disconnected"}
                   </strong>
                 </p>
-                <p>Memory: {health.memory.percentage.toFixed(1)}% ({(health.memory.used / 1024 / 1024).toFixed(0)}MB / {(health.memory.total / 1024 / 1024).toFixed(0)}MB)</p>
-                <p>Last Check: {new Date(health.lastHealthCheck).toLocaleString()}</p>
+                <p>
+                  Memory: {health.memory.percentage.toFixed(1)}% (
+                  {(health.memory.used / 1024 / 1024).toFixed(0)}MB /{" "}
+                  {(health.memory.total / 1024 / 1024).toFixed(0)}MB)
+                </p>
+                <p>
+                  Last Check:{" "}
+                  {new Date(health.lastHealthCheck).toLocaleString()}
+                </p>
               </div>
               <button
                 onClick={() => void getHealth()}
@@ -165,9 +185,7 @@ export const AIAnnotator: React.FC = () => {
 
         {/* Database Statistics Card */}
         <div className="ai-card">
-          <h3 className="ai-card-title">
-            📊 Database Statistics
-          </h3>
+          <h3 className="ai-card-title">📊 Database Statistics</h3>
           {databaseStatsLoading ? (
             <p className="loading-text">Loading...</p>
           ) : databaseStatsError ? (
@@ -175,7 +193,13 @@ export const AIAnnotator: React.FC = () => {
           ) : databaseStats ? (
             <>
               <div className="db-stats">
-                <p className="stat-main">Total Nodes: <strong>{(databaseStats as unknown as Record<string, number>).total || 0}</strong></p>
+                <p className="stat-main">
+                  Total Nodes:{" "}
+                  <strong>
+                    {(databaseStats as unknown as Record<string, number>)
+                      .total || 0}
+                  </strong>
+                </p>
                 <div className="progress-bar">
                   <div
                     className="progress-fill"
@@ -187,17 +211,28 @@ export const AIAnnotator: React.FC = () => {
                   />
                 </div>
                 <p className="stat-label">
-                  {(databaseStats as unknown as Record<string, number>).annotated || 0} / {(databaseStats as unknown as Record<string, number>).total || 0} annotated
+                  {(databaseStats as unknown as Record<string, number>)
+                    .annotated || 0}{" "}
+                  /{" "}
+                  {(databaseStats as unknown as Record<string, number>).total ||
+                    0}{" "}
+                  annotated
                 </p>
                 <div className="stats-grid">
                   <div className="stat-item">
-                    <strong>Valid:</strong> {(databaseStats as unknown as Record<string, number>).valid || 0}
+                    <strong>Valid:</strong>{" "}
+                    {(databaseStats as unknown as Record<string, number>)
+                      .valid || 0}
                   </div>
                   <div className="stat-item">
-                    <strong>Invalid:</strong> {(databaseStats as unknown as Record<string, number>).invalid || 0}
+                    <strong>Invalid:</strong>{" "}
+                    {(databaseStats as unknown as Record<string, number>)
+                      .invalid || 0}
                   </div>
                   <div className="stat-item">
-                    <strong>Pending:</strong> {(databaseStats as unknown as Record<string, number>).pending || 0}
+                    <strong>Pending:</strong>{" "}
+                    {(databaseStats as unknown as Record<string, number>)
+                      .pending || 0}
                   </div>
                 </div>
               </div>
@@ -220,7 +255,7 @@ export const AIAnnotator: React.FC = () => {
   const renderNodes = () => (
     <div className="ai-section">
       <h2 className="ai-section-title">Function Nodes</h2>
-      
+
       {/* Filters */}
       <div className="filter-row">
         <div className="filter-group">
@@ -229,7 +264,9 @@ export const AIAnnotator: React.FC = () => {
             type="text"
             className="filter-input"
             value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchQuery(e.target.value)
+            }
             placeholder="Search nodes..."
           />
         </div>
@@ -239,7 +276,9 @@ export const AIAnnotator: React.FC = () => {
             type="number"
             className="filter-input"
             value={limitValue}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLimitValue(Number(e.target.value))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setLimitValue(Number(e.target.value))
+            }
             min={1}
             max={100}
             aria-label="Results limit"
@@ -248,10 +287,18 @@ export const AIAnnotator: React.FC = () => {
       </div>
 
       <div className="filter-actions">
-        <button onClick={handleSearch} className="btn btn-primary" disabled={nodesLoading}>
+        <button
+          onClick={handleSearch}
+          className="btn btn-primary"
+          disabled={nodesLoading}
+        >
           Search
         </button>
-        <button onClick={handleRefreshNodes} className="btn btn-secondary" disabled={nodesLoading}>
+        <button
+          onClick={handleRefreshNodes}
+          className="btn btn-secondary"
+          disabled={nodesLoading}
+        >
           Refresh
         </button>
       </div>
@@ -261,79 +308,88 @@ export const AIAnnotator: React.FC = () => {
       ) : nodesError ? (
         <div className="error-state">Error: {nodesError}</div>
       ) : !nodes || nodes.length === 0 ? (
-        <div className="empty-state">No nodes found. Try adjusting filters.</div>
+        <div className="empty-state">
+          No nodes found. Try adjusting filters.
+        </div>
       ) : (
         <>
           <div className="pagination-info">
             Showing {nodes.length} of {pagination.total} nodes
           </div>
           <div className="ai-grid">
-            {nodes.map((node: { 
-              id: string; 
-              title: string; 
-              kind: string; 
-              path: string[];
-              meta?: { description?: string };
-            }, idx: number) => (
-              <div 
-                key={node.id || idx} 
-                className="ai-card node-card"
-                onClick={() => setSelectedNodeId(node.id)}
-              >
-                <div className="node-header">
-                  <span className="node-kind">{node.kind}</span>
-                  <span className="node-id">{node.id}</span>
-                </div>
-                <h4 className="node-title">{node.title || "Untitled"}</h4>
-                <p className="node-description">Path: {node.path?.join(" > ") || "N/A"}</p>
-                {node.meta?.description && (
-                  <p className="node-description">{String(node.meta.description).substring(0, 100)}...</p>
-                )}
-                {selectedNodeId === node.id && (
-                  <div className="node-actions">
-                    <button 
-                      onClick={(e: React.MouseEvent) => { 
-                        e.stopPropagation(); 
-                        void generateMeta(node.id); 
-                      }}
-                      className="btn btn-primary"
-                    >
-                      Generate Meta
-                    </button>
-                    <button 
-                      onClick={(e: React.MouseEvent) => { 
-                        e.stopPropagation(); 
-                        void generateForm(node.id); 
-                      }}
-                      className="btn btn-secondary"
-                    >
-                      Generate Form
-                    </button>
-                    <button 
-                      onClick={(e: React.MouseEvent) => { 
-                        e.stopPropagation(); 
-                        void generateRule(node.id); 
-                      }}
-                      className="btn btn-success"
-                    >
-                      Generate Rule
-                    </button>
+            {nodes.map(
+              (
+                node: {
+                  id: string;
+                  title: string;
+                  kind: string;
+                  path: string[];
+                  meta?: { description?: string };
+                },
+                idx: number,
+              ) => (
+                <div
+                  key={node.id || idx}
+                  className="ai-card node-card"
+                  onClick={() => setSelectedNodeId(node.id)}
+                >
+                  <div className="node-header">
+                    <span className="node-kind">{node.kind}</span>
+                    <span className="node-id">{node.id}</span>
                   </div>
-                )}
-              </div>
-            ))}
+                  <h4 className="node-title">{node.title || "Untitled"}</h4>
+                  <p className="node-description">
+                    Path: {node.path?.join(" > ") || "N/A"}
+                  </p>
+                  {node.meta?.description && (
+                    <p className="node-description">
+                      {String(node.meta.description).substring(0, 100)}...
+                    </p>
+                  )}
+                  {selectedNodeId === node.id && (
+                    <div className="node-actions">
+                      <button
+                        onClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          void generateMeta(node.id);
+                        }}
+                        className="btn btn-primary"
+                      >
+                        Generate Meta
+                      </button>
+                      <button
+                        onClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          void generateForm(node.id);
+                        }}
+                        className="btn btn-secondary"
+                      >
+                        Generate Form
+                      </button>
+                      <button
+                        onClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          void generateRule(node.id);
+                        }}
+                        className="btn btn-success"
+                      >
+                        Generate Rule
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ),
+            )}
           </div>
         </>
       )}
-
-
     </div>
   );
 
   const renderQuality = () => (
     <div className="ai-section">
       <h2 className="ai-section-title">Quality Report</h2>
-      
+
       {qualityReportLoading ? (
         <div className="loading-state">Loading quality report...</div>
       ) : qualityReportError ? (
@@ -342,24 +398,40 @@ export const AIAnnotator: React.FC = () => {
         <div className="ai-grid">
           <div className="ai-card">
             <h3 className="ai-card-title">Overall Score</h3>
-            <p className="quality-score">{((qualityReport as unknown as Record<string, number>).score || 0).toFixed(1)}</p>
+            <p className="quality-score">
+              {(
+                (qualityReport as unknown as Record<string, number>).score || 0
+              ).toFixed(1)}
+            </p>
           </div>
-          
+
           <div className="ai-card">
             <h3 className="ai-card-title">Coverage</h3>
-            <p className="quality-stat">{(qualityReport as unknown as Record<string, number>).coverage || 0}%</p>
+            <p className="quality-stat">
+              {(qualityReport as unknown as Record<string, number>).coverage ||
+                0}
+              %
+            </p>
             <p className="stat-label">Nodes Annotated</p>
           </div>
-          
+
           <div className="ai-card">
             <h3 className="ai-card-title">Completeness</h3>
-            <p className="quality-stat">{(qualityReport as unknown as Record<string, number>).completeness || 0}%</p>
+            <p className="quality-stat">
+              {(qualityReport as unknown as Record<string, number>)
+                .completeness || 0}
+              %
+            </p>
             <p className="stat-label">Fields Filled</p>
           </div>
-          
+
           <div className="ai-card">
             <h3 className="ai-card-title">Consistency</h3>
-            <p className="quality-stat">{(qualityReport as unknown as Record<string, number>).consistency || 0}%</p>
+            <p className="quality-stat">
+              {(qualityReport as unknown as Record<string, number>)
+                .consistency || 0}
+              %
+            </p>
             <p className="stat-label">Standard Compliance</p>
           </div>
         </div>
@@ -368,8 +440,8 @@ export const AIAnnotator: React.FC = () => {
           <p>No quality report available</p>
         </div>
       )}
-      
-      <button 
+
+      <button
         onClick={() => void getQualityReport()}
         className="btn btn-primary"
         disabled={qualityReportLoading}
@@ -382,60 +454,69 @@ export const AIAnnotator: React.FC = () => {
   const renderBatch = () => (
     <div className="ai-section">
       <h2 className="ai-section-title">Batch Operations</h2>
-      
+
       {batchOperationsLoading ? (
         <div className="loading-state">Loading batch operations...</div>
       ) : batchOperationsError ? (
         <div className="error-state">Error: {batchOperationsError}</div>
       ) : batchOperations && batchOperations.length > 0 ? (
         <div className="batch-list">
-          {batchOperations.map((batch: Record<string, unknown>, idx: number) => (
-            <div key={(batch.id as string) || String(idx)} className="ai-card batch-card">
-              <div className="batch-header">
-                <h4>{String(batch.operation || 'Unknown')}</h4>
-                <span className={`batch-status batch-status-${batch.status || 'pending'}`}>
-                  {String(batch.status || 'pending')}
-                </span>
+          {batchOperations.map(
+            (batch: Record<string, unknown>, idx: number) => (
+              <div
+                key={(batch.id as string) || String(idx)}
+                className="ai-card batch-card"
+              >
+                <div className="batch-header">
+                  <h4>{String(batch.operation || "Unknown")}</h4>
+                  <span
+                    className={`batch-status batch-status-${batch.status || "pending"}`}
+                  >
+                    {String(batch.status || "pending")}
+                  </span>
+                </div>
+                <p>Progress: {(batch.progress as number) || 0}%</p>
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    ref={(el) => {
+                      if (el) {
+                        el.style.width = `${(batch.progress as number) || 0}%`;
+                      }
+                    }}
+                  />
+                </div>
+                {batch.totalNodes !== undefined && (
+                  <p className="stat-label">
+                    {(batch.processedNodes as number) || 0} /{" "}
+                    {batch.totalNodes as number} nodes processed
+                  </p>
+                )}
+                {batch.created_at !== undefined && (
+                  <p className="batch-date">
+                    Created:{" "}
+                    {new Date(batch.created_at as string).toLocaleString()}
+                  </p>
+                )}
               </div>
-              <p>Progress: {(batch.progress as number) || 0}%</p>
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
-                  ref={(el) => {
-                    if (el) {
-                      el.style.width = `${(batch.progress as number) || 0}%`;
-                    }
-                  }}
-                />
-              </div>
-              {batch.totalNodes !== undefined && (
-                <p className="stat-label">
-                  {(batch.processedNodes as number) || 0} / {batch.totalNodes as number} nodes processed
-                </p>
-              )}
-              {batch.created_at !== undefined && (
-                <p className="batch-date">
-                  Created: {new Date(batch.created_at as string).toLocaleString()}
-                </p>
-              )}
-            </div>
-          ))}
+            ),
+          )}
         </div>
       ) : (
         <div className="empty-state">
           <p>No batch operations found</p>
         </div>
       )}
-      
+
       <div className="batch-actions">
-        <button 
+        <button
           onClick={() => void getBatchOperations()}
           className="btn btn-secondary"
           disabled={batchOperationsLoading}
         >
           Refresh Batches
         </button>
-        <button 
+        <button
           onClick={() => void cleanupOldBatches()}
           className="btn btn-danger"
           disabled={batchOperationsLoading}
@@ -449,9 +530,7 @@ export const AIAnnotator: React.FC = () => {
   return (
     <div className="ai-annotator-container">
       <header className="ai-annotator-header">
-        <h1 className="ai-annotator-title">
-          🤖 AI Annotator
-        </h1>
+        <h1 className="ai-annotator-title">🤖 AI Annotator</h1>
         <p className="ai-annotator-subtitle">
           AI-powered metadata generation and annotation system
         </p>

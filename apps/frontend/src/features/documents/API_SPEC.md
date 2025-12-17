@@ -6,7 +6,7 @@ Die Dokumentenverwaltungs-API bietet vollständige CRUD-Operationen für Dokumen
 
 ## Base URL
 
-``` text
+```text
 /api/documents
 ```
 
@@ -14,7 +14,7 @@ Die Dokumentenverwaltungs-API bietet vollständige CRUD-Operationen für Dokumen
 
 Alle Endpoints erfordern Authentifizierung via JWT-Token im Authorization-Header:
 
-``` text
+```text
 Authorization: Bearer <token>
 ```
 
@@ -345,7 +345,7 @@ Mehrere Dokumente archivieren.
   data: {
     archived: number;
     failed: number;
-  };
+  }
   message: string;
 }
 ```
@@ -373,7 +373,7 @@ Mehrere Dokumente genehmigen.
   data: {
     approved: number;
     failed: number;
-  };
+  }
   message: string;
 }
 ```
@@ -401,7 +401,7 @@ Mehrere Dokumente löschen.
   data: {
     deleted: number;
     failed: number;
-  };
+  }
   message: string;
 }
 ```
@@ -580,7 +580,7 @@ Erweiterte Dokumentensuche.
     }>;
     total: number;
     took: number; // ms
-  };
+  }
 }
 ```
 
@@ -719,7 +719,7 @@ Berechtigungen für ein Dokument abrufen.
     owner: {
       userId: string;
       name: string;
-    };
+    }
     shares: Array<{
       id: string;
       userId?: string;
@@ -730,7 +730,7 @@ Berechtigungen für ein Dokument abrufen.
       sharedAt: string;
       expiresAt?: string;
     }>;
-  };
+  }
 }
 ```
 
@@ -779,7 +779,13 @@ Audit-Log für ein Dokument abrufen.
   data: {
     logs: Array<{
       id: string;
-      action: "created" | "updated" | "downloaded" | "shared" | "deleted" | "version_created";
+      action:
+        | "created"
+        | "updated"
+        | "downloaded"
+        | "shared"
+        | "deleted"
+        | "version_created";
       userId: string;
       userName: string;
       timestamp: string; // ISO 8601
@@ -788,7 +794,7 @@ Audit-Log für ein Dokument abrufen.
       userAgent?: string;
     }>;
     total: number;
-  };
+  }
 }
 ```
 
@@ -828,38 +834,46 @@ Data: { documentId: string, sharedWith: string[], sharedBy: string }
 
 ```typescript
 // Kategorie abonnieren
-"documents:subscribe-category"
-Data: { category: DocumentCategory }
+"documents:subscribe-category";
+Data: {
+  category: DocumentCategory;
+}
 
 // Kategorie deabonnieren
-"documents:unsubscribe-category"
-Data: { category: DocumentCategory }
+("documents:unsubscribe-category");
+Data: {
+  category: DocumentCategory;
+}
 
 // Dokument beobachten
-"documents:watch-document"
-Data: { documentId: string }
+("documents:watch-document");
+Data: {
+  documentId: string;
+}
 
 // Dokument nicht mehr beobachten
-"documents:unwatch-document"
-Data: { documentId: string }
+("documents:unwatch-document");
+Data: {
+  documentId: string;
+}
 ```
 
 ---
 
 ## Fehler-Codes
 
-| Code | Bedeutung                    | HTTP Status |
-| ---- | ---------------------------- | ----------- |
-| 1001 | Dokument nicht gefunden      | 404         |
-| 1002 | Ungültige Datei              | 400         |
-| 1003 | Datei zu groß                | 413         |
-| 1004 | Dateityp nicht erlaubt       | 415         |
-| 1005 | Keine Berechtigung           | 403         |
-| 1006 | Speicherplatz überschritten  | 507         |
-| 1007 | Version nicht gefunden       | 404         |
-| 1008 | Dokument ist gesperrt        | 423         |
-| 1009 | Checksum-Fehler              | 422         |
-| 1010 | Dokument abgelaufen          | 410         |
+| Code | Bedeutung                   | HTTP Status |
+| ---- | --------------------------- | ----------- |
+| 1001 | Dokument nicht gefunden     | 404         |
+| 1002 | Ungültige Datei             | 400         |
+| 1003 | Datei zu groß               | 413         |
+| 1004 | Dateityp nicht erlaubt      | 415         |
+| 1005 | Keine Berechtigung          | 403         |
+| 1006 | Speicherplatz überschritten | 507         |
+| 1007 | Version nicht gefunden      | 404         |
+| 1008 | Dokument ist gesperrt       | 423         |
+| 1009 | Checksum-Fehler             | 422         |
+| 1010 | Dokument abgelaufen         | 410         |
 
 ---
 
@@ -947,5 +961,5 @@ curl -X POST http://localhost:3000/api/documents/bulk/archive \
 
 ---
 
-*Version: 1.0.0*
-*Erstellt: 16. Dezember 2024*
+_Version: 1.0.0_
+_Erstellt: 16. Dezember 2024_

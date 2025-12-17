@@ -6,7 +6,17 @@ import { createContext } from "react";
 /**
  * Verfügbare Sprachen
  */
-export type Locale = "de" | "en" | "ar" | "zh" | "ru" | "nds" | "fr" | "it" | "pl" | "tr";
+export type Locale =
+  | "de"
+  | "en"
+  | "ar"
+  | "zh"
+  | "ru"
+  | "nds"
+  | "fr"
+  | "it"
+  | "pl"
+  | "tr";
 
 /**
  * Sprach-Kontext-Interface

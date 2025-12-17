@@ -52,6 +52,7 @@ const navigationSections: NavSection[] = [
     title: "Sonstiges",
     items: [
       { path: "/innovation", label: "Innovation", icon: "💡" },
+      { path: "/help", label: "Hilfe", icon: "❓" },
       { path: "/settings", label: "Einstellungen", icon: "⚙️" },
     ],
   },
@@ -62,9 +63,9 @@ interface SidebarProps {
   onToggleCollapse?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ 
-  isCollapsed = false, 
-  onToggleCollapse 
+export const Sidebar: React.FC<SidebarProps> = ({
+  isCollapsed = false,
+  onToggleCollapse,
 }) => {
   return (
     <aside className={`app-sidebar ${isCollapsed ? "collapsed" : ""}`}>
