@@ -69,7 +69,7 @@ router.get(
     }
 
     const { category, status, search } = query.data;
-    
+
     let sql = "SELECT * FROM inventory_items WHERE 1=1";
     const params: any[] = [];
 
@@ -112,10 +112,9 @@ router.get(
 router.get(
   "/items/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const item = await db.get(
-      "SELECT * FROM inventory_items WHERE id = ?",
-      [req.params.id],
-    );
+    const item = await db.get("SELECT * FROM inventory_items WHERE id = ?", [
+      req.params.id,
+    ]);
 
     if (!item) {
       throw new NotFoundError("Item not found");
@@ -165,7 +164,9 @@ router.post(
       ],
     );
 
-    const item = await db.get("SELECT * FROM inventory_items WHERE id = ?", [id]);
+    const item = await db.get("SELECT * FROM inventory_items WHERE id = ?", [
+      id,
+    ]);
 
     res.status(201).json({
       success: true,
@@ -206,17 +207,20 @@ router.put(
     }
 
     const setClause = fields.map((f) => `${f} = ?`).join(", ");
-    const values = [...fields.map((f) => (updates as any)[f]), now, req.params.id];
+    const values = [
+      ...fields.map((f) => (updates as any)[f]),
+      now,
+      req.params.id,
+    ];
 
     await db.run(
       `UPDATE inventory_items SET ${setClause}, updated_at = ? WHERE id = ?`,
       values,
     );
 
-    const updated = await db.get(
-      "SELECT * FROM inventory_items WHERE id = ?",
-      [req.params.id],
-    );
+    const updated = await db.get("SELECT * FROM inventory_items WHERE id = ?", [
+      req.params.id,
+    ]);
 
     res.json({
       success: true,
@@ -291,7 +295,7 @@ router.post(
     }
 
     const now = new Date().toISOString();
-    
+
     // Update item quantity
     await db.run(
       "UPDATE inventory_items SET quantity = ?, updated_at = ? WHERE id = ?",
@@ -314,8 +318,14 @@ router.post(
       ],
     );
 
-    const movement = await db.get("SELECT * FROM inventory_movements WHERE id = ?", [movementId]);
-    const updatedItem = await db.get("SELECT * FROM inventory_items WHERE id = ?", [itemId]);
+    const movement = await db.get(
+      "SELECT * FROM inventory_movements WHERE id = ?",
+      [movementId],
+    );
+    const updatedItem = await db.get(
+      "SELECT * FROM inventory_items WHERE id = ?",
+      [itemId],
+    );
 
     res.status(201).json({
       success: true,
@@ -332,7 +342,9 @@ router.post(
 router.get(
   "/movements",
   asyncHandler(async (req: Request, res: Response) => {
-    const results = await db.all("SELECT * FROM inventory_movements ORDER BY timestamp DESC");
+    const results = await db.all(
+      "SELECT * FROM inventory_movements ORDER BY timestamp DESC",
+    );
 
     res.json({
       success: true,
@@ -350,22 +362,22 @@ router.get(
   "/stats",
   asyncHandler(async (req: Request, res: Response) => {
     const totalItems = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM inventory_items"
+      "SELECT COUNT(*) as count FROM inventory_items",
     );
     const inStock = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM inventory_items WHERE quantity > min_stock"
+      "SELECT COUNT(*) as count FROM inventory_items WHERE quantity > min_stock",
     );
     const lowStock = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM inventory_items WHERE quantity > 0 AND quantity <= min_stock"
+      "SELECT COUNT(*) as count FROM inventory_items WHERE quantity > 0 AND quantity <= min_stock",
     );
     const outOfStock = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM inventory_items WHERE quantity = 0"
+      "SELECT COUNT(*) as count FROM inventory_items WHERE quantity = 0",
     );
     const totalValue = await db.get<{ value: number }>(
-      "SELECT SUM(price * quantity) as value FROM inventory_items WHERE price IS NOT NULL"
+      "SELECT SUM(price * quantity) as value FROM inventory_items WHERE price IS NOT NULL",
     );
     const totalMovements = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM inventory_movements"
+      "SELECT COUNT(*) as count FROM inventory_movements",
     );
 
     const stats = {

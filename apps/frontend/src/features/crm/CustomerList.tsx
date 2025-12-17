@@ -26,41 +26,38 @@ export const CustomerList: React.FC = () => {
   );
 
   useEffect(() => {
-    const mockCustomers: Customer[] = [
-      {
-        id: "1",
-        companyName: "ABC GmbH",
-        contactPerson: "Hans Meyer",
-        email: "meyer@abc.de",
-        phone: "+49 30 12345678",
-        status: "customer",
-        revenue: 45000,
-        lastContact: new Date(Date.now() - 3 * 86400000).toISOString(),
-      },
-      {
-        id: "2",
-        companyName: "XYZ AG",
-        contactPerson: "Anna Schmidt",
-        email: "schmidt@xyz.de",
-        phone: "+49 40 98765432",
-        status: "prospect",
-        revenue: 0,
-        lastContact: new Date(Date.now() - 7 * 86400000).toISOString(),
-      },
-      {
-        id: "3",
-        companyName: "Test & Partner",
-        contactPerson: "Thomas Test",
-        email: "test@partner.de",
-        phone: "+49 89 11223344",
-        status: "lead",
-        revenue: 0,
-        lastContact: new Date().toISOString(),
-      },
-    ];
+    const fetchCustomers = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:3000/api/crm/customers");
+        if (!response.ok) {
+          throw new Error("Failed to fetch customers");
+        }
+        const data = await response.json();
+        
+        // Map database format to component format
+        const mappedCustomers: Customer[] = data.data.map((c: any) => ({
+          id: c.id,
+          companyName: c.company || c.name,
+          contactPerson: c.name,
+          email: c.email || "",
+          phone: c.phone || "",
+          status: c.status as CustomerStatus,
+          revenue: 0, // TODO: Add revenue tracking
+          lastContact: c.updated_at || c.created_at,
+        }));
+        
+        setCustomers(mappedCustomers);
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+        // Fallback to empty array on error
+        setCustomers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setCustomers(mockCustomers);
-    setLoading(false);
+    fetchCustomers();
   }, []);
 
   const filteredCustomers = customers.filter((c) => {

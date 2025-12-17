@@ -30,46 +30,39 @@ export const ProjectList: React.FC = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const mockProjects: Project[] = [
-      {
-        id: "1",
-        name: "Website Redesign",
-        client: "ABC GmbH",
-        startDate: "2024-01-15",
-        endDate: "2024-06-30",
-        status: "active",
-        progress: 65,
-        budget: 50000,
-        spent: 32500,
-        manager: "Max Mustermann",
-      },
-      {
-        id: "2",
-        name: "App Entwicklung",
-        client: "XYZ AG",
-        startDate: "2024-03-01",
-        status: "planning",
-        progress: 10,
-        budget: 120000,
-        spent: 5000,
-        manager: "Anna Schmidt",
-      },
-      {
-        id: "3",
-        name: "System Integration",
-        client: "Test KG",
-        startDate: "2023-09-01",
-        endDate: "2024-02-28",
-        status: "completed",
-        progress: 100,
-        budget: 35000,
-        spent: 33500,
-        manager: "Thomas Müller",
-      },
-    ];
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:3000/api/projects");
+        if (!response.ok) {
+          throw new Error("Failed to fetch projects");
+        }
+        const data = await response.json();
+        
+        // Map database format to component format
+        const mappedProjects: Project[] = data.data.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          client: p.client || "",
+          startDate: p.start_date || "",
+          endDate: p.end_date,
+          status: p.status as ProjectStatus,
+          progress: p.progress || 0,
+          budget: p.budget || 0,
+          spent: p.spent || 0,
+          manager: p.manager || "",
+        }));
+        
+        setProjects(mappedProjects);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setProjects(mockProjects);
-    setLoading(false);
+    fetchProjects();
   }, []);
 
   const filteredProjects = projects.filter((p) => {

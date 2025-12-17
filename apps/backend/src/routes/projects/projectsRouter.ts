@@ -66,8 +66,6 @@ const createTaskSchema = z.object({
   estimatedHours: z.number().min(0).optional(),
 });
 
-
-
 /**
  * GET /api/projects
  * List all projects
@@ -82,7 +80,7 @@ router.get(
     }
 
     const { status, search } = query.data;
-    
+
     let sql = "SELECT * FROM projects WHERE 1=1";
     const params: any[] = [];
 
@@ -116,10 +114,9 @@ router.get(
 router.get(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const project = await db.get(
-      "SELECT * FROM projects WHERE id = ?",
-      [req.params.id],
-    );
+    const project = await db.get("SELECT * FROM projects WHERE id = ?", [
+      req.params.id,
+    ]);
 
     if (!project) {
       throw new NotFoundError("Project not found");
@@ -194,10 +191,9 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const existing = await db.get(
-      "SELECT * FROM projects WHERE id = ?",
-      [req.params.id],
-    );
+    const existing = await db.get("SELECT * FROM projects WHERE id = ?", [
+      req.params.id,
+    ]);
 
     if (!existing) {
       throw new NotFoundError("Project not found");
@@ -222,17 +218,20 @@ router.put(
     }
 
     const setClause = fields.map((f) => `${f} = ?`).join(", ");
-    const values = [...fields.map((f) => (updates as any)[f]), now, req.params.id];
+    const values = [
+      ...fields.map((f) => (updates as any)[f]),
+      now,
+      req.params.id,
+    ];
 
     await db.run(
       `UPDATE projects SET ${setClause}, updated_at = ? WHERE id = ?`,
       values,
     );
 
-    const updated = await db.get(
-      "SELECT * FROM projects WHERE id = ?",
-      [req.params.id],
-    );
+    const updated = await db.get("SELECT * FROM projects WHERE id = ?", [
+      req.params.id,
+    ]);
 
     res.json({
       success: true,
@@ -248,10 +247,9 @@ router.put(
 router.delete(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const existing = await db.get(
-      "SELECT * FROM projects WHERE id = ?",
-      [req.params.id],
-    );
+    const existing = await db.get("SELECT * FROM projects WHERE id = ?", [
+      req.params.id,
+    ]);
 
     if (!existing) {
       throw new NotFoundError("Project not found");
@@ -274,10 +272,9 @@ router.delete(
 router.get(
   "/:projectId/tasks",
   asyncHandler(async (req: Request, res: Response) => {
-    const project = await db.get(
-      "SELECT * FROM projects WHERE id = ?",
-      [req.params.projectId],
-    );
+    const project = await db.get("SELECT * FROM projects WHERE id = ?", [
+      req.params.projectId,
+    ]);
 
     if (!project) {
       throw new NotFoundError("Project not found");
@@ -310,10 +307,9 @@ router.post(
     }
 
     const { projectId } = validation.data;
-    const project = await db.get(
-      "SELECT * FROM projects WHERE id = ?",
-      [projectId],
-    );
+    const project = await db.get("SELECT * FROM projects WHERE id = ?", [
+      projectId,
+    ]);
 
     if (!project) {
       throw new NotFoundError("Project not found");
@@ -356,10 +352,9 @@ router.post(
 router.put(
   "/tasks/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const existing = await db.get(
-      "SELECT * FROM project_tasks WHERE id = ?",
-      [req.params.id],
-    );
+    const existing = await db.get("SELECT * FROM project_tasks WHERE id = ?", [
+      req.params.id,
+    ]);
 
     if (!existing) {
       throw new NotFoundError("Task not found");
@@ -382,10 +377,9 @@ router.put(
       values,
     );
 
-    const updated = await db.get(
-      "SELECT * FROM project_tasks WHERE id = ?",
-      [req.params.id],
-    );
+    const updated = await db.get("SELECT * FROM project_tasks WHERE id = ?", [
+      req.params.id,
+    ]);
 
     res.json({
       success: true,
@@ -402,22 +396,22 @@ router.get(
   "/stats",
   asyncHandler(async (req: Request, res: Response) => {
     const totalProjects = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM projects"
+      "SELECT COUNT(*) as count FROM projects",
     );
     const activeProjects = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM projects WHERE status = 'active'"
+      "SELECT COUNT(*) as count FROM projects WHERE status = 'active'",
     );
     const completedProjects = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM projects WHERE status = 'completed'"
+      "SELECT COUNT(*) as count FROM projects WHERE status = 'completed'",
     );
     const totalTasks = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM project_tasks"
+      "SELECT COUNT(*) as count FROM project_tasks",
     );
     const completedTasks = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'done'"
+      "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'done'",
     );
     const inProgressTasks = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'in_progress'"
+      "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'in_progress'",
     );
 
     const stats = {
