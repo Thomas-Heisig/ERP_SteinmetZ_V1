@@ -116,8 +116,7 @@ export async function callLlamaCpp(
       },
     };
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : "Unbekannter Fehler";
+    const message = err instanceof Error ? err.message : "Unbekannter Fehler";
     log("error", "llama.cpp Fehler", {
       error: message,
       endpoint: llamaConfig.endpoint,

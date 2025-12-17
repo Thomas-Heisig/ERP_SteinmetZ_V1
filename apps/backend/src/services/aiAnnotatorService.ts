@@ -821,7 +821,7 @@ export class AiAnnotatorService extends EventEmitter {
   }
 
   private startHealthMonitoring() {
-        // Alle 30s pruefen
+    // Alle 30s pruefen
     setInterval(() => this.performHealthCheck().catch(console.error), 30000);
     // Sofort beim Start prüfen
     this.performHealthCheck().catch(console.error);
@@ -2401,7 +2401,7 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
       return fallback;
     }
 
-        // Prioritaeten-Reihenfolge (qwen:8b > qwen:4b > beliebiges Ollama)
+    // Prioritaeten-Reihenfolge (qwen:8b > qwen:4b > beliebiges Ollama)
     const byName = (n: string) => capable.find((m) => m.name === n);
     return (
       byName("qwen3:8b") ||

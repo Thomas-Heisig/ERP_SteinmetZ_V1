@@ -52,7 +52,7 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
       switch (sortBy) {
         case "provider":
           return (a.provider || "").localeCompare(b.provider || "");
-        case "capabilities":
+        case "capabilities": {
           // ✅ KORRIGIERT: Sort by capability count, then by name
           const aCapCount = Array.isArray(a.capabilities)
             ? a.capabilities.length
@@ -62,6 +62,7 @@ export const ModelsTab: React.FC<ModelsTabProps> = ({
             : 0;
           if (bCapCount !== aCapCount) return bCapCount - aCapCount;
           return (a.name || "").localeCompare(b.name || "");
+        }
         case "name":
         default:
           return (a.name || "").localeCompare(b.name || "");

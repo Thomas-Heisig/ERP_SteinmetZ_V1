@@ -198,7 +198,7 @@ export function dashboardReducer(
         },
       };
 
-    case "NAV_POP":
+    case "NAV_POP": {
       if (state.navigation.currentIndex <= 0) return state;
 
       const newIndex = state.navigation.currentIndex - 1;
@@ -212,6 +212,7 @@ export function dashboardReducer(
           canGoForward: true,
         },
       };
+    }
 
     case "NAV_CLEAR":
       return {
@@ -332,7 +333,7 @@ export function dashboardReducer(
     // ============================================================
     // CACHE
     // ============================================================
-    case "CACHE_SET_NODE":
+    case "CACHE_SET_NODE": {
       const cached = normalizeNode(action.payload);
       return {
         ...state,
@@ -345,6 +346,7 @@ export function dashboardReducer(
           lastUpdated: new Date(),
         },
       };
+    }
 
     // ============================================================
     // CONFIG

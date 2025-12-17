@@ -14,6 +14,7 @@ export type ClassValue =
   | Record<string, boolean>
   | ClassArray;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ClassArray extends Array<ClassValue> {}
 
 export interface ClsOptions {

@@ -39,6 +39,7 @@ export function useDashboardShortcuts(): UseDashboardShortcuts {
   const showHelp = useCallback(() => {
     // Log shortcuts for debugging (only in development)
     if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
       console.table(
         Array.from(shortcutsRef.current.entries()).map(([key, v]) => ({
           key,
