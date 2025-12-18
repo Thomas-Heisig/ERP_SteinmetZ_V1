@@ -142,7 +142,7 @@ Aktualisierte Links:
 - [ ] Weitere Artikel aus `docs/concept/` integrieren
 - [ ] Screenshots für wichtige Features hinzufügen
 - [ ] Code-Beispiele erweitern
-- [ ] Alle Links im Repository prüfen
+- [x] Alle Links im Repository geprüft (18.12.2025)
 
 ### Mittelfristig
 - [ ] Markdown-Rendering verbessern (Code-Highlighting, Tabellen)
