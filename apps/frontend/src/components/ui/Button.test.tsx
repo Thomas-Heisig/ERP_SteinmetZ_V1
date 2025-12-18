@@ -4,6 +4,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Button } from "./Button";
+import styles from "./Button.module.css";
 
 describe("Button component", () => {
   it("should render with children text", () => {
@@ -14,23 +15,23 @@ describe("Button component", () => {
   it("should render with primary variant by default", () => {
     render(<Button>Primary Button</Button>);
     const button = screen.getByRole("button");
-    expect(button).toHaveClass("ui-button--primary");
+    expect(button).toHaveClass(styles.primary);
   });
 
   it("should render with different variants", () => {
     const { rerender } = render(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole("button")).toHaveClass("ui-button--secondary");
+    expect(screen.getByRole("button")).toHaveClass(styles.secondary);
 
     rerender(<Button variant="danger">Danger</Button>);
-    expect(screen.getByRole("button")).toHaveClass("ui-button--danger");
+    expect(screen.getByRole("button")).toHaveClass(styles.danger);
   });
 
   it("should render with different sizes", () => {
     const { rerender } = render(<Button size="sm">Small</Button>);
-    expect(screen.getByRole("button")).toHaveClass("ui-button--sm");
+    expect(screen.getByRole("button")).toHaveClass(styles.sm);
 
     rerender(<Button size="lg">Large</Button>);
-    expect(screen.getByRole("button")).toHaveClass("ui-button--lg");
+    expect(screen.getByRole("button")).toHaveClass(styles.lg);
   });
 
   it("should be disabled when disabled prop is true", () => {
@@ -45,8 +46,9 @@ describe("Button component", () => {
 
   it("should show spinner when loading", () => {
     render(<Button loading>Loading</Button>);
-    const spinner = document.querySelector(".ui-button__spinner");
+    const spinner = screen.getByRole("status");
     expect(spinner).toBeInTheDocument();
+    expect(spinner).toHaveClass(styles.spinner);
   });
 
   it("should apply custom className", () => {
