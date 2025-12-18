@@ -2413,11 +2413,13 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
           m.available,
       ) ||
       capable.find((m) => m.name === "fallback");
-    
+
     if (!preferred) {
-      throw new Error("[aiAnnotator] Kein passendes Modell in capable-Liste gefunden");
+      throw new Error(
+        "[aiAnnotator] Kein passendes Modell in capable-Liste gefunden",
+      );
     }
-    
+
     return preferred;
   }
 

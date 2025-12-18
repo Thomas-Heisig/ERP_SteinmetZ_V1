@@ -595,7 +595,7 @@ function buildTreeFromFlatNodes(flatNodes: CatalogNode[]): CatalogNode[] {
   for (const n of flatNodes) {
     const cur = nodeMap.get(n.id);
     if (!cur) continue; // Should not happen, but handle it gracefully
-    
+
     if (n.parent_id && nodeMap.has(n.parent_id)) {
       const parent = nodeMap.get(n.parent_id);
       if (parent) {
