@@ -116,7 +116,7 @@ export class ModelManagementService {
   ): ModelPerformanceComparison[] {
     return modelNames
       .map((name) => {
-        const stats = this.getModelStats(name, days);
+        const stats = this.getModelStats(name);
         if (!stats) {
           return {
             modelName: name,
