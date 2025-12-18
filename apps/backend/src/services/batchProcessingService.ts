@@ -190,14 +190,16 @@ export class BatchProcessingService {
     }
 
     if (filter.createdAfter) {
+      const afterDate = filter.createdAfter;
       batches = batches.filter(
-        (b) => b.created_at && b.created_at >= filter.createdAfter!,
+        (b) => b.created_at && b.created_at >= afterDate,
       );
     }
 
     if (filter.createdBefore) {
+      const beforeDate = filter.createdBefore;
       batches = batches.filter(
-        (b) => b.created_at && b.created_at <= filter.createdBefore!,
+        (b) => b.created_at && b.created_at <= beforeDate,
       );
     }
 

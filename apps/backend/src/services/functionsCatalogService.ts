@@ -593,10 +593,14 @@ function buildTreeFromFlatNodes(flatNodes: CatalogNode[]): CatalogNode[] {
 
   // 2️⃣ Parent‑/Child‑Beziehungen herstellen
   for (const n of flatNodes) {
-    const cur = nodeMap.get(n.id)!;
+    const cur = nodeMap.get(n.id);
+    if (!cur) continue; // Should not happen, but handle it gracefully
+    
     if (n.parent_id && nodeMap.has(n.parent_id)) {
-      const parent = nodeMap.get(n.parent_id)!;
-      parent.children.push(cur);
+      const parent = nodeMap.get(n.parent_id);
+      if (parent) {
+        parent.children.push(cur);
+      }
     } else {
       roots.push(cur);
     }
@@ -813,7 +817,7 @@ async function buildIndex(opts?: BuildOptions): Promise<BuildResult> {
         return n;
       }
 
-      const count = seen.get(originalId)!;
+      const count = seen.get(originalId) ?? 1;
       const newId = `${originalId}-${count}`;
 
       seen.set(originalId, count + 1);

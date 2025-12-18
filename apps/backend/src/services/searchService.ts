@@ -121,14 +121,16 @@ export class SearchService {
 
     // Filter by kinds
     if (query.kinds && query.kinds.length > 0) {
-      filtered = filtered.filter((node) => query.kinds!.includes(node.kind));
+      const kinds = query.kinds;
+      filtered = filtered.filter((node) => kinds.includes(node.kind));
     }
 
     // Filter by tags
     if (query.tags && query.tags.length > 0) {
+      const tags = query.tags;
       filtered = filtered.filter((node) => {
         const nodeTags = (node.meta?.tags || []) as string[];
-        return query.tags!.some((tag) =>
+        return tags.some((tag) =>
           nodeTags.some((nt) =>
             String(nt).toLowerCase().includes(tag.toLowerCase()),
           ),
@@ -138,9 +140,10 @@ export class SearchService {
 
     // Filter by area
     if (query.area) {
+      const area = query.area;
       filtered = filtered.filter((node) => {
         const nodeArea = String(node.meta?.businessArea || "");
-        return nodeArea.toLowerCase().includes(query.area!.toLowerCase());
+        return nodeArea.toLowerCase().includes(area.toLowerCase());
       });
     }
 

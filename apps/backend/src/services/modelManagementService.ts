@@ -229,12 +229,12 @@ export class ModelManagementService {
     let comparisons = this.compareModels(allModels);
 
     if (criteria.maxCost !== undefined) {
-      comparisons = comparisons.filter((c) => c.cost <= criteria.maxCost!);
+      const maxCost = criteria.maxCost;
+      comparisons = comparisons.filter((c) => c.cost <= maxCost);
     }
     if (criteria.minAccuracy !== undefined) {
-      comparisons = comparisons.filter(
-        (c) => c.accuracy >= criteria.minAccuracy!,
-      );
+      const minAccuracy = criteria.minAccuracy;
+      comparisons = comparisons.filter((c) => c.accuracy >= minAccuracy);
     }
 
     return comparisons;

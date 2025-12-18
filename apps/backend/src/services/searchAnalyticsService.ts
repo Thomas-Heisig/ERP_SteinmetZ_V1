@@ -160,10 +160,12 @@ export class SearchAnalyticsService {
     const queryMap = new Map<string, SearchQueryLog[]>();
 
     for (const log of recentLogs) {
-      if (!queryMap.has(log.query)) {
-        queryMap.set(log.query, []);
+      const logs = queryMap.get(log.query);
+      if (logs) {
+        logs.push(log);
+      } else {
+        queryMap.set(log.query, [log]);
       }
-      queryMap.get(log.query)!.push(log);
     }
 
     const popularQueries: PopularQuery[] = [];
@@ -195,10 +197,12 @@ export class SearchAnalyticsService {
     const queryMap = new Map<string, SearchQueryLog[]>();
 
     for (const log of recentLogs) {
-      if (!queryMap.has(log.query)) {
-        queryMap.set(log.query, []);
+      const logs = queryMap.get(log.query);
+      if (logs) {
+        logs.push(log);
+      } else {
+        queryMap.set(log.query, [log]);
       }
-      queryMap.get(log.query)!.push(log);
     }
 
     const zeroResultQueries: PopularQuery[] = [];
@@ -238,10 +242,12 @@ export class SearchAnalyticsService {
         bucketKey = date.toISOString();
       }
 
-      if (!bucketMap.has(bucketKey)) {
-        bucketMap.set(bucketKey, []);
+      const logs = bucketMap.get(bucketKey);
+      if (logs) {
+        logs.push(log);
+      } else {
+        bucketMap.set(bucketKey, [log]);
       }
-      bucketMap.get(bucketKey)!.push(log);
     }
 
     const trends: SearchTrend[] = [];

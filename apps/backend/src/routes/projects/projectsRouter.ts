@@ -12,10 +12,7 @@
 
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import {
-  NotFoundError,
-  ValidationError,
-} from "../../types/errors.js";
+import { NotFoundError, ValidationError } from "../../types/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import pino from "pino";
 import db from "../../services/dbService.js";
