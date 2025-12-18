@@ -188,7 +188,7 @@ export async function translateBatch(
   engine:
     | "openai"
     | "vertex"
-    | "huggingface" = translationConfig.defaultEngine as any,
+    | "huggingface" = translationConfig.defaultEngine as "openai" | "vertex" | "huggingface",
 ): Promise<AIResponse[]> {
   const results: AIResponse[] = [];
   for (const t of texts) {

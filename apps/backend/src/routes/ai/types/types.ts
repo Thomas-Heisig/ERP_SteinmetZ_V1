@@ -425,7 +425,7 @@ export interface ConversationState {
   updated_at?: string;
   active_workflow?: string;
   last_tool_used?: string;
-  user_profile?: Record<string, any>;
+  user_profile?: Record<string, unknown>;
   context_confidence?: string;
   // Ergänzungen für erweiterte Kontextverwaltung
   session_start?: string;
@@ -436,7 +436,7 @@ export interface ConversationState {
   conversation_phase?: "initial" | "middle" | "final";
   pending_actions?: Array<{
     action: string;
-    params: Record<string, any>;
+    params: Record<string, unknown>;
     required_confirmation: boolean;
   }>;
 }
