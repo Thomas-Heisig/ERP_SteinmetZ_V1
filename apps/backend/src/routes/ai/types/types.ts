@@ -47,7 +47,7 @@ export interface ChatMessage {
 /** Verlauf einer Unterhaltung */
 export interface ConversationHistory {
   messages: ChatMessage[];
-  context_snapshot?: Record<string, any>;
+  context_snapshot?: Record<string, unknown>;
   last_updated?: string;
   source?: string;
   // Ergänzungen für erweiterte Historie
@@ -89,12 +89,12 @@ export interface FallbackConfig {
   pools: Record<string, string[][]>;
   eliza_rules: ElizaRule[];
   reflections: Record<string, string>;
-  tools: Record<string, any>;
-  workflows: Record<string, any>;
-  databases: Record<string, any>;
+  tools: Record<string, unknown>;
+  workflows: Record<string, unknown>;
+  databases: Record<string, unknown>;
   models?: Record<string, AIModuleConfig>;
-  preferences?: Record<string, any>;
-  defaults?: Record<string, any>;
+  preferences?: Record<string, unknown>;
+  defaults?: Record<string, unknown>;
   environment?: "development" | "production" | "test";
   version?: string;
   // Ergänzungen für erweiterte Konfiguration
@@ -116,7 +116,7 @@ export interface FallbackConfig {
 export interface ToolMetadata {
   name: string; // Hinzugefügt für Konsistenz
   description?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   category?: string;
   version?: string;
   restricted?: boolean;
@@ -124,11 +124,11 @@ export interface ToolMetadata {
   last_updated?: string;
   return_type?: string;
   // Ergänzungen für erweiterte Tool-Metadaten
-  input_schema?: Record<string, any>;
-  output_schema?: Record<string, any>;
+  input_schema?: Record<string, unknown>;
+  output_schema?: Record<string, unknown>;
   examples?: Array<{
-    input: Record<string, any>;
-    output: any;
+    input: Record<string, unknown>;
+    output: unknown;
   }>;
   dependencies?: string[];
   timeout_ms?: number;
@@ -136,15 +136,15 @@ export interface ToolMetadata {
 
 export interface ToolResult {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   runtime_ms?: number;
   source_tool?: string;
   timestamp?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   // Ergänzungen für erweiterte Ergebnisverwaltung
   warnings?: string[];
-  partial_data?: any;
+  partial_data?: unknown;
   next_steps?: string[];
 }
 
@@ -157,7 +157,7 @@ export interface ToolFunction {
   restricted?: boolean;
   registeredAt?: string;
   // Ergänzungen für erweiterte Tool-Funktionen
-  validate?: (params: Record<string, any>) => boolean;
+  validate?: (params: Record<string, unknown>) => boolean;
   cleanup?: () => void;
 }
 
@@ -207,7 +207,7 @@ export interface WorkflowStep {
   tool?: string;
 
   /** Parameter, die an Tool oder Subworkflow übergeben werden */
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
 
   /** Speichert Ergebnis des Schrittes unter diesem Variablennamen */
   variable?: string;
@@ -227,7 +227,7 @@ export interface WorkflowStep {
     target: string;
     map?: Record<string, string>;
     // Ergänzungen für erweiterte Transformationen
-    filter?: (item: any) => boolean;
+    filter?: (item: unknown) => boolean;
     format?: "json" | "csv" | "xml";
   };
 
@@ -247,7 +247,7 @@ export interface WorkflowStep {
   context_key?: string;
 
   /** Zusätzliche Metadaten, z. B. Beschreibung, Autor, Quelle */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 
   /** Nur für `switch`: Fälle definieren */
   cases?: {
@@ -370,17 +370,20 @@ export interface WorkflowDefinition {
 export interface AIResponse {
   text: string;
   action?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params?: Record<string, any>;
   tool_calls?: Array<{
     name: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parameters: Record<string, any>;
     // Ergänzungen für erweiterte Tool-Aufrufe
     id?: string;
     sequential?: boolean;
     fallback_tool?: string;
   }>;
-  context_update?: Record<string, any>;
+  context_update?: Record<string, unknown>;
   suggested_actions?: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
   meta?: {
     model?: string;
@@ -396,7 +399,7 @@ export interface AIResponse {
     model_version?: string;
     reasoning_steps?: string[];
     alternatives?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   };
   errors?: string[];
   // Ergänzungen für erweiterte Antwortverwaltung
@@ -411,8 +414,9 @@ export interface AIResponse {
 /* ========================================================================== */
 
 export interface ConversationState {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
-  preferences?: Record<string, any>;
+  preferences?: Record<string, unknown>;
   history_length?: number;
   sentiment?: "positive" | "neutral" | "negative" | "critical" | "questioning";
   current_topic?: string;
@@ -762,8 +766,8 @@ export interface AuditLogEntry {
   compliance_tags?: string[];
   data_changes?: Array<{
     field: string;
-    old_value: any;
-    new_value: any;
+    old_value: unknown;
+    new_value: unknown;
   }>;
 }
 
@@ -843,7 +847,7 @@ export interface ChatSession {
 export interface PipelineStage {
   name: string;
   description?: string;
-  handler: (input: any, context?: any) => Promise<any>;
+  handler: (input: unknown, context?: unknown) => Promise<unknown>;
   depends_on?: string[];
   timeout_ms?: number;
   output_key?: string;
@@ -853,8 +857,8 @@ export interface PipelineStage {
     max_attempts: number;
     backoff_ms: number;
   };
-  validation_schema?: Record<string, any>;
-  error_handler?: (error: Error, context: any) => Promise<any>;
+  validation_schema?: Record<string, unknown>;
+  error_handler?: (error: Error, context: unknown) => Promise<unknown>;
 }
 
 export interface PipelineRun {
@@ -949,15 +953,15 @@ export type PaginatedResult<T> = {
 
 export interface ReasoningTrace {
   step: string;
-  input: any;
-  output: any;
+  input: unknown;
+  output: unknown;
   duration_ms: number;
   timestamp: string;
   // Ergänzungen für erweiterte Reasoning-Traces
   confidence?: number;
-  alternatives_considered?: any[];
+  alternatives_considered?: unknown[];
   decision_factors?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface KnowledgeItem {
