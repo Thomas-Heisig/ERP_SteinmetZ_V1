@@ -375,7 +375,7 @@ export class FilterService {
    * Converts filtered data to JSON or CSV format for download/export.
    *
    * @param {any[]} nodes - The filtered data to export
-   * @param {"json" | "csv" | "excel"} [format="json"] - Export format
+   * @param {"json" | "csv"} [format="json"] - Export format (JSON or CSV)
    * @returns {Promise<string | Buffer>} Formatted data as string or buffer
    *
    * @example
@@ -387,7 +387,7 @@ export class FilterService {
    */
   async exportFilteredResults(
     nodes: any[],
-    format: "json" | "csv" | "excel" = "json",
+    format: "json" | "csv" = "json",
   ): Promise<string | Buffer> {
     if (format === "json") {
       return JSON.stringify(nodes, null, 2);

@@ -489,7 +489,7 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
     - Output: docs/api/index.html
     - npm run docs funktioniert
     - npm run docs:serve für lokale Ansicht
-  - [x] Phase 1: Critical APIs (erweitert - 5 von ~20 Dateien) ✅ FORTSCHRITT (18. Dez 2025)
+  - [x] Phase 1: Critical APIs (erweitert - 5 von ~20 Dateien) ✅ FORTSCHRITT (18 Dec 2025)
     - [x] AuthService: Vollständige JSDoc für init, register, login, logout, validateToken, refreshToken
     - [x] errorHandler Middleware: Umfassende Dokumentation mit Beispielen
     - [x] asyncHandler Middleware: Best-Practice-Beispiele hinzugefügt

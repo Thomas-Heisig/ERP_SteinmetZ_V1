@@ -87,8 +87,11 @@ class RedisService {
    * // Initialize with custom config
    * await redisService.initialize({ host: 'redis.example.com', port: 6380 });
    *
-   * // Initialize with defaults from environment
+   * // Initialize with defaults from environment (automatically called on module import)
    * await redisService.initialize();
+   *
+   * // Note: The service auto-initializes on import, but you can call this
+   * // explicitly if you need to change configuration or retry connection
    * ```
    */
   async initialize(config?: Partial<RedisConfig>): Promise<void> {
