@@ -2403,17 +2403,24 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
 
     // Prioritaeten-Reihenfolge (qwen:8b > qwen:4b > beliebiges Ollama)
     const byName = (n: string) => capable.find((m) => m.name === n);
-    return (
+    const preferred =
       byName("qwen3:8b") ||
       byName("qwen3:4b") ||
-      capable.find((m) => m.provider === "ollama")! ||
+      capable.find((m) => m.provider === "ollama") ||
       capable.find(
         (m) =>
           (m.provider === "openai" || m.provider === "anthropic") &&
           m.available,
-      )! ||
-      capable.find((m) => m.name === "fallback")!
-    );
+      ) ||
+      capable.find((m) => m.name === "fallback");
+
+    if (!preferred) {
+      throw new Error(
+        "[aiAnnotator] Kein passendes Modell in capable-Liste gefunden",
+      );
+    }
+
+    return preferred;
   }
 
   /* ---------------------------------------------------------------------- */

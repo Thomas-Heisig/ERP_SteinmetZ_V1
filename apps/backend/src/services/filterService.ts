@@ -139,15 +139,15 @@ export class FilterService {
     }
 
     if (filterConfig.kinds && filterConfig.kinds.length > 0) {
-      filtered = filtered.filter((node) =>
-        filterConfig.kinds!.includes(node.kind),
-      );
+      const kinds = filterConfig.kinds;
+      filtered = filtered.filter((node) => kinds.includes(node.kind));
     }
 
     if (filterConfig.tags && filterConfig.tags.length > 0) {
+      const tags = filterConfig.tags;
       filtered = filtered.filter((node) => {
         const nodeTags = node.meta_json?.tags || [];
-        return filterConfig.tags!.some((tag) => nodeTags.includes(tag));
+        return tags.some((tag) => nodeTags.includes(tag));
       });
     }
 

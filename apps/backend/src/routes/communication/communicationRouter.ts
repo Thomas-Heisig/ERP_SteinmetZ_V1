@@ -11,16 +11,12 @@
 
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import {
-  BadRequestError,
-  NotFoundError,
-  ValidationError,
-} from "../../types/errors.js";
+import { NotFoundError, ValidationError } from "../../types/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import pino from "pino";
 
 const router = Router();
-const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+const _logger = pino({ level: process.env.LOG_LEVEL || "info" }); // Reserved for future logging
 
 // Validation schemas
 const messageQuerySchema = z.object({

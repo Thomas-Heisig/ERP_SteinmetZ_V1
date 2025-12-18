@@ -60,7 +60,7 @@ import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { createLogger } from "../../utils/logger.js";
 
 const router = Router();
-const logger = createLogger("quickchat");
+const _logger = createLogger("quickchat"); // Reserved for future logging
 
 // ✅ IMPROVED: Enhanced validation schemas with better error messages
 const messageSchema = z.object({
