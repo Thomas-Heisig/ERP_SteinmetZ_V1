@@ -14,77 +14,131 @@ Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical D
 
 ### ISSUE-017: TypeScript `any` Type Warnungen 🔧
 
-**Status**: 🟡 Offen | **Priorität**: Mittel | **Erstellt**: 2025-12-18
+**Status**: 🟡 Offen - Analyse abgeschlossen | **Priorität**: Mittel | **Erstellt**: 2025-12-18 | **Aktualisiert**: 2025-12-18
 
 **Beschreibung**:
-Das Backend enthält 194 ESLint-Warnungen für `@typescript-eslint/no-explicit-any`. Die Verwendung von `any` untergräbt die Typsicherheit von TypeScript und kann zu Laufzeitfehlern führen.
+Das Backend enthält **441 ESLint-Warnungen** für `@typescript-eslint/no-explicit-any` (nicht 194 wie ursprünglich geschätzt). Die Verwendung von `any` untergräbt die Typsicherheit von TypeScript und kann zu Laufzeitfehlern führen.
 
-**Betroffene Bereiche**:
+**Detaillierte Analyse (18. Dez 2025)**:
 
-- `src/routes/ai/` - AI-Provider und Tools (ca. 150 Warnungen)
-  - `aiProviderService.ts` - 27 `any` Types
-  - `translationService.ts` - 8 `any` Types
-  - `databaseTools.ts` - 12 `any` Types
-  - `registry.ts` - 13 `any` Types
-  - `types.ts` - 62 `any` Types (größter Problembereich)
-  - `systemTools.ts` - 2 `any` Types
-- Andere Module - 44 Warnungen verteilt
+**Top 20 betroffene Dateien**:
+
+1. `src/services/dbService.ts` - 63 `any` Types (Datenbankabfragen, generische Result-Types)
+2. `src/services/aiAnnotatorService.ts` - 33 `any` Types (AI Service Responses)
+3. `ai/workflows/workflowEngine.ts` - 28 `any` Types (Workflow States, Payloads)
+4. `ai/types/types.ts` - 24 `any` Types (AI Message Types, Tool Definitions)
+5. `ai/providers/customProvider.ts` - 22 `any` Types (Provider API Responses)
+6. `src/services/systemInfoService.ts` - 19 `any` Types (System Metriken)
+7. `ai/utils/helpers.ts` - 16 `any` Types (Utility-Funktionen)
+8. `src/types/errors.ts` - 15 `any` Types (Error-Handling, Metadata)
+9. `ai/services/settingsService.ts` - 14 `any` Types
+10. `ai/tools/registry.ts` - 13 `any` Types
+11. `src/services/functionsCatalogService.ts` - 13 `any` Types
+12. `ai/tools/databaseTools.ts` - 12 `any` Types
+13. `ai/utils/errors.ts` - 12 `any` Types
+14. `ai/utils/fileUtils.ts` - 11 `any` Types
+15. `ai/utils/validation.ts` - 11 `any` Types
+16. `ai/services/chatService.ts` - 10 `any` Types
+17. `src/utils/errorResponse.ts` - 9 `any` Types
+18. `ai/services/toolService.ts` - 8 `any` Types
+19. `src/services/authService.ts` - 8 `any` Types
+20. `src/services/errorTrackingService.ts` - 8 `any` Types
+
+**Verbleibende Dateien**: 36 Dateien mit 1-7 `any` Types
 
 **Lösungsansatz**:
 
-1. Spezifische Types für AI-Provider-Responses definieren
-2. Generic Types für Tool-Parameter und Rückgabewerte
-3. Union Types für verschiedene Message-Formate
-4. `unknown` statt `any` wo der Typ wirklich unbekannt ist
-5. Type Guards für Runtime-Type-Checking
+1. **Phase 1: Core Services** (dbService, aiAnnotatorService) - 96 `any` Types
+   - Database: Generic Types für Query Results mit Zod-Validierung
+   - AI Annotator: Typed Interfaces für Service Responses
+2. **Phase 2: AI System** (workflows, types, providers) - 74 `any` Types
+   - Workflow Engine: State Machine Types mit Discriminated Unions
+   - AI Types: Message Types und Tool Parameter Interfaces
+   - Provider: Response Types für verschiedene AI APIs
+3. **Phase 3: Utilities & Tools** (helpers, tools, utils) - 85 `any` Types
+   - Helper-Funktionen: Generic Constraints und Type Guards
+   - Tool Registry: Typed Tool Definitions
+   - File/DB Tools: Input/Output Type Definitions
 
-**Auswirkung**: Reduzierte Typsicherheit, potenzielle Runtime-Fehler
+4. **Phase 4: Error Handling & Misc** (errors, remaining files) - 186 `any` Types
+   - Error Types: Custom Error Interfaces mit Metadata
+   - Remaining Files: Case-by-case Type Definitions
 
-**Aufwand**: 2-3 Tage für vollständige Type-Migration
+**Technische Ansätze**:
 
-**Priorität-Begründung**: Wichtig für Code-Qualität und Wartbarkeit, aber blockiert keine Features
+- `unknown` statt `any` für wirklich unbekannte Typen
+- Type Guards für Runtime Type Checking
+- Generic Types mit Constraints
+- Discriminated Unions für State Management
+- Zod-Schemas für Runtime Validation
+
+**Auswirkung**: Reduzierte Typsicherheit, potenzielle Runtime-Fehler, erschwerte Wartung
+
+**Aufwand**: 5-7 Tage für vollständige Migration (441 Instanzen in 56 Dateien)
+
+**Priorität-Begründung**: Wichtig für Code-Qualität und Wartbarkeit, aber blockiert keine Features. Schrittweise Migration möglich.
 
 ---
 
 ### ISSUE-018: Deprecated npm Dependencies 📦
 
-**Status**: 🟡 Offen | **Priorität**: Niedrig | **Erstellt**: 2025-12-18
+**Status**: 🟢 Gelöst - Nur transitive Dependencies betroffen | **Priorität**: Niedrig | **Erstellt**: 2025-12-18 | **Gelöst**: 2025-12-18
 
 **Beschreibung**:
-Mehrere npm-Pakete im Projekt sind als deprecated markiert und sollten evaluiert und ggf. ersetzt werden.
+Mehrere npm-Pakete im Projekt sind als deprecated markiert. Nach gründlicher Analyse sind **keine direkten deprecated Dependencies** mehr vorhanden.
 
-**Deprecated Packages**:
+**Analyse-Ergebnis (18. Dez 2025)**:
+
+**Verbleibende deprecated Packages (alle transitiv)**:
 
 - `npmlog@6.0.2` - "This package is no longer supported"
-  - Wird von `better-sqlite3` als transitive Dependency benötigt
-  - Keine direkte Abhängigkeit im Projekt
+  - ✅ Transitive Dependency von `better-sqlite3`
+  - ✅ Keine direkte Abhängigkeit im Projekt
+  - ℹ️ Kein Sicherheitsrisiko, reine Build-Warnings
 - `gauge@4.0.4` - "This package is no longer supported"
-  - Transitive Dependency von npmlog
-- `fluent-ffmpeg@2.1.3` - "Package no longer supported"
-  - Direkte Backend-Dependency
-  - Wird für Video/Audio-Verarbeitung verwendet
+  - ✅ Transitive Dependency von npmlog
+  - ℹ️ Wird mit sqlite3-Update automatisch behoben
+- ~~`fluent-ffmpeg@2.1.3`~~ - **BEREITS ENTFERNT** ✅
+  - ✅ Nicht mehr in package.json
+  - ✅ Wird nicht im Code verwendet
 - `rimraf@3.x` - "Rimraf versions prior to v4 are no longer supported"
-  - Transitive Dependencies (mehrere Pakete)
-  - Root verwendet bereits rimraf@5.0.5
+  - ✅ Transitive Dependencies (mehrere Pakete)
+  - ✅ Root verwendet bereits `rimraf@5.0.5`
+  - ℹ️ Wird durch Updates der Haupt-Dependencies automatisch behoben
 - `glob@7.x` - "Glob versions prior to v9 are no longer supported"
-  - Transitive Dependencies (mehrere Pakete)
+  - ✅ Transitive Dependencies (mehrere Pakete)
+  - ℹ️ Wird durch Updates der Haupt-Dependencies automatisch behoben
 - `inflight@1.0.6` - "This module is not supported, and leaks memory"
-  - Transitive Dependency
+  - ✅ Transitive Dependency
+  - ℹ️ Wird durch glob@9 Update automatisch behoben
 
-**Lösungsansatz**:
+**Weitere deprecated Packages**:
 
-1. **npmlog/gauge**: Auf bessere sqlite3-Version warten oder Build-Output filtern
-2. **fluent-ffmpeg**:
-   - Evaluieren ob noch benötigt wird
-   - Falls ja: Alternative wie `@ffmpeg/ffmpeg` oder `ffmpeg-static` prüfen
-3. **rimraf/glob**: Werden durch Updates der Haupt-Dependencies automatisch behoben
-4. **inflight**: Transitive Dependency, wird durch glob@9 Update behoben
+- `@npmcli/move-file@1.1.2` - Funktionalität in @npmcli/fs verschoben (transitiv)
+- `are-we-there-yet@3.0.1` - Nicht mehr supported (transitiv von npmlog)
+- `node-domexception@1.0.0` - Platform native DOMException verwenden (transitiv)
 
-**Auswirkung**: Potenzielle Sicherheitsprobleme, fehlender Support, Memory Leaks (inflight)
+**Status-Zusammenfassung**:
 
-**Aufwand**: 4-6 Stunden (Evaluation + Migration)
+✅ **Direkte Dependencies**: Alle bereinigt  
+✅ **Sicherheit**: `npm audit` zeigt 0 Vulnerabilities  
+⚠️ **Transitive Dependencies**: 9 deprecated packages (kein Handlungsbedarf)  
+✅ **Build & Tests**: Alle 152 Tests bestehen
 
-**Priorität-Begründung**: Keine akuten Probleme, aber sollte bei nächstem Major-Release adressiert werden
+**Empfehlung**:
+
+1. ✅ **Abgeschlossen**: Keine Aktion erforderlich für direkte Dependencies
+2. ⏳ **Monitoring**: Bei Updates von better-sqlite3 prüfen ob npmlog/gauge behoben
+3. ⏳ **Zukünftig**: Transitive Dependencies werden durch normale Updates behoben
+4. ✅ **Sicherheit**: Keine Vulnerabilities, kein dringender Handlungsbedarf
+
+**Auswirkung**: Minimal - nur Build-Warnings, keine Sicherheitsprobleme oder funktionale Einschränkungen
+
+**Aufwand**: 1 Stunde (Analyse abgeschlossen) ✅
+
+**Priorität-Begründung**: Niedrig - Nur transitive Dependencies betroffen, keine direkten deprecated packages mehr im Projekt. Wird durch normale Dependency-Updates im Laufe der Zeit automatisch behoben.
+
+**Ergebnis**: ✅ Issue als gelöst markiert - Keine weiteren Aktionen erforderlich
 
 ---
 
@@ -292,29 +346,30 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](../archive/ARCHIVE.m
 
 ### Nach Priorität
 
-- 🟠 Hoch: 3 Issues
-  - ISSUE-008: Monitoring - weitgehend behoben
-  - ISSUE-017: TypeScript `any` Types - 194 Warnungen 🆕
-  - ISSUE-018: Deprecated Dependencies - 6 Pakete 🆕
-- 🟡 Mittel: 2 Issues (ISSUE-009 weitgehend behoben, ISSUE-012, ISSUE-013 teilweise)
-- 🟢 Niedrig: 0 Issues - Alle erledigt! ✅
+- 🟠 Hoch: 2 Issues
+  - ISSUE-008: Monitoring - weitgehend behoben (75% komplett)
+  - ISSUE-017: TypeScript `any` Types - 441 Warnungen analysiert 🆕
+- 🟡 Mittel: 2 Issues (ISSUE-009 weitgehend behoben, ISSUE-013 Phase 1 begonnen)
+- 🟢 Niedrig: 1 Issue (ISSUE-012 - grundlegende Features implementiert)
+- ✅ Gelöst: ISSUE-018 (Deprecated Dependencies - nur transitive betroffen) 🆕
 
-**Gesamt**: 5 aktive Issues | **Status**: 1 weitgehend behoben, 4 in Arbeit/offen | **Archiviert**: 14 Issues (siehe [ARCHIVE.md](../archive/ARCHIVE.md))
+**Gesamt**: 4 aktive Issues, 1 gelöst | **Status**: 2 weitgehend behoben, 2 in Arbeit, 1 offen | **Archiviert**: 15 Issues (siehe [ARCHIVE.md](../archive/ARCHIVE.md))
 
 ### System-Status Übersicht
 
-- ✅ **Build & Tests**: 100% erfolgreich (152/152 Tests bestanden) - aktualisiert 18.12.2025
+- ✅ **Build & Tests**: 100% erfolgreich (152/152 Tests bestanden) - verifiziert 18.12.2025
   - Backend: 102/102 Tests ✅
-  - Frontend: 50/50 Tests ✅ (Button-Tests korrigiert)
-- ✅ **Dependencies**: 0 Vulnerabilities
-- ⚠️ **Deprecated Packages**: 6 deprecated Dependencies identifiziert (siehe ISSUE-018)
+  - Frontend: 50/50 Tests ✅
+- ✅ **Dependencies**: 0 Vulnerabilities (npm audit clean)
+- ✅ **Deprecated Packages**: Nur 9 transitive Dependencies betroffen (ISSUE-018 gelöst) ✅
 - ✅ **TypeScript Strict Mode**: Backend und Frontend vollständig funktional
-- ⚠️ **TypeScript Typsicherheit**: 194 ESLint `any`-Warnungen im Backend (siehe ISSUE-017)
+- ⚠️ **TypeScript Typsicherheit**: 441 ESLint `any`-Warnungen im Backend analysiert (ISSUE-017)
+  - Top-Dateien: dbService (63), aiAnnotatorService (33), workflowEngine (28)
 - ✅ **Console.logs**: 93% Reduktion, Pre-commit Hook aktiv
 - ✅ **Code Quality**: SonarQube konfiguriert, ESLint v9 aktiv
 - ✅ **Dashboard & Sidebar**: Erweitert mit neuen Widgets und Features
 - ✅ **Operational**: System läuft stabil und fehlertolerant
-- 🟡 **Verbesserungspotential**: Monitoring-Erweiterung, Code-Dokumentation (JSDoc), Type Safety
+- 🟡 **Verbesserungspotential**: Monitoring-Implementation (75% Doku fertig), JSDoc (Phase 1 begonnen), Type Safety (Analyse abgeschlossen)
 
 ### Nach Kategorie
 
@@ -329,22 +384,29 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](../archive/ARCHIVE.m
 
 ### Geschätzter Gesamtaufwand
 
-- **Hohe Priorität**: 3-4 Tage verbleibend
-  - TypeScript Type Migration: 2-3 Tage
-  - Deprecated Dependencies: 4-6 Stunden
-- **Mittlere Priorität**: 1 Woche verbleibend (Monitoring-Erweiterung, JSDoc-Vervollständigung)
-- **Niedrige Priorität**: ✅ Komplett erledigt und archiviert!
+- **Hohe Priorität**: 5-7 Tage verbleibend
+  - TypeScript Type Migration: 5-7 Tage (441 Instanzen in 56 Dateien)
+  - ~~Deprecated Dependencies: ✅ Abgeschlossen (1 Stunde)~~
+- **Mittlere Priorität**: 1 Woche verbleibend
+  - Monitoring Implementation: 2-3 Tage (Dokumentation 75% fertig)
+  - JSDoc-Vervollständigung: 8-12 Stunden (Phase 1 begonnen)
+  - Dependencies Wartung: Laufend
+- **Niedrige Priorität**: 2-3 Tage
+  - Accessibility Testing & Erweiterungen: 2-3 Tage
 
-**Gesamt**: ~2 Wochen für verbleibende 5 aktive Issues
+**Gesamt**: ~3 Wochen für verbleibende 4 aktive Issues
 
 **Kürzlich verbessert (18. Dezember 2025)**:
 
-- ✅ **Kompatibilitätsprüfung durchgeführt**: Alle Builds und Tests validiert
-- ✅ **Frontend Tests korrigiert**: Button.test.tsx auf CSS Modules angepasst
-- ✅ **Tests**: Alle 152 Tests bestehen (102 Backend + 50 Frontend) ✅
-- 🆕 **ISSUE-017 erstellt**: TypeScript `any` Types dokumentiert (194 Warnungen)
-- 🆕 **ISSUE-018 erstellt**: Deprecated Dependencies dokumentiert (6 Pakete)
-- ✅ **Dokumentation**: ISSUES.md und TODO.md aktualisiert
+- ✅ **System-Verifikation**: Alle Builds und Tests erfolgreich (152/152) ✅
+- ✅ **Dependency-Analyse**: 0 Vulnerabilities, nur transitive deprecated packages
+- ✅ **TypeScript Analysis**: 441 `any` types detailliert analysiert und dokumentiert
+  - Top 20 Dateien identifiziert mit Instanz-Counts
+  - 4-Phasen-Migrations-Plan erstellt
+  - Aufwand neu geschätzt: 5-7 Tage
+- ✅ **ISSUE-017 aktualisiert**: Vollständige Analyse mit detailliertem Migrations-Plan
+- ✅ **ISSUE-018 gelöst**: Keine direkten deprecated Dependencies mehr vorhanden ✅
+- ✅ **Dokumentation**: TODO.md und ISSUES.md mit korrekten Daten aktualisiert
 
 **Kürzlich verbessert (17. Dezember 2025)**:
 
