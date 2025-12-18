@@ -203,7 +203,7 @@ export class QualityAssuranceService {
     );
   }
 
-  getQualityTrends(metricType?: string, days = 30): QualityTrend[] {
+  getQualityTrends(metricType?: string, _days = 30): QualityTrend[] {
     return [];
   }
 }

@@ -203,7 +203,7 @@ router.post(
       const args = parts.slice(1).join(" ");
 
       if (cmd in COMMANDS) {
-        const commandInfo = COMMANDS[cmd];
+        const _commandInfo = COMMANDS[cmd];
         const result = await executeCommand(cmd, args, context);
         commandResult = result;
         response = result.message;
@@ -335,7 +335,7 @@ router.delete(
 async function executeCommand(
   command: CommandKey,
   args: string,
-  context?: unknown,
+  _context?: unknown,
 ): Promise<{ success: boolean; message: string; data?: unknown }> {
   switch (command) {
     case "/rechnung":
@@ -405,8 +405,8 @@ async function executeCommand(
 // Einfache AI-Response (Placeholder - in Produktion würde hier ein AI-Provider stehen)
 async function generateAIResponse(
   message: string,
-  history: QuickChatMessage[],
-  context?: unknown,
+  _history: QuickChatMessage[],
+  _context?: unknown,
 ): Promise<string> {
   // Hier würde normalerweise der AI-Provider aufgerufen werden
   // Für jetzt eine einfache Pattern-basierte Antwort

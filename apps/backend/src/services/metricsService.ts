@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/services/metricsService.ts
 
-import { Request, Response } from "express";
+// Reserved for future use
+// import { Request, Response } from "express";
 import client from "prom-client";
 
 /**

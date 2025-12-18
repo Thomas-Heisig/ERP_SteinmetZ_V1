@@ -59,8 +59,8 @@ const logger = createLogger("ai-annotator");
 /*                     KONFIGURATION & DEFAULTS                              */
 /* -------------------------------------------------------------------------- */
 
-const DEFAULT_AI_PROVIDER = process.env.AI_PROVIDER || "ollama";
-const DEFAULT_AI_MODEL =
+const _DEFAULT_AI_PROVIDER = process.env.AI_PROVIDER || "ollama";
+const _DEFAULT_AI_MODEL =
   process.env.AI_DEFAULT_MODEL || process.env.OPENAI_MODEL || "qwen3:4b";
 
 /* -------------------------------------------------------------------------- */
@@ -807,7 +807,7 @@ export class AiAnnotatorService extends EventEmitter {
       this.activeBatches.delete(batchId);
     });
 
-    this.on("batch_error", (batchId: string, err: Error) => {
+    this.on("batch_error", (batchId: string, _err: Error) => {
       this.databaseTool.updateBatchProgress(batchId, 0, "failed");
       this.activeBatches.delete(batchId);
     });
@@ -2201,7 +2201,7 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
   private async processBatchNode(
     node: NodeForAnnotation,
     operation: BatchOperation,
-    batchId: string,
+    _batchId: string,
   ): Promise<BatchResult["results"][0]> {
     const start = Date.now();
     const maxRetries =

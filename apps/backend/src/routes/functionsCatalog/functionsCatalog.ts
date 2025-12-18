@@ -29,7 +29,7 @@ import {
 /* ------------------------------------------------------------------- */
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 
-function sendError(
+function _sendError(
   res: Response,
   source: string,
   err: unknown,

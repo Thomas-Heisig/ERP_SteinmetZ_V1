@@ -199,7 +199,12 @@ router.get(
       );
     }
 
-    const { status, customerId, startDate, endDate } = validationResult.data;
+    const {
+      status,
+      customerId,
+      startDate: _startDate,
+      endDate: _endDate,
+    } = validationResult.data;
 
     // TODO: Replace with actual database query
     const mockInvoices = [
@@ -800,7 +805,11 @@ router.get(
       );
     }
 
-    const { accountId, startDate, endDate } = validationResult.data;
+    const {
+      accountId,
+      startDate: _startDate,
+      endDate: _endDate,
+    } = validationResult.data;
 
     // TODO: Replace with actual database query
     const mockTransactions = [

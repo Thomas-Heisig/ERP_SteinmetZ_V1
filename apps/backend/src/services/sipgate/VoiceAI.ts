@@ -135,7 +135,7 @@ export class VoiceAI {
     };
     context?: string;
   }): Promise<VoiceResponse> {
-    const { transcript, callerInfo, context } = params;
+    const { transcript, callerInfo, context: _context } = params;
 
     logger.info(
       { transcriptLength: transcript.length, callerName: callerInfo?.name },

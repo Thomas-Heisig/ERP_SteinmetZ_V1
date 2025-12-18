@@ -597,6 +597,7 @@ function resolvePgUrl() {
 interface SqlApi {
   init(): Promise<void>;
   exec(sql: string, params?: any[]): Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   run<T = any>(
     sql: string,
     params?: any[],
@@ -782,6 +783,7 @@ class SqliteApi implements SqlApi {
     this.db.prepare(sql).run(params);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async run<T = any>(sql: string, params: any[] = []) {
     const info = this.db.prepare(sql).run(params);
     return { changes: info.changes, lastID: info.lastInsertRowid };
@@ -978,6 +980,7 @@ class PostgresApi implements SqlApi {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async run<T = any>(
     sql: string,
     params: any[] = [],

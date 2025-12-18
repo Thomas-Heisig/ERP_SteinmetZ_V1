@@ -232,7 +232,7 @@ export class AutoRepair {
   private async repairDuplicate(
     issue: IntegrityIssue,
     result: RepairResult,
-    dryRun: boolean,
+    _dryRun: boolean,
   ): Promise<void> {
     // Duplikate werden vorerst nur gemeldet, nicht automatisch gelöscht
     result.action = "REPORTED_ONLY";
@@ -247,7 +247,7 @@ export class AutoRepair {
   private async repairMissingReference(
     issue: IntegrityIssue,
     result: RepairResult,
-    dryRun: boolean,
+    _dryRun: boolean,
   ): Promise<void> {
     // Fehlende Referenzen werden vorerst nur gemeldet
     result.action = "REPORTED_ONLY";

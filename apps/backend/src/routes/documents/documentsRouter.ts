@@ -325,7 +325,12 @@ router.get(
       );
     }
 
-    const { query, category, tags, fileType } = validationResult.data;
+    const {
+      query,
+      category: _category,
+      tags: _tags,
+      fileType: _fileType,
+    } = validationResult.data;
 
     // TODO: Implement full-text search with highlighting
     // TODO: Search in OCR-extracted text
@@ -494,7 +499,7 @@ router.post(
   "/:id/workflows/:workflowId/approve",
   asyncHandler(async (req: Request, res: Response) => {
     const { id, workflowId } = req.params;
-    const { comment } = req.body;
+    const { comment: _comment } = req.body;
 
     // TODO: Validate user is authorized approver
     // TODO: Update workflow state
@@ -548,7 +553,7 @@ router.post(
   "/:id/sign",
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { signers, message } = req.body;
+    const { signers, message: _message } = req.body;
 
     if (!signers || !Array.isArray(signers) || signers.length === 0) {
       throw new BadRequestError("At least one signer is required");
@@ -700,7 +705,7 @@ router.put(
 router.get(
   "/expiring",
   asyncHandler(async (req: Request, res: Response) => {
-    const { days = 30 } = req.query;
+    const { days: _days = 30 } = req.query;
 
     // TODO: Query documents expiring within X days
 
