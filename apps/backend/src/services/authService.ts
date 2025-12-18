@@ -18,7 +18,7 @@ import type {
   RegisterData,
   TokenPayload,
   AuthContext,
-  PasswordResetToken,
+  // PasswordResetToken, // Reserved for future use
 } from "../types/auth.js";
 
 const logger = createLogger("auth");
@@ -479,7 +479,7 @@ export class AuthService {
         permissions: payload.permissions,
         sessionId: session.id,
       };
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -669,7 +669,7 @@ export class AuthService {
     }
 
     // Check for pattern matching (e.g., "dashboard.*" matches "dashboard.read")
-    const permissionParts = permission.split(".");
+    const _permissionParts = permission.split(".");
     for (const perm of permissions) {
       if (perm.endsWith(".*")) {
         const permBase = perm.slice(0, -2);

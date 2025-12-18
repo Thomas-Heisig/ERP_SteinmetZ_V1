@@ -461,7 +461,7 @@ async function streamJsonLines(filePath: string): Promise<JsonNode[]> {
 
 async function parseJSONFile(
   filePath: string,
-  rules: GlobalRules,
+  _rules: GlobalRules,
 ): Promise<{
   file: string;
   nodes: CatalogNode[];
@@ -659,7 +659,7 @@ function buildTreeFromFlatNodes(flatNodes: CatalogNode[]): CatalogNode[] {
 /*  Lint‑Prüfungen                                                         */
 /*==========================================================================*/
 
-function lintTree(allFiles: ParsedFile[], rules: GlobalRules): LintFinding[] {
+function lintTree(allFiles: ParsedFile[], _rules: GlobalRules): LintFinding[] {
   const findings: LintFinding[] = [];
   const idMap = new Map<string, { file: string; path: string }[]>();
 

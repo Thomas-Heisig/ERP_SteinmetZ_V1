@@ -7,7 +7,9 @@
  */
 
 import { createLogger } from "../utils/logger.js";
-import type { ModelConfig, AIProvider } from "./aiAnnotatorService.js";
+import type { ModelConfig } from "./aiAnnotatorService.js";
+// Reserved for future use
+// import type { AIProvider } from "./aiAnnotatorService.js";
 
 const logger = createLogger("model-management");
 
@@ -99,16 +101,19 @@ export class ModelManagementService {
     this.stats.set(key, existing);
   }
 
-  getModelStats(modelName: string, days = 30): ModelUsageStats | null {
+  getModelStats(modelName: string, _days = 30): ModelUsageStats | null {
     const entries = Array.from(this.stats.values());
     return entries.find((s) => s.modelName === modelName) || null;
   }
 
-  getAllModelsStats(days = 30): ModelUsageStats[] {
+  getAllModelsStats(_days = 30): ModelUsageStats[] {
     return Array.from(this.stats.values());
   }
 
-  compareModels(modelNames: string[], days = 30): ModelPerformanceComparison[] {
+  compareModels(
+    modelNames: string[],
+    _days = 30,
+  ): ModelPerformanceComparison[] {
     return modelNames
       .map((name) => {
         const stats = this.getModelStats(name, days);
@@ -184,8 +189,8 @@ export class ModelManagementService {
   }
 
   getUsageOverTime(
-    days = 30,
-    granularity: "hour" | "day" = "day",
+    _days = 30,
+    _granularity: "hour" | "day" = "day",
   ): Array<{
     timestamp: string;
     requests: number;
@@ -240,7 +245,7 @@ export class ModelManagementService {
     return comparisons;
   }
 
-  cleanupOldStats(daysToKeep = 90): number {
+  cleanupOldStats(_daysToKeep = 90): number {
     // Stub - no cleanup needed for in-memory storage
     return 0;
   }

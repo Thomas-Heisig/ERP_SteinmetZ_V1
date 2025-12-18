@@ -121,7 +121,7 @@ export class FaxProcessor {
    * Perform OCR on fax content
    * In production, this would use a real OCR service like Tesseract or Google Vision
    */
-  private async performOCR(base64Content: string): Promise<string> {
+  private async performOCR(_base64Content: string): Promise<string> {
     // Mock OCR implementation
     // In production, integrate with:
     // - Tesseract.js for local OCR

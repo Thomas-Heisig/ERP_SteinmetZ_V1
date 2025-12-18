@@ -3,7 +3,8 @@
 
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { Request } from "express";
+// Reserved for future use
+// import { Request } from "express";
 import { createLogger } from "../utils/logger.js";
 
 const logger = createLogger("error-tracking");
@@ -79,7 +80,7 @@ export const errorTrackingService = {
         ],
 
         // Before send hook to filter sensitive data
-        beforeSend(event, hint) {
+        beforeSend(event, _hint) {
           // Redact sensitive data from request data
           if (event.request?.data) {
             event.request.data = redactSensitiveData(event.request.data);

@@ -406,7 +406,7 @@ export class SearchService {
   private highlightText(
     text: string,
     searchTerms: string[],
-    maxLength = 200,
+    _maxLength = 200,
   ): string[] {
     if (!text) return [];
 

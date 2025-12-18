@@ -350,7 +350,7 @@ router.put(
 router.delete(
   "/employees/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id: _id } = req.params;
 
     // TODO: Soft delete in database (set status to inactive)
     // In production: const result = await employeeService.deactivate(id);
@@ -383,7 +383,11 @@ router.get(
       );
     }
 
-    const { employeeId, startDate, endDate } = validationResult.data;
+    const {
+      employeeId,
+      startDate: _startDate,
+      endDate: _endDate,
+    } = validationResult.data;
 
     // TODO: Replace with actual database query
     const mockEntries = [
@@ -902,7 +906,7 @@ const createOnboardingSchema = z.object({
 router.get(
   "/onboarding",
   asyncHandler(async (req: Request, res: Response) => {
-    const { status } = req.query;
+    const { status: _status } = req.query;
 
     // TODO: Query from database
     const mockOnboarding = [
@@ -978,8 +982,8 @@ router.post(
 router.put(
   "/onboarding/:id/tasks/:taskId",
   asyncHandler(async (req: Request, res: Response) => {
-    const { id, taskId } = req.params;
-    const { status, comment } = req.body;
+    const { id: _id, taskId: _taskId } = req.params;
+    const { status, comment: _comment } = req.body;
 
     if (!status) {
       throw new BadRequestError("Task status is required");
@@ -1101,8 +1105,8 @@ router.get(
 router.post(
   "/approvals/:id/approve",
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { comment } = req.body;
+    const { id: _id } = req.params;
+    const { comment: _comment } = req.body;
 
     // TODO: Update approval status in database
     // TODO: Send notification to requester
@@ -1121,7 +1125,7 @@ router.post(
 router.post(
   "/approvals/:id/reject",
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { id: _id } = req.params;
     const { reason } = req.body;
 
     if (!reason) {

@@ -123,7 +123,6 @@ for (const file of migrationFiles) {
   );
 
   if (!hasOwnTransaction) db.exec("BEGIN TRANSACTION;");
-  let success = true;
   let message = "";
 
   try {
@@ -153,7 +152,6 @@ for (const file of migrationFiles) {
       "INSERT INTO schema_migrations (filename, status, message) VALUES (?, ?, ?)",
     ).run(file, "success", message);
   } catch (err: unknown) {
-    success = false;
     message = err instanceof Error ? err.message : JSON.stringify(err, null, 2);
     logger.error({ file, message, err }, `❌ Fehler bei Migration ${file}`);
 
