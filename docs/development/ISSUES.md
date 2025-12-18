@@ -5,8 +5,8 @@
 
 Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical Debt im Projekt auf.
 
-> **Hinweis**: Behobene Issues wurden nach [ARCHIVE.md](ARCHIVE.md) verschoben.  
-> 📊 **System-Status**: Siehe [docs/SYSTEM_STATUS.md](docs/SYSTEM_STATUS.md) für Gesamtübersicht
+> **Hinweis**: Behobene Issues wurden nach [ARCHIVE.md](../archive/ARCHIVE.md) verschoben.  
+> 📊 **System-Status**: Siehe [../SYSTEM_STATUS.md](../SYSTEM_STATUS.md) für Gesamtübersicht
 
 ---
 
@@ -208,7 +208,7 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 
 ## 🟢 Kleinere Issues & Verbesserungsvorschläge
 
-_Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](ARCHIVE.md) verschoben._
+_Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](../archive/ARCHIVE.md) verschoben._
 
 ---
 
@@ -220,7 +220,7 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](ARCHIVE.md) verschob
 - 🟡 Mittel: 2 Issues (ISSUE-009 weitgehend behoben, ISSUE-012, ISSUE-013 teilweise)
 - 🟢 Niedrig: 0 Issues - Alle erledigt! ✅
 
-**Gesamt**: 3 aktive Issues | **Status**: 1 weitgehend behoben, 2 in Arbeit | **Archiviert**: 14 Issues (siehe [ARCHIVE.md](ARCHIVE.md))
+**Gesamt**: 3 aktive Issues | **Status**: 1 weitgehend behoben, 2 in Arbeit | **Archiviert**: 14 Issues (siehe [ARCHIVE.md](../archive/ARCHIVE.md))
 
 ### System-Status Übersicht
 
@@ -272,7 +272,7 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](ARCHIVE.md) verschob
 - ✅ **ISSUE-015**: Package.json Scripts - vollständig behoben (2025-12-06)
 - ✅ **ISSUE-016**: Commit-Conventions - vollständig behoben (2025-12-06)
 
-**Details siehe**: [ARCHIVE.md](ARCHIVE.md)
+**Details siehe**: [ARCHIVE.md](../archive/ARCHIVE.md)
 
 ---
 
@@ -319,7 +319,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 **Siehe auch**:
 
-- [ARCHIVE.md](ARCHIVE.md) - Behobene Issues und alte Changelogs (12 Issues archiviert)
+- [ARCHIVE.md](../archive/ARCHIVE.md) - Behobene Issues und alte Changelogs (12 Issues archiviert)
 - [TODO.md](TODO.md) - Priorisierte Aufgabenliste
-- [CHANGELOG.md](CHANGELOG.md) - Projekt-Changelog
-- [docs/SYSTEM_STATUS.md](docs/SYSTEM_STATUS.md) - Vollständiger System-Status
+- [CHANGELOG.md](../../CHANGELOG.md) - Projekt-Changelog
+- [../SYSTEM_STATUS.md](../SYSTEM_STATUS.md) - Vollständiger System-Status

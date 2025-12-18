@@ -6,13 +6,13 @@
 Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und Phase.
 Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requirements), OpenAPI 3.0 (APIs).
 
-> 📊 **System-Status**: Siehe [SYSTEM_STATUS.md](docs/SYSTEM_STATUS.md) für detaillierte Übersicht
+> 📊 **System-Status**: Siehe [SYSTEM_STATUS.md](../SYSTEM_STATUS.md) für detaillierte Übersicht
 
 ---
 
 ## 🔴 Kritische Aufgaben (Höchste Priorität)
 
-**Status**: ✅ Alle kritischen Aufgaben erledigt! Siehe [ARCHIVE.md](ARCHIVE.md)
+**Status**: ✅ Alle kritischen Aufgaben erledigt! Siehe [ARCHIVE.md](../archive/ARCHIVE.md)
 
 ---
 
@@ -117,7 +117,7 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 - [x] **Dokumentations-Konsolidierung** ✅ VOLLSTÄNDIG ERLEDIGT (2025-12-07)
   - [x] Changelogs zusammenführen (CHANGELOG.md)
   - [x] Issues aufräumen (nur aktive in ISSUES.md)
-  - [x] Archiv erstellen (ARCHIVE.md) für behobene Issues
+  - [x] Archiv erstellen (../archive/ARCHIVE.md) für behobene Issues
   - [x] Redundante Dateien entfernen (6 Dateien)
   - [x] README aktualisieren mit neuer Struktur
   - [x] Erweiterte Dokumentation (2025-12-06):

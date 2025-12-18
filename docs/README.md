@@ -2,9 +2,13 @@
 
 Welcome to the ERP SteinmetZ documentation! This directory contains comprehensive documentation following international standards.
 
+**📘 Aktualisiert: 18. Dezember 2025** - Dokumentationsstruktur überarbeitet und zentralisiert
+
 ## 📚 Quick Navigation
 
 **➡️ [DOCUMENTATION INDEX](DOCUMENTATION_INDEX.md)** ⭐ **NEU** - Strukturierter Übersichtsindex aller Dokumentation
+
+**➡️ [Help Center](../apps/frontend/src/components/HelpCenter)** - Integrierte Benutzer-Hilfe im Frontend
 
 ## 🎯 System Status
 
@@ -15,6 +19,50 @@ Welcome to the ERP SteinmetZ documentation! This directory contains comprehensiv
 - Bekannte Einschränkungen
 - Production-Readiness-Status
 - Nächste Schritte
+
+---
+
+## 📁 Neue Dokumentationsstruktur (18. Dezember 2025)
+
+### Zentralisierte Dokumentation
+
+Die Dokumentation wurde neu organisiert, um die Wartbarkeit zu verbessern und den Zugriff zu erleichtern:
+
+**Root-Verzeichnis** (nur essenzielle Dateien):
+- `README.md` - Hauptübersicht des Projekts
+- `CONTRIBUTING.md` - Richtlinien für Beiträge
+- `CODE_OF_CONDUCT.md` - Verhaltenskodex
+- `SECURITY.md` - Sicherheitsrichtlinien
+- `CHANGELOG.md` - Versionshistorie
+
+**docs/** (alle anderen Dokumentationen):
+- `docs/development/` - Entwicklungsdokumentation
+  - `TODO.md` - Aufgabenliste
+  - `ISSUES.md` - Aktive Issues
+  - `COPILOT_RULESET.md` - Entwicklungsrichtlinien
+  - `CI_CD_SETUP.md` - CI/CD Konfiguration
+  - `SCRIPTS.md` - NPM Scripts Übersicht
+  - `COMMIT_CONVENTIONS.md` - Commit-Standards
+  - `REPOSITORY_REVIEW.md` - Repository-Übersicht
+- `docs/concept/` - Projektkonzepte und Vision
+- `docs/archive/` - Archivierte Dokumente
+  - `ARCHIVE.md` - Behobene Issues und alte Changelogs
+- `docs/SUPPORT.md` - Support-Informationen
+
+### Help Center Integration
+
+Die ursprünglichen Projektdaten aus `docs/concept/` wurden in das **Help Center** integriert:
+- Konzept & Vision
+- Dashboard-Beschreibungen
+- Modulbeschreibungen (Finanzen, Personal, etc.)
+- Entwicklerdokumentation
+
+Alle Mock-Daten wurden aus dem Help Center entfernt und durch echte Projektdokumentation ersetzt.
+
+**Zugriff im Frontend:**
+- Navigate zu `/help` oder klicken Sie auf das Hilfe-Icon
+- Durchsuchen Sie Kategorien und Artikel
+- Nutzen Sie die Volltextsuche
 
 ---
 

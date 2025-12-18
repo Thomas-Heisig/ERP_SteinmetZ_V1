@@ -361,11 +361,11 @@ Siehe [SonarQube Guide](docs/SONARQUBE.md) und [CI/CD Setup](CI_CD_SETUP.md) fü
 
 - **[Getting Started Tutorial](docs/tutorials/getting-started.md)** - 5-Minuten-Setup für neue Entwickler
 - **[Documentation Hub](docs/README.md)** - Zentraler Dokumentations-Index mit allen Guides
-- **[COPILOT_RULESET.md](COPILOT_RULESET.md)** - Entwicklungsrichtlinien für Copilot
+- **[COPILOT_RULESET.md](docs/development/COPILOT_RULESET.md)** - Entwicklungsrichtlinien für Copilot
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution Guidelines
 - **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** - Community Standards
 - **[SECURITY.md](SECURITY.md)** - Security Policy
-- **[SUPPORT.md](SUPPORT.md)** - Getting Help & FAQ
+- **[SUPPORT.md](docs/SUPPORT.md)** - Getting Help & FAQ
 
 ### 📖 Dokumentations-Hub
 
@@ -378,10 +378,10 @@ Siehe [SonarQube Guide](docs/SONARQUBE.md) und [CI/CD Setup](CI_CD_SETUP.md) fü
 
 ### Haupt-Dokumentation
 
-- **[TODO.md](TODO.md)** - Priorisierte Aufgabenliste
-- **[ISSUES.md](ISSUES.md)** - Aktive Issues & Technical Debt
+- **[TODO.md](docs/development/TODO.md)** - Priorisierte Aufgabenliste
+- **[ISSUES.md](docs/development/ISSUES.md)** - Aktive Issues & Technical Debt
 - **[CHANGELOG.md](CHANGELOG.md)** - Projekt-Changelog mit allen Versionen
-- **[ARCHIVE.md](ARCHIVE.md)** - Behobene Issues & alte Changelogs
+- **[ARCHIVE.md](docs/archive/ARCHIVE.md)** - Behobene Issues & alte Changelogs
 
 ### Architektur & Konzept
 
@@ -394,12 +394,14 @@ Siehe [SonarQube Guide](docs/SONARQUBE.md) und [CI/CD Setup](CI_CD_SETUP.md) fü
 
 ### Entwickler-Dokumentation
 
-- **[Copilot Ruleset](COPILOT_RULESET.md)** - Entwicklungsrichtlinien & Arbeitsweise
+- **[Copilot Ruleset](docs/development/COPILOT_RULESET.md)** - Entwicklungsrichtlinien & Arbeitsweise
 - **[Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)** - Komplette Setup-Anleitung
 - **[Code Conventions](docs/CODE_CONVENTIONS.md)** - Coding Standards & Best Practices
 - **[Error Standardization Guide](docs/ERROR_STANDARDIZATION_GUIDE.md)** - Error-Handling Guide
 - **[Environment Variables](docs/ENVIRONMENT_VARIABLES.md)** - Konfigurationsreferenz
 - **[Database Migrations](docs/DATABASE_MIGRATIONS.md)** - Datenbank-Migrationen
+- **[CI/CD Setup](docs/development/CI_CD_SETUP.md)** - Continuous Integration & Deployment
+- **[Scripts Guide](docs/development/SCRIPTS.md)** - Verfügbare NPM Scripts und Tools
 
 ### API-Dokumentation
 
@@ -421,9 +423,9 @@ Siehe [SonarQube Guide](docs/SONARQUBE.md) und [CI/CD Setup](CI_CD_SETUP.md) fü
 
 ## 🤝 Beitragen
 
-Dieses Projekt folgt dem [Copilot Ruleset](COPILOT_RULESET.md) für konsistente Entwicklung:
+Dieses Projekt folgt dem [Copilot Ruleset](docs/development/COPILOT_RULESET.md) für konsistente Entwicklung:
 
-- **Aufgabenbearbeitung**: Arbeite [TODO.md](TODO.md) und [ISSUES.md](ISSUES.md) systematisch ab
+- **Aufgabenbearbeitung**: Arbeite [TODO.md](docs/development/TODO.md) und [ISSUES.md](docs/development/ISSUES.md) systematisch ab
 - **Dokumentation**: Halte Docs aktuell und strukturiert (Diátaxis Framework)
 - **Code-Qualität**: Clean Code, SOLID-Prinzipien, TypeScript mit expliziten Typen
 - **Testing**: Mindest-Coverage 80%, alle Tests müssen bestehen
