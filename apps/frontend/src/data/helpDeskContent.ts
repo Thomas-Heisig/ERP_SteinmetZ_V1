@@ -410,6 +410,291 @@ Verwalten Sie die KI-Modelle:
     keywords: ["ki", "ai", "chat", "automatisierung", "annotator"],
   },
 
+  // Business Management - Extended
+  {
+    id: "business-company-data",
+    title: "Unternehmensstammdaten verwalten",
+    category: "business",
+    content: `
+# Unternehmensstammdaten
+
+## Grunddaten
+
+### Firmeninformationen
+- **Offizieller Firmenname**: Vollständiger eingetragener Name
+- **Handelsname**: Geschäftsname (DBA - Doing Business As)
+- **Hauptsitz**: Offizielle Geschäftsadresse
+- **Website & Domains**: Unternehmenswebsite und E-Mail-Domains
+- **Kontaktdaten**: Telefon, Fax, E-Mail
+- **Geschäftszeiten**: Öffnungszeiten und Erreichbarkeit
+- **Unternehmenszweck**: Geschäftsgegenstand
+- **Gründungsdatum**: Datum der Gründung
+- **Mitarbeiteranzahl**: Aktuelle Mitarbeiterzahl
+- **Branchenzuordnung**: WZ-Code und Branche
+
+### Rechtsform & Handelsregister
+- **Rechtsform**: GmbH, AG, KG, etc.
+- **Handelsregister-Nummer**: HRB/HRA-Nummer
+- **Registergericht**: Zuständiges Amtsgericht
+- **Geschäftsführer/Vorstand**: Vertretungsberechtigte Personen
+- **Gesellschafterliste**: Anteilseigner und Beteiligungen
+- **Stamm-/Grundkapital**: Eingetragenes Kapital
+
+### Steuernummern & USt-ID
+- **Finanzamt**: Zuständiges Finanzamt
+- **Steuernummer**: Nationale Steuernummer
+- **USt-IdNr**: Umsatzsteuer-Identifikationsnummer
+- **Lohnsteuer-Nummer**: Für Gehaltsabrechnung
+- **Gewerbesteuer-Nummer**: Kommunale Steuernummer
+
+### Bankverbindungen
+- **Hauptbankverbindung**: Primäres Geschäftskonto
+- **IBAN/BIC**: Internationale Bankverbindung
+- **Weitere Konten**: Zusätzliche Bankkonten
+- **Kreditlinien**: Verfügbare Kreditrahmen
+- **Online-Banking**: EBICS-Schlüssel und Zugänge
+    `,
+    keywords: ["unternehmen", "stammdaten", "firma", "handelsregister"],
+  },
+
+  // HR - Extended
+  {
+    id: "hr-employee-management",
+    title: "Mitarbeiterverwaltung",
+    category: "hr",
+    content: `
+# Mitarbeiterverwaltung
+
+## Stammdaten
+
+### Identifikationsdaten
+- **Personalnummer**: Eindeutige Mitarbeiter-ID
+- **Mitarbeiter-ID**: System-interne Kennung
+- **Benutzername**: Login-Name für Systeme
+- **Externe Kennungen**: Referenzen zu externen Systemen
+
+### Organisationsdaten
+- **Abteilung**: Zugehörigkeit zur Organisationseinheit
+- **Kostenstelle**: Buchungskreis und Kostenträger
+- **Position & Rolle**: Stellenbezeichnung und Funktion
+- **Vorgesetzter**: Direkte Berichtsbeziehung
+- **Karriere-Level**: Hierarchiestufe im Unternehmen
+
+### Persönliche Daten
+- **Name**: Vollständiger Name (Vor- und Nachname)
+- **Geburtsdatum**: Datum und Ort der Geburt
+- **Nationalität**: Staatsangehörigkeit
+- **Familienstand**: Ledig, Verheiratet, etc.
+- **Steuer-ID**: Steueridentifikationsnummer
+
+### Kontaktdaten
+- **Privatadresse**: Wohnanschrift
+- **E-Mail**: Geschäftliche und private E-Mail
+- **Telefon**: Festnetz und Mobilnummer
+- **Notfallkontakte**: Kontaktpersonen im Notfall
+
+## Vertragsmanagement
+
+### Vertragsgrundlagen
+- **Vertragsbeginn**: Startdatum des Arbeitsverhältnisses
+- **Vertragsende**: Bei befristeten Verträgen
+- **Vertragsart**: Unbefristet, befristet, Zeitarbeit
+- **Arbeitszeitmodell**: Vollzeit, Teilzeit, Gleitzeit
+- **Kündigungsfrist**: Rechtliche Kündigungsfristen
+- **Probezeit**: Dauer und Bedingungen
+
+### Vergütung
+- **Grundgehalt**: Monatliches Festgehalt
+- **Zulagen**: Schichtzulagen, Erschwerniszulagen
+- **Variable Vergütung**: Boni, Provisionen
+- **Benefits**: Firmenwagen, Versicherungen
+- **Sachbezüge**: Dienstwagen, Essensgutscheine
+
+### Arbeitszeit
+- **Sollarbeitszeit**: Vereinbarte Wochenarbeitszeit
+- **Gleitzeit**: Kernarbeitszeit und Gleitzeitrahmen
+- **Überstunden**: Abbau oder Auszahlung
+- **Urlaubsanspruch**: Jahresurlaub in Tagen
+- **Sonderurlaub**: Besondere Urlaubsansprüche
+
+## Zeiterfassung
+
+### Zeit-Tracking
+- **Arbeitszeiterfassung**: Kommen/Gehen-Buchungen
+- **Pausenregelung**: Gesetzliche und vertragliche Pausen
+- **Überstunden**: Erfassung und Saldenverwaltung
+- **Fehlzeiten**: Krankmeldungen, Urlaub
+- **Genehmigungen**: Workflow für Abwesenheiten
+
+### Urlaubsmanagement
+- **Urlaubsanträge**: Beantragung und Genehmigung
+- **Urlaubsplanung**: Jahresplanung und Teamkalender
+- **Urlaubssaldo**: Resturlaubstage und Verfallfristen
+- **Sonderurlaub**: Hochzeit, Geburt, Umzug
+- **Krankheitsvertretung**: Urlaubsvertretung regeln
+    `,
+    keywords: [
+      "mitarbeiter",
+      "personal",
+      "hr",
+      "vertrag",
+      "urlaub",
+      "zeit",
+    ],
+  },
+
+  // Finance - Extended
+  {
+    id: "finance-invoicing",
+    title: "Rechnungswesen",
+    category: "finance",
+    content: `
+# Rechnungswesen
+
+## Debitoren (Kundenbuchhaltung)
+
+### Ausgangsrechnungen
+- **Rechnungserstellung**: Manuelle und automatische Erstellung
+- **Rechnungsvorlagen**: Templates für verschiedene Rechnungsarten
+- **Rechnungsnummern**: Automatische Nummernkreise
+- **Positionen**: Artikel, Dienstleistungen, Rabatte
+- **Umsatzsteuer**: Verschiedene Steuersätze und -arten
+- **Zahlungsbedingungen**: Skonto, Zahlungsziele
+- **XRechnung**: E-Rechnungs-Standard für B2G
+- **ZUGFeRD**: Hybrid-Format (PDF mit XML)
+
+### Mahnwesen
+- **Mahnstufen**: 3 Eskalationsstufen
+  1. Zahlungserinnerung (ohne Gebühr)
+  2. 1. Mahnung (mit Mahngebühr)
+  3. 2. Mahnung (höhere Mahngebühr)
+- **Automatische Mahnläufe**: Zeitgesteuerte Verarbeitung
+- **Mahngebühren**: Konfigurierbare Gebühren pro Stufe
+- **Mahnsperre**: Temporäres Aussetzen von Mahnungen
+- **Inkasso**: Übergabe an Inkassobüro
+
+### Zahlungseingänge
+- **Bankauszug-Import**: Automatischer Import (MT940, CAMT)
+- **Zahlungszuordnung**: Manuelle und automatische Zuordnung
+- **Offene Posten**: OP-Verwaltung und Matching
+- **Teilzahlungen**: Verarbeitung von Ratenzahlungen
+- **Gutschriften**: Erstellen und Verbuchen
+
+## Kreditoren (Lieferantenbuchhaltung)
+
+### Eingangsrechnungen
+- **Rechnungserfassung**: Manuelle Eingabe oder OCR-Scan
+- **Rechnungsprüfung**: 3-Wege-Match (Bestellung, Wareneingang, Rechnung)
+- **Freigabe-Workflow**: Mehrstufige Genehmigung
+- **Kontierung**: Zuordnung zu Kostenstellen und Konten
+- **Skonto**: Automatische Skontoverwaltung
+
+### Zahlungslauf
+- **Zahlungsvorschläge**: Automatische Generierung
+- **Skontooptimierung**: Maximierung von Skontoerträgen
+- **Liquiditätsplanung**: Cashflow-Optimierung
+- **Sammelüberweisung**: Mehrere Zahlungen gebündelt
+- **SEPA-Export**: XML-Dateien für Online-Banking
+
+## Hauptbuch
+
+### Buchungen
+- **Journaleinträge**: Manuelle Buchungen
+- **Automatische Buchungen**: Aus Verkauf, Einkauf, Lohn
+- **Korrekturbuchungen**: Stornierungen und Anpassungen
+- **Periodische Buchungen**: Wiederkehrende Buchungen
+
+### Kontenplan
+- **SKR03**: Kontenrahmen für Prozessgliederung
+- **SKR04**: Kontenrahmen für Abschlussgliederung
+- **Individuelle Anpassung**: Eigene Kontenstruktur
+- **Kostenstellen**: Kostenstellenrechnung
+- **Kostenträger**: Produktkalkulation
+
+### Abschluss
+- **Monatsabschluss**: Periodenabschluss und -sperre
+- **Jahresabschluss**: Bilanz und GuV
+- **Rückstellungen**: Verbindlichkeiten und Rücklagen
+- **Abgrenzungen**: Aktive und passive Abgrenzung
+- **DATEV-Export**: Übergabe an Steuerberater
+    `,
+    keywords: [
+      "rechnung",
+      "buchhaltung",
+      "finanzen",
+      "debitor",
+      "kreditor",
+      "zahlung",
+    ],
+  },
+
+  // Sales - Extended
+  {
+    id: "sales-process",
+    title: "Vertriebsprozess",
+    category: "sales",
+    content: `
+# Vertriebsprozess
+
+## Lead-to-Cash Pipeline
+
+### Lead-Management
+- **Lead-Erfassung**: Manuelle Eingabe oder Import
+- **Lead-Qualifizierung**: BANT-Kriterien (Budget, Authority, Need, Timeline)
+- **Lead-Scoring**: Automatische Bewertung nach Kriterien
+- **Lead-Nurturing**: Automatisierte Follow-up-Kampagnen
+- **Lead-Übergabe**: Vom Marketing an Vertrieb
+
+### Opportunity-Management
+- **Verkaufschance erstellen**: Aus qualifizierten Leads
+- **Pipeline-Stages**:
+  1. Qualifizierung
+  2. Bedarfsanalyse
+  3. Angebot
+  4. Verhandlung
+  5. Abschluss (Gewonnen/Verloren)
+- **Wahrscheinlichkeit**: Abschlusswahrscheinlichkeit in %
+- **Forecast**: Umsatzprognose basierend auf Pipeline
+- **Win/Loss-Analyse**: Gründe für Erfolg oder Misserfolg
+
+### Angebotserstellung
+- **Angebotsvorlagen**: Templates für verschiedene Produkte
+- **Konfiguration**: Produktbundle und Optionen
+- **Preiskalkulation**: Basis-, Listen- und Sonderpreise
+- **Rabatte**: Mengen-, Kunden- und Projektrabatte
+- **Gültigkeitsdauer**: Befristung der Angebote
+- **Versionierung**: Mehrere Angebotsversionen
+
+### Auftragsabwicklung
+- **Auftragsbestätigung**: Automatische Generierung
+- **Verfügbarkeitsprüfung**: Lagerbestand und Liefertermine
+- **Produktionsplanung**: Bei Fertigungsaufträgen
+- **Liefertermine**: Kommunikation mit Kunden
+- **Teillieferungen**: Aufspaltung großer Aufträge
+
+## Customer Relationship Management
+
+### Kundenverwaltung
+- **Kundenstammdaten**: Adressen, Kontakte, Konditionen
+- **Kundensegmentierung**: ABC-Analyse, Branchen
+- **Kundenwert**: Customer Lifetime Value (CLV)
+- **Kundenhistorie**: Alle Interaktionen und Transaktionen
+
+### Kontaktverwaltung
+- **Kontaktpersonen**: Ansprechpartner beim Kunden
+- **Rollen**: Entscheider, Einkäufer, Anwender
+- **Kommunikationshistorie**: E-Mails, Anrufe, Meetings
+- **Aufgaben**: Follow-ups und To-Dos
+
+### Aktivitäten
+- **Termine**: Kundenbesuche, Telefonate
+- **Aufgaben**: To-Do-Liste pro Kunde
+- **Notizen**: Gesprächsprotokolle
+- **Dokumente**: Verträge, Präsentationen
+    `,
+    keywords: ["vertrieb", "sales", "angebot", "auftrag", "kunde", "crm"],
+  },
+
   // Development
   {
     id: "dev-setup",
