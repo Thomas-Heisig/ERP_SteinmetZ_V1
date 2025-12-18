@@ -40,7 +40,7 @@ declare module "connect-sqlite3" {
    * @returns SQLite store constructor
    */
   function connectSqlite3(
-    session: typeof import("express-session")
+    session: typeof import("express-session"),
   ): typeof SQLiteStore;
 
   export = connectSqlite3;

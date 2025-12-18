@@ -4,7 +4,7 @@ export default {
     title: "ERP SteinmetZ – 功能目录",
     subtitle: "业务运营中央控制面板",
     welcome: "欢迎回来，{{name}}",
-    
+
     // 状态指示器
     status: {
       online: "系统在线",
@@ -13,7 +13,7 @@ export default {
       maintenance: "维护模式",
       syncing: "正在同步数据...",
     },
-    
+
     // 快速操作
     quickActions: {
       title: "快速操作",
@@ -25,7 +25,7 @@ export default {
       exportData: "导出数据",
       importData: "导入数据",
     },
-    
+
     // 健康监控
     health: {
       title: "系统健康状态",
@@ -49,7 +49,7 @@ export default {
         cpuLoad: "CPU 负载",
       },
     },
-    
+
     // 通知
     notifications: {
       title: "通知",
@@ -63,7 +63,7 @@ export default {
         success: "成功",
       },
     },
-    
+
     // 最近活动
     recentActivity: {
       title: "最近活动",
@@ -78,12 +78,12 @@ export default {
       empty: "无近期活动",
     },
   },
-  
+
   // ===== 目录与功能 =====
   catalog: {
     title: "功能目录",
     subtitle: "浏览可用的系统功能",
-    
+
     categories: {
       title: "功能区域",
       count: "{{count}} 个区域可用",
@@ -97,7 +97,7 @@ export default {
         recent: "最近使用",
       },
     },
-    
+
     functions: {
       title: "可用功能",
       search: {
@@ -129,7 +129,7 @@ export default {
       },
     },
   },
-  
+
   // ===== 搜索 =====
   search: {
     global: {
@@ -138,7 +138,7 @@ export default {
       advanced: "高级搜索",
       clear: "清除",
     },
-    
+
     filters: {
       title: "搜索筛选器",
       category: "类别",
@@ -149,7 +149,7 @@ export default {
       clearAll: "清除所有筛选器",
       apply: "应用筛选器",
     },
-    
+
     results: {
       title: "搜索结果",
       loading: "正在搜索...",
@@ -160,7 +160,7 @@ export default {
       newest: "最新优先",
       oldest: "最早优先",
     },
-    
+
     modules: {
       all: "所有模块",
       crm: "客户关系管理",
@@ -172,7 +172,7 @@ export default {
       ai: "AI 功能",
     },
   },
-  
+
   // ===== 导航与侧边栏 =====
   sidebar: {
     title: "导航",
@@ -180,7 +180,7 @@ export default {
     expand: "展开侧边栏",
     pin: "固定侧边栏",
     unpin: "取消固定侧边栏",
-    
+
     // 主要部分
     sections: {
       main: "主要区域",
@@ -197,7 +197,7 @@ export default {
       ai: "AI 与自动化",
       tools: "工具",
     },
-    
+
     // 导航项目带图标
     navItems: {
       dashboard: "仪表板",
@@ -206,7 +206,7 @@ export default {
       company: "公司",
       processes: "流程管理",
       risk: "风险与合规",
-      
+
       // 财务
       accounting: "会计",
       controlling: "控制",
@@ -214,7 +214,7 @@ export default {
       taxes: "税务",
       invoices: "发票",
       expenses: "费用",
-      
+
       // CRM 与销售
       crm: "客户管理",
       customers: "客户",
@@ -224,44 +224,44 @@ export default {
       sales: "销售",
       orders: "订单",
       fulfillment: "订单履行",
-      
+
       // 采购
       purchasing: "采购",
       receiving: "收货",
       suppliers: "供应商",
       contracts: "合同",
-      
+
       // 生产
       planning: "生产计划",
       manufacturing: "制造",
       quality: "质量管理",
       maintenance: "维护",
-      
+
       // 仓库
       inventory: "库存",
       picking: "拣货",
       logistics: "物流",
       shipping: "发货",
-      
+
       // 人力资源
       personnel: "人事",
       timeTracking: "时间跟踪",
       payroll: "薪资",
       development: "发展",
       recruiting: "招聘",
-      
+
       // 报告
       reports: "报告",
       analytics: "分析",
       dashboards: "仪表板",
       exports: "数据导出",
-      
+
       // 通讯
       email: "电子邮件",
       messaging: "消息",
       social: "社交媒体",
       calls: "电话呼叫",
-      
+
       // 系统
       users: "用户",
       roles: "角色",
@@ -269,21 +269,21 @@ export default {
       settings: "设置",
       logs: "系统日志",
       backups: "备份",
-      
+
       // AI 与工具
       aiAnnotator: "AI 注释器",
       batchProcessing: "批处理",
       modelManagement: "AI 模型",
       advancedFilters: "高级筛选器",
       innovation: "创新实验室",
-      
+
       // 其他
       documents: "文档",
       projects: "项目",
       help: "帮助与支持",
       about: "关于系统",
     },
-    
+
     // 用户菜单
     user: {
       profile: "我的资料",
@@ -291,7 +291,7 @@ export default {
       logout: "退出登录",
       switchAccount: "切换账户",
     },
-    
+
     // 页脚
     footer: {
       version: "版本 {{version}}",
@@ -299,7 +299,7 @@ export default {
       copyright: "© {{year}} ERP SteinmetZ",
     },
   },
-  
+
   // ===== AI 与自动化 =====
   ai: {
     title: "AI 与自动化",
@@ -313,7 +313,7 @@ export default {
       export: "导出注释",
       supportedFormats: "支持格式：PDF、DOCX、图片",
     },
-    
+
     models: {
       title: "AI 模型",
       provider: "提供商",
@@ -326,7 +326,7 @@ export default {
       configure: "配置",
       test: "测试模型",
     },
-    
+
     chat: {
       title: "AI 助手",
       inputPlaceholder: "向我询问关于 ERP 系统的任何问题...",
@@ -342,7 +342,7 @@ export default {
         q4: "帮助员工入职",
       },
     },
-    
+
     batch: {
       title: "批处理",
       create: "创建批处理作业",
@@ -353,11 +353,11 @@ export default {
       retry: "重试失败",
     },
   },
-  
+
   // ===== CRM 模块 =====
   crm: {
     title: "客户关系管理",
-    
+
     customers: {
       title: "客户",
       list: "客户列表",
@@ -368,14 +368,14 @@ export default {
       import: "导入客户",
       export: "导出客户",
     },
-    
+
     leads: {
       title: "潜在客户",
       convert: "转为客户",
       assign: "分配给销售",
       followUp: "安排跟进",
     },
-    
+
     opportunities: {
       title: "销售机会",
       stages: {
@@ -387,14 +387,14 @@ export default {
         closedLost: "失败关闭",
       },
     },
-    
+
     contacts: {
       title: "联系人",
       add: "添加联系人",
       primary: "主要联系人",
       communication: "沟通记录",
     },
-    
+
     activities: {
       title: "活动",
       logCall: "记录电话",
@@ -403,11 +403,11 @@ export default {
       addNote: "添加备注",
     },
   },
-  
+
   // ===== 财务模块 =====
   finance: {
     title: "财务与会计",
-    
+
     invoices: {
       title: "发票",
       create: "创建发票",
@@ -417,7 +417,7 @@ export default {
       cancel: "取消发票",
       duplicate: "复制",
     },
-    
+
     status: {
       draft: "草稿",
       sent: "已发送",
@@ -426,7 +426,7 @@ export default {
       cancelled: "已取消",
       partiallyPaid: "部分支付",
     },
-    
+
     reports: {
       title: "财务报告",
       profitLoss: "损益表",
@@ -435,7 +435,7 @@ export default {
       agedReceivables: "应收账款账龄",
       agedPayables: "应付账款账龄",
     },
-    
+
     banking: {
       title: "银行",
       reconcile: "对账",
@@ -443,11 +443,11 @@ export default {
       matchTransactions: "匹配交易",
     },
   },
-  
+
   // ===== 人力资源模块 =====
   hr: {
     title: "人力资源",
-    
+
     employees: {
       title: "员工",
       new: "新建员工",
@@ -456,13 +456,13 @@ export default {
       reactivate: "重新激活",
       documents: "员工文档",
     },
-    
+
     departments: {
       title: "部门",
       assign: "分配部门",
       transfer: "调动员工",
     },
-    
+
     attendance: {
       title: "考勤",
       clockIn: "打卡上班",
@@ -470,7 +470,7 @@ export default {
       timesheet: "时间表",
       approve: "批准工时",
     },
-    
+
     payroll: {
       title: "薪资",
       run: "运行薪资",
@@ -479,7 +479,7 @@ export default {
       export: "导出给银行",
     },
   },
-  
+
   // ===== UI 组件 =====
   ui: {
     common: {
@@ -524,7 +524,7 @@ export default {
       yes: "是",
       no: "否",
     },
-    
+
     status: {
       loading: "正在加载...",
       saving: "正在保存...",
@@ -537,7 +537,7 @@ export default {
       info: "信息",
       unknown: "未知",
     },
-    
+
     validation: {
       required: "此字段为必填项",
       invalidEmail: "无效的电子邮件地址",
@@ -548,7 +548,7 @@ export default {
       invalidFormat: "格式无效",
       duplicate: "此值已存在",
     },
-    
+
     emptyStates: {
       noData: "无可用数据",
       noResults: "未找到结果",
@@ -556,7 +556,7 @@ export default {
       notConfigured: "尚未配置",
       comingSoon: "即将推出",
     },
-    
+
     dates: {
       today: "今天",
       yesterday: "昨天",
@@ -576,7 +576,7 @@ export default {
       customRange: "自定义范围",
       selectDate: "选择日期",
     },
-    
+
     time: {
       now: "现在",
       minutes: "分钟",
@@ -588,7 +588,7 @@ export default {
       ago: "前",
       fromNow: "后",
     },
-    
+
     numbers: {
       currency: "¥{{value}}",
       percent: "{{value}}%",
@@ -598,7 +598,7 @@ export default {
       million: "{{value}}百万",
       billion: "{{value}}十亿",
     },
-    
+
     units: {
       pieces: "件",
       kilograms: "公斤",
@@ -612,7 +612,7 @@ export default {
       seconds: "秒",
     },
   },
-  
+
   // ===== 错误消息 =====
   errors: {
     network: "网络错误，请检查您的连接。",
@@ -627,7 +627,7 @@ export default {
     fileTooLarge: "文件大小超过限制。",
     invalidFileType: "无效的文件类型。",
     quotaExceeded: "存储配额已满。",
-    
+
     specific: {
       loginFailed: "登录失败，请检查凭据。",
       sessionExpired: "会话已过期，请重新登录。",
@@ -635,13 +635,13 @@ export default {
       emailInUse: "电子邮件地址已被使用。",
       invalidToken: "无效或过期的令牌。",
     },
-    
+
     retry: "重试",
     contactSupport: "联系支持",
     goBack: "返回",
     reloadPage: "重新加载页面",
   },
-  
+
   // ===== 成功消息 =====
   success: {
     saved: "更改已成功保存！",
@@ -656,7 +656,7 @@ export default {
     configured: "配置成功！",
     activated: "激活成功！",
     deactivated: "停用成功！",
-    
+
     actions: {
       close: "关闭",
       view: "查看",
@@ -664,7 +664,7 @@ export default {
       new: "新建",
     },
   },
-  
+
   // ===== 确认对话框 =====
   confirm: {
     delete: {
@@ -674,27 +674,27 @@ export default {
       multiple: "删除 {{count}} 个选定项？",
       permanent: "这将永久删除该项目。",
     },
-    
+
     logout: {
       title: "确认退出",
       message: "确定要退出登录吗？",
     },
-    
+
     cancel: {
       title: "确认取消",
       message: "确定要取消吗？未保存的更改将丢失。",
     },
-    
+
     discard: {
       title: "放弃更改",
       message: "您有未保存的更改，确定要放弃吗？",
     },
-    
+
     overwrite: {
       title: "确认覆盖",
       message: "这将覆盖现有数据，确定吗？",
     },
-    
+
     buttons: {
       proceed: "继续",
       keep: "保留",
@@ -702,7 +702,7 @@ export default {
       cancel: "取消",
     },
   },
-  
+
   // ===== 表单与输入 =====
   forms: {
     labels: {
@@ -736,7 +736,7 @@ export default {
       createdBy: "创建者",
       updatedBy: "更新者",
     },
-    
+
     placeholders: {
       select: "选择...",
       searchSelect: "输入以搜索...",
@@ -746,7 +746,7 @@ export default {
       optional: "可选",
       required: "必填",
     },
-    
+
     hints: {
       minCharacters: "至少 {{count}} 个字符",
       maxCharacters: "最多 {{count}} 个字符",
@@ -754,7 +754,7 @@ export default {
       optionalField: "可选字段",
     },
   },
-  
+
   // ===== 表格与数据网格 =====
   table: {
     actions: {
@@ -766,13 +766,13 @@ export default {
       export: "导出",
       more: "更多操作",
     },
-    
+
     selection: {
       selected: "已选择 {{count}} 项",
       selectAll: "全选",
       clear: "清除选择",
     },
-    
+
     pagination: {
       page: "第 {{page}} 页",
       of: "共 {{pages}} 页",
@@ -783,20 +783,20 @@ export default {
       next: "下一页",
       last: "末页",
     },
-    
+
     sorting: {
       sortBy: "排序依据",
       ascending: "升序",
       descending: "降序",
       clear: "清除排序",
     },
-    
+
     filtering: {
       filter: "筛选",
       clearFilters: "清除筛选",
       apply: "应用",
     },
-    
+
     empty: {
       noData: "无可用数据",
       noResults: "未找到结果",
@@ -804,7 +804,7 @@ export default {
       error: "加载数据时出错",
     },
   },
-  
+
   // ===== 模态框与对话框 =====
   modal: {
     close: "关闭",
@@ -813,7 +813,7 @@ export default {
     fullscreen: "全屏",
     exitFullscreen: "退出全屏",
   },
-  
+
   // ===== 文件管理 =====
   files: {
     upload: "上传文件",
@@ -825,7 +825,7 @@ export default {
     delete: "删除",
     share: "分享",
     properties: "属性",
-    
+
     types: {
       image: "图片",
       document: "文档",
@@ -837,7 +837,7 @@ export default {
       video: "视频",
       other: "其他",
     },
-    
+
     status: {
       uploading: "正在上传...",
       processing: "正在处理...",
@@ -846,7 +846,7 @@ export default {
       queued: "排队中",
     },
   },
-  
+
   // ===== 打印与导出 =====
   export: {
     formats: {
@@ -857,21 +857,21 @@ export default {
       xml: "XML",
       print: "打印",
     },
-    
+
     options: {
       currentPage: "当前页",
       allPages: "所有页",
       selectedRows: "选定行",
       customRange: "自定义范围",
     },
-    
+
     status: {
       generating: "正在生成导出...",
       ready: "导出就绪",
       failed: "导出失败",
     },
   },
-  
+
   // ===== 系统与管理 =====
   system: {
     settings: {
@@ -885,7 +885,7 @@ export default {
       logs: "系统日志",
       maintenance: "维护",
     },
-    
+
     users: {
       title: "用户管理",
       newUser: "新建用户",
@@ -895,7 +895,7 @@ export default {
       activate: "激活",
       roles: "分配角色",
     },
-    
+
     roles: {
       title: "角色与权限",
       create: "创建角色",
@@ -903,7 +903,7 @@ export default {
       delete: "删除角色",
       permissions: "管理权限",
     },
-    
+
     logs: {
       title: "系统日志",
       clear: "清除日志",
@@ -917,7 +917,7 @@ export default {
         critical: "严重",
       },
     },
-    
+
     maintenance: {
       title: "维护",
       backup: "创建备份",
@@ -927,7 +927,7 @@ export default {
       update: "系统更新",
     },
   },
-  
+
   // ===== 时间与日期格式 =====
   datetime: {
     formats: {
@@ -944,7 +944,7 @@ export default {
       longDateTime: "YYYY年MM月DD日 HH:mm:ss z",
       fullDateTime: "YYYY年MM月DD日 dddd HH:mm:ss zzzz",
     },
-    
+
     relative: {
       justNow: "刚刚",
       secondsAgo: "{{count}} 秒前",
@@ -961,7 +961,7 @@ export default {
       monthsAgo_one: "1 个月前",
       yearsAgo: "{{count}} 年前",
       yearsAgo_one: "1 年前",
-      
+
       inSeconds: "{{count}} 秒后",
       inSeconds_one: "1 秒后",
       inMinutes: "{{count}} 分钟后",
@@ -977,7 +977,7 @@ export default {
       inYears: "{{count}} 年后",
       inYears_one: "1 年后",
     },
-    
+
     units: {
       second: "秒",
       second_one: "{{count}} 秒",
@@ -1002,7 +1002,7 @@ export default {
       year_other: "{{count}} 年",
     },
   },
-  
+
   // ===== 复数规则 =====
   pluralization: {
     items: {
@@ -1040,7 +1040,7 @@ export default {
       document_one: "{{count}} 个文档",
       document_other: "{{count}} 个文档",
     },
-    
+
     time: {
       day: "天",
       day_one: "{{count}} 天",

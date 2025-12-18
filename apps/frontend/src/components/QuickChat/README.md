@@ -22,21 +22,24 @@ Unified AI assistant chat component for ERP SteinmetZ - merged from QuickChat an
 ✅ **Model Selection** - Switch between AI models and providers  
 ✅ **ARIA Compliant** - Accessible for screen readers  
 ✅ **Responsive** - Mobile, tablet, and desktop support  
-✅ **Animations** - Smooth transitions and loading states  
+✅ **Animations** - Smooth transitions and loading states
 
 ## 📦 Usage
 
 ```tsx
-import { UnifiedQuickChat, UnifiedQuickChatProvider } from "./components/QuickChat";
+import {
+  UnifiedQuickChat,
+  UnifiedQuickChatProvider,
+} from "./components/QuickChat";
 
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
     <UnifiedQuickChatProvider>
-      <UnifiedQuickChat 
-        isOpen={isChatOpen} 
-        onClose={() => setIsChatOpen(false)} 
+      <UnifiedQuickChat
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
       />
     </UnifiedQuickChatProvider>
   );
@@ -45,17 +48,17 @@ function App() {
 
 ## 🎮 Commands
 
-| Command | Description | Category |
-|---------|-------------|----------|
-| `/rechnung` | Rechnung erstellen | ERP |
-| `/angebot` | Angebot erstellen | ERP |
-| `/bericht` | Bericht generieren | Reports |
-| `/idee` | Idee parken | Notes |
-| `/termin` | Termin erstellen | Calendar |
-| `/suche` | Im System suchen | Search |
-| `/hilfe` | Hilfe anzeigen | System |
-| `/new` | Neue Session starten | System |
-| `/clear` | Nachrichten löschen | System |
+| Command     | Description          | Category |
+| ----------- | -------------------- | -------- |
+| `/rechnung` | Rechnung erstellen   | ERP      |
+| `/angebot`  | Angebot erstellen    | ERP      |
+| `/bericht`  | Bericht generieren   | Reports  |
+| `/idee`     | Idee parken          | Notes    |
+| `/termin`   | Termin erstellen     | Calendar |
+| `/suche`    | Im System suchen     | Search   |
+| `/hilfe`    | Hilfe anzeigen       | System   |
+| `/new`      | Neue Session starten | System   |
+| `/clear`    | Nachrichten löschen  | System   |
 
 ### Command Usage
 
@@ -97,13 +100,13 @@ Styles are applied through CSS variables and automatically adapt based on the th
 
 ## ⌨️ Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `/` | Trigger command autocomplete |
-| `ArrowUp` / `ArrowDown` | Navigate commands |
-| `Tab` / `Enter` | Select command |
-| `Escape` | Clear input or close menu |
-| `Ctrl+Enter` | Send message |
+| Shortcut                | Action                       |
+| ----------------------- | ---------------------------- |
+| `/`                     | Trigger command autocomplete |
+| `ArrowUp` / `ArrowDown` | Navigate commands            |
+| `Tab` / `Enter`         | Select command               |
+| `Escape`                | Clear input or close menu    |
+| `Ctrl+Enter`            | Send message                 |
 
 ## 📊 Tabs
 
@@ -122,7 +125,13 @@ Styles are applied through CSS variables and automatically adapt based on the th
 type MessageRole = "system" | "user" | "assistant";
 
 // AI providers
-type ChatProvider = "openai" | "anthropic" | "local" | "ollama" | "azure" | "custom";
+type ChatProvider =
+  | "openai"
+  | "anthropic"
+  | "local"
+  | "ollama"
+  | "azure"
+  | "custom";
 
 // Tab names
 type TabName = "chat" | "sessions" | "models" | "settings" | "info";
@@ -176,9 +185,7 @@ interface Settings {
 ### Provider
 
 ```tsx
-<UnifiedQuickChatProvider>
-  {/* Your app */}
-</UnifiedQuickChatProvider>
+<UnifiedQuickChatProvider>{/* Your app */}</UnifiedQuickChatProvider>
 ```
 
 ### Hook
@@ -209,7 +216,7 @@ const {
 
 ```typescript
 interface UnifiedQuickChatProps {
-  isOpen: boolean;    // Dialog visibility
+  isOpen: boolean; // Dialog visibility
   onClose: () => void; // Close handler
 }
 ```
@@ -260,7 +267,10 @@ import QuickChat from "./components/QuickChat";
 **New Import:**
 
 ```tsx
-import { UnifiedQuickChat, UnifiedQuickChatProvider } from "./components/QuickChat";
+import {
+  UnifiedQuickChat,
+  UnifiedQuickChatProvider,
+} from "./components/QuickChat";
 ```
 
 **Old Usage:**
@@ -285,7 +295,7 @@ import { UnifiedQuickChat, UnifiedQuickChatProvider } from "./components/QuickCh
 **Lines:** 232, 356  
 **Issue:** `aria-selected="{expression}"` - Invalid ARIA attribute value  
 **Status:** False positive - Code is correct, ESLint limitation with jsx-a11y plugin  
-**Workaround:** Applied object spread pattern with const assertions  
+**Workaround:** Applied object spread pattern with const assertions
 
 ### Fast Refresh Warning
 
@@ -293,7 +303,7 @@ import { UnifiedQuickChat, UnifiedQuickChatProvider } from "./components/QuickCh
 **Line:** 103  
 **Issue:** "Fast refresh only works when a file only exports components"  
 **Status:** Acceptable - Standard pattern for Context files with hooks  
-**Impact:** No runtime issues, only affects HMR during development  
+**Impact:** No runtime issues, only affects HMR during development
 
 ## 🧪 Testing
 

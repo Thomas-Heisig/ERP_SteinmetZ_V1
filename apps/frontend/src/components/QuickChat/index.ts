@@ -3,7 +3,7 @@
 
 /**
  * Unified QuickChat Component Exports
- * 
+ *
  * @module QuickChat
  */
 

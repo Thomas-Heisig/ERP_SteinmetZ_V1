@@ -4,7 +4,7 @@ export default {
     title: "ERP SteinmetZ – Funktionsübersicht",
     subtitle: "Zentrale Steuerung für Geschäftsabläufe",
     welcome: "Willkommen zurück, {{name}}",
-    
+
     // Statusanzeigen
     status: {
       online: "System online",
@@ -13,7 +13,7 @@ export default {
       maintenance: "Wartungsmodus",
       syncing: "Daten werden synchronisiert...",
     },
-    
+
     // Schnellaktionen
     quickActions: {
       title: "Schnellaktionen",
@@ -25,7 +25,7 @@ export default {
       exportData: "Daten exportieren",
       importData: "Daten importieren",
     },
-    
+
     // Systemüberwachung
     health: {
       title: "Systemzustand",
@@ -49,7 +49,7 @@ export default {
         cpuLoad: "CPU-Auslastung",
       },
     },
-    
+
     // Benachrichtigungen
     notifications: {
       title: "Benachrichtigungen",
@@ -63,7 +63,7 @@ export default {
         success: "Erfolg",
       },
     },
-    
+
     // Letzte Aktivitäten
     recentActivity: {
       title: "Letzte Aktivitäten",
@@ -78,12 +78,12 @@ export default {
       empty: "Keine aktuellen Aktivitäten",
     },
   },
-  
+
   // ===== KATALOG & FUNKTIONEN =====
   catalog: {
     title: "Funktionskatalog",
     subtitle: "Durchsuchen verfügbarer Systemfunktionen",
-    
+
     categories: {
       title: "Funktionsbereiche",
       count: "{{count}} Bereiche verfügbar",
@@ -97,7 +97,7 @@ export default {
         recent: "Zuletzt verwendet",
       },
     },
-    
+
     functions: {
       title: "Verfügbare Funktionen",
       search: {
@@ -129,7 +129,7 @@ export default {
       },
     },
   },
-  
+
   // ===== SUCHE =====
   search: {
     global: {
@@ -138,7 +138,7 @@ export default {
       advanced: "Erweiterte Suche",
       clear: "Löschen",
     },
-    
+
     filters: {
       title: "Suchfilter",
       category: "Kategorie",
@@ -149,7 +149,7 @@ export default {
       clearAll: "Alle Filter löschen",
       apply: "Filter anwenden",
     },
-    
+
     results: {
       title: "Suchergebnisse",
       loading: "Suche läuft...",
@@ -160,7 +160,7 @@ export default {
       newest: "Neueste zuerst",
       oldest: "Älteste zuerst",
     },
-    
+
     modules: {
       all: "Alle Module",
       crm: "CRM",
@@ -172,7 +172,7 @@ export default {
       ai: "KI-Funktionen",
     },
   },
-  
+
   // ===== NAVIGATION & SIDEBAR =====
   sidebar: {
     title: "Navigation",
@@ -180,7 +180,7 @@ export default {
     expand: "Sidebar ausklappen",
     pin: "Sidebar fixieren",
     unpin: "Sidebar lösen",
-    
+
     // Direct navigation items (used by MainNavigation)
     dashboard: "Dashboard",
     catalog: "Funktionskatalog",
@@ -228,7 +228,7 @@ export default {
     projects: "Projekte",
     settings: "Einstellungen",
     help: "Hilfe",
-    
+
     // Section titles
     main: "Hauptbereich",
     business: "Geschäftsverwaltung",
@@ -241,7 +241,7 @@ export default {
     communication: "Kommunikation & Social",
     system: "System & Administration",
     ai: "KI & Automatisierung",
-    
+
     // Hauptbereiche
     sections: {
       main: "Hauptbereich",
@@ -258,7 +258,7 @@ export default {
       ai: "KI & Automatisierung",
       tools: "Werkzeuge",
     },
-    
+
     // Navigationselemente mit Icons
     navItems: {
       dashboard: "Dashboard",
@@ -267,7 +267,7 @@ export default {
       company: "Unternehmen",
       processes: "Prozess-Management",
       risk: "Risiko & Compliance",
-      
+
       // Finanzen
       accounting: "Buchhaltung",
       controlling: "Controlling",
@@ -275,7 +275,7 @@ export default {
       taxes: "Steuern",
       invoices: "Rechnungen",
       expenses: "Ausgaben",
-      
+
       // CRM & Vertrieb
       crm: "Kundenverwaltung",
       customers: "Kunden",
@@ -285,44 +285,44 @@ export default {
       sales: "Vertrieb",
       orders: "Aufträge",
       fulfillment: "Auftragsabwicklung",
-      
+
       // Einkauf
       purchasing: "Einkauf",
       receiving: "Wareneingang",
       suppliers: "Lieferanten",
       contracts: "Verträge",
-      
+
       // Produktion
       planning: "Produktionsplanung",
       manufacturing: "Fertigung",
       quality: "Qualitätsmanagement",
       maintenance: "Wartung",
-      
+
       // Lager
       inventory: "Lagerbestand",
       picking: "Kommissionierung",
       logistics: "Logistik",
       shipping: "Versand",
-      
+
       // Personal
       personnel: "Personal",
       timeTracking: "Zeiterfassung",
       payroll: "Gehaltsabrechnung",
       development: "Entwicklung",
       recruiting: "Recruiting",
-      
+
       // Reporting
       reports: "Berichte",
       analytics: "Analysen",
       dashboards: "Dashboards",
       exports: "Datenexporte",
-      
+
       // Kommunikation
       email: "E-Mail",
       messaging: "Nachrichten",
       social: "Social Media",
       calls: "Telefonate",
-      
+
       // System
       users: "Benutzer",
       roles: "Rollen",
@@ -330,21 +330,21 @@ export default {
       settings: "Einstellungen",
       logs: "System-Logs",
       backups: "Backups",
-      
+
       // KI & Tools
       aiAnnotator: "KI-Annotator",
       batchProcessing: "Stapelverarbeitung",
       modelManagement: "KI-Modelle",
       advancedFilters: "Erweiterte Filter",
       innovation: "Innovations-Labor",
-      
+
       // Sonstiges
       documents: "Dokumente",
       projects: "Projekte",
       help: "Hilfe & Support",
       about: "Über das System",
     },
-    
+
     // Benutzermenü
     user: {
       profile: "Mein Profil",
@@ -352,7 +352,7 @@ export default {
       logout: "Abmelden",
       switchAccount: "Konto wechseln",
     },
-    
+
     // Footer
     footer: {
       version: "Version {{version}}",
@@ -360,7 +360,7 @@ export default {
       copyright: "© {{year}} ERP SteinmetZ",
     },
   },
-  
+
   // ===== KI & AUTOMATISIERUNG =====
   ai: {
     title: "KI & Automatisierung",
@@ -374,7 +374,7 @@ export default {
       export: "Annotationen exportieren",
       supportedFormats: "Unterstützte Formate: PDF, DOCX, Bilder",
     },
-    
+
     models: {
       title: "KI-Modelle",
       provider: "Anbieter",
@@ -387,7 +387,7 @@ export default {
       configure: "Konfigurieren",
       test: "Modell testen",
     },
-    
+
     chat: {
       title: "KI-Assistent",
       inputPlaceholder: "Fragen Sie mich alles über das ERP-System...",
@@ -403,7 +403,7 @@ export default {
         q4: "Hilfe bei Mitarbeiter-Onboarding",
       },
     },
-    
+
     batch: {
       title: "Stapelverarbeitung",
       create: "Stapeljob erstellen",
@@ -414,11 +414,11 @@ export default {
       retry: "Fehlgeschlagenen wiederholen",
     },
   },
-  
+
   // ===== CRM MODUL =====
   crm: {
     title: "Kundenbeziehungsmanagement",
-    
+
     customers: {
       title: "Kunden",
       list: "Kundenliste",
@@ -429,14 +429,14 @@ export default {
       import: "Kunden importieren",
       export: "Kunden exportieren",
     },
-    
+
     leads: {
       title: "Leads",
       convert: "Zu Kunde konvertieren",
       assign: "Vertrieb zuweisen",
       followUp: "Follow-up planen",
     },
-    
+
     opportunities: {
       title: "Verkaufschancen",
       stages: {
@@ -448,14 +448,14 @@ export default {
         closedLost: "Verloren",
       },
     },
-    
+
     contacts: {
       title: "Kontakte",
       add: "Kontakt hinzufügen",
       primary: "Hauptansprechpartner",
       communication: "Kommunikationsprotokoll",
     },
-    
+
     activities: {
       title: "Aktivitäten",
       logCall: "Telefonat protokollieren",
@@ -464,11 +464,11 @@ export default {
       addNote: "Notiz hinzufügen",
     },
   },
-  
+
   // ===== FINANZMODUL =====
   finance: {
     title: "Finanzen & Buchhaltung",
-    
+
     invoices: {
       title: "Rechnungen",
       create: "Rechnung erstellen",
@@ -478,7 +478,7 @@ export default {
       cancel: "Rechnung stornieren",
       duplicate: "Duplizieren",
     },
-    
+
     status: {
       draft: "Entwurf",
       sent: "Versendet",
@@ -487,7 +487,7 @@ export default {
       cancelled: "Storniert",
       partiallyPaid: "Teilweise bezahlt",
     },
-    
+
     reports: {
       title: "Finanzberichte",
       profitLoss: "Gewinn- und Verlustrechnung",
@@ -496,7 +496,7 @@ export default {
       agedReceivables: "Forderungsalterung",
       agedPayables: "Verbindlichkeitsalterung",
     },
-    
+
     banking: {
       title: "Bankwesen",
       reconcile: "Konto abstimmen",
@@ -504,11 +504,11 @@ export default {
       matchTransactions: "Transaktionen zuordnen",
     },
   },
-  
+
   // ===== PERSONALMODUL =====
   hr: {
     title: "Personalwesen",
-    
+
     employees: {
       title: "Mitarbeiter",
       new: "Neuer Mitarbeiter",
@@ -517,13 +517,13 @@ export default {
       reactivate: "Reaktivieren",
       documents: "Mitarbeiterdokumente",
     },
-    
+
     departments: {
       title: "Abteilungen",
       assign: "Abteilung zuweisen",
       transfer: "Mitarbeiter versetzen",
     },
-    
+
     attendance: {
       title: "Anwesenheit",
       clockIn: "Stempeln (Start)",
@@ -531,7 +531,7 @@ export default {
       timesheet: "Zeiterfassung",
       approve: "Stunden genehmigen",
     },
-    
+
     payroll: {
       title: "Gehaltsabrechnung",
       run: "Abrechnung durchführen",
@@ -540,7 +540,7 @@ export default {
       export: "Für Bank exportieren",
     },
   },
-  
+
   // ===== UI-KOMPONENTEN =====
   ui: {
     common: {
@@ -585,7 +585,7 @@ export default {
       yes: "Ja",
       no: "Nein",
     },
-    
+
     status: {
       loading: "Wird geladen...",
       saving: "Wird gespeichert...",
@@ -598,7 +598,7 @@ export default {
       info: "Information",
       unknown: "Unbekannt",
     },
-    
+
     validation: {
       required: "Dieses Feld ist erforderlich",
       invalidEmail: "Ungültige E-Mail-Adresse",
@@ -609,7 +609,7 @@ export default {
       invalidFormat: "Ungültiges Format",
       duplicate: "Dieser Wert existiert bereits",
     },
-    
+
     emptyStates: {
       noData: "Keine Daten verfügbar",
       noResults: "Keine Ergebnisse gefunden",
@@ -617,7 +617,7 @@ export default {
       notConfigured: "Noch nicht konfiguriert",
       comingSoon: "Demnächst verfügbar",
     },
-    
+
     dates: {
       today: "Heute",
       yesterday: "Gestern",
@@ -637,7 +637,7 @@ export default {
       customRange: "Benutzerdefinierter Bereich",
       selectDate: "Datum auswählen",
     },
-    
+
     time: {
       now: "Jetzt",
       minutes: "Minuten",
@@ -649,7 +649,7 @@ export default {
       ago: "vor",
       fromNow: "in",
     },
-    
+
     numbers: {
       currency: "{{value}} €",
       percent: "{{value}} %",
@@ -659,7 +659,7 @@ export default {
       million: "{{value}} Mio.",
       billion: "{{value}} Mrd.",
     },
-    
+
     units: {
       pieces: "Stk.",
       kilograms: "kg",
@@ -673,7 +673,7 @@ export default {
       seconds: "s",
     },
   },
-  
+
   // ===== FEHLERMELDUNGEN =====
   errors: {
     network: "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
@@ -682,27 +682,31 @@ export default {
     unauthorized: "Sie sind nicht autorisiert, diese Aktion auszuführen.",
     forbidden: "Zugriff verweigert. Unzureichende Berechtigungen.",
     notFound: "Die angeforderte Ressource wurde nicht gefunden.",
-    validation: "Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut.",
+    validation:
+      "Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut.",
     duplicate: "Dieser Datensatz existiert bereits.",
-    constraint: "Kann aufgrund bestehender Abhängigkeiten nicht gelöscht werden.",
+    constraint:
+      "Kann aufgrund bestehender Abhängigkeiten nicht gelöscht werden.",
     fileTooLarge: "Dateigröße überschreitet das Maximum.",
     invalidFileType: "Ungültiger Dateityp.",
     quotaExceeded: "Speicherkontingent überschritten.",
-    
+
     specific: {
-      loginFailed: "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Zugangsdaten.",
-      sessionExpired: "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+      loginFailed:
+        "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Zugangsdaten.",
+      sessionExpired:
+        "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
       passwordWeak: "Passwort ist zu schwach.",
       emailInUse: "E-Mail-Adresse wird bereits verwendet.",
       invalidToken: "Ungültiges oder abgelaufenes Token.",
     },
-    
+
     retry: "Erneut versuchen",
     contactSupport: "Support kontaktieren",
     goBack: "Zurück",
     reloadPage: "Seite neu laden",
   },
-  
+
   // ===== ERFOLGSMELDUNGEN =====
   success: {
     saved: "Änderungen erfolgreich gespeichert!",
@@ -717,7 +721,7 @@ export default {
     configured: "Erfolgreich konfiguriert!",
     activated: "Erfolgreich aktiviert!",
     deactivated: "Erfolgreich deaktiviert!",
-    
+
     actions: {
       close: "Schließen",
       view: "Anzeigen",
@@ -725,37 +729,41 @@ export default {
       new: "Neu erstellen",
     },
   },
-  
+
   // ===== BESTÄTIGUNGSDIALOGE =====
   confirm: {
     delete: {
       title: "Löschen bestätigen",
-      message: "Möchten Sie dieses Element wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      message:
+        "Möchten Sie dieses Element wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
       single: "Dieses Element löschen?",
       multiple: "{{count}} ausgewählte Elemente löschen?",
       permanent: "Dies löscht das Element dauerhaft.",
     },
-    
+
     logout: {
       title: "Abmeldung bestätigen",
       message: "Möchten Sie sich wirklich abmelden?",
     },
-    
+
     cancel: {
       title: "Abbruch bestätigen",
-      message: "Möchten Sie wirklich abbrechen? Nicht gespeicherte Änderungen gehen verloren.",
+      message:
+        "Möchten Sie wirklich abbrechen? Nicht gespeicherte Änderungen gehen verloren.",
     },
-    
+
     discard: {
       title: "Änderungen verwerfen",
-      message: "Sie haben nicht gespeicherte Änderungen. Möchten Sie diese wirklich verwerfen?",
+      message:
+        "Sie haben nicht gespeicherte Änderungen. Möchten Sie diese wirklich verwerfen?",
     },
-    
+
     overwrite: {
       title: "Überschreiben bestätigen",
-      message: "Dadurch werden bestehende Daten überschrieben. Sind Sie sicher?",
+      message:
+        "Dadurch werden bestehende Daten überschrieben. Sind Sie sicher?",
     },
-    
+
     buttons: {
       proceed: "Fortfahren",
       keep: "Behalten",
@@ -763,7 +771,7 @@ export default {
       cancel: "Abbrechen",
     },
   },
-  
+
   // ===== FORMULARE & EINGABEN =====
   forms: {
     labels: {
@@ -797,7 +805,7 @@ export default {
       createdBy: "Erstellt von",
       updatedBy: "Aktualisiert von",
     },
-    
+
     placeholders: {
       select: "Auswählen...",
       searchSelect: "Zum Suchen tippen...",
@@ -807,7 +815,7 @@ export default {
       optional: "Optional",
       required: "Erforderlich",
     },
-    
+
     hints: {
       minCharacters: "Mindestens {{count}} Zeichen",
       maxCharacters: "Maximal {{count}} Zeichen",
@@ -815,7 +823,7 @@ export default {
       optionalField: "Optionales Feld",
     },
   },
-  
+
   // ===== TABELLE & DATENGRID =====
   table: {
     actions: {
@@ -827,13 +835,13 @@ export default {
       export: "Exportieren",
       more: "Weitere Aktionen",
     },
-    
+
     selection: {
       selected: "{{count}} ausgewählt",
       selectAll: "Alle auswählen",
       clear: "Auswahl aufheben",
     },
-    
+
     pagination: {
       page: "Seite",
       of: "von",
@@ -844,20 +852,20 @@ export default {
       next: "Nächste",
       last: "Letzte",
     },
-    
+
     sorting: {
       sortBy: "Sortieren nach",
       ascending: "Aufsteigend",
       descending: "Absteigend",
       clear: "Sortierung löschen",
     },
-    
+
     filtering: {
       filter: "Filter",
       clearFilters: "Filter löschen",
       apply: "Anwenden",
     },
-    
+
     empty: {
       noData: "Keine Daten verfügbar",
       noResults: "Keine Ergebnisse gefunden",
@@ -865,7 +873,7 @@ export default {
       error: "Fehler beim Laden der Daten",
     },
   },
-  
+
   // ===== MODALE & DIALOGE =====
   modal: {
     close: "Schließen",
@@ -874,7 +882,7 @@ export default {
     fullscreen: "Vollbild",
     exitFullscreen: "Vollbild verlassen",
   },
-  
+
   // ===== DATEIVERWALTUNG =====
   files: {
     upload: "Dateien hochladen",
@@ -886,7 +894,7 @@ export default {
     delete: "Löschen",
     share: "Teilen",
     properties: "Eigenschaften",
-    
+
     types: {
       image: "Bild",
       document: "Dokument",
@@ -898,7 +906,7 @@ export default {
       video: "Video",
       other: "Sonstiges",
     },
-    
+
     status: {
       uploading: "Wird hochgeladen...",
       processing: "Wird verarbeitet...",
@@ -907,7 +915,7 @@ export default {
       queued: "In Warteschlange",
     },
   },
-  
+
   // ===== DRUCKEN & EXPORT =====
   export: {
     formats: {
@@ -918,21 +926,21 @@ export default {
       xml: "XML",
       print: "Drucken",
     },
-    
+
     options: {
       currentPage: "Aktuelle Seite",
       allPages: "Alle Seiten",
       selectedRows: "Ausgewählte Zeilen",
       customRange: "Benutzerdefinierter Bereich",
     },
-    
+
     status: {
       generating: "Export wird erstellt...",
       ready: "Export bereit",
       failed: "Export fehlgeschlagen",
     },
   },
-  
+
   // ===== SYSTEM & ADMIN =====
   system: {
     settings: {
@@ -946,7 +954,7 @@ export default {
       logs: "System-Logs",
       maintenance: "Wartung",
     },
-    
+
     users: {
       title: "Benutzerverwaltung",
       newUser: "Neuer Benutzer",
@@ -956,7 +964,7 @@ export default {
       activate: "Aktivieren",
       roles: "Rollen zuweisen",
     },
-    
+
     roles: {
       title: "Rollen & Berechtigungen",
       create: "Rolle erstellen",
@@ -964,7 +972,7 @@ export default {
       delete: "Rolle löschen",
       permissions: "Berechtigungen verwalten",
     },
-    
+
     logs: {
       title: "System-Logs",
       clear: "Logs löschen",
@@ -978,7 +986,7 @@ export default {
         critical: "Kritisch",
       },
     },
-    
+
     maintenance: {
       title: "Wartung",
       backup: "Backup erstellen",
@@ -988,7 +996,7 @@ export default {
       update: "System-Update",
     },
   },
-  
+
   // ===== ZEIT & DATUM-FORMATIERUNG =====
   datetime: {
     formats: {
@@ -1005,7 +1013,7 @@ export default {
       longDateTime: "DD. MMMM YYYY HH:mm:ss z",
       fullDateTime: "dddd, DD. MMMM YYYY HH:mm:ss zzzz",
     },
-    
+
     relative: {
       justNow: "gerade eben",
       secondsAgo: "vor {{count}} Sekunden",
@@ -1022,7 +1030,7 @@ export default {
       monthsAgo_one: "vor 1 Monat",
       yearsAgo: "vor {{count}} Jahren",
       yearsAgo_one: "vor 1 Jahr",
-      
+
       inSeconds: "in {{count}} Sekunden",
       inSeconds_one: "in 1 Sekunde",
       inMinutes: "in {{count}} Minuten",
@@ -1038,7 +1046,7 @@ export default {
       inYears: "in {{count}} Jahren",
       inYears_one: "in 1 Jahr",
     },
-    
+
     units: {
       second: "Sekunde",
       second_one: "{{count}} Sekunde",
@@ -1063,7 +1071,7 @@ export default {
       year_other: "{{count}} Jahre",
     },
   },
-  
+
   // ===== PLURALISIERUNGSREGELN =====
   pluralization: {
     items: {
@@ -1101,7 +1109,7 @@ export default {
       document_one: "{{count}} Dokument",
       document_other: "{{count}} Dokumente",
     },
-    
+
     time: {
       day: "Tag",
       day_one: "{{count}} Tag",

@@ -105,7 +105,7 @@ export async function callHuggingFace(
       translation_text?: string;
       summary_text?: string;
     }>;
-    
+
     type HFObjectResponse = {
       generated_text?: string;
       outputs?: string | unknown;
@@ -113,7 +113,7 @@ export async function callHuggingFace(
         total_tokens?: number;
       };
     };
-    
+
     let output = "";
     if (Array.isArray(data)) {
       // Standard-Textmodelle
@@ -136,10 +136,11 @@ export async function callHuggingFace(
       }
     }
 
-    const objData = typeof data === "object" && data !== null 
-      ? (data as HFObjectResponse) 
-      : undefined;
-    
+    const objData =
+      typeof data === "object" && data !== null
+        ? (data as HFObjectResponse)
+        : undefined;
+
     log("info", "HuggingFace Antwort empfangen", {
       model: usedModel,
       endpoint,
@@ -160,7 +161,7 @@ export async function callHuggingFace(
     };
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : String(err);
-    
+
     log("error", "HuggingFace Fehler", {
       model: model || hfConfig.model,
       error: errorMessage,

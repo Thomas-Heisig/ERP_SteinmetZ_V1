@@ -41,7 +41,9 @@ const lazyLoad = (
 // ============================================================================
 
 /** Simple dashboard with executive overview only (4 KPIs, tasks, notifications) */
-const SimpleDashboard = lazy(() => import("./components/Dashboard/SimpleDashboard"));
+const SimpleDashboard = lazy(
+  () => import("./components/Dashboard/SimpleDashboard"),
+);
 
 /** Functions catalog for browsing and managing available functions */
 const FunctionsCatalog = lazy(

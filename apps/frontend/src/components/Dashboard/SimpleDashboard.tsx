@@ -7,6 +7,7 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useDashboardData } from "../../hooks/useDashboardData";
 import "./SimpleDashboard.css";
 
 interface KPICardProps {
@@ -53,7 +54,7 @@ const KPICard: React.FC<KPICardProps> = ({
 interface TaskItem {
   id: string;
   title: string;
-  priority: "high" | "medium" | "low";
+  priority: "high" | "medium" | "low" | "urgent";
   dueDate: string;
 }
 
@@ -67,85 +68,89 @@ interface NotificationItem {
 
 export const SimpleDashboard: React.FC = () => {
   const { t } = useTranslation();
+  const { data, loading, error } = useDashboardData();
 
-  // Mock-Daten für Executive Overview
-  const kpis = [
-    {
-      title: t("dashboard.kpis.revenue"),
-      value: "€ 1.2M",
-      change: 12.5,
-      icon: "💰",
-      color: "border-blue-500",
-    },
-    {
-      title: t("dashboard.kpis.orders"),
-      value: "156",
-      change: 8.3,
-      icon: "📦",
-      color: "border-green-500",
-    },
-    {
-      title: t("dashboard.kpis.production"),
-      value: "89%",
-      change: -2.1,
-      icon: "🏭",
-      color: "border-orange-500",
-    },
-    {
-      title: t("dashboard.kpis.liquidity"),
-      value: "€ 450K",
-      change: 15.7,
-      icon: "💵",
-      color: "border-purple-500",
-    },
-  ];
+  // Default KPIs mapping with icons and colors
+  const kpiConfig: Record<string, { icon: string; color: string }> = {
+    revenue: { icon: "💰", color: "border-blue-500" },
+    orders: { icon: "📦", color: "border-green-500" },
+    production: { icon: "🏭", color: "border-orange-500" },
+    liquidity: { icon: "💵", color: "border-purple-500" },
+  };
 
-  // Mock-Daten für Benachrichtigungen
-  const notifications: NotificationItem[] = [
-    {
-      id: "1",
-      title: "Neue Bestellung",
-      message: "Auftrag #1234 wurde erstellt",
-      time: "vor 5 Min.",
-      type: "success",
-    },
-    {
-      id: "2",
-      title: "Lagerbestand niedrig",
-      message: "Artikel XYZ unter Mindestbestand",
-      time: "vor 15 Min.",
-      type: "warning",
-    },
-    {
-      id: "3",
-      title: "Zahlung eingegangen",
-      message: "Rechnung #5678 wurde bezahlt",
-      time: "vor 1 Std.",
-      type: "info",
-    },
-  ];
+  // Map API data to KPI cards
+  const kpis =
+    data?.kpis?.slice(0, 4).map((kpi) => {
+      const config = kpiConfig[kpi.category] || {
+        icon: "📊",
+        color: "border-gray-500",
+      };
+      return {
+        title: kpi.name,
+        value: kpi.value,
+        change: kpi.change_percent,
+        icon: config.icon,
+        color: config.color,
+      };
+    }) || [];
 
-  // Mock-Daten für Aufgaben
-  const tasks: TaskItem[] = [
-    {
-      id: "1",
-      title: "Angebot für Kunde ABC erstellen",
-      priority: "high",
-      dueDate: "Heute, 14:00",
-    },
-    {
-      id: "2",
-      title: "Monatsabschluss vorbereiten",
-      priority: "medium",
-      dueDate: "Morgen",
-    },
-    {
-      id: "3",
-      title: "Lieferantenbewertung durchführen",
-      priority: "low",
-      dueDate: "Diese Woche",
-    },
-  ];
+  // Format notifications from API
+  const notifications: NotificationItem[] =
+    data?.notifications?.map((notif) => ({
+      id: notif.id,
+      title: notif.title,
+      message: notif.message,
+      time: formatTimeAgo(notif.created_at),
+      type: notif.type,
+    })) || [];
+
+  // Format tasks from API
+  const tasks: TaskItem[] =
+    data?.tasks?.map((task) => ({
+      id: task.id,
+      title: task.title,
+      priority: task.priority,
+      dueDate: formatDueDate(task.due_date),
+    })) || [];
+
+  // Helper function to format time ago
+  function formatTimeAgo(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 1) return "gerade eben";
+    if (diffMins < 60) return `vor ${diffMins} Min.`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `vor ${diffHours} Std.`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `vor ${diffDays} Tag${diffDays > 1 ? "en" : ""}`;
+  }
+
+  // Helper function to format due date
+  function formatDueDate(dateString: string): string {
+    const date = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const taskDate = new Date(date);
+    taskDate.setHours(0, 0, 0, 0);
+
+    if (taskDate.getTime() === today.getTime()) {
+      return `Heute, ${date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}`;
+    } else if (taskDate.getTime() === tomorrow.getTime()) {
+      return "Morgen";
+    } else {
+      return date.toLocaleDateString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    }
+  }
 
   const getNotificationColor = (type: NotificationItem["type"]) => {
     switch (type) {
@@ -170,6 +175,39 @@ export const SimpleDashboard: React.FC = () => {
         return "bg-green-100 text-green-800";
     }
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Lade Dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            Fehler beim Laden
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {error.message || "Dashboard-Daten konnten nicht geladen werden."}
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-500">
+            Verwende Mock-Daten zur Entwicklung oder prüfe die
+            Backend-Verbindung.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">

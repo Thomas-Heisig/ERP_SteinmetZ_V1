@@ -11,7 +11,10 @@ import { LanguageSwitcher } from "./components/LanguageSwitch/LanguageSwitcher";
 import { MainNavigation } from "./components/Navigation/MainNavigation";
 import { useLocation } from "react-router-dom";
 
-import { UnifiedQuickChat, UnifiedQuickChatProvider } from "./components/QuickChat";
+import {
+  UnifiedQuickChat,
+  UnifiedQuickChatProvider,
+} from "./components/QuickChat";
 import { VERSION_INFO } from "./version";
 
 /* ---------------------------------------------------------
@@ -94,7 +97,9 @@ export default function App() {
                 onClick={handleToggleSidebar}
                 aria-label="Toggle Sidebar"
                 title={
-                  isSidebarCollapsed ? "Sidebar ausklappen" : "Sidebar einklappen"
+                  isSidebarCollapsed
+                    ? "Sidebar ausklappen"
+                    : "Sidebar einklappen"
                 }
               >
                 ☰
@@ -150,14 +155,14 @@ export default function App() {
           {/* ---------- Footer + QuickChat ---------- */}
           <footer className="app-footer">
             <small>
-              © {new Date().getFullYear()} ERP SteinmetZ | v{VERSION_INFO.version}{" "}
-              ({VERSION_INFO.environment})
+              © {new Date().getFullYear()} ERP SteinmetZ | v
+              {VERSION_INFO.version} ({VERSION_INFO.environment})
             </small>
           </footer>
 
           {/* QuickChat with floating button - always visible */}
-          <UnifiedQuickChat 
-            isOpen={isChatOpen} 
+          <UnifiedQuickChat
+            isOpen={isChatOpen}
             onClose={() => setIsChatOpen(false)}
             onOpen={() => setIsChatOpen(true)}
           />

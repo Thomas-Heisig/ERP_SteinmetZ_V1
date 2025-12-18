@@ -4,7 +4,7 @@ export default {
     title: "ERP SteinmetZ – دليل الوظائف",
     subtitle: "لوحة التحكم المركزية للعمليات التجارية",
     welcome: "أهلاً بعودتك، {{name}}",
-    
+
     // مؤشرات الحالة
     status: {
       online: "النظام متصل",
@@ -13,7 +13,7 @@ export default {
       maintenance: "وضع الصيانة",
       syncing: "جارٍ مزامنة البيانات...",
     },
-    
+
     // الإجراءات السريعة
     quickActions: {
       title: "إجراءات سريعة",
@@ -25,7 +25,7 @@ export default {
       exportData: "تصدير البيانات",
       importData: "استيراد البيانات",
     },
-    
+
     // مراقبة صحة النظام
     health: {
       title: "صحة النظام",
@@ -49,7 +49,7 @@ export default {
         cpuLoad: "حمل المعالج",
       },
     },
-    
+
     // الإشعارات
     notifications: {
       title: "الإشعارات",
@@ -63,7 +63,7 @@ export default {
         success: "نجاح",
       },
     },
-    
+
     // الأنشطة الأخيرة
     recentActivity: {
       title: "الأنشطة الأخيرة",
@@ -78,12 +78,12 @@ export default {
       empty: "لا توجد أنشطة حديثة",
     },
   },
-  
+
   // ===== الدليل والوظائف =====
   catalog: {
     title: "دليل الوظائف",
     subtitle: "تصفح وظائف النظام المتاحة",
-    
+
     categories: {
       title: "مجالات الوظائف",
       count: "{{count}} مجال متاح",
@@ -97,7 +97,7 @@ export default {
         recent: "المستخدمة مؤخراً",
       },
     },
-    
+
     functions: {
       title: "الوظائف المتاحة",
       search: {
@@ -129,7 +129,7 @@ export default {
       },
     },
   },
-  
+
   // ===== البحث =====
   search: {
     global: {
@@ -138,7 +138,7 @@ export default {
       advanced: "بحث متقدم",
       clear: "مسح",
     },
-    
+
     filters: {
       title: "مرشحات البحث",
       category: "الفئة",
@@ -149,7 +149,7 @@ export default {
       clearAll: "مسح جميع المرشحات",
       apply: "تطبيق المرشحات",
     },
-    
+
     results: {
       title: "نتائج البحث",
       loading: "جارٍ البحث...",
@@ -160,7 +160,7 @@ export default {
       newest: "الأحدث أولاً",
       oldest: "الأقدم أولاً",
     },
-    
+
     modules: {
       all: "جميع الوحدات",
       crm: "إدارة العلاقات مع العملاء",
@@ -172,7 +172,7 @@ export default {
       ai: "وظائف الذكاء الاصطناعي",
     },
   },
-  
+
   // ===== التنقل والشريط الجانبي =====
   sidebar: {
     title: "التنقل",
@@ -180,7 +180,7 @@ export default {
     expand: "توسيع الشريط الجانبي",
     pin: "تثبيت الشريط الجانبي",
     unpin: "إلغاء تثبيت الشريط الجانبي",
-    
+
     // الأقسام الرئيسية
     sections: {
       main: "المنطقة الرئيسية",
@@ -197,7 +197,7 @@ export default {
       ai: "الذكاء الاصطناعي والأتمتة",
       tools: "الأدوات",
     },
-    
+
     // عناصر التنقل مع الرموز
     navItems: {
       dashboard: "لوحة التحكم",
@@ -206,7 +206,7 @@ export default {
       company: "الشركة",
       processes: "إدارة العمليات",
       risk: "المخاطر والامتثال",
-      
+
       // المالية
       accounting: "المحاسبة",
       controlling: "التحكم",
@@ -214,7 +214,7 @@ export default {
       taxes: "الضرائب",
       invoices: "الفواتير",
       expenses: "المصروفات",
-      
+
       // CRM والمبيعات
       crm: "إدارة العملاء",
       customers: "العملاء",
@@ -224,44 +224,44 @@ export default {
       sales: "المبيعات",
       orders: "الطلبات",
       fulfillment: "تنفيذ الطلبات",
-      
+
       // المشتريات
       purchasing: "المشتريات",
       receiving: "استلام البضائع",
       suppliers: "الموردين",
       contracts: "العقود",
-      
+
       // الإنتاج
       planning: "تخطيط الإنتاج",
       manufacturing: "التصنيع",
       quality: "إدارة الجودة",
       maintenance: "الصيانة",
-      
+
       // المستودع
       inventory: "المخزون",
       picking: "الاستلام",
       logistics: "اللوجستيات",
       shipping: "الشحن",
-      
+
       // الموارد البشرية
       personnel: "الموظفين",
       timeTracking: "تتبع الوقت",
       payroll: "كشوف المرتبات",
       development: "التطوير",
       recruiting: "التوظيف",
-      
+
       // التقارير
       reports: "التقارير",
       analytics: "التحليلات",
       dashboards: "لوحات التحكم",
       exports: "تصدير البيانات",
-      
+
       // الاتصالات
       email: "البريد الإلكتروني",
       messaging: "الرسائل",
       social: "وسائل التواصل الاجتماعي",
       calls: "المكالمات الهاتفية",
-      
+
       // النظام
       users: "المستخدمين",
       roles: "الأدوار",
@@ -269,21 +269,21 @@ export default {
       settings: "الإعدادات",
       logs: "سجلات النظام",
       backups: "النسخ الاحتياطية",
-      
+
       // الذكاء الاصطناعي والأدوات
       aiAnnotator: "معالج الذكاء الاصطناعي",
       batchProcessing: "المعالجة الدفعية",
       modelManagement: "نماذج الذكاء الاصطناعي",
       advancedFilters: "مرشحات متقدمة",
       innovation: "مختبر الابتكار",
-      
+
       // أخرى
       documents: "المستندات",
       projects: "المشاريع",
       help: "المساعدة والدعم",
       about: "حول النظام",
     },
-    
+
     // قائمة المستخدم
     user: {
       profile: "ملفي الشخصي",
@@ -291,7 +291,7 @@ export default {
       logout: "تسجيل الخروج",
       switchAccount: "تبديل الحساب",
     },
-    
+
     // التذييل
     footer: {
       version: "الإصدار {{version}}",
@@ -299,7 +299,7 @@ export default {
       copyright: "© {{year}} ERP SteinmetZ",
     },
   },
-  
+
   // ===== الذكاء الاصطناعي والأتمتة =====
   ai: {
     title: "الذكاء الاصطناعي والأتمتة",
@@ -313,7 +313,7 @@ export default {
       export: "تصدير التعليقات التوضيحية",
       supportedFormats: "الصيغ المدعومة: PDF، DOCX، الصور",
     },
-    
+
     models: {
       title: "نماذج الذكاء الاصطناعي",
       provider: "المزود",
@@ -326,7 +326,7 @@ export default {
       configure: "تكوين",
       test: "اختبار النموذج",
     },
-    
+
     chat: {
       title: "مساعد الذكاء الاصطناعي",
       inputPlaceholder: "اسألني أي شيء عن نظام ERP...",
@@ -342,7 +342,7 @@ export default {
         q4: "المساعدة في دمج الموظفين",
       },
     },
-    
+
     batch: {
       title: "المعالجة الدفعية",
       create: "إنشاء مهمة دفعية",
@@ -353,11 +353,11 @@ export default {
       retry: "إعادة المحاولة",
     },
   },
-  
+
   // ===== وحدة CRM =====
   crm: {
     title: "إدارة العلاقات مع العملاء",
-    
+
     customers: {
       title: "العملاء",
       list: "قائمة العملاء",
@@ -368,14 +368,14 @@ export default {
       import: "استيراد العملاء",
       export: "تصدير العملاء",
     },
-    
+
     leads: {
       title: "الفرص المحتملة",
       convert: "تحويل إلى عميل",
       assign: "تعيين للمبيعات",
       followUp: "جدولة المتابعة",
     },
-    
+
     opportunities: {
       title: "فرص المبيعات",
       stages: {
@@ -387,14 +387,14 @@ export default {
         closedLost: "تم الإغلاق (خسارة)",
       },
     },
-    
+
     contacts: {
       title: "جهات الاتصال",
       add: "إضافة جهة اتصال",
       primary: "جهة الاتصال الرئيسية",
       communication: "سجل الاتصالات",
     },
-    
+
     activities: {
       title: "الأنشطة",
       logCall: "تسجيل مكالمة هاتفية",
@@ -403,11 +403,11 @@ export default {
       addNote: "إضافة ملاحظة",
     },
   },
-  
+
   // ===== وحدة المالية =====
   finance: {
     title: "المالية والمحاسبة",
-    
+
     invoices: {
       title: "الفواتير",
       create: "إنشاء فاتورة",
@@ -417,7 +417,7 @@ export default {
       cancel: "إلغاء الفاتورة",
       duplicate: "نسخ",
     },
-    
+
     status: {
       draft: "مسودة",
       sent: "تم الإرسال",
@@ -426,7 +426,7 @@ export default {
       cancelled: "ملغاة",
       partiallyPaid: "مدفوعة جزئياً",
     },
-    
+
     reports: {
       title: "التقارير المالية",
       profitLoss: "قائمة الدخل",
@@ -435,7 +435,7 @@ export default {
       agedReceivables: "تقييم الذمم المدينة",
       agedPayables: "تقييم الذمم الدائنة",
     },
-    
+
     banking: {
       title: "الخدمات المصرفية",
       reconcile: "تسوية الحساب",
@@ -443,11 +443,11 @@ export default {
       matchTransactions: "مطابقة المعاملات",
     },
   },
-  
+
   // ===== وحدة الموارد البشرية =====
   hr: {
     title: "الموارد البشرية",
-    
+
     employees: {
       title: "الموظفين",
       new: "موظف جديد",
@@ -456,13 +456,13 @@ export default {
       reactivate: "إعادة التنشيط",
       documents: "مستندات الموظفين",
     },
-    
+
     departments: {
       title: "الأقسام",
       assign: "تعيين القسم",
       transfer: "نقل الموظف",
     },
-    
+
     attendance: {
       title: "الحضور",
       clockIn: "تسجيل الدخول",
@@ -470,7 +470,7 @@ export default {
       timesheet: "جدول الوقت",
       approve: "الموافقة على الساعات",
     },
-    
+
     payroll: {
       title: "كشوف المرتبات",
       run: "تشغيل الرواتب",
@@ -479,7 +479,7 @@ export default {
       export: "تصدير للبنك",
     },
   },
-  
+
   // ===== مكونات واجهة المستخدم =====
   ui: {
     common: {
@@ -524,7 +524,7 @@ export default {
       yes: "نعم",
       no: "لا",
     },
-    
+
     status: {
       loading: "جارٍ التحميل...",
       saving: "جارٍ الحفظ...",
@@ -537,7 +537,7 @@ export default {
       info: "معلومات",
       unknown: "غير معروف",
     },
-    
+
     validation: {
       required: "هذا الحقل مطلوب",
       invalidEmail: "عنوان بريد إلكتروني غير صالح",
@@ -548,7 +548,7 @@ export default {
       invalidFormat: "تنسيق غير صالح",
       duplicate: "هذه القيمة موجودة بالفعل",
     },
-    
+
     emptyStates: {
       noData: "لا توجد بيانات متاحة",
       noResults: "لم يتم العثور على نتائج",
@@ -556,7 +556,7 @@ export default {
       notConfigured: "لم يتم التكوين بعد",
       comingSoon: "قريباً",
     },
-    
+
     dates: {
       today: "اليوم",
       yesterday: "أمس",
@@ -576,7 +576,7 @@ export default {
       customRange: "نطاق مخصص",
       selectDate: "اختيار التاريخ",
     },
-    
+
     time: {
       now: "الآن",
       minutes: "دقائق",
@@ -588,7 +588,7 @@ export default {
       ago: "منذ",
       fromNow: "من الآن",
     },
-    
+
     numbers: {
       currency: "{{value}} ر.س",
       percent: "{{value}}٪",
@@ -598,7 +598,7 @@ export default {
       million: "{{value}} مليون",
       billion: "{{value}} مليار",
     },
-    
+
     units: {
       pieces: "قطعة",
       kilograms: "كجم",
@@ -612,7 +612,7 @@ export default {
       seconds: "ثانية",
     },
   },
-  
+
   // ===== رسائل الخطأ =====
   errors: {
     network: "خطأ في الشبكة. يرجى التحقق من اتصالك.",
@@ -627,7 +627,7 @@ export default {
     fileTooLarge: "حجم الملف يتجاوز الحد الأقصى.",
     invalidFileType: "نوع ملف غير صالح.",
     quotaExceeded: "تم تجاوز حصة التخزين.",
-    
+
     specific: {
       loginFailed: "فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد.",
       sessionExpired: "انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.",
@@ -635,13 +635,13 @@ export default {
       emailInUse: "عنوان البريد الإلكتروني مستخدم بالفعل.",
       invalidToken: "رمز غير صالح أو منتهي الصلاحية.",
     },
-    
+
     retry: "إعادة المحاولة",
     contactSupport: "الاتصال بالدعم",
     goBack: "العودة",
     reloadPage: "إعادة تحميل الصفحة",
   },
-  
+
   // ===== رسائل النجاح =====
   success: {
     saved: "تم حفظ التغييرات بنجاح!",
@@ -656,7 +656,7 @@ export default {
     configured: "تم التكوين بنجاح!",
     activated: "تم التفعيل بنجاح!",
     deactivated: "تم التعطيل بنجاح!",
-    
+
     actions: {
       close: "إغلاق",
       view: "عرض",
@@ -664,37 +664,39 @@ export default {
       new: "إنشاء جديد",
     },
   },
-  
+
   // ===== مربعات حوار التأكيد =====
   confirm: {
     delete: {
       title: "تأكيد الحذف",
-      message: "هل أنت متأكد من رغبتك في حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.",
+      message:
+        "هل أنت متأكد من رغبتك في حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.",
       single: "حذف هذا العنصر؟",
       multiple: "حذف {{count}} عناصر محددة؟",
       permanent: "سيتم حذف العنصر بشكل دائم.",
     },
-    
+
     logout: {
       title: "تأكيد تسجيل الخروج",
       message: "هل أنت متأكد من رغبتك في تسجيل الخروج؟",
     },
-    
+
     cancel: {
       title: "تأكيد الإلغاء",
-      message: "هل أنت متأكد من رغبتك في الإلغاء؟ ستفقد التغييرات غير المحفوظة.",
+      message:
+        "هل أنت متأكد من رغبتك في الإلغاء؟ ستفقد التغييرات غير المحفوظة.",
     },
-    
+
     discard: {
       title: "تجاهل التغييرات",
       message: "لديك تغييرات غير محفوظة. هل أنت متأكد من رغبتك في تجاهلها؟",
     },
-    
+
     overwrite: {
       title: "تأكيد الكتابة فوق",
       message: "سيتم الكتابة فوق البيانات الموجودة. هل أنت متأكد؟",
     },
-    
+
     buttons: {
       proceed: "متابعة",
       keep: "الاحتفاظ",
@@ -702,7 +704,7 @@ export default {
       cancel: "إلغاء",
     },
   },
-  
+
   // ===== النماذج والإدخالات =====
   forms: {
     labels: {
@@ -736,7 +738,7 @@ export default {
       createdBy: "تم الإنشاء بواسطة",
       updatedBy: "تم التحديث بواسطة",
     },
-    
+
     placeholders: {
       select: "اختر...",
       searchSelect: "اكتب للبحث...",
@@ -746,7 +748,7 @@ export default {
       optional: "اختياري",
       required: "مطلوب",
     },
-    
+
     hints: {
       minCharacters: "{{count}} أحرف على الأقل",
       maxCharacters: "{{count}} أحرف كحد أقصى",
@@ -754,7 +756,7 @@ export default {
       optionalField: "حقل اختياري",
     },
   },
-  
+
   // ===== الجدول وشبكة البيانات =====
   table: {
     actions: {
@@ -766,13 +768,13 @@ export default {
       export: "تصدير",
       more: "المزيد من الإجراءات",
     },
-    
+
     selection: {
       selected: "تم تحديد {{count}}",
       selectAll: "تحديد الكل",
       clear: "مسح التحديد",
     },
-    
+
     pagination: {
       page: "الصفحة",
       of: "من",
@@ -783,20 +785,20 @@ export default {
       next: "التالي",
       last: "الأخيرة",
     },
-    
+
     sorting: {
       sortBy: "ترتيب حسب",
       ascending: "تصاعدياً",
       descending: "تنازلياً",
       clear: "مسح الترتيب",
     },
-    
+
     filtering: {
       filter: "تصفية",
       clearFilters: "مسح المرشحات",
       apply: "تطبيق",
     },
-    
+
     empty: {
       noData: "لا توجد بيانات متاحة",
       noResults: "لم يتم العثور على نتائج",
@@ -804,7 +806,7 @@ export default {
       error: "خطأ في تحميل البيانات",
     },
   },
-  
+
   // ===== النوافذ المنبثقة والحوارات =====
   modal: {
     close: "إغلاق",
@@ -813,7 +815,7 @@ export default {
     fullscreen: "ملء الشاشة",
     exitFullscreen: "خروج من ملء الشاشة",
   },
-  
+
   // ===== إدارة الملفات =====
   files: {
     upload: "رفع الملفات",
@@ -825,7 +827,7 @@ export default {
     delete: "حذف",
     share: "مشاركة",
     properties: "خصائص",
-    
+
     types: {
       image: "صورة",
       document: "مستند",
@@ -837,7 +839,7 @@ export default {
       video: "فيديو",
       other: "أخرى",
     },
-    
+
     status: {
       uploading: "جارٍ الرفع...",
       processing: "جارٍ المعالجة...",
@@ -846,7 +848,7 @@ export default {
       queued: "في قائمة الانتظار",
     },
   },
-  
+
   // ===== الطباعة والتصدير =====
   export: {
     formats: {
@@ -857,21 +859,21 @@ export default {
       xml: "XML",
       print: "طباعة",
     },
-    
+
     options: {
       currentPage: "الصفحة الحالية",
       allPages: "جميع الصفحات",
       selectedRows: "الصفوف المحددة",
       customRange: "نطاق مخصص",
     },
-    
+
     status: {
       generating: "جارٍ إنشاء التصدير...",
       ready: "التصدير جاهز",
       failed: "فشل التصدير",
     },
   },
-  
+
   // ===== النظام والإدارة =====
   system: {
     settings: {
@@ -885,7 +887,7 @@ export default {
       logs: "سجلات النظام",
       maintenance: "الصيانة",
     },
-    
+
     users: {
       title: "إدارة المستخدمين",
       newUser: "مستخدم جديد",
@@ -895,7 +897,7 @@ export default {
       activate: "تفعيل",
       roles: "تعيين الأدوار",
     },
-    
+
     roles: {
       title: "الأدوار والصلاحيات",
       create: "إنشاء دور",
@@ -903,7 +905,7 @@ export default {
       delete: "حذف الدور",
       permissions: "إدارة الصلاحيات",
     },
-    
+
     logs: {
       title: "سجلات النظام",
       clear: "مسح السجلات",
@@ -917,7 +919,7 @@ export default {
         critical: "حرج",
       },
     },
-    
+
     maintenance: {
       title: "الصيانة",
       backup: "إنشاء نسخة احتياطية",
@@ -927,7 +929,7 @@ export default {
       update: "تحديث النظام",
     },
   },
-  
+
   // ===== تنسيق الوقت والتاريخ =====
   datetime: {
     formats: {
@@ -944,7 +946,7 @@ export default {
       longDateTime: "DD MMMM YYYY HH:mm:ss z",
       fullDateTime: "dddd، DD MMMM YYYY HH:mm:ss zzzz",
     },
-    
+
     relative: {
       justNow: "الآن",
       secondsAgo: "منذ {{count}} ثانية",
@@ -961,7 +963,7 @@ export default {
       monthsAgo_one: "منذ 1 شهر",
       yearsAgo: "منذ {{count}} سنة",
       yearsAgo_one: "منذ 1 سنة",
-      
+
       inSeconds: "خلال {{count}} ثانية",
       inSeconds_one: "خلال 1 ثانية",
       inMinutes: "خلال {{count}} دقيقة",
@@ -977,7 +979,7 @@ export default {
       inYears: "خلال {{count}} سنة",
       inYears_one: "خلال 1 سنة",
     },
-    
+
     units: {
       second: "ثانية",
       second_one: "{{count}} ثانية",
@@ -1002,7 +1004,7 @@ export default {
       year_other: "{{count}} سنة",
     },
   },
-  
+
   // ===== قواعد الجمع =====
   pluralization: {
     items: {
@@ -1040,7 +1042,7 @@ export default {
       document_one: "{{count}} مستند",
       document_other: "{{count}} مستندات",
     },
-    
+
     time: {
       day: "يوم",
       day_one: "{{count}} يوم",

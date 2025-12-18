@@ -3,11 +3,11 @@
 
 /**
  * Central export file for all reusable components
- * 
+ *
  * This file provides a single entry point for importing components
  * throughout the application, making it easier to manage dependencies
  * and refactor code.
- * 
+ *
  * @example
  * ```tsx
  * import { UnifiedQuickChat, ProtectedRoute } from "@/components";
@@ -29,17 +29,17 @@ export { Sidebar } from "./Sidebar/Sidebar";
 export { MainNavigation } from "./Navigation/MainNavigation";
 
 // Chat & Communication
-export { 
-  UnifiedQuickChat, 
-  UnifiedQuickChatProvider, 
-  useUnifiedQuickChat 
+export {
+  UnifiedQuickChat,
+  UnifiedQuickChatProvider,
+  useUnifiedQuickChat,
 } from "./QuickChat";
-export type { 
+export type {
   UnifiedQuickChatContextValue,
   ChatMessage,
   ChatSession,
   AIModel,
-  Settings as QuickChatSettings
+  Settings as QuickChatSettings,
 } from "./QuickChat";
 
 // Dashboard
@@ -61,20 +61,14 @@ export {
   ModelSelectionInterface,
   ModelComparison,
   ModelCostTracking,
-  ModelUsageStatistics
+  ModelUsageStatistics,
 } from "./ModelManagement";
 
 // Batch Processing
-export { 
-  BatchCreationForm,
-  ProgressTracker
-} from "./BatchProcessing";
+export { BatchCreationForm, ProgressTracker } from "./BatchProcessing";
 
 // Filters & Search
-export { 
-  AdvancedFilters,
-  FilterBuilder
-} from "./AdvancedFilters";
+export { AdvancedFilters, FilterBuilder } from "./AdvancedFilters";
 
 // Functions Catalog
 export { default as FunctionsCatalog } from "./FunctionsCatalog/FunctionsCatalog";

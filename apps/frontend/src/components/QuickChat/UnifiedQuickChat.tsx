@@ -10,7 +10,13 @@
  * @module UnifiedQuickChat
  */
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { useUnifiedQuickChat } from "./useUnifiedQuickChat";
 import styles from "./UnifiedQuickChat.module.css";
 import type { TabName, CommandDefinition } from "./UnifiedQuickChatTypes";
@@ -18,7 +24,11 @@ import type { TabName, CommandDefinition } from "./UnifiedQuickChatTypes";
 const COMMANDS: CommandDefinition[] = [
   { command: "/rechnung", description: "Rechnung erstellen", category: "erp" },
   { command: "/angebot", description: "Angebot erstellen", category: "erp" },
-  { command: "/bericht", description: "Bericht generieren", category: "reports" },
+  {
+    command: "/bericht",
+    description: "Bericht generieren",
+    category: "reports",
+  },
   { command: "/idee", description: "Idee parken", category: "notes" },
   { command: "/termin", description: "Termin erstellen", category: "calendar" },
   { command: "/suche", description: "Im System suchen", category: "search" },
@@ -65,11 +75,12 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
     return COMMANDS.filter(
       (c) =>
         c.command.toLowerCase().includes(search) ||
-        c.description.toLowerCase().includes(search.slice(1))
+        c.description.toLowerCase().includes(search.slice(1)),
     );
   }, [input]);
 
-  const shouldShowCommands = filteredCommandsList.length > 0 && input.startsWith("/");
+  const shouldShowCommands =
+    filteredCommandsList.length > 0 && input.startsWith("/");
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -113,7 +124,7 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
         console.error("Failed to send message:", err);
       }
     },
-    [input, loading, sendMessage, createSession]
+    [input, loading, sendMessage, createSession],
   );
 
   const handleKeyDown = useCallback(
@@ -122,12 +133,12 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
         if (e.key === "ArrowDown") {
           e.preventDefault();
           setSelectedCommandIndex((prev) =>
-            prev < filteredCommandsList.length - 1 ? prev + 1 : 0
+            prev < filteredCommandsList.length - 1 ? prev + 1 : 0,
           );
         } else if (e.key === "ArrowUp") {
           e.preventDefault();
           setSelectedCommandIndex((prev) =>
-            prev > 0 ? prev - 1 : filteredCommandsList.length - 1
+            prev > 0 ? prev - 1 : filteredCommandsList.length - 1,
           );
         } else if (e.key === "Tab" || e.key === "Enter") {
           if (filteredCommandsList[selectedCommandIndex]) {
@@ -143,7 +154,13 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
         handleSubmit(e);
       }
     },
-    [shouldShowCommands, filteredCommandsList, selectedCommandIndex, handleSubmit, selectCommand]
+    [
+      shouldShowCommands,
+      filteredCommandsList,
+      selectedCommandIndex,
+      handleSubmit,
+      selectCommand,
+    ],
   );
 
   const formatTime = (timestamp: string): string => {
@@ -179,7 +196,10 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
         aria-modal="true"
         aria-label="QuickChat Dialog"
       >
-        <header className={styles.header} onClick={() => setIsMinimized(!isMinimized)}>
+        <header
+          className={styles.header}
+          onClick={() => setIsMinimized(!isMinimized)}
+        >
           <div className={styles.headerLeft}>
             <span className={styles.headerIcon}>💬</span>
             <div>
@@ -188,7 +208,9 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
                 <div className={styles.headerStatus}>
                   <span
                     className={`${styles.statusIndicator} ${loading ? styles.loading : ""} ${error ? styles.error : ""}`}
-                    aria-label={loading ? "Lädt..." : error ? "Fehler" : "Verbunden"}
+                    aria-label={
+                      loading ? "Lädt..." : error ? "Fehler" : "Verbunden"
+                    }
                   />
                   <span>
                     {loading
@@ -233,13 +255,20 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
         {!isMinimized && (
           <>
             <div className={styles.tabs} role="tablist">
-              {(["chat", "sessions", "models", "settings", "info"] as const).map((tab) => (
+              {(
+                ["chat", "sessions", "models", "settings", "info"] as const
+              ).map((tab) => (
                 <button
                   key={tab}
                   className={`${styles.tabButton} ${activeTab === tab ? styles.active : ""}`}
                   onClick={() => setActiveTab(tab)}
                   role="tab"
-                  {...{ "aria-selected": activeTab === tab ? ("true" as const) : ("false" as const) }}
+                  {...{
+                    "aria-selected":
+                      activeTab === tab
+                        ? ("true" as const)
+                        : ("false" as const),
+                  }}
                   type="button"
                 >
                   {tab === "chat" && "💬 Chat"}
@@ -327,10 +356,16 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
                         <h4>{session.title}</h4>
                         <p>{session.model}</p>
                       </div>
-                      <button onClick={() => selectSession(session.id)} type="button">
+                      <button
+                        onClick={() => selectSession(session.id)}
+                        type="button"
+                      >
                         Öffnen
                       </button>
-                      <button onClick={() => deleteSession(session.id)} type="button">
+                      <button
+                        onClick={() => deleteSession(session.id)}
+                        type="button"
+                      >
                         Löschen
                       </button>
                     </div>
@@ -356,14 +391,23 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
               <div className={styles.inputArea}>
                 <div className={styles.inputWrapper}>
                   {shouldShowCommands && (
-                    <div className={styles.commandMenu} role="listbox" aria-label="Verfügbare Befehle">
+                    <div
+                      className={styles.commandMenu}
+                      role="listbox"
+                      aria-label="Verfügbare Befehle"
+                    >
                       {filteredCommandsList.map((cmd, index) => (
                         <button
                           key={cmd.command}
                           className={`${styles.commandButton} ${index === selectedCommandIndex ? styles.selected : ""}`}
                           onClick={() => selectCommand(cmd.command)}
                           role="option"
-                          {...{ "aria-selected": index === selectedCommandIndex ? ("true" as const) : ("false" as const) }}
+                          {...{
+                            "aria-selected":
+                              index === selectedCommandIndex
+                                ? ("true" as const)
+                                : ("false" as const),
+                          }}
                           type="button"
                         >
                           <span className={styles.commandText}>

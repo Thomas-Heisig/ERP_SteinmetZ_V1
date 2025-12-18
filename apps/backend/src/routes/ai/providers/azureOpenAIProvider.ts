@@ -193,7 +193,11 @@ export async function callAzureOpenAI(
 
     // API Call mit Timeout
     const result = (await Promise.race([
-      client.chat.completions.create(requestBody as unknown as Parameters<typeof client.chat.completions.create>[0]),
+      client.chat.completions.create(
+        requestBody as unknown as Parameters<
+          typeof client.chat.completions.create
+        >[0],
+      ),
       new Promise((_, reject) =>
         setTimeout(
           () => reject(new Error("Azure OpenAI API Timeout")),
@@ -235,13 +239,18 @@ export async function callAzureOpenAI(
       tokens_in: result?.usage?.prompt_tokens,
       tokens_out: result?.usage?.completion_tokens,
       duration_ms: duration,
-      tool_calls: toolCalls.map(tc => {
-        const toolCallAny = tc as OpenAI.Chat.Completions.ChatCompletionMessageToolCall & { function?: { name?: string; arguments?: string } };
+      tool_calls: toolCalls.map((tc) => {
+        const toolCallAny =
+          tc as OpenAI.Chat.Completions.ChatCompletionMessageToolCall & {
+            function?: { name?: string; arguments?: string };
+          };
         return {
           name: toolCallAny.function?.name || "unknown",
           parameters: (() => {
             try {
-              return JSON.parse(toolCallAny.function?.arguments || "{}") as Record<string, unknown>;
+              return JSON.parse(
+                toolCallAny.function?.arguments || "{}",
+              ) as Record<string, unknown>;
             } catch {
               return {};
             }
@@ -296,7 +305,10 @@ function prepareOpenAIMessages(
 ): {
   systemPrompt?: string;
   chatMessages: Array<{ role: string; content: string; metadata?: unknown }>;
-  tools?: Array<{ type: "function"; function: { name: string; description: string; parameters: unknown } }>;
+  tools?: Array<{
+    type: "function";
+    function: { name: string; description: string; parameters: unknown };
+  }>;
 } {
   if (!Array.isArray(messages) || messages.length === 0) {
     return { systemPrompt: undefined, chatMessages: [] };
@@ -322,7 +334,12 @@ function prepareOpenAIMessages(
     .filter((m) => m.content.trim().length > 0);
 
   // Tools vorbereiten falls aktiviert
-  let tools: Array<{ type: "function"; function: { name: string; description: string; parameters: unknown } }> | undefined;
+  let tools:
+    | Array<{
+        type: "function";
+        function: { name: string; description: string; parameters: unknown };
+      }>
+    | undefined;
   if (config.enableToolCalls) {
     tools = prepareToolsForOpenAI();
   }
@@ -330,7 +347,10 @@ function prepareOpenAIMessages(
   return { systemPrompt, chatMessages, tools };
 }
 
-function prepareToolsForOpenAI(): Array<{ type: "function"; function: { name: string; description: string; parameters: unknown } }> {
+function prepareToolsForOpenAI(): Array<{
+  type: "function";
+  function: { name: string; description: string; parameters: unknown };
+}> {
   const tools = toolRegistry.getToolDefinitions();
   return tools
     .map((tool) => ({
@@ -357,8 +377,10 @@ async function executeToolCalls(toolCalls: unknown[]): Promise<ToolResult[]> {
 
   for (const toolCall of toolCalls) {
     if (typeof toolCall !== "object" || toolCall === null) continue;
-    
-    const call = toolCall as { function?: { name?: string; arguments?: string } };
+
+    const call = toolCall as {
+      function?: { name?: string; arguments?: string };
+    };
     const startTime = Date.now();
 
     try {
@@ -366,7 +388,10 @@ async function executeToolCalls(toolCalls: unknown[]): Promise<ToolResult[]> {
       let parameters: Record<string, unknown> = {};
 
       try {
-        parameters = JSON.parse(call.function?.arguments || "{}") as Record<string, unknown>;
+        parameters = JSON.parse(call.function?.arguments || "{}") as Record<
+          string,
+          unknown
+        >;
       } catch {
         parameters = {};
       }

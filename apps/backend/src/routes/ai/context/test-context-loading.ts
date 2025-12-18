@@ -23,9 +23,15 @@ async function testContextLoading(): Promise<void> {
     const diagnostics = context.getDiagnostics();
 
     logger.info("\n📊 Loading Statistics:");
-    logger.info(`   Files Loaded: ${diagnostics.loading_info.loaded_files ?? "N/A"}`);
-    logger.info(`   Fallback Mode: ${diagnostics.loading_info.fallback_mode ? "❌ YES" : "✅ NO"}`);
-    logger.info(`   Load Timestamp: ${diagnostics.loading_info.load_timestamp ?? "N/A"}`);
+    logger.info(
+      `   Files Loaded: ${diagnostics.loading_info.loaded_files ?? "N/A"}`,
+    );
+    logger.info(
+      `   Fallback Mode: ${diagnostics.loading_info.fallback_mode ? "❌ YES" : "✅ NO"}`,
+    );
+    logger.info(
+      `   Load Timestamp: ${diagnostics.loading_info.load_timestamp ?? "N/A"}`,
+    );
 
     logger.info("\n📚 Data Statistics:");
     logger.info(`   Total Rules: ${diagnostics.rules_loaded}`);
@@ -40,8 +46,12 @@ async function testContextLoading(): Promise<void> {
     logger.info(`   History: ${diagnostics.history_length} messages`);
 
     logger.info("\n⏱️  System Status:");
-    logger.info(`   Initialized: ${diagnostics.system_info.initialized ? "✅" : "❌"}`);
-    logger.info(`   Uptime: ${(diagnostics.system_info.uptime_ms / 1000).toFixed(2)}s`);
+    logger.info(
+      `   Initialized: ${diagnostics.system_info.initialized ? "✅" : "❌"}`,
+    );
+    logger.info(
+      `   Uptime: ${(diagnostics.system_info.uptime_ms / 1000).toFixed(2)}s`,
+    );
 
     logger.info("\n📝 Metadata:");
     logger.info(`   Version: ${diagnostics.metadata.version ?? "N/A"}`);
@@ -49,7 +59,7 @@ async function testContextLoading(): Promise<void> {
 
     // Test einige Regel-Matches
     logger.info("\n🧪 Testing Rule Matching:");
-    
+
     const testInputs = [
       "Hallo, wie geht es dir?",
       "Danke für deine Hilfe!",
@@ -75,7 +85,7 @@ async function testContextLoading(): Promise<void> {
     logger.info(JSON.stringify(fullContext, null, 2));
 
     logger.info("\n" + "=".repeat(60));
-    
+
     if (diagnostics.loading_info.fallback_mode) {
       logger.error("❌ TEST FAILED: Running in fallback mode!");
       logger.error("   → Check if data files exist in data/ folder");

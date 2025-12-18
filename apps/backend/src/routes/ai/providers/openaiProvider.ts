@@ -69,22 +69,32 @@ export async function callOpenAI(
   const request = {
     model: usedModel,
     messages: formattedMessages,
-    temperature: (typeof options.temperature === "number" ? options.temperature : openaiConfig.temperature) as number,
-    max_tokens: (typeof options.max_tokens === "number" ? options.max_tokens : openaiConfig.max_tokens) as number,
+    temperature: (typeof options.temperature === "number"
+      ? options.temperature
+      : openaiConfig.temperature) as number,
+    max_tokens: (typeof options.max_tokens === "number"
+      ? options.max_tokens
+      : openaiConfig.max_tokens) as number,
     stream: false as const,
   };
 
   try {
     const start = Date.now();
-    const completionResponse = await client.chat.completions.create(request as Parameters<typeof client.chat.completions.create>[0]);
+    const completionResponse = await client.chat.completions.create(
+      request as Parameters<typeof client.chat.completions.create>[0],
+    );
     const duration = Date.now() - start;
 
     // Type guard: we know it's not a stream because stream: false
-    const completion = completionResponse as OpenAI.Chat.Completions.ChatCompletion;
-    
+    const completion =
+      completionResponse as OpenAI.Chat.Completions.ChatCompletion;
+
     const firstChoice = completion?.choices?.[0];
     const messageContent = firstChoice?.message?.content;
-    const reply = typeof messageContent === "string" ? messageContent.trim() : "(keine Antwort)";
+    const reply =
+      typeof messageContent === "string"
+        ? messageContent.trim()
+        : "(keine Antwort)";
     const usage = completion?.usage ?? { total_tokens: 0 };
 
     // Tool-Aufrufe erkennen und ausführen
@@ -102,11 +112,12 @@ export async function callOpenAI(
     return {
       text: [reply, ...toolResults].filter(Boolean).join("\n\n"),
       action: "openai_chat",
-      tool_calls: toolCalls.map(tc => ({
+      tool_calls: toolCalls.map((tc) => ({
         name: tc.name,
-        parameters: typeof tc.parameters === "object" && tc.parameters !== null 
-          ? tc.parameters as Record<string, unknown>
-          : {},
+        parameters:
+          typeof tc.parameters === "object" && tc.parameters !== null
+            ? (tc.parameters as Record<string, unknown>)
+            : {},
       })),
       meta: {
         model: usedModel,
@@ -139,7 +150,9 @@ export async function callOpenAI(
 /**
  * Erkennt Tool-Aufrufe im Text, z. B. [TOOL: weather {"city":"Berlin"}]
  */
-function detectToolCalls(text: string): { name: string; parameters: unknown }[] {
+function detectToolCalls(
+  text: string,
+): { name: string; parameters: unknown }[] {
   const matches = [...text.matchAll(/\[TOOL:\s*([a-zA-Z0-9_]+)(.*?)\]/g)];
   return matches.map((m) => ({
     name: m[1],
@@ -165,9 +178,10 @@ async function handleToolCalls(
   const results: string[] = [];
   for (const call of calls) {
     try {
-      const parameters = typeof call.parameters === "object" && call.parameters !== null
-        ? call.parameters as Record<string, unknown>
-        : {};
+      const parameters =
+        typeof call.parameters === "object" && call.parameters !== null
+          ? (call.parameters as Record<string, unknown>)
+          : {};
       const res = await toolRegistry.call(call.name, parameters);
       results.push(
         `✅ Tool "${call.name}" erfolgreich ausgeführt.\nErgebnis: ${JSON.stringify(res)}`,

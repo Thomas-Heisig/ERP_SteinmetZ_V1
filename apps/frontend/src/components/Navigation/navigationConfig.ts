@@ -37,7 +37,7 @@ export const navigationStructure: NavigationItem[] = [
     icon: "📅",
     path: "/calendar",
   },
-  
+
   // Business Management
   {
     id: "business",
@@ -65,7 +65,7 @@ export const navigationStructure: NavigationItem[] = [
       },
     ],
   },
-  
+
   // Finance & Controlling
   {
     id: "finance",
@@ -99,7 +99,7 @@ export const navigationStructure: NavigationItem[] = [
       },
     ],
   },
-  
+
   // Sales & Marketing
   {
     id: "sales",
@@ -128,7 +128,7 @@ export const navigationStructure: NavigationItem[] = [
       },
     ],
   },
-  
+
   // Procurement
   {
     id: "procurement",
@@ -136,12 +136,27 @@ export const navigationStructure: NavigationItem[] = [
     icon: "📋",
     path: "/purchasing",
     children: [
-      { id: "purchasing", label: "sidebar.purchasing", icon: "📋", path: "/purchasing" },
-      { id: "receiving", label: "sidebar.receiving", icon: "📦", path: "/receiving" },
-      { id: "suppliers", label: "sidebar.suppliers", icon: "🤝", path: "/suppliers" },
+      {
+        id: "purchasing",
+        label: "sidebar.purchasing",
+        icon: "📋",
+        path: "/purchasing",
+      },
+      {
+        id: "receiving",
+        label: "sidebar.receiving",
+        icon: "📦",
+        path: "/receiving",
+      },
+      {
+        id: "suppliers",
+        label: "sidebar.suppliers",
+        icon: "🤝",
+        path: "/suppliers",
+      },
     ],
   },
-  
+
   // Production & Manufacturing
   {
     id: "production",
@@ -149,13 +164,28 @@ export const navigationStructure: NavigationItem[] = [
     icon: "🏭",
     path: "/planning",
     children: [
-      { id: "planning", label: "sidebar.planning", icon: "🏗️", path: "/planning" },
-      { id: "manufacturing", label: "sidebar.manufacturing", icon: "⚙️", path: "/manufacturing" },
+      {
+        id: "planning",
+        label: "sidebar.planning",
+        icon: "🏗️",
+        path: "/planning",
+      },
+      {
+        id: "manufacturing",
+        label: "sidebar.manufacturing",
+        icon: "⚙️",
+        path: "/manufacturing",
+      },
       { id: "quality", label: "sidebar.quality", icon: "✅", path: "/quality" },
-      { id: "maintenance", label: "sidebar.maintenance", icon: "🔧", path: "/maintenance" },
+      {
+        id: "maintenance",
+        label: "sidebar.maintenance",
+        icon: "🔧",
+        path: "/maintenance",
+      },
     ],
   },
-  
+
   // Warehouse & Logistics
   {
     id: "warehouse",
@@ -163,12 +193,22 @@ export const navigationStructure: NavigationItem[] = [
     icon: "🏪",
     path: "/inventory",
     children: [
-      { id: "inventory", label: "sidebar.inventory", icon: "🏪", path: "/inventory" },
+      {
+        id: "inventory",
+        label: "sidebar.inventory",
+        icon: "🏪",
+        path: "/inventory",
+      },
       { id: "picking", label: "sidebar.picking", icon: "📦", path: "/picking" },
-      { id: "logistics", label: "sidebar.logistics", icon: "🚛", path: "/logistics" },
+      {
+        id: "logistics",
+        label: "sidebar.logistics",
+        icon: "🚛",
+        path: "/logistics",
+      },
     ],
   },
-  
+
   // HR & Personnel
   {
     id: "hr",
@@ -176,13 +216,33 @@ export const navigationStructure: NavigationItem[] = [
     icon: "👥",
     path: "/personnel",
     children: [
-      { id: "personnel", label: "sidebar.personnel", icon: "👤", path: "/personnel" },
-      { id: "time-tracking", label: "sidebar.timeTracking", icon: "⏱️", path: "/time-tracking" },
-      { id: "development", label: "sidebar.development", icon: "📈", path: "/development" },
-      { id: "recruiting", label: "sidebar.recruiting", icon: "💼", path: "/recruiting" },
+      {
+        id: "personnel",
+        label: "sidebar.personnel",
+        icon: "👤",
+        path: "/personnel",
+      },
+      {
+        id: "time-tracking",
+        label: "sidebar.timeTracking",
+        icon: "⏱️",
+        path: "/time-tracking",
+      },
+      {
+        id: "development",
+        label: "sidebar.development",
+        icon: "📈",
+        path: "/development",
+      },
+      {
+        id: "recruiting",
+        label: "sidebar.recruiting",
+        icon: "💼",
+        path: "/recruiting",
+      },
     ],
   },
-  
+
   // Reporting & Analytics
   {
     id: "reporting",
@@ -192,10 +252,15 @@ export const navigationStructure: NavigationItem[] = [
     children: [
       { id: "reports", label: "sidebar.reports", icon: "📈", path: "/reports" },
       { id: "adhoc", label: "sidebar.adhoc", icon: "🔍", path: "/adhoc" },
-      { id: "ai-analytics", label: "sidebar.aiAnalytics", icon: "🤖", path: "/ai-analytics" },
+      {
+        id: "ai-analytics",
+        label: "sidebar.aiAnalytics",
+        icon: "🤖",
+        path: "/ai-analytics",
+      },
     ],
   },
-  
+
   // Communication & Social
   {
     id: "communication",
@@ -204,11 +269,16 @@ export const navigationStructure: NavigationItem[] = [
     path: "/email",
     children: [
       { id: "email", label: "sidebar.email", icon: "📧", path: "/email" },
-      { id: "messaging", label: "sidebar.messaging", icon: "💬", path: "/messaging" },
+      {
+        id: "messaging",
+        label: "sidebar.messaging",
+        icon: "💬",
+        path: "/messaging",
+      },
       { id: "social", label: "sidebar.social", icon: "📱", path: "/social" },
     ],
   },
-  
+
   // AI Tools
   {
     id: "ai",
@@ -216,7 +286,12 @@ export const navigationStructure: NavigationItem[] = [
     icon: "🤖",
     path: "/ai",
     children: [
-      { id: "ai-annotator", label: "sidebar.aiAnnotator", icon: "🤖", path: "/ai" },
+      {
+        id: "ai-annotator",
+        label: "sidebar.aiAnnotator",
+        icon: "🤖",
+        path: "/ai",
+      },
       {
         id: "batch-processing",
         label: "sidebar.batchProcessing",
@@ -243,7 +318,7 @@ export const navigationStructure: NavigationItem[] = [
       },
     ],
   },
-  
+
   // System & Administration
   {
     id: "system",
@@ -258,10 +333,15 @@ export const navigationStructure: NavigationItem[] = [
         icon: "⚙️",
         path: "/system-settings",
       },
-      { id: "integrations", label: "sidebar.integrations", icon: "🔌", path: "/integrations" },
+      {
+        id: "integrations",
+        label: "sidebar.integrations",
+        icon: "🔌",
+        path: "/integrations",
+      },
     ],
   },
-  
+
   // Misc
   {
     id: "documents",

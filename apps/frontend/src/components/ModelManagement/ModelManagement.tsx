@@ -3,7 +3,7 @@
 
 /**
  * Model Management component for AI/ML models
- * 
+ *
  * Features:
  * - View all models with their details
  * - Search models by name or version
@@ -11,7 +11,7 @@
  * - Filter by status (active, training, archived)
  * - Model cards with accuracy, dataset size, and last trained date
  * - Actions for details, training, and archiving
- * 
+ *
  * @example
  * ```tsx
  * <ModelManagement />

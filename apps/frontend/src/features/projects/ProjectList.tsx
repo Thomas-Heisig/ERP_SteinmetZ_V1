@@ -124,9 +124,7 @@ export const ProjectList: React.FC = () => {
     };
     const c = config[status];
     return (
-      <span
-        className={`${styles.statusBadge} ${styles[`status_${status}`]}`}
-      >
+      <span className={`${styles.statusBadge} ${styles[`status_${status}`]}`}>
         {c.label}
       </span>
     );
@@ -160,7 +158,7 @@ export const ProjectList: React.FC = () => {
           <div className={styles.progressContainer}>
             <div className={styles.progressBar}>
               <div
-                className={`${styles.progressFill} ${progress === 100 ? styles.progressComplete : ''}`}
+                className={`${styles.progressFill} ${progress === 100 ? styles.progressComplete : ""}`}
                 data-progress={progress}
               />
             </div>

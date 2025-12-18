@@ -198,9 +198,21 @@
 /* LCARS theme adjustments */
 [data-theme="lcars"] .page {
   background: #000;
-  background-image: 
-    linear-gradient(90deg, transparent 0%, transparent 98%, #cc99ff 98%, #cc99ff 100%),
-    linear-gradient(0deg, transparent 0%, transparent 98%, #cc99ff 98%, #cc99ff 100%);
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 98%,
+      #cc99ff 98%,
+      #cc99ff 100%
+    ),
+    linear-gradient(
+      0deg,
+      transparent 0%,
+      transparent 98%,
+      #cc99ff 98%,
+      #cc99ff 100%
+    );
 }
 
 [data-theme="lcars"] .container {

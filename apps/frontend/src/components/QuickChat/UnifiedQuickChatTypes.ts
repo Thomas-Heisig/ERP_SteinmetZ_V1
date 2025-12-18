@@ -4,7 +4,7 @@
 /**
  * Unified QuickChat Type Definitions
  * Merged and improved types from both QuickChat versions
- * 
+ *
  * @module UnifiedQuickChatTypes
  */
 
@@ -18,12 +18,7 @@ export type ChatProvider =
   | "azure"
   | "custom";
 
-export type TabName =
-  | "chat"
-  | "sessions"
-  | "models"
-  | "settings"
-  | "info";
+export type TabName = "chat" | "sessions" | "models" | "settings" | "info";
 
 /**
  * Chat message interface

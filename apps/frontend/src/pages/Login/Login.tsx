@@ -3,7 +3,7 @@
 
 /**
  * Login and registration page component
- * 
+ *
  * Features:
  * - User authentication (login)
  * - User registration
@@ -11,7 +11,7 @@
  * - Error handling
  * - Loading states
  * - Accessibility support
- * 
+ *
  * @example
  * ```tsx
  * <Login />
@@ -93,7 +93,10 @@ export default function Login() {
 
           <div className={styles.formGroup}>
             <label htmlFor="username" className={styles.label}>
-              Benutzername <span className={styles.required} aria-label="erforderlich">*</span>
+              Benutzername{" "}
+              <span className={styles.required} aria-label="erforderlich">
+                *
+              </span>
             </label>
             <input
               type="text"
@@ -104,8 +107,13 @@ export default function Login() {
               required
               autoComplete="username"
               disabled={isLoading}
-              className={error ? `${styles.input} ${styles.inputInvalid}` : styles.input}
-              {...{ "aria-required": "true" as const, "aria-invalid": error ? ("true" as const) : ("false" as const) }}
+              className={
+                error ? `${styles.input} ${styles.inputInvalid}` : styles.input
+              }
+              {...{
+                "aria-required": "true" as const,
+                "aria-invalid": error ? ("true" as const) : ("false" as const),
+              }}
             />
           </div>
 
@@ -113,7 +121,10 @@ export default function Login() {
             <>
               <div className={styles.formGroup}>
                 <label htmlFor="email" className={styles.label}>
-                  E-Mail <span className={styles.required} aria-label="erforderlich">*</span>
+                  E-Mail{" "}
+                  <span className={styles.required} aria-label="erforderlich">
+                    *
+                  </span>
                 </label>
                 <input
                   type="email"
@@ -124,13 +135,24 @@ export default function Login() {
                   required
                   autoComplete="email"
                   disabled={isLoading}
-                  className={error ? `${styles.input} ${styles.inputInvalid}` : styles.input}
-                  {...{ "aria-required": "true" as const, "aria-invalid": error ? ("true" as const) : ("false" as const) }}
+                  className={
+                    error
+                      ? `${styles.input} ${styles.inputInvalid}`
+                      : styles.input
+                  }
+                  {...{
+                    "aria-required": "true" as const,
+                    "aria-invalid": error
+                      ? ("true" as const)
+                      : ("false" as const),
+                  }}
                 />
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="fullName" className={styles.label}>Vollständiger Name</label>
+                <label htmlFor="fullName" className={styles.label}>
+                  Vollständiger Name
+                </label>
                 <input
                   type="text"
                   id="fullName"
@@ -147,7 +169,10 @@ export default function Login() {
 
           <div className={styles.formGroup}>
             <label htmlFor="password" className={styles.label}>
-              Passwort <span className={styles.required} aria-label="erforderlich">*</span>
+              Passwort{" "}
+              <span className={styles.required} aria-label="erforderlich">
+                *
+              </span>
             </label>
             <input
               type="password"
@@ -161,8 +186,13 @@ export default function Login() {
               }
               disabled={isLoading}
               minLength={8}
-              className={error ? `${styles.input} ${styles.inputInvalid}` : styles.input}
-              {...{ "aria-required": "true" as const, "aria-invalid": error ? ("true" as const) : ("false" as const) }}
+              className={
+                error ? `${styles.input} ${styles.inputInvalid}` : styles.input
+              }
+              {...{
+                "aria-required": "true" as const,
+                "aria-invalid": error ? ("true" as const) : ("false" as const),
+              }}
             />
             {mode === "register" && (
               <small className={styles.hint}>
@@ -176,7 +206,9 @@ export default function Login() {
             type="submit"
             className={styles.submitButton}
             disabled={isLoading}
-            {...{ "aria-busy": isLoading ? ("true" as const) : ("false" as const) }}
+            {...{
+              "aria-busy": isLoading ? ("true" as const) : ("false" as const),
+            }}
           >
             {isLoading
               ? "Bitte warten..."

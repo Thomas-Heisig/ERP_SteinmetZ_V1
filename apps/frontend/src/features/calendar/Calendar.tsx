@@ -3,7 +3,7 @@
 
 /**
  * Calendar component with month, week, and day views
- * 
+ *
  * @example
  * ```tsx
  * <Calendar
@@ -115,17 +115,20 @@ export const Calendar: React.FC<CalendarProps> = ({
     fetchEvents();
   }, [getDateRange]);
 
-  const navigatePeriod = useCallback((direction: number) => {
-    const newDate = new Date(currentDate);
-    if (viewMode === "month") {
-      newDate.setMonth(newDate.getMonth() + direction);
-    } else if (viewMode === "week") {
-      newDate.setDate(newDate.getDate() + direction * 7);
-    } else {
-      newDate.setDate(newDate.getDate() + direction);
-    }
-    setCurrentDate(newDate);
-  }, [currentDate, viewMode]);
+  const navigatePeriod = useCallback(
+    (direction: number) => {
+      const newDate = new Date(currentDate);
+      if (viewMode === "month") {
+        newDate.setMonth(newDate.getMonth() + direction);
+      } else if (viewMode === "week") {
+        newDate.setDate(newDate.getDate() + direction * 7);
+      } else {
+        newDate.setDate(newDate.getDate() + direction);
+      }
+      setCurrentDate(newDate);
+    },
+    [currentDate, viewMode],
+  );
 
   const goToToday = useCallback(() => setCurrentDate(new Date()), []);
 
@@ -198,9 +201,7 @@ export const Calendar: React.FC<CalendarProps> = ({
           <Button variant="outline" size="sm" onClick={() => navigatePeriod(1)}>
             →
           </Button>
-          <h2 className={styles.headerTitle}>
-            {formatTitle()}
-          </h2>
+          <h2 className={styles.headerTitle}>{formatTitle()}</h2>
         </div>
 
         <div className={styles.viewButtons}>
@@ -236,11 +237,15 @@ export const Calendar: React.FC<CalendarProps> = ({
               const cellClasses = [
                 styles.dayCell,
                 !isCurrentMonth(date) && styles.dayCellOtherMonth,
-              ].filter(Boolean).join(" ");
+              ]
+                .filter(Boolean)
+                .join(" ");
               const numberClasses = [
                 styles.dayNumber,
                 isToday(date) && styles.dayNumberToday,
-              ].filter(Boolean).join(" ");
+              ]
+                .filter(Boolean)
+                .join(" ");
 
               return (
                 <div
@@ -248,9 +253,7 @@ export const Calendar: React.FC<CalendarProps> = ({
                   onClick={() => onDateClick?.(date)}
                   className={cellClasses}
                 >
-                  <div className={numberClasses}>
-                    {date.getDate()}
-                  </div>
+                  <div className={numberClasses}>{date.getDate()}</div>
 
                   <div className={styles.eventsContainer}>
                     {dayEvents.slice(0, 3).map((event) => (
@@ -265,7 +268,9 @@ export const Calendar: React.FC<CalendarProps> = ({
                         className={styles.eventItem}
                         style={
                           event.color
-                            ? ({ "--event-bg": event.color } as React.CSSProperties)
+                            ? ({
+                                "--event-bg": event.color,
+                              } as React.CSSProperties)
                             : undefined
                         }
                       >
