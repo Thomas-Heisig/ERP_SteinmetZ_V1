@@ -7,7 +7,7 @@
  * - Unterstützt SQLite und PostgreSQL.
  */
 
-import type { Express, Application } from "express";
+import type { Application } from "express";
 
 import os from "os";
 import process from "process";

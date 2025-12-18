@@ -68,7 +68,6 @@ import fs from "node:fs";
 // Middleware
 import {
   aiRateLimiter,
-  strictAiRateLimiter,
   audioRateLimiter,
 } from "../../middleware/rateLimiters.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
@@ -99,7 +98,6 @@ import { toolRegistry } from "./tools/registry.js";
 
 // Utils
 import { log } from "./utils/logger.js";
-import { errorResponse } from "./utils/errors.js";
 
 import { nowISO } from "./utils/helpers.js";
 import { sanitizeMessages } from "./utils/aiUtils.js";

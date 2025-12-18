@@ -9,7 +9,6 @@
 import fetch from "node-fetch";
 import type {
   ChatMessage,
-  AIResponse,
   AIModuleConfig,
   AIOptions,
   ModelResponse,
@@ -183,10 +182,10 @@ function buildRequestPayload(
 
 function prepareMessages(
   messages: ChatMessage[],
-  format: string,
+  _format: string,
 ): {
   systemPrompt?: string;
-  chatMessages: any[];
+  chatMessages: unknown[];
 } {
   if (!Array.isArray(messages) || messages.length === 0) {
     return { systemPrompt: undefined, chatMessages: [] };

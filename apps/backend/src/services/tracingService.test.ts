@@ -127,7 +127,7 @@ describe("Tracing Service", () => {
 
       const result = await tracingService.executeInSpan(
         "test-operation",
-        async (span) => {
+        async (_span) => {
           // Do some work
           return "success";
         },
@@ -141,7 +141,7 @@ describe("Tracing Service", () => {
       await tracingService.initialize();
 
       await expect(
-        tracingService.executeInSpan("test-operation", async (span) => {
+        tracingService.executeInSpan("test-operation", async (_span) => {
           throw new Error("Test error");
         }),
       ).rejects.toThrow("Test error");
@@ -153,7 +153,7 @@ describe("Tracing Service", () => {
 
       const result = await tracingService.executeInSpan(
         "test-operation",
-        async (span) => {
+        async (_span) => {
           return 42;
         },
         { userId: "123" },

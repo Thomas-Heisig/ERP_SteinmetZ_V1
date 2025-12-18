@@ -74,7 +74,7 @@ async function isMigrationExecuted(filename: string): Promise<boolean> {
       [filename],
     );
     return (result?.count ?? 0) > 0;
-  } catch (error) {
+  } catch (_error) {
     // If table doesn't exist yet, no migrations have been run
     return false;
   }

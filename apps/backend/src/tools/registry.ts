@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
-import type { Application } from "express";
-
 export type Tool = {
   name: string;
   description?: string;
-  parameters?: Record<string, any>;
-  run: (args: any) => Promise<any> | any;
+  parameters?: Record<string, unknown>;
+  run: (args: Record<string, unknown>) => Promise<unknown> | unknown;
 };
 
 class ToolRegistry {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/services/sipgate/CallHandler.ts
 
-import sipgateClient, { SipgateCall } from "./SipgateClient.js";
+import sipgateClient from "./SipgateClient.js";
 import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("call-handler");
@@ -216,7 +216,7 @@ export class CallHandler {
    * Look up contact name from CRM
    */
   private async lookupContactName(
-    phoneNumber: string,
+    _phoneNumber: string,
   ): Promise<string | undefined> {
     // This would integrate with the CRM module in a real implementation
     // For now, return undefined
