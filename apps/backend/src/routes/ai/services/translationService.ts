@@ -46,7 +46,10 @@ export async function translateText(
   engine:
     | "openai"
     | "vertex"
-    | "huggingface" = translationConfig.defaultEngine as any,
+    | "huggingface" = translationConfig.defaultEngine as
+    | "openai"
+    | "vertex"
+    | "huggingface",
 ): Promise<AIResponse> {
   const messages: ChatMessage[] = [
     {
@@ -88,10 +91,11 @@ export async function translateText(
         targetLang,
       },
     };
-  } catch (err: any) {
-    const msg = `❌ Übersetzungsfehler (${engine}): ${err.message}`;
-    log("error", "Fehler bei Übersetzung", { error: err.message, engine });
-    return { text: msg, errors: [err.message], meta: { engine, targetLang } };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    const msg = `❌ Übersetzungsfehler (${engine}): ${errorMessage}`;
+    log("error", "Fehler bei Übersetzung", { error: errorMessage, engine });
+    return { text: msg, errors: [errorMessage], meta: { engine, targetLang } };
   }
 }
 
@@ -107,7 +111,10 @@ export async function detectLanguage(
   engine:
     | "openai"
     | "vertex"
-    | "huggingface" = translationConfig.defaultEngine as any,
+    | "huggingface" = translationConfig.defaultEngine as
+    | "openai"
+    | "vertex"
+    | "huggingface",
 ): Promise<string> {
   const messages: ChatMessage[] = [
     {
@@ -125,8 +132,9 @@ export async function detectLanguage(
         : await callOpenAI(translationConfig.defaultModel, messages);
 
     return res.text.trim();
-  } catch (err: any) {
-    log("error", "Fehler bei Spracherkennung", { error: err.message });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    log("error", "Fehler bei Spracherkennung", { error: errorMessage });
     return "Unbekannt";
   }
 }
@@ -144,7 +152,10 @@ export async function autoTranslate(
   engine:
     | "openai"
     | "vertex"
-    | "huggingface" = translationConfig.defaultEngine as any,
+    | "huggingface" = translationConfig.defaultEngine as
+    | "openai"
+    | "vertex"
+    | "huggingface",
 ): Promise<AIResponse> {
   try {
     const detected = await detectLanguage(text, engine);
@@ -158,8 +169,9 @@ export async function autoTranslate(
     }
 
     return await translateText(text, targetLang, engine);
-  } catch (err: any) {
-    return { text: `❌ Fehler bei autoTranslate: ${err.message}` };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    return { text: `❌ Fehler bei autoTranslate: ${errorMessage}` };
   }
 }
 
@@ -176,7 +188,10 @@ export async function translateBatch(
   engine:
     | "openai"
     | "vertex"
-    | "huggingface" = translationConfig.defaultEngine as any,
+    | "huggingface" = translationConfig.defaultEngine as
+    | "openai"
+    | "vertex"
+    | "huggingface",
 ): Promise<AIResponse[]> {
   const results: AIResponse[] = [];
   for (const t of texts) {

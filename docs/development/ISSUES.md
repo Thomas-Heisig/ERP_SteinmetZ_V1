@@ -74,7 +74,7 @@ Mehrere npm-Pakete im Projekt sind als deprecated markiert und sollten evaluiert
 **Lösungsansatz**:
 
 1. **npmlog/gauge**: Auf bessere sqlite3-Version warten oder Build-Output filtern
-2. **fluent-ffmpeg**: 
+2. **fluent-ffmpeg**:
    - Evaluieren ob noch benötigt wird
    - Falls ja: Alternative wie `@ffmpeg/ffmpeg` oder `ffmpeg-static` prüfen
 3. **rimraf/glob**: Werden durch Updates der Haupt-Dependencies automatisch behoben
