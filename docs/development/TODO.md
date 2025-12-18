@@ -1,6 +1,6 @@
 # ERP SteinmetZ - TODO Liste
 
-**Stand**: 17. Dezember 2025  
+**Stand**: 18. Dezember 2025  
 **Version**: 0.3.0
 
 Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und Phase.
@@ -17,6 +17,35 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 ---
 
 ## 🟠 Hohe Priorität
+
+### Code Quality & Type Safety 🆕
+
+- [ ] **TypeScript `any` Types eliminieren** 🆕 (18. Dez 2025)
+  - [ ] AI-Provider Types definieren (aiProviderService.ts - 27 Instanzen)
+  - [ ] AI Tool-Parameter Types (databaseTools.ts - 12 Instanzen)
+  - [ ] AI Type Definitions überarbeiten (types.ts - 62 Instanzen)
+  - [ ] Translation Service Types (translationService.ts - 8 Instanzen)
+  - [ ] Tool Registry Types (registry.ts - 13 Instanzen)
+  - [ ] System Tools Types (systemTools.ts - 2 Instanzen)
+  - [ ] Restliche Module (44 Instanzen verteilt)
+  - **Aufwand**: 2-3 Tage
+  - **Priorität**: Hoch - Type Safety ist wichtig für Wartbarkeit
+  - **Details**: Siehe ISSUE-017 in ISSUES.md
+
+- [ ] **Deprecated Dependencies evaluieren** 🆕 (18. Dez 2025)
+  - [ ] fluent-ffmpeg evaluieren (direkte Dependency)
+    - [ ] Prüfen ob noch benötigt wird
+    - [ ] Alternative evaluieren (@ffmpeg/ffmpeg, ffmpeg-static)
+    - [ ] Migration durchführen falls nötig
+  - [ ] npmlog/gauge - auf bessere sqlite3-Version warten
+  - [ ] Transitive Dependencies durch Updates beheben
+  - **Aufwand**: 4-6 Stunden
+  - **Priorität**: Mittel - keine akuten Probleme
+  - **Details**: Siehe ISSUE-018 in ISSUES.md
+
+---
+
+## 🟠 Hohe Priorität (fortgesetzt)
 
 ### Backend - Core Funktionalität
 
@@ -886,12 +915,29 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 ### Key Performance Indicators (KPIs)
 
 - **Code-Coverage**: 86% (Ziel: 90%)
-- **Build-Success-Rate**: 100%
+- **Build-Success-Rate**: 100% ✅
+- **Test-Success-Rate**: 100% (152/152 Tests) ✅
+- **ESLint Warnings**: 194 (Ziel: <50) - TypeScript `any` Types
+- **Deprecated Dependencies**: 6 (Ziel: 0)
 - **API-Response-Time**: <100ms (95th percentile)
 - **Frontend-Performance**: Lighthouse Score >90
 
 ---
 
-**Letzte Aktualisierung**: 14. Dezember 2025  
+**Neu Hinzugefügt (18. Dezember 2025)**:
+
+- 🆕 **Kompatibilitätsprüfung durchgeführt**:
+  - ✅ Alle Builds erfolgreich (Backend + Frontend)
+  - ✅ Alle Tests bestehen (102 Backend + 50 Frontend)
+  - ❌ 194 ESLint-Warnungen identifiziert (`@typescript-eslint/no-explicit-any`)
+  - ❌ 6 Deprecated Dependencies identifiziert
+  - ✅ Button.test.tsx korrigiert (CSS Modules)
+- 🆕 **ISSUE-017**: TypeScript `any` Types dokumentiert
+- 🆕 **ISSUE-018**: Deprecated Dependencies dokumentiert
+- ✅ **Dokumentation**: ISSUES.md und TODO.md aktualisiert
+
+---
+
+**Letzte Aktualisierung**: 18. Dezember 2025  
 **Maintainer**: Thomas Heisig  
 **Nächster Review**: Januar 2026
