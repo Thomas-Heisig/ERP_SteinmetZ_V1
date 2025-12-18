@@ -98,6 +98,99 @@ router.get("/context", (_req, res) => {
 });
 
 /* ---------------------------------------------------------
+   Dashboard KPIs - Key Performance Indicators
+--------------------------------------------------------- */
+router.get(
+  "/kpis",
+  asyncHandler(async (_req, res) => {
+    const db = (await import("../../services/dbService.js")).default;
+
+    // Get recent KPIs from database
+    const kpis = await db.all(
+      `SELECT * FROM dashboard_kpis 
+       WHERE date >= date('now', '-7 days') 
+       ORDER BY date DESC, name ASC`
+    );
+
+    res.json({
+      success: true,
+      data: kpis,
+      count: kpis.length,
+    });
+  })
+);
+
+/* ---------------------------------------------------------
+   Dashboard Tasks
+--------------------------------------------------------- */
+router.get(
+  "/tasks",
+  asyncHandler(async (req, res) => {
+    const db = (await import("../../services/dbService.js")).default;
+    const { status, priority } = req.query;
+
+    let sql = "SELECT * FROM dashboard_tasks WHERE 1=1";
+    const params: any[] = [];
+
+    if (status) {
+      const statuses = Array.isArray(status) ? status : [status];
+      sql += ` AND status IN (${statuses.map(() => "?").join(",")})`;
+      params.push(...statuses);
+    }
+
+    if (priority) {
+      sql += " AND priority = ?";
+      params.push(priority);
+    }
+
+    sql += " ORDER BY priority DESC, due_date ASC";
+
+    const tasks = await db.all(sql, params);
+
+    res.json({
+      success: true,
+      data: tasks,
+      count: tasks.length,
+    });
+  })
+);
+
+/* ---------------------------------------------------------
+   Dashboard Notifications
+--------------------------------------------------------- */
+router.get(
+  "/notifications",
+  asyncHandler(async (req, res) => {
+    const db = (await import("../../services/dbService.js")).default;
+    const { read, user_id, limit = "10" } = req.query;
+
+    let sql = "SELECT * FROM dashboard_notifications WHERE 1=1";
+    const params: any[] = [];
+
+    if (read !== undefined) {
+      sql += " AND read = ?";
+      params.push(read === "true" ? 1 : 0);
+    }
+
+    if (user_id) {
+      sql += " AND user_id = ?";
+      params.push(user_id);
+    }
+
+    sql += " ORDER BY created_at DESC LIMIT ?";
+    params.push(parseInt(limit as string, 10));
+
+    const notifications = await db.all(sql, params);
+
+    res.json({
+      success: true,
+      data: notifications,
+      count: notifications.length,
+    });
+  })
+);
+
+/* ---------------------------------------------------------
    Dashboard Widgets Data
 --------------------------------------------------------- */
 router.get(
