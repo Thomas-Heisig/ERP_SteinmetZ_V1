@@ -489,15 +489,17 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
     - Output: docs/api/index.html
     - npm run docs funktioniert
     - npm run docs:serve für lokale Ansicht
-  - [x] Phase 1: Critical APIs (begonnen - 3 von ~20 Dateien)
+  - [x] Phase 1: Critical APIs (erweitert - 5 von ~20 Dateien) ✅ FORTSCHRITT (18 Dec 2025)
     - [x] AuthService: Vollständige JSDoc für init, register, login, logout, validateToken, refreshToken
     - [x] errorHandler Middleware: Umfassende Dokumentation mit Beispielen
     - [x] asyncHandler Middleware: Best-Practice-Beispiele hinzugefügt
-    - [ ] Verbleibende Services (dbService, websocketService, redisService, etc.)
-    - [ ] Verbleibende Middleware (cacheMiddleware, metricsMiddleware, etc.)
+    - [x] redisService: Vollständige JSDoc (15+ Methoden, alle Interfaces dokumentiert) 🆕
+    - [x] filterService: Vollständige JSDoc (alle Methoden und Interfaces) 🆕
+    - [ ] Verbleibende Services (~15): dbService, websocketService, systemInfoService, etc.
+    - [ ] Verbleibende Middleware: cacheMiddleware, metricsMiddleware, etc.
   - [ ] Phase 2: Routes
   - [ ] Phase 3: Supporting Code
-  - **Aufwand**: 2-3 Stunden → 2.5 Stunden erledigt (Infrastruktur + Phase 1 Start ✅), 8-12 Stunden für vollständige Migration verbleibend
+  - **Aufwand**: 2-3 Stunden → 4 Stunden erledigt (Infrastruktur + Phase 1 erweitert ✅), 6-10 Stunden für vollständige Migration verbleibend
 
 ### UI/UX Enhancements
 
@@ -947,7 +949,12 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - Keine direkten deprecated Dependencies mehr vorhanden
   - fluent-ffmpeg bereits entfernt
   - Nur 9 transitive Dependencies betroffen (kein Handlungsbedarf)
-- ✅ **Dokumentation**: ISSUES.md und TODO.md mit korrekten Analysen aktualisiert
+- ✅ **JSDoc Phase 1 erweitert**: 2 weitere Services vollständig dokumentiert 🆕
+  - redisService: 15+ Methoden mit vollständiger JSDoc, Interface-Dokumentation, Beispiele
+  - filterService: Alle Interfaces und Methoden mit JSDoc, Nutzungsbeispiele
+  - Gesamtfortschritt Phase 1: 5/20 Services (25%) - authService, errorHandler, asyncHandler, redisService, filterService
+  - Verbleibend: ~15 Services für vollständige Phase 1
+- ✅ **Dokumentation**: ISSUES.md und TODO.md mit aktuellem Stand aktualisiert
 
 ---
 
