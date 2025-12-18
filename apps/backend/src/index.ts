@@ -295,6 +295,21 @@ async function bootstrapFunctionsCatalog() {
     await db.init();
     logger.info("Database initialized");
 
+    // Run database migrations
+    const { runAllMigrations } = await import('./utils/runMigrations.js');
+    const migrationResult = await runAllMigrations();
+    if (migrationResult.success) {
+      logger.info(
+        { executed: migrationResult.executed },
+        "Database migrations completed successfully"
+      );
+    } else {
+      logger.warn(
+        { executed: migrationResult.executed, failed: migrationResult.failed },
+        "Some database migrations failed"
+      );
+    }
+
     // Initialize authentication system
     await AuthService.init();
     logger.info("Authentication system initialized");

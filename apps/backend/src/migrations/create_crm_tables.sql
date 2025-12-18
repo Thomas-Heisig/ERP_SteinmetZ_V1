@@ -3,127 +3,84 @@
 -- Description: Creates tables for customers, contacts, opportunities, and activities
 
 -- Customers table
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[crm_customers]') AND type in (N'U'))
-BEGIN
-CREATE TABLE crm_customers (
-  id NVARCHAR(255) PRIMARY KEY,
-  name NVARCHAR(255) NOT NULL,
-  email NVARCHAR(255),
-  phone NVARCHAR(50),
-  company NVARCHAR(255),
-  address NVARCHAR(500),
-  status NVARCHAR(50) NOT NULL CHECK (status IN ('active', 'inactive', 'prospect')) DEFAULT 'prospect',
-  category NVARCHAR(100),
-  notes NVARCHAR(MAX),
-  created_at DATETIME NOT NULL DEFAULT GETDATE(),
-  updated_at DATETIME NOT NULL DEFAULT GETDATE()
+CREATE TABLE IF NOT EXISTS crm_customers (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  company TEXT,
+  address TEXT,
+  status TEXT NOT NULL CHECK (status IN ('active', 'inactive', 'prospect')) DEFAULT 'prospect',
+  category TEXT,
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-END
 
 -- Contacts table
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[crm_contacts]') AND type in (N'U'))
-BEGIN
-CREATE TABLE crm_contacts (
-  id NVARCHAR(255) PRIMARY KEY,
-  customer_id NVARCHAR(255),
-  first_name NVARCHAR(255) NOT NULL,
-  last_name NVARCHAR(255) NOT NULL,
-  email NVARCHAR(255),
-  phone NVARCHAR(50),
-  position NVARCHAR(100),
-  department NVARCHAR(100),
-  is_primary BIT DEFAULT 0,
-  notes NVARCHAR(MAX),
-  created_at DATETIME NOT NULL DEFAULT GETDATE(),
-  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+CREATE TABLE IF NOT EXISTS crm_contacts (
+  id TEXT PRIMARY KEY,
+  customer_id TEXT,
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  position TEXT,
+  department TEXT,
+  is_primary BOOLEAN DEFAULT 0,
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (customer_id) REFERENCES crm_customers(id) ON DELETE CASCADE
 );
-END
 
 -- Opportunities (Sales opportunities) table
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[crm_opportunities]') AND type in (N'U'))
-BEGIN
-CREATE TABLE crm_opportunities (
-  id NVARCHAR(255) PRIMARY KEY,
-  customer_id NVARCHAR(255),
-  title NVARCHAR(255) NOT NULL,
-  description NVARCHAR(MAX),
-  value FLOAT DEFAULT 0,
-  probability INT DEFAULT 50 CHECK (probability >= 0 AND probability <= 100),
-  status NVARCHAR(50) NOT NULL CHECK (status IN ('open', 'won', 'lost', 'cancelled')) DEFAULT 'open',
-  stage NVARCHAR(100),
-  expected_close_date DATETIME,
-  assigned_to NVARCHAR(255),
-  notes NVARCHAR(MAX),
-  created_at DATETIME NOT NULL DEFAULT GETDATE(),
-  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+CREATE TABLE IF NOT EXISTS crm_opportunities (
+  id TEXT PRIMARY KEY,
+  customer_id TEXT,
+  title TEXT NOT NULL,
+  description TEXT,
+  value REAL DEFAULT 0,
+  probability INTEGER DEFAULT 50 CHECK (probability >= 0 AND probability <= 100),
+  status TEXT NOT NULL CHECK (status IN ('open', 'won', 'lost', 'cancelled')) DEFAULT 'open',
+  stage TEXT,
+  expected_close_date TEXT,
+  assigned_to TEXT,
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (customer_id) REFERENCES crm_customers(id) ON DELETE CASCADE
 );
-END
 
 -- Activities (Interactions, calls, emails, meetings) table
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[crm_activities]') AND type in (N'U'))
-BEGIN
-CREATE TABLE crm_activities (
-  id NVARCHAR(255) PRIMARY KEY,
-  customer_id NVARCHAR(255),
-  contact_id NVARCHAR(255),
-  opportunity_id NVARCHAR(255),
-  type NVARCHAR(50) NOT NULL CHECK (type IN ('call', 'email', 'meeting', 'note', 'task', 'demo')),
-  subject NVARCHAR(255) NOT NULL,
-  description NVARCHAR(MAX),
-  status NVARCHAR(50) NOT NULL CHECK (status IN ('planned', 'completed', 'cancelled')) DEFAULT 'planned',
-  scheduled_at DATETIME,
-  completed_at DATETIME,
-  duration_minutes INT,
-  assigned_to NVARCHAR(255),
-  outcome NVARCHAR(MAX),
-  notes NVARCHAR(MAX),
-  created_at DATETIME NOT NULL DEFAULT GETDATE(),
-  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+CREATE TABLE IF NOT EXISTS crm_activities (
+  id TEXT PRIMARY KEY,
+  customer_id TEXT,
+  contact_id TEXT,
+  opportunity_id TEXT,
+  type TEXT NOT NULL CHECK (type IN ('call', 'email', 'meeting', 'note', 'task', 'demo')),
+  subject TEXT NOT NULL,
+  description TEXT,
+  status TEXT NOT NULL CHECK (status IN ('planned', 'completed', 'cancelled')) DEFAULT 'planned',
+  scheduled_at TEXT,
+  completed_at TEXT,
+  duration_minutes INTEGER,
+  assigned_to TEXT,
+  outcome TEXT,
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (customer_id) REFERENCES crm_customers(id) ON DELETE CASCADE,
   FOREIGN KEY (contact_id) REFERENCES crm_contacts(id) ON DELETE SET NULL,
   FOREIGN KEY (opportunity_id) REFERENCES crm_opportunities(id) ON DELETE SET NULL
 );
-END
 
 -- Create indexes for better query performance
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_crm_customers_status' AND object_id = OBJECT_ID('crm_customers'))
-BEGIN
-  CREATE INDEX idx_crm_customers_status ON crm_customers(status);
-END
-
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_crm_customers_email' AND object_id = OBJECT_ID('crm_customers'))
-BEGIN
-  CREATE INDEX idx_crm_customers_email ON crm_customers(email);
-END
-
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_crm_contacts_customer' AND object_id = OBJECT_ID('crm_contacts'))
-BEGIN
-  CREATE INDEX idx_crm_contacts_customer ON crm_contacts(customer_id);
-END
-
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_crm_opportunities_customer' AND object_id = OBJECT_ID('crm_opportunities'))
-BEGIN
-  CREATE INDEX idx_crm_opportunities_customer ON crm_opportunities(customer_id);
-END
-
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_crm_opportunities_status' AND object_id = OBJECT_ID('crm_opportunities'))
-BEGIN
-  CREATE INDEX idx_crm_opportunities_status ON crm_opportunities(status);
-END
-
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_crm_activities_customer' AND object_id = OBJECT_ID('crm_activities'))
-BEGIN
-  CREATE INDEX idx_crm_activities_customer ON crm_activities(customer_id);
-END
-
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_crm_activities_type' AND object_id = OBJECT_ID('crm_activities'))
-BEGIN
-  CREATE INDEX idx_crm_activities_type ON crm_activities(type);
-END
-
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_crm_activities_status' AND object_id = OBJECT_ID('crm_activities'))
-BEGIN
-  CREATE INDEX idx_crm_activities_status ON crm_activities(status);
-END
+CREATE INDEX IF NOT EXISTS idx_crm_customers_status ON crm_customers(status);
+CREATE INDEX IF NOT EXISTS idx_crm_customers_email ON crm_customers(email);
+CREATE INDEX IF NOT EXISTS idx_crm_contacts_customer ON crm_contacts(customer_id);
+CREATE INDEX IF NOT EXISTS idx_crm_opportunities_customer ON crm_opportunities(customer_id);
+CREATE INDEX IF NOT EXISTS idx_crm_opportunities_status ON crm_opportunities(status);
+CREATE INDEX IF NOT EXISTS idx_crm_activities_customer ON crm_activities(customer_id);
+CREATE INDEX IF NOT EXISTS idx_crm_activities_type ON crm_activities(type);
+CREATE INDEX IF NOT EXISTS idx_crm_activities_status ON crm_activities(status);
