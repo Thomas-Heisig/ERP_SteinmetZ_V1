@@ -3,7 +3,7 @@
 
 import React, { useState } from "react";
 import { createLogger } from "../../utils/logger.js";
-import { Button, Input } from "../../components/ui";
+import { Button } from "../../components/ui";
 
 const logger = createLogger("phone-dialer");
 

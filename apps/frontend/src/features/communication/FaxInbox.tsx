@@ -20,53 +20,50 @@ interface FaxDocument {
 }
 
 export const FaxInbox: React.FC = () => {
-  const [faxes, setFaxes] = useState<FaxDocument[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Mock data - in production, fetch from API
+  const [faxes] = useState<FaxDocument[]>(() => [
+    {
+      id: "1",
+      from: "+49 30 11111111",
+      to: "+49 30 22222222",
+      receivedAt: new Date(Date.now() - 1800000).toISOString(),
+      pages: 3,
+      status: "processed",
+      ocrText: "Rechnung Nr. 2024-001\n\nSehr geehrte Damen und Herren...",
+      classification: {
+        type: "invoice",
+        confidence: 0.92,
+        suggestedAction: "Zur Rechnungsverarbeitung hinzufügen",
+      },
+    },
+    {
+      id: "2",
+      from: "+49 40 33333333",
+      to: "+49 30 22222222",
+      receivedAt: new Date(Date.now() - 86400000).toISOString(),
+      pages: 1,
+      status: "processed",
+      ocrText: "Anfrage zu Produkten...",
+      classification: {
+        type: "inquiry",
+        confidence: 0.78,
+        suggestedAction: "An Vertrieb weiterleiten",
+      },
+    },
+    {
+      id: "3",
+      from: "+49 89 44444444",
+      to: "+49 30 22222222",
+      receivedAt: new Date(Date.now() - 3600000).toISOString(),
+      pages: 5,
+      status: "processing",
+    },
+  ]);
+  const [loading] = useState(false);
   const [selectedFax, setSelectedFax] = useState<FaxDocument | null>(null);
 
   useEffect(() => {
-    // Mock data - in production, fetch from API
-    const mockFaxes: FaxDocument[] = [
-      {
-        id: "1",
-        from: "+49 30 11111111",
-        to: "+49 30 22222222",
-        receivedAt: new Date(Date.now() - 1800000).toISOString(),
-        pages: 3,
-        status: "processed",
-        ocrText: "Rechnung Nr. 2024-001\n\nSehr geehrte Damen und Herren...",
-        classification: {
-          type: "invoice",
-          confidence: 0.92,
-          suggestedAction: "Zur Rechnungsverarbeitung hinzufügen",
-        },
-      },
-      {
-        id: "2",
-        from: "+49 40 33333333",
-        to: "+49 30 22222222",
-        receivedAt: new Date(Date.now() - 86400000).toISOString(),
-        pages: 1,
-        status: "processed",
-        ocrText: "Anfrage zu Produkten...",
-        classification: {
-          type: "inquiry",
-          confidence: 0.78,
-          suggestedAction: "An Vertrieb weiterleiten",
-        },
-      },
-      {
-        id: "3",
-        from: "+49 89 44444444",
-        to: "+49 30 22222222",
-        receivedAt: new Date(Date.now() - 3600000).toISOString(),
-        pages: 5,
-        status: "processing",
-      },
-    ];
-
-    setFaxes(mockFaxes);
-    setLoading(false);
+    // In production, fetch from API here
   }, []);
 
   const formatTime = (timestamp: string): string => {

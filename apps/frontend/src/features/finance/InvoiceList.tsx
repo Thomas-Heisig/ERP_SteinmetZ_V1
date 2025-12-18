@@ -330,43 +330,54 @@ export const InvoiceList: React.FC = () => {
     }));
   };
 
-  const handleRowSelect = (invoiceId: string) => {
-    const newSelected = new Set(selectedIds);
-    if (newSelected.has(invoiceId)) {
-      newSelected.delete(invoiceId);
-    } else {
-      newSelected.add(invoiceId);
-    }
-    setSelectedIds(newSelected);
-  };
-
-  const handleDelete = async (invoiceId: string) => {
-    if (window.confirm("Rechnung wirklich löschen?")) {
-      try {
-        await fetch(`/api/finance/invoices/${invoiceId}`, { method: "DELETE" });
-        setInvoices((prev) => prev.filter((i) => i.id !== invoiceId));
-        toast.success("Rechnung gelöscht");
-      } catch {
-        toast.error("Löschen fehlgeschlagen");
+  const handleRowSelect = useCallback(
+    (invoiceId: string) => {
+      const newSelected = new Set(selectedIds);
+      if (newSelected.has(invoiceId)) {
+        newSelected.delete(invoiceId);
+      } else {
+        newSelected.add(invoiceId);
       }
-    }
-  };
+      setSelectedIds(newSelected);
+    },
+    [selectedIds],
+  );
 
-  const handleMarkAsPaid = async (invoiceId: string) => {
-    try {
-      await fetch(`/api/finance/invoices/${invoiceId}/mark-paid`, {
-        method: "POST",
-      });
-      setInvoices((prev) =>
-        prev.map((i) =>
-          i.id === invoiceId ? { ...i, status: "paid" as InvoiceStatus } : i,
-        ),
-      );
-      toast.success("Als bezahlt markiert");
-    } catch {
-      toast.error("Aktion fehlgeschlagen");
-    }
-  };
+  const handleDelete = useCallback(
+    async (invoiceId: string) => {
+      if (window.confirm("Rechnung wirklich löschen?")) {
+        try {
+          await fetch(`/api/finance/invoices/${invoiceId}`, {
+            method: "DELETE",
+          });
+          setInvoices((prev) => prev.filter((i) => i.id !== invoiceId));
+          toast.success("Rechnung gelöscht");
+        } catch {
+          toast.error("Löschen fehlgeschlagen");
+        }
+      }
+    },
+    [toast],
+  );
+
+  const handleMarkAsPaid = useCallback(
+    async (invoiceId: string) => {
+      try {
+        await fetch(`/api/finance/invoices/${invoiceId}/mark-paid`, {
+          method: "POST",
+        });
+        setInvoices((prev) =>
+          prev.map((i) =>
+            i.id === invoiceId ? { ...i, status: "paid" as InvoiceStatus } : i,
+          ),
+        );
+        toast.success("Als bezahlt markiert");
+      } catch {
+        toast.error("Aktion fehlgeschlagen");
+      }
+    },
+    [toast],
+  );
 
   // Table columns
   const columns = useMemo(
@@ -522,7 +533,7 @@ export const InvoiceList: React.FC = () => {
         ),
       },
     ],
-    [selectedIds, handleRowSelect],
+    [selectedIds, handleRowSelect, handleDelete, handleMarkAsPaid],
   );
 
   if (loading) {

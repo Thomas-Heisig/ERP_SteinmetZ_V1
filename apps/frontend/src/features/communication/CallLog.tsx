@@ -16,44 +16,41 @@ interface Call {
 }
 
 export const CallLog: React.FC = () => {
-  const [calls, setCalls] = useState<Call[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Mock data - in production, fetch from API
+  const [calls] = useState<Call[]>(() => [
+    {
+      id: "1",
+      direction: "incoming",
+      phoneNumber: "+49 30 12345678",
+      contactName: "Max Mustermann",
+      timestamp: new Date(Date.now() - 3600000).toISOString(),
+      duration: 180,
+      status: "answered",
+    },
+    {
+      id: "2",
+      direction: "outgoing",
+      phoneNumber: "+49 40 98765432",
+      contactName: "Firma ABC",
+      timestamp: new Date(Date.now() - 7200000).toISOString(),
+      duration: 420,
+      status: "completed",
+    },
+    {
+      id: "3",
+      direction: "incoming",
+      phoneNumber: "+49 89 11223344",
+      timestamp: new Date(Date.now() - 86400000).toISOString(),
+      duration: 0,
+      status: "missed",
+    },
+  ]);
+  const [loading] = useState(false);
   const [filter, setFilter] = useState<"all" | "incoming" | "outgoing">("all");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    // Mock data - in production, fetch from API
-    const mockCalls: Call[] = [
-      {
-        id: "1",
-        direction: "incoming",
-        phoneNumber: "+49 30 12345678",
-        contactName: "Max Mustermann",
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        duration: 180,
-        status: "answered",
-      },
-      {
-        id: "2",
-        direction: "outgoing",
-        phoneNumber: "+49 40 98765432",
-        contactName: "Firma ABC",
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
-        duration: 420,
-        status: "completed",
-      },
-      {
-        id: "3",
-        direction: "incoming",
-        phoneNumber: "+49 89 11223344",
-        timestamp: new Date(Date.now() - 86400000).toISOString(),
-        duration: 0,
-        status: "missed",
-      },
-    ];
-
-    setCalls(mockCalls);
-    setLoading(false);
+    // In production, fetch from API here
   }, []);
 
   const filteredCalls = calls.filter((call) => {
@@ -157,7 +154,7 @@ export const CallLog: React.FC = () => {
       key: "actions",
       header: "",
       width: "100px",
-      render: (_: unknown, row: Call) => (
+      render: (_: unknown, _row: Call) => (
         <div style={{ display: "flex", gap: "0.25rem" }}>
           <Button variant="ghost" size="sm" title="Anrufen">
             📞

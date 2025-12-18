@@ -7,7 +7,6 @@ import {
   helpCategories,
   helpArticles,
   type HelpArticle,
-  type HelpCategory,
 } from "../../data/helpDeskContent";
 
 export const HelpCenter: React.FC = () => {
@@ -42,14 +41,20 @@ export const HelpCenter: React.FC = () => {
       // Handle headings
       if (line.startsWith("### ")) {
         return (
-          <h3 key={index} style={{ marginTop: "1.5rem", marginBottom: "0.5rem" }}>
+          <h3
+            key={index}
+            style={{ marginTop: "1.5rem", marginBottom: "0.5rem" }}
+          >
             {line.substring(4)}
           </h3>
         );
       }
       if (line.startsWith("## ")) {
         return (
-          <h2 key={index} style={{ marginTop: "2rem", marginBottom: "0.75rem" }}>
+          <h2
+            key={index}
+            style={{ marginTop: "2rem", marginBottom: "0.75rem" }}
+          >
             {line.substring(3)}
           </h2>
         );

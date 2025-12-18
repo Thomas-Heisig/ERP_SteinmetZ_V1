@@ -29,6 +29,7 @@ Welcome to the ERP SteinmetZ documentation! This directory contains comprehensiv
 Die Dokumentation wurde neu organisiert, um die Wartbarkeit zu verbessern und den Zugriff zu erleichtern:
 
 **Root-Verzeichnis** (nur essenzielle Dateien):
+
 - `README.md` - Hauptübersicht des Projekts
 - `CONTRIBUTING.md` - Richtlinien für Beiträge
 - `CODE_OF_CONDUCT.md` - Verhaltenskodex
@@ -36,6 +37,7 @@ Die Dokumentation wurde neu organisiert, um die Wartbarkeit zu verbessern und de
 - `CHANGELOG.md` - Versionshistorie
 
 **docs/** (alle anderen Dokumentationen):
+
 - `docs/development/` - Entwicklungsdokumentation
   - `TODO.md` - Aufgabenliste
   - `ISSUES.md` - Aktive Issues
@@ -52,6 +54,7 @@ Die Dokumentation wurde neu organisiert, um die Wartbarkeit zu verbessern und de
 ### Help Center Integration
 
 Die ursprünglichen Projektdaten aus `docs/concept/` wurden in das **Help Center** integriert:
+
 - Konzept & Vision
 - Dashboard-Beschreibungen
 - Modulbeschreibungen (Finanzen, Personal, etc.)
@@ -60,6 +63,7 @@ Die ursprünglichen Projektdaten aus `docs/concept/` wurden in das **Help Center
 Alle Mock-Daten wurden aus dem Help Center entfernt und durch echte Projektdokumentation ersetzt.
 
 **Zugriff im Frontend:**
+
 - Navigate zu `/help` oder klicken Sie auf das Hilfe-Icon
 - Durchsuchen Sie Kategorien und Artikel
 - Nutzen Sie die Volltextsuche

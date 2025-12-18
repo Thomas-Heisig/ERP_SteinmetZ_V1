@@ -533,14 +533,7 @@ Verwalten Sie die KI-Modelle:
 - **Sonderurlaub**: Hochzeit, Geburt, Umzug
 - **Krankheitsvertretung**: Urlaubsvertretung regeln
     `,
-    keywords: [
-      "mitarbeiter",
-      "personal",
-      "hr",
-      "vertrag",
-      "urlaub",
-      "zeit",
-    ],
+    keywords: ["mitarbeiter", "personal", "hr", "vertrag", "urlaub", "zeit"],
   },
 
   // Finance - Extended
