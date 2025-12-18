@@ -155,7 +155,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
                       toggleFavorite(item.id);
                     }}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
+                      if (e.key === "Enter" || e.key === " ") {
                         e.stopPropagation();
                         toggleFavorite(item.id);
                       }

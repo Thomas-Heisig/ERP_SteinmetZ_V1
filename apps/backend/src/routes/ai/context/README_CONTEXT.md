@@ -2,7 +2,7 @@
 
 ## 📁 Struktur
 
-``` tree
+```tree
 context/
 ├── conversationContext.ts          # Hauptklasse
 ├── test-context-loading.ts         # Test-Script
@@ -43,11 +43,11 @@ const context = new ConversationContext();
 3. **Sortierung**: Sortiert nach Präfix-Nummer (01, 02, 03, ...)
 
 4. **Laden & Validierung**:
-
    - Liest jede Datei
    - Parst JSON
    - Validiert Struktur
    - Merged Daten zusammen
+
 5. **Fallback**: Falls Fehler → Fallback-Kontext mit minimalen Regeln
 
 ### 3. Validierung
@@ -83,10 +83,7 @@ Jede Datei wird validiert:
   "eliza_rules": [
     {
       "pattern": "\\b(hallo|hi|hey)\\b",
-      "replies": [
-        "Hallo! Wie kann ich helfen?",
-        "Guten Tag!"
-      ],
+      "replies": ["Hallo! Wie kann ich helfen?", "Guten Tag!"],
       "action": "greeting",
       "priority": 1,
       "enabled": true
@@ -151,16 +148,16 @@ console.log(diag);
 
 ```typescript
 {
-  context_size: number;          // Anzahl Context-Einträge
-  rules_loaded: number;          // Geladene Regeln
-  active_rules: number;          // Aktive Regeln
-  disabled_rules: number;        // Deaktivierte Regeln
-  reflections_loaded: number;    // Geladene Reflexionen
+  context_size: number; // Anzahl Context-Einträge
+  rules_loaded: number; // Geladene Regeln
+  active_rules: number; // Aktive Regeln
+  disabled_rules: number; // Deaktivierte Regeln
+  reflections_loaded: number; // Geladene Reflexionen
   loading_info: {
-    fallback_mode: boolean;      // ⚠️ Fallback aktiv?
-    loaded_files: number;        // Anzahl geladener Dateien
-    load_timestamp: string;      // Wann geladen?
-  };
+    fallback_mode: boolean; // ⚠️ Fallback aktiv?
+    loaded_files: number; // Anzahl geladener Dateien
+    load_timestamp: string; // Wann geladen?
+  }
   // ... weitere Infos
 }
 ```
@@ -171,7 +168,7 @@ console.log(diag);
 
 **Symptome:**
 
-``` text
+```text
 diagnostics.loading_info.fallback_mode === true
 ```
 
@@ -182,7 +179,7 @@ diagnostics.loading_info.fallback_mode === true
    ```bash
    # Prüfen
    ls apps/backend/src/routes/ai/context/data/
-   
+
    # Lösung: Ordner erstellen
    mkdir -p apps/backend/src/routes/ai/context/data/
    ```
@@ -192,7 +189,7 @@ diagnostics.loading_info.fallback_mode === true
    ```bash
    # Prüfen
    ls apps/backend/src/routes/ai/context/data/*.json
-   
+
    # Lösung: JSON-Dateien hinzufügen
    ```
 
@@ -201,7 +198,7 @@ diagnostics.loading_info.fallback_mode === true
    ```bash
    # Prüfen mit jq
    jq . apps/backend/src/routes/ai/context/data/01_reflections.json
-   
+
    # Oder mit Node
    node -e "console.log(JSON.parse(require('fs').readFileSync('...')))"
    ```
@@ -216,7 +213,7 @@ diagnostics.loading_info.fallback_mode === true
    ```bash
    # Windows
    icacls apps/backend/src/routes/ai/context/data/
-   
+
    # Linux/Mac
    ls -la apps/backend/src/routes/ai/context/data/
    ```
@@ -229,14 +226,14 @@ diagnostics.loading_info.fallback_mode === true
 
    ```typescript
    const match = context.matchRules("Hallo Welt");
-   console.log(match);  // null = kein Match
+   console.log(match); // null = kein Match
    ```
 
 2. **Pattern testen**
 
    ```javascript
    const pattern = /\b(hallo|hi)\b/i;
-   console.log(pattern.test("Hallo Welt"));  // true?
+   console.log(pattern.test("Hallo Welt")); // true?
    ```
 
 3. **Regex-Escaping**
@@ -244,7 +241,7 @@ diagnostics.loading_info.fallback_mode === true
    ```json
    // FALSCH:
    "pattern": "\b(hallo)\b"
-   
+
    // RICHTIG:
    "pattern": "\\b(hallo)\\b"
    ```
@@ -280,12 +277,12 @@ console.log("Reflections:", diag.reflections_loaded);
 
 ```typescript
 // In logger.ts oder .env
-LOG_LEVEL=debug
+LOG_LEVEL = debug;
 ```
 
 ### Wichtige Log-Messages
 
-``` list
+```list
 [ConversationContext] Starting to load context data
 [ConversationContext] Found JSON context files (count: X)
 [ConversationContext] Loading file (file: XX_...)
@@ -296,7 +293,7 @@ LOG_LEVEL=debug
 
 ### Bei Fehlern
 
-``` list
+```list
 [ConversationContext] Error loading file
 [ConversationContext] Validation failed
 [ConversationContext] Invalid data: ...
@@ -320,7 +317,7 @@ LOG_LEVEL=debug
 
 ```json
 {
-  "pattern": "(?i)\\b(keyword1|keyword2)\\b",
+  "pattern": "(?i)\\b(keyword1|keyword2)\\b"
   // (?i) = case-insensitive
   // \\b = Wortgrenze
   // (a|b) = Alternative
@@ -344,10 +341,10 @@ LOG_LEVEL=debug
 
 ```json
 {
-  "priority": 0,  // Sehr niedrig (Fallback)
-  "priority": 1,  // Normal (Greetings)
-  "priority": 2,  // Hoch (Spezifisch)
-  "priority": 3   // Sehr hoch (Kritisch)
+  "priority": 0, // Sehr niedrig (Fallback)
+  "priority": 1, // Normal (Greetings)
+  "priority": 2, // Hoch (Spezifisch)
+  "priority": 3 // Sehr hoch (Kritisch)
 }
 ```
 

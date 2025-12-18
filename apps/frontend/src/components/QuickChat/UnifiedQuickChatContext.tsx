@@ -3,10 +3,10 @@
 
 /**
  * Unified QuickChat Context Provider
- * 
+ *
  * Provides centralized state management for QuickChat using React Context API.
  * Handles sessions, messages, models, settings, and API communication.
- * 
+ *
  * Features:
  * - Session management
  * - Message handling
@@ -14,14 +14,14 @@
  * - Settings persistence
  * - Backend API integration
  * - Error handling
- * 
+ *
  * @example
  * ```tsx
  * <UnifiedQuickChatProvider>
  *   <UnifiedQuickChat />
  * </UnifiedQuickChatProvider>
  * ```
- * 
+ *
  * @module UnifiedQuickChatContext
  */
 
@@ -42,7 +42,10 @@ import type {
   ProviderStatus,
   ChatProvider,
 } from "./UnifiedQuickChatTypes";
-import { UnifiedQuickChatContext, type UnifiedQuickChatContextValue } from "./UnifiedQuickChatContextValue";
+import {
+  UnifiedQuickChatContext,
+  type UnifiedQuickChatContextValue,
+} from "./UnifiedQuickChatContextValue";
 
 const API_BASE = "/api/ai";
 const DEFAULT_TIMEOUT = 30000;
@@ -64,12 +67,14 @@ interface UnifiedQuickChatProviderProps {
 /**
  * UnifiedQuickChat Provider Component
  */
-export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> = ({
-  children,
-}) => {
+export const UnifiedQuickChatProvider: React.FC<
+  UnifiedQuickChatProviderProps
+> = ({ children }) => {
   // State
   const [sessions, setSessions] = useState<ChatSession[]>([]);
-  const [currentSession, setCurrentSession] = useState<ChatSession | null>(null);
+  const [currentSession, setCurrentSession] = useState<ChatSession | null>(
+    null,
+  );
   const [models, setModels] = useState<AIModel[]>([]);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(false);
@@ -81,7 +86,7 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
    * Generic API call helper
    */
   const apiCall = useCallback(
-    async <T = unknown>(
+    async <T = unknown,>(
       endpoint: string,
       options: RequestInit = {},
       timeout = DEFAULT_TIMEOUT,
@@ -133,7 +138,8 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
       setSessions(loadedSessions);
       return loadedSessions;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load sessions";
+      const message =
+        err instanceof Error ? err.message : "Failed to load sessions";
       setError(message);
       return [];
     }
@@ -159,7 +165,8 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
         setCurrentSession(newSession);
         return newSession;
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to create session";
+        const message =
+          err instanceof Error ? err.message : "Failed to create session";
         setError(message);
         throw err;
       } finally {
@@ -175,10 +182,13 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
   const selectSession = useCallback(
     async (sessionId: string): Promise<void> => {
       try {
-        const data = await apiCall<{ session: ChatSession }>(`/sessions/${sessionId}`);
+        const data = await apiCall<{ session: ChatSession }>(
+          `/sessions/${sessionId}`,
+        );
         setCurrentSession(data.session);
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to load session";
+        const message =
+          err instanceof Error ? err.message : "Failed to load session";
         setError(message);
       }
     },
@@ -197,7 +207,8 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
           setCurrentSession(null);
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to delete session";
+        const message =
+          err instanceof Error ? err.message : "Failed to delete session";
         setError(message);
       }
     },
@@ -240,10 +251,13 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
         });
 
         // Send to backend
-        const data = await apiCall<AIResponse>(`/sessions/${session.id}/messages`, {
-          method: "POST",
-          body: JSON.stringify({ message: content.trim() }),
-        });
+        const data = await apiCall<AIResponse>(
+          `/sessions/${session.id}/messages`,
+          {
+            method: "POST",
+            body: JSON.stringify({ message: content.trim() }),
+          },
+        );
 
         // Add assistant response
         const assistantMessage: ChatMessage = {
@@ -264,7 +278,8 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
 
         return data;
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to send message";
+        const message =
+          err instanceof Error ? err.message : "Failed to send message";
         setError(message);
         throw err;
       } finally {
@@ -278,7 +293,10 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
    * Stream a message (for future streaming support)
    */
   const streamMessage = useCallback(
-    async (content: string, onChunk: (chunk: string) => void): Promise<void> => {
+    async (
+      content: string,
+      onChunk: (chunk: string) => void,
+    ): Promise<void> => {
       // Placeholder for streaming implementation
       const response = await sendMessage(content);
       onChunk(response.message);
@@ -296,7 +314,8 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
       setModels(loadedModels);
       return loadedModels;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load models";
+      const message =
+        err instanceof Error ? err.message : "Failed to load models";
       setError(message);
       return [];
     }
@@ -310,7 +329,8 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
       const data = await apiCall<{ providers: ProviderStatus[] }>("/providers");
       return data.providers || [];
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to load providers";
+      const message =
+        err instanceof Error ? err.message : "Failed to load providers";
       setError(message);
       return [];
     }
@@ -331,7 +351,8 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
           body: JSON.stringify(updated),
         });
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to update settings";
+        const message =
+          err instanceof Error ? err.message : "Failed to update settings";
         setError(message);
       }
     },
@@ -346,7 +367,8 @@ export const UnifiedQuickChatProvider: React.FC<UnifiedQuickChatProviderProps> =
       const data = await apiCall<SystemStatus>("/system/status");
       return data;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to get system status";
+      const message =
+        err instanceof Error ? err.message : "Failed to get system status";
       setError(message);
       throw err;
     }

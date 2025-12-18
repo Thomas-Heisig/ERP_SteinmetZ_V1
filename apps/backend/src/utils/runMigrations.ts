@@ -3,21 +3,21 @@
 
 /**
  * Database Migration Runner
- * 
+ *
  * Automatically runs SQL migration files in order
  */
 
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import db from '../services/dbService.js';
-import { createLogger } from './logger.js';
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import db from "../services/dbService.js";
+import { createLogger } from "./logger.js";
 
-const logger = createLogger('migrations');
+const logger = createLogger("migrations");
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const MIGRATIONS_DIR = path.join(__dirname, '../migrations');
+const MIGRATIONS_DIR = path.join(__dirname, "../migrations");
 
 interface Migration {
   filename: string;
@@ -31,16 +31,16 @@ async function getMigrationFiles(): Promise<Migration[]> {
   try {
     const files = await fs.readdir(MIGRATIONS_DIR);
     const sqlFiles = files
-      .filter(f => f.endsWith('.sql'))
+      .filter((f) => f.endsWith(".sql"))
       .sort()
-      .map(f => ({
+      .map((f) => ({
         filename: f,
-        path: path.join(MIGRATIONS_DIR, f)
+        path: path.join(MIGRATIONS_DIR, f),
       }));
-    
+
     return sqlFiles;
   } catch (error) {
-    logger.error({ error }, 'Failed to read migrations directory');
+    logger.error({ error }, "Failed to read migrations directory");
     return [];
   }
 }
@@ -51,16 +51,16 @@ async function getMigrationFiles(): Promise<Migration[]> {
 function splitSQLStatements(sql: string): string[] {
   // Remove comments
   const withoutComments = sql
-    .split('\n')
-    .filter(line => !line.trim().startsWith('--'))
-    .join('\n');
-  
+    .split("\n")
+    .filter((line) => !line.trim().startsWith("--"))
+    .join("\n");
+
   // Split by semicolon but not inside strings
   const statements = withoutComments
-    .split(';')
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
-  
+    .split(";")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
   return statements;
 }
 
@@ -70,8 +70,8 @@ function splitSQLStatements(sql: string): string[] {
 async function isMigrationExecuted(filename: string): Promise<boolean> {
   try {
     const result = await db.get<{ count: number }>(
-      'SELECT COUNT(*) as count FROM database_migrations WHERE name = ?',
-      [filename]
+      "SELECT COUNT(*) as count FROM database_migrations WHERE name = ?",
+      [filename],
     );
     return (result?.count ?? 0) > 0;
   } catch (error) {
@@ -86,8 +86,8 @@ async function isMigrationExecuted(filename: string): Promise<boolean> {
 async function recordMigration(filename: string): Promise<void> {
   const now = new Date().toISOString();
   await db.run(
-    'INSERT INTO database_migrations (name, executed_at) VALUES (?, ?)',
-    [filename, now]
+    "INSERT INTO database_migrations (name, executed_at) VALUES (?, ?)",
+    [filename, now],
   );
 }
 
@@ -99,18 +99,21 @@ async function executeMigration(migration: Migration): Promise<boolean> {
     // Check if already executed
     const executed = await isMigrationExecuted(migration.filename);
     if (executed) {
-      logger.info({ migration: migration.filename }, 'Migration already executed, skipping');
+      logger.info(
+        { migration: migration.filename },
+        "Migration already executed, skipping",
+      );
       return true;
     }
 
-    logger.info({ migration: migration.filename }, 'Executing migration');
-    
+    logger.info({ migration: migration.filename }, "Executing migration");
+
     // Read migration file
-    const sql = await fs.readFile(migration.path, 'utf-8');
-    
+    const sql = await fs.readFile(migration.path, "utf-8");
+
     // Split into individual statements
     const statements = splitSQLStatements(sql);
-    
+
     // Execute each statement in a transaction
     await db.transaction(async () => {
       for (const statement of statements) {
@@ -118,15 +121,18 @@ async function executeMigration(migration: Migration): Promise<boolean> {
           await db.exec(statement);
         }
       }
-      
+
       // Record migration as executed
       await recordMigration(migration.filename);
     });
-    
-    logger.info({ migration: migration.filename }, 'Migration completed successfully');
+
+    logger.info(
+      { migration: migration.filename },
+      "Migration completed successfully",
+    );
     return true;
   } catch (error) {
-    logger.error({ migration: migration.filename, error }, 'Migration failed');
+    logger.error({ migration: migration.filename, error }, "Migration failed");
     return false;
   }
 }
@@ -134,26 +140,30 @@ async function executeMigration(migration: Migration): Promise<boolean> {
 /**
  * Run all pending migrations
  */
-export async function runAllMigrations(): Promise<{ success: boolean; executed: number; failed: number }> {
-  logger.info('Starting database migrations');
-  
+export async function runAllMigrations(): Promise<{
+  success: boolean;
+  executed: number;
+  failed: number;
+}> {
+  logger.info("Starting database migrations");
+
   try {
     // Ensure database is initialized
     await db.init();
-    
+
     // Get all migration files
     const migrations = await getMigrationFiles();
-    
+
     if (migrations.length === 0) {
-      logger.info('No migrations found');
+      logger.info("No migrations found");
       return { success: true, executed: 0, failed: 0 };
     }
-    
-    logger.info({ count: migrations.length }, 'Found migration files');
-    
+
+    logger.info({ count: migrations.length }, "Found migration files");
+
     let executed = 0;
     let failed = 0;
-    
+
     // Execute each migration in order
     for (const migration of migrations) {
       const success = await executeMigration(migration);
@@ -165,13 +175,13 @@ export async function runAllMigrations(): Promise<{ success: boolean; executed: 
         break;
       }
     }
-    
+
     const success = failed === 0;
-    logger.info({ executed, failed, success }, 'Migration run completed');
-    
+    logger.info({ executed, failed, success }, "Migration run completed");
+
     return { success, executed, failed };
   } catch (error) {
-    logger.error({ error }, 'Migration run failed');
+    logger.error({ error }, "Migration run failed");
     return { success: false, executed: 0, failed: 1 };
   }
 }
@@ -181,20 +191,26 @@ export async function runAllMigrations(): Promise<{ success: boolean; executed: 
  */
 async function main() {
   const result = await runAllMigrations();
-  
+
   if (result.success) {
-    console.log(`✅ Migrations completed: ${result.executed} executed, ${result.failed} failed`);
+    logger.info(
+      { executed: result.executed, failed: result.failed },
+      "✅ Migrations completed",
+    );
     process.exit(0);
   } else {
-    console.error(`❌ Migrations failed: ${result.executed} executed, ${result.failed} failed`);
+    logger.error(
+      { executed: result.executed, failed: result.failed },
+      "❌ Migrations failed",
+    );
     process.exit(1);
   }
 }
 
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch(error => {
-    console.error('Fatal error:', error);
+  main().catch((error) => {
+    logger.error({ error }, "Fatal error during migration");
     process.exit(1);
   });
 }

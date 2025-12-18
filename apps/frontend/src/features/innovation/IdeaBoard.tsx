@@ -156,10 +156,7 @@ export const IdeaBoard: React.FC<IdeaBoardProps> = ({
           onDragOver={handleDragOver}
           onDrop={(e) => handleDrop(e, phase.key)}
         >
-          <div
-            className={styles.columnHeader}
-            data-phase-color={phase.color}
-          >
+          <div className={styles.columnHeader} data-phase-color={phase.color}>
             <span className={styles.phaseIcon}>{phase.icon}</span>
             <h3 className={styles.phaseTitle}>{phase.label}</h3>
             <span className={styles.ideaCount}>

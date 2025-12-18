@@ -4,7 +4,7 @@ export default {
     title: "ERP SteinmetZ – Funktschoonskatalog",
     subtitle: "Översicht över’t System un de Funktschoonsrebeden",
     welcome: "Willkamen trüch, {{name}}",
-    
+
     // Statusanwiesers
     status: {
       online: "System löppt",
@@ -13,7 +13,7 @@ export default {
       maintenance: "Warungsmodus",
       syncing: "Daten warrt gliektogen...",
     },
-    
+
     // Snellakschonen
     quickActions: {
       title: "Snellakschonen",
@@ -25,7 +25,7 @@ export default {
       exportData: "Daten rutgeven",
       importData: "Daten rinhalen",
     },
-    
+
     // Systemöverwachung
     health: {
       title: "Systemtostand",
@@ -49,7 +49,7 @@ export default {
         cpuLoad: "CPU-Lasten",
       },
     },
-    
+
     // Bescheedmakers
     notifications: {
       title: "Bescheeden",
@@ -63,7 +63,7 @@ export default {
         success: "Klappt",
       },
     },
-    
+
     // Lütt Aktivitäten
     recentActivity: {
       title: "Lütt Aktivitäten",
@@ -78,12 +78,12 @@ export default {
       empty: "Keen lütt Aktivitäten",
     },
   },
-  
+
   // ===== KATALOG & FUNKTSCHOONEN =====
   catalog: {
     title: "Funktschoonskatalog",
     subtitle: "Dörblädern vun verfögbore Systemfunktschonen",
-    
+
     categories: {
       title: "Funktschoonsrebeden",
       count: "{{count}} Rebeden verfögboor",
@@ -97,7 +97,7 @@ export default {
         recent: "Toletzt bruukt",
       },
     },
-    
+
     functions: {
       title: "Verfögbore Funktschonen",
       search: {
@@ -129,7 +129,7 @@ export default {
       },
     },
   },
-  
+
   // ===== SÖKEN =====
   search: {
     global: {
@@ -138,7 +138,7 @@ export default {
       advanced: "Utwiedert Söken",
       clear: "Wegdoon",
     },
-    
+
     filters: {
       title: "Söökfilter",
       category: "Kategorie",
@@ -149,7 +149,7 @@ export default {
       clearAll: "All Filter wegdoon",
       apply: "Filter anwennen",
     },
-    
+
     results: {
       title: "Söökresultaten",
       loading: "Söök löppt...",
@@ -160,7 +160,7 @@ export default {
       newest: "Neeste to’n Eersten",
       oldest: "Öllste to’n Eersten",
     },
-    
+
     modules: {
       all: "All Module",
       crm: "CRM",
@@ -172,7 +172,7 @@ export default {
       ai: "KI-Funktschonen",
     },
   },
-  
+
   // ===== NAVIGATSCHOON & SIDEBAR =====
   sidebar: {
     title: "Navigatschoon",
@@ -180,7 +180,7 @@ export default {
     expand: "Sidebar utklappen",
     pin: "Sidebar fastmaken",
     unpin: "Sidebar losmaken",
-    
+
     // Hööftrebeden
     sections: {
       main: "Hööftrebeed",
@@ -197,7 +197,7 @@ export default {
       ai: "KI & Automatiseren",
       tools: "Warktüüch",
     },
-    
+
     // Navigatschoonselementen mit Icons
     navItems: {
       dashboard: "Dashboard",
@@ -206,7 +206,7 @@ export default {
       company: "Ünnernehmen",
       processes: "Prozess-Management",
       risk: "Risk & Compliance",
-      
+
       // Finanzen
       accounting: "Bookholten",
       controlling: "Controlling",
@@ -214,7 +214,7 @@ export default {
       taxes: "Stüern",
       invoices: "Rekeningen",
       expenses: "Utgaven",
-      
+
       // CRM & Verkoop
       crm: "Kunnenverwalten",
       customers: "Kunnen",
@@ -224,44 +224,44 @@ export default {
       sales: "Verkoop",
       orders: "Opdrääg",
       fulfillment: "Opdragafwickeln",
-      
+
       // Inkoop
       purchasing: "Inkoop",
       receiving: "Wareningang",
       suppliers: "Leferanten",
       contracts: "Verdrääg",
-      
+
       // Produkschoon
       planning: "Produkschoonsplanen",
       manufacturing: "Herstellen",
       quality: "Qualitätsmanagement",
       maintenance: "Warung",
-      
+
       // Lager
       inventory: "Lagerbestand",
       picking: "Kommissionern",
       logistics: "Logistik",
       shipping: "Verschicken",
-      
+
       // Personal
       personnel: "Personal",
       timeTracking: "Tietnahwiesen",
       payroll: "Löhn",
       development: "Entwicklung",
       recruiting: "Recruiting",
-      
+
       // Reporting
       reports: "Berichten",
       analytics: "Analysen",
       dashboards: "Dashboards",
       exports: "Datenutgaven",
-      
+
       // Kommunikatschoon
       email: "E-Mail",
       messaging: "Narichten",
       social: "Social Media",
       calls: "Telefonaten",
-      
+
       // System
       users: "Brukers",
       roles: "Rollen",
@@ -269,21 +269,21 @@ export default {
       settings: "Instellens",
       logs: "System-Logs",
       backups: "Backups",
-      
+
       // KI & Warktüüch
       aiAnnotator: "KI-Annotator",
       batchProcessing: "Stapelverarbeiden",
       modelManagement: "KI-Modellen",
       advancedFilters: "Utwiedert Filter",
       innovation: "Innovatschoonslabor",
-      
+
       // Annerswat
       documents: "Dokumenten",
       projects: "Projekten",
       help: "Hülp & Ünnerstütten",
       about: "Över dat System",
     },
-    
+
     // Brukermenü
     user: {
       profile: "Mien Profil",
@@ -291,7 +291,7 @@ export default {
       logout: "Afmellen",
       switchAccount: "Konto wesseln",
     },
-    
+
     // Footer
     footer: {
       version: "Version {{version}}",
@@ -299,7 +299,7 @@ export default {
       copyright: "© {{year}} ERP SteinmetZ",
     },
   },
-  
+
   // ===== KI & AUTOMATISEREN =====
   ai: {
     title: "KI & Automatiseren",
@@ -313,7 +313,7 @@ export default {
       export: "Annottatschonen rutgeven",
       supportedFormats: "Stütt Formaten: PDF, DOCX, Biller",
     },
-    
+
     models: {
       title: "KI-Modellen",
       provider: "Anbieder",
@@ -326,7 +326,7 @@ export default {
       configure: "Inrichten",
       test: "Modell testen",
     },
-    
+
     chat: {
       title: "KI-Hölper",
       inputPlaceholder: "Frag mi wat över dat ERP-System...",
@@ -342,7 +342,7 @@ export default {
         q4: "Hülp bi Medarbeider-Onboarding",
       },
     },
-    
+
     batch: {
       title: "Stapelverarbeiden",
       create: "Stapeljob maken",
@@ -353,11 +353,11 @@ export default {
       retry: "Fehlslagen nochmal maken",
     },
   },
-  
+
   // ===== CRM MODUL =====
   crm: {
     title: "Kunnenbeziehungsmanagement",
-    
+
     customers: {
       title: "Kunnen",
       list: "Kunnenlist",
@@ -368,14 +368,14 @@ export default {
       import: "Kunnen rinhalen",
       export: "Kunnen rutgeven",
     },
-    
+
     leads: {
       title: "Leads",
       convert: "To Kunn maken",
       assign: "Verkoop toordnen",
       followUp: "Folgen planen",
     },
-    
+
     opportunities: {
       title: "Verkoopschanzen",
       stages: {
@@ -387,14 +387,14 @@ export default {
         closedLost: "Verleern",
       },
     },
-    
+
     contacts: {
       title: "Kontakten",
       add: "Kontakt tofögen",
       primary: "Hööftanspreker",
       communication: "Kommunikatschoonsprotokoll",
     },
-    
+
     activities: {
       title: "Aktivitäten",
       logCall: "Telefonat opschrieven",
@@ -403,11 +403,11 @@ export default {
       addNote: "Notitz tofögen",
     },
   },
-  
+
   // ===== FINANZMODUL =====
   finance: {
     title: "Finanzen & Bookholten",
-    
+
     invoices: {
       title: "Rekeningen",
       create: "Rekening maken",
@@ -417,7 +417,7 @@ export default {
       cancel: "Rekening afseggen",
       duplicate: "Kopieren",
     },
-    
+
     status: {
       draft: "Entwarf",
       sent: "Sennen",
@@ -426,7 +426,7 @@ export default {
       cancelled: "Afseggt",
       partiallyPaid: "Deelwies betahlt",
     },
-    
+
     reports: {
       title: "Finanzberichten",
       profitLoss: "Winn- un Verlustreken",
@@ -435,7 +435,7 @@ export default {
       agedReceivables: "Forderungsöllern",
       agedPayables: "Verplichtensöllern",
     },
-    
+
     banking: {
       title: "Bankwesen",
       reconcile: "Konto afgleken",
@@ -443,11 +443,11 @@ export default {
       matchTransactions: "Transaktschonen toordnen",
     },
   },
-  
+
   // ===== PERSONALMODUL =====
   hr: {
     title: "Personalwesen",
-    
+
     employees: {
       title: "Medarbeiders",
       new: "Nieg Medarbeider",
@@ -456,13 +456,13 @@ export default {
       reactivate: "Wedder anstellen",
       documents: "Medarbeiderdokumenten",
     },
-    
+
     departments: {
       title: "Afdelen",
       assign: "Afdelen toordnen",
       transfer: "Medarbeider versetten",
     },
-    
+
     attendance: {
       title: "Anwesen",
       clockIn: "Stempeln (Start)",
@@ -470,7 +470,7 @@ export default {
       timesheet: "Tietnahwiesen",
       approve: "Stunnen goodheten",
     },
-    
+
     payroll: {
       title: "Löhn",
       run: "Löhn maken",
@@ -479,7 +479,7 @@ export default {
       export: "För Bank rutgeven",
     },
   },
-  
+
   // ===== UI-KOMPONENTEN =====
   ui: {
     common: {
@@ -524,7 +524,7 @@ export default {
       yes: "Ja",
       no: "Nee",
     },
-    
+
     status: {
       loading: "Warrt laadt...",
       saving: "Warrt spiekert...",
@@ -537,7 +537,7 @@ export default {
       info: "Informatschoon",
       unknown: "Nich bekannt",
     },
-    
+
     validation: {
       required: "Dit Feld is nödig",
       invalidEmail: "Unrecht E-Mail-Adress",
@@ -548,7 +548,7 @@ export default {
       invalidFormat: "Unrecht Formaat",
       duplicate: "Düssen Weert gifft dat al",
     },
-    
+
     emptyStates: {
       noData: "Keen Daten verfögboor",
       noResults: "Keen Resultaten funnen",
@@ -556,7 +556,7 @@ export default {
       notConfigured: "Noch nich inricht",
       comingSoon: "Kümmt bald",
     },
-    
+
     dates: {
       today: "Hüüt",
       yesterday: "Güstern",
@@ -576,7 +576,7 @@ export default {
       customRange: "Egenschapp Ruum",
       selectDate: "Datum utsöken",
     },
-    
+
     time: {
       now: "Nu",
       minutes: "Minuten",
@@ -588,7 +588,7 @@ export default {
       ago: "vör",
       fromNow: "in",
     },
-    
+
     numbers: {
       currency: "{{value}} €",
       percent: "{{value}} %",
@@ -598,7 +598,7 @@ export default {
       million: "{{value}} Mio.",
       billion: "{{value}} Mrd.",
     },
-    
+
     units: {
       pieces: "Stk.",
       kilograms: "kg",
@@ -612,7 +612,7 @@ export default {
       seconds: "s",
     },
   },
-  
+
   // ===== FEHLERMELDUNGEN =====
   errors: {
     network: "Netzwarkfehler. Prööv jüst de Verbinnen.",
@@ -627,7 +627,7 @@ export default {
     fileTooLarge: "Datei to groot.",
     invalidFileType: "Unrecht Dateityp.",
     quotaExceeded: "Speekerplatz opbruukt.",
-    
+
     specific: {
       loginFailed: "Anmellen fehlslaan. Prööv jüst de Daten.",
       sessionExpired: "Din Sessie is dood. Mell di nochmal an.",
@@ -635,13 +635,13 @@ export default {
       emailInUse: "E-Mail-Adress warrt al bruukt.",
       invalidToken: "Unrecht oder dood Token.",
     },
-    
+
     retry: "Nochmal versöken",
     contactSupport: "Hülp fragen",
     goBack: "Trüch",
     reloadPage: "Siet frisch maken",
   },
-  
+
   // ===== KLAPPT-MELDUNGEN =====
   success: {
     saved: "Ännern spiekert!",
@@ -656,7 +656,7 @@ export default {
     configured: "Inricht!",
     activated: "Anmaakt!",
     deactivated: "Utmaakt!",
-    
+
     actions: {
       close: "Tomaken",
       view: "Anwiesen",
@@ -664,7 +664,7 @@ export default {
       new: "Nieg maken",
     },
   },
-  
+
   // ===== SEKERHEITSFRAGEN =====
   confirm: {
     delete: {
@@ -674,27 +674,27 @@ export default {
       multiple: "{{count}} utsöken wegmaken?",
       permanent: "Dat is denn för immer weg.",
     },
-    
+
     logout: {
       title: "Afmellen sekern?",
       message: "Willst du wirklick afmellen?",
     },
-    
+
     cancel: {
       title: "Afbreken sekern?",
       message: "Willst du afbreken? Nich spiekert Ännern sünd denn weg.",
     },
-    
+
     discard: {
       title: "Ännern wegdoon?",
       message: "Du hest nich spiekert Ännern. Willst du se wirklick wegdoon?",
     },
-    
+
     overwrite: {
       title: "Överschrieven sekern?",
       message: "Dat överschrifft ole Daten. Seker?",
     },
-    
+
     buttons: {
       proceed: "Wiedermaken",
       keep: "Behollen",
@@ -702,7 +702,7 @@ export default {
       cancel: "Afbreken",
     },
   },
-  
+
   // ===== FORMULARE & INGAVEN =====
   forms: {
     labels: {
@@ -736,7 +736,7 @@ export default {
       createdBy: "Maakt vun",
       updatedBy: "Ännert vun",
     },
-    
+
     placeholders: {
       select: "Utsöken...",
       searchSelect: "Tipp to söken...",
@@ -746,7 +746,7 @@ export default {
       optional: "Freewillig",
       required: "Nödig",
     },
-    
+
     hints: {
       minCharacters: "Minstens {{count}} Tekens",
       maxCharacters: "Höchstens {{count}} Tekens",
@@ -754,7 +754,7 @@ export default {
       optionalField: "Freewillig Feld",
     },
   },
-  
+
   // ===== TABELL & DATENRUTER =====
   table: {
     actions: {
@@ -766,13 +766,13 @@ export default {
       export: "Rutgeven",
       more: "Mehr Akschonen",
     },
-    
+
     selection: {
       selected: "{{count}} utsöken",
       selectAll: "All utsöken",
       clear: "Utwahl wegdoon",
     },
-    
+
     pagination: {
       page: "Siet",
       of: "vun",
@@ -783,20 +783,20 @@ export default {
       next: "Nächste",
       last: "Leste",
     },
-    
+
     sorting: {
       sortBy: "Sorteren na",
       ascending: "Opstiegen",
       descending: "Dalgahen",
       clear: "Sorteren wegdoon",
     },
-    
+
     filtering: {
       filter: "Filter",
       clearFilters: "Filter wegdoon",
       apply: "Anwennen",
     },
-    
+
     empty: {
       noData: "Keen Daten verfögboor",
       noResults: "Keen Resultaten funnen",
@@ -804,7 +804,7 @@ export default {
       error: "Fehler bi't Laden",
     },
   },
-  
+
   // ===== MODALE & SNACKEN =====
   modal: {
     close: "Tomaken",
@@ -813,7 +813,7 @@ export default {
     fullscreen: "Heelbild",
     exitFullscreen: "Heelbild verlaten",
   },
-  
+
   // ===== DATEIVERWALTEN =====
   files: {
     upload: "Dateien rinhollen",
@@ -825,7 +825,7 @@ export default {
     delete: "Wegdoon",
     share: "Deelen",
     properties: "Egenschappen",
-    
+
     types: {
       image: "Bild",
       document: "Dokument",
@@ -837,7 +837,7 @@ export default {
       video: "Video",
       other: "Annere",
     },
-    
+
     status: {
       uploading: "Warrt rinhollen...",
       processing: "Warrt verarbeidt...",
@@ -846,7 +846,7 @@ export default {
       queued: "In de Reeg",
     },
   },
-  
+
   // ===== DRUCKEN & RUTGEVEN =====
   export: {
     formats: {
@@ -857,21 +857,21 @@ export default {
       xml: "XML",
       print: "Drucken",
     },
-    
+
     options: {
       currentPage: "Disse Siet",
       allPages: "All Sieden",
       selectedRows: "Utsöken Reegen",
       customRange: "Egenschapp Ruum",
     },
-    
+
     status: {
       generating: "Rutgeven warrt maakt...",
       ready: "Rutgeven fardig",
       failed: "Rutgeven fehlslaan",
     },
   },
-  
+
   // ===== SYSTEM & ADMIN =====
   system: {
     settings: {
@@ -885,7 +885,7 @@ export default {
       logs: "System-Logs",
       maintenance: "Warung",
     },
-    
+
     users: {
       title: "Brukerverwalten",
       newUser: "Nieg Bruker",
@@ -895,7 +895,7 @@ export default {
       activate: "Anmaken",
       roles: "Rollen toordnen",
     },
-    
+
     roles: {
       title: "Rollen & Rechten",
       create: "Rolle maken",
@@ -903,7 +903,7 @@ export default {
       delete: "Rolle wegdoon",
       permissions: "Rechten verwalten",
     },
-    
+
     logs: {
       title: "System-Logs",
       clear: "Logs wegdoon",
@@ -917,7 +917,7 @@ export default {
         critical: "Kritsch",
       },
     },
-    
+
     maintenance: {
       title: "Warung",
       backup: "Backup maken",
@@ -927,7 +927,7 @@ export default {
       update: "System-Update",
     },
   },
-  
+
   // ===== TIED & DATUMS =====
   datetime: {
     formats: {
@@ -944,7 +944,7 @@ export default {
       longDateTime: "DD. MMMM YYYY HH:mm:ss z",
       fullDateTime: "dddd, DD. MMMM YYYY HH:mm:ss zzzz",
     },
-    
+
     relative: {
       justNow: "jüst",
       secondsAgo: "vör {{count}} Sekunnen",
@@ -961,7 +961,7 @@ export default {
       monthsAgo_one: "vör 1 Maand",
       yearsAgo: "vör {{count}} Johren",
       yearsAgo_one: "vör 1 Johr",
-      
+
       inSeconds: "in {{count}} Sekunnen",
       inSeconds_one: "in 1 Sekunn",
       inMinutes: "in {{count}} Minuten",
@@ -977,7 +977,7 @@ export default {
       inYears: "in {{count}} Johren",
       inYears_one: "in 1 Johr",
     },
-    
+
     units: {
       second: "Sekunn",
       second_one: "{{count}} Sekunn",
@@ -1002,7 +1002,7 @@ export default {
       year_other: "{{count}} Johren",
     },
   },
-  
+
   // ===== MEHRTALLREGELN =====
   pluralization: {
     items: {
@@ -1040,7 +1040,7 @@ export default {
       document_one: "{{count}} Dokument",
       document_other: "{{count}} Dokumenten",
     },
-    
+
     time: {
       day: "Dag",
       day_one: "{{count}} Dag",

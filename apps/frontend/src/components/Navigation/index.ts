@@ -8,5 +8,3 @@
 export { MainNavigation } from "./MainNavigation";
 export type { NavigationItem } from "./navigationConfig";
 export { navigationStructure } from "./navigationConfig";
-
-export default MainNavigation;

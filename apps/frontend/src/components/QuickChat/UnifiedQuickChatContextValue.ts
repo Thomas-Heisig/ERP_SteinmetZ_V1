@@ -4,7 +4,7 @@
 /**
  * UnifiedQuickChat Context Type Definition
  * Separated to avoid Fast Refresh issues
- * 
+ *
  * @module UnifiedQuickChatContextValue
  */
 
@@ -30,27 +30,33 @@ export interface UnifiedQuickChatContextValue {
   settings: Settings;
   loading: boolean;
   error: string | null;
-  
+
   // Session management
-  createSession: (model?: string, provider?: ChatProvider) => Promise<ChatSession>;
+  createSession: (
+    model?: string,
+    provider?: ChatProvider,
+  ) => Promise<ChatSession>;
   loadSessions: () => Promise<ChatSession[]>;
   selectSession: (sessionId: string) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
-  
+
   // Message handling
   sendMessage: (content: string) => Promise<AIResponse>;
-  streamMessage: (content: string, onChunk: (chunk: string) => void) => Promise<void>;
-  
+  streamMessage: (
+    content: string,
+    onChunk: (chunk: string) => void,
+  ) => Promise<void>;
+
   // Model management
   loadModels: () => Promise<AIModel[]>;
   getProviders: () => Promise<ProviderStatus[]>;
-  
+
   // Settings
   updateSettings: (settings: Partial<Settings>) => Promise<void>;
-  
+
   // System
   getSystemStatus: () => Promise<SystemStatus>;
-  
+
   // Utils
   clearError: () => void;
 }
@@ -58,4 +64,5 @@ export interface UnifiedQuickChatContextValue {
 /**
  * UnifiedQuickChat Context
  */
-export const UnifiedQuickChatContext = createContext<UnifiedQuickChatContextValue | null>(null);
+export const UnifiedQuickChatContext =
+  createContext<UnifiedQuickChatContextValue | null>(null);

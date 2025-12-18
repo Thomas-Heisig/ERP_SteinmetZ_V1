@@ -10,10 +10,7 @@
  * kann Tools verwenden, Systemstatus liefern und sich dynamisch anpassen.
  */
 
-import type {
-  ChatMessage,
-  AIModuleConfig,
-} from "../types/types.js";
+import type { ChatMessage, AIModuleConfig } from "../types/types.js";
 import type { AIResponse } from "../types/types.js";
 import { log } from "../utils/logger.js";
 import { toolRegistry } from "../tools/registry.js";
@@ -69,7 +66,10 @@ export async function listOllamaModels(): Promise<
     const models = (data as { models: unknown[] }).models;
 
     return models.map((m) => {
-      const model = typeof m === "object" && m !== null ? m as Record<string, unknown> : {};
+      const model =
+        typeof m === "object" && m !== null
+          ? (m as Record<string, unknown>)
+          : {};
       return {
         name: String(model.name ?? ""),
         modified: String(model.modified_at ?? ""),
@@ -136,8 +136,14 @@ export async function callOllama(
     const data: unknown = await res.json();
     const duration = Date.now() - start;
 
-    const dataObj = typeof data === "object" && data !== null ? data as Record<string, unknown> : {};
-    const message = typeof dataObj.message === "object" && dataObj.message !== null ? dataObj.message as Record<string, unknown> : {};
+    const dataObj =
+      typeof data === "object" && data !== null
+        ? (data as Record<string, unknown>)
+        : {};
+    const message =
+      typeof dataObj.message === "object" && dataObj.message !== null
+        ? (dataObj.message as Record<string, unknown>)
+        : {};
     const messageContent = message.content;
     const replyText =
       (typeof messageContent === "string" ? messageContent.trim() : "") ||
@@ -160,15 +166,17 @@ export async function callOllama(
     return {
       text: [replyText, ...toolResults].join("\n\n"),
       action: "ollama_chat",
-      tool_calls: toolCalls.map(tc => ({
+      tool_calls: toolCalls.map((tc) => ({
         name: tc.name,
-        parameters: typeof tc.parameters === "object" && tc.parameters !== null
-          ? tc.parameters as Record<string, unknown>
-          : {},
+        parameters:
+          typeof tc.parameters === "object" && tc.parameters !== null
+            ? (tc.parameters as Record<string, unknown>)
+            : {},
       })),
       meta: {
         model: usedModel,
-        tokens_used: typeof dataObj.eval_count === "number" ? dataObj.eval_count : 0,
+        tokens_used:
+          typeof dataObj.eval_count === "number" ? dataObj.eval_count : 0,
         time_ms: duration,
         source: "ollamaProvider",
         confidence: 0.95,
@@ -197,7 +205,9 @@ export async function callOllama(
 /**
  * Erkennt einfache Tool-Aufrufe im Text, z. B. [TOOL: system_info {"verbose":true}]
  */
-function detectToolCalls(text: string): { name: string; parameters: unknown }[] {
+function detectToolCalls(
+  text: string,
+): { name: string; parameters: unknown }[] {
   const matches = [...text.matchAll(/\[TOOL:\s*([a-zA-Z0-9_]+)(.*?)\]/g)];
   return matches.map((m) => ({
     name: m[1],
@@ -214,9 +224,10 @@ async function handleToolCalls(
   const results: string[] = [];
   for (const call of toolCalls) {
     try {
-      const parameters = typeof call.parameters === "object" && call.parameters !== null
-        ? call.parameters as Record<string, unknown>
-        : {};
+      const parameters =
+        typeof call.parameters === "object" && call.parameters !== null
+          ? (call.parameters as Record<string, unknown>)
+          : {};
       const res = await toolRegistry.call(call.name, parameters);
       results.push(
         `✅ Tool "${call.name}" erfolgreich ausgeführt.\nAntwort: ${JSON.stringify(res)}`,

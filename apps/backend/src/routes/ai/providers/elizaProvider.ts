@@ -684,9 +684,11 @@ export class ElizaProvider {
           throw new Error("Ungültiger Tool-Name");
         }
 
-        const parameters = typeof toolCall.parameters === "object" && toolCall.parameters !== null
-          ? toolCall.parameters
-          : {};
+        const parameters =
+          typeof toolCall.parameters === "object" &&
+          toolCall.parameters !== null
+            ? toolCall.parameters
+            : {};
 
         const res = await toolRegistry.call(toolCall.name, parameters);
         results.push({
@@ -698,9 +700,10 @@ export class ElizaProvider {
         });
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : String(err);
-        const toolName = typeof call === "object" && call !== null 
-          ? (call as { name?: unknown }).name
-          : "unknown";
+        const toolName =
+          typeof call === "object" && call !== null
+            ? (call as { name?: unknown }).name
+            : "unknown";
         results.push({
           success: false,
           error: errorMsg,
@@ -792,7 +795,12 @@ Der Eliza Provider verarbeitet natürliche Sprache und führt automatisch Tools 
     const output = defs
       .map((w: unknown) => {
         if (typeof w === "object" && w !== null) {
-          const workflow = w as { name?: string; id?: string; description?: string; steps?: unknown[] | number };
+          const workflow = w as {
+            name?: string;
+            id?: string;
+            description?: string;
+            steps?: unknown[] | number;
+          };
           return `• **${workflow.name || workflow.id}** – ${workflow.description || "Keine Beschreibung"} (${Array.isArray(workflow.steps) ? workflow.steps.length : workflow.steps || 0} Schritte)`;
         }
         return "• Ungültiger Workflow";

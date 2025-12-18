@@ -3,12 +3,12 @@
 
 /**
  * Model Usage Statistics Component
- * 
+ *
  * Displays comprehensive usage statistics for AI models:
  * - Request counts and success rates
  * - Token usage and costs
  * - Usage trends over time
- * 
+ *
  * @module ModelUsageStatistics
  */
 
@@ -116,7 +116,9 @@ export const ModelUsageStatistics: React.FC<{ apiBaseUrl?: string }> = ({
       <div className={styles.cardGrid}>
         <div className={styles.card}>
           <div className={styles.cardLabel}>Total Requests</div>
-          <div className={styles.cardValue}>{totalRequests.toLocaleString()}</div>
+          <div className={styles.cardValue}>
+            {totalRequests.toLocaleString()}
+          </div>
         </div>
         <div className={styles.card}>
           <div className={styles.cardLabel}>Total Cost</div>
@@ -195,7 +197,9 @@ export const ModelUsageStatistics: React.FC<{ apiBaseUrl?: string }> = ({
                 <div className={styles.tableCell}>
                   <div
                     className={styles.badge}
-                    style={{ backgroundColor: getSuccessColor(model.successRate) }}
+                    style={{
+                      backgroundColor: getSuccessColor(model.successRate),
+                    }}
                   >
                     {(model.successRate * 100).toFixed(1)}%
                   </div>
@@ -235,7 +239,10 @@ export const ModelUsageStatistics: React.FC<{ apiBaseUrl?: string }> = ({
                 <div className={styles.distributionBar}>
                   <div
                     className={styles.distributionBarFill}
-                    style={{ width: `${percentage}%`, backgroundColor: getColor(index) }}
+                    style={{
+                      width: `${percentage}%`,
+                      backgroundColor: getColor(index),
+                    }}
                   />
                 </div>
                 <div className={styles.distributionStats}>

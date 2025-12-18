@@ -82,7 +82,8 @@ async function initializeAnthropicClient(): Promise<unknown> {
         });
 
         log("info", "Anthropic Client erfolgreich initialisiert", {
-          sdkVersion: (AnthropicClient as { _version?: string })?._version || "unknown",
+          sdkVersion:
+            (AnthropicClient as { _version?: string })?._version || "unknown",
         });
 
         return AnthropicClient;
@@ -399,10 +400,12 @@ export async function callAnthropic(
     // API Call mit Timeout
     const anthropicClient = client as {
       messages: {
-        create: (payload: Record<string, unknown>) => Promise<AnthropicResponse>;
+        create: (
+          payload: Record<string, unknown>,
+        ) => Promise<AnthropicResponse>;
       };
     };
-    
+
     const response = (await Promise.race([
       anthropicClient.messages.create(requestPayload),
       new Promise((_, reject) =>
@@ -417,8 +420,10 @@ export async function callAnthropic(
 
     // Verarbeite Response
     let output = "";
-    const toolCalls: Array<{ name: string; parameters: Record<string, unknown> }> =
-      [];
+    const toolCalls: Array<{
+      name: string;
+      parameters: Record<string, unknown>;
+    }> = [];
 
     for (const part of response.content) {
       if (part.type === "text" && part.text) {
@@ -590,7 +595,10 @@ export const anthropicProvider = {
   validateConfig: validateAnthropicConfig,
 
   // Erweiterte Methoden
-  async healthCheck(): Promise<{ healthy: boolean; details?: Record<string, unknown> }> {
+  async healthCheck(): Promise<{
+    healthy: boolean;
+    details?: Record<string, unknown>;
+  }> {
     try {
       const configCheck = validateAnthropicConfig();
       if (!configCheck.valid) {

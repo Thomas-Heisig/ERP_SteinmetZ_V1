@@ -5,9 +5,9 @@
  * Custom hook for fetching dashboard data from API
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 interface KPIData {
   name: string;
@@ -19,7 +19,7 @@ interface KPIData {
 interface Task {
   id: string;
   title: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  priority: "low" | "medium" | "high" | "urgent";
   status: string;
   due_date: string;
 }
@@ -28,7 +28,7 @@ interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'info' | 'warning' | 'error' | 'success';
+  type: "info" | "warning" | "error" | "success";
   created_at: string;
   read: boolean;
 }
@@ -61,11 +61,15 @@ export function useDashboardData(): UseDashboardDataResult {
       const kpisData = await kpisResponse.json();
 
       // Fetch Tasks
-      const tasksResponse = await fetch(`${API_BASE}/dashboard/tasks?status=pending&status=in_progress`);
+      const tasksResponse = await fetch(
+        `${API_BASE}/dashboard/tasks?status=pending&status=in_progress`,
+      );
       const tasksData = await tasksResponse.json();
 
       // Fetch Notifications
-      const notificationsResponse = await fetch(`${API_BASE}/dashboard/notifications?read=false&limit=10`);
+      const notificationsResponse = await fetch(
+        `${API_BASE}/dashboard/notifications?read=false&limit=10`,
+      );
       const notificationsData = await notificationsResponse.json();
 
       setData({
@@ -74,8 +78,12 @@ export function useDashboardData(): UseDashboardDataResult {
         notifications: notificationsData.data || [],
       });
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to fetch dashboard data'));
-      console.error('Dashboard data fetch error:', err);
+      setError(
+        err instanceof Error
+          ? err
+          : new Error("Failed to fetch dashboard data"),
+      );
+      console.error("Dashboard data fetch error:", err);
     } finally {
       setLoading(false);
     }

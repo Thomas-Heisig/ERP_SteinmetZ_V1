@@ -108,9 +108,7 @@ export const InventoryList: React.FC = () => {
     };
     const c = config[status];
     return (
-      <span className={`${styles.statusBadge} ${c.className}`}>
-        {c.label}
-      </span>
+      <span className={`${styles.statusBadge} ${c.className}`}>{c.label}</span>
     );
   };
 

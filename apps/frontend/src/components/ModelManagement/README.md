@@ -20,9 +20,9 @@ Main navigation component with tabbed interface for all model management feature
 **Usage:**
 
 ```tsx
-import { ModelManagementPage } from '@/components/ModelManagement';
+import { ModelManagementPage } from "@/components/ModelManagement";
 
-<ModelManagementPage />
+<ModelManagementPage />;
 ```
 
 ---
@@ -41,9 +41,9 @@ Intelligent model selection with performance-based recommendations.
 **Usage:**
 
 ```tsx
-import { ModelSelectionInterface } from '@/components/ModelManagement';
+import { ModelSelectionInterface } from "@/components/ModelManagement";
 
-<ModelSelectionInterface apiBaseUrl="http://localhost:3000" />
+<ModelSelectionInterface apiBaseUrl="http://localhost:3000" />;
 ```
 
 **Props:**
@@ -66,9 +66,9 @@ Compare performance and cost metrics across different AI models.
 **Usage:**
 
 ```tsx
-import { ModelComparison } from '@/components/ModelManagement';
+import { ModelComparison } from "@/components/ModelManagement";
 
-<ModelComparison apiBaseUrl="http://localhost:3000" />
+<ModelComparison apiBaseUrl="http://localhost:3000" />;
 ```
 
 ---
@@ -88,9 +88,9 @@ Track and optimize AI model costs over time.
 **Usage:**
 
 ```tsx
-import { ModelCostTracking } from '@/components/ModelManagement';
+import { ModelCostTracking } from "@/components/ModelManagement";
 
-<ModelCostTracking apiBaseUrl="http://localhost:3000" />
+<ModelCostTracking apiBaseUrl="http://localhost:3000" />;
 ```
 
 ---
@@ -110,9 +110,9 @@ Comprehensive usage statistics and trends.
 **Usage:**
 
 ```tsx
-import { ModelUsageStatistics } from '@/components/ModelManagement';
+import { ModelUsageStatistics } from "@/components/ModelManagement";
 
-<ModelUsageStatistics apiBaseUrl="http://localhost:3000" />
+<ModelUsageStatistics apiBaseUrl="http://localhost:3000" />;
 ```
 
 ---
@@ -132,9 +132,9 @@ Core model management component for viewing and managing all AI/ML models.
 **Usage:**
 
 ```tsx
-import { ModelManagement } from '@/components/ModelManagement';
+import { ModelManagement } from "@/components/ModelManagement";
 
-<ModelManagement />
+<ModelManagement />;
 ```
 
 ## 🎨 Styling
@@ -219,10 +219,10 @@ interface ModelConfig {
 interface ModelRecommendation {
   modelName: string;
   provider: string;
-  speed: number;        // ms (lower is better)
-  accuracy: number;     // 0-1 (higher is better)
-  cost: number;         // $ per 1k tokens
-  reliability: number;  // 0-1 (higher is better)
+  speed: number; // ms (lower is better)
+  accuracy: number; // 0-1 (higher is better)
+  cost: number; // $ per 1k tokens
+  reliability: number; // 0-1 (higher is better)
   overallScore: number; // 0-100
 }
 ```

@@ -156,7 +156,11 @@ class QueryMonitor {
   /**
    * Records query metrics in history
    */
-  private recordQuery(query: string, duration: number, params?: unknown[]): void {
+  private recordQuery(
+    query: string,
+    duration: number,
+    params?: unknown[],
+  ): void {
     const metrics: QueryMetrics = {
       query: this.sanitizeQuery(query),
       duration,

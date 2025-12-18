@@ -3,12 +3,12 @@
 
 /**
  * Model Selection Interface Component
- * 
+ *
  * Provides an intelligent interface for selecting AI models based on:
  * - Performance criteria (speed, accuracy, cost, reliability)
  * - Model recommendations with scoring
  * - Real-time model availability
- * 
+ *
  * @module ModelSelectionInterface
  */
 
@@ -101,7 +101,9 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
         <h3 className={styles.sectionTitle}>Selection Criteria</h3>
         <div className={styles.criteriaGrid}>
           <div className={styles.criteriaItem}>
-            <label className={styles.label} htmlFor="prioritize-select">Prioritize:</label>
+            <label className={styles.label} htmlFor="prioritize-select">
+              Prioritize:
+            </label>
             <select
               id="prioritize-select"
               aria-label="Prioritize selection criteria"
@@ -109,7 +111,11 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
               onChange={(e) =>
                 setCriteria({
                   ...criteria,
-                  prioritize: e.target.value as "balanced" | "speed" | "accuracy" | "cost",
+                  prioritize: e.target.value as
+                    | "balanced"
+                    | "speed"
+                    | "accuracy"
+                    | "cost",
                 })
               }
               className={styles.select}
@@ -180,10 +186,14 @@ export const ModelSelectionInterface: React.FC<{ apiBaseUrl?: string }> = ({
                 key={index}
                 className={`${styles.recommendationCard} ${index === 0 ? styles.topRecommendation : ""}`}
               >
-                {index === 0 && <div className={styles.badge}>🏆 Best Match</div>}
+                {index === 0 && (
+                  <div className={styles.badge}>🏆 Best Match</div>
+                )}
                 <div className={styles.recommendationHeader}>
                   <div>
-                    <div className={styles.recommendationName}>{rec.modelName}</div>
+                    <div className={styles.recommendationName}>
+                      {rec.modelName}
+                    </div>
                     <div className={styles.recommendationProvider}>
                       {rec.provider}
                     </div>

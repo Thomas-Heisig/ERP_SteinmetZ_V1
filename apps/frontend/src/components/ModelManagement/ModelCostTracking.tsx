@@ -3,12 +3,12 @@
 
 /**
  * Model Cost Tracking Component
- * 
+ *
  * Tracks and displays cost information for AI model usage:
  * - Total costs by period (day/week/month)
  * - Cost breakdown by model
  * - Cost optimization suggestions
- * 
+ *
  * @module ModelCostTracking
  */
 
@@ -83,7 +83,9 @@ export const ModelCostTracking: React.FC<{ apiBaseUrl?: string }> = ({
             id="period-select"
             aria-label="Select time period for cost tracking"
             value={period}
-            onChange={(e) => setPeriod(e.target.value as "day" | "week" | "month")}
+            onChange={(e) =>
+              setPeriod(e.target.value as "day" | "week" | "month")
+            }
             className={styles.select}
           >
             <option value="day">Last Day</option>
@@ -96,7 +98,9 @@ export const ModelCostTracking: React.FC<{ apiBaseUrl?: string }> = ({
       {/* Total Cost Summary */}
       <div className={styles.totalCard}>
         <div className={styles.totalLabel}>Total Cost</div>
-        <div className={styles.totalValue}>${costData.totalCost.toFixed(2)}</div>
+        <div className={styles.totalValue}>
+          ${costData.totalCost.toFixed(2)}
+        </div>
         <div className={styles.totalPeriod}>
           {new Date(costData.startDate).toLocaleDateString()} -{" "}
           {new Date(costData.endDate).toLocaleDateString()}
@@ -117,12 +121,18 @@ export const ModelCostTracking: React.FC<{ apiBaseUrl?: string }> = ({
                     <div className={styles.modelName}>{model.modelName}</div>
                     <div className={styles.modelProvider}>{model.provider}</div>
                   </div>
-                  <div className={styles.modelCost}>${model.cost.toFixed(2)}</div>
+                  <div className={styles.modelCost}>
+                    ${model.cost.toFixed(2)}
+                  </div>
                 </div>
                 <div className={styles.modelBar}>
                   <div
                     className={styles.modelBarFill}
-                    style={{ '--bar-width': `${(model.cost / maxModelCost) * 100}%` } as React.CSSProperties}
+                    style={
+                      {
+                        "--bar-width": `${(model.cost / maxModelCost) * 100}%`,
+                      } as React.CSSProperties
+                    }
                   />
                 </div>
                 <div className={styles.modelStats}>
@@ -146,7 +156,9 @@ export const ModelCostTracking: React.FC<{ apiBaseUrl?: string }> = ({
               <div key={index} className={styles.pieItem}>
                 <div
                   className={styles.pieDot}
-                  style={{ '--dot-color': getColor(index) } as React.CSSProperties}
+                  style={
+                    { "--dot-color": getColor(index) } as React.CSSProperties
+                  }
                 />
                 <div className={styles.pieLabel}>
                   {model.modelName} ({percentage.toFixed(1)}%)

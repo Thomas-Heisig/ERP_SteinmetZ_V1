@@ -296,17 +296,17 @@ async function bootstrapFunctionsCatalog() {
     logger.info("Database initialized");
 
     // Run database migrations
-    const { runAllMigrations } = await import('./utils/runMigrations.js');
+    const { runAllMigrations } = await import("./utils/runMigrations.js");
     const migrationResult = await runAllMigrations();
     if (migrationResult.success) {
       logger.info(
         { executed: migrationResult.executed },
-        "Database migrations completed successfully"
+        "Database migrations completed successfully",
       );
     } else {
       logger.warn(
         { executed: migrationResult.executed, failed: migrationResult.failed },
-        "Some database migrations failed"
+        "Some database migrations failed",
       );
     }
 

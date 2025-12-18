@@ -120,7 +120,10 @@ export function createSessionMiddleware(): RequestHandler {
       error: error instanceof Error ? error.message : String(error),
     });
     // Fallback to default memory store (will warn automatically)
-    log("warn", "⚠️ Falling back to memory session store (not recommended for production)");
+    log(
+      "warn",
+      "⚠️ Falling back to memory session store (not recommended for production)",
+    );
   }
 
   return session(sessionConfig);
@@ -263,7 +266,9 @@ export async function cleanupExpiredSessions(): Promise<number> {
  * clearInterval(timerId);
  * ```
  */
-export function startSessionCleanup(intervalMs = 60 * 60 * 1000): NodeJS.Timeout {
+export function startSessionCleanup(
+  intervalMs = 60 * 60 * 1000,
+): NodeJS.Timeout {
   log("info", `Starting session cleanup scheduler (interval: ${intervalMs}ms)`);
 
   return setInterval(async () => {

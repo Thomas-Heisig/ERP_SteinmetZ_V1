@@ -64,7 +64,7 @@ export async function callVertexAI(
     temperature?: number;
     max_tokens?: number;
   };
-  
+
   const sysPrompt =
     opts.systemPrompt ?? "Du bist ein präziser, sachlicher Assistent.";
 
@@ -127,11 +127,7 @@ export async function callVertexAI(
       if (Array.isArray(data.candidates) && data.candidates.length > 0) {
         const cand = data.candidates[0] as Record<string, unknown>;
 
-        if (
-          cand &&
-          typeof cand === "object" &&
-          "content" in cand
-        ) {
+        if (cand && typeof cand === "object" && "content" in cand) {
           const content = cand.content as { parts?: Array<{ text?: string }> };
           if (content?.parts?.[0]?.text) {
             reply = String(content.parts[0].text);
@@ -213,7 +209,9 @@ export async function callVertexAI(
 /**
  * Erkennt Tool-Aufrufe im Text, z. B. [TOOL: system_info {"verbose":true}]
  */
-function detectToolCalls(text: string): Array<{ name: string; parameters: Record<string, unknown> }> {
+function detectToolCalls(
+  text: string,
+): Array<{ name: string; parameters: Record<string, unknown> }> {
   const matches = [...text.matchAll(/\[TOOL:\s*([a-zA-Z0-9_]+)(.*?)\]/g)];
   return matches.map((m) => ({
     name: m[1] || "",

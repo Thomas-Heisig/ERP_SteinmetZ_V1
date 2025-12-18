@@ -109,7 +109,7 @@ router.get(
     const kpis = await db.all(
       `SELECT * FROM dashboard_kpis 
        WHERE date >= date('now', '-7 days') 
-       ORDER BY date DESC, name ASC`
+       ORDER BY date DESC, name ASC`,
     );
 
     res.json({
@@ -117,7 +117,7 @@ router.get(
       data: kpis,
       count: kpis.length,
     });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -152,7 +152,7 @@ router.get(
       data: tasks,
       count: tasks.length,
     });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -187,7 +187,7 @@ router.get(
       data: notifications,
       count: notifications.length,
     });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
