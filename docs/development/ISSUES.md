@@ -308,11 +308,13 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
    - ✅ Diagnostics Router (README.md) - System Diagnostics
    - ✅ Innovation Router (README.md) - Innovation Management
    - ✅ QuickChat Router (README.md) - AI Chat Assistant
-6. 🔄 JSDoc für Services (Phase 1 begonnen - 9. Dez 2025)
+6. 🔄 JSDoc für Services (Phase 1 erweitert - 18. Dez 2025)
    - ✅ AuthService: Vollständige JSDoc (7 Methoden: init, register, login, logout, validateToken, refreshToken, createSession)
    - ✅ errorHandler Middleware: Umfassende Dokumentation mit Response-Format-Beispielen
    - ✅ asyncHandler Middleware: Best-Practice-Beispiele für async error handling
-   - ⏳ Verbleibende Services (~17): dbService, websocketService, redisService, etc.
+   - ✅ redisService: Vollständige JSDoc (15+ Methoden mit Beispielen, Interface-Dokumentation) 🆕
+   - ✅ filterService: Vollständige JSDoc (alle Interfaces und Methoden dokumentiert) 🆕
+   - ⏳ Verbleibende Services (~15): dbService, websocketService, systemInfoService, etc.
 7. ⏳ Inline-Comments für komplexe Logik (laufend)
 
 **Betroffen** (verbleibend):
@@ -331,8 +333,8 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 **Auswirkung**: Wesentlich verbesserte Einarbeitung neuer Entwickler
 
 **Aufwand (ursprünglich)**: Laufend  
-**Aufwand (bereits investiert)**: 2.5 Stunden (Infrastruktur + Phase 1 Start)  
-**Aufwand (verbleibend)**: 8-12 Stunden für vollständige JSDoc-Migration
+**Aufwand (bereits investiert)**: 4 Stunden (Infrastruktur + Phase 1 erweitert - 5 Services komplett) ✅  
+**Aufwand (verbleibend)**: 6-10 Stunden für vollständige JSDoc-Migration
 
 ---
 
@@ -406,7 +408,11 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](../archive/ARCHIVE.m
   - Aufwand neu geschätzt: 5-7 Tage
 - ✅ **ISSUE-017 aktualisiert**: Vollständige Analyse mit detailliertem Migrations-Plan
 - ✅ **ISSUE-018 gelöst**: Keine direkten deprecated Dependencies mehr vorhanden ✅
-- ✅ **Dokumentation**: TODO.md und ISSUES.md mit korrekten Daten aktualisiert
+- ✅ **JSDoc Phase 1 erweitert**: 2 weitere Services vollständig dokumentiert 🆕
+  - redisService: 15+ Methoden mit vollständiger JSDoc und Beispielen
+  - filterService: Alle Interfaces und Methoden dokumentiert
+  - Gesamtfortschritt: 5 von ~20 kritischen Services (25% der Phase 1)
+- ✅ **Dokumentation**: TODO.md und ISSUES.md mit aktuellem Stand aktualisiert
 
 **Kürzlich verbessert (17. Dezember 2025)**:
 
