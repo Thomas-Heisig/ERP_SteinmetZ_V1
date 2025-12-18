@@ -13,7 +13,6 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import crypto from "node:crypto";
 import { log } from "../utils/logger.js";
 import { createHashId } from "./aiUtils.js";
 

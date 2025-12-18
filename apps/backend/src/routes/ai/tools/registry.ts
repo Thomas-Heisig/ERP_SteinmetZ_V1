@@ -5,8 +5,6 @@
  * Verwaltet Tool-Definitionen, sichere Aufrufe, Events, Sandbox und Debugging.
  */
 
-import fs from "node:fs";
-import path from "node:path";
 import { createLogger } from "../../../utils/logger.js";
 import { log } from "../utils/logger.js";
 

@@ -228,6 +228,8 @@ export const InvoiceList: React.FC = () => {
     search: "",
     status: [],
   });
+  // TODO: Implement sorting feature - state prepared but not yet used
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     field: "dates.due",
     direction: "asc",
