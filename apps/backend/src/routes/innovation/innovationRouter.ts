@@ -53,7 +53,7 @@ import { Router, Request, Response } from "express";
 import { z } from "zod";
 import db from "../../services/dbService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import { BadRequestError, NotFoundError } from "../../types/errors.js";
+import { NotFoundError } from "../../types/errors.js";
 import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("innovation");

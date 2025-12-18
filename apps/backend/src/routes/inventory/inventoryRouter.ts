@@ -23,7 +23,7 @@ import db from "../../services/dbService.js";
 import { randomUUID } from "crypto";
 
 const router = Router();
-const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+const _logger = pino({ level: process.env.LOG_LEVEL || "info" }); // Reserved for future logging
 
 // Validation schemas
 const itemQuerySchema = z.object({

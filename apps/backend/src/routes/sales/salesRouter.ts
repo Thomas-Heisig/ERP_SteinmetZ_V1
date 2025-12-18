@@ -8,7 +8,7 @@
 import { Router } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { z } from "zod";
-import { BadRequestError, NotFoundError } from "../../types/errors.js";
+import { BadRequestError } from "../../types/errors.js";
 
 const router = Router();
 

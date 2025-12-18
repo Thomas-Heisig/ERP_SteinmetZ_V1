@@ -73,7 +73,6 @@ import { Router, Request, Response } from "express";
 import { z } from "zod";
 import {
   BadRequestError,
-  NotFoundError,
   ValidationError,
 } from "../../types/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
