@@ -25,8 +25,8 @@ declare global {
 // --------------------------------------------------------
 // Erweiterung von NodeJS.ProcessEnv
 // --------------------------------------------------------
-declare namespace NodeJS {
-  interface ProcessEnv {
+export declare namespace NodeJS {
+  export interface ProcessEnv {
     NODE_ENV?: "development" | "production" | "test";
     PORT?: string;
     CORS_ORIGIN?: string;

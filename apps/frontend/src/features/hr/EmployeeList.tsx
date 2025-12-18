@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/features/hr/EmployeeList.tsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, Table, Button, Input, Modal } from "../../components/ui";
 
 interface Employee {
@@ -51,8 +51,8 @@ export const EmployeeList: React.FC = () => {
     },
   ];
 
-  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
-  const [loading, setLoading] = useState(false);
+  const [employees] = useState<Employee[]>(mockEmployees);
+  const [loading] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null,

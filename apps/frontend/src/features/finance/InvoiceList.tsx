@@ -343,7 +343,9 @@ export const InvoiceList: React.FC = () => {
   const handleDelete = async (invoiceId: string) => {
     if (window.confirm("Rechnung wirklich löschen?")) {
       try {
-        await fetch(`/api/finance/invoices/${invoiceId}`, { method: "DELETE" });
+        await fetch(`/api/finance/invoices/${invoiceId}`, {
+          method: "DELETE",
+        });
         setInvoices((prev) => prev.filter((i) => i.id !== invoiceId));
         toast.success("Rechnung gelöscht");
       } catch {
@@ -522,7 +524,8 @@ export const InvoiceList: React.FC = () => {
         ),
       },
     ],
-    [selectedIds, handleRowSelect],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedIds],
   );
 
   if (loading) {

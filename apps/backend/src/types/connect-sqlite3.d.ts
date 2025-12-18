@@ -30,7 +30,7 @@ declare module "connect-sqlite3" {
   /**
    * SQLite session store class
    */
-  class SQLiteStore extends session.Store {
+  export class SQLiteStore extends session.Store {
     constructor(options?: SQLiteStoreOptions);
   }
 

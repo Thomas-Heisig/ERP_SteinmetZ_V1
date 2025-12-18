@@ -295,7 +295,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (state.permissions.includes(permission)) return true;
 
     // Check for pattern matching (e.g., "dashboard.*" matches "dashboard.read")
-    const permissionParts = permission.split(".");
     for (const perm of state.permissions) {
       if (perm.endsWith(".*")) {
         const permBase = perm.slice(0, -2);

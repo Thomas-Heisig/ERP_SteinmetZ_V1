@@ -35,14 +35,25 @@ export const CustomerList: React.FC = () => {
         }
         const data = await response.json();
 
+        interface DbCustomer {
+          id: string;
+          company?: string;
+          name: string;
+          email?: string;
+          phone?: string;
+          status: CustomerStatus;
+          updated_at?: string;
+          created_at: string;
+        }
+
         // Map database format to component format
-        const mappedCustomers: Customer[] = data.data.map((c: any) => ({
+        const mappedCustomers: Customer[] = data.data.map((c: DbCustomer) => ({
           id: c.id,
           companyName: c.company || c.name,
           contactPerson: c.name,
           email: c.email || "",
           phone: c.phone || "",
-          status: c.status as CustomerStatus,
+          status: c.status,
           revenue: 0, // TODO: Add revenue tracking
           lastContact: c.updated_at || c.created_at,
         }));
