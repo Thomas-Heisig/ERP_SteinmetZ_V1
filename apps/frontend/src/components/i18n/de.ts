@@ -1125,4 +1125,110 @@ export default {
       second_other: "{{count}} Sekunden",
     },
   },
+
+  // ===== QUICKCHAT =====
+  quickchat: {
+    title: "QuickChat",
+    subtitle: "KI-Assistent",
+
+    tabs: {
+      chat: "Chat",
+      sessions: "Sessions",
+      models: "Modelle",
+      settings: "Einstellungen",
+      info: "Info",
+    },
+
+    status: {
+      connected: "Verbunden",
+      loading: "Lädt...",
+      processing: "Verarbeite...",
+      error: "Fehler",
+      ready: "Bereit",
+    },
+
+    actions: {
+      send: "Senden",
+      newSession: "Neue Session",
+      clearChat: "Chat löschen",
+      minimize: "Minimieren",
+      maximize: "Maximieren",
+      close: "Schließen",
+      open: "QuickChat öffnen",
+    },
+
+    placeholder: {
+      message: "Nachricht eingeben oder / für Befehle...",
+      model: "z.B. qwen2.5:3b",
+    },
+
+    empty: {
+      title: "Willkommen bei QuickChat",
+      subtitle:
+        "Starten Sie eine Unterhaltung oder geben Sie einen Befehl mit / ein",
+    },
+
+    settings: {
+      title: "Einstellungen",
+      provider: "Standard Provider",
+      model: "Standard Modell",
+      temperature: "Temperatur",
+      temperatureHelp:
+        "Niedrige Werte (0-0.5) = präzise, Hohe Werte (0.8-2) = kreativ",
+      maxTokens: "Max Tokens",
+      providerHelp:
+        "Ollama wird als primärer Provider verwendet, Eliza als Fallback",
+    },
+
+    info: {
+      title: "System Information",
+      providerConfig: "Provider Konfiguration",
+      primary: "Primär",
+      fallback: "Fallback",
+      model: "Modell",
+      availableProviders: "Verfügbare Provider",
+      ollamaDesc: "Lokale Modelle (empfohlen)",
+      elizaDesc: "Regelbasierter Fallback",
+      openaiDesc: "Cloud API",
+      anthropicDesc: "Cloud API",
+      azureDesc: "Cloud API",
+      localDesc: "GGUF Modelle",
+    },
+
+    commands: {
+      title: "Verfügbare Befehle",
+      rechnung: "Rechnung erstellen",
+      angebot: "Angebot erstellen",
+      bericht: "Bericht generieren",
+      idee: "Idee parken",
+      termin: "Termin erstellen",
+      suche: "Im System suchen",
+      hilfe: "Hilfe anzeigen",
+      new: "Neue Session starten",
+      clear: "Nachrichten löschen",
+    },
+
+    sessions: {
+      title: "Sessions",
+      open: "Öffnen",
+      delete: "Löschen",
+      empty: "Keine Sessions vorhanden",
+    },
+
+    models: {
+      title: "Verfügbare Modelle",
+      empty: "Keine Modelle verfügbar",
+    },
+
+    errors: {
+      loadSessions: "Fehler beim Laden der Sessions",
+      createSession: "Fehler beim Erstellen der Session",
+      sendMessage: "Fehler beim Senden der Nachricht",
+      loadModels: "Fehler beim Laden der Modelle",
+      updateSettings: "Fehler beim Aktualisieren der Einstellungen",
+      timeout: "Anfrage-Timeout",
+      unknown: "Unbekannter Fehler",
+      emptyMessage: "Nachricht kann nicht leer sein",
+    },
+  },
 } as const;

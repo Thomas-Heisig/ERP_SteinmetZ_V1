@@ -18,6 +18,7 @@ import { callCustomAPI } from "../providers/customProvider.js";
 import { callLlamaCpp } from "../providers/llamaCppProvider.js";
 import { callLocalModel } from "../providers/localProvider.js";
 import { callFallback } from "../providers/fallbackProvider.js";
+import elizaProvider from "../providers/elizaProvider.js";
 
 import { toolRegistry } from "../tools/registry.js";
 import { workflowEngine } from "../workflows/workflowEngine.js";
@@ -28,6 +29,8 @@ import { workflowEngine } from "../workflows/workflowEngine.js";
 
 const ACTIVE_PROVIDER = process.env.AI_PROVIDER?.toLowerCase() ?? "ollama";
 const FALLBACK_ENABLED = process.env.AI_FALLBACK_ENABLED === "1";
+const FALLBACK_PROVIDER =
+  process.env.AI_FALLBACK_PROVIDER?.toLowerCase() ?? "eliza";
 
 /* ========================================================================== */
 /* 🧠 Chat-Handler                                                           */
@@ -84,6 +87,10 @@ export async function handleChatRequest(
         response = await callCustomAPI(model, messages);
         break;
 
+      case "eliza":
+        response = await elizaProvider.respond(messages);
+        break;
+
       default:
         throw new Error(`Unbekannter Provider: ${provider}`);
     }
@@ -99,13 +106,42 @@ export async function handleChatRequest(
     log("error", "ChatService Fehler", { provider, error: err.message });
 
     if (FALLBACK_ENABLED) {
+      log("info", "Fallback aktiviert", {
+        fallbackProvider: FALLBACK_PROVIDER,
+      });
+
+      // Use Eliza as primary fallback, then simple fallback
+      if (FALLBACK_PROVIDER === "eliza" && provider !== "eliza") {
+        try {
+          const elizaResponse = await elizaProvider.respond(messages);
+          return {
+            ...elizaResponse,
+            meta: {
+              ...elizaResponse.meta,
+              originalProvider: provider,
+              fallbackUsed: true,
+            },
+            errors: [err.message],
+          };
+        } catch (elizaErr: any) {
+          log("warn", "Eliza Fallback fehlgeschlagen", {
+            error: elizaErr.message,
+          });
+        }
+      }
+
+      // Simple fallback as last resort
       const fb = await callFallback(model, messages);
-      // callFallback gibt einen String zurück
       const fbText =
         typeof fb === "string" ? fb : ((fb as any)?.text ?? "Fallback aktiv.");
       return {
         text: fbText,
-        meta: { provider: "fallback", model },
+        meta: {
+          provider: "fallback",
+          model,
+          originalProvider: provider,
+          fallbackUsed: true,
+        },
         errors: [err.message],
       };
     }

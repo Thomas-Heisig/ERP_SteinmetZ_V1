@@ -19,7 +19,11 @@ import React, {
 } from "react";
 import { useUnifiedQuickChat } from "./useUnifiedQuickChat";
 import styles from "./UnifiedQuickChat.module.css";
-import type { TabName, CommandDefinition } from "./UnifiedQuickChatTypes";
+import type {
+  TabName,
+  CommandDefinition,
+  ChatProvider,
+} from "./UnifiedQuickChatTypes";
 
 const COMMANDS: CommandDefinition[] = [
   { command: "/rechnung", description: "Rechnung erstellen", category: "erp" },
@@ -52,12 +56,14 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
     sessions,
     currentSession,
     models,
+    settings,
     loading,
     error,
     createSession,
     selectSession,
     deleteSession,
     sendMessage,
+    updateSettings,
     clearError,
   } = useUnifiedQuickChat();
 
@@ -383,6 +389,120 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
                       <span>{model.provider}</span>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {activeTab === "settings" && (
+                <div className={styles.settingsTab}>
+                  <h3>Einstellungen</h3>
+
+                  <div className={styles.settingGroup}>
+                    <label htmlFor="provider-select">Standard Provider</label>
+                    <select
+                      id="provider-select"
+                      value={settings.defaultProvider}
+                      onChange={(e) =>
+                        updateSettings({
+                          defaultProvider: e.target.value as ChatProvider,
+                        })
+                      }
+                      className={styles.settingSelect}
+                    >
+                      <option value="ollama">Ollama (Lokal)</option>
+                      <option value="eliza">Eliza (Regelbasiert)</option>
+                      <option value="openai">OpenAI</option>
+                      <option value="anthropic">Anthropic</option>
+                      <option value="azure">Azure OpenAI</option>
+                      <option value="local">Lokales Modell</option>
+                    </select>
+                    <small>
+                      Ollama wird als primärer Provider verwendet, Eliza als
+                      Fallback
+                    </small>
+                  </div>
+
+                  <div className={styles.settingGroup}>
+                    <label htmlFor="model-select">Standard Modell</label>
+                    <input
+                      id="model-select"
+                      type="text"
+                      value={settings.defaultModel}
+                      onChange={(e) =>
+                        updateSettings({ defaultModel: e.target.value })
+                      }
+                      className={styles.settingInput}
+                      placeholder="z.B. qwen2.5:3b"
+                    />
+                  </div>
+
+                  <div className={styles.settingGroup}>
+                    <label htmlFor="temperature-slider">
+                      Temperatur: {settings.temperature}
+                    </label>
+                    <input
+                      id="temperature-slider"
+                      type="range"
+                      min="0"
+                      max="2"
+                      step="0.1"
+                      value={settings.temperature}
+                      onChange={(e) =>
+                        updateSettings({
+                          temperature: parseFloat(e.target.value),
+                        })
+                      }
+                      className={styles.settingSlider}
+                    />
+                    <small>
+                      Niedrige Werte (0-0.5) = präzise, Hohe Werte (0.8-2) =
+                      kreativ
+                    </small>
+                  </div>
+
+                  <div className={styles.settingGroup}>
+                    <label htmlFor="max-tokens">Max Tokens</label>
+                    <input
+                      id="max-tokens"
+                      type="number"
+                      min="256"
+                      max="8192"
+                      step="256"
+                      value={settings.maxTokens}
+                      onChange={(e) =>
+                        updateSettings({ maxTokens: parseInt(e.target.value) })
+                      }
+                      className={styles.settingInput}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "info" && (
+                <div className={styles.infoTab}>
+                  <h3>System Information</h3>
+                  <div className={styles.infoCard}>
+                    <h4>Provider Konfiguration</h4>
+                    <p>
+                      <strong>Primär:</strong> {settings.defaultProvider}
+                    </p>
+                    <p>
+                      <strong>Fallback:</strong> Eliza (regelbasiert)
+                    </p>
+                    <p>
+                      <strong>Modell:</strong> {settings.defaultModel}
+                    </p>
+                  </div>
+                  <div className={styles.infoCard}>
+                    <h4>Verfügbare Provider</h4>
+                    <ul>
+                      <li>🏠 Ollama - Lokale Modelle (empfohlen)</li>
+                      <li>🤖 Eliza - Regelbasierter Fallback</li>
+                      <li>☁️ OpenAI - Cloud API</li>
+                      <li>☁️ Anthropic - Cloud API</li>
+                      <li>☁️ Azure OpenAI - Cloud API</li>
+                      <li>💾 Local - GGUF Modelle</li>
+                    </ul>
+                  </div>
                 </div>
               )}
             </div>

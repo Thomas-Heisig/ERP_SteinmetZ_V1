@@ -4,10 +4,10 @@ Unified AI assistant chat component for ERP SteinmetZ - merged from QuickChat an
 
 ## 🏗️ Architecture
 
-- **UnifiedQuickChat.tsx** - Main component with UI (444 lines)
+- **UnifiedQuickChat.tsx** - Main component with UI (550+ lines)
 - **UnifiedQuickChatContext.tsx** - State management and API integration (456 lines)
 - **UnifiedQuickChatTypes.ts** - TypeScript type definitions (187 lines)
-- **UnifiedQuickChat.module.css** - Component styles (752 lines)
+- **UnifiedQuickChat.module.css** - Component styles (900+ lines)
 - **index.ts** - Public exports
 
 ## ✨ Features
@@ -16,13 +16,56 @@ Unified AI assistant chat component for ERP SteinmetZ - merged from QuickChat an
 ✅ **Full TypeScript** - 0 `any` types, strict mode compliant  
 ✅ **CSS Modules** - 0 inline styles, scoped styling  
 ✅ **Backend Integration** - Connected to `/api/ai/*` endpoints  
+✅ **Provider Selection** - Choose between Ollama, Eliza, OpenAI, and more  
+✅ **Intelligent Fallback** - Ollama → Eliza → Simple fallback chain  
 ✅ **Command System** - Slash commands with autocomplete  
 ✅ **Keyboard Navigation** - Arrow keys, Tab, Enter, Escape, Ctrl+Enter  
 ✅ **Multi-Session** - Create, switch, and manage chat sessions  
 ✅ **Model Selection** - Switch between AI models and providers  
+✅ **Settings Management** - Configure temperature, max tokens, provider  
+✅ **i18n Support** - German and English translations  
 ✅ **ARIA Compliant** - Accessible for screen readers  
 ✅ **Responsive** - Mobile, tablet, and desktop support  
 ✅ **Animations** - Smooth transitions and loading states
+
+## 🤖 Provider Configuration
+
+### Default Setup (Recommended)
+
+- **Primary Provider**: Ollama (local models)
+- **Fallback Provider**: Eliza (rule-based)
+- **Default Model**: qwen2.5:3b
+
+### Supported Providers
+
+1. **Ollama** 🏠 - Local AI models (recommended)
+   - Runs locally without API costs
+   - Fast response times
+   - Privacy-focused
+   - Default model: qwen2.5:3b
+
+2. **Eliza** 🤖 - Rule-based fallback
+   - Always available
+   - No external dependencies
+   - Context-aware responses
+   - Integrated tool support
+
+3. **OpenAI** ☁️ - Cloud API
+   - GPT-4, GPT-3.5 models
+   - Requires API key
+   - Best quality responses
+
+4. **Anthropic** ☁️ - Cloud API
+   - Claude models
+   - Requires API key
+
+5. **Azure OpenAI** ☁️ - Enterprise cloud
+   - Azure-hosted OpenAI
+   - Requires Azure configuration
+
+6. **Local** 💾 - GGUF models
+   - llama.cpp integration
+   - Custom local models
 
 ## 📦 Usage
 

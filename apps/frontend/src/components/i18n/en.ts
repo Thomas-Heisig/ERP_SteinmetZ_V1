@@ -1119,4 +1119,108 @@ export default {
       second_other: "{{count}} seconds",
     },
   },
+
+  // ===== QUICKCHAT =====
+  quickchat: {
+    title: "QuickChat",
+    subtitle: "AI Assistant",
+
+    tabs: {
+      chat: "Chat",
+      sessions: "Sessions",
+      models: "Models",
+      settings: "Settings",
+      info: "Info",
+    },
+
+    status: {
+      connected: "Connected",
+      loading: "Loading...",
+      processing: "Processing...",
+      error: "Error",
+      ready: "Ready",
+    },
+
+    actions: {
+      send: "Send",
+      newSession: "New Session",
+      clearChat: "Clear Chat",
+      minimize: "Minimize",
+      maximize: "Maximize",
+      close: "Close",
+      open: "Open QuickChat",
+    },
+
+    placeholder: {
+      message: "Enter message or / for commands...",
+      model: "e.g. qwen2.5:3b",
+    },
+
+    empty: {
+      title: "Welcome to QuickChat",
+      subtitle: "Start a conversation or enter a command with /",
+    },
+
+    settings: {
+      title: "Settings",
+      provider: "Default Provider",
+      model: "Default Model",
+      temperature: "Temperature",
+      temperatureHelp:
+        "Low values (0-0.5) = precise, High values (0.8-2) = creative",
+      maxTokens: "Max Tokens",
+      providerHelp: "Ollama is used as primary provider, Eliza as fallback",
+    },
+
+    info: {
+      title: "System Information",
+      providerConfig: "Provider Configuration",
+      primary: "Primary",
+      fallback: "Fallback",
+      model: "Model",
+      availableProviders: "Available Providers",
+      ollamaDesc: "Local Models (recommended)",
+      elizaDesc: "Rule-based Fallback",
+      openaiDesc: "Cloud API",
+      anthropicDesc: "Cloud API",
+      azureDesc: "Cloud API",
+      localDesc: "GGUF Models",
+    },
+
+    commands: {
+      title: "Available Commands",
+      rechnung: "Create invoice",
+      angebot: "Create quote",
+      bericht: "Generate report",
+      idee: "Park idea",
+      termin: "Create appointment",
+      suche: "Search system",
+      hilfe: "Show help",
+      new: "Start new session",
+      clear: "Clear messages",
+    },
+
+    sessions: {
+      title: "Sessions",
+      open: "Open",
+      delete: "Delete",
+      empty: "No sessions available",
+    },
+
+    models: {
+      title: "Available Models",
+      empty: "No models available",
+    },
+
+    errors: {
+      loadSessions: "Failed to load sessions",
+      createSession: "Failed to create session",
+      sendMessage: "Failed to send message",
+      loadModels: "Failed to load models",
+      updateSettings: "Failed to update settings",
+      timeout: "Request timeout",
+      unknown: "Unknown error",
+      emptyMessage: "Message cannot be empty",
+    },
+  },
 } as const;

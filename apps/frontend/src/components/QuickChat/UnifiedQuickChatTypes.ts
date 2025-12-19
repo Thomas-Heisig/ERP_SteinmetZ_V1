@@ -15,6 +15,7 @@ export type ChatProvider =
   | "anthropic"
   | "local"
   | "ollama"
+  | "eliza"
   | "azure"
   | "custom";
 
