@@ -9,8 +9,24 @@ import { Router } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { z } from "zod";
 import { BadRequestError } from "../../types/errors.js";
+import companyRouter from "./companyRouter.js";
+import organizationRouter from "./organizationRouter.js";
+import documentRouter from "./documentRouter.js";
 
 const router = Router();
+
+/* ---------------------------------------------------------
+   SUB-ROUTERS - Comprehensive Business Management
+--------------------------------------------------------- */
+
+// Company Master Data Management
+router.use("/company", companyRouter);
+
+// Organizational Structure Management
+router.use("/organization", organizationRouter);
+
+// Document Management System
+router.use("/documents", documentRouter);
 
 /* ---------------------------------------------------------
    UNTERNEHMENSSTAMMDATEN
