@@ -29,7 +29,8 @@ import { workflowEngine } from "../workflows/workflowEngine.js";
 
 const ACTIVE_PROVIDER = process.env.AI_PROVIDER?.toLowerCase() ?? "ollama";
 const FALLBACK_ENABLED = process.env.AI_FALLBACK_ENABLED === "1";
-const FALLBACK_PROVIDER = process.env.AI_FALLBACK_PROVIDER?.toLowerCase() ?? "eliza";
+const FALLBACK_PROVIDER =
+  process.env.AI_FALLBACK_PROVIDER?.toLowerCase() ?? "eliza";
 
 /* ========================================================================== */
 /* 🧠 Chat-Handler                                                           */
@@ -105,8 +106,10 @@ export async function handleChatRequest(
     log("error", "ChatService Fehler", { provider, error: err.message });
 
     if (FALLBACK_ENABLED) {
-      log("info", "Fallback aktiviert", { fallbackProvider: FALLBACK_PROVIDER });
-      
+      log("info", "Fallback aktiviert", {
+        fallbackProvider: FALLBACK_PROVIDER,
+      });
+
       // Use Eliza as primary fallback, then simple fallback
       if (FALLBACK_PROVIDER === "eliza" && provider !== "eliza") {
         try {
@@ -121,17 +124,24 @@ export async function handleChatRequest(
             errors: [err.message],
           };
         } catch (elizaErr: any) {
-          log("warn", "Eliza Fallback fehlgeschlagen", { error: elizaErr.message });
+          log("warn", "Eliza Fallback fehlgeschlagen", {
+            error: elizaErr.message,
+          });
         }
       }
-      
+
       // Simple fallback as last resort
       const fb = await callFallback(model, messages);
       const fbText =
         typeof fb === "string" ? fb : ((fb as any)?.text ?? "Fallback aktiv.");
       return {
         text: fbText,
-        meta: { provider: "fallback", model, originalProvider: provider, fallbackUsed: true },
+        meta: {
+          provider: "fallback",
+          model,
+          originalProvider: provider,
+          fallbackUsed: true,
+        },
         errors: [err.message],
       };
     }

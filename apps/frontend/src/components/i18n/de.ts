@@ -1130,7 +1130,7 @@ export default {
   quickchat: {
     title: "QuickChat",
     subtitle: "KI-Assistent",
-    
+
     tabs: {
       chat: "Chat",
       sessions: "Sessions",
@@ -1164,7 +1164,8 @@ export default {
 
     empty: {
       title: "Willkommen bei QuickChat",
-      subtitle: "Starten Sie eine Unterhaltung oder geben Sie einen Befehl mit / ein",
+      subtitle:
+        "Starten Sie eine Unterhaltung oder geben Sie einen Befehl mit / ein",
     },
 
     settings: {
@@ -1172,9 +1173,11 @@ export default {
       provider: "Standard Provider",
       model: "Standard Modell",
       temperature: "Temperatur",
-      temperatureHelp: "Niedrige Werte (0-0.5) = präzise, Hohe Werte (0.8-2) = kreativ",
+      temperatureHelp:
+        "Niedrige Werte (0-0.5) = präzise, Hohe Werte (0.8-2) = kreativ",
       maxTokens: "Max Tokens",
-      providerHelp: "Ollama wird als primärer Provider verwendet, Eliza als Fallback",
+      providerHelp:
+        "Ollama wird als primärer Provider verwendet, Eliza als Fallback",
     },
 
     info: {

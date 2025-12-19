@@ -19,7 +19,11 @@ import React, {
 } from "react";
 import { useUnifiedQuickChat } from "./useUnifiedQuickChat";
 import styles from "./UnifiedQuickChat.module.css";
-import type { TabName, CommandDefinition } from "./UnifiedQuickChatTypes";
+import type {
+  TabName,
+  CommandDefinition,
+  ChatProvider,
+} from "./UnifiedQuickChatTypes";
 
 const COMMANDS: CommandDefinition[] = [
   { command: "/rechnung", description: "Rechnung erstellen", category: "erp" },
@@ -391,7 +395,7 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
               {activeTab === "settings" && (
                 <div className={styles.settingsTab}>
                   <h3>Einstellungen</h3>
-                  
+
                   <div className={styles.settingGroup}>
                     <label htmlFor="provider-select">Standard Provider</label>
                     <select
@@ -399,7 +403,7 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
                       value={settings.defaultProvider}
                       onChange={(e) =>
                         updateSettings({
-                          defaultProvider: e.target.value as any,
+                          defaultProvider: e.target.value as ChatProvider,
                         })
                       }
                       className={styles.settingSelect}
@@ -412,7 +416,8 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
                       <option value="local">Lokales Modell</option>
                     </select>
                     <small>
-                      Ollama wird als primärer Provider verwendet, Eliza als Fallback
+                      Ollama wird als primärer Provider verwendet, Eliza als
+                      Fallback
                     </small>
                   </div>
 
@@ -449,7 +454,8 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
                       className={styles.settingSlider}
                     />
                     <small>
-                      Niedrige Werte (0-0.5) = präzise, Hohe Werte (0.8-2) = kreativ
+                      Niedrige Werte (0-0.5) = präzise, Hohe Werte (0.8-2) =
+                      kreativ
                     </small>
                   </div>
 

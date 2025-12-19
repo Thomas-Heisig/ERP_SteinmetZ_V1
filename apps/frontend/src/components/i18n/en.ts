@@ -1124,7 +1124,7 @@ export default {
   quickchat: {
     title: "QuickChat",
     subtitle: "AI Assistant",
-    
+
     tabs: {
       chat: "Chat",
       sessions: "Sessions",
@@ -1166,7 +1166,8 @@ export default {
       provider: "Default Provider",
       model: "Default Model",
       temperature: "Temperature",
-      temperatureHelp: "Low values (0-0.5) = precise, High values (0.8-2) = creative",
+      temperatureHelp:
+        "Low values (0-0.5) = precise, High values (0.8-2) = creative",
       maxTokens: "Max Tokens",
       providerHelp: "Ollama is used as primary provider, Eliza as fallback",
     },
