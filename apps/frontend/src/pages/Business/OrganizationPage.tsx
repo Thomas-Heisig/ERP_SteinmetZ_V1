@@ -236,12 +236,12 @@ export const OrganizationPage: React.FC = () => {
                             <span className="font-medium">Typ:</span> {dept.type}
                           </p>
                         )}
-                        {dept.employee_count && (
+                        {dept.employee_count !== undefined && dept.employee_count !== null && (
                           <p className="text-gray-600 dark:text-gray-400">
                             <span className="font-medium">Mitarbeiter:</span> {dept.employee_count}
                           </p>
                         )}
-                        {dept.budget && (
+                        {dept.budget !== undefined && dept.budget !== null && (
                           <p className="text-gray-600 dark:text-gray-400">
                             <span className="font-medium">Budget:</span> €{dept.budget.toLocaleString()}
                           </p>

@@ -483,12 +483,11 @@ router.post(
   asyncHandler(async (req, res) => {
     const validatedData = archiveSchema.parse(req.body);
 
-    const retentionEndDate = validatedData.retention_start_date && validatedData.retention_period_years
-      ? new Date(validatedData.retention_start_date)
-      : null;
-
-    if (retentionEndDate && validatedData.retention_period_years) {
-      retentionEndDate.setFullYear(retentionEndDate.getFullYear() + validatedData.retention_period_years);
+    let retentionEndDate: string | null = null;
+    if (validatedData.retention_start_date && validatedData.retention_period_years) {
+      const endDate = new Date(validatedData.retention_start_date);
+      endDate.setFullYear(endDate.getFullYear() + validatedData.retention_period_years);
+      retentionEndDate = endDate.toISOString();
     }
 
     await db.run(
@@ -511,7 +510,7 @@ router.post(
         validatedData.tags || null,
         validatedData.retention_period_years || null,
         validatedData.retention_start_date || null,
-        retentionEndDate ? retentionEndDate.toISOString() : null,
+        retentionEndDate,
         validatedData.compliance_tags || null,
       ]
     );
