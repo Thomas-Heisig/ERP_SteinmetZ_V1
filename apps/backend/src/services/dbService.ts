@@ -516,6 +516,37 @@ const SCHEMAS = {
       checksum TEXT
     )
   `,
+
+  help_articles: `
+    CREATE TABLE IF NOT EXISTS help_articles (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      category TEXT NOT NULL,
+      excerpt TEXT,
+      keywords TEXT,
+      icon TEXT,
+      path TEXT,
+      status TEXT DEFAULT 'draft'
+        CHECK (status IN ('draft','published','archived')),
+      author TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      view_count INTEGER DEFAULT 0
+        CHECK (view_count >= 0)
+    )
+  `,
+
+  help_categories: `
+    CREATE TABLE IF NOT EXISTS help_categories (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      icon TEXT,
+      description TEXT,
+      \`order\` INTEGER DEFAULT 999
+        CHECK (\`order\` >= 0)
+    )
+  `,
 };
 
 // KORRIGIERTE INDEX-DEFINITIONEN - nur für existierende Spalten
@@ -545,6 +576,15 @@ const INDEXES = [
 
   // audit_log - NUR für existierende Spalten
   `CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log(created_at)`,
+
+  // help_articles
+  `CREATE INDEX IF NOT EXISTS idx_help_category ON help_articles(category)`,
+  `CREATE INDEX IF NOT EXISTS idx_help_status ON help_articles(status)`,
+  `CREATE INDEX IF NOT EXISTS idx_help_created ON help_articles(created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_help_views ON help_articles(view_count)`,
+
+  // help_categories
+  `CREATE INDEX IF NOT EXISTS idx_help_cat_order ON help_categories(\`order\`)`,
 ];
 
 // -------------------------------------------------------------------
