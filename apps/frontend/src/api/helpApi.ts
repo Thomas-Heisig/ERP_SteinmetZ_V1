@@ -6,7 +6,7 @@
  * API client for interacting with the help desk backend.
  */
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export interface HelpArticle {
   id: number;
@@ -17,7 +17,7 @@ export interface HelpArticle {
   keywords?: string;
   icon?: string;
   path?: string;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
   author?: string;
   created_at?: string;
   updated_at?: string;
@@ -54,20 +54,22 @@ export interface SearchResult {
 /**
  * Fetch all help articles with optional filtering
  */
-export async function getHelpArticles(params?: SearchParams): Promise<HelpArticle[]> {
+export async function getHelpArticles(
+  params?: SearchParams,
+): Promise<HelpArticle[]> {
   const queryParams = new URLSearchParams();
-  
-  if (params?.category) queryParams.append('category', params.category);
-  if (params?.status) queryParams.append('status', params.status);
-  if (params?.search) queryParams.append('search', params.search);
-  if (params?.limit) queryParams.append('limit', String(params.limit));
-  if (params?.offset) queryParams.append('offset', String(params.offset));
+
+  if (params?.category) queryParams.append("category", params.category);
+  if (params?.status) queryParams.append("status", params.status);
+  if (params?.search) queryParams.append("search", params.search);
+  if (params?.limit) queryParams.append("limit", String(params.limit));
+  if (params?.offset) queryParams.append("offset", String(params.offset));
 
   const url = `${API_BASE}/api/help/articles?${queryParams.toString()}`;
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error('Failed to fetch help articles');
+    throw new Error("Failed to fetch help articles");
   }
 
   const data = await response.json();
@@ -77,11 +79,13 @@ export async function getHelpArticles(params?: SearchParams): Promise<HelpArticl
 /**
  * Fetch a specific help article by ID
  */
-export async function getHelpArticle(id: string | number): Promise<HelpArticle> {
+export async function getHelpArticle(
+  id: string | number,
+): Promise<HelpArticle> {
   const response = await fetch(`${API_BASE}/api/help/articles/${id}`);
 
   if (!response.ok) {
-    throw new Error('Failed to fetch help article');
+    throw new Error("Failed to fetch help article");
   }
 
   const data = await response.json();
@@ -91,17 +95,19 @@ export async function getHelpArticle(id: string | number): Promise<HelpArticle> 
 /**
  * Create a new help article
  */
-export async function createHelpArticle(article: Partial<HelpArticle>): Promise<number> {
+export async function createHelpArticle(
+  article: Partial<HelpArticle>,
+): Promise<number> {
   const response = await fetch(`${API_BASE}/api/help/articles`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(article),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create help article');
+    throw new Error("Failed to create help article");
   }
 
   const data = await response.json();
@@ -113,18 +119,18 @@ export async function createHelpArticle(article: Partial<HelpArticle>): Promise<
  */
 export async function updateHelpArticle(
   id: string | number,
-  article: Partial<HelpArticle>
+  article: Partial<HelpArticle>,
 ): Promise<void> {
   const response = await fetch(`${API_BASE}/api/help/articles/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(article),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to update help article');
+    throw new Error("Failed to update help article");
   }
 }
 
@@ -133,11 +139,11 @@ export async function updateHelpArticle(
  */
 export async function deleteHelpArticle(id: string | number): Promise<void> {
   const response = await fetch(`${API_BASE}/api/help/articles/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 
   if (!response.ok) {
-    throw new Error('Failed to delete help article');
+    throw new Error("Failed to delete help article");
   }
 }
 
@@ -148,7 +154,7 @@ export async function getHelpCategories(): Promise<HelpCategory[]> {
   const response = await fetch(`${API_BASE}/api/help/categories`);
 
   if (!response.ok) {
-    throw new Error('Failed to fetch help categories');
+    throw new Error("Failed to fetch help categories");
   }
 
   const data = await response.json();
@@ -158,17 +164,19 @@ export async function getHelpCategories(): Promise<HelpCategory[]> {
 /**
  * Create a new help category
  */
-export async function createHelpCategory(category: HelpCategory): Promise<void> {
+export async function createHelpCategory(
+  category: HelpCategory,
+): Promise<void> {
   const response = await fetch(`${API_BASE}/api/help/categories`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(category),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create help category');
+    throw new Error("Failed to create help category");
   }
 }
 
@@ -178,18 +186,18 @@ export async function createHelpCategory(category: HelpCategory): Promise<void> 
 export async function searchHelpArticles(
   query: string,
   category?: string,
-  limit?: number
+  limit?: number,
 ): Promise<SearchResult[]> {
   const queryParams = new URLSearchParams({ q: query });
-  
-  if (category) queryParams.append('category', category);
-  if (limit) queryParams.append('limit', String(limit));
+
+  if (category) queryParams.append("category", category);
+  if (limit) queryParams.append("limit", String(limit));
 
   const url = `${API_BASE}/api/help/search?${queryParams.toString()}`;
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error('Failed to search help articles');
+    throw new Error("Failed to search help articles");
   }
 
   const data = await response.json();
@@ -214,7 +222,7 @@ export async function getHelpStats(): Promise<{
   const response = await fetch(`${API_BASE}/api/help/stats`);
 
   if (!response.ok) {
-    throw new Error('Failed to fetch help statistics');
+    throw new Error("Failed to fetch help statistics");
   }
 
   const data = await response.json();

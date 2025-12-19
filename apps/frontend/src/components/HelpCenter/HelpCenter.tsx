@@ -117,175 +117,175 @@ export const HelpCenter: React.FC = () => {
 
         // Lade Artikel vom Backend API
         const articles = await getHelpArticles();
-        
+
         // Konvertiere Backend-Format zu Frontend-Format
         const docs: DocFile[] = articles.map((article) => ({
           id: String(article.id),
           title: article.title,
           category: article.category,
-          path: article.path || '',
-          excerpt: article.excerpt || '',
-          icon: article.icon || '📄',
+          path: article.path || "",
+          excerpt: article.excerpt || "",
+          icon: article.icon || "📄",
           content: article.content,
         }));
 
         setDocuments(docs);
-        
+
         // Fallback zu Mock-Daten wenn API fehlschlägt oder leer ist
         if (articles.length === 0) {
           const mockDocs: DocFile[] = [
-          {
-            id: "readme",
-            title: "ERP SteinmetZ - Übersicht",
-            category: "getting-started",
-            path: "/docs/README.md",
-            excerpt:
-              "Willkommen bei ERP SteinmetZ - Ein modernes, KI-gestütztes ERP-System",
-            icon: "📖",
-          },
-          {
-            id: "developer-onboarding",
-            title: "Developer Onboarding",
-            category: "getting-started",
-            path: "/docs/DEVELOPER_ONBOARDING.md",
-            excerpt: "Schnellstart für neue Entwickler im Projekt",
-            icon: "👨‍💻",
-          },
-          {
-            id: "architecture",
-            title: "System-Architektur",
-            category: "architecture",
-            path: "/docs/ARCHITECTURE.md",
-            excerpt: "Überblick über die Systemarchitektur und Komponenten",
-            icon: "🏗️",
-          },
-          {
-            id: "ai-annotator",
-            title: "AI Annotator Integration",
-            category: "ai",
-            path: "/docs/AI_ANNOTATOR_INTEGRATION.md",
-            excerpt: "KI-gestützter Annotator für strukturierte Dateneingabe",
-            icon: "🤖",
-          },
-          {
-            id: "ai-ui-guide",
-            title: "AI Annotator UI Guide",
-            category: "ai",
-            path: "/docs/AI_ANNOTATOR_UI_GUIDE.md",
-            excerpt: "Benutzeroberfläche und Bedienung des AI Annotators",
-            icon: "🎨",
-          },
-          {
-            id: "ai-workflow",
-            title: "AI Annotator Workflow",
-            category: "ai",
-            path: "/docs/AI_ANNOTATOR_WORKFLOW.md",
-            excerpt: "Workflows und Best Practices für den AI Annotator",
-            icon: "🔄",
-          },
-          {
-            id: "advanced-filters",
-            title: "Advanced Filters Guide",
-            category: "ai",
-            path: "/docs/ADVANCED_FILTERS_GUIDE.md",
-            excerpt: "Erweiterte Filter- und Suchmöglichkeiten",
-            icon: "🔍",
-          },
-          {
-            id: "database-migrations",
-            title: "Database Migrations",
-            category: "architecture",
-            path: "/docs/DATABASE_MIGRATIONS.md",
-            excerpt: "Datenbank-Migrationen und Schema-Management",
-            icon: "🗄️",
-          },
-          {
-            id: "authentication",
-            title: "Authentication System",
-            category: "integration",
-            path: "/docs/AUTHENTICATION.md",
-            excerpt: "Authentifizierung und Autorisierung",
-            icon: "🔐",
-          },
-          {
-            id: "websocket",
-            title: "WebSocket & Realtime",
-            category: "integration",
-            path: "/docs/WEBSOCKET_REALTIME.md",
-            excerpt: "Echtzeit-Kommunikation mit WebSockets",
-            icon: "⚡",
-          },
-          {
-            id: "monitoring",
-            title: "Monitoring & Observability",
-            category: "deployment",
-            path: "/docs/MONITORING.md",
-            excerpt: "System-Monitoring und Observability",
-            icon: "📊",
-          },
-          {
-            id: "sentry",
-            title: "Sentry Integration",
-            category: "deployment",
-            path: "/docs/SENTRY_INTEGRATION.md",
-            excerpt: "Error-Tracking mit Sentry",
-            icon: "🐛",
-          },
-          {
-            id: "code-conventions",
-            title: "Code Conventions",
-            category: "development",
-            path: "/docs/CODE_CONVENTIONS.md",
-            excerpt: "Coding Standards und Best Practices",
-            icon: "📝",
-          },
-          {
-            id: "dashboard",
-            title: "Dashboard Module",
-            category: "modules",
-            path: "/docs/DASHBOARD_FIX_STATUS.md",
-            excerpt: "Dashboard-Komponente und Funktionen",
-            icon: "📊",
-          },
-          {
-            id: "finance",
-            title: "Finance Module Guide",
-            category: "modules",
-            path: "/docs/FINANCE_MODULE_GUIDE.md",
-            excerpt: "Finanzmodul - Buchhaltung und Controlling",
-            icon: "💰",
-          },
-          {
-            id: "hr",
-            title: "HR Module Guide",
-            category: "modules",
-            path: "/docs/HR_MODULE_GUIDE.md",
-            excerpt: "Personalverwaltung und HR-Funktionen",
-            icon: "👥",
-          },
-          {
-            id: "environment",
-            title: "Environment Variables",
-            category: "reference",
-            path: "/docs/ENVIRONMENT_VARIABLES.md",
-            excerpt: "Umgebungsvariablen und Konfiguration",
-            icon: "⚙️",
-          },
-          {
-            id: "backup",
-            title: "Backup & Restore",
-            category: "deployment",
-            path: "/docs/BACKUP_RESTORE.md",
-            excerpt: "Daten-Backup und Wiederherstellung",
-            icon: "💾",
-          },
-        ];
+            {
+              id: "readme",
+              title: "ERP SteinmetZ - Übersicht",
+              category: "getting-started",
+              path: "/docs/README.md",
+              excerpt:
+                "Willkommen bei ERP SteinmetZ - Ein modernes, KI-gestütztes ERP-System",
+              icon: "📖",
+            },
+            {
+              id: "developer-onboarding",
+              title: "Developer Onboarding",
+              category: "getting-started",
+              path: "/docs/DEVELOPER_ONBOARDING.md",
+              excerpt: "Schnellstart für neue Entwickler im Projekt",
+              icon: "👨‍💻",
+            },
+            {
+              id: "architecture",
+              title: "System-Architektur",
+              category: "architecture",
+              path: "/docs/ARCHITECTURE.md",
+              excerpt: "Überblick über die Systemarchitektur und Komponenten",
+              icon: "🏗️",
+            },
+            {
+              id: "ai-annotator",
+              title: "AI Annotator Integration",
+              category: "ai",
+              path: "/docs/AI_ANNOTATOR_INTEGRATION.md",
+              excerpt: "KI-gestützter Annotator für strukturierte Dateneingabe",
+              icon: "🤖",
+            },
+            {
+              id: "ai-ui-guide",
+              title: "AI Annotator UI Guide",
+              category: "ai",
+              path: "/docs/AI_ANNOTATOR_UI_GUIDE.md",
+              excerpt: "Benutzeroberfläche und Bedienung des AI Annotators",
+              icon: "🎨",
+            },
+            {
+              id: "ai-workflow",
+              title: "AI Annotator Workflow",
+              category: "ai",
+              path: "/docs/AI_ANNOTATOR_WORKFLOW.md",
+              excerpt: "Workflows und Best Practices für den AI Annotator",
+              icon: "🔄",
+            },
+            {
+              id: "advanced-filters",
+              title: "Advanced Filters Guide",
+              category: "ai",
+              path: "/docs/ADVANCED_FILTERS_GUIDE.md",
+              excerpt: "Erweiterte Filter- und Suchmöglichkeiten",
+              icon: "🔍",
+            },
+            {
+              id: "database-migrations",
+              title: "Database Migrations",
+              category: "architecture",
+              path: "/docs/DATABASE_MIGRATIONS.md",
+              excerpt: "Datenbank-Migrationen und Schema-Management",
+              icon: "🗄️",
+            },
+            {
+              id: "authentication",
+              title: "Authentication System",
+              category: "integration",
+              path: "/docs/AUTHENTICATION.md",
+              excerpt: "Authentifizierung und Autorisierung",
+              icon: "🔐",
+            },
+            {
+              id: "websocket",
+              title: "WebSocket & Realtime",
+              category: "integration",
+              path: "/docs/WEBSOCKET_REALTIME.md",
+              excerpt: "Echtzeit-Kommunikation mit WebSockets",
+              icon: "⚡",
+            },
+            {
+              id: "monitoring",
+              title: "Monitoring & Observability",
+              category: "deployment",
+              path: "/docs/MONITORING.md",
+              excerpt: "System-Monitoring und Observability",
+              icon: "📊",
+            },
+            {
+              id: "sentry",
+              title: "Sentry Integration",
+              category: "deployment",
+              path: "/docs/SENTRY_INTEGRATION.md",
+              excerpt: "Error-Tracking mit Sentry",
+              icon: "🐛",
+            },
+            {
+              id: "code-conventions",
+              title: "Code Conventions",
+              category: "development",
+              path: "/docs/CODE_CONVENTIONS.md",
+              excerpt: "Coding Standards und Best Practices",
+              icon: "📝",
+            },
+            {
+              id: "dashboard",
+              title: "Dashboard Module",
+              category: "modules",
+              path: "/docs/DASHBOARD_FIX_STATUS.md",
+              excerpt: "Dashboard-Komponente und Funktionen",
+              icon: "📊",
+            },
+            {
+              id: "finance",
+              title: "Finance Module Guide",
+              category: "modules",
+              path: "/docs/FINANCE_MODULE_GUIDE.md",
+              excerpt: "Finanzmodul - Buchhaltung und Controlling",
+              icon: "💰",
+            },
+            {
+              id: "hr",
+              title: "HR Module Guide",
+              category: "modules",
+              path: "/docs/HR_MODULE_GUIDE.md",
+              excerpt: "Personalverwaltung und HR-Funktionen",
+              icon: "👥",
+            },
+            {
+              id: "environment",
+              title: "Environment Variables",
+              category: "reference",
+              path: "/docs/ENVIRONMENT_VARIABLES.md",
+              excerpt: "Umgebungsvariablen und Konfiguration",
+              icon: "⚙️",
+            },
+            {
+              id: "backup",
+              title: "Backup & Restore",
+              category: "deployment",
+              path: "/docs/BACKUP_RESTORE.md",
+              excerpt: "Daten-Backup und Wiederherstellung",
+              icon: "💾",
+            },
+          ];
 
           setDocuments(mockDocs);
         }
       } catch (error) {
         console.error("Failed to load documents:", error);
-        
+
         // Bei Fehler: Nutze Mock-Daten als Fallback
         const mockDocs: DocFile[] = [
           {
@@ -341,13 +341,13 @@ export const HelpCenter: React.FC = () => {
     // Lade den Inhalt des Dokuments vom Backend API
     try {
       const article = await getHelpArticle(doc.id);
-      setSelectedDoc({ 
-        ...doc, 
-        content: article.content 
+      setSelectedDoc({
+        ...doc,
+        content: article.content,
       });
     } catch (error) {
       console.error("Failed to load document:", error);
-      
+
       // Fallback: Versuche direkt von Pfad zu laden
       try {
         const fileResponse = await fetch(doc.path);
@@ -355,7 +355,7 @@ export const HelpCenter: React.FC = () => {
           const content = await fileResponse.text();
           setSelectedDoc({ ...doc, content });
         } else {
-          throw new Error('File not found');
+          throw new Error("File not found");
         }
       } catch (fallbackError) {
         setSelectedDoc({

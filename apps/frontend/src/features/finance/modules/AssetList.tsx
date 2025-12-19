@@ -12,7 +12,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Card, Table, Button, Input } from "../../../components/ui";
+import { Card, Button, Input } from "../../../components/ui";
 import { API_ENDPOINTS, buildUrl } from "../../../config/api";
 import styles from "./AssetList.module.css";
 
@@ -377,66 +377,68 @@ export const AssetList: React.FC = () => {
       </Card>
 
       <Card>
-        <Table>
-          <thead>
-            <tr>
-              <th>Anlagennummer</th>
-              <th>Bezeichnung</th>
-              <th>Kategorie</th>
-              <th>Anschaffungsdatum</th>
-              <th>Anschaffungskosten</th>
-              <th>Buchwert</th>
-              <th>Abschreibung</th>
-              <th>Status</th>
-              <th>Aktionen</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAssets.length === 0 ? (
+        <div className={styles.tableWrapper}>
+          <table className={styles.assetsTable}>
+            <thead>
               <tr>
-                <td colSpan={9} className={styles.noData}>
-                  {search || categoryFilter
-                    ? "Keine Anlagen gefunden"
-                    : "Noch keine Anlagen erfasst"}
-                </td>
+                <th>Anlagennummer</th>
+                <th>Bezeichnung</th>
+                <th>Kategorie</th>
+                <th>Anschaffungsdatum</th>
+                <th>Anschaffungskosten</th>
+                <th>Buchwert</th>
+                <th>Abschreibung</th>
+                <th>Status</th>
+                <th>Aktionen</th>
               </tr>
-            ) : (
-              filteredAssets.map((asset) => (
-                <tr key={asset.id}>
-                  <td>
-                    <strong>{asset.assetNumber}</strong>
-                  </td>
-                  <td>{asset.name}</td>
-                  <td>
-                    <span className={styles.badge}>{asset.category}</span>
-                  </td>
-                  <td>{formatDate(asset.acquisitionDate)}</td>
-                  <td>{formatCurrency(asset.acquisitionCost)}</td>
-                  <td>
-                    <strong>{formatCurrency(asset.currentBookValue)}</strong>
-                  </td>
-                  <td>
-                    {getDepreciationMethodLabel(asset.depreciationMethod)}
-                  </td>
-                  <td>
-                    <span
-                      className={`${styles.statusBadge} ${styles[`status-${asset.status}`]}`}
-                    >
-                      {asset.status === "active" ? "Aktiv" : "Ausgebucht"}
-                    </span>
-                  </td>
-                  <td>
-                    <div className={styles.actions}>
-                      <Button size="sm" variant="outline">
-                        Details
-                      </Button>
-                    </div>
+            </thead>
+            <tbody>
+              {filteredAssets.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className={styles.noData}>
+                    {search || categoryFilter
+                      ? "Keine Anlagen gefunden"
+                      : "Noch keine Anlagen erfasst"}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
+              ) : (
+                filteredAssets.map((asset) => (
+                  <tr key={asset.id}>
+                    <td>
+                      <strong>{asset.assetNumber}</strong>
+                    </td>
+                    <td>{asset.name}</td>
+                    <td>
+                      <span className={styles.badge}>{asset.category}</span>
+                    </td>
+                    <td>{formatDate(asset.acquisitionDate)}</td>
+                    <td>{formatCurrency(asset.acquisitionCost)}</td>
+                    <td>
+                      <strong>{formatCurrency(asset.currentBookValue)}</strong>
+                    </td>
+                    <td>
+                      {getDepreciationMethodLabel(asset.depreciationMethod)}
+                    </td>
+                    <td>
+                      <span
+                        className={`${styles.statusBadge} ${styles[`status-${asset.status}`]}`}
+                      >
+                        {asset.status === "active" ? "Aktiv" : "Ausgebucht"}
+                      </span>
+                    </td>
+                    <td>
+                      <div className={styles.actions}>
+                        <Button size="sm" variant="outline">
+                          Details
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </Card>
 
       <div className={styles.summary}>
