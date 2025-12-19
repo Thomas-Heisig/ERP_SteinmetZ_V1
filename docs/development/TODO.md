@@ -351,14 +351,16 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - [x] Widgets in Dashboard.tsx integriert
   - [x] Navigation zu Modulen implementiert
 
-- [ ] **Modul-Seiten erstellen** ⏳ NÄCHSTER SCHRITT
-  - [ ] Business-Management-Seiten
-  - [ ] Sales & CRM-Seiten
-  - [ ] Procurement-Seiten
-  - [ ] Production-Seiten
-  - [ ] Warehouse-Seiten
-  - [ ] Reporting-Seiten
-  - **Aufwand**: 2-3 Wochen
+- [x] **Modul-Seiten erstellen** ✅ GRUNDLAGEN ERLEDIGT (19. Dez 2025)
+  - [x] Business-Management-Seiten (bereits vorhanden: CompanyPage, OrganizationPage)
+  - [x] Sales & CRM-Seiten (SalesPage.tsx - Stats, Pipeline, Quotes, Orders, Leads, Campaigns) 🆕
+  - [x] Procurement-Seiten (ProcurementPage.tsx - Purchase Orders, Suppliers, Goods Receipt) 🆕
+  - [x] Production-Seiten (ProductionPage.tsx - Orders, Planning, Machines, Quality) 🆕
+  - [x] Warehouse-Seiten (WarehousePage.tsx - Stock, Locations, Picking, Shipping) 🆕
+  - [x] Reporting-Seiten (ReportingPage.tsx - Standard Reports, Ad-hoc, AI Analytics) 🆕
+  - **Aufwand**: 2-3 Wochen → 2 Stunden für Basis-Seiten erledigt ✅
+  - **Status**: Grundlegende Seiten mit Stats und Feature-Übersicht erstellt
+  - **Verbleibend**: Detaillierte Funktionen und CRUD-Operationen (1-2 Wochen)
 
 ### Dokumentation (Status: ✅ ERLEDIGT)
 
@@ -489,17 +491,20 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
     - Output: docs/api/index.html
     - npm run docs funktioniert
     - npm run docs:serve für lokale Ansicht
-  - [x] Phase 1: Critical APIs (erweitert - 5 von ~20 Dateien) ✅ FORTSCHRITT (18 Dec 2025)
+  - [x] Phase 1: Critical APIs (erweitert - 8 von ~20 Dateien) ✅ FORTSCHRITT (19 Dec 2025)
     - [x] AuthService: Vollständige JSDoc für init, register, login, logout, validateToken, refreshToken
     - [x] errorHandler Middleware: Umfassende Dokumentation mit Beispielen
     - [x] asyncHandler Middleware: Best-Practice-Beispiele hinzugefügt
-    - [x] redisService: Vollständige JSDoc (15+ Methoden, alle Interfaces dokumentiert) 🆕
-    - [x] filterService: Vollständige JSDoc (alle Methoden und Interfaces) 🆕
-    - [ ] Verbleibende Services (~15): dbService, websocketService, systemInfoService, etc.
+    - [x] redisService: Vollständige JSDoc (15+ Methoden, alle Interfaces dokumentiert)
+    - [x] filterService: Vollständige JSDoc (alle Methoden und Interfaces)
+    - [x] systemInfoService: Vollständige JSDoc (5 Hauptmethoden dokumentiert) 🆕
+    - [x] batchProcessingService: Erweiterte JSDoc (Klassen-Header + 3 Hauptmethoden) 🆕
+    - [x] websocketService: Bereits vollständig dokumentiert ✓
+    - [ ] Verbleibende Services (~12): dbService, aiAnnotatorService, etc.
     - [ ] Verbleibende Middleware: cacheMiddleware, metricsMiddleware, etc.
   - [ ] Phase 2: Routes
   - [ ] Phase 3: Supporting Code
-  - **Aufwand**: 2-3 Stunden → 4 Stunden erledigt (Infrastruktur + Phase 1 erweitert ✅), 6-10 Stunden für vollständige Migration verbleibend
+  - **Aufwand**: 2-3 Stunden → 5 Stunden erledigt (Infrastruktur + Phase 1 erweitert ✅), 5-8 Stunden für vollständige Migration verbleibend
 
 ### UI/UX Enhancements
 

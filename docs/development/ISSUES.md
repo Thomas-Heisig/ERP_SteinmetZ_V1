@@ -308,13 +308,16 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
    - ✅ Diagnostics Router (README.md) - System Diagnostics
    - ✅ Innovation Router (README.md) - Innovation Management
    - ✅ QuickChat Router (README.md) - AI Chat Assistant
-6. 🔄 JSDoc für Services (Phase 1 erweitert - 18 Dec 2025)
+6. 🔄 JSDoc für Services (Phase 1 erweitert - 19 Dec 2025)
    - ✅ AuthService: Vollständige JSDoc (7 Methoden: init, register, login, logout, validateToken, refreshToken, createSession)
    - ✅ errorHandler Middleware: Umfassende Dokumentation mit Response-Format-Beispielen
    - ✅ asyncHandler Middleware: Best-Practice-Beispiele für async error handling
-   - ✅ redisService: Vollständige JSDoc (15+ Methoden mit Beispielen, Interface-Dokumentation) 🆕
-   - ✅ filterService: Vollständige JSDoc (alle Interfaces und Methoden dokumentiert) 🆕
-   - ⏳ Verbleibende Services (~15): dbService, websocketService, systemInfoService, etc.
+   - ✅ redisService: Vollständige JSDoc (15+ Methoden mit Beispielen, Interface-Dokumentation)
+   - ✅ filterService: Vollständige JSDoc (alle Interfaces und Methoden dokumentiert)
+   - ✅ systemInfoService: Vollständige JSDoc (5 Hauptmethoden dokumentiert) 🆕
+   - ✅ batchProcessingService: Erweiterte JSDoc (Klassen-Header + 3 Hauptmethoden) 🆕
+   - ✅ websocketService: Bereits vollständig dokumentiert ✓
+   - ⏳ Verbleibende Services (~12): dbService, aiAnnotatorService, etc.
 7. ⏳ Inline-Comments für komplexe Logik (laufend)
 
 **Betroffen** (verbleibend):
@@ -328,13 +331,13 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 1. ✅ README in komplexen Modulen
 2. ✅ Umfassende Guides für Kern-Features
 3. ⏳ JSDoc für alle öffentlichen Functions/Classes
-4. ⏳ TypeDoc für API-Dokumentation generieren
+4. ✅ TypeDoc für API-Dokumentation generieren (npm run docs funktioniert)
 
 **Auswirkung**: Wesentlich verbesserte Einarbeitung neuer Entwickler
 
 **Aufwand (ursprünglich)**: Laufend  
-**Aufwand (bereits investiert)**: 4 Stunden (Infrastruktur + Phase 1 erweitert - 5 Services komplett) ✅  
-**Aufwand (verbleibend)**: 6-10 Stunden für vollständige JSDoc-Migration
+**Aufwand (bereits investiert)**: 5 Stunden (Infrastruktur + Phase 1 erweitert - 8 Services) ✅  
+**Aufwand (verbleibend)**: 5-8 Stunden für vollständige JSDoc-Migration
 
 ---
 
@@ -408,10 +411,18 @@ _Alle kleineren Issues wurden behoben und nach [ARCHIVE.md](../archive/ARCHIVE.m
   - Aufwand neu geschätzt: 5-7 Tage
 - ✅ **ISSUE-017 aktualisiert**: Vollständige Analyse mit detailliertem Migrations-Plan
 - ✅ **ISSUE-018 gelöst**: Keine direkten deprecated Dependencies mehr vorhanden ✅
-- ✅ **JSDoc Phase 1 erweitert**: 2 weitere Services vollständig dokumentiert 🆕
-  - redisService: 15+ Methoden mit vollständiger JSDoc und Beispielen
-  - filterService: Alle Interfaces und Methoden dokumentiert
-  - Gesamtfortschritt: 5 von ~20 kritischen Services (25% der Phase 1)
+- ✅ **JSDoc Phase 1 erweitert**: 3 weitere Services dokumentiert 🆕 (19. Dez 2025)
+  - systemInfoService: 5 Hauptmethoden mit vollständiger JSDoc und Beispielen
+  - batchProcessingService: Klassen-Header + 3 Hauptmethoden dokumentiert
+  - websocketService: Bereits vollständig dokumentiert (bestätigt)
+  - Gesamtfortschritt: 8 von ~20 kritischen Services (40% der Phase 1)
+- ✅ **Frontend Module Pages**: 5 neue Basis-Seiten erstellt 🆕 (19. Dez 2025)
+  - SalesPage.tsx - Sales & CRM mit Stats und Features
+  - ProcurementPage.tsx - Einkauf mit Purchase Orders
+  - ProductionPage.tsx - Produktion mit Maschinen und Qualität
+  - WarehousePage.tsx - Lager mit Bestand und Versand
+  - ReportingPage.tsx - Reporting mit AI-Analytics
+- ✅ **TypeScript Fix**: AssetList.tsx Table-Komponente korrigiert
 - ✅ **Dokumentation**: TODO.md und ISSUES.md mit aktuellem Stand aktualisiert
 
 **Kürzlich verbessert (17. Dezember 2025)**:
