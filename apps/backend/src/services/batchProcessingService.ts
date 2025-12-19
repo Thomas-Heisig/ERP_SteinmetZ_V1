@@ -3,28 +3,28 @@
 
 /**
  * Enhanced Batch Processing Service
- * 
+ *
  * Provides comprehensive batch processing capabilities including:
  * - Batch operation creation and management
  * - Real-time progress tracking via WebSocket
  * - Result visualization and analytics
  * - Batch history and filtering
- * 
+ *
  * @remarks
  * This service is designed for large-scale operations that need to process
  * multiple items asynchronously. It integrates with the WebSocket service
  * to provide real-time progress updates to connected clients.
- * 
+ *
  * Supported operations include:
  * - AI annotation batches
  * - Data import/export batches
  * - Bulk data transformations
  * - Report generation batches
- * 
+ *
  * @example
  * ```typescript
  * const batchService = new BatchProcessingService();
- * 
+ *
  * // Create a new batch
  * const batch = batchService.createBatch({
  *   operation: 'annotate',
@@ -32,13 +32,13 @@
  *   options: { model: 'gpt-4' },
  *   name: 'Monthly annotation batch'
  * });
- * 
+ *
  * // Get batch history
  * const history = batchService.getBatchHistory({
  *   status: 'completed',
  *   limit: 10
  * });
- * 
+ *
  * // Get visualization data
  * const viz = batchService.getVisualizationData(batch.id);
  * ```
@@ -107,13 +107,13 @@ export class BatchProcessingService {
 
   /**
    * Creates a new batch operation
-   * 
+   *
    * Generates a unique batch ID and initializes the batch with pending status.
    * Broadcasts a 'batch:created' event via WebSocket to notify connected clients.
-   * 
+   *
    * @param request - Batch creation parameters including operation type, filters, and options
    * @returns The created batch operation with generated ID and metadata
-   * 
+   *
    * @example
    * ```typescript
    * const batch = batchService.createBatch({
@@ -150,10 +150,10 @@ export class BatchProcessingService {
 
   /**
    * Retrieves a batch operation by ID
-   * 
+   *
    * @param id - The batch ID to retrieve
    * @returns The batch operation if found, null otherwise
-   * 
+   *
    * @example
    * ```typescript
    * const batch = batchService.getBatch('batch_1234567890_abc123');
@@ -168,10 +168,10 @@ export class BatchProcessingService {
 
   /**
    * Retrieves a batch operation with its complete results
-   * 
+   *
    * @param id - The batch ID to retrieve
    * @returns The batch operation with results and summary, or null if not found
-   * 
+   *
    * @example
    * ```typescript
    * const batchWithResults = batchService.getBatchWithResults('batch_1234567890_abc123');
