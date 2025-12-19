@@ -444,10 +444,10 @@ The module uses standardized error handling:
 
 ## Related Documentation
 
-- [API Documentation](../../../../docs/modules/marketing/README.md)
+- [Backend Module Implementation](../../../../apps/backend/src/routes/marketing/README.md)
 - [CRM Module](../crm/README.md)
 - [Communication Module](../communication/README.md)
-- [Database Schema](../../../../docs/reference/database-schema.md)
+- [Database Schema](../../reference/database-schema.md)
 
 ## Version History
 

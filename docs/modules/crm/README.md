@@ -315,9 +315,9 @@ All responses follow the standard format:
 
 ## Related Documentation
 
-- [API Documentation](../../../../docs/modules/crm/README.md)
-- [Database Schema](../../../../docs/reference/database-schema.md)
-- [Error Handling Guide](../../../../docs/ERROR_STANDARDIZATION_GUIDE.md)
+- [Backend Module Implementation](../../../../apps/backend/src/routes/crm/README.md)
+- [Database Schema](../../reference/database-schema.md)
+- [Error Handling Guide](../../ERROR_STANDARDIZATION_GUIDE.md)
 
 ## Version History
 
