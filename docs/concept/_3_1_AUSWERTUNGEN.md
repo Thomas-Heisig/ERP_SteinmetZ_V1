@@ -10,16 +10,16 @@ GET /api/finance/reports/:reportType?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
 
 #### Verfügbare Reports
 
-| Report Type | Endpoint | Query Parameter |
-|-------------|----------|-----------------|
-| Bilanz | `/api/finance/reports/balance-sheet` | `date` (Stichtag) |
-| GuV | `/api/finance/reports/profit-loss` | `startDate`, `endDate` |
-| Kapitalflussrechnung | `/api/finance/reports/cash-flow` | `startDate`, `endDate`, `method` (direct/indirect) |
-| Anhang | `/api/finance/reports/notes` | `year` |
-| Summen-Saldenliste | `/api/finance/reports/trial-balance` | `startDate`, `endDate` |
-| Anlagenspiegel | `/api/finance/reports/asset-register` | `year` |
-| Segmentbericht | `/api/finance/reports/segment` | `startDate`, `endDate`, `segment` |
-| Fälligkeitsstruktur | `/api/finance/reports/aging` | `date`, `type` (receivables/payables) |
+| Report Type          | Endpoint                              | Query Parameter                                    |
+| -------------------- | ------------------------------------- | -------------------------------------------------- |
+| Bilanz               | `/api/finance/reports/balance-sheet`  | `date` (Stichtag)                                  |
+| GuV                  | `/api/finance/reports/profit-loss`    | `startDate`, `endDate`                             |
+| Kapitalflussrechnung | `/api/finance/reports/cash-flow`      | `startDate`, `endDate`, `method` (direct/indirect) |
+| Anhang               | `/api/finance/reports/notes`          | `year`                                             |
+| Summen-Saldenliste   | `/api/finance/reports/trial-balance`  | `startDate`, `endDate`                             |
+| Anlagenspiegel       | `/api/finance/reports/asset-register` | `year`                                             |
+| Segmentbericht       | `/api/finance/reports/segment`        | `startDate`, `endDate`, `segment`                  |
+| Fälligkeitsstruktur  | `/api/finance/reports/aging`          | `date`, `type` (receivables/payables)              |
 
 ### Report-Datenstrukturen
 
@@ -27,7 +27,7 @@ GET /api/finance/reports/:reportType?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
 // Balance Sheet Response
 interface BalanceSheetReport {
   date: Date;
-  standard: 'HGB' | 'IFRS' | 'US-GAAP';
+  standard: "HGB" | "IFRS" | "US-GAAP";
   assets: {
     fixedAssets: {
       intangibleAssets: number;
@@ -63,7 +63,7 @@ interface BalanceSheetReport {
 interface ProfitLossReport {
   startDate: Date;
   endDate: Date;
-  method: 'total-cost' | 'cost-of-sales';
+  method: "total-cost" | "cost-of-sales";
   revenue: number;
   costOfGoodsSold?: number;
   grossProfit?: number;
@@ -88,7 +88,7 @@ interface ProfitLossReport {
 interface CashFlowReport {
   startDate: Date;
   endDate: Date;
-  method: 'direct' | 'indirect';
+  method: "direct" | "indirect";
   operatingActivities: {
     netIncome?: number;
     adjustments?: {
@@ -120,7 +120,7 @@ interface CashFlowReport {
 // Aging Report (Fälligkeitsstruktur)
 interface AgingReport {
   date: Date;
-  type: 'receivables' | 'payables';
+  type: "receivables" | "payables";
   buckets: {
     current: { count: number; amount: number };
     days1to30: { count: number; amount: number };
@@ -143,36 +143,41 @@ interface AgingReport {
 ```typescript
 // apps/backend/src/services/reportService.ts
 export class ReportService {
-  
   // Bilanz generieren
-  async generateBalanceSheet(date: Date, standard: string): Promise<BalanceSheetReport> {
+  async generateBalanceSheet(
+    date: Date,
+    standard: string,
+  ): Promise<BalanceSheetReport> {
     // 1. Alle Konten mit Salden abrufen
     const accounts = await db.getAccountsWithBalances(date);
-    
+
     // 2. Nach Kontenklassen gruppieren
     const groupedAccounts = this.groupAccountsByClass(accounts, standard);
-    
+
     // 3. Summen bilden
     const assets = this.calculateAssets(groupedAccounts);
     const liabilities = this.calculateLiabilitiesAndEquity(groupedAccounts);
-    
+
     return {
       date,
       standard,
       assets,
-      liabilitiesAndEquity: liabilities
+      liabilitiesAndEquity: liabilities,
     };
   }
-  
+
   // GuV generieren
-  async generateProfitLoss(startDate: Date, endDate: Date): Promise<ProfitLossReport> {
+  async generateProfitLoss(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<ProfitLossReport> {
     // 1. Alle Ertrags- und Aufwandskonten im Zeitraum
     const transactions = await db.getTransactions(startDate, endDate);
-    
+
     // 2. Nach Kontenart summieren
-    const revenue = this.sumByAccountType(transactions, 'revenue');
-    const expenses = this.sumByAccountType(transactions, 'expense');
-    
+    const revenue = this.sumByAccountType(transactions, "revenue");
+    const expenses = this.sumByAccountType(transactions, "expense");
+
     // 3. GuV-Struktur aufbauen
     return {
       startDate,
@@ -183,33 +188,39 @@ export class ReportService {
       // ... weitere Berechnungen
     };
   }
-  
+
   // Kapitalflussrechnung (indirekte Methode)
-  async generateCashFlow(startDate: Date, endDate: Date): Promise<CashFlowReport> {
+  async generateCashFlow(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<CashFlowReport> {
     // 1. Periodenergebnis aus GuV
     const plStatement = await this.generateProfitLoss(startDate, endDate);
-    
+
     // 2. Anpassungen (nicht-zahlungswirksame Vorgänge)
     const depreciation = await db.getDepreciation(startDate, endDate);
-    const changeInWC = await this.calculateWorkingCapitalChange(startDate, endDate);
-    
+    const changeInWC = await this.calculateWorkingCapitalChange(
+      startDate,
+      endDate,
+    );
+
     // 3. Investitions- und Finanzierungstätigkeit
     const investing = await this.calculateInvestingCashFlow(startDate, endDate);
     const financing = await this.calculateFinancingCashFlow(startDate, endDate);
-    
+
     return {
       startDate,
       endDate,
-      method: 'indirect',
+      method: "indirect",
       operatingActivities: {
         netIncome: plStatement.netIncome,
         adjustments: {
           depreciation,
           changeInReceivables: changeInWC.receivables,
           changeInPayables: changeInWC.payables,
-          other: 0
+          other: 0,
         },
-        net: plStatement.netIncome + depreciation + changeInWC.total
+        net: plStatement.netIncome + depreciation + changeInWC.total,
       },
       investingActivities: investing,
       financingActivities: financing,
@@ -229,17 +240,17 @@ import { financeApi } from '@/api/finance';
 export function BalanceSheetView() {
   const [report, setReport] = useState<BalanceSheetReport | null>(null);
   const [date, setDate] = useState(new Date());
-  
+
   useEffect(() => {
     financeApi.getBalanceSheet(date).then(setReport);
   }, [date]);
-  
+
   if (!report) return <Loading />;
-  
+
   return (
     <div className="balance-sheet">
       <h2>Bilanz zum {formatDate(report.date)}</h2>
-      
+
       <div className="two-columns">
         {/* Aktiva */}
         <div className="assets">
@@ -253,7 +264,7 @@ export function BalanceSheetView() {
             {/* ... weitere Positionen */}
           </section>
         </div>
-        
+
         {/* Passiva */}
         <div className="liabilities">
           <h3>Passiva</h3>
@@ -273,27 +284,27 @@ export function ProfitLossView() {
 // Fälligkeitsanalyse
 export function AgingReportView() {
   const [report, setReport] = useState<AgingReport | null>(null);
-  
+
   return (
     <div className="aging-report">
       <h2>Fälligkeitsstruktur Forderungen</h2>
-      
+
       <div className="buckets">
         <div className="bucket">
           <h3>Aktuell (nicht fällig)</h3>
           <p>{report?.buckets.current.count} Positionen</p>
           <p>{formatCurrency(report?.buckets.current.amount)}</p>
         </div>
-        
+
         <div className="bucket warning">
           <h3>1-30 Tage überfällig</h3>
           <p>{report?.buckets.days1to30.count} Positionen</p>
           <p>{formatCurrency(report?.buckets.days1to30.amount)}</p>
         </div>
-        
+
         {/* ... weitere Buckets */}
       </div>
-      
+
       <table className="top-items">
         <thead>
           <tr>
@@ -322,8 +333,8 @@ export function AgingReportView() {
 ```typescript
 // PDF-Export
 export async function exportReportAsPDF(
-  reportType: string, 
-  data: any
+  reportType: string,
+  data: any,
 ): Promise<Blob> {
   // PDF-Generierung mit pdfmake oder ähnlicher Library
   const pdfDoc = createPDFDocument(reportType, data);
@@ -333,7 +344,7 @@ export async function exportReportAsPDF(
 // Excel-Export
 export async function exportReportAsExcel(
   reportType: string,
-  data: any
+  data: any,
 ): Promise<Blob> {
   // Excel-Generierung mit xlsx oder ähnlicher Library
   const workbook = createExcelWorkbook(reportType, data);
@@ -341,10 +352,7 @@ export async function exportReportAsExcel(
 }
 
 // CSV-Export
-export function exportReportAsCSV(
-  reportType: string,
-  data: any
-): string {
+export function exportReportAsCSV(reportType: string, data: any): string {
   // CSV-String generieren
   return convertToCSV(data);
 }

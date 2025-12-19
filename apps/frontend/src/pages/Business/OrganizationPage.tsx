@@ -47,7 +47,9 @@ interface CostCenter {
 
 export const OrganizationPage: React.FC = () => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<"departments" | "locations" | "cost-centers">("departments");
+  const [activeTab, setActiveTab] = useState<
+    "departments" | "locations" | "cost-centers"
+  >("departments");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -220,7 +222,9 @@ export const OrganizationPage: React.FC = () => {
                       className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-lg transition-shadow"
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">{dept.name}</h3>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">
+                          {dept.name}
+                        </h3>
                         {dept.code && (
                           <span className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
                             {dept.code}
@@ -228,22 +232,28 @@ export const OrganizationPage: React.FC = () => {
                         )}
                       </div>
                       {dept.description && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{dept.description}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          {dept.description}
+                        </p>
                       )}
                       <div className="space-y-1 text-sm">
                         {dept.type && (
                           <p className="text-gray-600 dark:text-gray-400">
-                            <span className="font-medium">Typ:</span> {dept.type}
+                            <span className="font-medium">Typ:</span>{" "}
+                            {dept.type}
                           </p>
                         )}
-                        {dept.employee_count !== undefined && dept.employee_count !== null && (
-                          <p className="text-gray-600 dark:text-gray-400">
-                            <span className="font-medium">Mitarbeiter:</span> {dept.employee_count}
-                          </p>
-                        )}
+                        {dept.employee_count !== undefined &&
+                          dept.employee_count !== null && (
+                            <p className="text-gray-600 dark:text-gray-400">
+                              <span className="font-medium">Mitarbeiter:</span>{" "}
+                              {dept.employee_count}
+                            </p>
+                          )}
                         {dept.budget !== undefined && dept.budget !== null && (
                           <p className="text-gray-600 dark:text-gray-400">
-                            <span className="font-medium">Budget:</span> €{dept.budget.toLocaleString()}
+                            <span className="font-medium">Budget:</span> €
+                            {dept.budget.toLocaleString()}
                           </p>
                         )}
                       </div>
@@ -278,14 +288,18 @@ export const OrganizationPage: React.FC = () => {
                       className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-lg transition-shadow"
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">{location.name}</h3>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">
+                          {location.name}
+                        </h3>
                         <span className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded">
                           {getLocationTypeLabel(location.location_type)}
                         </span>
                       </div>
                       <div className="space-y-1 text-sm">
                         {location.street && (
-                          <p className="text-gray-600 dark:text-gray-400">{location.street}</p>
+                          <p className="text-gray-600 dark:text-gray-400">
+                            {location.street}
+                          </p>
                         )}
                         {location.city && (
                           <p className="text-gray-600 dark:text-gray-400">
@@ -294,17 +308,20 @@ export const OrganizationPage: React.FC = () => {
                         )}
                         {location.phone && (
                           <p className="text-gray-600 dark:text-gray-400">
-                            <span className="font-medium">Tel:</span> {location.phone}
+                            <span className="font-medium">Tel:</span>{" "}
+                            {location.phone}
                           </p>
                         )}
                         {location.area_sqm && (
                           <p className="text-gray-600 dark:text-gray-400">
-                            <span className="font-medium">Fläche:</span> {location.area_sqm} m²
+                            <span className="font-medium">Fläche:</span>{" "}
+                            {location.area_sqm} m²
                           </p>
                         )}
                         {location.capacity && (
                           <p className="text-gray-600 dark:text-gray-400">
-                            <span className="font-medium">Kapazität:</span> {location.capacity}
+                            <span className="font-medium">Kapazität:</span>{" "}
+                            {location.capacity}
                           </p>
                         )}
                       </div>
@@ -355,18 +372,25 @@ export const OrganizationPage: React.FC = () => {
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {costCenters.map((cc) => (
-                        <tr key={cc.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <tr
+                          key={cc.id}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        >
                           <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
                             {cc.code}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{cc.name}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                            {cc.name}
+                          </td>
                           <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
                             <span className="px-2 py-1 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded">
                               {getCostCenterTypeLabel(cc.type)}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                            {cc.annual_budget ? `€${cc.annual_budget.toLocaleString()}` : "-"}
+                            {cc.annual_budget
+                              ? `€${cc.annual_budget.toLocaleString()}`
+                              : "-"}
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
                             {cc.description || "-"}

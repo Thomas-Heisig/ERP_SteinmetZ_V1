@@ -49,6 +49,7 @@ import projectsRouter from "./routes/projects/projectsRouter.js";
 import communicationRouter from "./routes/communication/communicationRouter.js";
 import businessRouter from "./routes/business/businessRouter.js";
 import salesRouter from "./routes/sales/salesRouter.js";
+import marketingRouter from "./routes/marketing/marketingRouter.js";
 import procurementRouter from "./routes/procurement/procurementRouter.js";
 import productionRouter from "./routes/production/productionRouter.js";
 import warehouseRouter from "./routes/warehouse/warehouseRouter.js";
@@ -201,6 +202,7 @@ app.use("/api/communication", communicationRouter);
 // Neue Hauptfunktions-Module
 app.use("/api/business", businessRouter);
 app.use("/api/sales", salesRouter);
+app.use("/api/marketing", marketingRouter);
 app.use("/api/procurement", procurementRouter);
 app.use("/api/production", productionRouter);
 app.use("/api/warehouse", warehouseRouter);

@@ -3,7 +3,7 @@
 
 /**
  * Asset Management Component
- * 
+ *
  * Displays and manages fixed assets (Anlagenvermögen) including:
  * - Asset list with filtering capabilities
  * - Asset details with depreciation history
@@ -11,10 +11,10 @@
  * - Depreciation calculation
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Input } from '../../../components/ui';
-import { API_ENDPOINTS, buildUrl } from '../../../config/api';
-import styles from './AssetList.module.css';
+import React, { useState, useEffect } from "react";
+import { Card, Table, Button, Input } from "../../../components/ui";
+import { API_ENDPOINTS, buildUrl } from "../../../config/api";
+import styles from "./AssetList.module.css";
 
 interface Asset {
   id: string;
@@ -25,12 +25,12 @@ interface Asset {
   acquisitionCost: number;
   residualValue: number;
   usefulLife: number;
-  depreciationMethod: 'linear' | 'declining' | 'performance-based';
+  depreciationMethod: "linear" | "declining" | "performance-based";
   currentBookValue: number;
   location?: string;
   costCenter?: string;
   serialNumber?: string;
-  status: 'active' | 'disposed' | 'sold';
+  status: "active" | "disposed" | "sold";
 }
 
 interface AssetFormData {
@@ -40,7 +40,7 @@ interface AssetFormData {
   acquisitionCost: number;
   residualValue: number;
   usefulLife: number;
-  depreciationMethod: 'linear' | 'declining' | 'performance-based';
+  depreciationMethod: "linear" | "declining" | "performance-based";
   location: string;
   costCenter: string;
   serialNumber: string;
@@ -50,20 +50,20 @@ export const AssetList: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<AssetFormData>({
-    name: '',
-    category: '',
-    acquisitionDate: new Date().toISOString().split('T')[0],
+    name: "",
+    category: "",
+    acquisitionDate: new Date().toISOString().split("T")[0],
     acquisitionCost: 0,
     residualValue: 0,
     usefulLife: 60,
-    depreciationMethod: 'linear',
-    location: '',
-    costCenter: '',
-    serialNumber: '',
+    depreciationMethod: "linear",
+    location: "",
+    costCenter: "",
+    serialNumber: "",
   });
 
   useEffect(() => {
@@ -80,14 +80,14 @@ export const AssetList: React.FC = () => {
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error('Failed to fetch assets');
+        throw new Error("Failed to fetch assets");
       }
 
       const result = await response.json();
       setAssets(result.data || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
-      console.error('Error fetching assets:', err);
+      setError(err instanceof Error ? err.message : "Unknown error occurred");
+      console.error("Error fetching assets:", err);
     } finally {
       setLoading(false);
     }
@@ -98,15 +98,15 @@ export const AssetList: React.FC = () => {
 
     try {
       const response = await fetch(API_ENDPOINTS.finance.assets, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create asset');
+        throw new Error("Failed to create asset");
       }
 
       const result = await response.json();
@@ -114,23 +114,23 @@ export const AssetList: React.FC = () => {
       setShowForm(false);
       resetForm();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create asset');
-      console.error('Error creating asset:', err);
+      setError(err instanceof Error ? err.message : "Failed to create asset");
+      console.error("Error creating asset:", err);
     }
   };
 
   const resetForm = () => {
     setFormData({
-      name: '',
-      category: '',
-      acquisitionDate: new Date().toISOString().split('T')[0],
+      name: "",
+      category: "",
+      acquisitionDate: new Date().toISOString().split("T")[0],
       acquisitionCost: 0,
       residualValue: 0,
       usefulLife: 60,
-      depreciationMethod: 'linear',
-      location: '',
-      costCenter: '',
-      serialNumber: '',
+      depreciationMethod: "linear",
+      location: "",
+      costCenter: "",
+      serialNumber: "",
     });
   };
 
@@ -141,26 +141,27 @@ export const AssetList: React.FC = () => {
       asset.name.toLowerCase().includes(searchLower) ||
       asset.assetNumber.toLowerCase().includes(searchLower) ||
       asset.category.toLowerCase().includes(searchLower) ||
-      (asset.serialNumber && asset.serialNumber.toLowerCase().includes(searchLower))
+      (asset.serialNumber &&
+        asset.serialNumber.toLowerCase().includes(searchLower))
     );
   });
 
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR',
+    return new Intl.NumberFormat("de-DE", {
+      style: "currency",
+      currency: "EUR",
     }).format(amount);
   };
 
   const formatDate = (dateStr: string): string => {
-    return new Date(dateStr).toLocaleDateString('de-DE');
+    return new Date(dateStr).toLocaleDateString("de-DE");
   };
 
   const getDepreciationMethodLabel = (method: string): string => {
     const labels: Record<string, string> = {
-      linear: 'Linear',
-      declining: 'Degressiv',
-      'performance-based': 'Leistungsabhängig',
+      linear: "Linear",
+      declining: "Degressiv",
+      "performance-based": "Leistungsabhängig",
     };
     return labels[method] || method;
   };
@@ -177,8 +178,11 @@ export const AssetList: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>🏢 Anlagenbuchhaltung</h1>
-        <Button onClick={() => setShowForm(!showForm)} className={styles.addButton}>
-          {showForm ? 'Abbrechen' : '+ Neue Anlage'}
+        <Button
+          onClick={() => setShowForm(!showForm)}
+          className={styles.addButton}
+        >
+          {showForm ? "Abbrechen" : "+ Neue Anlage"}
         </Button>
       </div>
 
@@ -195,7 +199,9 @@ export const AssetList: React.FC = () => {
                   type="text"
                   required
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                 />
               </div>
               <div className={styles.formGroup}>
@@ -204,7 +210,9 @@ export const AssetList: React.FC = () => {
                   type="text"
                   required
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
                   placeholder="z.B. Fahrzeuge, IT-Hardware"
                 />
               </div>
@@ -218,7 +226,10 @@ export const AssetList: React.FC = () => {
                   required
                   value={formData.acquisitionDate}
                   onChange={(e) =>
-                    setFormData({ ...formData, acquisitionDate: e.target.value })
+                    setFormData({
+                      ...formData,
+                      acquisitionDate: e.target.value,
+                    })
                   }
                 />
               </div>
@@ -231,7 +242,10 @@ export const AssetList: React.FC = () => {
                   step="0.01"
                   value={formData.acquisitionCost}
                   onChange={(e) =>
-                    setFormData({ ...formData, acquisitionCost: parseFloat(e.target.value) })
+                    setFormData({
+                      ...formData,
+                      acquisitionCost: parseFloat(e.target.value),
+                    })
                   }
                 />
               </div>
@@ -246,7 +260,10 @@ export const AssetList: React.FC = () => {
                   step="0.01"
                   value={formData.residualValue}
                   onChange={(e) =>
-                    setFormData({ ...formData, residualValue: parseFloat(e.target.value) })
+                    setFormData({
+                      ...formData,
+                      residualValue: parseFloat(e.target.value),
+                    })
                   }
                 />
               </div>
@@ -258,7 +275,10 @@ export const AssetList: React.FC = () => {
                   min="1"
                   value={formData.usefulLife}
                   onChange={(e) =>
-                    setFormData({ ...formData, usefulLife: parseInt(e.target.value) })
+                    setFormData({
+                      ...formData,
+                      usefulLife: parseInt(e.target.value),
+                    })
                   }
                 />
               </div>
@@ -288,7 +308,9 @@ export const AssetList: React.FC = () => {
                 <Input
                   type="text"
                   value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -299,7 +321,9 @@ export const AssetList: React.FC = () => {
                 <Input
                   type="text"
                   value={formData.costCenter}
-                  onChange={(e) => setFormData({ ...formData, costCenter: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, costCenter: e.target.value })
+                  }
                 />
               </div>
               <div className={styles.formGroup}>
@@ -372,8 +396,8 @@ export const AssetList: React.FC = () => {
               <tr>
                 <td colSpan={9} className={styles.noData}>
                   {search || categoryFilter
-                    ? 'Keine Anlagen gefunden'
-                    : 'Noch keine Anlagen erfasst'}
+                    ? "Keine Anlagen gefunden"
+                    : "Noch keine Anlagen erfasst"}
                 </td>
               </tr>
             ) : (
@@ -391,12 +415,14 @@ export const AssetList: React.FC = () => {
                   <td>
                     <strong>{formatCurrency(asset.currentBookValue)}</strong>
                   </td>
-                  <td>{getDepreciationMethodLabel(asset.depreciationMethod)}</td>
+                  <td>
+                    {getDepreciationMethodLabel(asset.depreciationMethod)}
+                  </td>
                   <td>
                     <span
                       className={`${styles.statusBadge} ${styles[`status-${asset.status}`]}`}
                     >
-                      {asset.status === 'active' ? 'Aktiv' : 'Ausgebucht'}
+                      {asset.status === "active" ? "Aktiv" : "Ausgebucht"}
                     </span>
                   </td>
                   <td>
@@ -418,10 +444,13 @@ export const AssetList: React.FC = () => {
           Gesamt: <strong>{filteredAssets.length}</strong> Anlagen
         </p>
         <p>
-          Gesamtwert:{' '}
+          Gesamtwert:{" "}
           <strong>
             {formatCurrency(
-              filteredAssets.reduce((sum, asset) => sum + asset.currentBookValue, 0)
+              filteredAssets.reduce(
+                (sum, asset) => sum + asset.currentBookValue,
+                0,
+              ),
             )}
           </strong>
         </p>

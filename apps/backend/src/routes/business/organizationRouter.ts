@@ -79,7 +79,12 @@ const costCenterSchema = z.object({
   parent_id: z.string().optional(),
   code: z.string().min(1, "Code is required"),
   name: z.string().min(1, "Name is required"),
-  type: z.enum(["cost_center", "profit_center", "investment_center", "revenue_center"]),
+  type: z.enum([
+    "cost_center",
+    "profit_center",
+    "investment_center",
+    "revenue_center",
+  ]),
   description: z.string().optional(),
   level: z.number().int().default(0),
   responsible_person_id: z.string().optional(),
@@ -125,7 +130,7 @@ router.get(
 
     const departments = await db.all(query, params);
     res.json({ departments });
-  })
+  }),
 );
 
 // GET /api/business/organization/departments/:id - Get single department
@@ -136,7 +141,7 @@ router.get(
 
     const department = await db.get(
       `SELECT * FROM business_departments WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!department) {
@@ -146,14 +151,14 @@ router.get(
     // Get sub-departments
     const subDepartments = await db.all(
       `SELECT * FROM business_departments WHERE parent_id = ? AND is_active = 1`,
-      [id]
+      [id],
     );
 
     res.json({
       department,
       sub_departments: subDepartments,
     });
-  })
+  }),
 );
 
 // POST /api/business/organization/departments - Create department
@@ -184,13 +189,13 @@ router.post(
         validatedData.location_id || null,
         validatedData.valid_from,
         validatedData.valid_to || null,
-      ]
+      ],
     );
 
     logger.info("Department created", { name: validatedData.name });
 
     res.status(201).json({ message: "Department created successfully" });
-  })
+  }),
 );
 
 // PUT /api/business/organization/departments/:id - Update department
@@ -202,7 +207,7 @@ router.put(
 
     const existing = await db.get(
       `SELECT id FROM business_departments WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!existing) {
@@ -232,13 +237,13 @@ router.put(
         validatedData.valid_from,
         validatedData.valid_to || null,
         id,
-      ]
+      ],
     );
 
     logger.info("Department updated", { id, name: validatedData.name });
 
     res.json({ message: "Department updated successfully" });
-  })
+  }),
 );
 
 // DELETE /api/business/organization/departments/:id - Deactivate department
@@ -249,7 +254,7 @@ router.delete(
 
     const existing = await db.get(
       `SELECT id FROM business_departments WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!existing) {
@@ -258,13 +263,13 @@ router.delete(
 
     await db.run(
       `UPDATE business_departments SET is_active = 0, updated_at = datetime('now') WHERE id = ?`,
-      [id]
+      [id],
     );
 
     logger.info("Department deactivated", { id });
 
     res.json({ message: "Department deactivated successfully" });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -294,7 +299,7 @@ router.get(
 
     const locations = await db.all(query, params);
     res.json({ locations });
-  })
+  }),
 );
 
 // GET /api/business/organization/locations/:id - Get single location
@@ -305,7 +310,7 @@ router.get(
 
     const location = await db.get(
       `SELECT * FROM business_locations WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!location) {
@@ -313,7 +318,7 @@ router.get(
     }
 
     res.json({ location });
-  })
+  }),
 );
 
 // POST /api/business/organization/locations - Create location
@@ -354,13 +359,13 @@ router.post(
         validatedData.utilization_percent || null,
         validatedData.valid_from,
         validatedData.valid_to || null,
-      ]
+      ],
     );
 
     logger.info("Location created", { name: validatedData.name });
 
     res.status(201).json({ message: "Location created successfully" });
-  })
+  }),
 );
 
 // PUT /api/business/organization/locations/:id - Update location
@@ -372,7 +377,7 @@ router.put(
 
     const existing = await db.get(
       `SELECT id FROM business_locations WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!existing) {
@@ -412,13 +417,13 @@ router.put(
         validatedData.valid_from,
         validatedData.valid_to || null,
         id,
-      ]
+      ],
     );
 
     logger.info("Location updated", { id, name: validatedData.name });
 
     res.json({ message: "Location updated successfully" });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -443,7 +448,7 @@ router.get(
 
     const costCenters = await db.all(query, params);
     res.json({ cost_centers: costCenters });
-  })
+  }),
 );
 
 // POST /api/business/organization/cost-centers - Create cost center
@@ -472,13 +477,16 @@ router.post(
         validatedData.department_id || null,
         validatedData.valid_from,
         validatedData.valid_to || null,
-      ]
+      ],
     );
 
-    logger.info("Cost center created", { code: validatedData.code, name: validatedData.name });
+    logger.info("Cost center created", {
+      code: validatedData.code,
+      name: validatedData.name,
+    });
 
     res.status(201).json({ message: "Cost center created successfully" });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -503,7 +511,7 @@ router.get(
 
     const roles = await db.all(query, params);
     res.json({ roles });
-  })
+  }),
 );
 
 // POST /api/business/organization/roles - Create role
@@ -529,13 +537,13 @@ router.post(
         validatedData.decision_authority || null,
         validatedData.approval_limits || null,
         validatedData.career_level || null,
-      ]
+      ],
     );
 
     logger.info("Role created", { name: validatedData.role_name });
 
     res.status(201).json({ message: "Role created successfully" });
-  })
+  }),
 );
 
 export default router;

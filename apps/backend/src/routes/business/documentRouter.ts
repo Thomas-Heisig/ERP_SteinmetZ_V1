@@ -104,7 +104,7 @@ router.get(
 
     const templates = await db.all(query, params);
     res.json({ templates });
-  })
+  }),
 );
 
 // GET /api/business/documents/templates/:id - Get single template
@@ -115,7 +115,7 @@ router.get(
 
     const template = await db.get(
       `SELECT * FROM business_doc_templates WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!template) {
@@ -125,14 +125,14 @@ router.get(
     // Get version history
     const versions = await db.all(
       `SELECT * FROM business_doc_versions WHERE template_id = ? ORDER BY created_at DESC`,
-      [id]
+      [id],
     );
 
     res.json({
       template,
       versions,
     });
-  })
+  }),
 );
 
 // POST /api/business/documents/templates - Create template
@@ -157,7 +157,7 @@ router.post(
         validatedData.branding || null,
         validatedData.language,
         validatedData.version,
-      ]
+      ],
     );
 
     // Create initial version
@@ -165,7 +165,12 @@ router.post(
       `INSERT INTO business_doc_versions (
         template_id, version, version_note, content, is_current
       ) VALUES (?, ?, ?, ?, 1)`,
-      [result.lastID, validatedData.version, "Initial version", validatedData.template_content]
+      [
+        result.lastID,
+        validatedData.version,
+        "Initial version",
+        validatedData.template_content,
+      ],
     );
 
     logger.info("Template created", { name: validatedData.name });
@@ -174,7 +179,7 @@ router.post(
       message: "Template created successfully",
       id: result.lastID,
     });
-  })
+  }),
 );
 
 // PUT /api/business/documents/templates/:id - Update template
@@ -186,7 +191,7 @@ router.put(
 
     const existing = await db.get(
       `SELECT * FROM business_doc_templates WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!existing) {
@@ -211,7 +216,7 @@ router.put(
         validatedData.language,
         validatedData.version,
         id,
-      ]
+      ],
     );
 
     // Create new version if content changed
@@ -219,7 +224,7 @@ router.put(
       // Mark old versions as not current
       await db.run(
         `UPDATE business_doc_versions SET is_current = 0 WHERE template_id = ?`,
-        [id]
+        [id],
       );
 
       // Create new version
@@ -227,14 +232,19 @@ router.put(
         `INSERT INTO business_doc_versions (
           template_id, version, version_note, content, is_current
         ) VALUES (?, ?, ?, ?, 1)`,
-        [id, validatedData.version, "Updated version", validatedData.template_content]
+        [
+          id,
+          validatedData.version,
+          "Updated version",
+          validatedData.template_content,
+        ],
       );
     }
 
     logger.info("Template updated", { id, name: validatedData.name });
 
     res.json({ message: "Template updated successfully" });
-  })
+  }),
 );
 
 // POST /api/business/documents/templates/:id/approve - Approve template
@@ -246,7 +256,7 @@ router.post(
 
     const existing = await db.get(
       `SELECT id FROM business_doc_templates WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!existing) {
@@ -260,13 +270,13 @@ router.post(
         approved_at = datetime('now'),
         updated_at = datetime('now')
       WHERE id = ?`,
-      [approved_by, id]
+      [approved_by, id],
     );
 
     logger.info("Template approved", { id, approved_by });
 
     res.json({ message: "Template approved successfully" });
-  })
+  }),
 );
 
 // POST /api/business/documents/templates/:id/use - Increment usage count
@@ -281,11 +291,11 @@ router.post(
         last_used = datetime('now'),
         updated_at = datetime('now')
       WHERE id = ?`,
-      [id]
+      [id],
     );
 
     res.json({ message: "Template usage recorded" });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -315,7 +325,7 @@ router.get(
 
     const workflows = await db.all(query, params);
     res.json({ workflows });
-  })
+  }),
 );
 
 // GET /api/business/documents/workflows/:id - Get single workflow
@@ -326,7 +336,7 @@ router.get(
 
     const workflow = await db.get(
       `SELECT * FROM business_workflows WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!workflow) {
@@ -336,14 +346,14 @@ router.get(
     // Get active instances
     const instances = await db.all(
       `SELECT * FROM business_workflow_instances WHERE workflow_id = ? AND status IN ('pending', 'in_progress')`,
-      [id]
+      [id],
     );
 
     res.json({
       workflow,
       active_instances: instances,
     });
-  })
+  }),
 );
 
 // POST /api/business/documents/workflows - Create workflow
@@ -368,13 +378,13 @@ router.post(
         validatedData.escalation_rules || null,
         validatedData.sla_hours || null,
         validatedData.version,
-      ]
+      ],
     );
 
     logger.info("Workflow created", { name: validatedData.name });
 
     res.status(201).json({ message: "Workflow created successfully" });
-  })
+  }),
 );
 
 // POST /api/business/documents/workflows/:id/start - Start workflow instance
@@ -386,7 +396,7 @@ router.post(
 
     const workflow = await db.get(
       `SELECT * FROM business_workflows WHERE id = ? AND is_active = 1`,
-      [id]
+      [id],
     );
 
     if (!workflow) {
@@ -402,16 +412,25 @@ router.post(
         workflow_id, entity_type, entity_id, current_step, status,
         current_approver_id, due_date, step_history
       ) VALUES (?, ?, ?, 0, 'pending', ?, ?, '[]')`,
-      [id, entity_type, entity_id, firstStep?.approver_id || null, due_date || null]
+      [
+        id,
+        entity_type,
+        entity_id,
+        firstStep?.approver_id || null,
+        due_date || null,
+      ],
     );
 
-    logger.info("Workflow instance started", { workflow_id: id, instance_id: result.lastID });
+    logger.info("Workflow instance started", {
+      workflow_id: id,
+      instance_id: result.lastID,
+    });
 
     res.status(201).json({
       message: "Workflow started successfully",
       instance_id: result.lastID,
     });
-  })
+  }),
 );
 
 // GET /api/business/documents/workflows/instances/:instanceId - Get workflow instance
@@ -422,7 +441,7 @@ router.get(
 
     const instance = await db.get(
       `SELECT * FROM business_workflow_instances WHERE id = ?`,
-      [instanceId]
+      [instanceId],
     );
 
     if (!instance) {
@@ -432,14 +451,14 @@ router.get(
     // Get workflow definition
     const workflow = await db.get(
       `SELECT * FROM business_workflows WHERE id = ?`,
-      [instance.workflow_id]
+      [instance.workflow_id],
     );
 
     res.json({
       instance,
       workflow,
     });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -474,7 +493,7 @@ router.get(
 
     const documents = await db.all(query, params);
     res.json({ documents });
-  })
+  }),
 );
 
 // POST /api/business/documents/archive - Archive document
@@ -484,9 +503,14 @@ router.post(
     const validatedData = archiveSchema.parse(req.body);
 
     let retentionEndDate: string | null = null;
-    if (validatedData.retention_start_date && validatedData.retention_period_years) {
+    if (
+      validatedData.retention_start_date &&
+      validatedData.retention_period_years
+    ) {
       const endDate = new Date(validatedData.retention_start_date);
-      endDate.setFullYear(endDate.getFullYear() + validatedData.retention_period_years);
+      endDate.setFullYear(
+        endDate.getFullYear() + validatedData.retention_period_years,
+      );
       retentionEndDate = endDate.toISOString();
     }
 
@@ -512,13 +536,13 @@ router.post(
         validatedData.retention_start_date || null,
         retentionEndDate,
         validatedData.compliance_tags || null,
-      ]
+      ],
     );
 
     logger.info("Document archived", { name: validatedData.document_name });
 
     res.status(201).json({ message: "Document archived successfully" });
-  })
+  }),
 );
 
 // GET /api/business/documents/archive/search - Search archive
@@ -548,7 +572,7 @@ router.get(
     ]);
 
     res.json({ documents });
-  })
+  }),
 );
 
 export default router;
