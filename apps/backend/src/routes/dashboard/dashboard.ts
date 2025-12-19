@@ -7,8 +7,12 @@ import { Router } from "express";
 import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
+import comprehensiveRouter from "./comprehensive.js";
 
 const router = Router();
+
+// Mount comprehensive dashboard routes
+router.use("/comprehensive", comprehensiveRouter);
 
 /* ---------------------------------------------------------
    Systemstatus
