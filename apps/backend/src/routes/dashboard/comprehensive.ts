@@ -309,9 +309,9 @@ router.get(
     let budgetWhere = "date = date('now')";
     let qualityWhere = "date = date('now')";
     let complaintsWhere = "date = date('now')";
-    let systemWhere = "date = date('now')";
+    const systemWhere = "date = date('now')";
 
-    const params: any[] = [];
+    const params: string[] = [];
 
     if (priority) {
       deliveryWhere += " AND priority = ?";
@@ -560,7 +560,7 @@ router.put(
     } = req.body;
 
     const updates: string[] = [];
-    const params: any[] = [];
+    const params: (string | number | boolean)[] = [];
 
     if (position_x !== undefined) {
       updates.push("position_x = ?");
@@ -752,9 +752,7 @@ router.get(
       db.get(
         "SELECT * FROM dashboard_liquidity_metrics ORDER BY date DESC LIMIT 1",
       ),
-      db.get(
-        "SELECT * FROM dashboard_order_intake ORDER BY date DESC LIMIT 1",
-      ),
+      db.get("SELECT * FROM dashboard_order_intake ORDER BY date DESC LIMIT 1"),
       db.get(
         "SELECT * FROM dashboard_productivity_metrics ORDER BY date DESC LIMIT 1",
       ),

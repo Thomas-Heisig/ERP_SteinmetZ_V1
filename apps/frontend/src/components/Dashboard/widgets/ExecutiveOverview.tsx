@@ -57,7 +57,11 @@ interface ExecutiveOverviewData {
   revenue: RevenueMetrics;
   topCustomers: Array<{ customer_name: string; revenue: number; rank: number }>;
   topProducts: Array<{ product_name: string; revenue: number; rank: number }>;
-  regionalRevenue: Array<{ region: string; revenue: number; percentage: number }>;
+  regionalRevenue: Array<{
+    region: string;
+    revenue: number;
+    percentage: number;
+  }>;
   margins: MarginMetrics;
   liquidity: LiquidityMetrics;
   orderIntake: OrderIntakeMetrics;
@@ -98,23 +102,33 @@ export const ExecutiveOverview: React.FC = () => {
       const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
       // Fetch all executive overview data
-      const [revenueRes, marginsRes, liquidityRes, orderIntakeRes, productivityRes] =
-        await Promise.all([
-          fetch(`${baseUrl}/api/dashboard/comprehensive/executive/revenue`),
-          fetch(`${baseUrl}/api/dashboard/comprehensive/executive/margins`),
-          fetch(`${baseUrl}/api/dashboard/comprehensive/executive/liquidity`),
-          fetch(`${baseUrl}/api/dashboard/comprehensive/executive/order-intake`),
-          fetch(`${baseUrl}/api/dashboard/comprehensive/executive/productivity`),
-        ]);
+      const [
+        revenueRes,
+        marginsRes,
+        liquidityRes,
+        orderIntakeRes,
+        productivityRes,
+      ] = await Promise.all([
+        fetch(`${baseUrl}/api/dashboard/comprehensive/executive/revenue`),
+        fetch(`${baseUrl}/api/dashboard/comprehensive/executive/margins`),
+        fetch(`${baseUrl}/api/dashboard/comprehensive/executive/liquidity`),
+        fetch(`${baseUrl}/api/dashboard/comprehensive/executive/order-intake`),
+        fetch(`${baseUrl}/api/dashboard/comprehensive/executive/productivity`),
+      ]);
 
-      const [revenueData, marginsData, liquidityData, orderIntakeData, productivityData] =
-        await Promise.all([
-          revenueRes.json(),
-          marginsRes.json(),
-          liquidityRes.json(),
-          orderIntakeRes.json(),
-          productivityRes.json(),
-        ]);
+      const [
+        revenueData,
+        marginsData,
+        liquidityData,
+        orderIntakeData,
+        productivityData,
+      ] = await Promise.all([
+        revenueRes.json(),
+        marginsRes.json(),
+        liquidityRes.json(),
+        orderIntakeRes.json(),
+        productivityRes.json(),
+      ]);
 
       setData({
         revenue: revenueData.data.metrics,
@@ -171,16 +185,24 @@ export const ExecutiveOverview: React.FC = () => {
         <div className="metrics-grid">
           <div className="metric-card primary">
             <div className="metric-label">Tagesumsatz (Live)</div>
-            <div className="metric-value">{formatCurrency(data.revenue.daily_revenue)}</div>
+            <div className="metric-value">
+              {formatCurrency(data.revenue.daily_revenue)}
+            </div>
           </div>
 
           <div className="metric-card">
             <div className="metric-label">Monatsumsatz</div>
-            <div className="metric-value">{formatCurrency(data.revenue.monthly_revenue)}</div>
+            <div className="metric-value">
+              {formatCurrency(data.revenue.monthly_revenue)}
+            </div>
             <div className="metric-change">
-              {data.revenue.monthly_revenue > data.revenue.previous_month_revenue ? "📈" : "📉"}{" "}
+              {data.revenue.monthly_revenue >
+              data.revenue.previous_month_revenue
+                ? "📈"
+                : "📉"}{" "}
               {formatPercent(
-                (data.revenue.monthly_revenue - data.revenue.previous_month_revenue) /
+                (data.revenue.monthly_revenue -
+                  data.revenue.previous_month_revenue) /
                   data.revenue.previous_month_revenue,
               )}{" "}
               vs. Vormonat
@@ -189,11 +211,16 @@ export const ExecutiveOverview: React.FC = () => {
 
           <div className="metric-card">
             <div className="metric-label">Jahresumsatz (YTD)</div>
-            <div className="metric-value">{formatCurrency(data.revenue.yearly_revenue)}</div>
+            <div className="metric-value">
+              {formatCurrency(data.revenue.yearly_revenue)}
+            </div>
             <div className="metric-change">
-              {data.revenue.yearly_revenue > data.revenue.previous_year_revenue ? "📈" : "📉"}{" "}
+              {data.revenue.yearly_revenue > data.revenue.previous_year_revenue
+                ? "📈"
+                : "📉"}{" "}
               {formatPercent(
-                (data.revenue.yearly_revenue - data.revenue.previous_year_revenue) /
+                (data.revenue.yearly_revenue -
+                  data.revenue.previous_year_revenue) /
                   data.revenue.previous_year_revenue,
               )}{" "}
               vs. Vorjahr
@@ -202,7 +229,9 @@ export const ExecutiveOverview: React.FC = () => {
 
           <div className="metric-card">
             <div className="metric-label">Umsatzprognose (KI)</div>
-            <div className="metric-value">{formatCurrency(data.revenue.forecast_amount)}</div>
+            <div className="metric-value">
+              {formatCurrency(data.revenue.forecast_amount)}
+            </div>
             <div className="metric-change">
               🎯 Konfidenz: {formatPercent(data.revenue.forecast_confidence)}
             </div>
@@ -217,8 +246,12 @@ export const ExecutiveOverview: React.FC = () => {
 
           <div className="metric-card">
             <div className="metric-label">Wachstumsrate</div>
-            <div className="metric-value">{formatPercent(data.revenue.growth_rate)}</div>
-            <div className={`metric-trend ${data.revenue.growth_rate > 0 ? "positive" : "negative"}`}>
+            <div className="metric-value">
+              {formatPercent(data.revenue.growth_rate)}
+            </div>
+            <div
+              className={`metric-trend ${data.revenue.growth_rate > 0 ? "positive" : "negative"}`}
+            >
               {data.revenue.growth_rate > 0 ? "▲" : "▼"}
             </div>
           </div>
@@ -232,7 +265,9 @@ export const ExecutiveOverview: React.FC = () => {
               <div key={customer.rank} className="list-item">
                 <span className="rank">#{customer.rank}</span>
                 <span className="name">{customer.customer_name}</span>
-                <span className="value">{formatCurrency(customer.revenue)}</span>
+                <span className="value">
+                  {formatCurrency(customer.revenue)}
+                </span>
               </div>
             ))}
           </div>
@@ -259,7 +294,9 @@ export const ExecutiveOverview: React.FC = () => {
             <div key={region.region} className="region-bar">
               <div className="region-label">
                 <span className="region-name">{region.region}</span>
-                <span className="region-value">{formatCurrency(region.revenue)}</span>
+                <span className="region-value">
+                  {formatCurrency(region.revenue)}
+                </span>
               </div>
               <div className="progress-bar">
                 <div
@@ -279,7 +316,9 @@ export const ExecutiveOverview: React.FC = () => {
         <div className="metrics-grid">
           <div className="metric-card">
             <div className="metric-label">Bruttomarge (Live)</div>
-            <div className="metric-value">{formatPercent(data.margins.gross_margin)}</div>
+            <div className="metric-value">
+              {formatPercent(data.margins.gross_margin)}
+            </div>
             <div className="metric-change">
               🎯 Ziel: {formatPercent(data.margins.target_margin)}
             </div>
@@ -287,12 +326,16 @@ export const ExecutiveOverview: React.FC = () => {
 
           <div className="metric-card">
             <div className="metric-label">Nettomarge</div>
-            <div className="metric-value">{formatPercent(data.margins.net_margin)}</div>
+            <div className="metric-value">
+              {formatPercent(data.margins.net_margin)}
+            </div>
           </div>
 
           <div className="metric-card">
             <div className="metric-label">Branchenbenchmark</div>
-            <div className="metric-value">{formatPercent(data.margins.benchmark_margin)}</div>
+            <div className="metric-value">
+              {formatPercent(data.margins.benchmark_margin)}
+            </div>
             <div
               className={`metric-trend ${data.margins.gross_margin > data.margins.benchmark_margin ? "positive" : "negative"}`}
             >
@@ -307,7 +350,9 @@ export const ExecutiveOverview: React.FC = () => {
       {/* Liquidity Section */}
       <section className="overview-section liquidity-section">
         <h3 className="subsection-title">💧 Liquiditätsstatus</h3>
-        <div className={`liquidity-status status-${data.liquidity.warning_level}`}>
+        <div
+          className={`liquidity-status status-${data.liquidity.warning_level}`}
+        >
           <div className="status-indicator">
             {data.liquidity.warning_level === "green" && "✅ Gut"}
             {data.liquidity.warning_level === "yellow" && "⚠️ Warnung"}
@@ -345,7 +390,9 @@ export const ExecutiveOverview: React.FC = () => {
 
           <div className="metric-card warning">
             <div className="metric-label">Fällige Zahlungsausgänge</div>
-            <div className="metric-value">{formatCurrency(data.liquidity.payables_due)}</div>
+            <div className="metric-value">
+              {formatCurrency(data.liquidity.payables_due)}
+            </div>
           </div>
 
           <div className="metric-card success">
@@ -400,7 +447,9 @@ export const ExecutiveOverview: React.FC = () => {
             <div
               className={`metric-trend ${data.orderIntake.deviation_percentage > 0 ? "positive" : "negative"}`}
             >
-              {data.orderIntake.deviation_percentage > 0 ? "▲ Über Plan" : "▼ Unter Plan"}
+              {data.orderIntake.deviation_percentage > 0
+                ? "▲ Über Plan"
+                : "▼ Unter Plan"}
             </div>
           </div>
 
@@ -439,8 +488,12 @@ export const ExecutiveOverview: React.FC = () => {
           </div>
 
           <div className="metric-card">
-            <div className="metric-label">OEE (Overall Equipment Effectiveness)</div>
-            <div className="metric-value">{formatPercent(data.productivity.oee)}</div>
+            <div className="metric-label">
+              OEE (Overall Equipment Effectiveness)
+            </div>
+            <div className="metric-value">
+              {formatPercent(data.productivity.oee)}
+            </div>
             <div className="metric-change">
               🎯 Ziel: {formatPercent(data.productivity.target_value)}
             </div>
@@ -454,7 +507,9 @@ export const ExecutiveOverview: React.FC = () => {
             <div
               className={`metric-trend ${data.productivity.capacity_utilization > 0.85 ? "positive" : "warning"}`}
             >
-              {data.productivity.capacity_utilization > 0.85 ? "Optimal" : "Ausbaufähig"}
+              {data.productivity.capacity_utilization > 0.85
+                ? "Optimal"
+                : "Ausbaufähig"}
             </div>
           </div>
         </div>

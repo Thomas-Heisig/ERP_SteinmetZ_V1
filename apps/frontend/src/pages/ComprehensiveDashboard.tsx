@@ -2,10 +2,18 @@
 // apps/frontend/src/pages/ComprehensiveDashboard.tsx
 
 import React, { useState } from "react";
-import { ExecutiveOverview, WarningsEscalations } from "../components/Dashboard/widgets";
+import {
+  ExecutiveOverview,
+  WarningsEscalations,
+} from "../components/Dashboard/widgets";
 import "./ComprehensiveDashboard.css";
 
-type DashboardView = "overview" | "executive" | "warnings" | "analytics" | "tasks";
+type DashboardView =
+  | "overview"
+  | "executive"
+  | "warnings"
+  | "analytics"
+  | "tasks";
 
 export const ComprehensiveDashboard: React.FC = () => {
   const [activeView, setActiveView] = useState<DashboardView>("overview");
@@ -22,7 +30,9 @@ export const ComprehensiveDashboard: React.FC = () => {
           <div className="dashboard-overview-grid">
             <div className="overview-card">
               <h3>📊 Executive Overview</h3>
-              <p>Schnellzugriff auf Umsatz, Margen, Liquidität und Produktivität</p>
+              <p>
+                Schnellzugriff auf Umsatz, Margen, Liquidität und Produktivität
+              </p>
               <button
                 className="view-btn"
                 onClick={() => setActiveView("executive")}
@@ -32,7 +42,9 @@ export const ComprehensiveDashboard: React.FC = () => {
             </div>
             <div className="overview-card">
               <h3>🚨 Warnungen & Eskalationen</h3>
-              <p>Kritische Lieferverzögerungen, Budget-Überschreitungen und mehr</p>
+              <p>
+                Kritische Lieferverzögerungen, Budget-Überschreitungen und mehr
+              </p>
               <button
                 className="view-btn"
                 onClick={() => setActiveView("warnings")}

@@ -168,7 +168,10 @@ export const WarningsEscalations: React.FC = () => {
     );
   }
 
-  const filterData = (items: any[], priorityField: string = "priority") => {
+  const filterData = <T extends Record<string, unknown>>(
+    items: T[],
+    priorityField: string = "priority",
+  ): T[] => {
     if (filter === "all") return items;
     if (filter === "critical")
       return items.filter((item) => item[priorityField] === "critical");
@@ -225,13 +228,20 @@ export const WarningsEscalations: React.FC = () => {
       <section className="warning-section">
         <h3 className="subsection-title">⚠️ Kritische Lieferverzögerungen</h3>
         {filterData(data.deliveryDelays).length === 0 ? (
-          <div className="no-warnings">✅ Keine aktuellen Lieferverzögerungen</div>
+          <div className="no-warnings">
+            ✅ Keine aktuellen Lieferverzögerungen
+          </div>
         ) : (
           <div className="warning-cards">
             {filterData(data.deliveryDelays).map((delay) => (
-              <div key={delay.id} className={`warning-card priority-${delay.priority}`}>
+              <div
+                key={delay.id}
+                className={`warning-card priority-${delay.priority}`}
+              >
                 <div className="card-header">
-                  <span className="priority-icon">{getPriorityIcon(delay.priority)}</span>
+                  <span className="priority-icon">
+                    {getPriorityIcon(delay.priority)}
+                  </span>
                   <span className="card-title">
                     Auftrag {delay.order_id} - {delay.customer_name}
                   </span>
@@ -252,11 +262,15 @@ export const WarningsEscalations: React.FC = () => {
                   </div>
                   <div className="info-row">
                     <span className="info-label">Ursache:</span>
-                    <span className="info-value">{delay.root_cause || "Unbekannt"}</span>
+                    <span className="info-value">
+                      {delay.root_cause || "Unbekannt"}
+                    </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Status:</span>
-                    <span className="info-value">{delay.escalation_status}</span>
+                    <span className="info-value">
+                      {delay.escalation_status}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -312,7 +326,9 @@ export const WarningsEscalations: React.FC = () => {
                   </div>
                   <div className="info-row">
                     <span className="info-label">Genehmigung:</span>
-                    <span className="info-value">{overrun.approval_status}</span>
+                    <span className="info-value">
+                      {overrun.approval_status}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -329,9 +345,14 @@ export const WarningsEscalations: React.FC = () => {
         ) : (
           <div className="warning-cards">
             {filterData(data.qualityIssues, "severity").map((issue) => (
-              <div key={issue.id} className={`warning-card priority-${issue.severity}`}>
+              <div
+                key={issue.id}
+                className={`warning-card priority-${issue.severity}`}
+              >
                 <div className="card-header">
-                  <span className="priority-icon">{getPriorityIcon(issue.severity)}</span>
+                  <span className="priority-icon">
+                    {getPriorityIcon(issue.severity)}
+                  </span>
                   <span className="card-title">{issue.product_name}</span>
                   <span className={`priority-badge ${issue.severity}`}>
                     {issue.severity}
@@ -344,7 +365,9 @@ export const WarningsEscalations: React.FC = () => {
                   </div>
                   <div className="info-row">
                     <span className="info-label">Betroffene Menge:</span>
-                    <span className="info-value">{issue.affected_quantity} Stück</span>
+                    <span className="info-value">
+                      {issue.affected_quantity} Stück
+                    </span>
                   </div>
                   <div className="info-row">
                     <span className="info-label">Geschätzte Kosten:</span>
@@ -416,7 +439,9 @@ export const WarningsEscalations: React.FC = () => {
                   <div className="info-row">
                     <span className="info-label">Deadline:</span>
                     <span className="info-value">
-                      {new Date(complaint.resolution_deadline).toLocaleDateString("de-DE")}
+                      {new Date(
+                        complaint.resolution_deadline,
+                      ).toLocaleDateString("de-DE")}
                     </span>
                   </div>
                 </div>
@@ -459,13 +484,17 @@ export const WarningsEscalations: React.FC = () => {
                   {warning.response_time && (
                     <div className="info-row">
                       <span className="info-label">Antwortzeit:</span>
-                      <span className="info-value">{warning.response_time} ms</span>
+                      <span className="info-value">
+                        {warning.response_time} ms
+                      </span>
                     </div>
                   )}
                   {warning.memory_usage && (
                     <div className="info-row">
                       <span className="info-label">Speicher:</span>
-                      <span className="info-value">{warning.memory_usage}%</span>
+                      <span className="info-value">
+                        {warning.memory_usage}%
+                      </span>
                     </div>
                   )}
                   {warning.api_status && (
