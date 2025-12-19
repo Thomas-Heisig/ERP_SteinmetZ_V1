@@ -1272,6 +1272,7 @@ Reviews: Monatlich Datenqualität & Regeln; Quartalsweise Steuer-/IFRS-Sonderthe
 ### Backend-API-Endpunkte
 
 #### Rechnungswesen (Invoicing)
+
 - `GET /api/finance/invoices` - Liste aller Rechnungen (mit Filtern)
 - `GET /api/finance/invoices/:id` - Einzelne Rechnung abrufen
 - `POST /api/finance/invoices` - Neue Rechnung erstellen
@@ -1280,6 +1281,7 @@ Reviews: Monatlich Datenqualität & Regeln; Quartalsweise Steuer-/IFRS-Sonderthe
 - `POST /api/finance/invoices/:id/send` - Rechnung versenden
 
 #### Debitoren (Customers/Receivables)
+
 - `GET /api/finance/customers` - Kundenliste
 - `GET /api/finance/customers/:id` - Kundendetails
 - `POST /api/finance/customers` - Kunde anlegen
@@ -1287,6 +1289,7 @@ Reviews: Monatlich Datenqualität & Regeln; Quartalsweise Steuer-/IFRS-Sonderthe
 - `GET /api/finance/customers/:id/transactions` - Kundenkontobewegungen
 
 #### Kreditoren (Suppliers/Payables)
+
 - `GET /api/finance/suppliers` - Lieferantenliste
 - `GET /api/finance/suppliers/:id` - Lieferantendetails
 - `POST /api/finance/suppliers` - Lieferant anlegen
@@ -1294,11 +1297,13 @@ Reviews: Monatlich Datenqualität & Regeln; Quartalsweise Steuer-/IFRS-Sonderthe
 - `GET /api/finance/suppliers/:id/transactions` - Lieferantenkontobewegungen
 
 #### Zahlungen (Payments)
+
 - `GET /api/finance/payments` - Zahlungsliste (ein-/ausgehend)
 - `POST /api/finance/payments` - Zahlung erfassen
 - `GET /api/finance/payments/:id` - Zahlungsdetails
 
 #### Konten & Buchungen (Accounts & Transactions)
+
 - `GET /api/finance/accounts` - Kontenplan (SKR03/SKR04)
 - `GET /api/finance/accounts/:id` - Kontodetails mit Salden
 - `POST /api/finance/accounts` - Konto anlegen
@@ -1306,6 +1311,7 @@ Reviews: Monatlich Datenqualität & Regeln; Quartalsweise Steuer-/IFRS-Sonderthe
 - `POST /api/finance/transactions` - Buchung erstellen
 
 #### Anlagenbuchhaltung (Asset Accounting)
+
 - `GET /api/finance/assets` - Anlagenverzeichnis
 - `GET /api/finance/assets/:id` - Anlagendetails
 - `POST /api/finance/assets` - Anlage erfassen
@@ -1313,14 +1319,16 @@ Reviews: Monatlich Datenqualität & Regeln; Quartalsweise Steuer-/IFRS-Sonderthe
 - `GET /api/finance/assets/:id/depreciation` - Abschreibungsverlauf
 - `POST /api/finance/assets/depreciation/calculate` - AfA berechnen
 
-#### Auswertungen & Reports (siehe _3_1_AUSWERTUNGEN.md)
+#### Auswertungen & Reports (siehe \_3_1_AUSWERTUNGEN.md)
+
 - `GET /api/finance/reports/balance-sheet` - Bilanz
 - `GET /api/finance/reports/profit-loss` - GuV
 - `GET /api/finance/reports/cash-flow` - Kapitalflussrechnung
 - `GET /api/finance/reports/trial-balance` - Summen-Saldenliste
 - `GET /api/finance/reports/aging` - Fälligkeitsstruktur (OP-Listen)
 
-#### Kennzahlen (siehe _3_2_KENNZAHLEN.md)
+#### Kennzahlen (siehe \_3_2_KENNZAHLEN.md)
+
 - `GET /api/finance/kpi/liquidity` - Liquiditätskennzahlen (1., 2., 3. Grades)
 - `GET /api/finance/kpi/profitability` - Rentabilitätskennzahlen (ROE, ROA, ROS)
 - `GET /api/finance/kpi/efficiency` - Effizienzkennzahlen (DSO, DPO, DIO, CCC)
@@ -1328,16 +1336,19 @@ Reviews: Monatlich Datenqualität & Regeln; Quartalsweise Steuer-/IFRS-Sonderthe
 - `GET /api/finance/kpi/dashboard` - Kennzahlen-Dashboard (alle wichtigen KPIs)
 
 #### Mahnwesen (Dunning)
+
 - `GET /api/finance/dunning` - Mahnungsliste
 - `POST /api/finance/dunning` - Mahnung erstellen
 - `POST /api/finance/dunning/auto-escalate` - Automatische Eskalation
 
 #### Nummernkreise (Number Ranges)
+
 - `GET /api/finance/number-ranges` - Nummernkreise abrufen
 - `POST /api/finance/number-ranges` - Nummernkreis anlegen
 - `POST /api/finance/number-ranges/:id/next` - Nächste Nummer generieren
 
 #### Export & Compliance
+
 - `POST /api/finance/invoices/:id/export/xrechnung` - XRechnung-XML generieren
 - `POST /api/finance/invoices/:id/export/zugferd` - ZUGFeRD-PDF erstellen
 - `POST /api/finance/datev-export` - DATEV-Export erstellen
@@ -1346,12 +1357,14 @@ Reviews: Monatlich Datenqualität & Regeln; Quartalsweise Steuer-/IFRS-Sonderthe
 - `POST /api/finance/vat/advance-return/submit` - UStVA einreichen
 
 #### Statistiken
+
 - `GET /api/finance/statistics` - Finanzstatistiken-Übersicht
 - `GET /api/finance/payment-monitoring` - Zahlungsüberwachung
 
 ### Datenmodell
 
 #### Core Entities
+
 ```typescript
 // Customer (Debitor)
 interface Customer {
@@ -1393,7 +1406,7 @@ interface Invoice {
   currency: string;
   taxAmount: number;
   grossAmount: number;
-  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+  status: "draft" | "sent" | "paid" | "overdue" | "cancelled";
   dueDate: Date;
   items: InvoiceItem[];
   createdAt: Date;
@@ -1414,11 +1427,11 @@ interface InvoiceItem {
 // Payment
 interface Payment {
   id: string;
-  type: 'incoming' | 'outgoing';
+  type: "incoming" | "outgoing";
   amount: number;
   currency: string;
   date: Date;
-  status: 'pending' | 'completed' | 'failed';
+  status: "pending" | "completed" | "failed";
   invoiceId?: string;
   customerId?: string;
   supplierId?: string;
@@ -1433,9 +1446,9 @@ interface Account {
   id: string;
   accountNumber: string;
   name: string;
-  type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+  type: "asset" | "liability" | "equity" | "revenue" | "expense";
   category: string;
-  standard: 'SKR03' | 'SKR04' | 'IFRS' | 'US-GAAP';
+  standard: "SKR03" | "SKR04" | "IFRS" | "US-GAAP";
   balance: number;
   currency: string;
   isActive: boolean;
@@ -1467,7 +1480,7 @@ interface Asset {
   acquisitionCost: number;
   residualValue: number;
   usefulLife: number; // in months
-  depreciationMethod: 'linear' | 'declining' | 'performance-based';
+  depreciationMethod: "linear" | "declining" | "performance-based";
   currentBookValue: number;
   location?: string;
   costCenter?: string;
@@ -1492,6 +1505,7 @@ interface Depreciation {
 ### Frontend-Komponenten
 
 #### Übersichtsseiten
+
 - **FinanceDashboard** - Finanz-Übersicht mit KPIs
 - **InvoiceList** - Rechnungsliste mit Filtern
 - **CustomerList** - Kundenliste
@@ -1502,6 +1516,7 @@ interface Depreciation {
 - **AssetList** - Anlagenverzeichnis
 
 #### Formulare & Dialoge
+
 - **InvoiceForm** - Rechnung erstellen/bearbeiten
 - **CustomerForm** - Kunde anlegen/bearbeiten
 - **SupplierForm** - Lieferant anlegen/bearbeiten
@@ -1511,12 +1526,13 @@ interface Depreciation {
 - **ChartOfAccountsImport** - Kontenplan importieren
 
 #### Auswertungen & Reports
+
 - **BalanceSheet** - Bilanzansicht
 - **ProfitLossStatement** - GuV-Ansicht
 - **CashFlowStatement** - Kapitalflussrechnung
 - **AgingReport** - Fälligkeitsanalyse
-- **KPIDashboard** - Kennzahlen-Dashboard (detailliert in _3_2_KENNZAHLEN.md)
-- **FinancialReports** - Auswertungsmodul (detailliert in _3_1_AUSWERTUNGEN.md)
+- **KPIDashboard** - Kennzahlen-Dashboard (detailliert in \_3_2_KENNZAHLEN.md)
+- **FinancialReports** - Auswertungsmodul (detailliert in \_3_1_AUSWERTUNGEN.md)
 
 ### Datenbank-Schema (SQLite/PostgreSQL)
 
@@ -1714,6 +1730,7 @@ CREATE INDEX idx_depreciation_asset ON depreciation(asset_id);
 ### Integration & Workflows
 
 #### Automatische Prozesse
+
 1. **Rechnungsnummerierung**: Automatische Vergabe bei Erstellung
 2. **Zahlungsabgleich**: Auto-Matching von Banktransaktionen mit offenen Posten
 3. **Mahnwesen**: Automatische Eskalation nach konfigurierbaren Regeln
@@ -1721,6 +1738,7 @@ CREATE INDEX idx_depreciation_asset ON depreciation(asset_id);
 5. **Saldenberechnung**: Automatische Aktualisierung bei Buchungen
 
 #### Validierungen
+
 1. **Doppelte Buchführung**: Soll = Haben bei jeder Transaktion
 2. **Kredilimitprüfung**: Warnung bei Überschreitung
 3. **Plausibilitätsprüfungen**: Datum, Betrag, Konten
@@ -1728,6 +1746,7 @@ CREATE INDEX idx_depreciation_asset ON depreciation(asset_id);
 5. **GoBD-Konformität**: Unveränderbarkeit, Vollständigkeit, Nachvollziehbarkeit
 
 ### Sicherheit & Compliance
+
 - **Verschlüsselung**: Sensible Daten (Bankverbindungen, Steuer-IDs)
 - **Audit-Trail**: Alle Änderungen protokollieren
 - **Zugriffsrechte**: Rollenbasierte Berechtigungen (RBAC)

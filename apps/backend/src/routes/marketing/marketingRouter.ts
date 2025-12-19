@@ -14,12 +14,12 @@ import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { NotFoundError, ValidationError } from "../../types/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import pino from "pino";
+import { createLogger } from "../../utils/logger.js";
 import db from "../../services/dbService.js";
 import { randomUUID } from "crypto";
 
 const router = Router();
-const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+const logger = createLogger("marketing");
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -94,7 +94,13 @@ const createSegmentSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().optional(),
   segment_type: z
-    .enum(["demographic", "firmographic", "behavioral", "psychographic", "custom"])
+    .enum([
+      "demographic",
+      "firmographic",
+      "behavioral",
+      "psychographic",
+      "custom",
+    ])
     .optional(),
   criteria: z.string(), // JSON string with criteria
   status: z.enum(["active", "inactive"]).default("active"),
@@ -170,7 +176,10 @@ router.post(
     const validation = createCampaignSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid campaign data", validation.error.issues);
+      throw new ValidationError(
+        "Invalid campaign data",
+        validation.error.issues,
+      );
     }
 
     const id = `camp-${randomUUID()}`;
@@ -229,7 +238,10 @@ router.put(
     const validation = updateCampaignSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid campaign data", validation.error.issues);
+      throw new ValidationError(
+        "Invalid campaign data",
+        validation.error.issues,
+      );
     }
 
     const now = new Date().toISOString();
@@ -734,7 +746,10 @@ router.post(
     const validation = createSegmentSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid segment data", validation.error.issues);
+      throw new ValidationError(
+        "Invalid segment data",
+        validation.error.issues,
+      );
     }
 
     const id = `seg-${randomUUID()}`;
@@ -756,9 +771,10 @@ router.post(
       ],
     );
 
-    const segment = await db.get("SELECT * FROM marketing_segments WHERE id = ?", [
-      id,
-    ]);
+    const segment = await db.get(
+      "SELECT * FROM marketing_segments WHERE id = ?",
+      [id],
+    );
 
     res.status(201).json({
       success: true,

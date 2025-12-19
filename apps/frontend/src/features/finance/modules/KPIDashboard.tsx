@@ -3,7 +3,7 @@
 
 /**
  * KPI Dashboard Component
- * 
+ *
  * Displays comprehensive financial key performance indicators including:
  * - Liquidity ratios (Cash Ratio, Quick Ratio, Current Ratio)
  * - Profitability metrics (ROE, ROA, ROS, EBIT/EBITDA margins)
@@ -11,10 +11,10 @@
  * - Capital structure indicators (Equity ratio, Gearing, Debt ratios)
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card } from '../../../components/ui';
-import { API_ENDPOINTS } from '../../../config/api';
-import styles from './KPIDashboard.module.css';
+import React, { useState, useEffect } from "react";
+import { Card } from "../../../components/ui";
+import { API_ENDPOINTS } from "../../../config/api";
+import styles from "./KPIDashboard.module.css";
 
 interface KPIDashboard {
   liquidity: {
@@ -49,7 +49,7 @@ interface KPICardProps {
   title: string;
   value: number;
   unit?: string;
-  format?: 'number' | 'currency' | 'percentage';
+  format?: "number" | "currency" | "percentage";
   benchmark?: { min: number; optimal: number; max: number };
   invertColors?: boolean;
   description?: string;
@@ -58,38 +58,39 @@ interface KPICardProps {
 const KPICard: React.FC<KPICardProps> = ({
   title,
   value,
-  unit = '',
-  format = 'number',
+  unit = "",
+  format = "number",
   benchmark,
   invertColors = false,
   description,
 }) => {
-  const getStatus = (): 'good' | 'warning' | 'bad' => {
-    if (!benchmark) return 'good';
+  const getStatus = (): "good" | "warning" | "bad" => {
+    if (!benchmark) return "good";
 
     const isInRange = value >= benchmark.min && value <= benchmark.max;
-    const isOptimal = Math.abs(value - benchmark.optimal) / benchmark.optimal < 0.1;
+    const isOptimal =
+      Math.abs(value - benchmark.optimal) / benchmark.optimal < 0.1;
 
     if (invertColors) {
-      if (value > benchmark.max) return 'bad';
-      if (value < benchmark.min) return 'good';
-      if (isOptimal) return 'good';
-      return 'warning';
+      if (value > benchmark.max) return "bad";
+      if (value < benchmark.min) return "good";
+      if (isOptimal) return "good";
+      return "warning";
     } else {
-      if (value < benchmark.min || value > benchmark.max) return 'bad';
-      if (isOptimal) return 'good';
-      return 'warning';
+      if (value < benchmark.min || value > benchmark.max) return "bad";
+      if (isOptimal) return "good";
+      return "warning";
     }
   };
 
   const formatValue = (val: number): string => {
     switch (format) {
-      case 'currency':
-        return new Intl.NumberFormat('de-DE', {
-          style: 'currency',
-          currency: 'EUR',
+      case "currency":
+        return new Intl.NumberFormat("de-DE", {
+          style: "currency",
+          currency: "EUR",
         }).format(val);
-      case 'percentage':
+      case "percentage":
         return val.toFixed(2);
       default:
         return val.toFixed(2);
@@ -129,16 +130,16 @@ export const KPIDashboard: React.FC = () => {
       try {
         setLoading(true);
         const response = await fetch(API_ENDPOINTS.finance.kpi.dashboard);
-        
+
         if (!response.ok) {
-          throw new Error('Failed to fetch KPI data');
+          throw new Error("Failed to fetch KPI data");
         }
 
         const result = await response.json();
         setKpis(result.data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred');
-        console.error('Error fetching KPIs:', err);
+        setError(err instanceof Error ? err.message : "Unknown error occurred");
+        console.error("Error fetching KPIs:", err);
       } finally {
         setLoading(false);
       }
@@ -159,7 +160,7 @@ export const KPIDashboard: React.FC = () => {
     return (
       <div className={styles.container}>
         <div className={styles.error}>
-          Fehler beim Laden der Kennzahlen: {error || 'Keine Daten verfügbar'}
+          Fehler beim Laden der Kennzahlen: {error || "Keine Daten verfügbar"}
         </div>
       </div>
     );
@@ -334,7 +335,8 @@ export const KPIDashboard: React.FC = () => {
 
       <footer className={styles.footer}>
         <p className={styles.timestamp}>
-          Letzte Aktualisierung: {new Date(kpis.timestamp).toLocaleString('de-DE')}
+          Letzte Aktualisierung:{" "}
+          {new Date(kpis.timestamp).toLocaleString("de-DE")}
         </p>
       </footer>
     </div>

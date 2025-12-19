@@ -15,60 +15,70 @@ The Extended CRM Module adds advanced customer relationship management capabilit
 ## Features
 
 ### 1. Customer Hierarchies
+
 - Parent-subsidiary relationships
 - Corporate group structures
 - Partner networks
 - Key account mapping
 
 ### 2. Contact Relationships
+
 - Organizational charts
 - Influencer identification
 - Decision-maker mapping
 - Relationship strength tracking
 
 ### 3. Data Enrichment
+
 - External data source integration
 - Automatic data updates
 - Quality scoring
 - Enrichment audit trail
 
 ### 4. Duplicate Detection
+
 - Fuzzy matching algorithms
 - Multi-field comparison
 - Manual review workflow
 - Merge history tracking
 
 ### 5. Data Quality Management
+
 - Automated quality checks
 - Completeness scoring
 - Validation rules
 - Issue tracking and resolution
 
 ### 6. Extended Contact Features
+
 - Communication preferences
 - GDPR consent management
 - Multi-channel contact history
 - Automated follow-ups
 
 ### 7. Customer Value Metrics
+
 - Lifetime value calculation
 - Customer scoring
 - Churn risk prediction
 - Engagement scoring
 
 ### 8. Telephony & CTI Integration
+
 - Call logging and recording
 - Call quality tracking
 - Voicemail management
 - Transcription services
 
 ### 9. Email Tracking
+
 - Open and click tracking
 - Delivery monitoring
 - Bounce management
 - Engagement analytics
 
 ### 10. Performance & Predictive Analytics
+
 - Sales performance metrics
 - Predictive models for opportunities
 - Churn prediction
@@ -79,6 +89,7 @@ The Extended CRM Module adds advanced customer relationship management capabilit
 ### Customer Hierarchies
 
 #### `crm_company_hierarchies`
+
 Manages relationships between companies.
 
 ```sql
@@ -97,6 +108,7 @@ CREATE TABLE crm_company_hierarchies (
 ```
 
 #### `crm_contact_relationships`
+
 Tracks relationships between individual contacts.
 
 ```sql
@@ -117,6 +129,7 @@ CREATE TABLE crm_contact_relationships (
 ### Data Enrichment
 
 #### `crm_enrichment_logs`
+
 Tracks all data enrichment activities.
 
 ```sql
@@ -137,6 +150,7 @@ CREATE TABLE crm_enrichment_logs (
 ### Duplicate Detection
 
 #### `crm_duplicate_rules`
+
 Defines rules for detecting duplicates.
 
 ```sql
@@ -153,6 +167,7 @@ CREATE TABLE crm_duplicate_rules (
 ```
 
 #### `crm_duplicate_candidates`
+
 Stores detected potential duplicates.
 
 ```sql
@@ -174,6 +189,7 @@ CREATE TABLE crm_duplicate_candidates (
 ### Contact Preferences
 
 #### `crm_contact_preferences`
+
 Stores communication preferences and consent.
 
 ```sql
@@ -200,6 +216,7 @@ CREATE TABLE crm_contact_preferences (
 ### Customer Metrics
 
 #### `crm_customer_metrics`
+
 Tracks customer value and behavior metrics.
 
 ```sql
@@ -223,6 +240,7 @@ CREATE TABLE crm_customer_metrics (
 ### Communication Tracking
 
 #### `crm_call_logs`
+
 Detailed call tracking and recording.
 
 ```sql
@@ -248,6 +266,7 @@ CREATE TABLE crm_call_logs (
 ```
 
 #### `crm_email_tracking`
+
 Email interaction tracking.
 
 ```sql
@@ -277,6 +296,7 @@ CREATE TABLE crm_email_tracking (
 ### Performance Metrics
 
 #### `crm_performance_metrics`
+
 Tracks sales and team performance.
 
 ```sql
@@ -315,15 +335,15 @@ All extended tables use foreign keys to maintain referential integrity with the 
 
 ```typescript
 // Create parent-subsidiary relationship
-await fetch('/api/crm/hierarchies', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+await fetch("/api/crm/hierarchies", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    parent_customer_id: 'cust-parent-uuid',
-    child_customer_id: 'cust-subsidiary-uuid',
-    relationship_type: 'parent_subsidiary',
-    notes: 'Full subsidiary, 100% owned'
-  })
+    parent_customer_id: "cust-parent-uuid",
+    child_customer_id: "cust-subsidiary-uuid",
+    relationship_type: "parent_subsidiary",
+    notes: "Full subsidiary, 100% owned",
+  }),
 });
 ```
 
@@ -331,20 +351,20 @@ await fetch('/api/crm/hierarchies', {
 
 ```typescript
 // Log data enrichment from external source
-await fetch('/api/crm/enrichment', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+await fetch("/api/crm/enrichment", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    customer_id: 'cust-uuid',
-    source: 'creditreform',
-    enriched_fields: ['credit_score', 'company_size', 'revenue'],
+    customer_id: "cust-uuid",
+    source: "creditreform",
+    enriched_fields: ["credit_score", "company_size", "revenue"],
     enriched_data: {
       credit_score: 85,
       company_size: 250,
-      revenue: 15000000
+      revenue: 15000000,
     },
-    quality_score: 95
-  })
+    quality_score: 95,
+  }),
 });
 ```
 
@@ -352,13 +372,13 @@ await fetch('/api/crm/enrichment', {
 
 ```typescript
 // Run duplicate detection
-const duplicates = await fetch('/api/crm/duplicates/detect', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const duplicates = await fetch("/api/crm/duplicates/detect", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    entity_type: 'customer',
-    rule_id: 'rule-uuid'
-  })
+    entity_type: "customer",
+    rule_id: "rule-uuid",
+  }),
 });
 
 // Review and merge duplicates
@@ -366,14 +386,14 @@ const duplicateList = await duplicates.json();
 for (const dup of duplicateList.data) {
   if (dup.match_score > 90) {
     // Merge the duplicates
-    await fetch('/api/crm/duplicates/merge', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    await fetch("/api/crm/duplicates/merge", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         master_id: dup.entity_id_1,
         duplicate_ids: [dup.entity_id_2],
-        merge_strategy: 'keep_master'
-      })
+        merge_strategy: "keep_master",
+      }),
     });
   }
 }
@@ -383,12 +403,12 @@ for (const dup of duplicateList.data) {
 
 ```typescript
 // Calculate and store customer metrics
-await fetch('/api/crm/metrics/customer', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+await fetch("/api/crm/metrics/customer", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    customer_id: 'cust-uuid',
-    metric_date: '2025-12-01',
+    customer_id: "cust-uuid",
+    metric_date: "2025-12-01",
     total_revenue: 125000,
     total_orders: 45,
     avg_order_value: 2777.78,
@@ -396,8 +416,8 @@ await fetch('/api/crm/metrics/customer', {
     customer_score: 85,
     churn_risk_score: 15,
     engagement_score: 92,
-    satisfaction_score: 88
-  })
+    satisfaction_score: 88,
+  }),
 });
 ```
 
@@ -405,23 +425,23 @@ await fetch('/api/crm/metrics/customer', {
 
 ```typescript
 // Log a completed call
-await fetch('/api/crm/calls', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+await fetch("/api/crm/calls", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    customer_id: 'cust-uuid',
-    contact_id: 'contact-uuid',
-    phone_number: '+49123456789',
-    call_direction: 'outbound',
+    customer_id: "cust-uuid",
+    contact_id: "contact-uuid",
+    phone_number: "+49123456789",
+    call_direction: "outbound",
     call_duration_seconds: 420,
-    call_status: 'answered',
-    recording_url: 'https://recordings.example.com/call-123.mp3',
-    transcript: 'Call transcript text here...',
+    call_status: "answered",
+    recording_url: "https://recordings.example.com/call-123.mp3",
+    transcript: "Call transcript text here...",
     call_quality_score: 5,
-    notes: 'Discussed renewal of contract',
-    started_at: '2025-12-19T10:00:00Z',
-    ended_at: '2025-12-19T10:07:00Z'
-  })
+    notes: "Discussed renewal of contract",
+    started_at: "2025-12-19T10:00:00Z",
+    ended_at: "2025-12-19T10:07:00Z",
+  }),
 });
 ```
 
@@ -429,26 +449,27 @@ await fetch('/api/crm/calls', {
 
 ```typescript
 // Update contact preferences and GDPR consent
-await fetch('/api/crm/contacts/cust-uuid/preferences', {
-  method: 'PUT',
-  headers: { 'Content-Type': 'application/json' },
+await fetch("/api/crm/contacts/cust-uuid/preferences", {
+  method: "PUT",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    preferred_communication_channel: 'email',
-    preferred_contact_time: '09:00-17:00',
-    communication_frequency: 'weekly',
-    language: 'de',
-    timezone: 'Europe/Berlin',
+    preferred_communication_channel: "email",
+    preferred_contact_time: "09:00-17:00",
+    communication_frequency: "weekly",
+    language: "de",
+    timezone: "Europe/Berlin",
     gdpr_consent: true,
-    gdpr_consent_date: '2025-12-19',
+    gdpr_consent_date: "2025-12-19",
     marketing_opt_in: true,
-    marketing_opt_in_date: '2025-12-19'
-  })
+    marketing_opt_in_date: "2025-12-19",
+  }),
 });
 ```
 
 ## Best Practices
 
 ### 1. Data Enrichment
+
 - Schedule regular enrichment updates
 - Validate enriched data before storing
 - Track enrichment quality scores
@@ -456,6 +477,7 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 - Respect rate limits on external APIs
 
 ### 2. Duplicate Detection
+
 - Set appropriate match thresholds (80-90%)
 - Always require manual review before merging
 - Keep merge history for audit purposes
@@ -463,6 +485,7 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 - Monitor false positive rates
 
 ### 3. Data Quality
+
 - Run automated checks daily
 - Prioritize critical issues
 - Set up alerts for quality drops
@@ -470,6 +493,7 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 - Document quality standards
 
 ### 4. GDPR Compliance
+
 - Always record consent timestamps
 - Provide easy opt-out mechanisms
 - Honor data deletion requests within 30 days
@@ -477,6 +501,7 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 - Regular compliance reviews
 
 ### 5. Customer Metrics
+
 - Calculate metrics asynchronously
 - Update metrics on schedule (daily/weekly)
 - Use historical trends for predictions
@@ -484,6 +509,7 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 - Validate metric accuracy regularly
 
 ### 6. Communication Tracking
+
 - Only track with proper consent
 - Secure call recordings properly
 - Respect privacy regulations
@@ -491,6 +517,7 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 - Set retention policies
 
 ### 7. Performance Analytics
+
 - Calculate metrics off-peak hours
 - Use aggregated data for dashboards
 - Cache frequently accessed metrics
@@ -498,6 +525,7 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 - Regular model validation
 
 ### 8. Hierarchies
+
 - Prevent circular references
 - Validate relationships before creating
 - Document organizational changes
@@ -505,6 +533,7 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 - Handle reorganizations carefully
 
 ### 9. Contact Relationships
+
 - Keep relationship data current
 - Track relationship changes
 - Use for targeted campaigns
@@ -512,6 +541,7 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 - Document key relationships
 
 ### 10. Predictive Models
+
 - Regular retraining (monthly/quarterly)
 - Monitor model drift
 - Explain predictions when possible
@@ -529,13 +559,16 @@ await fetch('/api/crm/contacts/cust-uuid/preferences', {
 ## Performance Optimization
 
 ### Indexing Strategy
+
 All critical indexes are created by the migration:
+
 - Foreign key indexes for joins
 - Status indexes for filtering
 - Date indexes for time-based queries
 - Composite indexes for common query patterns
 
 ### Query Optimization
+
 - Use indexed columns in WHERE clauses
 - Limit result sets appropriately
 - Paginate large datasets
@@ -543,6 +576,7 @@ All critical indexes are created by the migration:
 - Use aggregations wisely
 
 ### Batch Processing
+
 - Calculate metrics in batches
 - Schedule heavy operations off-peak
 - Use queues for async processing
@@ -563,6 +597,7 @@ All critical indexes are created by the migration:
 ## Support
 
 For issues or questions:
+
 - Review the database schema
 - Check the API documentation
 - Examine example implementations

@@ -50,10 +50,14 @@ interface CommunicationChannel {
 export const CompanyPage: React.FC = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"basic" | "legal" | "tax" | "bank" | "communication">("basic");
+  const [activeTab, setActiveTab] = useState<
+    "basic" | "legal" | "tax" | "bank" | "communication"
+  >("basic");
   const [companies, setCompanies] = useState<CompanyInfo[]>([]);
-  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
-  
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(
+    null,
+  );
+
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>({
     official_name: "",
     country: "Deutschland",
@@ -61,7 +65,9 @@ export const CompanyPage: React.FC = () => {
   });
 
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
-  const [communications, setCommunications] = useState<CommunicationChannel[]>([]);
+  const [communications, setCommunications] = useState<CommunicationChannel[]>(
+    [],
+  );
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -128,11 +134,11 @@ export const CompanyPage: React.FC = () => {
 
       const data = await response.json();
       setSuccess("Company information saved successfully");
-      
+
       if (!companyInfo.id && data.id) {
         setSelectedCompanyId(data.id);
       }
-      
+
       fetchCompanies();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save company");
@@ -145,11 +151,14 @@ export const CompanyPage: React.FC = () => {
     if (!selectedCompanyId) return;
 
     try {
-      const response = await fetch(`/api/business/company/${selectedCompanyId}/bank-accounts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(account),
-      });
+      const response = await fetch(
+        `/api/business/company/${selectedCompanyId}/bank-accounts`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(account),
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to add bank account");
 
@@ -164,11 +173,14 @@ export const CompanyPage: React.FC = () => {
     if (!selectedCompanyId) return;
 
     try {
-      const response = await fetch(`/api/business/company/${selectedCompanyId}/communications`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(channel),
-      });
+      const response = await fetch(
+        `/api/business/company/${selectedCompanyId}/communications`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(channel),
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to add communication channel");
 
@@ -258,7 +270,12 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="text"
                 value={companyInfo.official_name}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, official_name: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({
+                    ...companyInfo,
+                    official_name: e.target.value,
+                  })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 required
@@ -272,7 +289,9 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="text"
                 value={companyInfo.trade_name || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, trade_name: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({ ...companyInfo, trade_name: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
@@ -285,7 +304,12 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="date"
                 value={companyInfo.founded_date || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, founded_date: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({
+                    ...companyInfo,
+                    founded_date: e.target.value,
+                  })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
@@ -299,7 +323,10 @@ export const CompanyPage: React.FC = () => {
                 type="number"
                 value={companyInfo.employee_count || ""}
                 onChange={(e) => {
-                  const value = e.target.value === "" ? undefined : parseInt(e.target.value, 10);
+                  const value =
+                    e.target.value === ""
+                      ? undefined
+                      : parseInt(e.target.value, 10);
                   if (value === undefined || !isNaN(value)) {
                     setCompanyInfo({ ...companyInfo, employee_count: value });
                   }
@@ -316,14 +343,21 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="text"
                 value={companyInfo.industry_classification || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, industry_classification: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({
+                    ...companyInfo,
+                    industry_classification: e.target.value,
+                  })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
             <div className="md:col-span-2">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Adresse</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Adresse
+              </h3>
             </div>
 
             <div className="md:col-span-2">
@@ -333,7 +367,9 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="text"
                 value={companyInfo.street || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, street: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({ ...companyInfo, street: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
@@ -346,7 +382,12 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="text"
                 value={companyInfo.postal_code || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, postal_code: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({
+                    ...companyInfo,
+                    postal_code: e.target.value,
+                  })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
@@ -359,7 +400,9 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="text"
                 value={companyInfo.city || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, city: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({ ...companyInfo, city: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
@@ -372,14 +415,18 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="text"
                 value={companyInfo.country}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, country: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({ ...companyInfo, country: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
             <div className="md:col-span-2">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Kontaktdaten</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Kontaktdaten
+              </h3>
             </div>
 
             <div>
@@ -389,7 +436,9 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="tel"
                 value={companyInfo.phone || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, phone: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({ ...companyInfo, phone: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
@@ -402,7 +451,9 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="email"
                 value={companyInfo.email || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, email: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({ ...companyInfo, email: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
@@ -415,7 +466,9 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="url"
                 value={companyInfo.website || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, website: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({ ...companyInfo, website: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
@@ -428,7 +481,9 @@ export const CompanyPage: React.FC = () => {
               <input
                 type="tel"
                 value={companyInfo.fax || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, fax: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({ ...companyInfo, fax: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
@@ -440,7 +495,9 @@ export const CompanyPage: React.FC = () => {
               </label>
               <textarea
                 value={companyInfo.notes || ""}
-                onChange={(e) => setCompanyInfo({ ...companyInfo, notes: e.target.value })}
+                onChange={(e) =>
+                  setCompanyInfo({ ...companyInfo, notes: e.target.value })
+                }
                 rows={4}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -451,26 +508,47 @@ export const CompanyPage: React.FC = () => {
 
         {activeTab === "bank" && (
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Bankverbindungen</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Bankverbindungen
+            </h3>
             <div className="space-y-4">
               {bankAccounts.map((account, index) => (
-                <div key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div
+                  key={index}
+                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
+                >
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Bank</p>
-                      <p className="font-medium text-gray-900 dark:text-white">{account.bank_name}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Bank
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {account.bank_name}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Kontoname</p>
-                      <p className="font-medium text-gray-900 dark:text-white">{account.account_name}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Kontoname
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {account.account_name}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">IBAN</p>
-                      <p className="font-medium text-gray-900 dark:text-white">{account.iban}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        IBAN
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {account.iban}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">BIC</p>
-                      <p className="font-medium text-gray-900 dark:text-white">{account.bic || "-"}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        BIC
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {account.bic || "-"}
+                      </p>
                     </div>
                   </div>
                   {account.is_primary && (
@@ -481,7 +559,9 @@ export const CompanyPage: React.FC = () => {
                 </div>
               ))}
               {bankAccounts.length === 0 && (
-                <p className="text-gray-500 dark:text-gray-400">Keine Bankverbindungen vorhanden</p>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Keine Bankverbindungen vorhanden
+                </p>
               )}
             </div>
           </div>
@@ -489,22 +569,39 @@ export const CompanyPage: React.FC = () => {
 
         {activeTab === "communication" && (
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Kommunikationskanäle</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Kommunikationskanäle
+            </h3>
             <div className="space-y-4">
               {communications.map((channel, index) => (
-                <div key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div
+                  key={index}
+                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
+                >
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Typ</p>
-                      <p className="font-medium text-gray-900 dark:text-white">{channel.channel_type}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Typ
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {channel.channel_type}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Name</p>
-                      <p className="font-medium text-gray-900 dark:text-white">{channel.channel_name}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Name
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {channel.channel_name}
+                      </p>
                     </div>
                     <div className="col-span-2">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Wert</p>
-                      <p className="font-medium text-gray-900 dark:text-white">{channel.value}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Wert
+                      </p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {channel.value}
+                      </p>
                     </div>
                   </div>
                   {channel.is_primary && (
@@ -515,7 +612,9 @@ export const CompanyPage: React.FC = () => {
                 </div>
               ))}
               {communications.length === 0 && (
-                <p className="text-gray-500 dark:text-gray-400">Keine Kommunikationskanäle vorhanden</p>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Keine Kommunikationskanäle vorhanden
+                </p>
               )}
             </div>
           </div>

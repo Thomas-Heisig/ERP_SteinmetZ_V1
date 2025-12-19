@@ -24,6 +24,7 @@ The Marketing Module consists of:
 ### Database Tables
 
 #### Campaign Management
+
 - `marketing_campaigns` - Core campaign definitions
 - `marketing_campaign_metrics` - Performance tracking per campaign
 - `marketing_email_sequences` - Email automation sequences
@@ -31,11 +32,13 @@ The Marketing Module consists of:
 - `marketing_social_posts` - Social media content calendar
 
 #### Audience Management
+
 - `marketing_segments` - Customer/lead segments
 - `marketing_personas` - Buyer personas
 - `marketing_budgets` - Budget allocation and tracking
 
 #### Lead Generation
+
 - `marketing_forms` - Web form definitions
 - `marketing_form_submissions` - Form submission data
 - `marketing_landing_pages` - Landing page content
@@ -43,12 +46,14 @@ The Marketing Module consists of:
 - `marketing_event_registrations` - Event attendee tracking
 
 #### Lead Scoring & Analytics
+
 - `marketing_scoring_models` - Lead scoring configurations
 - `marketing_lead_scores` - Historical lead scores
 - `marketing_attribution_models` - Attribution model definitions
 - `marketing_touchpoints` - Customer touchpoint tracking
 
 #### Marketing Automation
+
 - `marketing_workflows` - Automation workflow definitions
 - `marketing_workflow_executions` - Workflow execution state
 - `marketing_ab_tests` - A/B test configurations
@@ -58,15 +63,18 @@ The Marketing Module consists of:
 ### Campaign Management
 
 #### List Campaigns
+
 ```http
 GET /api/marketing/campaigns?status={status}&type={type}
 ```
 
 Query Parameters:
+
 - `status` (optional): Filter by status (draft, planned, active, paused, completed, cancelled)
 - `type` (optional): Filter by type (email, social, sem, seo, offline, event, telephone)
 
 Response:
+
 ```json
 {
   "success": true,
@@ -92,11 +100,13 @@ Response:
 ```
 
 #### Get Campaign by ID
+
 ```http
 GET /api/marketing/campaigns/:id
 ```
 
 #### Create Campaign
+
 ```http
 POST /api/marketing/campaigns
 Content-Type: application/json
@@ -115,6 +125,7 @@ Content-Type: application/json
 ```
 
 #### Update Campaign
+
 ```http
 PUT /api/marketing/campaigns/:id
 Content-Type: application/json
@@ -126,16 +137,19 @@ Content-Type: application/json
 ```
 
 #### Delete Campaign
+
 ```http
 DELETE /api/marketing/campaigns/:id
 ```
 
 #### Get Campaign Metrics
+
 ```http
 GET /api/marketing/campaigns/:id/metrics
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -163,16 +177,19 @@ Response:
 ### Web Forms
 
 #### List Forms
+
 ```http
 GET /api/marketing/forms?status={status}
 ```
 
 #### Get Form by ID
+
 ```http
 GET /api/marketing/forms/:id
 ```
 
 #### Create Form
+
 ```http
 POST /api/marketing/forms
 Content-Type: application/json
@@ -189,6 +206,7 @@ Content-Type: application/json
 ```
 
 #### Submit Form (Public Endpoint)
+
 ```http
 POST /api/marketing/forms/:id/submit
 Content-Type: application/json
@@ -201,6 +219,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -212,11 +231,13 @@ Response:
 ### Landing Pages
 
 #### List Landing Pages
+
 ```http
 GET /api/marketing/landing-pages?status={status}
 ```
 
 #### Get Landing Page by Slug
+
 ```http
 GET /api/marketing/landing-pages/:slug
 ```
@@ -224,6 +245,7 @@ GET /api/marketing/landing-pages/:slug
 This endpoint automatically increments the view count.
 
 #### Create Landing Page
+
 ```http
 POST /api/marketing/landing-pages
 Content-Type: application/json
@@ -243,11 +265,13 @@ Content-Type: application/json
 ### Events
 
 #### List Events
+
 ```http
 GET /api/marketing/events?status={status}
 ```
 
 #### Create Event
+
 ```http
 POST /api/marketing/events
 Content-Type: application/json
@@ -266,6 +290,7 @@ Content-Type: application/json
 ```
 
 #### Register for Event
+
 ```http
 POST /api/marketing/events/:id/register
 Content-Type: application/json
@@ -282,6 +307,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -293,11 +319,13 @@ Response:
 ### Segments
 
 #### List Segments
+
 ```http
 GET /api/marketing/segments
 ```
 
 #### Create Segment
+
 ```http
 POST /api/marketing/segments
 Content-Type: application/json
@@ -314,11 +342,13 @@ Content-Type: application/json
 ### Statistics
 
 #### Get Marketing Statistics
+
 ```http
 GET /api/marketing/stats
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -336,6 +366,7 @@ Response:
 ## Features
 
 ### 1. Campaign Management
+
 - Multi-channel campaign support (email, social, SEM/SEO, offline, events)
 - Campaign lifecycle management (draft → planned → active → completed)
 - Budget tracking and ROI calculation
@@ -343,6 +374,7 @@ Response:
 - Campaign attribution
 
 ### 2. Email Marketing
+
 - Email sequence builder
 - Automated email workflows
 - Personalization and dynamic content
@@ -350,12 +382,14 @@ Response:
 - Open and click tracking (GDPR-compliant)
 
 ### 3. Social Media Management
+
 - Multi-platform posting (Facebook, Instagram, Twitter, LinkedIn, TikTok, Pinterest)
 - Content calendar
 - Scheduled publishing
 - Engagement metrics tracking
 
 ### 4. Lead Generation
+
 - Drag-and-drop form builder
 - Landing page creation
 - Event management and registration
@@ -363,6 +397,7 @@ Response:
 - Form submission tracking
 
 ### 5. Audience Segmentation
+
 - Demographic segmentation
 - Firmographic segmentation
 - Behavioral segmentation
@@ -370,12 +405,14 @@ Response:
 - Persona management
 
 ### 6. Lead Scoring
+
 - Rule-based scoring models
 - AI-based scoring (extensible)
 - Score history tracking
 - Automated lead routing based on scores
 
 ### 7. Marketing Automation
+
 - Workflow automation
 - Trigger-based actions
 - Lead nurturing campaigns
@@ -383,6 +420,7 @@ Response:
 - Behavioral triggers
 
 ### 8. Analytics & Reporting
+
 - Campaign performance dashboards
 - ROI calculation
 - Attribution modeling (first-touch, last-touch, multi-touch)
@@ -390,12 +428,14 @@ Response:
 - Conversion funnel analysis
 
 ### 9. A/B Testing
+
 - Test multiple variants
 - Statistical significance tracking
 - Winner selection
 - Performance comparison
 
 ### 10. Budget Management
+
 - Budget allocation per campaign/channel
 - Spend tracking
 - Budget alerts
@@ -407,74 +447,74 @@ Response:
 
 ```typescript
 // 1. Create a campaign
-const campaignResponse = await fetch('/api/marketing/campaigns', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const campaignResponse = await fetch("/api/marketing/campaigns", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    name: 'Newsletter Q2 2025',
-    type: 'email',
-    status: 'draft',
-    description: 'Quarterly newsletter',
-    start_date: '2025-04-01',
-    end_date: '2025-06-30',
+    name: "Newsletter Q2 2025",
+    type: "email",
+    status: "draft",
+    description: "Quarterly newsletter",
+    start_date: "2025-04-01",
+    end_date: "2025-06-30",
     budget: 5000,
-    target_audience: 'Newsletter Subscribers',
+    target_audience: "Newsletter Subscribers",
     goals: JSON.stringify({
       opens: 1000,
       clicks: 150,
-      conversions: 30
-    })
-  })
+      conversions: 30,
+    }),
+  }),
 });
 
 const campaign = await campaignResponse.json();
 
 // 2. Create an email sequence
-const sequenceResponse = await fetch('/api/marketing/email-sequences', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const sequenceResponse = await fetch("/api/marketing/email-sequences", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     campaign_id: campaign.data.id,
-    name: 'Welcome Series',
-    trigger_type: 'manual',
-    status: 'active'
-  })
+    name: "Welcome Series",
+    trigger_type: "manual",
+    status: "active",
+  }),
 });
 
 // 3. Add email steps to the sequence
 // Step 1: Welcome email
-await fetch('/api/marketing/email-steps', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+await fetch("/api/marketing/email-steps", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     sequence_id: sequence.data.id,
     step_order: 1,
-    subject: 'Welcome to our newsletter!',
-    content: '<html>...</html>',
+    subject: "Welcome to our newsletter!",
+    content: "<html>...</html>",
     delay_days: 0,
-    delay_hours: 0
-  })
+    delay_hours: 0,
+  }),
 });
 
 // Step 2: Follow-up email
-await fetch('/api/marketing/email-steps', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+await fetch("/api/marketing/email-steps", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     sequence_id: sequence.data.id,
     step_order: 2,
-    subject: 'Here are our top tips',
-    content: '<html>...</html>',
+    subject: "Here are our top tips",
+    content: "<html>...</html>",
     delay_days: 3,
-    delay_hours: 0
-  })
+    delay_hours: 0,
+  }),
 });
 
 // 4. Activate the campaign
 await fetch(`/api/marketing/campaigns/${campaign.data.id}`, {
-  method: 'PUT',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ status: 'active' })
+  method: "PUT",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ status: "active" }),
 });
 ```
 
@@ -482,45 +522,45 @@ await fetch(`/api/marketing/campaigns/${campaign.data.id}`, {
 
 ```typescript
 // 1. Create a form
-const formResponse = await fetch('/api/marketing/forms', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const formResponse = await fetch("/api/marketing/forms", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    name: 'Product Demo Request',
-    form_type: 'registration',
+    name: "Product Demo Request",
+    form_type: "registration",
     form_config: JSON.stringify({
       fields: [
-        { name: 'name', type: 'text', label: 'Full Name', required: true },
-        { name: 'email', type: 'email', label: 'Email', required: true },
-        { name: 'company', type: 'text', label: 'Company', required: false },
-        { name: 'phone', type: 'tel', label: 'Phone', required: false }
-      ]
+        { name: "name", type: "text", label: "Full Name", required: true },
+        { name: "email", type: "email", label: "Email", required: true },
+        { name: "company", type: "text", label: "Company", required: false },
+        { name: "phone", type: "tel", label: "Phone", required: false },
+      ],
     }),
-    success_message: 'Thank you! We will contact you soon.',
-    status: 'published'
-  })
+    success_message: "Thank you! We will contact you soon.",
+    status: "published",
+  }),
 });
 
 const form = await formResponse.json();
 
 // 2. Create a landing page
-const pageResponse = await fetch('/api/marketing/landing-pages', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const pageResponse = await fetch("/api/marketing/landing-pages", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    name: 'Product Demo Page',
-    slug: 'request-demo',
-    title: 'Request a Free Demo',
-    description: 'See our product in action',
-    content: '<html>...</html>',
+    name: "Product Demo Page",
+    slug: "request-demo",
+    title: "Request a Free Demo",
+    description: "See our product in action",
+    content: "<html>...</html>",
     form_id: form.data.id,
     seo_config: JSON.stringify({
-      meta_title: 'Request a Demo - Our Product',
-      meta_description: 'Schedule your free product demonstration',
-      keywords: ['demo', 'product', 'free trial']
+      meta_title: "Request a Demo - Our Product",
+      meta_description: "Schedule your free product demonstration",
+      keywords: ["demo", "product", "free trial"],
     }),
-    status: 'published'
-  })
+    status: "published",
+  }),
 });
 
 // Landing page is now live at: /api/marketing/landing-pages/request-demo
@@ -529,20 +569,20 @@ const pageResponse = await fetch('/api/marketing/landing-pages', {
 ### Example 3: Create a Customer Segment
 
 ```typescript
-const segmentResponse = await fetch('/api/marketing/segments', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const segmentResponse = await fetch("/api/marketing/segments", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    name: 'Active Enterprise Customers',
-    description: 'Enterprise customers with recent activity',
-    segment_type: 'firmographic',
+    name: "Active Enterprise Customers",
+    description: "Enterprise customers with recent activity",
+    segment_type: "firmographic",
     criteria: JSON.stringify({
       company_size: { gte: 100 },
-      customer_status: 'active',
-      last_order_days: { lte: 90 }
+      customer_status: "active",
+      last_order_days: { lte: 90 },
     }),
-    status: 'active'
-  })
+    status: "active",
+  }),
 });
 ```
 
@@ -550,28 +590,30 @@ const segmentResponse = await fetch('/api/marketing/segments', {
 
 ```typescript
 // Add campaign metrics
-await fetch('/api/marketing/campaign-metrics', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+await fetch("/api/marketing/campaign-metrics", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    campaign_id: 'camp-uuid',
-    metric_date: '2025-06-01',
+    campaign_id: "camp-uuid",
+    metric_date: "2025-06-01",
     impressions: 10000,
     clicks: 500,
     opens: 2500,
     conversions: 25,
     leads_generated: 30,
     cost: 1000,
-    revenue: 5000
-  })
+    revenue: 5000,
+  }),
 });
 
 // Retrieve campaign metrics
-const metricsResponse = await fetch('/api/marketing/campaigns/camp-uuid/metrics');
+const metricsResponse = await fetch(
+  "/api/marketing/campaigns/camp-uuid/metrics",
+);
 const metrics = await metricsResponse.json();
 
 // Calculate ROI
-metrics.data.forEach(m => {
+metrics.data.forEach((m) => {
   const roi = ((m.revenue - m.cost) / m.cost) * 100;
   console.log(`Date: ${m.metric_date}, ROI: ${roi}%`);
 });
@@ -580,6 +622,7 @@ metrics.data.forEach(m => {
 ## Best Practices
 
 ### 1. Campaign Planning
+
 - Set clear goals and KPIs before launching campaigns
 - Define target audience segments upfront
 - Plan budget allocation across channels
@@ -587,6 +630,7 @@ metrics.data.forEach(m => {
 - Set up tracking and attribution before launch
 
 ### 2. Data Quality
+
 - Validate email addresses before sending
 - Regularly clean and update segments
 - Remove inactive subscribers
@@ -594,6 +638,7 @@ metrics.data.forEach(m => {
 - Ensure GDPR compliance for all data collection
 
 ### 3. Form Design
+
 - Keep forms short and focused
 - Only ask for essential information
 - Use clear labels and placeholders
@@ -601,6 +646,7 @@ metrics.data.forEach(m => {
 - Test forms on multiple devices
 
 ### 4. Email Marketing
+
 - Always include unsubscribe links
 - Personalize subject lines and content
 - A/B test email variants
@@ -608,6 +654,7 @@ metrics.data.forEach(m => {
 - Monitor deliverability metrics
 
 ### 5. Landing Pages
+
 - Have a single, clear call-to-action
 - Optimize page load speed
 - Use compelling headlines and visuals
@@ -615,6 +662,7 @@ metrics.data.forEach(m => {
 - Track and optimize conversion rates
 
 ### 6. Segmentation
+
 - Create segments based on behavior, not just demographics
 - Regularly review and update segment criteria
 - Test segment performance
@@ -622,6 +670,7 @@ metrics.data.forEach(m => {
 - Document segment definitions
 
 ### 7. Lead Scoring
+
 - Start simple, iterate based on results
 - Include both explicit and implicit signals
 - Regularly review and adjust scoring rules
@@ -629,6 +678,7 @@ metrics.data.forEach(m => {
 - Track scoring accuracy and adjust models
 
 ### 8. Analytics
+
 - Set up conversion tracking on all campaigns
 - Use consistent UTM parameters
 - Regularly review attribution models
@@ -636,6 +686,7 @@ metrics.data.forEach(m => {
 - Document assumptions and methodologies
 
 ### 9. Automation
+
 - Test workflows before activation
 - Monitor workflow execution regularly
 - Set up error notifications
@@ -643,6 +694,7 @@ metrics.data.forEach(m => {
 - Document workflow logic
 
 ### 10. Compliance
+
 - Always obtain explicit consent for marketing
 - Provide easy opt-out mechanisms
 - Honor unsubscribe requests immediately
@@ -652,7 +704,9 @@ metrics.data.forEach(m => {
 ## Performance Optimization
 
 ### Database Indexes
+
 All relevant indexes are created automatically by the migration scripts:
+
 - Campaign status and type for filtering
 - Form and landing page status
 - Event dates for date-range queries
@@ -660,12 +714,14 @@ All relevant indexes are created automatically by the migration scripts:
 - Customer/lead foreign keys for joins
 
 ### Caching Strategies
+
 - Cache frequently accessed segments
 - Cache campaign metrics for dashboards
 - Use Redis for real-time counters
 - Invalidate caches on updates
 
 ### Batch Processing
+
 - Process form submissions asynchronously
 - Batch email sends
 - Schedule metric calculations off-peak
@@ -695,6 +751,7 @@ All relevant indexes are created automatically by the migration scripts:
 ## Support
 
 For issues or questions:
+
 - Check the API documentation
 - Review the database schema
 - Examine the router implementation

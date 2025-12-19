@@ -3,7 +3,7 @@
 
 /**
  * Campaign Form Component
- * 
+ *
  * Form for creating and editing marketing campaigns with validation.
  */
 
@@ -45,11 +45,15 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
     goals: initialData?.goals || "",
   });
 
-  const [errors, setErrors] = useState<Partial<Record<keyof CampaignFormData, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof CampaignFormData, string>>
+  >({});
   const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -107,7 +111,9 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
       <div className={styles.formHeader}>
-        <h2>{initialData ? "Kampagne bearbeiten" : "Neue Kampagne erstellen"}</h2>
+        <h2>
+          {initialData ? "Kampagne bearbeiten" : "Neue Kampagne erstellen"}
+        </h2>
       </div>
 
       <div className={styles.formBody}>
@@ -126,7 +132,9 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
             placeholder="z.B. Sommerkampagne 2025"
             required
           />
-          {errors.name && <span className={styles.errorText}>{errors.name}</span>}
+          {errors.name && (
+            <span className={styles.errorText}>{errors.name}</span>
+          )}
         </div>
 
         {/* Type and Status */}
@@ -219,7 +227,9 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
               onChange={handleChange}
               className={`${styles.input} ${errors.end_date ? styles.inputError : ""}`}
             />
-            {errors.end_date && <span className={styles.errorText}>{errors.end_date}</span>}
+            {errors.end_date && (
+              <span className={styles.errorText}>{errors.end_date}</span>
+            )}
           </div>
         </div>
 
@@ -239,7 +249,9 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
             step="0.01"
             placeholder="0.00"
           />
-          {errors.budget && <span className={styles.errorText}>{errors.budget}</span>}
+          {errors.budget && (
+            <span className={styles.errorText}>{errors.budget}</span>
+          )}
         </div>
 
         {/* Target Audience */}
@@ -292,7 +304,11 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
           className={styles.submitButton}
           disabled={submitting}
         >
-          {submitting ? "Wird gespeichert..." : initialData ? "Speichern" : "Erstellen"}
+          {submitting
+            ? "Wird gespeichert..."
+            : initialData
+              ? "Speichern"
+              : "Erstellen"}
         </button>
       </div>
     </form>

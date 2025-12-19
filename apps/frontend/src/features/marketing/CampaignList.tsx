@@ -3,8 +3,8 @@
 
 /**
  * Campaign List Component
- * 
- * Displays and manages marketing campaigns with filtering, 
+ *
+ * Displays and manages marketing campaigns with filtering,
  * status badges, and CRUD operations.
  */
 
@@ -78,10 +78,7 @@ export const CampaignList: React.FC = () => {
   });
 
   const getStatusBadge = (status: string) => {
-    const statusConfig: Record<
-      string,
-      { label: string; className: string }
-    > = {
+    const statusConfig: Record<string, { label: string; className: string }> = {
       draft: { label: "Entwurf", className: styles.statusDraft },
       planned: { label: "Geplant", className: styles.statusPlanned },
       active: { label: "Aktiv", className: styles.statusActive },
@@ -91,7 +88,11 @@ export const CampaignList: React.FC = () => {
     };
 
     const config = statusConfig[status] || statusConfig.draft;
-    return <span className={`${styles.statusBadge} ${config.className}`}>{config.label}</span>;
+    return (
+      <span className={`${styles.statusBadge} ${config.className}`}>
+        {config.label}
+      </span>
+    );
   };
 
   const getTypeBadge = (type: string) => {
@@ -105,11 +106,7 @@ export const CampaignList: React.FC = () => {
       telephone: "Telefon",
     };
 
-    return (
-      <span className={styles.typeBadge}>
-        {typeLabels[type] || type}
-      </span>
-    );
+    return <span className={styles.typeBadge}>{typeLabels[type] || type}</span>;
   };
 
   const formatCurrency = (amount: number) => {
@@ -149,9 +146,7 @@ export const CampaignList: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Marketing-Kampagnen</h1>
-        <button className={styles.createButton}>
-          + Neue Kampagne
-        </button>
+        <button className={styles.createButton}>+ Neue Kampagne</button>
       </div>
 
       <div className={styles.filters}>
@@ -215,9 +210,10 @@ export const CampaignList: React.FC = () => {
             </thead>
             <tbody>
               {filteredCampaigns.map((campaign) => {
-                const spentPercentage = campaign.budget > 0
-                  ? (campaign.spent / campaign.budget) * 100
-                  : 0;
+                const spentPercentage =
+                  campaign.budget > 0
+                    ? (campaign.spent / campaign.budget) * 100
+                    : 0;
 
                 return (
                   <tr key={campaign.id}>
@@ -279,10 +275,7 @@ export const CampaignList: React.FC = () => {
                         >
                           📊
                         </button>
-                        <button
-                          className={styles.actionButton}
-                          title="Löschen"
-                        >
+                        <button className={styles.actionButton} title="Löschen">
                           🗑️
                         </button>
                       </div>

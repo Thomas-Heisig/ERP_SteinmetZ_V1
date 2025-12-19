@@ -2008,7 +2008,8 @@ router.get(
 
     // TODO: Generate cash flow statement
     const mockCashFlow = {
-      startDate: startDate || new Date(Date.now() - 365 * 86400000).toISOString(),
+      startDate:
+        startDate || new Date(Date.now() - 365 * 86400000).toISOString(),
       endDate: endDate || new Date().toISOString(),
       method,
       operatingActivities: {
@@ -2055,7 +2056,8 @@ router.get(
 
     // TODO: Generate trial balance from transactions
     const mockTrialBalance = {
-      startDate: startDate || new Date(Date.now() - 365 * 86400000).toISOString(),
+      startDate:
+        startDate || new Date(Date.now() - 365 * 86400000).toISOString(),
       endDate: endDate || new Date().toISOString(),
       accounts: [
         {

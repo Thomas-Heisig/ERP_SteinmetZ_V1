@@ -107,7 +107,14 @@ const bankAccountSchema = z.object({
 
 const communicationSchema = z.object({
   company_id: z.string(),
-  channel_type: z.enum(["email", "phone", "fax", "social_media", "website", "other"]),
+  channel_type: z.enum([
+    "email",
+    "phone",
+    "fax",
+    "social_media",
+    "website",
+    "other",
+  ]),
   channel_name: z.string().min(1, "Channel name is required"),
   value: z.string().min(1, "Value is required"),
   description: z.string().optional(),
@@ -124,10 +131,10 @@ router.get(
   "/",
   asyncHandler(async (_req, res) => {
     const companies = await db.all(
-      `SELECT * FROM business_company_info WHERE is_active = 1 ORDER BY created_at DESC`
+      `SELECT * FROM business_company_info WHERE is_active = 1 ORDER BY created_at DESC`,
     );
     res.json({ companies });
-  })
+  }),
 );
 
 // GET /api/business/company/:id - Get single company with all related data
@@ -139,7 +146,7 @@ router.get(
     // Get basic info
     const company = await db.get(
       `SELECT * FROM business_company_info WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!company) {
@@ -149,25 +156,25 @@ router.get(
     // Get legal info
     const legalInfo = await db.all(
       `SELECT * FROM business_legal_info WHERE company_id = ? AND (valid_to IS NULL OR valid_to > datetime('now'))`,
-      [id]
+      [id],
     );
 
     // Get tax info
     const taxInfo = await db.all(
       `SELECT * FROM business_tax_info WHERE company_id = ? AND (valid_to IS NULL OR valid_to > datetime('now'))`,
-      [id]
+      [id],
     );
 
     // Get bank accounts
     const bankAccounts = await db.all(
       `SELECT * FROM business_bank_accounts WHERE company_id = ? AND is_active = 1`,
-      [id]
+      [id],
     );
 
     // Get communication channels
     const communications = await db.all(
       `SELECT * FROM business_communication WHERE company_id = ? AND is_active = 1`,
-      [id]
+      [id],
     );
 
     res.json({
@@ -177,7 +184,7 @@ router.get(
       bank_accounts: bankAccounts,
       communications,
     });
-  })
+  }),
 );
 
 // POST /api/business/company - Create new company
@@ -215,7 +222,7 @@ router.post(
         validatedData.brand_assets || null,
         validatedData.imprint_data || null,
         validatedData.notes || null,
-      ]
+      ],
     );
 
     logger.info("Company created", { id, name: validatedData.official_name });
@@ -224,7 +231,7 @@ router.post(
       message: "Company created successfully",
       id,
     });
-  })
+  }),
 );
 
 // PUT /api/business/company/:id - Update company
@@ -237,7 +244,7 @@ router.put(
     // Check if company exists
     const existing = await db.get(
       `SELECT id FROM business_company_info WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!existing) {
@@ -275,13 +282,13 @@ router.put(
         validatedData.imprint_data || null,
         validatedData.notes || null,
         id,
-      ]
+      ],
     );
 
     logger.info("Company updated", { id, name: validatedData.official_name });
 
     res.json({ message: "Company updated successfully" });
-  })
+  }),
 );
 
 // DELETE /api/business/company/:id - Soft delete company
@@ -292,7 +299,7 @@ router.delete(
 
     const existing = await db.get(
       `SELECT id FROM business_company_info WHERE id = ?`,
-      [id]
+      [id],
     );
 
     if (!existing) {
@@ -301,13 +308,13 @@ router.delete(
 
     await db.run(
       `UPDATE business_company_info SET is_active = 0, updated_at = datetime('now') WHERE id = ?`,
-      [id]
+      [id],
     );
 
     logger.info("Company deactivated", { id });
 
     res.json({ message: "Company deactivated successfully" });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -319,7 +326,10 @@ router.post(
   "/:id/legal",
   asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const validatedData = legalInfoSchema.parse({ ...req.body, company_id: id });
+    const validatedData = legalInfoSchema.parse({
+      ...req.body,
+      company_id: id,
+    });
 
     await db.run(
       `INSERT INTO business_legal_info (
@@ -349,13 +359,13 @@ router.post(
         validatedData.reporting_obligations || null,
         validatedData.valid_from,
         validatedData.valid_to || null,
-      ]
+      ],
     );
 
     logger.info("Legal info added", { company_id: id });
 
     res.status(201).json({ message: "Legal info added successfully" });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -397,13 +407,13 @@ router.post(
         validatedData.tax_obligations || null,
         validatedData.valid_from,
         validatedData.valid_to || null,
-      ]
+      ],
     );
 
     logger.info("Tax info added", { company_id: id });
 
     res.status(201).json({ message: "Tax info added successfully" });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -418,11 +428,11 @@ router.get(
 
     const accounts = await db.all(
       `SELECT * FROM business_bank_accounts WHERE company_id = ? AND is_active = 1`,
-      [id]
+      [id],
     );
 
     res.json({ bank_accounts: accounts });
-  })
+  }),
 );
 
 // POST /api/business/company/:id/bank-accounts - Add bank account
@@ -430,7 +440,10 @@ router.post(
   "/:id/bank-accounts",
   asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const validatedData = bankAccountSchema.parse({ ...req.body, company_id: id });
+    const validatedData = bankAccountSchema.parse({
+      ...req.body,
+      company_id: id,
+    });
 
     await db.run(
       `INSERT INTO business_bank_accounts (
@@ -456,13 +469,16 @@ router.post(
         validatedData.is_primary ? 1 : 0,
         validatedData.low_balance_threshold || null,
         validatedData.notification_settings || null,
-      ]
+      ],
     );
 
-    logger.info("Bank account added", { company_id: id, iban: validatedData.iban });
+    logger.info("Bank account added", {
+      company_id: id,
+      iban: validatedData.iban,
+    });
 
     res.status(201).json({ message: "Bank account added successfully" });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -477,11 +493,11 @@ router.get(
 
     const communications = await db.all(
       `SELECT * FROM business_communication WHERE company_id = ? AND is_active = 1`,
-      [id]
+      [id],
     );
 
     res.json({ communications });
-  })
+  }),
 );
 
 // POST /api/business/company/:id/communications - Add communication channel
@@ -489,7 +505,10 @@ router.post(
   "/:id/communications",
   asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const validatedData = communicationSchema.parse({ ...req.body, company_id: id });
+    const validatedData = communicationSchema.parse({
+      ...req.body,
+      company_id: id,
+    });
 
     await db.run(
       `INSERT INTO business_communication (
@@ -504,7 +523,7 @@ router.post(
         validatedData.description || null,
         validatedData.configuration || null,
         validatedData.is_primary ? 1 : 0,
-      ]
+      ],
     );
 
     logger.info("Communication channel added", {
@@ -512,8 +531,10 @@ router.post(
       type: validatedData.channel_type,
     });
 
-    res.status(201).json({ message: "Communication channel added successfully" });
-  })
+    res
+      .status(201)
+      .json({ message: "Communication channel added successfully" });
+  }),
 );
 
 export default router;

@@ -10,13 +10,13 @@ GET /api/finance/kpi/calculate
 
 #### KPI-Kategorien
 
-| Kategorie | Endpoint | Enthaltene KPIs |
-|-----------|----------|-----------------|
-| Liquidität | `/api/finance/kpi/liquidity` | Cash Ratio, Quick Ratio, Current Ratio, Working Capital |
-| Rentabilität | `/api/finance/kpi/profitability` | ROE, ROA, ROS, EBIT-Marge, EBITDA-Marge |
-| Effizienz | `/api/finance/kpi/efficiency` | DSO, DPO, DIO, CCC, Kapitalumschlag, Vorratsumschlag |
-| Kapitalstruktur | `/api/finance/kpi/capital-structure` | EK-Quote, FK-Quote, Verschuldungsgrad, Gearing |
-| Alle | `/api/finance/kpi/dashboard` | Kombination aller wichtigen KPIs |
+| Kategorie       | Endpoint                             | Enthaltene KPIs                                         |
+| --------------- | ------------------------------------ | ------------------------------------------------------- |
+| Liquidität      | `/api/finance/kpi/liquidity`         | Cash Ratio, Quick Ratio, Current Ratio, Working Capital |
+| Rentabilität    | `/api/finance/kpi/profitability`     | ROE, ROA, ROS, EBIT-Marge, EBITDA-Marge                 |
+| Effizienz       | `/api/finance/kpi/efficiency`        | DSO, DPO, DIO, CCC, Kapitalumschlag, Vorratsumschlag    |
+| Kapitalstruktur | `/api/finance/kpi/capital-structure` | EK-Quote, FK-Quote, Verschuldungsgrad, Gearing          |
+| Alle            | `/api/finance/kpi/dashboard`         | Kombination aller wichtigen KPIs                        |
 
 ### KPI-Berechnungsservice
 
@@ -24,181 +24,183 @@ GET /api/finance/kpi/calculate
 // apps/backend/src/services/kpiService.ts
 
 export class KPIService {
-  
   // ==================== LIQUIDITÄT ====================
-  
+
   // Liquidität 1. Grades (Cash Ratio)
   async calculateCashRatio(date: Date): Promise<number> {
     const cash = await this.getCash(date);
     const shortTermLiabilities = await this.getShortTermLiabilities(date);
-    
+
     if (shortTermLiabilities === 0) return 0;
     return (cash / shortTermLiabilities) * 100;
   }
-  
+
   // Liquidität 2. Grades (Quick Ratio)
   async calculateQuickRatio(date: Date): Promise<number> {
     const cash = await this.getCash(date);
     const receivables = await this.getReceivables(date);
     const shortTermLiabilities = await this.getShortTermLiabilities(date);
-    
+
     if (shortTermLiabilities === 0) return 0;
     return ((cash + receivables) / shortTermLiabilities) * 100;
   }
-  
+
   // Liquidität 3. Grades (Current Ratio)
   async calculateCurrentRatio(date: Date): Promise<number> {
     const currentAssets = await this.getCurrentAssets(date);
     const shortTermLiabilities = await this.getShortTermLiabilities(date);
-    
+
     if (shortTermLiabilities === 0) return 0;
     return (currentAssets / shortTermLiabilities) * 100;
   }
-  
+
   // Working Capital
   async calculateWorkingCapital(date: Date): Promise<number> {
     const currentAssets = await this.getCurrentAssets(date);
     const shortTermLiabilities = await this.getShortTermLiabilities(date);
-    
+
     return currentAssets - shortTermLiabilities;
   }
-  
+
   // ==================== RENTABILITÄT ====================
-  
+
   // Eigenkapitalrentabilität (ROE)
   async calculateROE(startDate: Date, endDate: Date): Promise<number> {
     const netIncome = await this.getNetIncome(startDate, endDate);
     const avgEquity = await this.getAverageEquity(startDate, endDate);
-    
+
     if (avgEquity === 0) return 0;
     return (netIncome / avgEquity) * 100;
   }
-  
+
   // Gesamtkapitalrentabilität (ROA)
   async calculateROA(startDate: Date, endDate: Date): Promise<number> {
     const netIncome = await this.getNetIncome(startDate, endDate);
     const interestExpense = await this.getInterestExpense(startDate, endDate);
     const avgTotalAssets = await this.getAverageTotalAssets(startDate, endDate);
-    
+
     if (avgTotalAssets === 0) return 0;
     return ((netIncome + interestExpense) / avgTotalAssets) * 100;
   }
-  
+
   // Umsatzrendite (ROS)
   async calculateROS(startDate: Date, endDate: Date): Promise<number> {
     const netIncome = await this.getNetIncome(startDate, endDate);
     const revenue = await this.getRevenue(startDate, endDate);
-    
+
     if (revenue === 0) return 0;
     return (netIncome / revenue) * 100;
   }
-  
+
   // EBIT-Marge
   async calculateEBITMargin(startDate: Date, endDate: Date): Promise<number> {
     const ebit = await this.getEBIT(startDate, endDate);
     const revenue = await this.getRevenue(startDate, endDate);
-    
+
     if (revenue === 0) return 0;
     return (ebit / revenue) * 100;
   }
-  
+
   // EBITDA-Marge
   async calculateEBITDAMargin(startDate: Date, endDate: Date): Promise<number> {
     const ebitda = await this.getEBITDA(startDate, endDate);
     const revenue = await this.getRevenue(startDate, endDate);
-    
+
     if (revenue === 0) return 0;
     return (ebitda / revenue) * 100;
   }
-  
+
   // ==================== EFFIZIENZ ====================
-  
+
   // Days Sales Outstanding (DSO)
   async calculateDSO(startDate: Date, endDate: Date): Promise<number> {
     const avgReceivables = await this.getAverageReceivables(startDate, endDate);
     const revenue = await this.getRevenue(startDate, endDate);
     const days = this.getDaysBetween(startDate, endDate);
-    
+
     if (revenue === 0) return 0;
     return (avgReceivables / revenue) * days;
   }
-  
+
   // Days Payables Outstanding (DPO)
   async calculateDPO(startDate: Date, endDate: Date): Promise<number> {
     const avgPayables = await this.getAveragePayables(startDate, endDate);
     const cogs = await this.getCOGS(startDate, endDate);
     const days = this.getDaysBetween(startDate, endDate);
-    
+
     if (cogs === 0) return 0;
     return (avgPayables / cogs) * days;
   }
-  
+
   // Days Inventory Outstanding (DIO)
   async calculateDIO(startDate: Date, endDate: Date): Promise<number> {
     const avgInventory = await this.getAverageInventory(startDate, endDate);
     const cogs = await this.getCOGS(startDate, endDate);
     const days = this.getDaysBetween(startDate, endDate);
-    
+
     if (cogs === 0) return 0;
     return (avgInventory / cogs) * days;
   }
-  
+
   // Cash Conversion Cycle (CCC)
   async calculateCCC(startDate: Date, endDate: Date): Promise<number> {
     const dso = await this.calculateDSO(startDate, endDate);
     const dio = await this.calculateDIO(startDate, endDate);
     const dpo = await this.calculateDPO(startDate, endDate);
-    
+
     return dso + dio - dpo;
   }
-  
+
   // Kapitalumschlag
-  async calculateAssetTurnover(startDate: Date, endDate: Date): Promise<number> {
+  async calculateAssetTurnover(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
     const revenue = await this.getRevenue(startDate, endDate);
     const avgTotalAssets = await this.getAverageTotalAssets(startDate, endDate);
-    
+
     if (avgTotalAssets === 0) return 0;
     return revenue / avgTotalAssets;
   }
-  
+
   // ==================== KAPITALSTRUKTUR ====================
-  
+
   // Eigenkapitalquote
   async calculateEquityRatio(date: Date): Promise<number> {
     const equity = await this.getEquity(date);
     const totalAssets = await this.getTotalAssets(date);
-    
+
     if (totalAssets === 0) return 0;
     return (equity / totalAssets) * 100;
   }
-  
+
   // Verschuldungsgrad
   async calculateDebtToEquityRatio(date: Date): Promise<number> {
     const totalDebt = await this.getTotalDebt(date);
     const equity = await this.getEquity(date);
-    
+
     if (equity === 0) return 0;
     return (totalDebt / equity) * 100;
   }
-  
+
   // Gearing (Nettoverschuldung / Eigenkapital)
   async calculateGearing(date: Date): Promise<number> {
     const interestBearingDebt = await this.getInterestBearingDebt(date);
     const cash = await this.getCash(date);
     const equity = await this.getEquity(date);
-    
+
     const netDebt = interestBearingDebt - cash;
-    
+
     if (equity === 0) return 0;
     return (netDebt / equity) * 100;
   }
-  
+
   // ==================== DASHBOARD ====================
-  
+
   async getKPIDashboard(date: Date): Promise<KPIDashboard> {
     const thirtyDaysAgo = new Date(date);
     thirtyDaysAgo.setDate(date.getDate() - 30);
-    
+
     return {
       liquidity: {
         cashRatio: await this.calculateCashRatio(date),
@@ -244,21 +246,21 @@ import { KPITrend } from './KPITrend';
 export function KPIDashboard() {
   const [kpis, setKpis] = useState<KPIDashboard | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     financeApi.getKPIDashboard().then(data => {
       setKpis(data);
       setLoading(false);
     });
   }, []);
-  
+
   if (loading) return <Loading />;
   if (!kpis) return <Error />;
-  
+
   return (
     <div className="kpi-dashboard">
       <h1>Kennzahlen-Dashboard</h1>
-      
+
       {/* Liquidität */}
       <section className="kpi-section">
         <h2>💧 Liquidität</h2>
@@ -293,7 +295,7 @@ export function KPIDashboard() {
           />
         </div>
       </section>
-      
+
       {/* Rentabilität */}
       <section className="kpi-section">
         <h2>📈 Rentabilität</h2>
@@ -328,7 +330,7 @@ export function KPIDashboard() {
           />
         </div>
       </section>
-      
+
       {/* Effizienz */}
       <section className="kpi-section">
         <h2>⚡ Effizienz</h2>
@@ -366,7 +368,7 @@ export function KPIDashboard() {
           />
         </div>
       </section>
-      
+
       {/* Kapitalstruktur */}
       <section className="kpi-section">
         <h2>🏛️ Kapitalstruktur</h2>
@@ -396,7 +398,7 @@ export function KPIDashboard() {
           />
         </div>
       </section>
-      
+
       {/* Trendcharts */}
       <section className="kpi-trends">
         <h2>📊 Trends (letzte 12 Monate)</h2>
@@ -407,20 +409,20 @@ export function KPIDashboard() {
 }
 
 // KPICard Komponente
-function KPICard({ 
-  title, 
-  value, 
-  unit, 
-  benchmark, 
+function KPICard({
+  title,
+  value,
+  unit,
+  benchmark,
   invertColors = false,
   format = 'number',
-  description 
+  description
 }: KPICardProps) {
   const status = getStatus(value, benchmark, invertColors);
-  const formattedValue = format === 'currency' 
-    ? formatCurrency(value) 
+  const formattedValue = format === 'currency'
+    ? formatCurrency(value)
     : formatNumber(value, 2);
-  
+
   return (
     <div className={`kpi-card status-${status}`}>
       <h3>{title}</h3>
@@ -429,7 +431,7 @@ function KPICard({
         {unit && <span className="unit">{unit}</span>}
       </div>
       <p className="description">{description}</p>
-      
+
       {benchmark && (
         <div className="benchmark">
           <div className="benchmark-bar">
@@ -446,13 +448,13 @@ function KPICard({
 
 // Helper Functions
 function getStatus(
-  value: number, 
+  value: number,
   benchmark: { min: number; optimal: number; max: number },
   invertColors: boolean
 ): 'good' | 'warning' | 'bad' {
   const isInRange = value >= benchmark.min && value <= benchmark.max;
   const isOptimal = Math.abs(value - benchmark.optimal) / benchmark.optimal < 0.1;
-  
+
   if (invertColors) {
     if (value > benchmark.max) return 'bad';
     if (value < benchmark.min) return 'good';
