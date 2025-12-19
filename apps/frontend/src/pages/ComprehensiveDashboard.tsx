@@ -30,7 +30,8 @@ export const ComprehensiveDashboard: React.FC = () => {
             <h2>📈 Echtzeit-Analytics</h2>
             <p>Diese Funktion wird in Kürze verfügbar sein.</p>
             <p>
-              Hier werden Sie Finanz-, Produktions- und Kunden-KPIs in Echtzeit sehen können.
+              Hier werden Sie Finanz-, Produktions- und Kunden-KPIs in Echtzeit
+              sehen können.
             </p>
           </div>
         );
@@ -40,7 +41,8 @@ export const ComprehensiveDashboard: React.FC = () => {
             <h2>✅ Aufgaben & Benachrichtigungen</h2>
             <p>Diese Funktion wird in Kürze verfügbar sein.</p>
             <p>
-              Hier werden Sie Ihre persönlichen und Team-Aufgaben im Überblick sehen können.
+              Hier werden Sie Ihre persönlichen und Team-Aufgaben im Überblick
+              sehen können.
             </p>
           </div>
         );
