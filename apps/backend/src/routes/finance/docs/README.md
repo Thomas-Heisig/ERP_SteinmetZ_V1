@@ -557,14 +557,392 @@ Die folgenden Rollen haben Zugriff auf das Finance-Modul:
 - DATEV-Schnittstelle (geplant)
 - Unterstützung für SKR03/SKR04
 
+## 🏭 Anlagenbuchhaltung
+
+### GET /api/finance/assets
+
+Listet alle Anlagen auf.
+
+**Query-Parameter:**
+
+- `category` (optional): Filter nach Anlagenkategorie
+- `status` (optional): Filter nach Status (`active`, `disposed`)
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "ast-1",
+      "assetNumber": "ANL-001",
+      "name": "Firmenwagen Mercedes E-Klasse",
+      "category": "Fahrzeuge",
+      "acquisitionDate": "2022-01-15",
+      "acquisitionCost": 45000.0,
+      "currentBookValue": 28333.33,
+      "status": "active"
+    }
+  ],
+  "count": 1
+}
+```
+
+### GET /api/finance/assets/:id
+
+Ruft Details einer einzelnen Anlage ab.
+
+### POST /api/finance/assets
+
+Erstellt eine neue Anlage.
+
+**Request-Body:**
+
+```json
+{
+  "name": "Firmenwagen Mercedes E-Klasse",
+  "category": "Fahrzeuge",
+  "acquisitionDate": "2024-01-15",
+  "acquisitionCost": 45000.0,
+  "residualValue": 5000.0,
+  "usefulLife": 72,
+  "depreciationMethod": "linear",
+  "location": "Hauptsitz Berlin",
+  "costCenter": "CC-100",
+  "serialNumber": "WDD12345678901234"
+}
+```
+
+### PUT /api/finance/assets/:id
+
+Aktualisiert eine Anlage.
+
+### GET /api/finance/assets/:id/depreciation
+
+Ruft den Abschreibungsverlauf einer Anlage ab.
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "dep-1",
+      "assetId": "ast-1",
+      "period": "2022-01-31",
+      "amount": 555.56,
+      "accumulatedDepreciation": 555.56,
+      "bookValue": 44444.44,
+      "method": "linear"
+    }
+  ],
+  "count": 30
+}
+```
+
+### POST /api/finance/assets/depreciation/calculate
+
+Berechnet die Abschreibung für alle aktiven Anlagen.
+
+**Request-Body:**
+
+```json
+{
+  "period": "2024-12-31"
+}
+```
+
+## 📊 Kennzahlen (KPIs)
+
+### GET /api/finance/kpi/liquidity
+
+Ruft Liquiditätskennzahlen ab.
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "cashRatio": 25.5,
+    "quickRatio": 115.3,
+    "currentRatio": 185.7,
+    "workingCapital": 125000.0,
+    "timestamp": "2024-12-05T10:00:00Z"
+  }
+}
+```
+
+### GET /api/finance/kpi/profitability
+
+Ruft Rentabilitätskennzahlen ab.
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "roe": 15.2,
+    "roa": 8.5,
+    "ros": 12.3,
+    "ebitMargin": 14.7,
+    "ebitdaMargin": 18.2,
+    "timestamp": "2024-12-05T10:00:00Z"
+  }
+}
+```
+
+### GET /api/finance/kpi/efficiency
+
+Ruft Effizienzkennzahlen ab.
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "dso": 32.5,
+    "dpo": 42.1,
+    "dio": 28.3,
+    "ccc": 18.7,
+    "assetTurnover": 1.8,
+    "inventoryTurnover": 12.5,
+    "timestamp": "2024-12-05T10:00:00Z"
+  }
+}
+```
+
+### GET /api/finance/kpi/capital-structure
+
+Ruft Kapitalstruktur-Kennzahlen ab.
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "equityRatio": 32.5,
+    "debtToEquityRatio": 107.7,
+    "gearing": 85.3,
+    "debtRatio": 51.8,
+    "interestCoverageRatio": 8.5,
+    "timestamp": "2024-12-05T10:00:00Z"
+  }
+}
+```
+
+### GET /api/finance/kpi/dashboard
+
+Ruft alle wichtigen KPIs auf einmal ab.
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "liquidity": {
+      "cashRatio": 25.5,
+      "quickRatio": 115.3,
+      "currentRatio": 185.7,
+      "workingCapital": 125000.0
+    },
+    "profitability": {
+      "roe": 15.2,
+      "roa": 8.5,
+      "ros": 12.3,
+      "ebitMargin": 14.7,
+      "ebitdaMargin": 18.2
+    },
+    "efficiency": {
+      "dso": 32.5,
+      "dpo": 42.1,
+      "dio": 28.3,
+      "ccc": 18.7,
+      "assetTurnover": 1.8
+    },
+    "capitalStructure": {
+      "equityRatio": 32.5,
+      "debtToEquityRatio": 107.7,
+      "gearing": 85.3
+    },
+    "timestamp": "2024-12-05T10:00:00Z"
+  }
+}
+```
+
+## 📈 Zusätzliche Berichte
+
+### GET /api/finance/reports/cash-flow
+
+Ruft die Kapitalflussrechnung ab.
+
+**Query-Parameter:**
+
+- `startDate` (optional): Startdatum (ISO 8601)
+- `endDate` (optional): Enddatum (ISO 8601)
+- `method` (optional): Methode (`direct` oder `indirect`, Standard: `indirect`)
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31",
+    "method": "indirect",
+    "operatingActivities": {
+      "netIncome": 40000.0,
+      "adjustments": {
+        "depreciation": 12000.0,
+        "changeInReceivables": -5000.0,
+        "changeInPayables": 3000.0,
+        "other": 0
+      },
+      "net": 50000.0
+    },
+    "investingActivities": {
+      "acquisitions": -25000.0,
+      "disposals": 5000.0,
+      "net": -20000.0
+    },
+    "financingActivities": {
+      "equity": 10000.0,
+      "debt": 5000.0,
+      "dividends": -10000.0,
+      "net": 5000.0
+    },
+    "netCashFlow": 35000.0,
+    "beginningCash": 20000.0,
+    "endingCash": 55000.0
+  }
+}
+```
+
+### GET /api/finance/reports/trial-balance
+
+Ruft die Summen- und Saldenliste ab.
+
+**Query-Parameter:**
+
+- `startDate` (optional): Startdatum (ISO 8601)
+- `endDate` (optional): Enddatum (ISO 8601)
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "startDate": "2024-01-01",
+    "endDate": "2024-12-31",
+    "accounts": [
+      {
+        "accountNumber": "1000",
+        "accountName": "Kasse",
+        "debitTurnover": 25000.0,
+        "creditTurnover": 22000.0,
+        "balance": 3000.0,
+        "balanceType": "debit"
+      }
+    ],
+    "totalDebitTurnover": 175000.0,
+    "totalCreditTurnover": 322000.0,
+    "difference": 0
+  }
+}
+```
+
+### GET /api/finance/reports/aging
+
+Ruft die Fälligkeitsstruktur ab.
+
+**Query-Parameter:**
+
+- `type` (optional): Typ (`receivables` oder `payables`, Standard: `receivables`)
+- `date` (optional): Stichtag (ISO 8601)
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "date": "2024-12-05",
+    "type": "receivables",
+    "buckets": {
+      "current": { "count": 15, "amount": 25000.0 },
+      "days1to30": { "count": 8, "amount": 12500.0 },
+      "days31to60": { "count": 5, "amount": 7800.0 },
+      "days61to90": { "count": 2, "amount": 3200.0 },
+      "over90": { "count": 1, "amount": 2100.0 }
+    },
+    "total": { "count": 31, "amount": 50600.0 },
+    "topItems": [
+      {
+        "id": "C002",
+        "name": "XYZ AG",
+        "amount": 3250.5,
+        "daysOverdue": 45
+      }
+    ]
+  }
+}
+```
+
+### GET /api/finance/reports/asset-register
+
+Ruft den Anlagenspiegel ab.
+
+**Query-Parameter:**
+
+- `year` (erforderlich): Jahr für den Anlagenspiegel
+
+**Beispiel-Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "year": 2024,
+    "categories": [
+      {
+        "category": "Fahrzeuge",
+        "openingBalance": 50000.0,
+        "additions": 45000.0,
+        "disposals": 15000.0,
+        "depreciation": 12000.0,
+        "closingBalance": 68000.0
+      }
+    ],
+    "totals": {
+      "openingBalance": 75000.0,
+      "additions": 53500.0,
+      "disposals": 18000.0,
+      "depreciation": 17500.0,
+      "closingBalance": 93000.0
+    }
+  }
+}
+```
+
 ## 🚀 Nächste Schritte
 
 1. ✅ Backend-Routen erstellt
-2. ⏳ Datenbank-Schema implementieren
-3. ⏳ Services und Business-Logik erstellen
-4. ⏳ OCR-Integration für Eingangsrechnungen
-5. ⏳ XRechnung/ZUGFeRD-Support
-6. ⏳ DATEV-Schnittstelle
-7. ⏳ Frontend-Integration
-8. ⏳ Tests schreiben
-9. ⏳ Dokumentation vervollständigen
+2. ✅ Kennzahlen-Endpoints hinzugefügt
+3. ✅ Asset-Management-Endpoints hinzugefügt
+4. ✅ Zusätzliche Reports hinzugefügt
+5. ⏳ Datenbank-Schema implementieren
+6. ⏳ Services und Business-Logik erstellen
+7. ⏳ OCR-Integration für Eingangsrechnungen
+8. ⏳ XRechnung/ZUGFeRD-Support
+9. ⏳ DATEV-Schnittstelle
+10. ⏳ Frontend-Integration
+11. ⏳ Tests schreiben
+12. ⏳ Dokumentation vervollständigen
