@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
+import { getHelpArticles, getHelpArticle } from "../../api/helpApi";
 import "./HelpCenter.css";
 
 interface DocFile {
@@ -114,9 +115,25 @@ export const HelpCenter: React.FC = () => {
       try {
         setLoading(true);
 
-        // Simuliere das Laden von Dokumenten aus dem Backend
-        // In einer echten Implementation würde dies ein API-Call sein
-        const mockDocs: DocFile[] = [
+        // Lade Artikel vom Backend API
+        const articles = await getHelpArticles();
+        
+        // Konvertiere Backend-Format zu Frontend-Format
+        const docs: DocFile[] = articles.map((article) => ({
+          id: String(article.id),
+          title: article.title,
+          category: article.category,
+          path: article.path || '',
+          excerpt: article.excerpt || '',
+          icon: article.icon || '📄',
+          content: article.content,
+        }));
+
+        setDocuments(docs);
+        
+        // Fallback zu Mock-Daten wenn API fehlschlägt oder leer ist
+        if (articles.length === 0) {
+          const mockDocs: DocFile[] = [
           {
             id: "readme",
             title: "ERP SteinmetZ - Übersicht",
@@ -264,9 +281,32 @@ export const HelpCenter: React.FC = () => {
           },
         ];
 
-        setDocuments(mockDocs);
+          setDocuments(mockDocs);
+        }
       } catch (error) {
         console.error("Failed to load documents:", error);
+        
+        // Bei Fehler: Nutze Mock-Daten als Fallback
+        const mockDocs: DocFile[] = [
+          {
+            id: "readme",
+            title: "ERP SteinmetZ - Übersicht",
+            category: "getting-started",
+            path: "/docs/README.md",
+            excerpt:
+              "Willkommen bei ERP SteinmetZ - Ein modernes, KI-gestütztes ERP-System",
+            icon: "📖",
+          },
+          {
+            id: "developer-onboarding",
+            title: "Developer Onboarding",
+            category: "getting-started",
+            path: "/docs/DEVELOPER_ONBOARDING.md",
+            excerpt: "Schnellstart für neue Entwickler im Projekt",
+            icon: "👨‍💻",
+          },
+        ];
+        setDocuments(mockDocs);
       } finally {
         setLoading(false);
       }
@@ -298,25 +338,31 @@ export const HelpCenter: React.FC = () => {
   }, [documents]);
 
   const handleDocumentClick = async (doc: DocFile) => {
-    // Lade den Inhalt des Dokuments
+    // Lade den Inhalt des Dokuments vom Backend API
     try {
-      const response = await fetch(doc.path);
-      if (response.ok) {
-        const content = await response.text();
-        setSelectedDoc({ ...doc, content });
-      } else {
-        // Fallback-Inhalt wenn Datei nicht gefunden
-        setSelectedDoc({
-          ...doc,
-          content: `# ${doc.title}\n\n${doc.excerpt}\n\n*Dokumentation wird geladen...*`,
-        });
-      }
+      const article = await getHelpArticle(doc.id);
+      setSelectedDoc({ 
+        ...doc, 
+        content: article.content 
+      });
     } catch (error) {
       console.error("Failed to load document:", error);
-      setSelectedDoc({
-        ...doc,
-        content: `# ${doc.title}\n\n${doc.excerpt}\n\n*Fehler beim Laden der Dokumentation.*`,
-      });
+      
+      // Fallback: Versuche direkt von Pfad zu laden
+      try {
+        const fileResponse = await fetch(doc.path);
+        if (fileResponse.ok) {
+          const content = await fileResponse.text();
+          setSelectedDoc({ ...doc, content });
+        } else {
+          throw new Error('File not found');
+        }
+      } catch (fallbackError) {
+        setSelectedDoc({
+          ...doc,
+          content: `# ${doc.title}\n\n${doc.excerpt}\n\n*Fehler beim Laden der Dokumentation.*`,
+        });
+      }
     }
   };
 

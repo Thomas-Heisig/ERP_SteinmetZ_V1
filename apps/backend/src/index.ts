@@ -56,6 +56,7 @@ import warehouseRouter from "./routes/warehouse/warehouseRouter.js";
 import reportingRouter from "./routes/reporting/reportingRouter.js";
 import settingsRouter from "./routes/settings.js";
 import userSettingsRouter from "./routes/userSettings.js";
+import helpRouter from "./routes/help/helpRouter.js";
 
 import { toolRegistry } from "./tools/registry.js";
 import { listRoutesTool } from "./tools/listRoutesTool.js";
@@ -209,6 +210,7 @@ app.use("/api/warehouse", warehouseRouter);
 app.use("/api/reporting", reportingRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/user-settings", userSettingsRouter);
+app.use("/api/help", helpRouter);
 
 // WebSocket statistics endpoint
 app.get("/api/ws/stats", (_req: Request, res: Response) => {
