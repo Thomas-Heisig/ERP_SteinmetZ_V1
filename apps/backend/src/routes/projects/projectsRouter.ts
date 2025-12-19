@@ -78,7 +78,7 @@ router.get(
     const { status, search } = query.data;
 
     let sql = "SELECT * FROM projects WHERE 1=1";
-    const params: any[] = [];
+    const params: (string | number)[] = [];
 
     // Apply filters
     if (status) {
@@ -215,7 +215,7 @@ router.put(
 
     const setClause = fields.map((f) => `${f} = ?`).join(", ");
     const values = [
-      ...fields.map((f) => (updates as any)[f]),
+      ...fields.map((f) => (updates as Record<string, unknown>)[f]),
       now,
       req.params.id,
     ];

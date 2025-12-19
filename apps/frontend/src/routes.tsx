@@ -66,8 +66,8 @@ const HelpCenter = lazy(() => import("./components/HelpCenter/HelpCenter"));
 /** Calendar for scheduling and appointments */
 const Calendar = lazy(() => import("./features/calendar/Calendar"));
 
-/** Application settings and preferences */
-const Settings = lazy(() => import("./features/settings/Settings"));
+/** System settings and configuration */
+const Settings = lazy(() => import("./pages/Settings/Settings"));
 
 /** Communication center for calls, SMS, and fax */
 const CommunicationCenter = lazy(

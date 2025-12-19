@@ -30,8 +30,23 @@ interface Migration {
 async function getMigrationFiles(): Promise<Migration[]> {
   try {
     const files = await fs.readdir(MIGRATIONS_DIR);
+    
+    // Get current database driver
+    const driver = process.env.DB_DRIVER || "sqlite";
+    
     const sqlFiles = files
       .filter((f) => f.endsWith(".sql"))
+      // Skip MSSQL-specific migrations when using SQLite
+      .filter((f) => {
+        if (driver === "sqlite" && f.includes("_mssql")) {
+          logger.info(
+            { migration: f },
+            "Skipping MSSQL-specific migration (SQLite database)",
+          );
+          return false;
+        }
+        return true;
+      })
       .sort()
       .map((f) => ({
         filename: f,

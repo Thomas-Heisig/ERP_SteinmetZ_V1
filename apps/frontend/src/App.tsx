@@ -6,6 +6,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 
 import { useTheme, type Theme } from "./contexts/ThemeContext";
 import { useAuth } from "./contexts/AuthContext";
+import { SettingsProvider } from "./contexts/SettingsContext";
 import { LanguageProvider } from "./components/LanguageSwitch/LanguageProvider";
 import { LanguageSwitcher } from "./components/LanguageSwitch/LanguageSwitcher";
 import { MainNavigation } from "./components/Navigation/MainNavigation";
@@ -85,9 +86,10 @@ export default function App() {
   };
 
   return (
-    <UnifiedQuickChatProvider>
-      <LanguageProvider>
-        <div className="app-container">
+    <SettingsProvider>
+      <UnifiedQuickChatProvider>
+        <LanguageProvider>
+          <div className="app-container">
           {/* ---------- Header ---------- */}
           <header className="app-header">
             {/* Branding */}
@@ -166,8 +168,9 @@ export default function App() {
             onClose={() => setIsChatOpen(false)}
             onOpen={() => setIsChatOpen(true)}
           />
-        </div>
-      </LanguageProvider>
-    </UnifiedQuickChatProvider>
+          </div>
+        </LanguageProvider>
+      </UnifiedQuickChatProvider>
+    </SettingsProvider>
   );
 }

@@ -53,6 +53,8 @@ import procurementRouter from "./routes/procurement/procurementRouter.js";
 import productionRouter from "./routes/production/productionRouter.js";
 import warehouseRouter from "./routes/warehouse/warehouseRouter.js";
 import reportingRouter from "./routes/reporting/reportingRouter.js";
+import settingsRouter from "./routes/settings.js";
+import userSettingsRouter from "./routes/userSettings.js";
 
 import { toolRegistry } from "./tools/registry.js";
 import { listRoutesTool } from "./tools/listRoutesTool.js";
@@ -203,6 +205,8 @@ app.use("/api/procurement", procurementRouter);
 app.use("/api/production", productionRouter);
 app.use("/api/warehouse", warehouseRouter);
 app.use("/api/reporting", reportingRouter);
+app.use("/api/settings", settingsRouter);
+app.use("/api/user-settings", userSettingsRouter);
 
 // WebSocket statistics endpoint
 app.get("/api/ws/stats", (_req: Request, res: Response) => {
@@ -313,6 +317,11 @@ async function bootstrapFunctionsCatalog() {
     // Initialize authentication system
     await AuthService.init();
     logger.info("Authentication system initialized");
+    
+    // Initialize user settings
+    const UserSettingsService = (await import("./services/userSettingsService.js")).default;
+    await UserSettingsService.init();
+    logger.info("User settings system initialized");
 
     if (process.env.FUNCTIONS_AUTOLOAD !== "0") {
       const result = await service.refreshFunctionsIndex();

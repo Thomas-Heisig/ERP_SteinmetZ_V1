@@ -170,6 +170,60 @@ export async function optionalAuthenticate(
 }
 
 /**
+ * Authorization middleware factory - require specific role
+ *
+ * Creates middleware that checks if authenticated user has the specified
+ * role. Must be used after authenticate() middleware.
+ *
+ * @param roleName - Required role name (e.g., 'admin', 'user', 'manager')
+ * @returns Express middleware function
+ *
+ * @throws {401} If user is not authenticated
+ * @throws {403} If user lacks the required role
+ *
+ * @example
+ * ```typescript
+ * router.post('/settings/bulk',
+ *   authenticate,
+ *   requireRole('admin'),
+ *   (req, res) => {
+ *     // Only admins can access
+ *   }
+ * );
+ * ```
+ */
+export function requireRole(roleName: string) {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      if (!req.auth) {
+        sendUnauthorized(res, "Authentication required");
+        return;
+      }
+
+      const userRoles = req.auth.roles?.map((r) => r.name.toLowerCase()) || [];
+      const hasRole = userRoles.includes(roleName.toLowerCase());
+
+      if (!hasRole) {
+        sendForbidden(
+          res,
+          `Access denied. Required role: ${roleName}`,
+        );
+        return;
+      }
+
+      next();
+    } catch (error) {
+      console.error("[auth] Role check error:", error);
+      sendForbidden(res, "Authorization failed");
+    }
+  };
+}
+
+/**
  * Authorization middleware factory - require specific permission
  *
  * Creates middleware that checks if authenticated user has the specified
@@ -233,36 +287,6 @@ export function requirePermission(permission: string) {
       sendForbidden(res, "Insufficient permissions", { required: permission });
     } catch (error) {
       console.error("[auth] Authorization error:", error);
-      sendForbidden(res, "Authorization failed");
-    }
-  };
-}
-
-/**
- * Role-based authorization middleware factory
- * Checks if user has required role
- */
-export function requireRole(roleName: string) {
-  return async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      if (!req.auth) {
-        sendUnauthorized(res, "Authentication required");
-        return;
-      }
-
-      const hasRole = req.auth.roles.some((role) => role.name === roleName);
-      if (!hasRole) {
-        sendForbidden(res, `Role '${roleName}' required`, { role: roleName });
-        return;
-      }
-
-      next();
-    } catch (error) {
-      console.error("[auth] Role check error:", error);
       sendForbidden(res, "Authorization failed");
     }
   };

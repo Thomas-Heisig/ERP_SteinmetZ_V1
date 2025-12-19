@@ -137,6 +137,7 @@ const getNavigationSections = (): NavSection[] => [
     titleKey: "sidebar.system",
     items: [
       { path: "/users", labelKey: "sidebar.users", icon: "👥" },
+      { path: "/settings", labelKey: "sidebar.settings", icon: "⚙️" },
       {
         path: "/system-settings",
         labelKey: "sidebar.systemSettings",

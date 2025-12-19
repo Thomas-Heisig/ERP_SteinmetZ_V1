@@ -6,35 +6,43 @@
 -- CRM (Customer Relationship Management) Tables
 -- =============================================================================
 
-CREATE TABLE IF NOT EXISTS crm_customers (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  email TEXT,
-  phone TEXT,
-  company TEXT,
-  address TEXT,
-  status TEXT NOT NULL CHECK (status IN ('active', 'inactive', 'prospect')) DEFAULT 'prospect',
-  category TEXT,
-  notes TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[crm_customers]') AND type in (N'U'))
+BEGIN
+CREATE TABLE crm_customers (
+  id NVARCHAR(255) PRIMARY KEY,
+  name NVARCHAR(255) NOT NULL,
+  email NVARCHAR(255),
+  phone NVARCHAR(50),
+  company NVARCHAR(255),
+  address NVARCHAR(500),
+  status NVARCHAR(50) NOT NULL CHECK (status IN ('active', 'inactive', 'prospect')) DEFAULT 'prospect',
+  category NVARCHAR(100),
+  notes NVARCHAR(MAX),
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE()
 );
+END
+GO
 
-CREATE TABLE IF NOT EXISTS crm_contacts (
-  id TEXT PRIMARY KEY,
-  customer_id TEXT,
-  first_name TEXT NOT NULL,
-  last_name TEXT NOT NULL,
-  email TEXT,
-  phone TEXT,
-  position TEXT,
-  department TEXT,
-  is_primary BOOLEAN DEFAULT 0,
-  notes TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[crm_contacts]') AND type in (N'U'))
+BEGIN
+CREATE TABLE crm_contacts (
+  id NVARCHAR(255) PRIMARY KEY,
+  customer_id NVARCHAR(255),
+  first_name NVARCHAR(100) NOT NULL,
+  last_name NVARCHAR(100) NOT NULL,
+  email NVARCHAR(255),
+  phone NVARCHAR(50),
+  position NVARCHAR(100),
+  department NVARCHAR(100),
+  is_primary BIT DEFAULT 0,
+  notes NVARCHAR(MAX),
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
   FOREIGN KEY (customer_id) REFERENCES crm_customers(id) ON DELETE CASCADE
 );
+END
+GO
 
 CREATE TABLE IF NOT EXISTS crm_opportunities (
   id TEXT PRIMARY KEY,
