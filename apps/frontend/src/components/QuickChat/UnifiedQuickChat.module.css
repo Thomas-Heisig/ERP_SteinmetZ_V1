@@ -731,3 +731,153 @@
     padding: 0.75rem 1rem;
   }
 }
+
+/* ========================================================================== */
+/* Settings Tab */
+/* ========================================================================== */
+
+.settingsTab {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.settingsTab h3 {
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.settingGroup {
+  margin-bottom: 1.5rem;
+}
+
+.settingGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.settingGroup small {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.settingSelect,
+.settingInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.settingSelect:focus,
+.settingInput:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.settingSlider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--background-secondary);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.settingSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settingSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.settingSlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.settingSlider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* ========================================================================== */
+/* Info Tab */
+/* ========================================================================== */
+
+.infoTab {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.infoTab h3 {
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.infoCard {
+  background: var(--background-secondary);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.infoCard h4 {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.infoCard p {
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.infoCard p:last-child {
+  margin-bottom: 0;
+}
+
+.infoCard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.infoCard li {
+  padding: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.infoCard li:last-child {
+  border-bottom: none;
+}

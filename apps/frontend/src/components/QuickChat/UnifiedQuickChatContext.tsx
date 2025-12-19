@@ -51,8 +51,8 @@ const API_BASE = "/api/ai";
 const DEFAULT_TIMEOUT = 30000;
 
 const DEFAULT_SETTINGS: Settings = {
-  defaultModel: "gpt-4o-mini",
-  defaultProvider: "openai",
+  defaultModel: "qwen2.5:3b",
+  defaultProvider: "ollama",
   temperature: 0.7,
   maxTokens: 2048,
   streaming: false,
