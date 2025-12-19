@@ -103,6 +103,76 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - `GET /api/documents/retention-policies` - Aufbewahrungsrichtlinien
 - `GET /api/documents/statistics` - DMS-Statistiken
 
+#### CRM Module (Customer Relationship Management) ✨ NEU
+
+- `GET /api/crm/customers` - Kundenverwaltung
+- `POST /api/crm/customers` - Neuer Kunde
+- `GET /api/crm/contacts` - Kontaktverwaltung
+- `GET /api/crm/opportunities` - Verkaufschancen
+- `GET /api/crm/activities` - Aktivitäten & Interaktionen
+- `GET /api/crm/statistics` - CRM-Statistiken
+
+#### Sales Module (Vertrieb) ✨ NEU
+
+- `GET /api/sales/quotes` - Angebotsverwaltung
+- `POST /api/sales/quotes/:id/convert` - Angebot zu Auftrag
+- `GET /api/sales/orders` - Auftragsverwaltung
+- `GET /api/sales/products` - Produktkatalog
+- `GET /api/sales/analytics` - Vertriebsanalyse
+
+#### Marketing Module ✨ NEU
+
+- `GET /api/marketing/campaigns` - Kampagnenverwaltung
+- `GET /api/marketing/forms` - Marketing-Formulare
+- `GET /api/marketing/landing-pages` - Landing Pages
+- `GET /api/marketing/leads` - Lead-Management
+- `GET /api/marketing/analytics/overview` - Marketing-Analytics
+
+#### Inventory Module (Lagerverwaltung) ✨ NEU
+
+- `GET /api/inventory/items` - Artikelverwaltung
+- `POST /api/inventory/movements` - Lagerbewegungen
+- `GET /api/inventory/low-stock` - Niedrigbestand-Alarm
+- `GET /api/inventory/statistics` - Lagerstatistiken
+
+#### Projects Module (Projektverwaltung) ✨ NEU
+
+- `GET /api/projects` - Projektverwaltung
+- `GET /api/projects/:id/tasks` - Aufgabenverwaltung
+- `POST /api/projects/time-entries` - Zeiterfassung
+- `GET /api/projects/:id/analytics` - Projektanalyse
+
+#### Procurement Module (Beschaffung) ✨ NEU
+
+- `GET /api/procurement/purchase-orders` - Bestellwesen
+- `GET /api/procurement/suppliers` - Lieferantenverwaltung
+- `GET /api/procurement/requisitions` - Bestellanforderungen
+
+#### Production Module (Produktion) ✨ NEU
+
+- `GET /api/production/work-orders` - Fertigungsaufträge
+- `GET /api/production/bom` - Stücklisten (BOM)
+- `GET /api/production/schedule` - Produktionsplanung
+
+#### Warehouse Module (Lagerhaltung) ✨ NEU
+
+- `GET /api/warehouse/locations` - Lagerplätze
+- `GET /api/warehouse/receipts` - Wareneingang
+- `GET /api/warehouse/shipments` - Warenausgang
+
+#### Communication Module ✨ NEU
+
+- `POST /api/communication/emails/send` - E-Mail versenden
+- `GET /api/communication/messages` - Interne Nachrichten
+- `GET /api/communication/notifications` - Benachrichtigungen
+
+#### Monitoring & Analytics ✨ NEU
+
+- `GET /api/monitoring/health` - System-Gesundheit
+- `GET /api/metrics/kpis` - Kennzahlen (KPIs)
+- `GET /api/reporting/reports` - Berichtswesen
+- `GET /api/search-analytics/statistics` - Suchanalyse
+
 ## 🚀 Quick Start
 
 ### Voraussetzungen
