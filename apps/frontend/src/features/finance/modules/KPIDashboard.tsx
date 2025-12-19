@@ -13,6 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../../components/ui';
+import { API_ENDPOINTS } from '../../../config/api';
 import styles from './KPIDashboard.module.css';
 
 interface KPIDashboard {
@@ -127,7 +128,7 @@ export const KPIDashboard: React.FC = () => {
     const fetchKPIs = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:3000/api/finance/kpi/dashboard');
+        const response = await fetch(API_ENDPOINTS.finance.kpi.dashboard);
         
         if (!response.ok) {
           throw new Error('Failed to fetch KPI data');

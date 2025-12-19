@@ -13,6 +13,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, Table, Button, Input } from '../../../components/ui';
+import { API_ENDPOINTS, buildUrl } from '../../../config/api';
 import styles from './AssetList.module.css';
 
 interface Asset {
@@ -72,12 +73,11 @@ export const AssetList: React.FC = () => {
   const fetchAssets = async () => {
     try {
       setLoading(true);
-      const url = new URL('http://localhost:3000/api/finance/assets');
-      if (categoryFilter) {
-        url.searchParams.append('category', categoryFilter);
-      }
+      const url = buildUrl(API_ENDPOINTS.finance.assets, {
+        category: categoryFilter || undefined,
+      });
 
-      const response = await fetch(url.toString());
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error('Failed to fetch assets');
@@ -97,7 +97,7 @@ export const AssetList: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:3000/api/finance/assets', {
+      const response = await fetch(API_ENDPOINTS.finance.assets, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
