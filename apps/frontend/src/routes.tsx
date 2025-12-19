@@ -96,6 +96,178 @@ const IdeaBoard = lazy(() => import("./features/innovation/IdeaBoard"));
 const DocumentList = lazy(() => import("./features/documents/DocumentList"));
 
 // ============================================================================
+// Business Module
+// ============================================================================
+
+/** Business: Company management */
+const CompanyManagement = lazy(
+  () => import("./features/business/CompanyManagement"),
+);
+
+/** Business: Process management */
+const ProcessManagement = lazy(
+  () => import("./features/business/ProcessManagement"),
+);
+
+/** Business: Risk and compliance management */
+const RiskManagement = lazy(() => import("./features/business/RiskManagement"));
+
+// ============================================================================
+// Finance Module - Additional
+// ============================================================================
+
+/** Finance: Accounting */
+const AccountingList = lazy(
+  () => import("./features/finance/modules/AccountingList"),
+);
+
+/** Finance: Controlling */
+const ControllingList = lazy(
+  () => import("./features/finance/modules/ControllingList"),
+);
+
+/** Finance: Treasury */
+const TreasuryList = lazy(
+  () => import("./features/finance/modules/TreasuryList"),
+);
+
+/** Finance: Taxes */
+const TaxesList = lazy(() => import("./features/finance/modules/TaxesList"));
+
+// ============================================================================
+// Sales Module
+// ============================================================================
+
+/** Sales: Marketing */
+const MarketingList = lazy(() => import("./features/sales/MarketingList"));
+
+/** Sales: Sales orders */
+const SalesList = lazy(() => import("./features/sales/SalesList"));
+
+/** Sales: Fulfillment */
+const FulfillmentList = lazy(() => import("./features/sales/FulfillmentList"));
+
+// ============================================================================
+// Procurement Module
+// ============================================================================
+
+/** Procurement: Purchasing */
+const PurchasingList = lazy(
+  () => import("./features/procurement/PurchasingList"),
+);
+
+/** Procurement: Receiving */
+const ReceivingList = lazy(
+  () => import("./features/procurement/ReceivingList"),
+);
+
+/** Procurement: Suppliers */
+const SupplierList = lazy(() => import("./features/procurement/SupplierList"));
+
+// ============================================================================
+// Production Module
+// ============================================================================
+
+/** Production: Planning */
+const PlanningList = lazy(() => import("./features/production/PlanningList"));
+
+/** Production: Manufacturing */
+const ManufacturingList = lazy(
+  () => import("./features/production/ManufacturingList"),
+);
+
+/** Production: Quality management */
+const QualityList = lazy(() => import("./features/production/QualityList"));
+
+/** Production: Maintenance */
+const MaintenanceList = lazy(
+  () => import("./features/production/MaintenanceList"),
+);
+
+// ============================================================================
+// Warehouse Module
+// ============================================================================
+
+/** Warehouse: Picking */
+const PickingList = lazy(() => import("./features/warehouse/PickingList"));
+
+/** Warehouse: Logistics */
+const LogisticsList = lazy(() => import("./features/warehouse/LogisticsList"));
+
+// ============================================================================
+// HR Module - Additional
+// ============================================================================
+
+/** HR: Personnel management */
+const PersonnelList = lazy(() => import("./features/hr/modules/PersonnelList"));
+
+/** HR: Time tracking */
+const TimeTrackingList = lazy(
+  () => import("./features/hr/modules/TimeTrackingList"),
+);
+
+/** HR: Personnel development */
+const DevelopmentList = lazy(
+  () => import("./features/hr/modules/DevelopmentList"),
+);
+
+/** HR: Recruiting */
+const RecruitingList = lazy(
+  () => import("./features/hr/modules/RecruitingList"),
+);
+
+// ============================================================================
+// Reporting Module
+// ============================================================================
+
+/** Reporting: Standard reports */
+const ReportsList = lazy(() => import("./features/reporting/ReportsList"));
+
+/** Reporting: Ad-hoc analysis */
+const AdhocAnalysisList = lazy(
+  () => import("./features/reporting/AdhocAnalysisList"),
+);
+
+/** Reporting: AI analytics */
+const AIAnalyticsList = lazy(
+  () => import("./features/reporting/AIAnalyticsList"),
+);
+
+// ============================================================================
+// Communication Module - Additional
+// ============================================================================
+
+/** Communication: Email management */
+const EmailManagement = lazy(
+  () => import("./features/communication/EmailManagement"),
+);
+
+/** Communication: Messaging center */
+const MessagingCenter = lazy(
+  () => import("./features/communication/MessagingCenter"),
+);
+
+/** Communication: Social media hub */
+const SocialMediaHub = lazy(
+  () => import("./features/communication/SocialMediaHub"),
+);
+
+// ============================================================================
+// System Module
+// ============================================================================
+
+/** System: User management */
+const UserManagement = lazy(() => import("./features/system/UserManagement"));
+
+/** System: System settings */
+const SystemSettings = lazy(() => import("./features/system/SystemSettings"));
+
+/** System: Integrations */
+const IntegrationsList = lazy(
+  () => import("./features/system/IntegrationsList"),
+);
+
+// ============================================================================
 // AI & ML Features
 // ============================================================================
 
@@ -211,6 +383,144 @@ export const router = createBrowserRouter([
       {
         path: "help",
         element: lazyLoad(HelpCenter),
+      },
+      // Business routes
+      {
+        path: "company",
+        element: lazyLoad(CompanyManagement),
+      },
+      {
+        path: "processes",
+        element: lazyLoad(ProcessManagement),
+      },
+      {
+        path: "risk",
+        element: lazyLoad(RiskManagement),
+      },
+      // Finance routes
+      {
+        path: "accounting",
+        element: lazyLoad(AccountingList),
+      },
+      {
+        path: "controlling",
+        element: lazyLoad(ControllingList),
+      },
+      {
+        path: "treasury",
+        element: lazyLoad(TreasuryList),
+      },
+      {
+        path: "taxes",
+        element: lazyLoad(TaxesList),
+      },
+      // Sales routes
+      {
+        path: "marketing",
+        element: lazyLoad(MarketingList),
+      },
+      {
+        path: "sales",
+        element: lazyLoad(SalesList),
+      },
+      {
+        path: "fulfillment",
+        element: lazyLoad(FulfillmentList),
+      },
+      // Procurement routes
+      {
+        path: "purchasing",
+        element: lazyLoad(PurchasingList),
+      },
+      {
+        path: "receiving",
+        element: lazyLoad(ReceivingList),
+      },
+      {
+        path: "suppliers",
+        element: lazyLoad(SupplierList),
+      },
+      // Production routes
+      {
+        path: "planning",
+        element: lazyLoad(PlanningList),
+      },
+      {
+        path: "manufacturing",
+        element: lazyLoad(ManufacturingList),
+      },
+      {
+        path: "quality",
+        element: lazyLoad(QualityList),
+      },
+      {
+        path: "maintenance",
+        element: lazyLoad(MaintenanceList),
+      },
+      // Warehouse routes
+      {
+        path: "picking",
+        element: lazyLoad(PickingList),
+      },
+      {
+        path: "logistics",
+        element: lazyLoad(LogisticsList),
+      },
+      // HR routes
+      {
+        path: "personnel",
+        element: lazyLoad(PersonnelList),
+      },
+      {
+        path: "time-tracking",
+        element: lazyLoad(TimeTrackingList),
+      },
+      {
+        path: "development",
+        element: lazyLoad(DevelopmentList),
+      },
+      {
+        path: "recruiting",
+        element: lazyLoad(RecruitingList),
+      },
+      // Reporting routes
+      {
+        path: "reports",
+        element: lazyLoad(ReportsList),
+      },
+      {
+        path: "adhoc",
+        element: lazyLoad(AdhocAnalysisList),
+      },
+      {
+        path: "ai-analytics",
+        element: lazyLoad(AIAnalyticsList),
+      },
+      // Communication routes
+      {
+        path: "email",
+        element: lazyLoad(EmailManagement),
+      },
+      {
+        path: "messaging",
+        element: lazyLoad(MessagingCenter),
+      },
+      {
+        path: "social",
+        element: lazyLoad(SocialMediaHub),
+      },
+      // System routes
+      {
+        path: "users",
+        element: lazyLoad(UserManagement),
+      },
+      {
+        path: "system-settings",
+        element: lazyLoad(SystemSettings),
+      },
+      {
+        path: "integrations",
+        element: lazyLoad(IntegrationsList),
       },
     ],
   },

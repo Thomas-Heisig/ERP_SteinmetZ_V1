@@ -130,7 +130,9 @@ export const DocumentList: React.FC = () => {
               className="input"
               placeholder="Dokument suchen..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearch(e.target.value)
+              }
             />
           </div>
 

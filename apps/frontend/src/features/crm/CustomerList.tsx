@@ -199,7 +199,9 @@ export const CustomerList: React.FC = () => {
           <Input
             placeholder="Suchen..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearch(e.target.value)
+            }
             icon={<span>🔍</span>}
           />
           <Button variant="primary">+ Neuer Kunde</Button>
