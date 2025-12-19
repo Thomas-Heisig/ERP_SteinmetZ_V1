@@ -180,7 +180,9 @@ export const CallLog: React.FC = () => {
         <Input
           placeholder="Suchen..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setSearch(e.target.value)
+          }
           icon={<span>🔍</span>}
         />
         <div style={{ display: "flex", gap: "0.5rem" }}>

@@ -100,10 +100,14 @@ const DocumentList = lazy(() => import("./features/documents/DocumentList"));
 // ============================================================================
 
 /** Business: Company management */
-const CompanyManagement = lazy(() => import("./features/business/CompanyManagement"));
+const CompanyManagement = lazy(
+  () => import("./features/business/CompanyManagement"),
+);
 
 /** Business: Process management */
-const ProcessManagement = lazy(() => import("./features/business/ProcessManagement"));
+const ProcessManagement = lazy(
+  () => import("./features/business/ProcessManagement"),
+);
 
 /** Business: Risk and compliance management */
 const RiskManagement = lazy(() => import("./features/business/RiskManagement"));
@@ -113,13 +117,19 @@ const RiskManagement = lazy(() => import("./features/business/RiskManagement"));
 // ============================================================================
 
 /** Finance: Accounting */
-const AccountingList = lazy(() => import("./features/finance/modules/AccountingList"));
+const AccountingList = lazy(
+  () => import("./features/finance/modules/AccountingList"),
+);
 
 /** Finance: Controlling */
-const ControllingList = lazy(() => import("./features/finance/modules/ControllingList"));
+const ControllingList = lazy(
+  () => import("./features/finance/modules/ControllingList"),
+);
 
 /** Finance: Treasury */
-const TreasuryList = lazy(() => import("./features/finance/modules/TreasuryList"));
+const TreasuryList = lazy(
+  () => import("./features/finance/modules/TreasuryList"),
+);
 
 /** Finance: Taxes */
 const TaxesList = lazy(() => import("./features/finance/modules/TaxesList"));
@@ -142,10 +152,14 @@ const FulfillmentList = lazy(() => import("./features/sales/FulfillmentList"));
 // ============================================================================
 
 /** Procurement: Purchasing */
-const PurchasingList = lazy(() => import("./features/procurement/PurchasingList"));
+const PurchasingList = lazy(
+  () => import("./features/procurement/PurchasingList"),
+);
 
 /** Procurement: Receiving */
-const ReceivingList = lazy(() => import("./features/procurement/ReceivingList"));
+const ReceivingList = lazy(
+  () => import("./features/procurement/ReceivingList"),
+);
 
 /** Procurement: Suppliers */
 const SupplierList = lazy(() => import("./features/procurement/SupplierList"));
@@ -158,13 +172,17 @@ const SupplierList = lazy(() => import("./features/procurement/SupplierList"));
 const PlanningList = lazy(() => import("./features/production/PlanningList"));
 
 /** Production: Manufacturing */
-const ManufacturingList = lazy(() => import("./features/production/ManufacturingList"));
+const ManufacturingList = lazy(
+  () => import("./features/production/ManufacturingList"),
+);
 
 /** Production: Quality management */
 const QualityList = lazy(() => import("./features/production/QualityList"));
 
 /** Production: Maintenance */
-const MaintenanceList = lazy(() => import("./features/production/MaintenanceList"));
+const MaintenanceList = lazy(
+  () => import("./features/production/MaintenanceList"),
+);
 
 // ============================================================================
 // Warehouse Module
@@ -184,13 +202,19 @@ const LogisticsList = lazy(() => import("./features/warehouse/LogisticsList"));
 const PersonnelList = lazy(() => import("./features/hr/modules/PersonnelList"));
 
 /** HR: Time tracking */
-const TimeTrackingList = lazy(() => import("./features/hr/modules/TimeTrackingList"));
+const TimeTrackingList = lazy(
+  () => import("./features/hr/modules/TimeTrackingList"),
+);
 
 /** HR: Personnel development */
-const DevelopmentList = lazy(() => import("./features/hr/modules/DevelopmentList"));
+const DevelopmentList = lazy(
+  () => import("./features/hr/modules/DevelopmentList"),
+);
 
 /** HR: Recruiting */
-const RecruitingList = lazy(() => import("./features/hr/modules/RecruitingList"));
+const RecruitingList = lazy(
+  () => import("./features/hr/modules/RecruitingList"),
+);
 
 // ============================================================================
 // Reporting Module
@@ -200,23 +224,33 @@ const RecruitingList = lazy(() => import("./features/hr/modules/RecruitingList")
 const ReportsList = lazy(() => import("./features/reporting/ReportsList"));
 
 /** Reporting: Ad-hoc analysis */
-const AdhocAnalysisList = lazy(() => import("./features/reporting/AdhocAnalysisList"));
+const AdhocAnalysisList = lazy(
+  () => import("./features/reporting/AdhocAnalysisList"),
+);
 
 /** Reporting: AI analytics */
-const AIAnalyticsList = lazy(() => import("./features/reporting/AIAnalyticsList"));
+const AIAnalyticsList = lazy(
+  () => import("./features/reporting/AIAnalyticsList"),
+);
 
 // ============================================================================
 // Communication Module - Additional
 // ============================================================================
 
 /** Communication: Email management */
-const EmailManagement = lazy(() => import("./features/communication/EmailManagement"));
+const EmailManagement = lazy(
+  () => import("./features/communication/EmailManagement"),
+);
 
 /** Communication: Messaging center */
-const MessagingCenter = lazy(() => import("./features/communication/MessagingCenter"));
+const MessagingCenter = lazy(
+  () => import("./features/communication/MessagingCenter"),
+);
 
 /** Communication: Social media hub */
-const SocialMediaHub = lazy(() => import("./features/communication/SocialMediaHub"));
+const SocialMediaHub = lazy(
+  () => import("./features/communication/SocialMediaHub"),
+);
 
 // ============================================================================
 // System Module
@@ -229,7 +263,9 @@ const UserManagement = lazy(() => import("./features/system/UserManagement"));
 const SystemSettings = lazy(() => import("./features/system/SystemSettings"));
 
 /** System: Integrations */
-const IntegrationsList = lazy(() => import("./features/system/IntegrationsList"));
+const IntegrationsList = lazy(
+  () => import("./features/system/IntegrationsList"),
+);
 
 // ============================================================================
 // AI & ML Features

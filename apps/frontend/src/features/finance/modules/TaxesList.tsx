@@ -2,7 +2,7 @@
 // apps/frontend/src/features/finance/modules/TaxesList.tsx
 
 import React, { useState, useEffect } from "react";
-import { Card, Table, Button, Input } from "../../components/ui";
+import { Card, Table, Button, Input } from "../../../components/ui";
 import styles from "./TaxesList.module.css";
 
 interface DataItem {
@@ -49,14 +49,30 @@ export const TaxesList: React.FC = () => {
   });
 
   const getStatusBadge = (status: string) => {
-    const config: Record<string, { label: string; bg: string; color: string }> = {
-      active: { label: "Aktiv", bg: "var(--success-50)", color: "var(--success-600)" },
-      inactive: { label: "Inaktiv", bg: "var(--gray-100)", color: "var(--gray-600)" },
-      pending: { label: "Ausstehend", bg: "var(--warning-50)", color: "var(--warning-600)" },
-    };
+    const config: Record<string, { label: string; bg: string; color: string }> =
+      {
+        active: {
+          label: "Aktiv",
+          bg: "var(--success-50)",
+          color: "var(--success-600)",
+        },
+        inactive: {
+          label: "Inaktiv",
+          bg: "var(--gray-100)",
+          color: "var(--gray-600)",
+        },
+        pending: {
+          label: "Ausstehend",
+          bg: "var(--warning-50)",
+          color: "var(--warning-600)",
+        },
+      };
     const c = config[status] || config.active;
     return (
-      <span className={styles.statusBadge} style={{ background: c.bg, color: c.color }}>
+      <span
+        className={styles.statusBadge}
+        style={{ background: c.bg, color: c.color }}
+      >
         {c.label}
       </span>
     );
@@ -101,7 +117,9 @@ export const TaxesList: React.FC = () => {
           <Input
             placeholder="Suchen..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearch(e.target.value)
+            }
             icon={<span>🔍</span>}
           />
           <Button variant="primary">+ Neu</Button>

@@ -22,7 +22,9 @@ export const MaintenanceList: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:3000/api/production/maintenance");
+        const response = await fetch(
+          "http://localhost:3000/api/production/maintenance",
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
@@ -49,14 +51,30 @@ export const MaintenanceList: React.FC = () => {
   });
 
   const getStatusBadge = (status: string) => {
-    const config: Record<string, { label: string; bg: string; color: string }> = {
-      active: { label: "Aktiv", bg: "var(--success-50)", color: "var(--success-600)" },
-      inactive: { label: "Inaktiv", bg: "var(--gray-100)", color: "var(--gray-600)" },
-      pending: { label: "Ausstehend", bg: "var(--warning-50)", color: "var(--warning-600)" },
-    };
+    const config: Record<string, { label: string; bg: string; color: string }> =
+      {
+        active: {
+          label: "Aktiv",
+          bg: "var(--success-50)",
+          color: "var(--success-600)",
+        },
+        inactive: {
+          label: "Inaktiv",
+          bg: "var(--gray-100)",
+          color: "var(--gray-600)",
+        },
+        pending: {
+          label: "Ausstehend",
+          bg: "var(--warning-50)",
+          color: "var(--warning-600)",
+        },
+      };
     const c = config[status] || config.active;
     return (
-      <span className={styles.statusBadge} style={{ background: c.bg, color: c.color }}>
+      <span
+        className={styles.statusBadge}
+        style={{ background: c.bg, color: c.color }}
+      >
         {c.label}
       </span>
     );
@@ -101,7 +119,9 @@ export const MaintenanceList: React.FC = () => {
           <Input
             placeholder="Suchen..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearch(e.target.value)
+            }
             icon={<span>🔍</span>}
           />
           <Button variant="primary">+ Neu</Button>
