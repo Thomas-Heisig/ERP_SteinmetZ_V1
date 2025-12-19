@@ -1,6 +1,6 @@
 # ERP SteinmetZ - Dokumentationsindex
 
-**Stand**: 9. Dezember 2025  
+**Stand**: 19. Dezember 2025  
 **Version**: 0.3.0
 
 Dieser Index bietet eine strukturierte Übersicht über die gesamte Projektdokumentation.
@@ -12,6 +12,36 @@ Dieser Index bietet eine strukturierte Übersicht über die gesamte Projektdokum
 | [README.md](../README.md)                          | Projekt-Übersicht, Features, Quick Start | Alle            |
 | [DEVELOPER_ONBOARDING.md](DEVELOPER_ONBOARDING.md) | Entwickler-Setup-Anleitung               | Neue Entwickler |
 | [SCRIPTS.md](../SCRIPTS.md)                        | Verfügbare npm-Scripts                   | Entwickler      |
+| **[📘 Help Center](/help)**                        | **Integriertes Help-System**             | **Alle Benutzer** |
+
+## 🆕 Neue Dokumentationsstruktur (19. Dezember 2025)
+
+### Zentralisierte Dokumentation
+
+Die Dokumentation wurde neu organisiert und konsolidiert:
+
+| Bereich | Beschreibung | Dateien |
+|---------|--------------|---------|
+| **[docs/modules/](modules/README.md)** | Backend-Modul-Dokumentation | 24 Module-Docs |
+| **[docs/frontend/](frontend/README.md)** | Frontend-Komponenten & Features | 19 Komponenten-Docs |
+| **[docs/backend/](backend/README.md)** | Backend-Infrastructure | 3 Infrastructure-Docs |
+
+### Help Desk System ✨ NEU
+
+| Komponente | Beschreibung | Zugriff |
+|------------|--------------|---------|
+| **Frontend Help Center** | Benutzer-Hilfe-Portal | `/help` |
+| **Admin Interface** | Artikel-Verwaltung | `/help-admin` |
+| **Backend API** | REST API für Help-System | `/api/help/*` |
+| **[API Documentation](../apps/backend/src/routes/help/README.md)** | Vollständige API-Dokumentation | - |
+
+**Features:**
+- 📝 Artikel-Verwaltung (CRUD)
+- 🔍 Erweiterte Suche mit Relevanz-Scoring
+- 📊 Usage-Analytics und Statistics
+- 🏷️ Kategorien-Management
+- 📈 View-Count Tracking
+- 🎨 Markdown-Editor
 
 ## 🏗️ Architektur & Design
 
