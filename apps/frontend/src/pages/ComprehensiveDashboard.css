@@ -1,0 +1,232 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/pages/ComprehensiveDashboard.css */
+
+.comprehensive-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem;
+}
+
+.dashboard-main-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-main-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-subtitle {
+  font-size: 1.125rem;
+  color: #7f8c8d;
+  font-weight: 400;
+}
+
+.dashboard-navigation {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border: 2px solid transparent;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.nav-btn:hover {
+  background: #f8f9fa;
+  border-color: #3498db;
+}
+
+.nav-btn.active {
+  background: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.nav-icon {
+  font-size: 2rem;
+}
+
+.nav-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.dashboard-main-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-height: 500px;
+}
+
+.dashboard-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.overview-card {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.overview-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border-color: #3498db;
+}
+
+.overview-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.overview-card p {
+  font-size: 1rem;
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.view-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.view-btn:active {
+  transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .comprehensive-dashboard {
+    padding: 1.5rem;
+  }
+
+  .dashboard-overview-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .comprehensive-dashboard {
+    padding: 1rem;
+  }
+
+  .dashboard-main-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 1rem;
+  }
+
+  .dashboard-navigation {
+    gap: 0.5rem;
+  }
+
+  .nav-btn {
+    min-width: auto;
+    padding: 0.75rem 1rem;
+  }
+
+  .nav-icon {
+    font-size: 1.5rem;
+  }
+
+  .nav-label {
+    font-size: 0.75rem;
+  }
+
+  .dashboard-overview-grid {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+
+  .overview-card {
+    padding: 1.5rem;
+  }
+
+  .overview-card h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .comprehensive-dashboard {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+  }
+
+  .dashboard-main-header h1,
+  .overview-card h3,
+  .nav-label {
+    color: #e0e0e0;
+  }
+
+  .dashboard-subtitle,
+  .overview-card p {
+    color: #aaa;
+  }
+
+  .dashboard-navigation,
+  .dashboard-main-content,
+  .overview-card {
+    background: #2d2d2d;
+    border-color: #444;
+  }
+
+  .nav-btn:hover {
+    background: #363636;
+    border-color: #3498db;
+  }
+
+  .nav-btn.active {
+    background: #1a237e;
+    border-color: #2196f3;
+  }
+
+  .overview-card:hover {
+    border-color: #3498db;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+}
