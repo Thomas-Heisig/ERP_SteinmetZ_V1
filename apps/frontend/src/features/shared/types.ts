@@ -15,4 +15,10 @@ export interface BaseDataItem {
 /**
  * Common status types used across the application
  */
-export type CommonStatus = "active" | "inactive" | "pending" | "draft" | "completed" | "cancelled";
+export type CommonStatus =
+  | "active"
+  | "inactive"
+  | "pending"
+  | "draft"
+  | "completed"
+  | "cancelled";

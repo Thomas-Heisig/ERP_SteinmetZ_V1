@@ -61,7 +61,7 @@ export const getStatusBadge = (
 ): React.ReactElement => {
   const config = customConfig || DEFAULT_STATUS_CONFIG;
   const statusConfig = config[status] || DEFAULT_STATUS_CONFIG.active;
-  
+
   return (
     <span
       className={className}
