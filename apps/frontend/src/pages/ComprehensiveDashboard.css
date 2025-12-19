@@ -191,6 +191,25 @@
   }
 }
 
+.coming-soon {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+.coming-soon h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.coming-soon p {
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .comprehensive-dashboard {
@@ -228,5 +247,13 @@
   .overview-card:hover {
     border-color: #3498db;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .coming-soon h2 {
+    color: #e0e0e0;
+  }
+
+  .coming-soon p {
+    color: #aaa;
   }
 }

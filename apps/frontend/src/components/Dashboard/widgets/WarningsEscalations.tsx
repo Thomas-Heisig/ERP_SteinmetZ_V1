@@ -168,9 +168,14 @@ export const WarningsEscalations: React.FC = () => {
     );
   }
 
-  const filterData = <T extends Record<string, unknown>>(
+  interface FilterableItem {
+    priority?: string;
+    severity?: string;
+  }
+
+  const filterData = <T extends FilterableItem>(
     items: T[],
-    priorityField: string = "priority",
+    priorityField: keyof FilterableItem = "priority",
   ): T[] => {
     if (filter === "all") return items;
     if (filter === "critical")

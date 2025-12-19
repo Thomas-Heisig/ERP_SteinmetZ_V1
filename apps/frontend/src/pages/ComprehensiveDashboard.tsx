@@ -24,6 +24,26 @@ export const ComprehensiveDashboard: React.FC = () => {
         return <ExecutiveOverview />;
       case "warnings":
         return <WarningsEscalations />;
+      case "analytics":
+        return (
+          <div className="coming-soon">
+            <h2>📈 Echtzeit-Analytics</h2>
+            <p>Diese Funktion wird in Kürze verfügbar sein.</p>
+            <p>
+              Hier werden Sie Finanz-, Produktions- und Kunden-KPIs in Echtzeit sehen können.
+            </p>
+          </div>
+        );
+      case "tasks":
+        return (
+          <div className="coming-soon">
+            <h2>✅ Aufgaben & Benachrichtigungen</h2>
+            <p>Diese Funktion wird in Kürze verfügbar sein.</p>
+            <p>
+              Hier werden Sie Ihre persönlichen und Team-Aufgaben im Überblick sehen können.
+            </p>
+          </div>
+        );
       case "overview":
       default:
         return (

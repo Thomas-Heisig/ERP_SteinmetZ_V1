@@ -311,7 +311,7 @@ router.get(
     let complaintsWhere = "date = date('now')";
     const systemWhere = "date = date('now')";
 
-    const params: string[] = [];
+    const params: (string | number)[] = [];
 
     if (priority) {
       deliveryWhere += " AND priority = ?";
@@ -518,7 +518,7 @@ router.post(
       refresh_interval,
     } = req.body;
 
-    const id = `widget-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = `widget-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
     await db.run(
       `INSERT INTO dashboard_widget_config 
@@ -634,7 +634,7 @@ router.post(
     const { user_id, layout_name, layout_config, is_default, device_type } =
       req.body;
 
-    const id = `layout-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = `layout-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
     // If setting as default, unset other defaults for this user and device
     if (is_default) {
@@ -693,7 +693,7 @@ router.post(
     const db = (await import("../../services/dbService.js")).default;
     const { user_id, item_type, item_id, display_order } = req.body;
 
-    const id = `fav-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = `fav-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
     await db.run(
       `INSERT INTO dashboard_favorites (id, user_id, item_type, item_id, display_order)
