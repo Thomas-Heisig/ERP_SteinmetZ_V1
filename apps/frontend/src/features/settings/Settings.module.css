@@ -174,3 +174,81 @@
   font-weight: 600;
   color: var(--success-500);
 }
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .diagnosticsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gridThree {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    font-size: 1.25rem;
+  }
+
+  .gridTwo {
+    grid-template-columns: 1fr;
+  }
+
+  .gridThree {
+    grid-template-columns: 1fr;
+  }
+
+  .backupGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .diagnosticsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .settingsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .buttonGroup > * {
+    width: 100%;
+  }
+
+  .apiCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .apiCard button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    gap: 0.75rem;
+  }
+
+  .generalSettings,
+  .settingsContent,
+  .apiSection,
+  .backupSection,
+  .diagnosticsSection {
+    padding: 0.75rem;
+  }
+
+  .placeholder {
+    padding: 1.5rem;
+  }
+}

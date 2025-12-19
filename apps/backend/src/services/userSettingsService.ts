@@ -22,7 +22,8 @@ class UserSettingsService {
    */
   static async init(): Promise<void> {
     try {
-      const sql = `
+      // Create table
+      await db.exec(`
         CREATE TABLE IF NOT EXISTS user_settings (
           id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
           user_id TEXT NOT NULL,
@@ -31,13 +32,17 @@ class UserSettingsService {
           updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
           UNIQUE(user_id, key),
           FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        );
-        
-        CREATE INDEX IF NOT EXISTS idx_user_settings_user_id ON user_settings(user_id);
-        CREATE INDEX IF NOT EXISTS idx_user_settings_key ON user_settings(key);
-      `;
+        )
+      `);
 
-      db.exec(sql);
+      // Create indexes separately
+      await db.exec(
+        `CREATE INDEX IF NOT EXISTS idx_user_settings_user_id ON user_settings(user_id)`,
+      );
+      await db.exec(
+        `CREATE INDEX IF NOT EXISTS idx_user_settings_key ON user_settings(key)`,
+      );
+
       logger.info("User settings table initialized");
     } catch (error) {
       logger.error("Failed to initialize user settings table:", error);
