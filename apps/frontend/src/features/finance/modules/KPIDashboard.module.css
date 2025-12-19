@@ -1,0 +1,215 @@
+/* SPDX-License-Identifier: MIT */
+/* apps/frontend/src/features/finance/modules/KPIDashboard.module.css */
+
+.container {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #1a202c;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.125rem;
+  color: #718096;
+}
+
+.error {
+  color: #e53e3e;
+  background-color: #fff5f5;
+  border: 1px solid #feb2b2;
+  border-radius: 0.5rem;
+}
+
+.kpiSection {
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.kpiCard {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpiCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #cbd5e0;
+  transition: background 0.2s ease;
+}
+
+.kpiCard:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.status-good::before {
+  background: #48bb78;
+}
+
+.status-warning::before {
+  background: #ed8936;
+}
+
+.status-bad::before {
+  background: #f56565;
+}
+
+.status-good {
+  border-color: #c6f6d5;
+  background: #f0fff4;
+}
+
+.status-warning {
+  border-color: #feebc8;
+  background: #fffaf0;
+}
+
+.status-bad {
+  border-color: #fed7d7;
+  background: #fff5f5;
+}
+
+.kpiTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpiValue {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.unit {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: #718096;
+  margin-left: 0.25rem;
+}
+
+.description {
+  font-size: 0.875rem;
+  color: #718096;
+  margin-bottom: 1rem;
+}
+
+.benchmark {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.benchmarkBar {
+  position: relative;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.benchmarkBar span {
+  position: absolute;
+  top: -20px;
+  font-size: 0.75rem;
+  color: #718096;
+  transform: translateX(-50%);
+}
+
+.min {
+  left: 0;
+  transform: translateX(0);
+}
+
+.optimal {
+  left: 50%;
+  font-weight: 600;
+  color: #48bb78;
+}
+
+.max {
+  right: 0;
+  left: auto;
+  transform: translateX(0);
+}
+
+.indicator {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: #3182ce;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.timestamp {
+  font-size: 0.875rem;
+  color: #a0aec0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+
+  .kpiGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpiValue {
+    font-size: 1.75rem;
+  }
+}

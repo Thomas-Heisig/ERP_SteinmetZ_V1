@@ -1266,3 +1266,470 @@ Automationen „klein anfangen“: Bank-Auto-Match, Standard-ER-Kontierung, einf
 Schließkalender & KPIs: T-Plan, Mindest-KPIs (DSO, Auto-Match-Quote, Durchlaufzeit ER, Skonto-Quote, Abschluss-Takt).
 
 Reviews: Monatlich Datenqualität & Regeln; Quartalsweise Steuer-/IFRS-Sonderthemen.
+
+## 🔧 Technische Implementierung
+
+### Backend-API-Endpunkte
+
+#### Rechnungswesen (Invoicing)
+- `GET /api/finance/invoices` - Liste aller Rechnungen (mit Filtern)
+- `GET /api/finance/invoices/:id` - Einzelne Rechnung abrufen
+- `POST /api/finance/invoices` - Neue Rechnung erstellen
+- `PUT /api/finance/invoices/:id` - Rechnung aktualisieren
+- `DELETE /api/finance/invoices/:id` - Rechnung löschen (nur Entwürfe)
+- `POST /api/finance/invoices/:id/send` - Rechnung versenden
+
+#### Debitoren (Customers/Receivables)
+- `GET /api/finance/customers` - Kundenliste
+- `GET /api/finance/customers/:id` - Kundendetails
+- `POST /api/finance/customers` - Kunde anlegen
+- `PUT /api/finance/customers/:id` - Kunde aktualisieren
+- `GET /api/finance/customers/:id/transactions` - Kundenkontobewegungen
+
+#### Kreditoren (Suppliers/Payables)
+- `GET /api/finance/suppliers` - Lieferantenliste
+- `GET /api/finance/suppliers/:id` - Lieferantendetails
+- `POST /api/finance/suppliers` - Lieferant anlegen
+- `PUT /api/finance/suppliers/:id` - Lieferant aktualisieren
+- `GET /api/finance/suppliers/:id/transactions` - Lieferantenkontobewegungen
+
+#### Zahlungen (Payments)
+- `GET /api/finance/payments` - Zahlungsliste (ein-/ausgehend)
+- `POST /api/finance/payments` - Zahlung erfassen
+- `GET /api/finance/payments/:id` - Zahlungsdetails
+
+#### Konten & Buchungen (Accounts & Transactions)
+- `GET /api/finance/accounts` - Kontenplan (SKR03/SKR04)
+- `GET /api/finance/accounts/:id` - Kontodetails mit Salden
+- `POST /api/finance/accounts` - Konto anlegen
+- `GET /api/finance/transactions` - Buchungsliste
+- `POST /api/finance/transactions` - Buchung erstellen
+
+#### Anlagenbuchhaltung (Asset Accounting)
+- `GET /api/finance/assets` - Anlagenverzeichnis
+- `GET /api/finance/assets/:id` - Anlagendetails
+- `POST /api/finance/assets` - Anlage erfassen
+- `PUT /api/finance/assets/:id` - Anlage aktualisieren
+- `GET /api/finance/assets/:id/depreciation` - Abschreibungsverlauf
+- `POST /api/finance/assets/depreciation/calculate` - AfA berechnen
+
+#### Auswertungen & Reports (siehe _3_1_AUSWERTUNGEN.md)
+- `GET /api/finance/reports/balance-sheet` - Bilanz
+- `GET /api/finance/reports/profit-loss` - GuV
+- `GET /api/finance/reports/cash-flow` - Kapitalflussrechnung
+- `GET /api/finance/reports/trial-balance` - Summen-Saldenliste
+- `GET /api/finance/reports/aging` - Fälligkeitsstruktur (OP-Listen)
+
+#### Kennzahlen (siehe _3_2_KENNZAHLEN.md)
+- `GET /api/finance/kpi/liquidity` - Liquiditätskennzahlen (1., 2., 3. Grades)
+- `GET /api/finance/kpi/profitability` - Rentabilitätskennzahlen (ROE, ROA, ROS)
+- `GET /api/finance/kpi/efficiency` - Effizienzkennzahlen (DSO, DPO, DIO, CCC)
+- `GET /api/finance/kpi/capital-structure` - Kapitalstruktur (EK-Quote, Verschuldungsgrad)
+- `GET /api/finance/kpi/dashboard` - Kennzahlen-Dashboard (alle wichtigen KPIs)
+
+#### Mahnwesen (Dunning)
+- `GET /api/finance/dunning` - Mahnungsliste
+- `POST /api/finance/dunning` - Mahnung erstellen
+- `POST /api/finance/dunning/auto-escalate` - Automatische Eskalation
+
+#### Nummernkreise (Number Ranges)
+- `GET /api/finance/number-ranges` - Nummernkreise abrufen
+- `POST /api/finance/number-ranges` - Nummernkreis anlegen
+- `POST /api/finance/number-ranges/:id/next` - Nächste Nummer generieren
+
+#### Export & Compliance
+- `POST /api/finance/invoices/:id/export/xrechnung` - XRechnung-XML generieren
+- `POST /api/finance/invoices/:id/export/zugferd` - ZUGFeRD-PDF erstellen
+- `POST /api/finance/datev-export` - DATEV-Export erstellen
+- `POST /api/finance/chart-of-accounts/import` - Kontenplan importieren
+- `GET /api/finance/vat/advance-return` - UStVA-Daten abrufen
+- `POST /api/finance/vat/advance-return/submit` - UStVA einreichen
+
+#### Statistiken
+- `GET /api/finance/statistics` - Finanzstatistiken-Übersicht
+- `GET /api/finance/payment-monitoring` - Zahlungsüberwachung
+
+### Datenmodell
+
+#### Core Entities
+```typescript
+// Customer (Debitor)
+interface Customer {
+  id: string;
+  customerId: string;
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  taxId?: string;
+  creditLimit?: number;
+  paymentTerms?: string;
+  currentBalance: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Supplier (Kreditor)
+interface Supplier {
+  id: string;
+  supplierId: string;
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  taxId?: string;
+  paymentTerms?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Invoice
+interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  customerId: string;
+  customerName: string;
+  amount: number;
+  currency: string;
+  taxAmount: number;
+  grossAmount: number;
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+  dueDate: Date;
+  items: InvoiceItem[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// InvoiceItem
+interface InvoiceItem {
+  id: string;
+  invoiceId: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  taxRate: number;
+}
+
+// Payment
+interface Payment {
+  id: string;
+  type: 'incoming' | 'outgoing';
+  amount: number;
+  currency: string;
+  date: Date;
+  status: 'pending' | 'completed' | 'failed';
+  invoiceId?: string;
+  customerId?: string;
+  supplierId?: string;
+  description?: string;
+  paymentMethod?: string;
+  reference?: string;
+  createdAt: Date;
+}
+
+// Account (Konto)
+interface Account {
+  id: string;
+  accountNumber: string;
+  name: string;
+  type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+  category: string;
+  standard: 'SKR03' | 'SKR04' | 'IFRS' | 'US-GAAP';
+  balance: number;
+  currency: string;
+  isActive: boolean;
+  createdAt: Date;
+}
+
+// Transaction (Buchung)
+interface Transaction {
+  id: string;
+  transactionNumber: string;
+  date: Date;
+  description: string;
+  debitAccount: string;
+  creditAccount: string;
+  amount: number;
+  currency: string;
+  reference?: string;
+  createdBy: string;
+  createdAt: Date;
+}
+
+// Asset (Anlage)
+interface Asset {
+  id: string;
+  assetNumber: string;
+  name: string;
+  category: string;
+  acquisitionDate: Date;
+  acquisitionCost: number;
+  residualValue: number;
+  usefulLife: number; // in months
+  depreciationMethod: 'linear' | 'declining' | 'performance-based';
+  currentBookValue: number;
+  location?: string;
+  costCenter?: string;
+  serialNumber?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Depreciation
+interface Depreciation {
+  id: string;
+  assetId: string;
+  period: Date;
+  amount: number;
+  accumulatedDepreciation: number;
+  bookValue: number;
+  method: string;
+  createdAt: Date;
+}
+```
+
+### Frontend-Komponenten
+
+#### Übersichtsseiten
+- **FinanceDashboard** - Finanz-Übersicht mit KPIs
+- **InvoiceList** - Rechnungsliste mit Filtern
+- **CustomerList** - Kundenliste
+- **SupplierList** - Lieferantenliste
+- **PaymentList** - Zahlungsliste
+- **AccountList** - Kontenplan-Übersicht
+- **TransactionList** - Buchungsliste (Journal)
+- **AssetList** - Anlagenverzeichnis
+
+#### Formulare & Dialoge
+- **InvoiceForm** - Rechnung erstellen/bearbeiten
+- **CustomerForm** - Kunde anlegen/bearbeiten
+- **SupplierForm** - Lieferant anlegen/bearbeiten
+- **PaymentForm** - Zahlung erfassen
+- **TransactionForm** - Manuelle Buchung
+- **AssetForm** - Anlage erfassen
+- **ChartOfAccountsImport** - Kontenplan importieren
+
+#### Auswertungen & Reports
+- **BalanceSheet** - Bilanzansicht
+- **ProfitLossStatement** - GuV-Ansicht
+- **CashFlowStatement** - Kapitalflussrechnung
+- **AgingReport** - Fälligkeitsanalyse
+- **KPIDashboard** - Kennzahlen-Dashboard (detailliert in _3_2_KENNZAHLEN.md)
+- **FinancialReports** - Auswertungsmodul (detailliert in _3_1_AUSWERTUNGEN.md)
+
+### Datenbank-Schema (SQLite/PostgreSQL)
+
+```sql
+-- Customers (Debitoren)
+CREATE TABLE customers (
+  id TEXT PRIMARY KEY,
+  customer_id TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  address TEXT,
+  tax_id TEXT,
+  credit_limit REAL,
+  payment_terms TEXT,
+  current_balance REAL DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Suppliers (Kreditoren)
+CREATE TABLE suppliers (
+  id TEXT PRIMARY KEY,
+  supplier_id TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  address TEXT,
+  tax_id TEXT,
+  payment_terms TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Invoices
+CREATE TABLE invoices (
+  id TEXT PRIMARY KEY,
+  invoice_number TEXT UNIQUE NOT NULL,
+  customer_id TEXT NOT NULL,
+  customer_name TEXT NOT NULL,
+  amount REAL NOT NULL,
+  currency TEXT DEFAULT 'EUR',
+  tax_amount REAL DEFAULT 0,
+  gross_amount REAL NOT NULL,
+  status TEXT CHECK(status IN ('draft', 'sent', 'paid', 'overdue', 'cancelled')),
+  due_date DATE NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+-- Invoice Items
+CREATE TABLE invoice_items (
+  id TEXT PRIMARY KEY,
+  invoice_id TEXT NOT NULL,
+  description TEXT NOT NULL,
+  quantity REAL NOT NULL,
+  unit_price REAL NOT NULL,
+  total REAL NOT NULL,
+  tax_rate REAL DEFAULT 19.0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
+);
+
+-- Payments
+CREATE TABLE payments (
+  id TEXT PRIMARY KEY,
+  type TEXT CHECK(type IN ('incoming', 'outgoing')),
+  amount REAL NOT NULL,
+  currency TEXT DEFAULT 'EUR',
+  date DATE NOT NULL,
+  status TEXT CHECK(status IN ('pending', 'completed', 'failed')),
+  invoice_id TEXT,
+  customer_id TEXT,
+  supplier_id TEXT,
+  description TEXT,
+  payment_method TEXT,
+  reference TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (invoice_id) REFERENCES invoices(id),
+  FOREIGN KEY (customer_id) REFERENCES customers(id),
+  FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+);
+
+-- Accounts (Konten)
+CREATE TABLE accounts (
+  id TEXT PRIMARY KEY,
+  account_number TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  type TEXT CHECK(type IN ('asset', 'liability', 'equity', 'revenue', 'expense')),
+  category TEXT NOT NULL,
+  standard TEXT CHECK(standard IN ('SKR03', 'SKR04', 'IFRS', 'US-GAAP')),
+  balance REAL DEFAULT 0,
+  currency TEXT DEFAULT 'EUR',
+  is_active BOOLEAN DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Transactions (Buchungen)
+CREATE TABLE transactions (
+  id TEXT PRIMARY KEY,
+  transaction_number TEXT UNIQUE NOT NULL,
+  date DATE NOT NULL,
+  description TEXT NOT NULL,
+  debit_account TEXT NOT NULL,
+  credit_account TEXT NOT NULL,
+  amount REAL NOT NULL,
+  currency TEXT DEFAULT 'EUR',
+  reference TEXT,
+  created_by TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (debit_account) REFERENCES accounts(account_number),
+  FOREIGN KEY (credit_account) REFERENCES accounts(account_number)
+);
+
+-- Assets (Anlagen)
+CREATE TABLE assets (
+  id TEXT PRIMARY KEY,
+  asset_number TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  category TEXT NOT NULL,
+  acquisition_date DATE NOT NULL,
+  acquisition_cost REAL NOT NULL,
+  residual_value REAL DEFAULT 0,
+  useful_life INTEGER NOT NULL,
+  depreciation_method TEXT CHECK(depreciation_method IN ('linear', 'declining', 'performance-based')),
+  current_book_value REAL NOT NULL,
+  location TEXT,
+  cost_center TEXT,
+  serial_number TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Depreciation
+CREATE TABLE depreciation (
+  id TEXT PRIMARY KEY,
+  asset_id TEXT NOT NULL,
+  period DATE NOT NULL,
+  amount REAL NOT NULL,
+  accumulated_depreciation REAL NOT NULL,
+  book_value REAL NOT NULL,
+  method TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE CASCADE
+);
+
+-- Dunning (Mahnungen)
+CREATE TABLE dunning (
+  id TEXT PRIMARY KEY,
+  invoice_id TEXT NOT NULL,
+  invoice_number TEXT NOT NULL,
+  customer_id TEXT NOT NULL,
+  customer_name TEXT NOT NULL,
+  level INTEGER CHECK(level IN (1, 2, 3)),
+  sent_date DATETIME NOT NULL,
+  due_date DATE NOT NULL,
+  amount REAL NOT NULL,
+  fee REAL DEFAULT 0,
+  status TEXT CHECK(status IN ('sent', 'paid', 'escalated')),
+  message TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (invoice_id) REFERENCES invoices(id),
+  FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+-- Number Ranges (Nummernkreise)
+CREATE TABLE number_ranges (
+  id TEXT PRIMARY KEY,
+  type TEXT CHECK(type IN ('invoice', 'credit_note', 'customer', 'supplier', 'voucher', 'asset')),
+  prefix TEXT NOT NULL,
+  start_number INTEGER NOT NULL,
+  current_number INTEGER NOT NULL,
+  end_number INTEGER,
+  year INTEGER,
+  format TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indices für Performance
+CREATE INDEX idx_invoices_customer ON invoices(customer_id);
+CREATE INDEX idx_invoices_status ON invoices(status);
+CREATE INDEX idx_invoices_due_date ON invoices(due_date);
+CREATE INDEX idx_payments_invoice ON payments(invoice_id);
+CREATE INDEX idx_payments_customer ON payments(customer_id);
+CREATE INDEX idx_payments_supplier ON payments(supplier_id);
+CREATE INDEX idx_transactions_date ON transactions(date);
+CREATE INDEX idx_transactions_debit ON transactions(debit_account);
+CREATE INDEX idx_transactions_credit ON transactions(credit_account);
+CREATE INDEX idx_assets_category ON assets(category);
+CREATE INDEX idx_depreciation_asset ON depreciation(asset_id);
+```
+
+### Integration & Workflows
+
+#### Automatische Prozesse
+1. **Rechnungsnummerierung**: Automatische Vergabe bei Erstellung
+2. **Zahlungsabgleich**: Auto-Matching von Banktransaktionen mit offenen Posten
+3. **Mahnwesen**: Automatische Eskalation nach konfigurierbaren Regeln
+4. **Abschreibungen**: Periodische Berechnung (monatlich/quartalsweise/jährlich)
+5. **Saldenberechnung**: Automatische Aktualisierung bei Buchungen
+
+#### Validierungen
+1. **Doppelte Buchführung**: Soll = Haben bei jeder Transaktion
+2. **Kredilimitprüfung**: Warnung bei Überschreitung
+3. **Plausibilitätsprüfungen**: Datum, Betrag, Konten
+4. **Dublettenerkennung**: Kunden, Lieferanten, Rechnungen
+5. **GoBD-Konformität**: Unveränderbarkeit, Vollständigkeit, Nachvollziehbarkeit
+
+### Sicherheit & Compliance
+- **Verschlüsselung**: Sensible Daten (Bankverbindungen, Steuer-IDs)
+- **Audit-Trail**: Alle Änderungen protokollieren
+- **Zugriffsrechte**: Rollenbasierte Berechtigungen (RBAC)
+- **Datenarchivierung**: GoBD-konforme Langzeitarchivierung (10 Jahre)
+- **Backup**: Automatische Backups (täglich/wöchentlich)

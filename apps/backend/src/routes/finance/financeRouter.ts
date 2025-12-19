@@ -1593,4 +1593,604 @@ router.get(
   }),
 );
 
+// ============================================================================
+// ASSETS (ANLAGENBUCHHALTUNG)
+// ============================================================================
+
+const createAssetSchema = z.object({
+  assetNumber: z.string().optional(),
+  name: z.string().min(1).max(200),
+  category: z.string().min(1),
+  acquisitionDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  acquisitionCost: z.number().positive(),
+  residualValue: z.number().min(0).default(0),
+  usefulLife: z.number().int().positive(), // in months
+  depreciationMethod: z
+    .enum(["linear", "declining", "performance-based"])
+    .default("linear"),
+  location: z.string().optional(),
+  costCenter: z.string().optional(),
+  serialNumber: z.string().optional(),
+});
+
+/**
+ * GET /api/finance/assets
+ * Get all assets
+ */
+router.get(
+  "/assets",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { category, status } = req.query;
+
+    // TODO: Query from database
+    const mockAssets = [
+      {
+        id: "ast-1",
+        assetNumber: "ANL-001",
+        name: "Firmenwagen Mercedes E-Klasse",
+        category: "Fahrzeuge",
+        acquisitionDate: "2022-01-15",
+        acquisitionCost: 45000.0,
+        residualValue: 5000.0,
+        usefulLife: 72,
+        depreciationMethod: "linear",
+        currentBookValue: 28333.33,
+        location: "Hauptsitz Berlin",
+        status: "active",
+      },
+      {
+        id: "ast-2",
+        assetNumber: "ANL-002",
+        name: "Server Dell PowerEdge",
+        category: "IT-Hardware",
+        acquisitionDate: "2023-06-01",
+        acquisitionCost: 8500.0,
+        residualValue: 500.0,
+        usefulLife: 60,
+        depreciationMethod: "linear",
+        currentBookValue: 6166.67,
+        location: "Rechenzentrum",
+        status: "active",
+      },
+    ];
+
+    let filtered = mockAssets;
+    if (category) {
+      filtered = filtered.filter((a) => a.category === category);
+    }
+    if (status) {
+      filtered = filtered.filter((a) => a.status === status);
+    }
+
+    res.json({
+      success: true,
+      data: filtered,
+      count: filtered.length,
+    });
+  }),
+);
+
+/**
+ * GET /api/finance/assets/:id
+ * Get asset details
+ */
+router.get(
+  "/assets/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    // TODO: Query from database
+    const mockAsset = {
+      id,
+      assetNumber: "ANL-001",
+      name: "Firmenwagen Mercedes E-Klasse",
+      category: "Fahrzeuge",
+      acquisitionDate: "2022-01-15",
+      acquisitionCost: 45000.0,
+      residualValue: 5000.0,
+      usefulLife: 72,
+      depreciationMethod: "linear",
+      currentBookValue: 28333.33,
+      accumulatedDepreciation: 16666.67,
+      location: "Hauptsitz Berlin",
+      costCenter: "CC-100",
+      serialNumber: "WDD12345678901234",
+      status: "active",
+      createdAt: new Date("2022-01-15").toISOString(),
+    };
+
+    res.json({
+      success: true,
+      data: mockAsset,
+    });
+  }),
+);
+
+/**
+ * POST /api/finance/assets
+ * Create a new asset
+ */
+router.post(
+  "/assets",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validationResult = createAssetSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid asset data",
+        validationResult.error.issues,
+      );
+    }
+
+    const assetData = validationResult.data;
+
+    // TODO: Generate asset number if not provided
+    // TODO: Save to database
+    const newAsset = {
+      id: `ast-${Date.now()}`,
+      assetNumber: assetData.assetNumber || `ANL-${Date.now()}`,
+      ...assetData,
+      currentBookValue: assetData.acquisitionCost,
+      accumulatedDepreciation: 0,
+      status: "active",
+      createdAt: new Date().toISOString(),
+    };
+
+    logger.info({ assetId: newAsset.id }, "Asset created");
+
+    res.status(201).json({
+      success: true,
+      data: newAsset,
+      message: "Asset created successfully",
+    });
+  }),
+);
+
+/**
+ * PUT /api/finance/assets/:id
+ * Update an asset
+ */
+router.put(
+  "/assets/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const validationResult = createAssetSchema.partial().safeParse(req.body);
+    if (!validationResult.success) {
+      throw new ValidationError(
+        "Invalid asset update data",
+        validationResult.error.issues,
+      );
+    }
+
+    const updateData = validationResult.data;
+
+    // TODO: Update in database
+    logger.info({ assetId: id }, "Asset updated");
+
+    res.json({
+      success: true,
+      data: { id, ...updateData },
+      message: "Asset updated successfully",
+    });
+  }),
+);
+
+/**
+ * GET /api/finance/assets/:id/depreciation
+ * Get depreciation history for an asset
+ */
+router.get(
+  "/assets/:id/depreciation",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    // TODO: Query from database
+    const mockDepreciation = [
+      {
+        id: "dep-1",
+        assetId: id,
+        period: "2022-01-31",
+        amount: 555.56,
+        accumulatedDepreciation: 555.56,
+        bookValue: 44444.44,
+        method: "linear",
+      },
+      {
+        id: "dep-2",
+        assetId: id,
+        period: "2022-02-28",
+        amount: 555.56,
+        accumulatedDepreciation: 1111.12,
+        bookValue: 43888.88,
+        method: "linear",
+      },
+      // ... more periods
+    ];
+
+    res.json({
+      success: true,
+      data: mockDepreciation,
+      count: mockDepreciation.length,
+    });
+  }),
+);
+
+/**
+ * POST /api/finance/assets/depreciation/calculate
+ * Calculate depreciation for all active assets
+ */
+router.post(
+  "/assets/depreciation/calculate",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { period } = req.body;
+
+    if (!period || !/^\d{4}-\d{2}-\d{2}$/.test(period)) {
+      throw new BadRequestError("Period is required in YYYY-MM-DD format");
+    }
+
+    // TODO: Calculate depreciation for all active assets
+    // TODO: Save depreciation entries to database
+    // TODO: Update asset book values
+
+    const calculationResult = {
+      period,
+      assetsProcessed: 25,
+      totalDepreciation: 12345.67,
+      timestamp: new Date().toISOString(),
+    };
+
+    logger.info({ result: calculationResult }, "Depreciation calculated");
+
+    res.json({
+      success: true,
+      data: calculationResult,
+      message: "Depreciation calculated successfully",
+    });
+  }),
+);
+
+// ============================================================================
+// KPI ENDPOINTS (KENNZAHLEN)
+// ============================================================================
+
+/**
+ * GET /api/finance/kpi/liquidity
+ * Get liquidity KPIs
+ */
+router.get(
+  "/kpi/liquidity",
+  asyncHandler(async (_req: Request, res: Response) => {
+    // TODO: Calculate from actual data
+    const mockKPIs = {
+      cashRatio: 25.5,
+      quickRatio: 115.3,
+      currentRatio: 185.7,
+      workingCapital: 125000.0,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.json({
+      success: true,
+      data: mockKPIs,
+    });
+  }),
+);
+
+/**
+ * GET /api/finance/kpi/profitability
+ * Get profitability KPIs
+ */
+router.get(
+  "/kpi/profitability",
+  asyncHandler(async (_req: Request, res: Response) => {
+    // TODO: Calculate from actual data
+    const mockKPIs = {
+      roe: 15.2,
+      roa: 8.5,
+      ros: 12.3,
+      ebitMargin: 14.7,
+      ebitdaMargin: 18.2,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.json({
+      success: true,
+      data: mockKPIs,
+    });
+  }),
+);
+
+/**
+ * GET /api/finance/kpi/efficiency
+ * Get efficiency KPIs
+ */
+router.get(
+  "/kpi/efficiency",
+  asyncHandler(async (_req: Request, res: Response) => {
+    // TODO: Calculate from actual data
+    const mockKPIs = {
+      dso: 32.5,
+      dpo: 42.1,
+      dio: 28.3,
+      ccc: 18.7,
+      assetTurnover: 1.8,
+      inventoryTurnover: 12.5,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.json({
+      success: true,
+      data: mockKPIs,
+    });
+  }),
+);
+
+/**
+ * GET /api/finance/kpi/capital-structure
+ * Get capital structure KPIs
+ */
+router.get(
+  "/kpi/capital-structure",
+  asyncHandler(async (_req: Request, res: Response) => {
+    // TODO: Calculate from actual data
+    const mockKPIs = {
+      equityRatio: 32.5,
+      debtToEquityRatio: 107.7,
+      gearing: 85.3,
+      debtRatio: 51.8,
+      interestCoverageRatio: 8.5,
+      timestamp: new Date().toISOString(),
+    };
+
+    res.json({
+      success: true,
+      data: mockKPIs,
+    });
+  }),
+);
+
+/**
+ * GET /api/finance/kpi/dashboard
+ * Get comprehensive KPI dashboard
+ */
+router.get(
+  "/kpi/dashboard",
+  asyncHandler(async (_req: Request, res: Response) => {
+    // TODO: Calculate all KPIs from actual data
+    const mockDashboard = {
+      liquidity: {
+        cashRatio: 25.5,
+        quickRatio: 115.3,
+        currentRatio: 185.7,
+        workingCapital: 125000.0,
+      },
+      profitability: {
+        roe: 15.2,
+        roa: 8.5,
+        ros: 12.3,
+        ebitMargin: 14.7,
+        ebitdaMargin: 18.2,
+      },
+      efficiency: {
+        dso: 32.5,
+        dpo: 42.1,
+        dio: 28.3,
+        ccc: 18.7,
+        assetTurnover: 1.8,
+      },
+      capitalStructure: {
+        equityRatio: 32.5,
+        debtToEquityRatio: 107.7,
+        gearing: 85.3,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    res.json({
+      success: true,
+      data: mockDashboard,
+    });
+  }),
+);
+
+// ============================================================================
+// ADDITIONAL REPORTS
+// ============================================================================
+
+/**
+ * GET /api/finance/reports/cash-flow
+ * Get cash flow statement
+ */
+router.get(
+  "/reports/cash-flow",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { startDate, endDate, method = "indirect" } = req.query;
+
+    // TODO: Generate cash flow statement
+    const mockCashFlow = {
+      startDate: startDate || new Date(Date.now() - 365 * 86400000).toISOString(),
+      endDate: endDate || new Date().toISOString(),
+      method,
+      operatingActivities: {
+        netIncome: 40000.0,
+        adjustments: {
+          depreciation: 12000.0,
+          changeInReceivables: -5000.0,
+          changeInPayables: 3000.0,
+          other: 0,
+        },
+        net: 50000.0,
+      },
+      investingActivities: {
+        acquisitions: -25000.0,
+        disposals: 5000.0,
+        net: -20000.0,
+      },
+      financingActivities: {
+        equity: 10000.0,
+        debt: 5000.0,
+        dividends: -10000.0,
+        net: 5000.0,
+      },
+      netCashFlow: 35000.0,
+      beginningCash: 20000.0,
+      endingCash: 55000.0,
+    };
+
+    res.json({
+      success: true,
+      data: mockCashFlow,
+    });
+  }),
+);
+
+/**
+ * GET /api/finance/reports/trial-balance
+ * Get trial balance (Summen- und Saldenliste)
+ */
+router.get(
+  "/reports/trial-balance",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { startDate, endDate } = req.query;
+
+    // TODO: Generate trial balance from transactions
+    const mockTrialBalance = {
+      startDate: startDate || new Date(Date.now() - 365 * 86400000).toISOString(),
+      endDate: endDate || new Date().toISOString(),
+      accounts: [
+        {
+          accountNumber: "1000",
+          accountName: "Kasse",
+          debitTurnover: 25000.0,
+          creditTurnover: 22000.0,
+          balance: 3000.0,
+          balanceType: "debit",
+        },
+        {
+          accountNumber: "1200",
+          accountName: "Bank",
+          debitTurnover: 150000.0,
+          creditTurnover: 100000.0,
+          balance: 50000.0,
+          balanceType: "debit",
+        },
+        {
+          accountNumber: "4000",
+          accountName: "Umsatzerlöse",
+          debitTurnover: 0,
+          creditTurnover: 200000.0,
+          balance: 200000.0,
+          balanceType: "credit",
+        },
+      ],
+      totalDebitTurnover: 175000.0,
+      totalCreditTurnover: 322000.0,
+      difference: 0, // should always be 0 in double-entry
+    };
+
+    res.json({
+      success: true,
+      data: mockTrialBalance,
+    });
+  }),
+);
+
+/**
+ * GET /api/finance/reports/aging
+ * Get aging report (Fälligkeitsstruktur)
+ */
+router.get(
+  "/reports/aging",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { type = "receivables", date } = req.query;
+
+    if (type !== "receivables" && type !== "payables") {
+      throw new BadRequestError("Type must be 'receivables' or 'payables'");
+    }
+
+    // TODO: Calculate aging from invoices/payments
+    const mockAging = {
+      date: date || new Date().toISOString(),
+      type,
+      buckets: {
+        current: { count: 15, amount: 25000.0 },
+        days1to30: { count: 8, amount: 12500.0 },
+        days31to60: { count: 5, amount: 7800.0 },
+        days61to90: { count: 2, amount: 3200.0 },
+        over90: { count: 1, amount: 2100.0 },
+      },
+      total: { count: 31, amount: 50600.0 },
+      topItems: [
+        {
+          id: "C002",
+          name: "XYZ AG",
+          amount: 3250.5,
+          daysOverdue: 45,
+        },
+        {
+          id: "C005",
+          name: "Test GmbH",
+          amount: 2100.0,
+          daysOverdue: 95,
+        },
+      ],
+    };
+
+    res.json({
+      success: true,
+      data: mockAging,
+    });
+  }),
+);
+
+/**
+ * GET /api/finance/reports/asset-register
+ * Get asset register (Anlagenspiegel)
+ */
+router.get(
+  "/reports/asset-register",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { year } = req.query;
+
+    if (!year) {
+      throw new BadRequestError("Year is required");
+    }
+
+    // TODO: Generate asset register from assets table
+    const mockAssetRegister = {
+      year: Number(year),
+      categories: [
+        {
+          category: "Fahrzeuge",
+          openingBalance: 50000.0,
+          additions: 45000.0,
+          disposals: 15000.0,
+          depreciation: 12000.0,
+          closingBalance: 68000.0,
+        },
+        {
+          category: "IT-Hardware",
+          openingBalance: 25000.0,
+          additions: 8500.0,
+          disposals: 3000.0,
+          depreciation: 5500.0,
+          closingBalance: 25000.0,
+        },
+      ],
+      totals: {
+        openingBalance: 75000.0,
+        additions: 53500.0,
+        disposals: 18000.0,
+        depreciation: 17500.0,
+        closingBalance: 93000.0,
+      },
+    };
+
+    res.json({
+      success: true,
+      data: mockAssetRegister,
+    });
+  }),
+);
+
 export default router;

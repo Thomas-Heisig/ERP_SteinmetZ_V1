@@ -53,6 +53,42 @@ bash scripts/sonarqube-setup.sh
 - GitHub secrets configured (SONAR_TOKEN, SONAR_HOST_URL)
 - Dependencies installed (`npm install`)
 
+### init-finance-db.sql
+
+Initializes the database schema for the Finance & Controlling module.
+
+**Usage with SQLite**:
+
+```bash
+sqlite3 data/finance.db < scripts/init-finance-db.sql
+```
+
+**Usage with PostgreSQL**:
+
+```bash
+psql -d erp_steinmetz -f scripts/init-finance-db.sql
+```
+
+**Tables created**:
+- `customers` - Customer master data (Debitoren)
+- `suppliers` - Supplier master data (Kreditoren)
+- `invoices` - Invoices
+- `invoice_items` - Invoice line items
+- `payments` - Payment transactions
+- `accounts` - Chart of accounts (Kontenplan)
+- `transactions` - Accounting transactions (Buchungen)
+- `assets` - Fixed assets (Anlagevermögen)
+- `depreciation` - Depreciation records (Abschreibungen)
+- `dunning` - Dunning notices (Mahnungen)
+- `number_ranges` - Number range definitions (Nummernkreise)
+
+**Sample Data**:
+- 6 sample accounts (SKR03)
+- 2 sample customers
+- 1 sample supplier
+- 3 number ranges
+- 1 sample asset
+
 ## Adding New Scripts
 
 When adding new scripts:
