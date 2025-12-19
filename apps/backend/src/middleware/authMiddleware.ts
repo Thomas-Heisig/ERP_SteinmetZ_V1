@@ -208,10 +208,7 @@ export function requireRole(roleName: string) {
       const hasRole = userRoles.includes(roleName.toLowerCase());
 
       if (!hasRole) {
-        sendForbidden(
-          res,
-          `Access denied. Required role: ${roleName}`,
-        );
+        sendForbidden(res, `Access denied. Required role: ${roleName}`);
         return;
       }
 

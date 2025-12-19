@@ -6,28 +6,23 @@
  * Comprehensive type system for application settings
  */
 
-export type Provider = 
-  | "openai" 
-  | "anthropic" 
-  | "ollama" 
-  | "local" 
-  | "azure" 
+export type Provider =
+  | "openai"
+  | "anthropic"
+  | "ollama"
+  | "local"
+  | "azure"
   | "gemini";
 
-export type LogLevel = 
-  | "debug" 
-  | "info" 
-  | "warn" 
-  | "error" 
-  | "fatal";
+export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";
 
-export type SettingCategory = 
-  | "system" 
-  | "ai" 
-  | "database" 
-  | "security" 
-  | "ui" 
-  | "integration" 
+export type SettingCategory =
+  | "system"
+  | "ai"
+  | "database"
+  | "security"
+  | "ui"
+  | "integration"
   | "performance"
   | "email"
   | "finance"
@@ -39,12 +34,12 @@ export type SettingCategory =
   | "api"
   | "notifications";
 
-export type SettingType = 
-  | "string" 
-  | "number" 
-  | "boolean" 
-  | "json" 
-  | "select" 
+export type SettingType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "json"
+  | "select"
   | "multiselect";
 
 export interface SettingDefinition {
@@ -85,7 +80,7 @@ export interface SystemSettings {
   debug_mode: boolean;
   log_level: LogLevel;
   log_retention_days: number;
-  
+
   // Tenant (Mandantenfähigkeit) Settings
   tenant_enabled: boolean;
   tenant_mode: "single" | "multi";
@@ -93,7 +88,7 @@ export interface SystemSettings {
   tenant_default_id?: string;
   tenant_custom_domains: boolean;
   tenant_data_isolation_strict: boolean;
-  
+
   // AI Provider Settings
   default_provider: Provider;
   default_model: string;
@@ -102,7 +97,7 @@ export interface SystemSettings {
   max_parallel_requests: number;
   ai_fallback_provider?: Provider;
   ai_cost_limit_monthly?: number;
-  
+
   // OpenAI
   openai_api_key?: string;
   openai_organization?: string;
@@ -112,7 +107,7 @@ export interface SystemSettings {
   openai_top_p: number;
   openai_frequency_penalty: number;
   openai_presence_penalty: number;
-  
+
   // Anthropic
   anthropic_api_key?: string;
   anthropic_model: string;
@@ -120,32 +115,32 @@ export interface SystemSettings {
   anthropic_max_tokens: number;
   anthropic_top_p: number;
   anthropic_top_k: number;
-  
+
   // Ollama
   ollama_base_url: string;
   ollama_model: string;
   ollama_temperature: number;
   ollama_max_tokens: number;
   ollama_num_ctx: number;
-  
+
   // Azure OpenAI
   azure_openai_endpoint?: string;
   azure_openai_api_key?: string;
   azure_openai_deployment?: string;
   azure_openai_api_version: string;
-  
+
   // Google Gemini
   gemini_api_key?: string;
   gemini_model: string;
   gemini_temperature: number;
   gemini_max_tokens: number;
-  
+
   // Local Model
   local_model_path?: string;
   local_model_name?: string;
   local_gpu_enabled: boolean;
   local_gpu_layers: number;
-  
+
   // Cache Settings
   cache_enabled: boolean;
   cache_ttl_minutes: number;
@@ -155,7 +150,7 @@ export interface SystemSettings {
   redis_port: number;
   redis_password?: string;
   redis_db: number;
-  
+
   // Performance
   autosave_interval_min: number;
   batch_size: number;
@@ -165,7 +160,7 @@ export interface SystemSettings {
   rate_limit_requests_per_minute: number;
   compression_enabled: boolean;
   lazy_loading_enabled: boolean;
-  
+
   // Database
   db_backup_enabled: boolean;
   db_backup_interval_hours: number;
@@ -175,7 +170,7 @@ export interface SystemSettings {
   db_max_connections: number;
   db_query_timeout_seconds: number;
   db_pool_size: number;
-  
+
   // Security
   session_timeout_minutes: number;
   max_login_attempts: number;
@@ -195,7 +190,7 @@ export interface SystemSettings {
   cors_enabled: boolean;
   cors_allowed_origins?: string;
   csrf_protection_enabled: boolean;
-  
+
   // UI Settings
   theme: "light" | "dark" | "auto" | "lcars";
   language: string;
@@ -211,7 +206,7 @@ export interface SystemSettings {
   compact_view: boolean;
   sidebar_collapsed: boolean;
   show_breadcrumbs: boolean;
-  
+
   // Feature Flags
   feature_ai_annotator: boolean;
   feature_batch_processing: boolean;
@@ -225,7 +220,7 @@ export interface SystemSettings {
   feature_notifications: boolean;
   feature_mobile_app: boolean;
   feature_api_access: boolean;
-  
+
   // Email Settings
   email_enabled: boolean;
   email_provider: "smtp" | "sendgrid" | "mailgun" | "ses";
@@ -240,7 +235,7 @@ export interface SystemSettings {
   email_bcc_admin: boolean;
   email_queue_enabled: boolean;
   email_retry_attempts: number;
-  
+
   // Notification Settings
   notifications_enabled: boolean;
   notifications_email: boolean;
@@ -252,7 +247,7 @@ export interface SystemSettings {
   notification_sound_enabled: boolean;
   notification_digest_enabled: boolean;
   notification_digest_frequency: "hourly" | "daily" | "weekly";
-  
+
   // Webhook Settings
   webhook_enabled: boolean;
   webhook_url?: string;
@@ -260,7 +255,7 @@ export interface SystemSettings {
   webhook_timeout_seconds: number;
   webhook_retry_attempts: number;
   webhook_events?: string[];
-  
+
   // Finance Module
   finance_enabled: boolean;
   finance_fiscal_year_start: string;
@@ -274,7 +269,7 @@ export interface SystemSettings {
   finance_exchange_rate_api?: string;
   finance_accounting_standard: "GAAP" | "IFRS" | "HGB";
   finance_cost_center_tracking: boolean;
-  
+
   // Inventory Module
   inventory_enabled: boolean;
   inventory_track_lots: boolean;
@@ -287,7 +282,7 @@ export interface SystemSettings {
   inventory_fifo_costing: boolean;
   inventory_allow_negative_stock: boolean;
   inventory_stock_valuation_method: "FIFO" | "LIFO" | "Average";
-  
+
   // HR Module
   hr_enabled: boolean;
   hr_timesheet_enabled: boolean;
@@ -300,7 +295,7 @@ export interface SystemSettings {
   hr_working_hours_per_week: number;
   hr_overtime_calculation_method: "fixed" | "multiplier";
   hr_overtime_multiplier: number;
-  
+
   // CRM Module
   crm_enabled: boolean;
   crm_lead_scoring: boolean;
@@ -311,7 +306,7 @@ export interface SystemSettings {
   crm_duplicate_detection: boolean;
   crm_email_integration: boolean;
   crm_calendar_sync: boolean;
-  
+
   // Reporting Module
   reporting_enabled: boolean;
   reporting_auto_generate_monthly: boolean;
@@ -321,7 +316,7 @@ export interface SystemSettings {
   reporting_custom_kpi: boolean;
   reporting_export_formats?: string[];
   reporting_chart_library: "chartjs" | "d3" | "recharts";
-  
+
   // API Settings
   api_enabled: boolean;
   api_rate_limiting: boolean;
@@ -332,7 +327,7 @@ export interface SystemSettings {
   api_documentation_enabled: boolean;
   api_cors_enabled: boolean;
   api_webhook_endpoints?: string[];
-  
+
   // Backup Settings
   backup_enabled: boolean;
   backup_auto_backup: boolean;
@@ -347,7 +342,7 @@ export interface SystemSettings {
   backup_remote_access_key?: string;
   backup_remote_secret_key?: string;
   backup_verify_after_backup: boolean;
-  
+
   // Monitoring
   diagnostics_enabled: boolean;
   monitoring_enabled: boolean;
@@ -362,13 +357,13 @@ export interface SystemSettings {
   grafana_url?: string;
   health_check_enabled: boolean;
   health_check_interval_seconds: number;
-  
+
   // Integration Platforms
   integration_zapier: boolean;
   integration_make: boolean;
   integration_n8n: boolean;
   integration_api_url?: string;
-  
+
   // Document Management
   document_storage_provider: "local" | "s3" | "azure" | "gcp";
   document_max_file_size_mb: number;
@@ -377,7 +372,7 @@ export interface SystemSettings {
   document_retention_years: number;
   document_ocr_enabled: boolean;
   document_auto_tagging: boolean;
-  
+
   // Metadata
   last_updated: string;
   updated_by?: string;
@@ -466,14 +461,14 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   debug_mode: false,
   log_level: "info",
   log_retention_days: 90,
-  
+
   // Tenant (Mandantenfähigkeit)
   tenant_enabled: false,
   tenant_mode: "single",
   tenant_isolation: "row",
   tenant_custom_domains: false,
   tenant_data_isolation_strict: true,
-  
+
   // AI
   default_provider: "openai",
   default_model: "gpt-4o-mini",
@@ -481,7 +476,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   ai_timeout_seconds: 60,
   max_parallel_requests: 3,
   ai_cost_limit_monthly: 1000,
-  
+
   // OpenAI
   openai_model: "gpt-4o-mini",
   openai_temperature: 0.7,
@@ -489,33 +484,33 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   openai_top_p: 1.0,
   openai_frequency_penalty: 0.0,
   openai_presence_penalty: 0.0,
-  
+
   // Anthropic
   anthropic_model: "claude-3-5-sonnet-20241022",
   anthropic_temperature: 0.7,
   anthropic_max_tokens: 4096,
   anthropic_top_p: 1.0,
   anthropic_top_k: 40,
-  
+
   // Ollama
   ollama_base_url: "http://localhost:11434",
   ollama_model: "qwen2.5:3b",
   ollama_temperature: 0.7,
   ollama_max_tokens: 4096,
   ollama_num_ctx: 2048,
-  
+
   // Azure OpenAI
   azure_openai_api_version: "2024-02-01",
-  
+
   // Google Gemini
   gemini_model: "gemini-pro",
   gemini_temperature: 0.7,
   gemini_max_tokens: 4096,
-  
+
   // Local Model
   local_gpu_enabled: false,
   local_gpu_layers: 0,
-  
+
   // Cache
   cache_enabled: true,
   cache_ttl_minutes: 60,
@@ -524,7 +519,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   redis_host: "localhost",
   redis_port: 6379,
   redis_db: 0,
-  
+
   // Performance
   autosave_interval_min: 30,
   batch_size: 100,
@@ -534,7 +529,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   rate_limit_requests_per_minute: 100,
   compression_enabled: true,
   lazy_loading_enabled: true,
-  
+
   // Database
   db_backup_enabled: true,
   db_backup_interval_hours: 24,
@@ -543,7 +538,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   db_max_connections: 20,
   db_query_timeout_seconds: 30,
   db_pool_size: 10,
-  
+
   // Security
   session_timeout_minutes: 60,
   max_login_attempts: 5,
@@ -559,7 +554,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   refresh_token_expiry_days: 30,
   cors_enabled: true,
   csrf_protection_enabled: true,
-  
+
   // UI
   theme: "auto",
   language: "de",
@@ -575,7 +570,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   compact_view: false,
   sidebar_collapsed: false,
   show_breadcrumbs: true,
-  
+
   // Features
   feature_ai_annotator: true,
   feature_batch_processing: true,
@@ -589,7 +584,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   feature_notifications: true,
   feature_mobile_app: false,
   feature_api_access: true,
-  
+
   // Email
   email_enabled: false,
   email_provider: "smtp",
@@ -598,7 +593,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   email_bcc_admin: false,
   email_queue_enabled: true,
   email_retry_attempts: 3,
-  
+
   // Notifications
   notifications_enabled: true,
   notifications_email: true,
@@ -610,12 +605,12 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   notification_sound_enabled: true,
   notification_digest_enabled: false,
   notification_digest_frequency: "daily",
-  
+
   // Webhook
   webhook_enabled: false,
   webhook_timeout_seconds: 30,
   webhook_retry_attempts: 3,
-  
+
   // Finance
   finance_enabled: true,
   finance_fiscal_year_start: "01-01",
@@ -628,7 +623,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   finance_multiple_currencies: false,
   finance_accounting_standard: "HGB",
   finance_cost_center_tracking: true,
-  
+
   // Inventory
   inventory_enabled: true,
   inventory_track_lots: true,
@@ -641,7 +636,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   inventory_fifo_costing: true,
   inventory_allow_negative_stock: false,
   inventory_stock_valuation_method: "FIFO",
-  
+
   // HR
   hr_enabled: true,
   hr_timesheet_enabled: true,
@@ -654,7 +649,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   hr_working_hours_per_week: 40,
   hr_overtime_calculation_method: "multiplier",
   hr_overtime_multiplier: 1.5,
-  
+
   // CRM
   crm_enabled: true,
   crm_lead_scoring: true,
@@ -664,7 +659,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   crm_duplicate_detection: true,
   crm_email_integration: false,
   crm_calendar_sync: false,
-  
+
   // Reporting
   reporting_enabled: true,
   reporting_auto_generate_monthly: true,
@@ -673,7 +668,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   reporting_scheduled_reports: true,
   reporting_custom_kpi: true,
   reporting_chart_library: "chartjs",
-  
+
   // API
   api_enabled: true,
   api_rate_limiting: true,
@@ -683,7 +678,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   api_current_version: "v1",
   api_documentation_enabled: true,
   api_cors_enabled: true,
-  
+
   // Backup
   backup_enabled: true,
   backup_auto_backup: true,
@@ -693,7 +688,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   backup_encryption: false,
   backup_remote_storage: false,
   backup_verify_after_backup: true,
-  
+
   // Monitoring
   diagnostics_enabled: true,
   monitoring_enabled: false,
@@ -706,12 +701,12 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   grafana_enabled: false,
   health_check_enabled: true,
   health_check_interval_seconds: 30,
-  
+
   // Integration
   integration_zapier: false,
   integration_make: false,
   integration_n8n: false,
-  
+
   // Document Management
   document_storage_provider: "local",
   document_max_file_size_mb: 50,
@@ -719,7 +714,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   document_retention_years: 10,
   document_ocr_enabled: false,
   document_auto_tagging: false,
-  
+
   // Metadata
   last_updated: new Date().toISOString(),
 };

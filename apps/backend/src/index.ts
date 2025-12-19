@@ -317,9 +317,11 @@ async function bootstrapFunctionsCatalog() {
     // Initialize authentication system
     await AuthService.init();
     logger.info("Authentication system initialized");
-    
+
     // Initialize user settings
-    const UserSettingsService = (await import("./services/userSettingsService.js")).default;
+    const UserSettingsService = (
+      await import("./services/userSettingsService.js")
+    ).default;
     await UserSettingsService.init();
     logger.info("User settings system initialized");
 

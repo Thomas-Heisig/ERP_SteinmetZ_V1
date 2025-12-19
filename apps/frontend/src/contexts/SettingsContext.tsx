@@ -6,7 +6,14 @@
  * Provides system-wide access to settings with caching and real-time updates
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
 
 export interface Setting {
   id: string;
@@ -36,14 +43,16 @@ interface SettingsContextType {
   refresh: () => Promise<void>;
   isFeatureEnabled: (feature: string) => boolean;
   // Commonly used settings as properties for quick access
-  theme: 'light' | 'dark' | 'auto' | 'lcars';
+  theme: "light" | "dark" | "auto" | "lcars";
   language: string;
   currency: string;
   dateFormat: string;
   timeFormat: string;
 }
 
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+const SettingsContext = createContext<SettingsContextType | undefined>(
+  undefined,
+);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Setting[]>([]);
@@ -56,8 +65,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/settings', {
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/settings", {
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
         },
@@ -71,11 +80,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       if (data.success && data.settings) {
         setSettings(data.settings);
       } else {
-        throw new Error(data.error || 'Failed to load settings');
+        throw new Error(data.error || "Failed to load settings");
       }
     } catch (err) {
-      console.error('Failed to load settings:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      console.error("Failed to load settings:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
     }
@@ -88,55 +97,52 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   // Get a specific setting object
   const getSetting = useCallback(
-    <T = unknown>(key: string): T | undefined => {
+    <T = unknown,>(key: string): T | undefined => {
       const setting = settings.find((s) => s.key === key);
       return setting?.value as T | undefined;
     },
-    [settings]
+    [settings],
   );
 
   // Get a setting value with default fallback
   const getSettingValue = useCallback(
-    <T = unknown>(key: string, defaultValue?: T): T => {
+    <T = unknown,>(key: string, defaultValue?: T): T => {
       const value = getSetting<T>(key);
       return value !== undefined ? value : (defaultValue as T);
     },
-    [getSetting]
+    [getSetting],
   );
 
   // Update a single setting
-  const updateSetting = useCallback(
-    async (key: string, value: unknown) => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/settings/${key}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-          body: JSON.stringify({
-            value,
-            reason: 'Updated via Settings Context',
-          }),
-        });
+  const updateSetting = useCallback(async (key: string, value: unknown) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/settings/${key}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          value,
+          reason: "Updated via Settings Context",
+        }),
+      });
 
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.error || 'Failed to update setting');
-        }
-
-        // Update local state
-        setSettings((prev) =>
-          prev.map((s) => (s.key === key ? { ...s, value } : s))
-        );
-      } catch (err) {
-        console.error(`Failed to update setting ${key}:`, err);
-        throw err;
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to update setting");
       }
-    },
-    []
-  );
+
+      // Update local state
+      setSettings((prev) =>
+        prev.map((s) => (s.key === key ? { ...s, value } : s)),
+      );
+    } catch (err) {
+      console.error(`Failed to update setting ${key}:`, err);
+      throw err;
+    }
+  }, []);
 
   // Refresh settings from server
   const refresh = useCallback(async () => {
@@ -146,18 +152,23 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   // Check if a feature flag is enabled
   const isFeatureEnabled = useCallback(
     (feature: string): boolean => {
-      const key = feature.startsWith('feature_') ? feature : `feature_${feature}`;
+      const key = feature.startsWith("feature_")
+        ? feature
+        : `feature_${feature}`;
       return getSettingValue<boolean>(key, false);
     },
-    [getSettingValue]
+    [getSettingValue],
   );
 
   // Commonly used settings
-  const theme = getSettingValue<'light' | 'dark' | 'auto' | 'lcars'>('theme', 'auto');
-  const language = getSettingValue<string>('language', 'de');
-  const currency = getSettingValue<string>('system_currency', 'EUR');
-  const dateFormat = getSettingValue<string>('date_format', 'DD.MM.YYYY');
-  const timeFormat = getSettingValue<string>('time_format', 'HH:mm');
+  const theme = getSettingValue<"light" | "dark" | "auto" | "lcars">(
+    "theme",
+    "auto",
+  );
+  const language = getSettingValue<string>("language", "de");
+  const currency = getSettingValue<string>("system_currency", "EUR");
+  const dateFormat = getSettingValue<string>("date_format", "DD.MM.YYYY");
+  const timeFormat = getSettingValue<string>("time_format", "HH:mm");
 
   const value: SettingsContextType = {
     settings,
@@ -188,7 +199,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 export function useSettingsContext(): SettingsContextType {
   const context = useContext(SettingsContext);
   if (!context) {
-    throw new Error('useSettingsContext must be used within a SettingsProvider');
+    throw new Error(
+      "useSettingsContext must be used within a SettingsProvider",
+    );
   }
   return context;
 }
@@ -197,7 +210,7 @@ export function useSettingsContext(): SettingsContextType {
  * HOC to wrap component with settings provider
  */
 export function withSettings<P extends object>(
-  Component: React.ComponentType<P>
+  Component: React.ComponentType<P>,
 ): React.FC<P> {
   return function WithSettingsComponent(props: P) {
     return (

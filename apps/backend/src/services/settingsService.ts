@@ -38,7 +38,8 @@ import { DEFAULT_SETTINGS, SETTING_DEFINITIONS } from "../types/settings.js";
 const logger = createLogger("settings");
 
 // Encryption key for sensitive settings (should be in env vars)
-const ENCRYPTION_KEY = process.env.SETTINGS_ENCRYPTION_KEY || "default-key-change-in-production";
+const ENCRYPTION_KEY =
+  process.env.SETTINGS_ENCRYPTION_KEY || "default-key-change-in-production";
 const ALGORITHM = "aes-256-cbc";
 
 /* ========================================================================== */
@@ -63,7 +64,7 @@ function decrypt(encrypted: string): string {
   try {
     const [ivHex, encryptedText] = encrypted.split(":");
     if (!ivHex || !encryptedText) return encrypted;
-    
+
     const key = crypto.scryptSync(ENCRYPTION_KEY, "salt", 32);
     const iv = Buffer.from(ivHex, "hex");
     const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
@@ -100,7 +101,7 @@ export class SettingsService {
   static async getAll(): Promise<SystemSettings> {
     try {
       const records = await db.all<SettingRecord>(
-        "SELECT * FROM system_settings ORDER BY category, key"
+        "SELECT * FROM system_settings ORDER BY category, key",
       );
 
       const settings: Partial<SystemSettings> = {};
@@ -108,7 +109,7 @@ export class SettingsService {
       for (const record of records) {
         try {
           let value = JSON.parse(record.value);
-          
+
           // Decrypt if sensitive
           if (record.sensitive && typeof value === "string") {
             value = decrypt(value);
@@ -116,7 +117,10 @@ export class SettingsService {
 
           settings[record.key as keyof SystemSettings] = value;
         } catch (error) {
-          logger.warn({ key: record.key, error }, "Failed to parse setting value");
+          logger.warn(
+            { key: record.key, error },
+            "Failed to parse setting value",
+          );
         }
       }
 
@@ -135,7 +139,7 @@ export class SettingsService {
     try {
       const record = await db.get<SettingRecord>(
         "SELECT * FROM system_settings WHERE key = ?",
-        [key]
+        [key],
       );
 
       if (!record) {
@@ -143,7 +147,7 @@ export class SettingsService {
       }
 
       let value = JSON.parse(record.value);
-      
+
       if (record.sensitive && typeof value === "string") {
         value = decrypt(value);
       }
@@ -158,11 +162,13 @@ export class SettingsService {
   /**
    * Get settings by category
    */
-  static async getByCategory(category: SettingCategory): Promise<Record<string, unknown>> {
+  static async getByCategory(
+    category: SettingCategory,
+  ): Promise<Record<string, unknown>> {
     try {
       const records = await db.all<SettingRecord>(
         "SELECT * FROM system_settings WHERE category = ? ORDER BY key",
-        [category]
+        [category],
       );
 
       const settings: Record<string, unknown> = {};
@@ -170,7 +176,7 @@ export class SettingsService {
       for (const record of records) {
         try {
           let value = JSON.parse(record.value);
-          
+
           if (record.sensitive && typeof value === "string") {
             value = decrypt(value);
           }
@@ -195,13 +201,13 @@ export class SettingsService {
     key: string,
     value: unknown,
     userId?: string,
-    reason?: string
+    reason?: string,
   ): Promise<boolean> {
     try {
       // Get current value for history
       const current = await db.get<SettingRecord>(
         "SELECT * FROM system_settings WHERE key = ?",
-        [key]
+        [key],
       );
 
       // Check if setting is sensitive
@@ -220,11 +226,17 @@ export class SettingsService {
           `UPDATE system_settings 
            SET value = ?, updated_at = datetime('now'), updated_by = ?
            WHERE key = ?`,
-          [valueStr, userId || null, key]
+          [valueStr, userId || null, key],
         );
 
         // Record history
-        await this.recordHistory(key, current.value, valueStr, userId || "system", reason);
+        await this.recordHistory(
+          key,
+          current.value,
+          valueStr,
+          userId || "system",
+          reason,
+        );
       } else {
         // Insert new
         await db.run(
@@ -238,11 +250,17 @@ export class SettingsService {
             definition?.description || "",
             isSensitive ? 1 : 0,
             userId || null,
-          ]
+          ],
         );
 
         // Record history
-        await this.recordHistory(key, null, valueStr, userId || "system", reason);
+        await this.recordHistory(
+          key,
+          null,
+          valueStr,
+          userId || "system",
+          reason,
+        );
       }
 
       logger.info({ key, userId }, "Setting updated");
@@ -259,7 +277,7 @@ export class SettingsService {
   static async setMany(
     settings: Partial<SystemSettings>,
     userId?: string,
-    reason?: string
+    reason?: string,
   ): Promise<boolean> {
     try {
       await db.transaction(async () => {
@@ -268,7 +286,10 @@ export class SettingsService {
         }
       });
 
-      logger.info({ count: Object.keys(settings).length, userId }, "Multiple settings updated");
+      logger.info(
+        { count: Object.keys(settings).length, userId },
+        "Multiple settings updated",
+      );
       return true;
     } catch (error) {
       logger.error({ error }, "Failed to set multiple settings");
@@ -315,13 +336,19 @@ export class SettingsService {
     try {
       const current = await db.get<SettingRecord>(
         "SELECT value FROM system_settings WHERE key = ?",
-        [key]
+        [key],
       );
 
       await db.run("DELETE FROM system_settings WHERE key = ?", [key]);
 
       if (current) {
-        await this.recordHistory(key, current.value, null, userId || "system", "Deleted");
+        await this.recordHistory(
+          key,
+          current.value,
+          null,
+          userId || "system",
+          "Deleted",
+        );
       }
 
       logger.info({ key, userId }, "Setting deleted");
@@ -344,14 +371,14 @@ export class SettingsService {
     oldValue: string | null,
     newValue: string | null,
     userId: string,
-    reason?: string
+    reason?: string,
   ): Promise<void> {
     try {
       await db.run(
         `INSERT INTO system_settings_history 
          (setting_key, old_value, new_value, changed_by, change_reason)
          VALUES (?, ?, ?, ?, ?)`,
-        [key, oldValue, newValue, userId, reason || null]
+        [key, oldValue, newValue, userId, reason || null],
       );
     } catch (error) {
       logger.error({ key, error }, "Failed to record settings history");
@@ -361,14 +388,17 @@ export class SettingsService {
   /**
    * Get history for a specific setting
    */
-  static async getHistory(key: string, limit: number = 50): Promise<SettingHistoryRecord[]> {
+  static async getHistory(
+    key: string,
+    limit: number = 50,
+  ): Promise<SettingHistoryRecord[]> {
     try {
       return await db.all<SettingHistoryRecord>(
         `SELECT * FROM system_settings_history 
          WHERE setting_key = ? 
          ORDER BY changed_at DESC 
          LIMIT ?`,
-        [key, limit]
+        [key, limit],
       );
     } catch (error) {
       logger.error({ key, error }, "Failed to get setting history");
@@ -379,13 +409,15 @@ export class SettingsService {
   /**
    * Get recent changes across all settings
    */
-  static async getRecentChanges(limit: number = 100): Promise<SettingHistoryRecord[]> {
+  static async getRecentChanges(
+    limit: number = 100,
+  ): Promise<SettingHistoryRecord[]> {
     try {
       return await db.all<SettingHistoryRecord>(
         `SELECT * FROM system_settings_history 
          ORDER BY changed_at DESC 
          LIMIT ?`,
-        [limit]
+        [limit],
       );
     } catch (error) {
       logger.error({ error }, "Failed to get recent changes");
@@ -408,7 +440,10 @@ export class SettingsService {
       const value = settings[definition.key as keyof SystemSettings];
 
       // Check required
-      if (definition.required && (value === undefined || value === null || value === "")) {
+      if (
+        definition.required &&
+        (value === undefined || value === null || value === "")
+      ) {
         errors.push({
           key: definition.key,
           error: "Required setting is missing",
@@ -419,9 +454,10 @@ export class SettingsService {
 
       // Type validation
       if (value !== undefined && value !== null) {
-        const expectedType = definition.type === "select" || definition.type === "multiselect" 
-          ? "string" 
-          : definition.type;
+        const expectedType =
+          definition.type === "select" || definition.type === "multiselect"
+            ? "string"
+            : definition.type;
 
         if (typeof value !== expectedType && definition.type !== "json") {
           errors.push({
@@ -478,7 +514,10 @@ export class SettingsService {
     }
 
     if (errors.length > 0) {
-      logger.warn({ errorCount: errors.length }, "Settings validation found issues");
+      logger.warn(
+        { errorCount: errors.length },
+        "Settings validation found issues",
+      );
     }
 
     return errors;
@@ -491,7 +530,10 @@ export class SettingsService {
   /**
    * Export settings to JSON
    */
-  static async export(userId: string, includeSensitive: boolean = false): Promise<SettingsExport> {
+  static async export(
+    userId: string,
+    includeSensitive: boolean = false,
+  ): Promise<SettingsExport> {
     const settings = await this.getAll();
 
     // Filter out sensitive data if requested
@@ -516,7 +558,7 @@ export class SettingsService {
    */
   static async import(
     data: SettingsImport,
-    userId: string
+    userId: string,
   ): Promise<{ success: boolean; imported: number; errors: string[] }> {
     const errors: string[] = [];
     let imported = 0;
@@ -525,7 +567,7 @@ export class SettingsService {
       await db.transaction(async () => {
         for (const [key, value] of Object.entries(data.settings)) {
           const definition = SETTING_DEFINITIONS.find((d) => d.key === key);
-          
+
           // Skip sensitive if not allowed
           if (definition?.sensitive && !data.import_sensitive) {
             continue;
@@ -535,16 +577,25 @@ export class SettingsService {
             await this.set(key, value, userId, "Imported from file");
             imported++;
           } catch (error) {
-            errors.push(`Failed to import ${key}: ${error instanceof Error ? error.message : String(error)}`);
+            errors.push(
+              `Failed to import ${key}: ${error instanceof Error ? error.message : String(error)}`,
+            );
           }
         }
       });
 
-      logger.info({ imported, errors: errors.length, userId }, "Settings imported");
+      logger.info(
+        { imported, errors: errors.length, userId },
+        "Settings imported",
+      );
       return { success: errors.length === 0, imported, errors };
     } catch (error) {
       logger.error({ error }, "Failed to import settings");
-      return { success: false, imported, errors: [error instanceof Error ? error.message : String(error)] };
+      return {
+        success: false,
+        imported,
+        errors: [error instanceof Error ? error.message : String(error)],
+      };
     }
   }
 
@@ -557,7 +608,9 @@ export class SettingsService {
    */
   static async getStatusReport(): Promise<SettingsStatusReport> {
     const settings = await this.getAll();
-    const allRecords = await db.all<SettingRecord>("SELECT * FROM system_settings");
+    const allRecords = await db.all<SettingRecord>(
+      "SELECT * FROM system_settings",
+    );
     const validationErrors = await this.validate();
 
     const categoryCounts: Record<SettingCategory, number> = {

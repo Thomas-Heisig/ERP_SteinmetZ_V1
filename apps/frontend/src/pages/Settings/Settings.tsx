@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import styles from './Settings.module.css';
+import { useState, useEffect } from "react";
+import styles from "./Settings.module.css";
 
 // Types matching backend
 interface SettingRecord {
@@ -29,67 +29,68 @@ interface SettingsHistory {
   reason?: string;
 }
 
-type SettingCategory = 
-  | 'system'
-  | 'ai' 
-  | 'database' 
-  | 'security' 
-  | 'ui'
-  | 'email' 
-  | 'performance' 
-  | 'integration'
-  | 'finance'
-  | 'inventory'
-  | 'hr'
-  | 'crm'
-  | 'reporting'
-  | 'api'
-  | 'backup' 
-  | 'notifications';
+type SettingCategory =
+  | "system"
+  | "ai"
+  | "database"
+  | "security"
+  | "ui"
+  | "email"
+  | "performance"
+  | "integration"
+  | "finance"
+  | "inventory"
+  | "hr"
+  | "crm"
+  | "reporting"
+  | "api"
+  | "backup"
+  | "notifications";
 
 const CATEGORY_LABELS: Record<SettingCategory, string> = {
-  system: 'System',
-  ai: 'KI & Assistenten',
-  database: 'Datenbank',
-  security: 'Sicherheit',
-  ui: 'Benutzeroberfläche',
-  email: 'E-Mail',
-  performance: 'Performance',
-  integration: 'Integrationen',
-  finance: 'Finanzen',
-  inventory: 'Lagerverwaltung',
-  hr: 'Personal',
-  crm: 'CRM',
-  reporting: 'Berichte',
-  api: 'API',
-  backup: 'Backup',
-  notifications: 'Benachrichtigungen',
+  system: "System",
+  ai: "KI & Assistenten",
+  database: "Datenbank",
+  security: "Sicherheit",
+  ui: "Benutzeroberfläche",
+  email: "E-Mail",
+  performance: "Performance",
+  integration: "Integrationen",
+  finance: "Finanzen",
+  inventory: "Lagerverwaltung",
+  hr: "Personal",
+  crm: "CRM",
+  reporting: "Berichte",
+  api: "API",
+  backup: "Backup",
+  notifications: "Benachrichtigungen",
 };
 
 const CATEGORY_ICONS: Record<SettingCategory, string> = {
-  system: '⚙️',
-  ai: '🤖',
-  database: '💾',
-  security: '🔒',
-  ui: '🎨',
-  email: '📧',
-  performance: '⚡',
-  integration: '🔗',
-  finance: '💰',
-  inventory: '📦',
-  hr: '👥',
-  crm: '🤝',
-  reporting: '📊',
-  api: '🔌',
-  backup: '💾',
-  notifications: '🔔',
+  system: "⚙️",
+  ai: "🤖",
+  database: "💾",
+  security: "🔒",
+  ui: "🎨",
+  email: "📧",
+  performance: "⚡",
+  integration: "🔗",
+  finance: "💰",
+  inventory: "📦",
+  hr: "👥",
+  crm: "🤝",
+  reporting: "📊",
+  api: "🔌",
+  backup: "💾",
+  notifications: "🔔",
 };
 
 export default function Settings() {
   const [settings, setSettings] = useState<SettingRecord[]>([]);
   const [filteredSettings, setFilteredSettings] = useState<SettingRecord[]>([]);
-  const [activeCategory, setActiveCategory] = useState<SettingCategory>('system');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] =
+    useState<SettingCategory>("system");
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,7 +99,9 @@ export default function Settings() {
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<SettingsHistory[]>([]);
   const [selectedSetting, setSelectedSetting] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<Map<string, string>>(new Map());
+  const [validationErrors, setValidationErrors] = useState<Map<string, string>>(
+    new Map(),
+  );
 
   // Load settings
   useEffect(() => {
@@ -114,8 +117,8 @@ export default function Settings() {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/settings', {
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/settings", {
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
         },
@@ -129,11 +132,11 @@ export default function Settings() {
       if (data.success && data.settings) {
         setSettings(data.settings);
       } else {
-        throw new Error(data.error || 'Fehler beim Laden der Einstellungen');
+        throw new Error(data.error || "Fehler beim Laden der Einstellungen");
       }
     } catch (err) {
-      console.error('Failed to load settings:', err);
-      setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
+      console.error("Failed to load settings:", err);
+      setError(err instanceof Error ? err.message : "Unbekannter Fehler");
     } finally {
       setLoading(false);
     }
@@ -147,7 +150,7 @@ export default function Settings() {
       filtered = filtered.filter(
         (s) =>
           s.key.toLowerCase().includes(term) ||
-          s.description?.toLowerCase().includes(term)
+          s.description?.toLowerCase().includes(term),
       );
     }
 
@@ -173,11 +176,14 @@ export default function Settings() {
     setChanges(newChanges);
   };
 
-  const validateSetting = (setting: SettingRecord, value: any): string | null => {
+  const validateSetting = (
+    setting: SettingRecord,
+    value: any,
+  ): string | null => {
     // Type validation
-    if (setting.type === 'number') {
+    if (setting.type === "number") {
       const num = Number(value);
-      if (isNaN(num)) return 'Muss eine Zahl sein';
+      if (isNaN(num)) return "Muss eine Zahl sein";
       if (setting.minValue !== undefined && num < setting.minValue) {
         return `Minimum: ${setting.minValue}`;
       }
@@ -186,19 +192,19 @@ export default function Settings() {
       }
     }
 
-    if (setting.type === 'boolean' && typeof value !== 'boolean') {
-      return 'Muss true oder false sein';
+    if (setting.type === "boolean" && typeof value !== "boolean") {
+      return "Muss true oder false sein";
     }
 
-    if (setting.type === 'select' && setting.validValues) {
+    if (setting.type === "select" && setting.validValues) {
       if (!setting.validValues.includes(String(value))) {
-        return `Ungültiger Wert. Erlaubt: ${setting.validValues.join(', ')}`;
+        return `Ungültiger Wert. Erlaubt: ${setting.validValues.join(", ")}`;
       }
     }
 
     // Required validation
-    if (setting.type === 'string' && !value) {
-      return 'Pflichtfeld';
+    if (setting.type === "string" && !value) {
+      return "Pflichtfeld";
     }
 
     return null;
@@ -209,7 +215,7 @@ export default function Settings() {
 
     // Check for validation errors
     if (validationErrors.size > 0) {
-      setError('Bitte korrigieren Sie die Validierungsfehler');
+      setError("Bitte korrigieren Sie die Validierungsfehler");
       return;
     }
 
@@ -222,27 +228,30 @@ export default function Settings() {
         value,
       }));
 
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/settings/bulk', {
-        method: 'POST',
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/settings/bulk", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: JSON.stringify({
           updates,
-          reason: 'Manuelle Änderung über Settings UI',
+          reason: "Manuelle Änderung über Settings UI",
         }),
       });
 
       if (!response.ok) {
-        let errorMessage = 'Fehler beim Speichern';
+        let errorMessage = "Fehler beim Speichern";
         try {
           const data = await response.json();
           if (response.status === 403) {
-            errorMessage = 'Keine Berechtigung. Admin-Rechte erforderlich.';
+            errorMessage = "Keine Berechtigung. Admin-Rechte erforderlich.";
           } else if (data.error) {
-            errorMessage = typeof data.error === 'string' ? data.error : JSON.stringify(data.error);
+            errorMessage =
+              typeof data.error === "string"
+                ? data.error
+                : JSON.stringify(data.error);
           } else if (data.message) {
             errorMessage = data.message;
           }
@@ -253,12 +262,12 @@ export default function Settings() {
       }
 
       const data = await response.json();
-      
+
       setSuccessMessage(
-        `${data.results.length} Einstellung(en) erfolgreich gespeichert`
+        `${data.results.length} Einstellung(en) erfolgreich gespeichert`,
       );
       setChanges(new Map());
-      
+
       // Check if restart required
       const requiresRestart = Array.from(changes.keys()).some((key) => {
         const setting = settings.find((s) => s.key === key);
@@ -267,7 +276,7 @@ export default function Settings() {
 
       if (requiresRestart) {
         setSuccessMessage(
-          (prev) => prev + '. ⚠️ Server-Neustart erforderlich!'
+          (prev) => prev + ". ⚠️ Server-Neustart erforderlich!",
         );
       }
 
@@ -277,15 +286,21 @@ export default function Settings() {
       // Clear success message after 5 seconds
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
-      console.error('Failed to save settings:', err);
+      console.error("Failed to save settings:", err);
       const errorMessage = err instanceof Error ? err.message : String(err);
       setError(errorMessage);
-      
+
       // Show user-friendly message based on error type
-      if (errorMessage.includes('403') || errorMessage.includes('Berechtigung')) {
-        setError('❌ Zugriff verweigert. Bitte als Administrator anmelden.');
-      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
-        setError('❌ Netzwerkfehler. Bitte Verbindung prüfen.');
+      if (
+        errorMessage.includes("403") ||
+        errorMessage.includes("Berechtigung")
+      ) {
+        setError("❌ Zugriff verweigert. Bitte als Administrator anmelden.");
+      } else if (
+        errorMessage.includes("network") ||
+        errorMessage.includes("fetch")
+      ) {
+        setError("❌ Netzwerkfehler. Bitte Verbindung prüfen.");
       }
     } finally {
       setSaving(false);
@@ -298,7 +313,11 @@ export default function Settings() {
   };
 
   const handleResetToDefaults = async () => {
-    if (!confirm('Möchten Sie wirklich ALLE Einstellungen auf Standardwerte zurücksetzen?')) {
+    if (
+      !confirm(
+        "Möchten Sie wirklich ALLE Einstellungen auf Standardwerte zurücksetzen?",
+      )
+    ) {
       return;
     }
 
@@ -306,31 +325,31 @@ export default function Settings() {
       setSaving(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/settings/reset', {
-        method: 'POST',
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/settings/reset", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: JSON.stringify({
-          reason: 'Zurücksetzen auf Standardwerte',
+          reason: "Zurücksetzen auf Standardwerte",
         }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Fehler beim Zurücksetzen');
+        throw new Error(data.error || "Fehler beim Zurücksetzen");
       }
 
-      setSuccessMessage('Alle Einstellungen wurden zurückgesetzt');
+      setSuccessMessage("Alle Einstellungen wurden zurückgesetzt");
       setChanges(new Map());
       await loadSettings();
 
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
-      console.error('Failed to reset settings:', err);
-      setError(err instanceof Error ? err.message : 'Fehler beim Zurücksetzen');
+      console.error("Failed to reset settings:", err);
+      setError(err instanceof Error ? err.message : "Fehler beim Zurücksetzen");
     } finally {
       setSaving(false);
     }
@@ -340,17 +359,17 @@ export default function Settings() {
     try {
       const url = settingKey
         ? `/api/settings/history/${settingKey}`
-        : '/api/settings/history';
-      
-      const token = localStorage.getItem('token');
+        : "/api/settings/history";
+
+      const token = localStorage.getItem("token");
       const response = await fetch(url, {
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
         },
       });
-      
+
       if (!response.ok) {
-        throw new Error('Fehler beim Laden der Historie');
+        throw new Error("Fehler beim Laden der Historie");
       }
 
       const data = await response.json();
@@ -358,30 +377,32 @@ export default function Settings() {
       setShowHistory(true);
       setSelectedSetting(settingKey || null);
     } catch (err) {
-      console.error('Failed to load history:', err);
-      setError(err instanceof Error ? err.message : 'Fehler beim Laden der Historie');
+      console.error("Failed to load history:", err);
+      setError(
+        err instanceof Error ? err.message : "Fehler beim Laden der Historie",
+      );
     }
   };
 
   const handleExport = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/settings/export', {
-        method: 'POST',
+      const token = localStorage.getItem("token");
+      const response = await fetch("/api/settings/export", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` }),
         },
         body: JSON.stringify({ includeSensitive: false }),
       });
 
       if (!response.ok) {
-        throw new Error('Fehler beim Export');
+        throw new Error("Fehler beim Export");
       }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = `settings-export-${new Date().toISOString()}.json`;
       document.body.appendChild(a);
@@ -389,56 +410,62 @@ export default function Settings() {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
 
-      setSuccessMessage('Einstellungen erfolgreich exportiert');
+      setSuccessMessage("Einstellungen erfolgreich exportiert");
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
-      console.error('Failed to export settings:', err);
-      setError(err instanceof Error ? err.message : 'Fehler beim Export');
+      console.error("Failed to export settings:", err);
+      setError(err instanceof Error ? err.message : "Fehler beim Export");
     }
   };
 
   const renderSettingInput = (setting: SettingRecord) => {
-    const currentValue = changes.has(setting.key) 
-      ? changes.get(setting.key) 
+    const currentValue = changes.has(setting.key)
+      ? changes.get(setting.key)
       : setting.value;
 
     const hasError = validationErrors.has(setting.key);
     const errorMessage = validationErrors.get(setting.key);
 
     switch (setting.type) {
-      case 'boolean':
+      case "boolean":
         return (
           <label className={styles.toggle}>
             <input
               type="checkbox"
               checked={!!currentValue}
-              onChange={(e) => handleChange(setting.key, e.target.checked, setting)}
+              onChange={(e) =>
+                handleChange(setting.key, e.target.checked, setting)
+              }
             />
             <span className={styles.toggleSlider}></span>
           </label>
         );
 
-      case 'number':
+      case "number":
         return (
           <div className={styles.inputWrapper}>
             <input
               type="number"
-              value={currentValue ?? ''}
+              value={currentValue ?? ""}
               min={setting.minValue}
               max={setting.maxValue}
-              onChange={(e) => handleChange(setting.key, Number(e.target.value), setting)}
-              className={`${styles.input} ${hasError ? styles.inputError : ''}`}
+              onChange={(e) =>
+                handleChange(setting.key, Number(e.target.value), setting)
+              }
+              className={`${styles.input} ${hasError ? styles.inputError : ""}`}
               aria-label={setting.description || setting.key}
               title={setting.description || setting.key}
             />
-            {hasError && <span className={styles.errorText}>{errorMessage}</span>}
+            {hasError && (
+              <span className={styles.errorText}>{errorMessage}</span>
+            )}
           </div>
         );
 
-      case 'select':
+      case "select":
         return (
           <select
-            value={currentValue ?? ''}
+            value={currentValue ?? ""}
             onChange={(e) => handleChange(setting.key, e.target.value, setting)}
             className={styles.select}
             aria-label={setting.description || setting.key}
@@ -456,18 +483,22 @@ export default function Settings() {
           </select>
         );
 
-      case 'string':
+      case "string":
       default:
         return (
           <div className={styles.inputWrapper}>
             <input
-              type={setting.sensitive ? 'password' : 'text'}
-              value={currentValue ?? ''}
-              onChange={(e) => handleChange(setting.key, e.target.value, setting)}
-              className={`${styles.input} ${hasError ? styles.inputError : ''}`}
+              type={setting.sensitive ? "password" : "text"}
+              value={currentValue ?? ""}
+              onChange={(e) =>
+                handleChange(setting.key, e.target.value, setting)
+              }
+              className={`${styles.input} ${hasError ? styles.inputError : ""}`}
               placeholder={setting.defaultValue}
             />
-            {hasError && <span className={styles.errorText}>{errorMessage}</span>}
+            {hasError && (
+              <span className={styles.errorText}>{errorMessage}</span>
+            )}
           </div>
         );
     }
@@ -521,16 +552,29 @@ export default function Settings() {
       </header>
 
       {error && (
-        <div className={styles.alert} style={{ backgroundColor: '#fee', borderColor: '#faa' }}>
+        <div
+          className={styles.alert}
+          style={{ backgroundColor: "#fee", borderColor: "#faa" }}
+        >
           <strong>❌ Fehler:</strong> {error}
-          <button onClick={() => setError(null)} className={styles.alertClose}>×</button>
+          <button onClick={() => setError(null)} className={styles.alertClose}>
+            ×
+          </button>
         </div>
       )}
 
       {successMessage && (
-        <div className={styles.alert} style={{ backgroundColor: '#efe', borderColor: '#afa' }}>
+        <div
+          className={styles.alert}
+          style={{ backgroundColor: "#efe", borderColor: "#afa" }}
+        >
           <strong>✅ Erfolg:</strong> {successMessage}
-          <button onClick={() => setSuccessMessage(null)} className={styles.alertClose}>×</button>
+          <button
+            onClick={() => setSuccessMessage(null)}
+            className={styles.alertClose}
+          >
+            ×
+          </button>
         </div>
       )}
 
@@ -557,7 +601,7 @@ export default function Settings() {
               className={styles.btnPrimary}
               disabled={saving || validationErrors.size > 0}
             >
-              {saving ? 'Speichere...' : '💾 Speichern'}
+              {saving ? "Speichere..." : "💾 Speichern"}
             </button>
           </div>
         )}
@@ -568,9 +612,12 @@ export default function Settings() {
           <nav className={styles.categoryNav}>
             {Object.entries(CATEGORY_LABELS).map(([cat, label]) => {
               const category = cat as SettingCategory;
-              const count = settings.filter((s) => s.category === category).length;
+              const count = settings.filter(
+                (s) => s.category === category,
+              ).length;
               const hasChanges = Array.from(changes.keys()).some(
-                (key) => settings.find((s) => s.key === key)?.category === category
+                (key) =>
+                  settings.find((s) => s.key === key)?.category === category,
               );
 
               return (
@@ -578,7 +625,7 @@ export default function Settings() {
                   key={category}
                   onClick={() => setActiveCategory(category)}
                   className={`${styles.categoryBtn} ${
-                    activeCategory === category ? styles.categoryBtnActive : ''
+                    activeCategory === category ? styles.categoryBtnActive : ""
                   }`}
                 >
                   <span className={styles.categoryIcon}>
@@ -622,7 +669,10 @@ export default function Settings() {
                           </span>
                         )}
                         {setting.requiresRestart && (
-                          <span className={styles.badge} title="Neustart erforderlich">
+                          <span
+                            className={styles.badge}
+                            title="Neustart erforderlich"
+                          >
                             ⚠️
                           </span>
                         )}
@@ -635,15 +685,20 @@ export default function Settings() {
                         📜
                       </button>
                     </div>
-                    <p className={styles.settingDescription}>{setting.description}</p>
-                    {setting.type === 'number' && (setting.minValue || setting.maxValue) && (
-                      <p className={styles.settingMeta}>
-                        Bereich: {setting.minValue ?? '∞'} – {setting.maxValue ?? '∞'}
-                      </p>
-                    )}
+                    <p className={styles.settingDescription}>
+                      {setting.description}
+                    </p>
+                    {setting.type === "number" &&
+                      (setting.minValue || setting.maxValue) && (
+                        <p className={styles.settingMeta}>
+                          Bereich: {setting.minValue ?? "∞"} –{" "}
+                          {setting.maxValue ?? "∞"}
+                        </p>
+                      )}
                     {changes.has(setting.key) && (
                       <p className={styles.settingChanged}>
-                        ✏️ Geändert von: <code>{JSON.stringify(setting.value)}</code>
+                        ✏️ Geändert von:{" "}
+                        <code>{JSON.stringify(setting.value)}</code>
                       </p>
                     )}
                   </div>
@@ -660,13 +715,19 @@ export default function Settings() {
       {/* History Modal */}
       {showHistory && (
         <div className={styles.modal} onClick={() => setShowHistory(false)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className={styles.modalHeader}>
               <h2>
                 📜 Änderungshistorie
                 {selectedSetting && ` – ${selectedSetting}`}
               </h2>
-              <button onClick={() => setShowHistory(false)} className={styles.modalClose}>
+              <button
+                onClick={() => setShowHistory(false)}
+                className={styles.modalClose}
+              >
                 ×
               </button>
             </div>
@@ -680,7 +741,7 @@ export default function Settings() {
                       <div className={styles.historyHeader}>
                         <strong>{entry.setting_key}</strong>
                         <span className={styles.historyDate}>
-                          {new Date(entry.changed_at).toLocaleString('de-DE')}
+                          {new Date(entry.changed_at).toLocaleString("de-DE")}
                         </span>
                       </div>
                       <div className={styles.historyChange}>

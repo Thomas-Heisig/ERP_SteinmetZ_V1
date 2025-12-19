@@ -76,11 +76,13 @@ class UserSettingsService {
    */
   static async get<K extends keyof UserSettings>(
     userId: string,
-    key: K
+    key: K,
   ): Promise<UserSettings[K]> {
     try {
       const record = db
-        .prepare("SELECT value FROM user_settings WHERE user_id = ? AND key = ?")
+        .prepare(
+          "SELECT value FROM user_settings WHERE user_id = ? AND key = ?",
+        )
         .get(userId, key) as UserSettingRecord | undefined;
 
       if (record) {
@@ -100,7 +102,7 @@ class UserSettingsService {
   static async set<K extends keyof UserSettings>(
     userId: string,
     key: K,
-    value: UserSettings[K]
+    value: UserSettings[K],
   ): Promise<boolean> {
     try {
       const valueJson = JSON.stringify(value);
@@ -110,7 +112,7 @@ class UserSettingsService {
          VALUES (?, ?, ?, CURRENT_TIMESTAMP)
          ON CONFLICT(user_id, key) DO UPDATE SET
            value = excluded.value,
-           updated_at = CURRENT_TIMESTAMP`
+           updated_at = CURRENT_TIMESTAMP`,
       ).run(userId, key, valueJson);
 
       logger.info(`User setting ${key} updated for user ${userId}`);
@@ -126,19 +128,26 @@ class UserSettingsService {
    */
   static async setMultiple(
     userId: string,
-    settings: Partial<UserSettings>
+    settings: Partial<UserSettings>,
   ): Promise<{ success: boolean; updated: number }> {
     try {
       let updated = 0;
 
       for (const [key, value] of Object.entries(settings)) {
-        const success = await this.set(userId, key as keyof UserSettings, value);
+        const success = await this.set(
+          userId,
+          key as keyof UserSettings,
+          value,
+        );
         if (success) updated++;
       }
 
       return { success: true, updated };
     } catch (error) {
-      logger.error(`Failed to set multiple user settings for ${userId}:`, error);
+      logger.error(
+        `Failed to set multiple user settings for ${userId}:`,
+        error,
+      );
       return { success: false, updated: 0 };
     }
   }
@@ -146,11 +155,14 @@ class UserSettingsService {
   /**
    * Reset a specific setting to default
    */
-  static async reset(userId: string, key: keyof UserSettings): Promise<boolean> {
+  static async reset(
+    userId: string,
+    key: keyof UserSettings,
+  ): Promise<boolean> {
     try {
       db.prepare("DELETE FROM user_settings WHERE user_id = ? AND key = ?").run(
         userId,
-        key
+        key,
       );
 
       logger.info(`User setting ${key} reset for user ${userId}`);

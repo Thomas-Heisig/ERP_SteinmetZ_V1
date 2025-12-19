@@ -113,7 +113,7 @@ export const HelpCenter: React.FC = () => {
     const loadDocuments = async () => {
       try {
         setLoading(true);
-        
+
         // Simuliere das Laden von Dokumenten aus dem Backend
         // In einer echten Implementation würde dies ein API-Call sein
         const mockDocs: DocFile[] = [
@@ -122,7 +122,8 @@ export const HelpCenter: React.FC = () => {
             title: "ERP SteinmetZ - Übersicht",
             category: "getting-started",
             path: "/docs/README.md",
-            excerpt: "Willkommen bei ERP SteinmetZ - Ein modernes, KI-gestütztes ERP-System",
+            excerpt:
+              "Willkommen bei ERP SteinmetZ - Ein modernes, KI-gestütztes ERP-System",
             icon: "📖",
           },
           {
@@ -277,7 +278,8 @@ export const HelpCenter: React.FC = () => {
   // Filtere Dokumente basierend auf Kategorie und Suche
   const filteredDocuments = useMemo(() => {
     return documents.filter((doc) => {
-      const matchesCategory = !selectedCategory || doc.category === selectedCategory;
+      const matchesCategory =
+        !selectedCategory || doc.category === selectedCategory;
       const matchesSearch =
         !searchQuery ||
         doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -372,7 +374,9 @@ export const HelpCenter: React.FC = () => {
                       >
                         <span className="category-nav-icon">📋</span>
                         <span>Alle Dokumente</span>
-                        <span className="category-count">{documents.length}</span>
+                        <span className="category-count">
+                          {documents.length}
+                        </span>
                       </button>
                     </li>
                     {categories
@@ -383,7 +387,9 @@ export const HelpCenter: React.FC = () => {
                             className={`category-nav-button ${selectedCategory === category.id ? "active" : ""}`}
                             onClick={() => setSelectedCategory(category.id)}
                           >
-                            <span className="category-nav-icon">{category.icon}</span>
+                            <span className="category-nav-icon">
+                              {category.icon}
+                            </span>
                             <span>{category.name}</span>
                             <span className="category-count">
                               {documentCounts[category.id] || 0}
@@ -403,14 +409,17 @@ export const HelpCenter: React.FC = () => {
                     <div>
                       <h2 className="section-title">
                         {selectedCategory
-                          ? categories.find((c) => c.id === selectedCategory)?.name
+                          ? categories.find((c) => c.id === selectedCategory)
+                              ?.name
                           : searchQuery
                             ? "Suchergebnisse"
                             : "Alle Dokumente"}
                       </h2>
                       <p className="results-count">
                         {filteredDocuments.length}{" "}
-                        {filteredDocuments.length === 1 ? "Dokument" : "Dokumente"}
+                        {filteredDocuments.length === 1
+                          ? "Dokument"
+                          : "Dokumente"}
                       </p>
                     </div>
 
@@ -433,7 +442,11 @@ export const HelpCenter: React.FC = () => {
                   </div>
 
                   {filteredDocuments.length > 0 ? (
-                    <div className={viewMode === "grid" ? "articles-grid" : "articles-list"}>
+                    <div
+                      className={
+                        viewMode === "grid" ? "articles-grid" : "articles-list"
+                      }
+                    >
                       {filteredDocuments.map((doc) => (
                         <article
                           key={doc.id}
@@ -446,7 +459,11 @@ export const HelpCenter: React.FC = () => {
                               <h3 className="article-title">{doc.title}</h3>
                               <div className="article-meta">
                                 <span>
-                                  {categories.find((c) => c.id === doc.category)?.name}
+                                  {
+                                    categories.find(
+                                      (c) => c.id === doc.category,
+                                    )?.name
+                                  }
                                 </span>
                               </div>
                             </div>
@@ -463,7 +480,8 @@ export const HelpCenter: React.FC = () => {
                       <div className="no-results-icon">🔍</div>
                       <h3>Keine Dokumente gefunden</h3>
                       <p>
-                        Versuchen Sie eine andere Suche oder wählen Sie eine andere Kategorie.
+                        Versuchen Sie eine andere Suche oder wählen Sie eine
+                        andere Kategorie.
                       </p>
                     </div>
                   )}
@@ -475,7 +493,10 @@ export const HelpCenter: React.FC = () => {
           {/* Article Detail */}
           {selectedDoc && (
             <section className="article-detail">
-              <button className="back-button" onClick={() => setSelectedDoc(null)}>
+              <button
+                className="back-button"
+                onClick={() => setSelectedDoc(null)}
+              >
                 ← Zurück zur Übersicht
               </button>
 
@@ -483,7 +504,11 @@ export const HelpCenter: React.FC = () => {
                 <h1 className="article-detail-title">{selectedDoc.title}</h1>
                 <div className="article-detail-meta">
                   <span>
-                    📂 {categories.find((c) => c.id === selectedDoc.category)?.name}
+                    📂{" "}
+                    {
+                      categories.find((c) => c.id === selectedDoc.category)
+                        ?.name
+                    }
                   </span>
                 </div>
               </div>
@@ -505,8 +530,8 @@ export const HelpCenter: React.FC = () => {
           <footer className="help-footer">
             <h3>Brauchen Sie weitere Hilfe?</h3>
             <p>
-              Nutzen Sie unseren KI-Assistenten für personalisierte Unterstützung oder
-              besuchen Sie unsere Community-Foren.
+              Nutzen Sie unseren KI-Assistenten für personalisierte
+              Unterstützung oder besuchen Sie unsere Community-Foren.
             </p>
             <div className="footer-actions">
               <Link to="/ai" className="footer-button">

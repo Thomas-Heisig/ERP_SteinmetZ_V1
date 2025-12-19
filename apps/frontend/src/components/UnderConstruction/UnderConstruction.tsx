@@ -31,7 +31,8 @@ export const UnderConstruction: React.FC<UnderConstructionProps> = ({
 
         <div className="construction-info">
           <p>
-            Wir arbeiten hart daran, diese Funktionalität für Sie bereitzustellen.
+            Wir arbeiten hart daran, diese Funktionalität für Sie
+            bereitzustellen.
           </p>
           <p>
             In der Zwischenzeit können Sie unseren KI-Assistenten nutzen, um

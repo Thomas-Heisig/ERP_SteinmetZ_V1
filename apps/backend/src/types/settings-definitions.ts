@@ -157,7 +157,7 @@ export const SETTING_DEFINITIONS: SettingDefinition[] = [
     },
     group: "logging",
   },
-  
+
   // ============================================================
   // TENANT (MANDANTENFÄHIGKEIT) SETTINGS
   // ============================================================
@@ -372,7 +372,8 @@ export const SETTING_DEFINITIONS: SettingDefinition[] = [
     category: "ai",
     type: "number",
     label: "OpenAI Temperatur",
-    description: "Kreativität der KI (0.0 = deterministisch, 2.0 = sehr kreativ)",
+    description:
+      "Kreativität der KI (0.0 = deterministisch, 2.0 = sehr kreativ)",
     defaultValue: 0.7,
     required: true,
     sensitive: false,
@@ -641,7 +642,8 @@ export const SETTING_DEFINITIONS: SettingDefinition[] = [
     category: "security",
     type: "number",
     label: "Passwort-Ablauf (Tage)",
-    description: "Nach wie vielen Tagen muss das Passwort geändert werden (0 = nie)",
+    description:
+      "Nach wie vielen Tagen muss das Passwort geändert werden (0 = nie)",
     defaultValue: 90,
     required: true,
     sensitive: false,
@@ -716,7 +718,19 @@ export const SETTING_DEFINITIONS: SettingDefinition[] = [
     required: true,
     sensitive: false,
     validation: {
-      options: ["de", "en", "fr", "es", "it", "pl", "tr", "ar", "zh", "ru", "nds"],
+      options: [
+        "de",
+        "en",
+        "fr",
+        "es",
+        "it",
+        "pl",
+        "tr",
+        "ar",
+        "zh",
+        "ru",
+        "nds",
+      ],
     },
     group: "localization",
   },

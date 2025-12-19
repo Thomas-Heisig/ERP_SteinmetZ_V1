@@ -30,10 +30,10 @@ interface Migration {
 async function getMigrationFiles(): Promise<Migration[]> {
   try {
     const files = await fs.readdir(MIGRATIONS_DIR);
-    
+
     // Get current database driver
     const driver = process.env.DB_DRIVER || "sqlite";
-    
+
     const sqlFiles = files
       .filter((f) => f.endsWith(".sql"))
       // Skip MSSQL-specific migrations when using SQLite

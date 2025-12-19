@@ -31,7 +31,7 @@ router.get(
 
     const settings = await UserSettingsService.getAll(userId);
     res.json({ success: true, settings });
-  })
+  }),
 );
 
 /**
@@ -43,7 +43,7 @@ router.get(
   authenticate,
   asyncHandler(async (req: Request, res: Response) => {
     res.json({ success: true, definitions: USER_SETTING_DEFINITIONS });
-  })
+  }),
 );
 
 /**
@@ -63,7 +63,7 @@ router.get(
     const value = await UserSettingsService.get(userId, key as any);
 
     res.json({ success: true, key, value });
-  })
+  }),
 );
 
 /**
@@ -93,7 +93,7 @@ router.put(
     } else {
       res.status(500).json({ error: "Failed to update setting" });
     }
-  })
+  }),
 );
 
 /**
@@ -122,7 +122,7 @@ router.post(
       updated: result.updated,
       message: `Updated ${result.updated} settings`,
     });
-  })
+  }),
 );
 
 /**
@@ -146,7 +146,7 @@ router.delete(
     } else {
       res.status(500).json({ error: "Failed to reset setting" });
     }
-  })
+  }),
 );
 
 /**
@@ -170,7 +170,7 @@ router.post(
         ? "All settings reset to defaults"
         : "Failed to reset settings",
     });
-  })
+  }),
 );
 
 export default router;

@@ -18,24 +18,24 @@ export interface UserSettings {
   compact_view: boolean;
   show_tooltips: boolean;
   enable_animations: boolean;
-  
+
   // Notification Preferences
   notifications_email: boolean;
   notifications_browser: boolean;
   notification_sound_enabled: boolean;
   notification_digest_enabled: boolean;
   notification_digest_frequency: "hourly" | "daily" | "weekly";
-  
+
   // Dashboard Preferences
   dashboard_layout?: string; // JSON string of widget layout
   dashboard_widgets?: string[]; // Array of enabled widgets
   dashboard_refresh_interval: number; // seconds
-  
+
   // Work Preferences
   default_view: string; // Default landing page
   quick_actions?: string[]; // Favorite actions
   recent_items_count: number;
-  
+
   // Accessibility
   high_contrast: boolean;
   font_size: "small" | "medium" | "large" | "xlarge";
@@ -63,21 +63,21 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   compact_view: false,
   show_tooltips: true,
   enable_animations: true,
-  
+
   // Notification Preferences
   notifications_email: true,
   notifications_browser: true,
   notification_sound_enabled: true,
   notification_digest_enabled: false,
   notification_digest_frequency: "daily",
-  
+
   // Dashboard Preferences
   dashboard_refresh_interval: 300, // 5 minutes
-  
+
   // Work Preferences
   default_view: "/",
   recent_items_count: 10,
-  
+
   // Accessibility
   high_contrast: false,
   font_size: "medium",
@@ -132,7 +132,7 @@ export const USER_SETTING_DEFINITIONS: UserSettingDefinition[] = [
     category: "ui",
     options: ["10", "25", "50", "100"],
   },
-  
+
   // Notification Preferences
   {
     key: "notifications_email",
@@ -158,7 +158,7 @@ export const USER_SETTING_DEFINITIONS: UserSettingDefinition[] = [
     defaultValue: true,
     category: "notifications",
   },
-  
+
   // Dashboard Preferences
   {
     key: "dashboard_refresh_interval",
@@ -169,7 +169,7 @@ export const USER_SETTING_DEFINITIONS: UserSettingDefinition[] = [
     category: "dashboard",
     options: ["60", "300", "600", "1800"],
   },
-  
+
   // Work Preferences
   {
     key: "default_view",
@@ -188,7 +188,7 @@ export const USER_SETTING_DEFINITIONS: UserSettingDefinition[] = [
     category: "work",
     options: ["5", "10", "20", "50"],
   },
-  
+
   // Accessibility
   {
     key: "high_contrast",
