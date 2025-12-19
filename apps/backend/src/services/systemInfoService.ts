@@ -3,8 +3,38 @@
 
 /**
  * SystemInfoService
- * - Ermittelt Laufzeitinformationen über System, Node.js, Datenbank und Routen.
- * - Unterstützt SQLite und PostgreSQL.
+ *
+ * Service for retrieving runtime information about the system, Node.js runtime,
+ * database connections, and registered API routes. Supports both SQLite and PostgreSQL.
+ *
+ * @remarks
+ * This service provides comprehensive system monitoring capabilities including:
+ * - System resource information (CPU, memory, load average)
+ * - Node.js runtime information (version, platform, process stats)
+ * - Database schema information (tables, columns, indexes, row counts)
+ * - Registered Express routes discovery
+ * - Service status checks (database, functions catalog, AI services)
+ *
+ * The service automatically detects the database driver (SQLite/PostgreSQL) from
+ * the DB_DRIVER environment variable and adapts queries accordingly.
+ *
+ * @example
+ * ```typescript
+ * import systemInfoService from './services/systemInfoService.js';
+ *
+ * // Get complete system information
+ * const info = await systemInfoService.getSystemInfo();
+ * console.log(`Node.js version: ${info.nodejs.version}`);
+ * console.log(`System uptime: ${info.system.uptime} seconds`);
+ *
+ * // Get database schema information
+ * const dbInfo = await systemInfoService.getDatabaseInfo();
+ * console.log(`Tables: ${dbInfo.tables.length}`);
+ *
+ * // Get registered routes (requires Express app)
+ * const routes = systemInfoService.getRegisteredRoutes(app);
+ * console.log(`Registered routes: ${routes.length}`);
+ * ```
  */
 
 // Reserved for future use
@@ -98,9 +128,26 @@ export type ServiceStatus = {
 /* ========================================================================== */
 
 class SystemInfoService {
-  /* ----------------------------------------------------------- */
-  /* Express-Routen rekursiv ermitteln                            */
-  /* ----------------------------------------------------------- */
+  /**
+   * Extracts all registered routes from an Express application
+   *
+   * Recursively walks through the Express router stack to discover all
+   * registered routes, including nested routers and sub-routes.
+   *
+   * @param app - The Express application instance
+   * @returns Array of route information including paths and HTTP methods
+   *
+   * @example
+   * ```typescript
+   * const routes = systemInfoService.getRegisteredRoutes(app);
+   * routes.forEach(route => {
+   *   console.log(`${route.methods.join(',')} ${route.path}`);
+   * });
+   * // Output: GET /api/users
+   * //         POST /api/users
+   * //         GET /api/products
+   * ```
+   */
   getRegisteredRoutes(app: import("express").Application): RouteInfo[] {
     const routes: RouteInfo[] = [];
     const seen = new Set<string>();
@@ -170,9 +217,25 @@ class SystemInfoService {
     return routes;
   }
 
-  /* ----------------------------------------------------------- */
-  /* Datenbankinformationen                                       */
-  /* ----------------------------------------------------------- */
+  /**
+   * Retrieves comprehensive database information
+   *
+   * Collects detailed schema information including tables, columns, indexes,
+   * row counts, and size statistics. Works with both SQLite and PostgreSQL.
+   *
+   * @returns Database information including schema, row counts, and sizes
+   * @throws Does not throw - returns empty result on database connection failure
+   *
+   * @example
+   * ```typescript
+   * const dbInfo = await systemInfoService.getDatabaseInfo();
+   *
+   * console.log(`Tables: ${dbInfo.tables.length}`);
+   * dbInfo.tables.forEach(table => {
+   *   console.log(`- ${table.name}: ${dbInfo.rowCounts[table.name]} rows`);
+   * });
+   * ```
+   */
   async getDatabaseInfo(): Promise<DatabaseInfo> {
     const result: DatabaseInfo = { tables: [], rowCounts: {}, sizeInfo: {} };
     try {
@@ -339,9 +402,27 @@ class SystemInfoService {
     return sizes;
   }
 
-  /* ----------------------------------------------------------- */
-  /* Systeminformationen                                          */
-  /* ----------------------------------------------------------- */
+  /**
+   * Retrieves comprehensive system runtime information
+   *
+   * Collects information about Node.js runtime, process metrics, system resources,
+   * and environment configuration.
+   *
+   * @returns Complete system information including:
+   *   - Node.js: version, platform, architecture, uptime
+   *   - Process: PID, memory usage (RSS, heap), uptime
+   *   - System: hostname, OS type, load average, CPU count, memory
+   *   - Environment: NODE_ENV, PORT, and application-specific settings
+   *
+   * @example
+   * ```typescript
+   * const info = systemInfoService.getSystemInfo();
+   *
+   * console.log(`Node.js ${info.nodejs.version} on ${info.nodejs.platform}`);
+   * console.log(`Memory: ${info.process.memory.heapUsed} / ${info.process.memory.heapTotal}`);
+   * console.log(`Load average: ${info.system.loadAverage.join(', ')}`);
+   * ```
+   */
   getSystemInfo(): SystemInfo {
     const formatMem = (b: number) =>
       b < 1024 ** 2
@@ -391,9 +472,29 @@ class SystemInfoService {
     };
   }
 
-  /* ----------------------------------------------------------- */
-  /* Service-Status                                               */
-  /* ----------------------------------------------------------- */
+  /**
+   * Retrieves status information for all application services
+   *
+   * Checks the health and availability of critical application services:
+   * - Database connection and schema
+   * - Functions catalog loading status
+   * - AI provider configuration and availability
+   *
+   * @returns Service status information for database, functions catalog, and AI
+   * @throws Does not throw - returns partial status on service check failure
+   *
+   * @example
+   * ```typescript
+   * const status = await systemInfoService.getServiceStatus();
+   *
+   * if (!status.database.connected) {
+   *   console.error('Database connection failed!');
+   * }
+   *
+   * console.log(`Functions loaded: ${status.functions.nodes} nodes`);
+   * console.log(`AI provider: ${status.ai.provider} (${status.ai.available ? 'available' : 'unavailable'})`);
+   * ```
+   */
   async getServiceStatus(): Promise<ServiceStatus> {
     const status: ServiceStatus = {
       database: { connected: false, tables: 0, totalRows: 0 },
@@ -450,10 +551,31 @@ class SystemInfoService {
     return status;
   }
 
-  /* ----------------------------------------------------------- */
-  /* Komplettübersicht                                            */
-  /* ----------------------------------------------------------- */
-
+  /**
+   * Retrieves a complete system overview including all subsystems
+   *
+   * Aggregates information from all system info methods into a single
+   * comprehensive overview. This is the main entry point for getting
+   * complete system diagnostics.
+   *
+   * @param app - Optional Express application instance for route discovery
+   * @returns Complete system overview including:
+   *   - System runtime information
+   *   - Database schema and statistics
+   *   - Service status
+   *   - Registered API routes (if app provided)
+   *
+   * @example
+   * ```typescript
+   * // With routes
+   * const overview = await systemInfoService.getCompleteSystemOverview(app);
+   * console.log(`Routes: ${overview.routes?.length || 0}`);
+   *
+   * // Without routes
+   * const overview = await systemInfoService.getCompleteSystemOverview();
+   * console.log(`System: ${overview.system.nodejs.version}`);
+   * ```
+   */
   async getCompleteSystemOverview(app?: any) {
     // robuste App-Ermittlung
     const expressApp: import("express").Application | undefined =

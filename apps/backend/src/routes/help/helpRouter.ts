@@ -114,10 +114,9 @@ router.get("/articles/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const article = await db.get(
-      "SELECT * FROM help_articles WHERE id = ?",
-      [id],
-    );
+    const article = await db.get("SELECT * FROM help_articles WHERE id = ?", [
+      id,
+    ]);
 
     if (!article) {
       return res.status(404).json({
@@ -127,9 +126,10 @@ router.get("/articles/:id", async (req: Request, res: Response) => {
     }
 
     // Increment view count
-    await db.run("UPDATE help_articles SET view_count = view_count + 1 WHERE id = ?", [
-      id,
-    ]);
+    await db.run(
+      "UPDATE help_articles SET view_count = view_count + 1 WHERE id = ?",
+      [id],
+    );
 
     logger.info({ articleId: id }, "Retrieved help article");
 
@@ -138,7 +138,10 @@ router.get("/articles/:id", async (req: Request, res: Response) => {
       article,
     });
   } catch (error) {
-    logger.error({ error, id: req.params.id }, "Failed to retrieve help article");
+    logger.error(
+      { error, id: req.params.id },
+      "Failed to retrieve help article",
+    );
     res.status(500).json({
       success: false,
       error: "Failed to retrieve help article",
@@ -205,10 +208,9 @@ router.put("/articles/:id", async (req: Request, res: Response) => {
     const article: HelpArticle = req.body;
 
     // Check if article exists
-    const existing = await db.get(
-      "SELECT id FROM help_articles WHERE id = ?",
-      [id],
-    );
+    const existing = await db.get("SELECT id FROM help_articles WHERE id = ?", [
+      id,
+    ]);
 
     if (!existing) {
       return res.status(404).json({
@@ -259,10 +261,9 @@ router.delete("/articles/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
 
     // Check if article exists
-    const existing = await db.get(
-      "SELECT id FROM help_articles WHERE id = ?",
-      [id],
-    );
+    const existing = await db.get("SELECT id FROM help_articles WHERE id = ?", [
+      id,
+    ]);
 
     if (!existing) {
       return res.status(404).json({

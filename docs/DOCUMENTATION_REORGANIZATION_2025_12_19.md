@@ -17,29 +17,34 @@ This document describes the comprehensive documentation reorganization and Help 
 ### Phase 1: Documentation Consolidation
 
 #### Backend Module Documentation
+
 - **Created**: `docs/modules/` directory
 - **Consolidated**: 24 backend module documentation files
 - **Organized by**: AI, Business, Core Functions, and System modules
 - **Index**: Comprehensive README with quick links and categories
 
 **Modules organized:**
+
 - AI & Automation: ai, ai-annotator, quickchat
 - Business: dashboard, functions-catalog, innovation
 - Core: finance, hr, documents
 - System: auth, calendar, diagnostics, system-info
 
 #### Frontend Documentation
+
 - **Created**: `docs/frontend/` directory
 - **Consolidated**: 19 frontend documentation files
 - **Organized by**: Components, Features, Pages
 - **Index**: Comprehensive README with component hierarchy
 
 **Categories:**
+
 - Components: Navigation, Dashboard, QuickChat, etc.
 - Features: Innovation, HR, Documents, Finance APIs
 - Pages: Settings and other page-specific docs
 
 #### Backend Infrastructure
+
 - **Created**: `docs/backend/` directory
 - **Consolidated**: 3 infrastructure documentation files
 - **Covers**: Middleware, Monitoring, Services
@@ -49,6 +54,7 @@ This document describes the comprehensive documentation reorganization and Help 
 #### Backend API (`/api/help`)
 
 **Database Schema:**
+
 ```sql
 -- help_articles table
 CREATE TABLE help_articles (
@@ -78,6 +84,7 @@ CREATE TABLE help_categories (
 ```
 
 **API Endpoints:**
+
 - `GET /api/help/articles` - List articles with filtering
 - `GET /api/help/articles/:id` - Get specific article
 - `POST /api/help/articles` - Create article
@@ -89,6 +96,7 @@ CREATE TABLE help_categories (
 - `GET /api/help/stats` - System statistics
 
 **Features:**
+
 - Full CRUD operations
 - Advanced search with relevance scoring
 - View count tracking
@@ -99,6 +107,7 @@ CREATE TABLE help_categories (
 #### Frontend Integration
 
 **Help Center Component** (`/help`):
+
 - Integrated with backend API
 - Fallback to mock data if API unavailable
 - Markdown rendering with syntax highlighting
@@ -107,6 +116,7 @@ CREATE TABLE help_categories (
 - View tracking
 
 **Help Admin Interface** (`/help-admin`):
+
 - Full article management dashboard
 - Statistics overview
 - Filter by category, status, search
@@ -115,6 +125,7 @@ CREATE TABLE help_categories (
 - Status workflow management
 
 **API Client** (`helpApi.ts`):
+
 - Clean abstraction layer
 - TypeScript types
 - Error handling
@@ -123,6 +134,7 @@ CREATE TABLE help_categories (
 #### Data Seeding
 
 **Initial Data:**
+
 - 10 predefined categories
 - 10 starter articles covering:
   - Getting Started
@@ -133,6 +145,7 @@ CREATE TABLE help_categories (
   - Deployment
 
 **Seeding Script:**
+
 - `apps/backend/src/routes/help/seedHelpData.ts`
 - Idempotent (can run multiple times safely)
 - Checks for existing data before inserting
@@ -140,6 +153,7 @@ CREATE TABLE help_categories (
 ### Phase 3: Documentation Updates
 
 #### Updated Files:
+
 - `docs/README.md` - Main documentation hub
 - `docs/DOCUMENTATION_INDEX.md` - Comprehensive index
 - `docs/modules/README.md` - Module index (NEW)
@@ -224,18 +238,21 @@ apps/frontend/src/
 ## Statistics
 
 ### Documentation Files Consolidated
+
 - **Backend Modules**: 24 files → docs/modules/
 - **Frontend Components**: 19 files → docs/frontend/
 - **Infrastructure**: 3 files → docs/backend/
 - **Total Organized**: 46 documentation files
 
 ### Code Added
+
 - **Backend**: ~1,250 lines (router, seeding, types)
 - **Frontend**: ~1,000 lines (components, API client, styles)
 - **Documentation**: ~400 lines (README files, guides)
 - **Total**: ~2,650 lines of new code
 
 ### Database
+
 - **Tables Added**: 2 (help_articles, help_categories)
 - **Indexes Added**: 5 performance indexes
 - **Initial Data**: 10 categories, 10 articles
@@ -243,24 +260,28 @@ apps/frontend/src/
 ## Benefits
 
 ### For Users
+
 1. ✅ Integrated help system accessible from anywhere
 2. ✅ Searchable documentation with relevance scoring
 3. ✅ Categorized content for easy navigation
 4. ✅ Always up-to-date information from database
 
 ### For Administrators
+
 1. ✅ Easy content management through web interface
 2. ✅ No need to edit files or restart services
 3. ✅ Usage statistics and analytics
 4. ✅ Workflow management (draft → published)
 
 ### For Developers
+
 1. ✅ Consolidated, organized documentation structure
 2. ✅ Clear module boundaries and responsibilities
 3. ✅ Comprehensive API documentation
 4. ✅ Easy to find relevant information
 
 ### For System
+
 1. ✅ Better discoverability of documentation
 2. ✅ Reduced duplication
 3. ✅ Clear ownership of documentation
@@ -271,6 +292,7 @@ apps/frontend/src/
 ### For End Users
 
 **Access Help Center:**
+
 1. Navigate to `/help` in the application
 2. Browse categories or search for topics
 3. Click on articles to view full content
@@ -279,6 +301,7 @@ apps/frontend/src/
 ### For Administrators
 
 **Access Admin Interface:**
+
 1. Navigate to `/help-admin`
 2. View statistics dashboard
 3. Filter articles by category, status, or search
@@ -286,6 +309,7 @@ apps/frontend/src/
 5. Manage article status (draft/published/archived)
 
 **Creating an Article:**
+
 1. Click "Neuer Artikel" button
 2. Fill in required fields (title, content, category)
 3. Add optional metadata (excerpt, keywords, icon)
@@ -295,8 +319,9 @@ apps/frontend/src/
 ### For Developers
 
 **Using the API:**
+
 ```typescript
-import { getHelpArticles, getHelpArticle } from '@/api/helpApi';
+import { getHelpArticles, getHelpArticle } from "@/api/helpApi";
 
 // Fetch all published articles
 const articles = await getHelpArticles();
@@ -305,10 +330,11 @@ const articles = await getHelpArticles();
 const article = await getHelpArticle(1);
 
 // Search articles
-const results = await searchHelpArticles('authentication');
+const results = await searchHelpArticles("authentication");
 ```
 
 **Seeding Data:**
+
 ```bash
 cd apps/backend
 npm run build
@@ -320,6 +346,7 @@ node dist/routes/help/seedHelpData.js
 ### Search Algorithm
 
 The search endpoint uses relevance scoring:
+
 - **Title match**: 10 points
 - **Excerpt match**: 5 points
 - **Keywords match**: 3 points
@@ -344,11 +371,13 @@ Results are sorted by relevance score, then by view count.
 ### Security Considerations
 
 **Current State:**
+
 - API endpoints are publicly accessible
 - No authentication on read operations
 - Write operations need authentication (TODO)
 
 **Recommended Next Steps:**
+
 1. Add authentication middleware to write operations
 2. Implement role-based access control
 3. Add rate limiting on search endpoint
@@ -360,12 +389,14 @@ Results are sorted by relevance score, then by view count.
 
 **Module Documentation:**
 If you have module-specific documentation in `apps/backend/src/routes/[module]/`:
+
 1. Copy to `docs/modules/[module]/`
 2. Update references in main documentation
 3. Keep original for code-level documentation
 
 **Frontend Documentation:**
 If you have component documentation in `apps/frontend/src/components/[component]/`:
+
 1. Copy to `docs/frontend/components/[component].md`
 2. Update references
 3. Keep original for developers
@@ -373,11 +404,13 @@ If you have component documentation in `apps/frontend/src/components/[component]
 ### For New Documentation
 
 **Adding Module Documentation:**
+
 1. Create file in `docs/modules/[module]/`
 2. Update `docs/modules/README.md`
 3. Link from main documentation
 
 **Adding Help Articles:**
+
 1. Use Admin Interface at `/help-admin`
 2. Or use API directly
 3. Or add to seeding script for permanent articles
@@ -422,16 +455,19 @@ If you have component documentation in `apps/frontend/src/components/[component]
 ### Regular Tasks
 
 **Weekly:**
+
 - Review article statistics
 - Update outdated content
 - Archive obsolete articles
 
 **Monthly:**
+
 - Analyze search queries
 - Identify documentation gaps
 - Update categories if needed
 
 **Quarterly:**
+
 - Comprehensive documentation audit
 - User feedback review
 - System performance review
@@ -439,6 +475,7 @@ If you have component documentation in `apps/frontend/src/components/[component]
 ## Conclusion
 
 This reorganization has:
+
 - ✅ Consolidated 46+ scattered documentation files
 - ✅ Created a comprehensive Help Desk system
 - ✅ Implemented full CRUD API with 8 endpoints

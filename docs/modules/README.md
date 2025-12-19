@@ -5,6 +5,7 @@ This directory contains detailed documentation for all ERP SteinmetZ modules.
 ## Backend Modules
 
 ### AI & Automation
+
 - **[AI Module](./ai/README.md)** - AI integration and orchestration
   - [Context Management](./ai/README_CONTEXT.md) - AI context handling
   - [Types](./ai/README_TYPES.md) - Type definitions
@@ -22,6 +23,7 @@ This directory contains detailed documentation for all ERP SteinmetZ modules.
 - **[QuickChat](./quickchat/README.md)** - AI-powered chat assistant
 
 ### Business Modules
+
 - **[Dashboard](./dashboard/README.md)** - Executive dashboard and KPI overview
 
 - **[Functions Catalog](./functions-catalog/README.md)** - Business function catalog
@@ -29,6 +31,7 @@ This directory contains detailed documentation for all ERP SteinmetZ modules.
 - **[Innovation](./innovation/README.md)** - Innovation management module
 
 ### Core Business Functions
+
 - **[Finance](./finance/README.md)** - Financial management and accounting
 
 - **[HR](./hr/README.md)** - Human resources and employee management
@@ -36,6 +39,7 @@ This directory contains detailed documentation for all ERP SteinmetZ modules.
 - **[Documents](./documents/README.md)** - Document management system
 
 ### System & Integration
+
 - **[Auth](./auth/README.md)** - Authentication and authorization
 
 - **[Calendar](./calendar/README.md)** - Calendar and scheduling
@@ -51,21 +55,25 @@ This directory contains detailed documentation for all ERP SteinmetZ modules.
 ### By Category
 
 **AI & Automation:**
+
 - [AI Module](./ai/README.md)
 - [AI Annotator](./ai-annotator/README.md)
 - [QuickChat](./quickchat/README.md)
 
 **Business Operations:**
+
 - [Finance](./finance/README.md)
 - [HR](./hr/README.md)
 - [Documents](./documents/README.md)
 - [Innovation](./innovation/README.md)
 
 **Dashboard & Analytics:**
+
 - [Dashboard](./dashboard/README.md)
 - [Functions Catalog](./functions-catalog/README.md)
 
 **System & Infrastructure:**
+
 - [Auth](./auth/README.md)
 - [Calendar](./calendar/README.md)
 - [Diagnostics](./diagnostics/README.md)
@@ -74,6 +82,7 @@ This directory contains detailed documentation for all ERP SteinmetZ modules.
 ## Documentation Standards
 
 All module documentation should include:
+
 1. **Overview** - What the module does
 2. **Features** - Key capabilities
 3. **API Reference** - Endpoints and methods

@@ -24,7 +24,9 @@ export const HelpAdmin: React.FC = () => {
   const [categories, setCategories] = useState<HelpCategory[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(
+    null,
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [filter, setFilter] = useState({
     category: "",
@@ -249,7 +251,9 @@ export const HelpAdmin: React.FC = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2>
-                {selectedArticle.id === 0 ? "Neuer Artikel" : "Artikel bearbeiten"}
+                {selectedArticle.id === 0
+                  ? "Neuer Artikel"
+                  : "Artikel bearbeiten"}
               </h2>
               <button
                 onClick={() => {
@@ -269,7 +273,10 @@ export const HelpAdmin: React.FC = () => {
                   type="text"
                   value={selectedArticle.title}
                   onChange={(e) =>
-                    setSelectedArticle({ ...selectedArticle, title: e.target.value })
+                    setSelectedArticle({
+                      ...selectedArticle,
+                      title: e.target.value,
+                    })
                   }
                   required
                 />
@@ -321,7 +328,10 @@ export const HelpAdmin: React.FC = () => {
                     type="text"
                     value={selectedArticle.icon || ""}
                     onChange={(e) =>
-                      setSelectedArticle({ ...selectedArticle, icon: e.target.value })
+                      setSelectedArticle({
+                        ...selectedArticle,
+                        icon: e.target.value,
+                      })
                     }
                     placeholder="📄"
                   />
@@ -334,7 +344,10 @@ export const HelpAdmin: React.FC = () => {
                   type="text"
                   value={selectedArticle.excerpt || ""}
                   onChange={(e) =>
-                    setSelectedArticle({ ...selectedArticle, excerpt: e.target.value })
+                    setSelectedArticle({
+                      ...selectedArticle,
+                      excerpt: e.target.value,
+                    })
                   }
                   placeholder="Kurze Beschreibung für die Übersicht"
                 />
@@ -346,7 +359,10 @@ export const HelpAdmin: React.FC = () => {
                   type="text"
                   value={selectedArticle.keywords || ""}
                   onChange={(e) =>
-                    setSelectedArticle({ ...selectedArticle, keywords: e.target.value })
+                    setSelectedArticle({
+                      ...selectedArticle,
+                      keywords: e.target.value,
+                    })
                   }
                   placeholder="keyword1,keyword2,keyword3"
                 />
@@ -358,7 +374,10 @@ export const HelpAdmin: React.FC = () => {
                   type="text"
                   value={selectedArticle.path || ""}
                   onChange={(e) =>
-                    setSelectedArticle({ ...selectedArticle, path: e.target.value })
+                    setSelectedArticle({
+                      ...selectedArticle,
+                      path: e.target.value,
+                    })
                   }
                   placeholder="/docs/example.md"
                 />
@@ -369,7 +388,10 @@ export const HelpAdmin: React.FC = () => {
                 <textarea
                   value={selectedArticle.content}
                   onChange={(e) =>
-                    setSelectedArticle({ ...selectedArticle, content: e.target.value })
+                    setSelectedArticle({
+                      ...selectedArticle,
+                      content: e.target.value,
+                    })
                   }
                   rows={15}
                   required

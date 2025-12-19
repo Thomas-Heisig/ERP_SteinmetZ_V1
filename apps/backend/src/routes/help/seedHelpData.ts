@@ -323,14 +323,23 @@ async function seedCategories(): Promise<void> {
       );
 
       if (existing) {
-        logger.debug({ categoryId: category.id }, "Category already exists, skipping");
+        logger.debug(
+          { categoryId: category.id },
+          "Category already exists, skipping",
+        );
         continue;
       }
 
       await db.run(
         `INSERT INTO help_categories (id, name, icon, description, \`order\`)
          VALUES (?, ?, ?, ?, ?)`,
-        [category.id, category.name, category.icon, category.description, category.order],
+        [
+          category.id,
+          category.name,
+          category.icon,
+          category.description,
+          category.order,
+        ],
       );
 
       logger.info({ categoryId: category.id }, "Seeded category");
@@ -357,7 +366,10 @@ async function seedArticles(): Promise<void> {
       );
 
       if (existing) {
-        logger.debug({ title: article.title }, "Article already exists, skipping");
+        logger.debug(
+          { title: article.title },
+          "Article already exists, skipping",
+        );
         continue;
       }
 

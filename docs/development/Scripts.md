@@ -70,6 +70,7 @@ psql -d erp_steinmetz -f scripts/init-finance-db.sql
 ```
 
 **Tables created**:
+
 - `customers` - Customer master data (Debitoren)
 - `suppliers` - Supplier master data (Kreditoren)
 - `invoices` - Invoices
@@ -83,6 +84,7 @@ psql -d erp_steinmetz -f scripts/init-finance-db.sql
 - `number_ranges` - Number range definitions (Nummernkreise)
 
 **Sample Data**:
+
 - 6 sample accounts (SKR03)
 - 2 sample customers
 - 1 sample supplier

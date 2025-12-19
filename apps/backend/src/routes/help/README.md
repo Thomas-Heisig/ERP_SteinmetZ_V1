@@ -15,6 +15,7 @@ The Help Desk module provides a comprehensive help system for managing documenta
 ### Articles
 
 #### Get All Articles
+
 ```http
 GET /api/help/articles?category=<category>&status=<status>&search=<query>&limit=<n>&offset=<n>
 ```
@@ -22,6 +23,7 @@ GET /api/help/articles?category=<category>&status=<status>&search=<query>&limit=
 Returns a list of help articles with optional filtering.
 
 **Query Parameters:**
+
 - `category` (optional): Filter by category
 - `status` (optional): Filter by status (default: "published")
 - `search` (optional): Search in title, content, keywords, excerpt
@@ -29,6 +31,7 @@ Returns a list of help articles with optional filtering.
 - `offset` (optional): Pagination offset
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -38,6 +41,7 @@ Returns a list of help articles with optional filtering.
 ```
 
 #### Get Article by ID
+
 ```http
 GET /api/help/articles/:id
 ```
@@ -45,6 +49,7 @@ GET /api/help/articles/:id
 Returns a specific article and increments the view count.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -59,6 +64,7 @@ Returns a specific article and increments the view count.
 ```
 
 #### Create Article
+
 ```http
 POST /api/help/articles
 Content-Type: application/json
@@ -76,6 +82,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -85,6 +92,7 @@ Content-Type: application/json
 ```
 
 #### Update Article
+
 ```http
 PUT /api/help/articles/:id
 Content-Type: application/json
@@ -97,6 +105,7 @@ Content-Type: application/json
 ```
 
 #### Delete Article
+
 ```http
 DELETE /api/help/articles/:id
 ```
@@ -104,6 +113,7 @@ DELETE /api/help/articles/:id
 ### Categories
 
 #### Get All Categories
+
 ```http
 GET /api/help/categories
 ```
@@ -111,6 +121,7 @@ GET /api/help/categories
 Returns all help categories ordered by `order` field.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -128,6 +139,7 @@ Returns all help categories ordered by `order` field.
 ```
 
 #### Create Category
+
 ```http
 POST /api/help/categories
 Content-Type: application/json
@@ -144,6 +156,7 @@ Content-Type: application/json
 ### Search
 
 #### Advanced Search
+
 ```http
 GET /api/help/search?q=<query>&category=<category>&limit=<n>
 ```
@@ -151,11 +164,13 @@ GET /api/help/search?q=<query>&category=<category>&limit=<n>
 Performs advanced search with relevance scoring.
 
 **Query Parameters:**
+
 - `q` (required): Search query
 - `category` (optional): Filter by category
 - `limit` (optional): Maximum results (default: 20)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -174,6 +189,7 @@ Performs advanced search with relevance scoring.
 ```
 
 Relevance scoring:
+
 - Title match: 10 points
 - Excerpt match: 5 points
 - Keywords match: 3 points
@@ -182,6 +198,7 @@ Relevance scoring:
 ### Statistics
 
 #### Get Help Statistics
+
 ```http
 GET /api/help/stats
 ```
@@ -189,6 +206,7 @@ GET /api/help/stats
 Returns help system statistics.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -206,23 +224,24 @@ Returns help system statistics.
 
 ### help_articles
 
-| Column | Type | Description |
-|--------|------|-------------|
-| id | INTEGER | Primary key (auto-increment) |
-| title | TEXT | Article title |
-| content | TEXT | Article content (markdown) |
-| category | TEXT | Category ID |
-| excerpt | TEXT | Short description |
-| keywords | TEXT | Comma-separated keywords |
-| icon | TEXT | Icon emoji |
-| path | TEXT | Original file path |
-| status | TEXT | Status: draft, published, archived |
-| author | TEXT | Author name |
-| created_at | TEXT | Creation timestamp |
-| updated_at | TEXT | Last update timestamp |
-| view_count | INTEGER | Number of views |
+| Column     | Type    | Description                        |
+| ---------- | ------- | ---------------------------------- |
+| id         | INTEGER | Primary key (auto-increment)       |
+| title      | TEXT    | Article title                      |
+| content    | TEXT    | Article content (markdown)         |
+| category   | TEXT    | Category ID                        |
+| excerpt    | TEXT    | Short description                  |
+| keywords   | TEXT    | Comma-separated keywords           |
+| icon       | TEXT    | Icon emoji                         |
+| path       | TEXT    | Original file path                 |
+| status     | TEXT    | Status: draft, published, archived |
+| author     | TEXT    | Author name                        |
+| created_at | TEXT    | Creation timestamp                 |
+| updated_at | TEXT    | Last update timestamp              |
+| view_count | INTEGER | Number of views                    |
 
 **Indexes:**
+
 - `idx_help_category` on `category`
 - `idx_help_status` on `status`
 - `idx_help_created` on `created_at`
@@ -230,15 +249,16 @@ Returns help system statistics.
 
 ### help_categories
 
-| Column | Type | Description |
-|--------|------|-------------|
-| id | TEXT | Primary key |
-| name | TEXT | Category name |
-| icon | TEXT | Icon emoji |
-| description | TEXT | Category description |
-| order | INTEGER | Display order |
+| Column      | Type    | Description          |
+| ----------- | ------- | -------------------- |
+| id          | TEXT    | Primary key          |
+| name        | TEXT    | Category name        |
+| icon        | TEXT    | Icon emoji           |
+| description | TEXT    | Category description |
+| order       | INTEGER | Display order        |
 
 **Indexes:**
+
 - `idx_help_cat_order` on `order`
 
 ## Seeding Data
@@ -254,7 +274,7 @@ node dist/routes/help/seedHelpData.js
 Or programmatically:
 
 ```typescript
-import { seedHelpData } from './routes/help/seedHelpData.js';
+import { seedHelpData } from "./routes/help/seedHelpData.js";
 
 await seedHelpData();
 ```
@@ -265,15 +285,15 @@ await seedHelpData();
 
 ```typescript
 // Fetch all published articles
-const response = await fetch('/api/help/articles');
+const response = await fetch("/api/help/articles");
 const { articles } = await response.json();
 
 // Search for articles
-const searchResponse = await fetch('/api/help/search?q=authentication');
+const searchResponse = await fetch("/api/help/search?q=authentication");
 const { results } = await searchResponse.json();
 
 // Get article by ID
-const articleResponse = await fetch('/api/help/articles/1');
+const articleResponse = await fetch("/api/help/articles/1");
 const { article } = await articleResponse.json();
 ```
 
@@ -287,13 +307,13 @@ const article = {
   excerpt: "Learn about the new feature",
   keywords: "feature,tutorial,guide",
   icon: "📖",
-  status: "published"
+  status: "published",
 };
 
-const response = await fetch('/api/help/articles', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(article)
+const response = await fetch("/api/help/articles", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(article),
 });
 ```
 
