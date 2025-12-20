@@ -55,6 +55,7 @@ async function scanToolFiles(dir: string, recursive = true): Promise<string[]> {
  */
 async function importToolModule(filePath: string) {
   try {
+    const before = toolRegistry.count();
     const fileUrl = pathToFileURL(filePath).href;
     const mod = await import(fileUrl);
     const fileName = path.basename(filePath);
@@ -63,10 +64,15 @@ async function importToolModule(filePath: string) {
       await mod.registerTools(toolRegistry);
       logger.debug({ fileName }, "Tool module loaded");
     } else {
-      logger.warn(
-        { fileName },
-        "Module does not export registerTools() function",
-      );
+      const after = toolRegistry.count();
+      if (after > before) {
+        logger.info({ fileName, added: after - before }, "Module registered tools via side-effect import");
+      } else {
+        logger.warn(
+          { fileName },
+          "Module does not export registerTools() function",
+        );
+      }
     }
   } catch (err) {
     logger.error({ err, filePath }, "Failed to load tool module");

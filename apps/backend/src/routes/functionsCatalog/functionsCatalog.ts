@@ -15,9 +15,9 @@ import {
   FunctionsCatalogService,
   type MenuContext,
   type SearchParams,
-} from "../../services/functionsCatalogService.js";
+} from "./functionsCatalogService.js";
 
-import db from "../../services/dbService.js";
+import db from "../database/dbService.js";
 import pino from "pino";
 import {
   cacheMiddleware,

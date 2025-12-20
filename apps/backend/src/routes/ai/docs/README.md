@@ -1,4 +1,4 @@
-**komplette Backend-System inklusive Workflow-Engine**
+# **komplette Backend-System inklusive Workflow-Engine**
 
 ## 🗂️ **Aktualisierte Vollständige System-Übersicht**
 
@@ -33,7 +33,7 @@
 
 ### **Architektur-Ebenen**
 
-```
+```ascii
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Layer (1)                           │
 │                   aiRouter.ts                              │
@@ -71,7 +71,7 @@
 
 ### **Unterstützte Schritt-Typen**
 
-```
+```info
 🛠️  tool_call        - Tool-Ausführung
 🔀  if               - Bedingte Ausführung
 🔄  loop             - Schleifen-Operation

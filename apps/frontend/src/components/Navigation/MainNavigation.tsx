@@ -223,7 +223,9 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
   }, [searchQuery, t]);
 
   return (
-    <nav className={`main-navigation ${collapsed ? "collapsed" : "expanded"}`}>
+    <nav
+      className={`main-navigation app-sidebar ${collapsed ? "collapsed" : "expanded"}`}
+    >
       <div className="flex flex-col h-full">
         {/* Logo/Header */}
         <div

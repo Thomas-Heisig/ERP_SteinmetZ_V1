@@ -8,9 +8,10 @@
 import { Router } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { z } from "zod";
-import { NotFoundError } from "../../types/errors.js";
-import db from "../../services/dbService.js";
+import { NotFoundError } from "../error/errors.js";
+import db from "../database/dbService.js";
 import { createLogger } from "../../utils/logger.js";
+import type { SqlValue } from "../database/database.js";
 
 const router = Router();
 const logger = createLogger("organization");
@@ -119,7 +120,7 @@ router.get(
     const { company_id } = req.query;
 
     let query = `SELECT * FROM business_departments WHERE is_active = 1`;
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (company_id) {
       query += ` AND company_id = ?`;
@@ -192,7 +193,7 @@ router.post(
       ],
     );
 
-    logger.info("Department created", { name: validatedData.name });
+    logger.info({ name: validatedData.name }, "Department created");
 
     res.status(201).json({ message: "Department created successfully" });
   }),
@@ -240,7 +241,7 @@ router.put(
       ],
     );
 
-    logger.info("Department updated", { id, name: validatedData.name });
+    logger.info({ id, name: validatedData.name }, "Department updated");
 
     res.json({ message: "Department updated successfully" });
   }),
@@ -266,7 +267,7 @@ router.delete(
       [id],
     );
 
-    logger.info("Department deactivated", { id });
+    logger.info({ id }, "Department deactivated");
 
     res.json({ message: "Department deactivated successfully" });
   }),
@@ -283,7 +284,7 @@ router.get(
     const { company_id, location_type } = req.query;
 
     let query = `SELECT * FROM business_locations WHERE is_active = 1`;
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (company_id) {
       query += ` AND company_id = ?`;
@@ -362,7 +363,7 @@ router.post(
       ],
     );
 
-    logger.info("Location created", { name: validatedData.name });
+    logger.info({ name: validatedData.name }, "Location created");
 
     res.status(201).json({ message: "Location created successfully" });
   }),
@@ -420,7 +421,7 @@ router.put(
       ],
     );
 
-    logger.info("Location updated", { id, name: validatedData.name });
+    logger.info({ id, name: validatedData.name }, "Location updated");
 
     res.json({ message: "Location updated successfully" });
   }),
@@ -437,7 +438,7 @@ router.get(
     const { company_id } = req.query;
 
     let query = `SELECT * FROM business_cost_centers WHERE is_active = 1`;
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (company_id) {
       query += ` AND company_id = ?`;
@@ -480,10 +481,13 @@ router.post(
       ],
     );
 
-    logger.info("Cost center created", {
-      code: validatedData.code,
-      name: validatedData.name,
-    });
+    logger.info(
+      {
+        code: validatedData.code,
+        name: validatedData.name,
+      },
+      "Cost center created",
+    );
 
     res.status(201).json({ message: "Cost center created successfully" });
   }),
@@ -500,7 +504,7 @@ router.get(
     const { company_id } = req.query;
 
     let query = `SELECT * FROM business_roles WHERE is_active = 1`;
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (company_id) {
       query += ` AND company_id = ?`;
@@ -540,7 +544,7 @@ router.post(
       ],
     );
 
-    logger.info("Role created", { name: validatedData.role_name });
+    logger.info({ name: validatedData.role_name }, "Role created");
 
     res.status(201).json({ message: "Role created successfully" });
   }),

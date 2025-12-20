@@ -17,7 +17,7 @@ declare module "node-llama-cpp";
 declare global {
   var app: import("express").Express | undefined;
 
-  var db: any | undefined;
+  var db: import("better-sqlite3").Database | undefined;
 
   var logger: Console | undefined;
 }

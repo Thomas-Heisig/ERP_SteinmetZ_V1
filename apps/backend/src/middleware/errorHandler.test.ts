@@ -10,7 +10,7 @@ import {
   ValidationError,
   InternalServerError,
   ErrorCode,
-} from "../types/errors";
+} from "../routes/error/errors";
 
 describe("errorHandler middleware", () => {
   let mockReq: Partial<Request>;

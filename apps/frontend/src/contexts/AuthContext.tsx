@@ -186,51 +186,101 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (credentials: LoginCredentials) => {
     try {
+      console.log("🔐 Login attempt:", {
+        username: credentials.username,
+        apiUrl: API_BASE_URL,
+        timestamp: new Date().toISOString(),
+      });
+
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(credentials),
+        credentials: "include", // Include cookies
       });
 
-      const data = await response.json();
+      console.log("📡 Login response:", {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+      });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error("❌ Failed to parse response:", parseError);
+        throw new Error(
+          `Server error: ${response.status} ${response.statusText}`
+        );
+      }
 
       if (!response.ok) {
+        const errorMsg = data.error || data.message || "Login failed";
+        console.error("❌ Login failed:", data);
+        throw new Error(errorMsg);
+      }
+
+      if (!data.success) {
         throw new Error(data.error || "Login failed");
       }
 
-      if (data.success && data.token) {
-        // Store tokens
-        localStorage.setItem("token", data.token);
-        if (data.refreshToken) {
-          localStorage.setItem("refreshToken", data.refreshToken);
-        }
+      if (!data.token) {
+        throw new Error("No token received from server");
+      }
 
-        // Get user info
-        const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${data.token}`,
+      console.log("✅ Login successful, storing tokens...");
+
+      // Store tokens
+      localStorage.setItem("token", data.token);
+      if (data.refreshToken) {
+        localStorage.setItem("refreshToken", data.refreshToken);
+      }
+
+      // Get user info
+      const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+        },
+      });
+
+      if (!userResponse.ok) {
+        console.warn("Could not fetch user info, using data from login response");
+        // Still proceed with login even if we can't get user info
+        setState({
+          user: data.user || {
+            id: "unknown",
+            username: credentials.username,
+            email: "",
+            is_active: true,
+            is_verified: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           },
+          roles: data.roles || [],
+          permissions: data.permissions || [],
+          token: data.token,
+          refreshToken: data.refreshToken || null,
+          isAuthenticated: true,
+          isLoading: false,
         });
-
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setState({
-            user: userData.user,
-            roles: userData.roles || [],
-            permissions: userData.permissions || [],
-            token: data.token,
-            refreshToken: data.refreshToken || null,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        }
       } else {
-        throw new Error("Login failed");
+        const userData = await userResponse.json();
+        console.log("✅ User data retrieved:", userData);
+        setState({
+          user: userData.user,
+          roles: userData.roles || [],
+          permissions: userData.permissions || [],
+          token: data.token,
+          refreshToken: data.refreshToken || null,
+          isAuthenticated: true,
+          isLoading: false,
+        });
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("❌ Login error:", error);
       throw error;
     }
   };
@@ -254,19 +304,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (data: RegisterData) => {
     try {
+      console.log("📝 Register attempt:", {
+        username: data.username,
+        email: data.email,
+        apiUrl: API_BASE_URL,
+        timestamp: new Date().toISOString(),
+      });
+
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
+        credentials: "include",
       });
 
-      const result = await response.json();
+      console.log("📡 Register response:", {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+      });
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (parseError) {
+        console.error("❌ Failed to parse response:", parseError);
+        throw new Error(
+          `Server error: ${response.status} ${response.statusText}`
+        );
+      }
 
       if (!response.ok) {
-        throw new Error(result.error || "Registration failed");
+        const errorMsg = result.error || result.message || "Registration failed";
+        console.error("❌ Registration failed:", errorMsg);
+        throw new Error(errorMsg);
       }
+
+      console.log("✅ Registration successful, auto-logging in...");
 
       // After successful registration, log in automatically
       await login({
@@ -274,7 +350,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password: data.password,
       });
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("❌ Registration error:", error);
       throw error;
     }
   };

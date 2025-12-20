@@ -17,7 +17,7 @@ Das Finance-Modul verwaltet alle finanzbezogenen Funktionen des ERP-Systems, ein
 
 Alle Endpoints erfordern Authentifizierung. Verwenden Sie einen JWT-Token im Authorization-Header:
 
-```
+```text
 Authorization: Bearer <your-token>
 ```
 
@@ -72,7 +72,7 @@ Alle Endpoints verwenden Zod-Schemas für die Validierung von Eingabedaten. Bei 
 }
 ```
 
-## 💰 Rechnungsmanagement
+## 💰 Rechnungsmanagement {#rechnungsmanagement}
 
 ### GET /api/finance/invoices
 
@@ -204,7 +204,7 @@ Versendet eine Rechnung an den Kunden.
 }
 ```
 
-## 👥 Kunden (Debitoren)
+## 👥 Kunden (Debitoren) {#kunden-debitoren}
 
 ### GET /api/finance/customers
 
@@ -275,7 +275,7 @@ Erstellt einen neuen Kunden.
 }
 ```
 
-## 🏭 Lieferanten (Kreditoren)
+## 🏭 Lieferanten (Kreditoren) {#lieferanten-kreditoren}
 
 ### GET /api/finance/suppliers
 
@@ -316,7 +316,7 @@ Erstellt einen neuen Lieferanten.
 }
 ```
 
-## 💳 Zahlungen
+## 💳 Zahlungen {#zahlungen}
 
 ### GET /api/finance/payments
 
@@ -367,7 +367,7 @@ Erfasst eine neue Zahlung.
 }
 ```
 
-## 📊 Konten (Kontenplan)
+## 📊 Konten (Kontenplan) {#konten-kontenplan}
 
 ### GET /api/finance/accounts
 
@@ -402,7 +402,7 @@ Ruft den Kontenplan ab (SKR03/SKR04 kompatibel).
 }
 ```
 
-## 📝 Buchungen (Transaktionen)
+## 📝 Buchungen (Transaktionen) {#buchungen-transaktionen}
 
 ### GET /api/finance/transactions
 
@@ -451,7 +451,7 @@ Erstellt eine neue Buchung.
 }
 ```
 
-## 📈 Berichte
+## 📈 Berichte {#berichte}
 
 ### GET /api/finance/reports/balance-sheet
 
@@ -498,7 +498,7 @@ Ruft die Gewinn- und Verlustrechnung ab.
 }
 ```
 
-## 📊 Statistiken
+## 📊 Statistiken {#statistiken}
 
 ### GET /api/finance/statistics
 

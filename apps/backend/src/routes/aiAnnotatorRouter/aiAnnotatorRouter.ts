@@ -64,7 +64,7 @@
  */
 
 import { Router } from "express";
-import { z } from "zod";
+import { createLogger } from "../../utils/logger.js";
 import aiAnnotatorService, {
   BatchOperation,
   NodeForAnnotation,
@@ -72,156 +72,83 @@ import aiAnnotatorService, {
   FormSpec,
   GeneratedMeta,
   DashboardRule,
-} from "../../services/aiAnnotatorService.js";
+} from "./aiAnnotatorService.js";
 import { strictAiRateLimiter } from "../../middleware/rateLimiters.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import {
   BadRequestError,
   NotFoundError,
   ForbiddenError,
-} from "../../types/errors.js";
-import { filterService } from "../../services/filterService.js";
-import { qualityAssuranceService } from "../../services/qualityAssuranceService.js";
-import { modelManagementService } from "../../services/modelManagementService.js";
-import { batchProcessingService } from "../../services/batchProcessingService.js";
+} from "../error/errors.js";
+import { filterService } from "../other/filterService.js";
+import { qualityAssuranceService } from "../other/qualityAssuranceService.js";
+import { modelManagementService } from "../modelmanager/modelManagementService.js";
+import { batchProcessingService } from "../batch/batchProcessingService.js";
 
+// Import types and schemas from centralized types file
+import {
+  batchOperationSchema,
+  classifyPiiSchema,
+  validateBatchSchema,
+  errorCorrectionConfigSchema,
+  debugPromptSchema,
+  debugAiTestSchema,
+  bulkEnhanceSchema,
+  modelSelectionTestSchema,
+  exportFilterSchema,
+  fullAnnotationRequestSchema,
+  approveRejectReviewSchema,
+  compareModelsSchema,
+  toStringArray,
+  toBool,
+  toInt,
+} from "./types.js";
+
+const logger = createLogger("ai-annotator");
 const router = Router();
 const databaseTool = DatabaseTool.getInstance();
 
-/** --------- Erweiterte Hilfsfunktionen --------- */
-function toStringArray(v: unknown): string[] | undefined {
-  if (typeof v === "string") return [v];
-  if (Array.isArray(v))
-    return (v as unknown[]).filter((x): x is string => typeof x === "string");
-  if (v && typeof v === "object") {
-    const values = Object.values(v as Record<string, unknown>);
-    const flat = values.flatMap((x) => (typeof x === "string" ? [x] : []));
-    return flat.length ? flat : undefined;
-  }
-  return undefined;
-}
-
-function toBool(v: unknown, def = false): boolean {
-  if (typeof v === "boolean") return v;
-  if (typeof v === "string") {
-    const s = v.trim().toLowerCase();
-    return s === "true" || s === "1" || s === "yes" || s === "on";
-  }
-  return def;
-}
-
-function toInt(v: unknown, def: number): number {
-  if (typeof v === "number") return v;
-  const n = typeof v === "string" ? parseInt(v, 10) : NaN;
-  return Number.isFinite(n) ? n : def;
-}
-
 /** Helper function to find node by ID */
 async function findNodeById(id: string): Promise<NodeForAnnotation> {
+  logger.debug({ nodeId: id }, "Searching for node by ID");
   const nodes = await aiAnnotatorService.listCandidates({
     limit: 1,
     search: id,
   });
   const node = nodes.find((n) => n.id === id);
   if (!node) {
+    logger.warn({ nodeId: id }, "Node not found");
     throw new NotFoundError(`Knoten ${id} nicht gefunden`);
   }
+  logger.debug({ nodeId: id, nodeKind: node.kind }, "Node found");
   return node;
 }
 
-/* ========================================================================== */
-/* Zod Validation Schemas                                                     */
-/* ========================================================================== */
-
-const fullAnnotationSchema = z.object({
-  includeValidation: z.boolean().optional().default(true),
-  parallel: z.boolean().optional().default(true),
-});
-
-const batchOperationSchema = z.object({
-  operation: z.string().min(1),
-  filters: z.record(z.string(), z.any()),
-  options: z
-    .object({
-      retryFailed: z.boolean().optional(),
-      maxRetries: z.number().int().positive().optional(),
-      chunkSize: z.number().int().positive().optional(),
-      parallelRequests: z.number().int().positive().optional(),
-      modelPreference: z.enum(["fast", "balanced", "accurate"]).optional(),
-    })
-    .optional(),
-});
-
-const classifyPiiSchema = z.object({
-  nodeIds: z.array(z.string()).min(1),
-  detailed: z.boolean().optional().default(false),
-});
-
-const validateBatchSchema = z.object({
-  nodeIds: z.array(z.string()).min(1),
-  rules: z.array(z.any()).optional().default([]),
-});
-
-// TODO: Define specific validation rules for error correction config parameters
-// This should validate the specific configuration options available in the error correction system
-const errorCorrectionConfigSchema = z.record(z.string(), z.any());
-
-const debugPromptSchema = z.object({
-  nodeId: z.string().min(1),
-  promptType: z
-    .enum(["meta", "rule", "form", "simple", "correction"])
-    .optional()
-    .default("meta"),
-  options: z.record(z.string(), z.any()).optional().default({}),
-});
-
-const debugAiTestSchema = z.object({
-  prompt: z.string().optional(),
-  model: z.string().optional(),
-  provider: z.string().optional(),
-});
-
-const bulkEnhanceSchema = z.object({
-  nodeIds: z.array(z.string()).min(1),
-  operations: z
-    .array(z.enum(["meta", "rule", "form"]))
-    .optional()
-    .default(["meta", "rule", "form"]),
-});
-
-const modelSelectionTestSchema = z.object({
-  operation: z.string().optional().default("meta"),
-  priority: z.string().optional().default("balanced"),
-});
-
-const exportFilterSchema = z.object({
-  nodes: z.array(z.unknown()).min(1),
-  format: z.enum(["json", "csv"]).optional().default("json"),
-});
-
-const approveRejectReviewSchema = z.object({
-  reviewer: z.string().min(1),
-  comments: z.string().optional(),
-});
-
-const compareModelsSchema = z.object({
-  models: z.array(z.string()).min(2),
-  days: z.number().int().positive().optional().default(30),
-});
-
 // ============ SYSTEM STATUS & HEALTH ============
 
+/**
+ * Get system status
+ * @route GET /api/ai-annotator/status
+ * @access Private
+ */
 router.get(
   "/status",
   asyncHandler(async (_req, res) => {
+    logger.debug("Fetching AI Annotator system status");
     const status = await aiAnnotatorService.getStatus();
     res.json({ success: true, data: status });
   }),
 );
 
+/**
+ * Get health status
+ * @route GET /api/ai-annotator/health
+ * @access Private
+ */
 router.get(
   "/health",
   asyncHandler(async (_req, res) => {
+    logger.debug("Fetching AI Annotator health status");
     const health = await aiAnnotatorService.getHealthStatus();
     res.json({ success: true, data: health });
   }),
@@ -229,18 +156,30 @@ router.get(
 
 // ============ DATABASE TOOL ENDPOINTS ============
 
+/**
+ * Get node statistics
+ * @route GET /api/ai-annotator/database/stats
+ * @access Private
+ */
 router.get(
   "/database/stats",
   asyncHandler(async (_req, res) => {
+    logger.debug("Fetching database node statistics");
     const stats = await databaseTool.getNodeStatistics();
     res.json({ success: true, data: stats });
   }),
 );
 
+/**
+ * Get batch operations
+ * @route GET /api/ai-annotator/database/batches
+ * @access Private
+ */
 router.get(
   "/database/batches",
   asyncHandler(async (req, res) => {
     const limit = toInt(req.query.limit, 50);
+    logger.debug({ limit }, "Fetching batch operations");
     const batches = await databaseTool.getBatchOperations(limit);
 
     res.json({
@@ -251,14 +190,21 @@ router.get(
   }),
 );
 
+/**
+ * Cleanup old batch operations
+ * @route DELETE /api/ai-annotator/database/batches/cleanup
+ * @access Private
+ */
 router.delete(
   "/database/batches/cleanup",
   asyncHandler(async (req, res) => {
     if (process.env.NODE_ENV === "production" && req.query.force !== "true") {
+      logger.warn("Attempted cleanup in production without force flag");
       throw new ForbiddenError("Cleanup in Production erfordert force=true");
     }
 
     const daysToKeep = toInt(req.query.days, 30);
+    logger.info({ daysToKeep }, "Cleaning up old batch operations");
     await databaseTool.cleanupOldBatches(daysToKeep);
 
     res.json({
@@ -270,6 +216,11 @@ router.delete(
 
 // ============ ERWEITERTE NODE MANAGEMENT ============
 
+/**
+ * List annotation candidate nodes
+ * @route GET /api/ai-annotator/nodes
+ * @access Private
+ */
 router.get(
   "/nodes",
   asyncHandler(async (req, res) => {
@@ -282,6 +233,8 @@ router.get(
     const status = toStringArray(req.query.status);
     const businessArea = toStringArray(req.query.businessArea);
     const complexity = toStringArray(req.query.complexity);
+
+    logger.debug({ kinds, status, limit, offset }, "Listing annotation candidate nodes");
 
     const nodes = await aiAnnotatorService.listCandidates({
       kinds,
@@ -297,12 +250,26 @@ router.get(
     res.json({
       success: true,
       data: { nodes },
-      pagination: { limit, offset, total: nodes.length },
-      filters: { kinds, status, businessArea, complexity },
+      pagination: { 
+        limit, 
+        offset, 
+        total: nodes.length 
+      },
+      filters: {
+        kinds,
+        status,
+        businessArea,
+        complexity,
+      },
     });
   }),
 );
 
+/**
+ * Get single node by ID
+ * @route GET /api/ai-annotator/nodes/:id
+ * @access Private
+ */
 router.get(
   "/nodes/:id",
   asyncHandler(async (req, res) => {
@@ -314,9 +281,15 @@ router.get(
   }),
 );
 
+/**
+ * Validate node annotations
+ * @route POST /api/ai-annotator/nodes/:id/validate
+ * @access Private
+ */
 router.post(
   "/nodes/:id/validate",
   asyncHandler(async (req, res) => {
+    logger.debug({ nodeId: req.params.id }, "Validating node");
     const node = await findNodeById(req.params.id);
     const validation = await aiAnnotatorService.validateNode(node);
 
@@ -329,10 +302,16 @@ router.post(
 
 // ============ SINGLE OPERATIONS MIT ERROR CORRECTION ============
 
+/**
+ * Generate metadata for a node
+ * @route POST /api/ai-annotator/nodes/:id/generate-meta
+ * @access Private
+ */
 router.post(
   "/nodes/:id/generate-meta",
   strictAiRateLimiter,
   asyncHandler(async (req, res) => {
+    logger.info({ nodeId: req.params.id }, "Generating metadata");
     const node = await findNodeById(req.params.id);
     const meta = await aiAnnotatorService.generateMeta(node);
     await aiAnnotatorService.saveMeta(req.params.id, meta);
@@ -345,10 +324,16 @@ router.post(
   }),
 );
 
+/**
+ * Generate dashboard rule for a node
+ * @route POST /api/ai-annotator/nodes/:id/generate-rule
+ * @access Private
+ */
 router.post(
   "/nodes/:id/generate-rule",
   strictAiRateLimiter,
   asyncHandler(async (req, res) => {
+    logger.info({ nodeId: req.params.id }, "Generating dashboard rule");
     const node = await findNodeById(req.params.id);
     const rule = await aiAnnotatorService.generateRule(node);
     await aiAnnotatorService.saveRule(req.params.id, rule);
@@ -361,10 +346,16 @@ router.post(
   }),
 );
 
+/**
+ * Generate form specification for a node
+ * @route POST /api/ai-annotator/nodes/:id/generate-form
+ * @access Private
+ */
 router.post(
   "/nodes/:id/generate-form",
   strictAiRateLimiter,
   asyncHandler(async (req, res) => {
+    logger.info({ nodeId: req.params.id }, "Generating form specification");
     const node = await findNodeById(req.params.id);
     const formSpec = await aiAnnotatorService.generateFormSpec(node);
     await aiAnnotatorService.saveFormSpec(req.params.id, formSpec);
@@ -377,9 +368,15 @@ router.post(
   }),
 );
 
+/**
+ * Enhance schema with AI suggestions
+ * @route POST /api/ai-annotator/nodes/:id/enhance-schema
+ * @access Private
+ */
 router.post(
   "/nodes/:id/enhance-schema",
   asyncHandler(async (req, res) => {
+    logger.info({ nodeId: req.params.id }, "Enhancing schema");
     const node = await findNodeById(req.params.id);
     const enhancedSchema = await aiAnnotatorService.enhanceSchema(node);
 
@@ -391,11 +388,17 @@ router.post(
   }),
 );
 
+/**
+ * Generate full annotation (meta, rule, form) for a node
+ * @route POST /api/ai-annotator/nodes/:id/full-annotation
+ * @access Private
+ */
 router.post(
   "/nodes/:id/full-annotation",
   asyncHandler(async (req, res) => {
-    const validated = fullAnnotationSchema.parse(req.body);
+    const validated = fullAnnotationRequestSchema.parse(req.body);
     const { includeValidation, parallel } = validated;
+    logger.info({ nodeId: req.params.id, includeValidation, parallel }, "Generating full annotation");
     const node = await findNodeById(req.params.id);
 
     let meta: unknown,
@@ -617,12 +620,22 @@ router.get(
     let filteredNodes = nodesWithRules;
     if (type) {
       filteredNodes = filteredNodes.filter(
-        (node) => node.meta_json.rule.type === type,
+        (node) => node.meta_json && typeof node.meta_json === 'object' && 
+                  'rule' in node.meta_json && 
+                  typeof node.meta_json.rule === 'object' && 
+                  node.meta_json.rule && 
+                  'type' in node.meta_json.rule && 
+                  node.meta_json.rule.type === type,
       );
     }
     if (widget) {
       filteredNodes = filteredNodes.filter(
-        (node) => node.meta_json.rule.widget === widget,
+        (node) => node.meta_json && typeof node.meta_json === 'object' && 
+                  'rule' in node.meta_json && 
+                  typeof node.meta_json.rule === 'object' && 
+                  node.meta_json.rule && 
+                  'widget' in node.meta_json.rule && 
+                  node.meta_json.rule.widget === widget,
       );
     }
 
@@ -631,8 +644,13 @@ router.get(
     const widgetsByType: Record<string, string[]> = {};
 
     filteredNodes.forEach((node) => {
-      const ruleType = node.meta_json.rule.type;
-      const widget = node.meta_json.rule.widget;
+      if (!node.meta_json || typeof node.meta_json !== 'object' || !('rule' in node.meta_json) || typeof node.meta_json.rule !== 'object' || !node.meta_json.rule) {
+        return;
+      }
+
+      const rule = node.meta_json.rule as Record<string, unknown>;
+      const ruleType = typeof rule.type === 'string' ? rule.type : 'unknown';
+      const widget = typeof rule.widget === 'string' ? rule.widget : undefined;
 
       if (!rulesByType[ruleType]) {
         rulesByType[ruleType] = [];

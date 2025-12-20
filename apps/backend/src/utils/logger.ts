@@ -1,57 +1,199 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/utils/logger.ts
 
-import pino from "pino";
-
 /**
- * Centralized logger configuration for the entire backend.
- * Uses Pino for structured logging with configurable log levels.
- *
- * Usage:
- * ```typescript
- * import { logger } from './utils/logger.js';
- * logger.info('Server started');
- * logger.error({ err }, 'Failed to connect');
- * ```
+ * Zentrales Logging-System mit Pino
+ * Bietet strukturiertes Logging mit Kontext und Specialized Loggers
  */
-export const logger = pino({
-  level: process.env.LOG_LEVEL || "info",
-  formatters: {
-    level: (label) => {
-      return { level: label.toUpperCase() };
-    },
-  },
-  timestamp: pino.stdTimeFunctions.isoTime,
-  base: {
-    pid: process.pid,
-    hostname: process.env.HOSTNAME || "unknown",
-  },
-  redact: {
-    paths: [
-      "password",
-      "token",
-      "apiKey",
-      "secret",
-      "authorization",
-      "*.password",
-      "*.token",
-      "*.apiKey",
-      "*.secret",
-    ],
-    remove: true,
-  },
-});
 
-/**
- * Creates a child logger with a specific name/context.
- * Useful for adding context to all logs from a specific module.
- *
- * @param name - Name/context for the child logger (e.g., 'auth', 'db', 'api')
- * @returns Child logger instance
- */
-export function createLogger(name: string) {
-  return logger.child({ module: name });
+import pino, { type LoggerOptions } from "pino";
+
+export type LogLevel = "fatal" | "error" | "warn" | "info" | "debug" | "trace";
+
+export interface Logger {
+  request(req: Record<string, unknown>, res: Record<string, unknown>, duration: number): void;
+  response(statusCode: number, duration: number): void;
+  database(operation: string, duration: number, rowCount?: number): void;
+  externalAPI(service: string, endpoint: string, duration: number, statusCode?: number): void;
+  performanceWarning(metric: string, value: number, threshold: number): void;
+  security(event: string, details: Record<string, unknown>): void;
+  child(bindings: Record<string, unknown>): Logger;
+  // Überladungen für info - sowohl 1 als auch 2 Parameter
+  info(message: string): void;
+  info(obj: Record<string, unknown>, msg: string): void;
+  // Überladungen für error
+  error(message: string): void;
+  error(obj: Record<string, unknown>, msg: string): void;
+  // Überladungen für debug
+  debug(message: string): void;
+  debug(obj: Record<string, unknown>, msg: string): void;
+  // Überladungen für warn
+  warn(message: string): void;
+  warn(obj: Record<string, unknown>, msg: string): void;
 }
+
+const DEFAULT_CONFIG = {
+  level: (process.env.LOG_LEVEL as LogLevel) || "info",
+  environment: process.env.NODE_ENV || "development",
+  pretty: process.env.NODE_ENV !== "production",
+};
+
+/**
+ * Erstellt einen Logger mit Kontext
+ */
+export function createLogger(moduleName: string, config: Record<string, unknown> = {}): Logger {
+  const finalConfig = { ...DEFAULT_CONFIG, ...config };
+
+  const baseOptions: LoggerOptions = {
+    level: finalConfig.level as string,
+    timestamp: pino.stdTimeFunctions.isoTime,
+    base: {
+      module: moduleName,
+      environment: finalConfig.environment,
+    },
+    formatters: {
+      level: (label: string) => ({ level: label }),
+      bindings: (bindings: Record<string, unknown>) => ({ ...bindings, module: moduleName }),
+    },
+  };
+
+  const pinoLogger = pino(baseOptions);
+  
+  // Typen für die flexiblen Log-Funktionen
+  type LogFunction = {
+    (message: string): void;
+    (obj: Record<string, unknown>, msg: string): void;
+  };
+
+  const logger: Logger = Object.create(pinoLogger) as Logger;
+
+  // Wrapper für info - unterstützt beide Signaturen
+  const originalInfo = pinoLogger.info.bind(pinoLogger);
+  (logger.info as LogFunction) = ((arg1: string | Record<string, unknown>, arg2?: string) => {
+    if (typeof arg1 === "string") {
+      originalInfo(arg1);
+    } else if (typeof arg1 === "object" && typeof arg2 === "string") {
+      originalInfo(arg1, arg2);
+    }
+  });
+
+  // Wrapper für error - unterstützt beide Signaturen
+  const originalError = pinoLogger.error.bind(pinoLogger);
+  (logger.error as LogFunction) = ((arg1: string | Record<string, unknown>, arg2?: string) => {
+    if (typeof arg1 === "string") {
+      originalError(arg1);
+    } else if (typeof arg1 === "object" && typeof arg2 === "string") {
+      originalError(arg1, arg2);
+    }
+  });
+
+  // Wrapper für debug - unterstützt beide Signaturen
+  const originalDebug = pinoLogger.debug.bind(pinoLogger);
+  (logger.debug as LogFunction) = ((arg1: string | Record<string, unknown>, arg2?: string) => {
+    if (typeof arg1 === "string") {
+      originalDebug(arg1);
+    } else if (typeof arg1 === "object" && typeof arg2 === "string") {
+      originalDebug(arg1, arg2);
+    }
+  });
+
+  // Wrapper für warn - unterstützt beide Signaturen
+  const originalWarn = pinoLogger.warn.bind(pinoLogger);
+  (logger.warn as LogFunction) = ((arg1: string | Record<string, unknown>, arg2?: string) => {
+    if (typeof arg1 === "string") {
+      originalWarn(arg1);
+    } else if (typeof arg1 === "object" && typeof arg2 === "string") {
+      originalWarn(arg1, arg2);
+    }
+  });
+
+  logger.request = function (req: Record<string, unknown>, res: Record<string, unknown>, duration: number) {
+    originalInfo({ method: req.method, path: req.path, statusCode: res.statusCode, duration }, "API Request");
+  };
+
+  logger.response = function (statusCode: number, duration: number) {
+    originalDebug({ statusCode, duration }, "API Response");
+  };
+
+  logger.database = function (operation: string, duration: number, rowCount?: number) {
+    const level = duration > 100 ? "warn" : "debug";
+    const logFunc = level === "warn" ? originalWarn : originalDebug;
+    logFunc({ operation, duration, rowCount }, duration > 100 ? "Slow query" : "DB operation");
+  };
+
+  logger.externalAPI = function (service: string, endpoint: string, duration: number, statusCode?: number) {
+    const level = statusCode && statusCode >= 400 ? "warn" : "debug";
+    const logFunc = level === "warn" ? originalWarn : originalDebug;
+    logFunc({ service, endpoint, statusCode, duration }, statusCode && statusCode >= 400 ? "External API error" : "External API");
+  };
+
+  logger.performanceWarning = function (metric: string, value: number, threshold: number) {
+    originalWarn({ metric, value, threshold, percentage: ((value / threshold) * 100).toFixed(1) }, "Performance threshold exceeded");
+  };
+
+  logger.security = function (event: string, details: Record<string, unknown>) {
+    originalWarn({ event, ...details }, "Security event");
+  };
+
+  return logger;
+}
+
+// ============================================================================
+// VORKONFIGURIERTE LOGGER
+// ============================================================================
+
+/** Logger für Datenbank-Operationen */
+export const dbLogger = createLogger("database");
+
+/** Logger für API-Routes */
+export const apiLogger = createLogger("api");
+
+/** Logger für Authentifizierung */
+export const authLogger = createLogger("auth");
+
+/** Logger für Dokumentenverwaltung */
+export const documentsLogger = createLogger("documents");
+
+/** Logger für Workflows */
+export const workflowLogger = createLogger("workflows");
+
+/** Logger für Fehler */
+export const errorLogger = createLogger("error");
+
+/** Logger für Security-Events */
+export const securityLogger = createLogger("security");
+
+// ============================================================================
+// MIDDLEWARE FÜR EXPRESS
+// ============================================================================
+
+/**
+ * Express-Middleware für Request-Logging
+ */
+export function loggerMiddleware(req: Record<string, unknown>, res: Record<string, unknown>, next: () => void) {
+  const startTime = Date.now();
+  const requestId = (req.headers as Record<string, string>)["x-request-id"] || `req-${Date.now()}`;
+  const requestLogger = createLogger("http").child({ requestId, method: req.method, path: req.path });
+  (req as Record<string, unknown>).logger = requestLogger;
+  const originalJson = (res as Record<string, unknown>).json as (data: unknown) => void;
+  (res as Record<string, unknown>).json = function (data: unknown) {
+    const duration = Date.now() - startTime;
+    requestLogger.info({ statusCode: res.statusCode, duration, responseSize: JSON.stringify(data).length }, "Request completed");
+    return originalJson.call(this, data);
+  };
+  next();
+}
+
+/**
+ * Logger mit Request-Kontext für async Operationen
+ */
+export function createContextLogger(context: Record<string, unknown>): Logger {
+  const logger = createLogger("context");
+  return logger.child(context) as Logger;
+}
+
+// Standardlogger für Rückwärtskompatibilität
+export const logger = createLogger("app");
 
 /**
  * Log levels with semantic helpers
@@ -147,7 +289,7 @@ export const logHelpers = {
   /**
    * Log business event
    */
-  business: (event: string, data?: Record<string, any>) => {
+  business: (event: string, data?: Record<string, unknown>) => {
     logger.info(
       {
         type: "business_event",
@@ -164,7 +306,7 @@ export const logHelpers = {
   security: (
     event: string,
     severity: "low" | "medium" | "high" | "critical",
-    data?: Record<string, any>,
+    data?: Record<string, unknown>,
   ) => {
     const level =
       severity === "critical" || severity === "high" ? "error" : "warn";

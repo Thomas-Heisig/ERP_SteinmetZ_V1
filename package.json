@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "dev": "run-p -l dev:backend dev:frontend",
+    "dev:stack": "run-p -l dev:backend dev:frontend:wait",
+    "dev:frontend:wait": "wait-on --timeout 15000 tcp:3000 && npm run dev:frontend",
     "dev:frontend": "npm run dev -w @erp-steinmetz/frontend",
     "dev:backend": "npm run dev -w @erp-steinmetz/backend",
     "build": "npm run build -ws",
@@ -57,7 +59,8 @@
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.15",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.15",
+    "wait-on": "^7.2.0"
   },
   "engines": {
     "node": ">=18.18.0"

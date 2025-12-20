@@ -45,6 +45,11 @@ const SimpleDashboard = lazy(
   () => import("./components/Dashboard/SimpleDashboard"),
 );
 
+/** Full experience dashboard (modules, widgets, categories) */
+const Dashboard = lazy(
+  () => import("./components/Dashboard/Dashboard"),
+);
+
 /** Functions catalog for browsing and managing available functions */
 const FunctionsCatalog = lazy(
   () => import("./components/FunctionsCatalog/FunctionsCatalog"),
@@ -313,10 +318,14 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: lazyLoad(SimpleDashboard),
+        element: <Navigate to="/dashboard" replace />,
       },
       {
         path: "dashboard",
+        element: lazyLoad(Dashboard),
+      },
+      {
+        path: "dashboard/simple",
         element: lazyLoad(SimpleDashboard),
       },
       {

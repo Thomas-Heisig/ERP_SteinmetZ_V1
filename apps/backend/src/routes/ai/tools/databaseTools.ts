@@ -12,10 +12,49 @@ import type { ToolFunction } from "./registry.js";
 const require = createRequire(import.meta.url);
 
 // Optionale DB-Treiber dynamisch laden (nicht zwingend erforderlich)
-let betterSqlite3: any = null;
-let sqlite3: any = null;
-let pg: any = null;
-let mysql: any = null;
+type BetterSqlite3Module = new (
+  file: string,
+  options?: { readonly?: boolean },
+) => {
+  prepare: (sql: string) => { all: (params?: unknown[]) => unknown[] };
+  close: () => void;
+};
+
+type SQLite3Module = {
+  Database: new (file: string) => {
+    all: (
+      sql: string,
+      params: unknown[],
+      cb: (err: Error | null, rows: unknown[]) => void,
+    ) => void;
+    close: () => void;
+  };
+};
+
+type PostgresModule = {
+  Client: new (opts: { connectionString: string }) => {
+    connect: () => Promise<void>;
+    query: (
+      sql: string,
+      params?: unknown[],
+    ) => Promise<{ rows: unknown[] }>;
+    end: () => Promise<void>;
+  };
+};
+
+type MySQLModule = {
+  createConnection: (
+    connectionString: string,
+  ) => Promise<{
+    execute: (sql: string, params?: unknown[]) => Promise<[unknown, unknown]>;
+    end: () => Promise<void>;
+  }>;
+};
+
+let betterSqlite3: BetterSqlite3Module | null = null;
+let sqlite3: SQLite3Module | null = null;
+let pg: PostgresModule | null = null;
+let mysql: MySQLModule | null = null;
 try {
   betterSqlite3 = require("better-sqlite3");
 } catch {
@@ -64,8 +103,8 @@ async function scanDatabases(baseDir: string): Promise<string[]> {
 async function querySQLite(
   file: string,
   sql: string,
-  params?: any[],
-): Promise<any[]> {
+  params?: unknown[],
+): Promise<unknown[]> {
   if (betterSqlite3) {
     const db = new betterSqlite3(file, { readonly: true });
     const res = db.prepare(sql).all(params || []);
@@ -75,7 +114,7 @@ async function querySQLite(
   if (sqlite3) {
     const db = new sqlite3.Database(file);
     return new Promise((resolve, reject) => {
-      db.all(sql, params || [], (err: any, rows: any[]) => {
+      db.all(sql, (params || []) as unknown[], (err: Error | null, rows: unknown[]) => {
         db.close();
         if (err) reject(err);
         else resolve(rows);
@@ -108,7 +147,7 @@ export function registerTools(toolRegistry: {
   register: (name: string, fn: ToolFunction) => void;
 }) {
   /* 🔍 Scan nach Datenbanken */
-  const scanTool = (async ({ directory = "./" }: { directory?: string }) => {
+  const scanTool = (async ({ directory = "data" }: { directory?: string }) => {
     try {
       const abs = path.resolve(directory);
       const files = await scanDatabases(abs);
@@ -118,8 +157,8 @@ export function registerTools(toolRegistry: {
         databases: files,
         count: files.length,
       };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -137,17 +176,18 @@ export function registerTools(toolRegistry: {
           file,
           "SELECT name FROM sqlite_master WHERE type='table';",
         );
-        const meta: Record<string, any> = {};
+        const meta: Record<string, unknown> = {};
         for (const t of tables) {
           const columns = await querySQLite(
             file,
-            `PRAGMA table_info(${t.name});`,
+            `PRAGMA table_info(${(t as Record<string, unknown>).name});`,
           );
           const indices = await querySQLite(
             file,
-            `PRAGMA index_list(${t.name});`,
+            `PRAGMA index_list(${(t as Record<string, unknown>).name});`,
           );
-          meta[t.name] = { columns, indices };
+          const tableName = (t as Record<string, unknown>).name as string;
+          meta[tableName] = { columns, indices };
         }
         return {
           success: true,
@@ -158,33 +198,34 @@ export function registerTools(toolRegistry: {
       }
 
       if (file.endsWith(".json")) {
-        const json = JSON.parse(await fs.promises.readFile(file, "utf8"));
-        const keys = Array.isArray(json)
-          ? Object.keys(json[0] ?? {})
-          : Object.keys(json);
+        const raw = JSON.parse(await fs.promises.readFile(file, "utf8")) as unknown;
+        const isArray = Array.isArray(raw);
+        const first = isArray ? (raw as unknown[])[0] ?? {} : raw;
+        const keys = isRecord(first) ? Object.keys(first) : [];
         return {
           success: true,
           file,
           type: "json",
           keys,
-          sample: json[0] ?? json,
+          sample: isArray ? (raw as unknown[])[0] : raw,
         };
       }
 
       if (file.endsWith(".csv")) {
         const content = await fs.promises.readFile(file, "utf8");
         const [headerLine] = content.split(/\r?\n/);
+        const columns = headerLine ? headerLine.split(",").map((c) => c.trim()) : [];
         return {
           success: true,
           file,
           type: "csv",
-          columns: headerLine.split(","),
+          columns,
         };
       }
 
       return { success: false, error: "Unbekanntes Datenformat." };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -204,15 +245,16 @@ export function registerTools(toolRegistry: {
   }: {
     file?: string;
     query: string;
-    params?: any[];
+    params?: unknown[];
     connectionString?: string;
     type?: "sqlite" | "postgres" | "mysql" | "json";
   }) => {
     try {
-      let rows: any[] = [];
+      let rows: unknown[] = [];
 
-      if (file && isSQLiteDatabase(file))
+      if (file && isSQLiteDatabase(file)) {
         rows = await querySQLite(file, query, params);
+      }
       else if (connectionString && type === "postgres") {
         const client = await connectPostgres(connectionString);
         const res = await client.query(query, params);
@@ -222,18 +264,19 @@ export function registerTools(toolRegistry: {
         const conn = await connectMySQL(connectionString);
         const [res] = await conn.execute(query, params);
         await conn.end();
-        rows = Array.isArray(res) ? res : [res];
+        rows = Array.isArray(res) ? (res as unknown[]) : [res];
       } else if (file?.endsWith(".json")) {
-        const json = JSON.parse(await fs.promises.readFile(file, "utf8"));
-        if (query.toLowerCase().startsWith("select"))
-          rows = Array.isArray(json) ? json : [json];
+        const raw = JSON.parse(await fs.promises.readFile(file, "utf8")) as unknown;
+        if (query.toLowerCase().startsWith("select")) {
+          rows = Array.isArray(raw) ? (raw as unknown[]) : [raw];
+        }
       } else {
         throw new Error("Kein unterstützter Datenbanktyp erkannt.");
       }
 
       return { success: true, count: rows.length, results: rows.slice(0, 100) };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -257,16 +300,17 @@ export function registerTools(toolRegistry: {
         file,
         "SELECT name FROM sqlite_master WHERE type='table';",
       );
-      const results: any[] = [];
+      const results: Array<{ table: string; indices: unknown[]; columnCount: number }> = [];
       for (const t of tables) {
-        const idx = await querySQLite(file, `PRAGMA index_list(${t.name});`);
-        const cols = await querySQLite(file, `PRAGMA table_info(${t.name});`);
-        results.push({ table: t.name, indices: idx, columnCount: cols.length });
+        const tableName = (t as Record<string, unknown>).name as string;
+        const idx = await querySQLite(file, `PRAGMA index_list(${tableName});`);
+        const cols = await querySQLite(file, `PRAGMA table_info(${tableName});`);
+        results.push({ table: tableName, indices: idx, columnCount: cols.length as number });
       }
-      const total = results.reduce((a, r) => a + r.indices.length, 0);
+      const total = results.reduce((a, r) => a + (Array.isArray(r.indices) ? r.indices.length : 0), 0);
       return { success: true, results, totalIndices: total };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -284,17 +328,20 @@ export function registerTools(toolRegistry: {
       const pageSize = await querySQLite(file, "PRAGMA page_size;");
       const pageCount = await querySQLite(file, "PRAGMA page_count;");
       const freelist = await querySQLite(file, "PRAGMA freelist_count;");
-      const size = pageSize[0]?.page_size * pageCount[0]?.page_count;
+      const pageSizeVal = (pageSize[0] as Record<string, unknown>)?.page_size as number;
+      const pageCountVal = (pageCount[0] as Record<string, unknown>)?.page_count as number;
+      const freelistVal = (freelist[0] as Record<string, unknown>)?.freelist_count as number;
+      const size = pageSizeVal * pageCountVal;
       return {
         success: true,
         stats,
-        pageSize: pageSize[0]?.page_size,
-        pageCount: pageCount[0]?.page_count,
-        freelist: freelist[0]?.freelist_count,
+        pageSize: pageSizeVal,
+        pageCount: pageCountVal,
+        freelist: freelistVal,
         approxSizeMB: (size / 1024 / 1024).toFixed(2),
       };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -303,4 +350,13 @@ export function registerTools(toolRegistry: {
   analyzeTool.parameters = { file: "Pfad zur SQLite-Datenbank" };
   analyzeTool.category = "database";
   toolRegistry.register("analyze_database", analyzeTool);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return typeof error === "string" ? error : JSON.stringify(error);
 }

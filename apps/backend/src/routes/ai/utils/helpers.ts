@@ -47,7 +47,7 @@ export function formatDuration(ms: number): string {
 /**
  * Sicheres JSON-Parsing mit Fallback.
  */
-export function safeJsonParse<T = any>(
+export function safeJsonParse<T = unknown>(
   input: string,
   fallback: T = {} as T,
 ): T {
@@ -61,11 +61,12 @@ export function safeJsonParse<T = any>(
 /**
  * Sicheres JSON-Stringify (mit optionaler Formatierung).
  */
-export function safeJsonStringify(obj: any, pretty = false): string {
+export function safeJsonStringify(obj: unknown, pretty = false): string {
   try {
     return JSON.stringify(obj, null, pretty ? 2 : 0);
-  } catch (err: any) {
-    log("error", "Fehler beim JSON-Stringify", { error: err.message });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    log("error", "Fehler beim JSON-Stringify", { error: message });
     return "{}";
   }
 }
@@ -84,26 +85,29 @@ export function deepClone<T>(obj: T): T {
 /**
  * Prüft, ob ein Wert ein einfaches Objekt ist.
  */
-export function isPlainObject(val: any): val is Record<string, any> {
+export function isPlainObject(val: unknown): val is Record<string, unknown> {
   return val !== null && typeof val === "object" && !Array.isArray(val);
 }
 
 /**
  * Deep Merge (rekursives Zusammenführen von Objekten)
  */
-export function deepMergeLoose<T extends Record<string, any>>(
+export function deepMergeLoose<T extends Record<string, unknown>>(
   target: T,
   source: Partial<T>,
 ): T {
   for (const key of Object.keys(source) as (keyof T)[]) {
-    const s = source[key] as any;
-    const t = target[key] as any;
+    const s = source[key];
+    const t = target[key];
 
     if (Array.isArray(s)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (target as any)[key] = s.slice();
     } else if (s && typeof s === "object" && !Array.isArray(s)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (target as any)[key] = deepMergeLoose(isPlainObject(t) ? t : {}, s);
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (target as any)[key] = s;
     }
   }
@@ -113,7 +117,7 @@ export function deepMergeLoose<T extends Record<string, any>>(
 /**
  * Vergleicht zwei Objekte inhaltlich.
  */
-export function deepEqual(a: any, b: any): boolean {
+export function deepEqual(a: unknown, b: unknown): boolean {
   try {
     return JSON.stringify(a) === JSON.stringify(b);
   } catch {
@@ -221,14 +225,14 @@ export function nowISO(): string {
 /**
  * Prüft, ob ein Wert ein Objekt ist.
  */
-export function isObject(val: any): val is Record<string, any> {
+export function isObject(val: unknown): val is Record<string, unknown> {
   return val !== null && typeof val === "object" && !Array.isArray(val);
 }
 
 /**
  * Prüft, ob ein Wert leer ist.
  */
-export function isEmpty(value: any): boolean {
+export function isEmpty(value: unknown): boolean {
   if (value === null || value === undefined) return true;
   if (typeof value === "string") return value.trim() === "";
   if (Array.isArray(value)) return value.length === 0;

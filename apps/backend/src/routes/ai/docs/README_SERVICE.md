@@ -1,4 +1,6 @@
-Basierend auf der analysierten `audioService.ts` Datei, hier sind die erkannten Funktionen und Routen:
+<!-- markdownlint-disable MD024 MD031 MD040 -->
+#
+<!-- markdownlint-enable MD024 MD031 MD040 -->
 
 ## 🎙️ **Audio Service - Hauptfunktionen**
 

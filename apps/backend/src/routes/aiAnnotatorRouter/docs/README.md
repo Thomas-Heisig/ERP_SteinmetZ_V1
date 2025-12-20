@@ -1,328 +1,517 @@
-# 📘 AI Annotator Router – API-Dokumentation
+# AI Annotator Module Documentation
 
-**Version**: 1.0  
-**Stand**: Dezember 2025  
-**Status**: Production-Ready
+## Table of Contents
 
-Dieses Dokument beschreibt die bereitgestellten API-Endpunkte des AI Annotator Routers.
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Database Schema](#database-schema)
+- [API Endpoints](#api-endpoints)
+- [TypeScript Types](#typescript-types)
+- [Frontend Integration](#frontend-integration)
+- [Best Practices](#best-practices)
+- [Error Handling](#error-handling)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
 
-## 📖 Übersicht
+---
 
-Der AI Annotator Router verarbeitet Funktionsknoten und reichert diese automatisch mit:
+## Overview
 
-- **Metadaten** (Tags, Komplexität, Kategorisierung)
-- **Regeln** (Validierung, Business-Logic, RBAC)
-- **Formulare** (JSON-Schema, UI-Konfiguration)
-- **Qualitätssicherung** (Validierung, Scoring)
+The **AI Annotator Module** provides AI-powered metadata annotation and quality assurance for function nodes in the ERP system. It supports multiple AI providers (OpenAI, Anthropic, Ollama), batch processing, quality workflows, and PII classification.
 
-Für den vollständigen Workflow siehe: [AI_ANNOTATOR_WORKFLOW.md](../../../../../docs/AI_ANNOTATOR_WORKFLOW.md)
-Der Router stellt Funktionen zur Datenannotation, Analyse, Qualitätssicherung und Batch-Verarbeitung bereit.
-Alle Routen befinden sich unter:
+### Key Features
 
-/api/ai-annotator
+- **Multi-Provider AI Support**: OpenAI, Anthropic, and Ollama integration
+- **Batch Processing**: Process multiple nodes concurrently with progress tracking
+- **Quality Assurance**: Automated quality scoring and validation
+- **PII Classification**: Detect and classify personally identifiable information
+- **Model Management**: Compare models, track performance, and select optimal providers
+- **Error Correction**: Automatic retry and error handling
+- **Filter Management**: Create custom filters for node selection
+- **Debug Tools**: Test prompts, models, and annotations
 
-Inhaltsverzeichnis
+### Technology Stack
 
-System & Health
+- **Backend**: Node.js + Express + TypeScript
+- **Database**: SQLite with JSON columns
+- **Validation**: Zod v3.x schemas
+- **Logging**: Pino structured logging
+- **AI Providers**: OpenAI SDK, Anthropic SDK, Ollama REST API
 
-Database & Batch Verwaltung
+---
 
-Node Management
+## Architecture
 
-Einzeloperationen (Meta/Rule/Form/Validation)
+### Module Structure
 
-Batch Operations
+```tree
+apps/backend/src/routes/aiAnnotatorRouter/
+├── aiAnnotatorRouter.ts     # Main router (1400+ lines)
+├── types.ts                  # TypeScript types and Zod schemas (700+ lines)
+└── docs/
+    └── README.md            # This documentation
 
-PII / Validierung
+apps/backend/src/services/
+├── aiAnnotatorService.ts    # Core AI annotation logic
+├── filterService.ts          # Filter management
+├── qualityAssuranceService.ts # QA workflows
+├── modelManagementService.ts  # Model selection
+└── batchProcessingService.ts  # Batch operations
+```
 
-Qualitätsanalyse
+### Data Flow
 
-Dashboard-Regeln
+```text
+Client Request → Router (Validation) → Service Layer → AI Provider → Database → Response
+```
 
-AI-Modellverwaltung
+---
 
-Error-Correction
+## Database Schema
 
-Debug-Endpunkte
+### functions_nodes
 
-Templates
+| Column | Type | Description |
+| ------ | ---- | ----------- |
+| `id` | TEXT (PK) | Node ID |
+| `title` | TEXT | Node name |
+| `kind` | TEXT | Node type |
+| `meta_json` | TEXT | AI metadata |
+| `annotation_status` | TEXT | Status |
+| `last_annotated` | TEXT | Last update |
 
-Node-spezifische Daten
+### batch_operations
 
-Erweiterte Funktionen
+| Column | Type | Description |
+| ------ | ---- | ----------- |
+| `id` | TEXT (PK) | Batch ID |
+| `operation` | TEXT | Operation type |
+| `status` | TEXT | Status |
+| `total_nodes` | INTEGER | Total count |
+| `processed_nodes` | INTEGER | Processed |
+| `success_count` | INTEGER | Successes |
 
-System & Health
-GET /status
+---
 
-Liefert den allgemeinen Systemstatus.
+## API Endpoints
 
-GET /health
+### System Status
 
-Gibt die interne Health-Analyse des Systems zurück.
+#### GET /status
 
-Database & Batch Verwaltung
-GET /database/stats
+System status overview.
 
-Gibt Statistiken über gespeicherte Nodes und Annotationen aus.
+**Response:**
 
-GET /database/batches?limit=50
+```json
+{
+  "success": true,
+  "data": {
+    "totalNodes": 1234,
+    "annotatedNodes": 567,
+    "pendingNodes": 667,
+    "providers": { ... }
+  }
+}
+```
 
-Liefert Batch-Operationen aus der Datenbank.
+#### GET /health
 
-DELETE /database/batches/cleanup?days=30&force=true
+Health check for AI providers.
 
-Bereinigt alte Batch-Prozesse.
-In Produktionsumgebungen ist force=true erforderlich.
+### Node Management
 
-Node Management
-GET /nodes
+#### GET /nodes
 
-Filterbare Abfrage von Nodes.
-Unterstützte Parameter:
+List nodes with filters.
 
-kinds
+**Query:** `kinds`, `missingOnly`, `limit`, `offset`, `search`, `status`
 
-status
+#### GET /nodes/:id
 
-businessArea
+Get single node.
 
-complexity
+#### POST /nodes/:id/validate
 
-missingOnly
+Validate node annotations.
 
-limit, offset
+### Single Operations
 
-search
+#### POST /nodes/:id/generate-meta
 
-GET /nodes/:id
+Generate metadata (rate limited).
 
-Gibt genau einen Node zurück (sofern vorhanden).
+#### POST /nodes/:id/generate-rule
 
-POST /nodes/:id/validate
+Generate dashboard rule (rate limited).
 
-Führt eine Validierung des Node aus.
+#### POST /nodes/:id/generate-form
 
-Einzeloperationen (Meta/Rule/Daten/Form)
-POST /nodes/:id/generate-meta
+Generate form specification (rate limited).
 
-Erzeugt Metadaten und speichert sie.
+#### POST /nodes/:id/full-annotation
 
-POST /nodes/:id/generate-rule
+Complete annotation (meta + rule + form).
 
-Erzeugt Regeldefinitionen und speichert sie.
+**Body:**
 
-POST /nodes/:id/generate-form
+```json
+{
+  "includeValidation": true,
+  "parallel": true
+}
+```
 
-Erzeugt Formularkonfigurationen und speichert sie.
+### Batch Operations
 
-POST /nodes/:id/enhance-schema
+#### POST /batch/annotate
 
-Erweitert das Datenschema eines Nodes.
+Start batch annotation.
 
-POST /nodes/:id/full-annotation
+**Body:**
 
-Kombiniert Meta-Erzeugung, Regelgenerierung, Formularerstellung und Validierung.
+```json
+{
+  "nodeIds": ["id1", "id2"],
+  "force": false,
+  "provider": "openai"
+}
+```
 
-Parameter:
+#### GET /batch/:id
 
-includeValidation
+Get batch status.
 
-parallel
+#### GET /batch/:id/progress
 
-Batch Operations
-POST /batch
+Real-time progress.
 
-Erstellt und startet eine Batch-Operation.
-Erforderliche Felder:
+---
 
-operation
-filters
+## TypeScript Types
 
-Default-Optionen werden automatisch gesetzt:
+See [types.ts](../types.ts) for complete definitions.
 
-retryFailed
+### Key Types
 
-maxRetries
+```typescript
+// Enums
+export const ANNOTATION_STATUS = {
+  PENDING: "pending",
+  ANNOTATED: "annotated",
+  REVIEWED: "reviewed",
+  APPROVED: "approved",
+  REJECTED: "rejected",
+  FAILED: "failed",
+} as const;
 
-chunkSize
+export const AI_PROVIDER = {
+  OPENAI: "openai",
+  ANTHROPIC: "anthropic",
+  OLLAMA: "ollama",
+} as const;
 
-parallelRequests
+// Interfaces
+export interface NodeForAnnotation {
+  id: string;
+  title: string;
+  kind: string;
+  annotationStatus: string;
+  meta?: GeneratedMeta;
+}
 
-modelPreference
+export interface GeneratedMeta {
+  summary: string;
+  description: string;
+  category: string;
+  keywords: string[];
+  tags: string[];
+  complexity?: "low" | "medium" | "high";
+}
 
-GET /batch/:id
+export interface BatchOperation {
+  id: string;
+  operation: string;
+  status: string;
+  totalNodes: number;
+  processedNodes: number;
+  successCount: number;
+  failCount: number;
+}
+```
 
-Liefert einen gespeicherten Batch.
+---
 
-POST /batch/:id/cancel
+## Frontend Integration
 
-Setzt einen Batch auf cancelled.
+### API Client
 
-PII & Validierung
-POST /classify-pii
+```typescript
+// src/api/aiAnnotatorClient.ts
+import axios from "axios";
 
-Klassifiziert Nodes hinsichtlich personenbezogener Daten.
-Body:
+const API_BASE = "/api/ai-annotator";
 
-{ nodeIds: [], detailed: false }
+export const aiAnnotatorApi = {
+  getStatus: () => 
+    axios.get(`${API_BASE}/status`),
+
+  listNodes: (params?) => 
+    axios.get(`${API_BASE}/nodes`, { params }),
+
+  generateMeta: (id: string) => 
+    axios.post(`${API_BASE}/nodes/${id}/generate-meta`),
+
+  fullAnnotation: (id: string, options?) => 
+    axios.post(`${API_BASE}/nodes/${id}/full-annotation`, options),
+
+  batchAnnotate: (nodeIds: string[], options?) => 
+    axios.post(`${API_BASE}/batch/annotate`, { nodeIds, ...options }),
+
+  getBatchStatus: (id: string) => 
+    axios.get(`${API_BASE}/batch/${id}`),
+};
+```
+
+### React Query Hooks
+
+```typescript
+// src/hooks/useAiAnnotator.ts
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { aiAnnotatorApi } from "../api/aiAnnotatorClient";
+import { toast } from "react-hot-toast";
+
+export function useNodes(params?) {
+  return useQuery({
+    queryKey: ["aiAnnotator", "nodes", params],
+    queryFn: () => aiAnnotatorApi.listNodes(params).then(res => res.data.data.nodes),
+  });
+}
+
+export function useGenerateMeta() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (nodeId: string) => 
+      aiAnnotatorApi.generateMeta(nodeId).then(res => res.data.data),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["aiAnnotator"] });
+      toast.success("Metadata generated");
+    },
+  });
+}
+
+export function useBatchAnnotate() {
+  return useMutation({
+    mutationFn: ({ nodeIds, options }) => 
+      aiAnnotatorApi.batchAnnotate(nodeIds, options).then(res => res.data.data),
+    onSuccess: (data) => {
+      toast.success(`Batch started: ${data.batchId}`);
+    },
+  });
+}
+
+export function useBatchStatus(batchId: string) {
+  return useQuery({
+    queryKey: ["aiAnnotator", "batch", batchId],
+    queryFn: () => aiAnnotatorApi.getBatchStatus(batchId).then(res => res.data.data),
+    enabled: !!batchId,
+    refetchInterval: (data) => 
+      data?.status === "in_progress" ? 2000 : false,
+  });
+}
+```
+
+### React Components
+
+```typescript
+// src/components/AiAnnotator/NodeList.tsx
+import React from "react";
+import { useNodes, useGenerateMeta } from "../../hooks/useAiAnnotator";
+
+export const NodeList: React.FC = () => {
+  const { data: nodes, isLoading } = useNodes({ missingOnly: true, limit: 50 });
+  const generateMeta = useGenerateMeta();
 
-POST /validate-batch
+  if (isLoading) return <div>Loading...</div>;
 
-Validiert mehrere Nodes gleichzeitig.
-Berechnet zusätzlich eine aggregierte Zusammenfassung.
+  return (
+    <div className="node-list">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Kind</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {nodes?.map(node => (
+            <tr key={node.id}>
+              <td>{node.title}</td>
+              <td>{node.kind}</td>
+              <td><span className={`badge ${node.annotationStatus}`}>{node.annotationStatus}</span></td>
+              <td>
+                <button onClick={() => generateMeta.mutate(node.id)} disabled={generateMeta.isPending}>
+                  Generate Meta
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+```
+
+```typescript
+// src/components/AiAnnotator/BatchMonitor.tsx
+import React from "react";
+import { useBatchStatus } from "../../hooks/useAiAnnotator";
+
+export const BatchMonitor: React.FC<{ batchId: string }> = ({ batchId }) => {
+  const { data: status } = useBatchStatus(batchId);
+
+  if (!status) return null;
+
+  const percentage = (status.processedNodes / status.totalNodes) * 100;
+
+  return (
+    <div className="batch-monitor">
+      <h3>Batch: {batchId}</h3>
+      <div className="progress-bar">
+        <div className="fill" style={{ width: `${percentage}%` }} />
+      </div>
+      <div className="stats">
+        <span>Total: {status.totalNodes}</span>
+        <span>Processed: {status.processedNodes}</span>
+        <span className="success">Success: {status.successCount}</span>
+        <span className="error">Failed: {status.failCount}</span>
+      </div>
+    </div>
+  );
+};
+```
+
+---
+
+## Best Practices
 
-Qualitätsanalyse
-GET /quality/report
+### 1. AI Provider Selection
+
+- Use `modelManagementService` for automatic provider selection
+- Monitor performance metrics
+- Implement fallback providers
 
-Erstellt einen Bericht über:
+### 2. Batch Processing
 
-Annotationstatus
+- Use appropriate chunk sizes (default: 10)
+- Enable `retryFailed` for critical operations
+- Monitor progress in real-time
 
-Modell-Qualität
+### 3. Quality Assurance
 
-Fehlerquoten in Batches
+- Validate annotations before approval
+- Set quality thresholds
+- Review rejected annotations manually
 
-Empfehlungen basierend auf Statistiken
+### 4. Error Handling
 
-Dashboard-Regeln
-GET /rules?type=...&widget=...&includeNodes=true
+- Implement comprehensive logging
+- Use structured error messages
+- Provide recovery suggestions
 
-Gibt Regeldefinitionen strukturiert nach:
+---
 
-type
+## Error Handling
 
-widget
-zusätzlich:
+### Common Errors
 
-Zuordnung der Nodes zu den Regeltypen
+| Error | Cause | Solution |
+|-------|-------|----------|
 
-AI-Modellverwaltung
-GET /ai/models
+| `NotFoundError: Knoten nicht gefunden` | Invalid node ID | Verify node exists |
+| `BadRequestError: Invalid operation` | Unknown batch operation | Check BATCH_OPERATION enum |
+| `ForbiddenError: Cleanup requires force=true` | Missing force flag | Add `?force=true` in production |
+| `RateLimitError` | Exceeded rate limit | Reduce parallelRequests |
 
-Liefert Modellstatistiken.
+### Error Response
 
-POST /ai/optimize
+```json
+{
+  "success": false,
+  "error": "Human-readable message",
+  "code": "ERROR_CODE",
+  "details": {}
+}
+```
 
-Optimierung der Modellkonfiguration.
+---
 
-GET /ai/model-stats
+## Testing
 
-Alternative Ausgabe von Modellstatistiken.
+```typescript
+// __tests__/aiAnnotatorRouter.test.ts
+import { describe, it, expect } from "vitest";
+import request from "supertest";
+import app from "../app";
 
-Error Correction
-GET /error-correction/config
+describe("AI Annotator", () => {
+  it("should return system status", async () => {
+    const res = await request(app).get("/api/ai-annotator/status");
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toHaveProperty("totalNodes");
+  });
 
-Liest die aktuelle Fehlerkorrektur-Konfiguration aus.
+  it("should list nodes", async () => {
+    const res = await request(app).get("/api/ai-annotator/nodes");
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body.data.nodes)).toBe(true);
+  });
 
-PUT /error-correction/config
+  it("should generate metadata", async () => {
+    const res = await request(app)
+      .post("/api/ai-annotator/nodes/test-node/generate-meta");
+    expect(res.status).toBe(200);
+    expect(res.body.data).toHaveProperty("meta");
+  });
+});
+```
 
-Aktualisiert die Fehlerkorrektur-Einstellungen.
-Nicht verfügbar in Produktionsumgebungen.
+---
 
-Debug-Endpunkte
+## Troubleshooting
 
-Alle Debug-Funktionen sind nur außerhalb von Production verfügbar.
+### Issue: AI Provider Timeout
 
-POST /debug/prompt
+**Solutions:**
 
-Gibt generierte KI-Prompts für einen Node zurück.
-Unterstützte Typen:
+1. Check network connectivity
+2. Verify API keys
+3. Increase timeout
+4. Switch provider
 
-meta
+### Issue: Poor Quality Scores
 
-rule
+**Solutions:**
 
-form
+1. Use more accurate model
+2. Improve source documentation
+3. Adjust quality thresholds
 
-simple
+### Issue: Batch Operation Stuck
 
-correction
+**Solutions:**
 
-POST /debug/ai-test
+1. Check database locks
+2. Review error logs
+3. Restart with `retryFailed`
 
-Testet die KI-Verbindung mit einem einfachen Prompt.
+---
 
-Batch Templates
-GET /batch-templates
-
-Gibt vorbereitete Batch-Vorlagen zurück:
-
-quick_annotation
-
-full_annotation
-
-pii_scan
-
-quality_check
-
-Node-spezifische Daten
-GET /nodes/:id/meta
-
-Liefert Metadaten.
-
-GET /nodes/:id/rule
-
-Liefert Regeldefinition.
-
-GET /nodes/:id/form
-
-Liefert Formulardefinition.
-
-GET /nodes/:id/schema
-
-Liefert gespeichertes Schema.
-
-GET /nodes/:id/analysis
-
-Liefert technische Analyse:
-
-Komplexität
-
-Integrationspunkte
-
-Business-Zuordnung
-
-PII-Klassifikation
-
-GET /nodes/:id/quality
-
-Liefert qualitätsbezogene Metriken des Nodes.
-
-Erweiterte Funktionen
-POST /system/optimize
-
-Optimiert globale Einstellungen.
-
-POST /bulk-enhance
-
-Verbessert mehrere Nodes gleichzeitig (Meta, Rule, Form).
-
-GET /system/monitoring
-
-Kombinierter Systemstatus:
-
-Health
-
-Modelle
-
-Datenbank
-
-POST /ai/model-selection-test
-
-Testet den Modellselektor (nur außerhalb Production).
-
-Abschluss
-
-Dieses Routing-Modul deckt folgende Hauptbereiche ab:
-
-Node-Verwaltung und Annotation
-
-Validierung und Qualitätskontrolle
-
-Batch-Verarbeitung
-
-AI-Modellanalyse
-
-Debugging
-
-System- und Health-Monitoring
+**Last Updated:** 2025-12-20  
+**Version:** 2.0.0  
+**Maintainers:** ERP SteinmetZ Development Team

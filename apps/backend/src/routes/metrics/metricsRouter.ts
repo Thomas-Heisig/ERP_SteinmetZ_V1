@@ -5,7 +5,7 @@ import { Router } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 // Reserved for future use
 // import { metricsService } from "../../services/metricsService.js";
-import prometheusMetrics from "../../services/monitoring/prometheusMetricsService.js";
+import prometheusMetrics from "../monitoring/prometheusMetricsService.js";
 import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("metrics");

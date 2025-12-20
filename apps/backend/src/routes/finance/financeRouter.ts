@@ -70,13 +70,39 @@
  */
 
 import { Router, Request, Response } from "express";
-import { z } from "zod";
-import { BadRequestError, ValidationError } from "../../types/errors.js";
+import { z, ZodIssue } from "zod";
+import { BadRequestError } from "../error/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import pino from "pino";
+import { getDatabase } from "../database/db.js";
+import { FinanceService } from "./services/FinanceService.js";
+import { createLogger } from "../../utils/logger.js";
 
 const router = Router();
-const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+const logger = createLogger("finance-router");
+
+// Lazy-initialize service
+let financeService: FinanceService | null = null;
+
+function getFinanceService(): FinanceService {
+  if (!financeService) {
+    const db = getDatabase();
+    financeService = new FinanceService(db);
+  }
+  return financeService;
+}
+
+/**
+ * Helper function to format Zod validation errors
+ */
+function formatValidationErrors(issues: ZodIssue[]): Record<string, unknown> {
+  return {
+    errors: issues.map((issue) => ({
+      path: issue.path.join("."),
+      message: issue.message,
+      code: issue.code,
+    })),
+  };
+}
 
 // Validation schemas
 const invoiceQuerySchema = z.object({
@@ -193,84 +219,22 @@ router.get(
     // Validate query parameters
     const validationResult = invoiceQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid query parameters",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
     }
 
-    const {
+    const { status, customerId, startDate, endDate } = validationResult.data;
+
+    const invoices = await getFinanceService().getAllInvoices({
       status,
       customerId,
-      startDate: _startDate,
-      endDate: _endDate,
-    } = validationResult.data;
-
-    // TODO: Replace with actual database query
-    const mockInvoices = [
-      {
-        id: "1",
-        invoiceNumber: "RE-2024-001",
-        customerName: "ABC GmbH",
-        customerId: "C001",
-        amount: 1500.0,
-        currency: "EUR",
-        dueDate: new Date(Date.now() + 7 * 86400000).toISOString(),
-        status: "sent",
-        createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-      },
-      {
-        id: "2",
-        invoiceNumber: "RE-2024-002",
-        customerName: "XYZ AG",
-        customerId: "C002",
-        amount: 3250.5,
-        currency: "EUR",
-        dueDate: new Date(Date.now() - 5 * 86400000).toISOString(),
-        status: "overdue",
-        createdAt: new Date(Date.now() - 30 * 86400000).toISOString(),
-      },
-      {
-        id: "3",
-        invoiceNumber: "RE-2024-003",
-        customerName: "Musterfirma",
-        customerId: "C003",
-        amount: 890.0,
-        currency: "EUR",
-        dueDate: new Date(Date.now() - 20 * 86400000).toISOString(),
-        status: "paid",
-        createdAt: new Date(Date.now() - 35 * 86400000).toISOString(),
-      },
-      {
-        id: "4",
-        invoiceNumber: "RE-2024-004",
-        customerName: "Test KG",
-        customerId: "C004",
-        amount: 2100.0,
-        currency: "EUR",
-        dueDate: new Date(Date.now() + 14 * 86400000).toISOString(),
-        status: "draft",
-        createdAt: new Date().toISOString(),
-      },
-    ];
-
-    // Apply filters
-    let filteredInvoices = mockInvoices;
-    if (status) {
-      filteredInvoices = filteredInvoices.filter(
-        (inv) => inv.status === status,
-      );
-    }
-    if (customerId) {
-      filteredInvoices = filteredInvoices.filter(
-        (inv) => inv.customerId === customerId,
-      );
-    }
+      startDate,
+      endDate,
+    });
 
     res.json({
       success: true,
-      data: filteredInvoices,
-      count: filteredInvoices.length,
+      data: invoices,
+      count: invoices.length,
     });
   }),
 );
@@ -327,10 +291,7 @@ router.post(
     // Validate input
     const validationResult = createInvoiceSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid invoice data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid invoice data", formatValidationErrors(validationResult.error.issues));
     }
 
     const invoiceData = validationResult.data;
@@ -369,10 +330,7 @@ router.put(
     // Validate input (using partial schema for updates)
     const validationResult = createInvoiceSchema.partial().safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid invoice update data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid invoice update data", formatValidationErrors(validationResult.error.issues));
     }
 
     const updateData = validationResult.data;
@@ -457,10 +415,7 @@ router.get(
     // Validate query parameters
     const validationResult = customerQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid query parameters",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
     }
 
     const { search } = validationResult.data;
@@ -547,10 +502,7 @@ router.post(
     // Validate input
     const validationResult = createCustomerSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid customer data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid customer data", formatValidationErrors(validationResult.error.issues));
     }
 
     const customerData = validationResult.data;
@@ -583,10 +535,7 @@ router.get(
     // Validate query parameters
     const validationResult = supplierQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid query parameters",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
     }
 
     const { search } = validationResult.data;
@@ -632,10 +581,7 @@ router.post(
     // Validate input
     const validationResult = createSupplierSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid supplier data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid supplier data", formatValidationErrors(validationResult.error.issues));
     }
 
     const supplierData = validationResult.data;
@@ -668,10 +614,7 @@ router.get(
     // Validate query parameters
     const validationResult = paymentQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid query parameters",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
     }
 
     const { type, status } = validationResult.data;
@@ -717,10 +660,7 @@ router.post(
     // Validate input
     const validationResult = createPaymentSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid payment data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid payment data", formatValidationErrors(validationResult.error.issues));
     }
 
     const paymentData = validationResult.data;
@@ -799,10 +739,7 @@ router.get(
     // Validate query parameters
     const validationResult = transactionQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid query parameters",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
     }
 
     const {
@@ -851,10 +788,7 @@ router.post(
     // Validate input
     const validationResult = createTransactionSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid transaction data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid transaction data", formatValidationErrors(validationResult.error.issues));
     }
 
     const transactionData = validationResult.data;
@@ -1103,10 +1037,7 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const validationResult = createNumberRangeSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid number range data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid number range data", formatValidationErrors(validationResult.error.issues));
     }
 
     const rangeData = validationResult.data;
@@ -1227,10 +1158,7 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const validationResult = createDunningSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid dunning data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid dunning data", formatValidationErrors(validationResult.error.issues));
     }
 
     const { invoiceId, level, message } = validationResult.data;
@@ -1715,10 +1643,7 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const validationResult = createAssetSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid asset data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid asset data", formatValidationErrors(validationResult.error.issues));
     }
 
     const assetData = validationResult.data;
@@ -1756,10 +1681,7 @@ router.put(
 
     const validationResult = createAssetSchema.partial().safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid asset update data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid asset update data", formatValidationErrors(validationResult.error.issues));
     }
 
     const updateData = validationResult.data;

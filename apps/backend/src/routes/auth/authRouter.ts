@@ -63,14 +63,14 @@
 
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import { AuthService } from "../../services/authService.js";
+import { AuthService } from "./authService.js";
 import {
   authenticate,
   rateLimitLogin,
   requireRole,
 } from "../../middleware/authMiddleware.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import { BadRequestError, UnauthorizedError } from "../../types/errors.js";
+import { BadRequestError, UnauthorizedError } from "../error/errors.js";
 
 const router = Router();
 
@@ -143,14 +143,33 @@ const changePasswordSchema = z.object({
 router.post(
   "/register",
   asyncHandler(async (req: Request, res: Response) => {
-    const data = registerSchema.parse(req.body);
-    const user = await AuthService.register(data);
+    // In development, allow simpler validation
+    if (process.env.NODE_ENV === "development") {
+      const simpleSchema = z.object({
+        username: z.string().min(1, "Username is required"),
+        email: z.string().email("Invalid email address"),
+        password: z.string().min(1, "Password is required"),
+        full_name: z.string().optional(),
+      });
+      const data = simpleSchema.parse(req.body);
+      const user = await AuthService.register(data);
 
-    res.status(201).json({
-      success: true,
-      user,
-      message: "User registered successfully",
-    });
+      res.status(201).json({
+        success: true,
+        user,
+        message: "User registered successfully",
+      });
+    } else {
+      // Production: strict validation
+      const data = registerSchema.parse(req.body);
+      const user = await AuthService.register(data);
+
+      res.status(201).json({
+        success: true,
+        user,
+        message: "User registered successfully",
+      });
+    }
   }),
 );
 

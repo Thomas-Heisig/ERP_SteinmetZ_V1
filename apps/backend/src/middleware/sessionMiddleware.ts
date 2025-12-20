@@ -44,7 +44,7 @@ import session from "express-session";
 import type { RequestHandler } from "express";
 import { RedisStore } from "connect-redis";
 import connectSqlite3 from "connect-sqlite3";
-import { redisService } from "../services/redisService.js";
+import { redisService } from "../routes/other/redisService.js";
 import { log } from "../routes/ai/utils/logger.js";
 import path from "path";
 import { fileURLToPath } from "url";

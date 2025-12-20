@@ -19,14 +19,14 @@ import { log } from "../utils/logger.js";
 export class BaseError extends Error {
   code: string;
   status: number;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp: string;
 
   constructor(
     message: string,
     code = "ERR_GENERIC",
     status = 500,
-    details?: Record<string, any>,
+    details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = this.constructor.name;
@@ -57,7 +57,7 @@ export class AIProviderError extends BaseError {
   constructor(
     provider: string,
     message: string,
-    details?: Record<string, any>,
+    details?: Record<string, unknown>,
   ) {
     super(
       `KI-Provider-Fehler (${provider}): ${message}`,
@@ -69,7 +69,7 @@ export class AIProviderError extends BaseError {
 }
 
 export class AIResponseError extends BaseError {
-  constructor(message: string, details?: Record<string, any>) {
+  constructor(message: string, details?: Record<string, unknown>) {
     super(`Ungültige KI-Antwort: ${message}`, "ERR_AI_RESPONSE", 500, details);
   }
 }
@@ -104,7 +104,7 @@ export class FileSystemError extends BaseError {
   constructor(
     filePath: string,
     message: string,
-    details?: Record<string, any>,
+    details?: Record<string, unknown>,
   ) {
     super(`Dateifehler: ${message}`, "ERR_FILE_SYSTEM", 500, {
       filePath,
@@ -114,7 +114,7 @@ export class FileSystemError extends BaseError {
 }
 
 export class ConfigError extends BaseError {
-  constructor(message: string, details?: Record<string, any>) {
+  constructor(message: string, details?: Record<string, unknown>) {
     super(`Konfigurationsfehler: ${message}`, "ERR_CONFIG", 500, details);
   }
 }
@@ -123,7 +123,7 @@ export class ToolExecutionError extends BaseError {
   constructor(
     toolName: string,
     message: string,
-    details?: Record<string, any>,
+    details?: Record<string, unknown>,
   ) {
     super(
       `Tool-Fehler (${toolName}): ${message}`,
@@ -143,7 +143,7 @@ export class APIError extends BaseError {
     status: number,
     message: string,
     endpoint?: string,
-    details?: Record<string, any>,
+    details?: Record<string, unknown>,
   ) {
     super(`API-Fehler: ${message}`, "ERR_API", status, {
       endpoint,
@@ -153,7 +153,7 @@ export class APIError extends BaseError {
 }
 
 export class ValidationError extends BaseError {
-  constructor(message: string, field?: string, details?: Record<string, any>) {
+  constructor(message: string, field?: string, details?: Record<string, unknown>) {
     super(
       `Validierungsfehler${field ? ` in Feld "${field}"` : ""}: ${message}`,
       "ERR_VALIDATION",
@@ -170,7 +170,7 @@ export class ValidationError extends BaseError {
 /**
  * Erkennt, ob ein Fehler bereits ein BaseError ist.
  */
-export function isBaseError(err: any): err is BaseError {
+export function isBaseError(err: unknown): err is BaseError {
   return err instanceof BaseError;
 }
 
@@ -185,7 +185,7 @@ export function toBaseError(err: unknown, context: string): BaseError {
 
   log("error", `❌ Fehler (${context})`, {
     message,
-    stack: (err as Error)?.stack,
+    stack: err instanceof Error ? err.stack : undefined,
   });
   return wrapped;
 }
@@ -193,7 +193,7 @@ export function toBaseError(err: unknown, context: string): BaseError {
 /**
  * Wandelt Fehler in ein API-kompatibles JSON-Format um.
  */
-export function formatErrorResponse(err: any): Record<string, any> {
+export function formatErrorResponse(err: unknown): Record<string, unknown> {
   const base = isBaseError(err) ? err : toBaseError(err, "unknown");
   return {
     error: {

@@ -155,26 +155,26 @@ The system automatically falls back to available providers when the primary prov
 
 ## Health Check Behavior
 
-### OpenAI
+### OpenAI Health Checks
 
 - Checks connectivity by listing available models
 - Timeout: 10 seconds
 - Error states: API key missing, network errors, API errors
 
-### Ollama
+### Ollama Health Checks
 
 - Checks local Ollama installation via `/api/tags` endpoint
 - Default URL: `http://localhost:11434`
 - Timeout: 5 seconds
 - Returns model count in details
 
-### Anthropic
+### Anthropic Health Checks
 
 - Makes minimal API request to verify connectivity
 - Handles rate limits gracefully (marked as degraded)
 - Timeout: 10 seconds
 
-### Fallback
+### Fallback Health Checks
 
 - Always returns healthy status
 - No external dependencies

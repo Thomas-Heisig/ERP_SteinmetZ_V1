@@ -505,9 +505,18 @@ class ElizaEngine {
   /** Behandelt Wikipedia-Suche */
   private async handleWikipediaSearch(query: string): Promise<AIResponse> {
     try {
-      const result = await toolRegistry.call("wikipedia_search", { query });
+      const result = (await toolRegistry.call(
+        "wikipedia_search",
+        { query } as Record<string, unknown>,
+      )) as unknown;
+      const resultText =
+        typeof result === "object" && result !== null && "result" in result
+          ? (result as Record<string, unknown>).result
+          : undefined;
       return {
-        text: `Wikipedia-Ergebnis für "${query}":\n${result?.result ?? "(keine Daten gefunden)"}`,
+        text: `Wikipedia-Ergebnis für "${query}":\n${String(
+          resultText ?? "(keine Daten gefunden)",
+        )}`,
         action: "wikipedia_search",
         data: result,
         meta: {
@@ -690,7 +699,10 @@ export class ElizaProvider {
             ? toolCall.parameters
             : {};
 
-        const res = await toolRegistry.call(toolCall.name, parameters);
+        const res = await toolRegistry.call(
+          toolCall.name,
+          parameters as Record<string, unknown>,
+        );
         results.push({
           success: true,
           data: res,

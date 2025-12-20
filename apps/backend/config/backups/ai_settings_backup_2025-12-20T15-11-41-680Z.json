@@ -1,0 +1,25 @@
+{
+  "success": true,
+  "settings": {
+    "system_version": "1.0",
+    "default_provider": "ollama",
+    "default_model": "qwen2.5:3b",
+    "fallback_provider": "eliza",
+    "log_level": "info",
+    "max_parallel_requests": 3,
+    "cache_enabled": true,
+    "autosave_interval_min": 30,
+    "diagnostics_enabled": true,
+    "last_updated": "2025-12-19T09:36:00.000Z"
+  },
+  "last_updated": "2025-12-19T09:36:00.000Z",
+  "system_version": "1.0",
+  "default_provider": "ollama",
+  "default_model": "qwen2.5:3b",
+  "fallback_provider": "eliza",
+  "log_level": "info",
+  "max_parallel_requests": 3,
+  "cache_enabled": true,
+  "autosave_interval_min": 30,
+  "diagnostics_enabled": true
+}

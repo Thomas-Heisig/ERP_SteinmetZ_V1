@@ -2,7 +2,7 @@
 // apps/backend/src/middleware/metricsMiddleware.ts
 
 import { Request, Response, NextFunction } from "express";
-import { metricsService } from "../services/metricsService.js";
+import { metricsService } from "../routes/metrics/metricsService.js";
 
 /**
  * Middleware to automatically collect HTTP request metrics.

@@ -1,4 +1,4 @@
-📘 Functions Catalog Router – API Referenz
+# 📘 Functions Catalog Router – API Referenz
 
 **Version**: 1.0  
 **Stand**: Dezember 2025  

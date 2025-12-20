@@ -38,11 +38,12 @@ export function pathExists(filePath: string): boolean {
 export function ensureDir(dirPath: string): void {
   try {
     if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     throw new FileSystemError(
       dirPath,
       "Verzeichnis konnte nicht erstellt werden",
-      { error: err.message },
+      { error: message },
     );
   }
 }
@@ -71,13 +72,14 @@ export async function readTextFile(filePath: string): Promise<string> {
   try {
     const data = await fsp.readFile(filePath, "utf8");
     return data;
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     log("error", `❌ Fehler beim Lesen der Datei`, {
       filePath,
-      error: err.message,
+      error: message,
     });
     throw new FileSystemError(filePath, "Fehler beim Lesen", {
-      error: err.message,
+      error: message,
     });
   }
 }
@@ -108,9 +110,10 @@ export async function writeTextFile(
       filePath,
       size: Buffer.byteLength(content),
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     throw new FileSystemError(filePath, "Fehler beim Schreiben", {
-      error: err.message,
+      error: message,
     });
   }
 }
@@ -124,9 +127,10 @@ export async function deleteFile(filePath: string): Promise<boolean> {
     await fsp.unlink(filePath);
     log("info", `🗑️ Datei gelöscht`, { filePath });
     return true;
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     throw new FileSystemError(filePath, "Fehler beim Löschen", {
-      error: err.message,
+      error: message,
     });
   }
 }
@@ -138,14 +142,15 @@ export async function deleteFile(filePath: string): Promise<boolean> {
 /**
  * Liest JSON-Dateien sicher mit Fallback auf leeres Objekt.
  */
-export async function readJsonFile<T = any>(filePath: string): Promise<T> {
+export async function readJsonFile<T = Record<string, unknown>>(filePath: string): Promise<T> {
   try {
     const data = await fsp.readFile(filePath, "utf8");
     return JSON.parse(data) as T;
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     log("warn", "⚠️ Fehler beim Lesen von JSON", {
       filePath,
-      error: err.message,
+      error: message,
     });
     return {} as T;
   }
@@ -156,7 +161,7 @@ export async function readJsonFile<T = any>(filePath: string): Promise<T> {
  */
 export async function writeJsonFile(
   filePath: string,
-  data: any,
+  data: unknown,
 ): Promise<void> {
   const json = JSON.stringify(data, null, 2);
   await writeTextFile(filePath, json);
@@ -165,17 +170,18 @@ export async function writeJsonFile(
 /**
  * Liest YAML-Dateien sicher.
  */
-export async function readYamlFile<T = any>(filePath: string): Promise<T> {
+export async function readYamlFile<T = Record<string, unknown>>(filePath: string): Promise<T> {
   try {
     const text = await fsp.readFile(filePath, "utf8");
     return yaml.parse(text) as T;
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     log("error", "Fehler beim Lesen von YAML", {
       filePath,
-      error: err.message,
+      error: message,
     });
     throw new FileSystemError(filePath, "Fehler beim Lesen von YAML", {
-      error: err.message,
+      error: message,
     });
   }
 }
@@ -185,14 +191,15 @@ export async function readYamlFile<T = any>(filePath: string): Promise<T> {
  */
 export async function writeYamlFile(
   filePath: string,
-  data: any,
+  data: unknown,
 ): Promise<void> {
   try {
     const yamlText = yaml.stringify(data);
     await writeTextFile(filePath, yamlText);
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
     throw new FileSystemError(filePath, "Fehler beim Schreiben von YAML", {
-      error: err.message,
+      error: message,
     });
   }
 }

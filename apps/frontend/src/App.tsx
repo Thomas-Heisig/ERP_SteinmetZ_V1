@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/App.tsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import { useTheme, type Theme } from "./contexts/ThemeContext";
@@ -72,9 +72,77 @@ function ThemeToggle() {
 export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [redisStatus, setRedisStatus] = useState<{
+    connected: boolean;
+    usingFallback: boolean;
+  } | null>(null);
+  const [backendReady, setBackendReady] = useState(false);
+  const [backendAttempts, setBackendAttempts] = useState(0);
+  const [backendError, setBackendError] = useState<string | null>(null);
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Fetch Redis status periodically
+  useEffect(() => {
+    const fetchRedisStatus = async () => {
+      try {
+        const response = await fetch("/api/health");
+        if (response.ok) {
+          const data = await response.json();
+          if (data.details?.redis) {
+            setRedisStatus(data.details.redis);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch Redis status:", error);
+      }
+    };
+
+    fetchRedisStatus();
+    const interval = setInterval(fetchRedisStatus, 30000); // Check every 30 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Backend reachability check with retry/backoff
+  useEffect(() => {
+    let cancelled = false;
+
+    const pingBackend = async (attempt: number) => {
+      if (cancelled || backendReady) return;
+      setBackendAttempts(attempt);
+      try {
+        const response = await fetch("/api/health", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        setBackendReady(true);
+        setBackendError(null);
+        return;
+      } catch (error) {
+        if (cancelled) return;
+        const message =
+          error instanceof Error ? error.message : "Unbekannter Fehler";
+        setBackendError(message);
+        setBackendReady(false);
+        const delay = Math.min(3000, 300 * attempt);
+        setTimeout(() => void pingBackend(attempt + 1), delay);
+      }
+    };
+
+    void pingBackend(1);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [backendReady]);
+
+  const handleManualRetry = () => {
+    setBackendReady(false);
+    setBackendAttempts(0);
+    setBackendError(null);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -90,6 +158,30 @@ export default function App() {
       <UnifiedQuickChatProvider>
         <LanguageProvider>
           <div className="app-container">
+            {!backendReady && (
+              <div
+                className="backend-wait-overlay"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="backend-wait-card">
+                  <div className="backend-spinner" aria-hidden="true" />
+                  <h2>Warte auf Backend ...</h2>
+                  <p>
+                    Versuche: {backendAttempts || 1}
+                    {backendError ? ` | Letzter Fehler: ${backendError}` : ""}
+                  </p>
+                  <button
+                    type="button"
+                    className="backend-retry-button"
+                    onClick={handleManualRetry}
+                  >
+                    Erneut versuchen
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* ---------- Header ---------- */}
             <header className="app-header">
               {/* Branding */}
@@ -160,6 +252,31 @@ export default function App() {
                 © {new Date().getFullYear()} ERP SteinmetZ | v
                 {VERSION_INFO.version} ({VERSION_INFO.environment})
               </small>
+              {redisStatus && (
+                <div
+                  className="service-status"
+                  title={
+                    redisStatus.connected
+                      ? "Redis verbunden"
+                      : redisStatus.usingFallback
+                        ? "Redis nicht verfügbar - In-Memory-Modus"
+                        : "Redis Status unbekannt"
+                  }
+                >
+                  <span className="status-label">Redis:</span>
+                  <span
+                    className={`status-indicator ${
+                      redisStatus.connected
+                        ? "status-green"
+                        : redisStatus.usingFallback
+                          ? "status-yellow"
+                          : "status-red"
+                    }`}
+                  >
+                    ●
+                  </span>
+                </div>
+              )}
             </footer>
 
             {/* QuickChat with floating button - always visible */}

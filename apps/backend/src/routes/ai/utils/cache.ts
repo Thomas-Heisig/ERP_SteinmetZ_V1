@@ -20,7 +20,7 @@ import { createHashId } from "./aiUtils.js";
 /* 📦 Cache-Grundstruktur                                                     */
 /* ========================================================================== */
 
-interface CacheEntry<T = any> {
+interface CacheEntry<T = unknown> {
   key: string;
   value: T;
   createdAt: number;
@@ -55,7 +55,7 @@ export class AICache {
    * Erstellt deterministischen Cache-Schlüssel.
    * Kombiniert Model, Prompt und Zusatzoptionen.
    */
-  generateKey(model: string, input: any, opts: CacheOptions = {}): string {
+  generateKey(model: string, input: unknown, opts: CacheOptions = {}): string {
     const data = JSON.stringify({
       model,
       input,
@@ -99,10 +99,11 @@ export class AICache {
       const filePath = this.getFilePath(key);
       try {
         fs.writeFileSync(filePath, JSON.stringify(entry, null, 2), "utf8");
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const error = err as Error;
         log("warn", "Cache konnte nicht gespeichert werden", {
           filePath,
-          error: err.message,
+          error: error.message,
         });
       }
     }
@@ -129,9 +130,10 @@ export class AICache {
             this.cache.set(key, data);
             return data.value as T;
           }
-        } catch (err: any) {
+        } catch (err: unknown) {
+          const error = err as Error;
           log("error", "Fehler beim Lesen aus Cache-Datei", {
-            error: err.message,
+            error: error.message,
           });
         }
       }

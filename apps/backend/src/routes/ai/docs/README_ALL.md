@@ -1,6 +1,8 @@
+#
+
 ## 🎯 Zusammenfassung – Alle API‑Routen („AI‑Router“) und deren Funktionen
 
-### Ziel: Frontend‑Entwicklung (Aufruf‑ und Daten‑Schema‑Definition)
+### Ziel: Frontend‑Entwicklung (Aufruf‑ und Daten‑Schema‑Definition)
 
 > **Hinweis** – Das Backend besteht aus vielen Service‑ und Layer‑Komponenten (Provider, Services, Utilities, Workflow‑Engine, …).  
 > Für das Frontend sind jedoch ausschließlich die **öffentlichen HTTP‑Endpoints** relevant, die im `aiRouter.ts` definiert sind.  
@@ -41,7 +43,7 @@
 | ----------- | ------------ | ----------------------------------------------------------------------------------------------------------------------- |
 | `GET`       | `/ai/models` | Gibt ein Array von **Model‑Definitionen** zurück (Name, Provider, Modell‑ID, Aktiv‑Status, Capabilities, Beschreibung). |
 
-**Response‑Beispiel**
+#### Response‑Beispiel
 
 ```json
 {
@@ -80,7 +82,7 @@
 | `GET`       | `/ai/sessions`                | –                                            | Liefert eine Liste aller aktiven Sessions (ID, Modell, Erstellungs‑/Letztes‑Update‑Zeitpunkt, Anzahl Nachrichten).                                                                                  |
 | `DELETE`    | `/ai/chat/:sessionId`         | –                                            | Löscht die Session komplett (Memory‑Eintrag + Persistenz‑Datei, falls aktiviert).                                                                                                                   |
 
-**Response‑Beispiel (Session‑Erstellung)**
+#### Response‑Beispiel (Session‑Erstellung)
 
 ```json
 {
@@ -145,7 +147,7 @@
 | ----------- | --------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `POST`      | `/ai/translate` | `{ "text": "...", "targetLang": "de", "engine": "openai" }` (engine optional) | Übersetzt `text` in die Zielsprache. Nutzt standardmäßig den in `translationConfig.defaultEngine` konfigurierten Provider (`openai`). |
 
-**Response‑Beispiel**
+#### Response‑Beispiel
 
 ```json
 {
@@ -257,7 +259,7 @@
 | `GET`       | `/ai/workflows`          | –                               | Gibt alle **registrierten Workflows** zurück (Name, Beschreibung, Schritte‑Array, letzter Lauf).                                                                  |
 | `POST`      | `/ai/workflow/:name/run` | `{ "input": { … } }` (optional) | Startet den Workflow **synchron** über die **Workflow‑Engine**. Ergebnis ist das finale AI‑Response des letzten Schritts (oder ein strukturiertes Fehler‑Objekt). |
 
-**Response‑Beispiel (Workflow‑Liste)**
+#### Response‑Beispiel (Workflow‑Liste)
 
 ```json
 {
@@ -374,10 +376,10 @@
 
 | Situation                                          | HTTP‑Status                                             | JSON‑Body (Beispiel)                                                                                        |
 | -------------------------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Ungültige Parameter**                            | `400 Bad Request`                                       | `{ "error": { "code": "ERR_VALIDATION", "message": "Missing field `text`", "status": 400 } }`               |
+| **Ungültige Parameter**                            | `400 Bad Request`                                       | `{ "error": { "code": "ERR_VALIDATION", "message": "Missing field`text`", "status": 400 } }` |
 | **Ressource nicht gefunden** (z. B. Session, Tool) | `404 Not Found`                                         | `{ "error": { "code": "ERR_NOT_FOUND", "message": "Session 1234 not found", "status": 404 } }`              |
 | **Provider‑Fehler / Timeout**                      | `502 Bad Gateway` (Provider) oder `504 Gateway Timeout` | `{ "error": { "code": "ERR_PROVIDER", "message": "OpenAI request timed out", "status": 504 } }`             |
-| **Interner Server‑Fehler**                         | `500 Internal Server Error`                             | `{ "error": { "code": "ERR_INTERNAL", "message": "Unexpected error in tool `calculate`", "status": 500 } }` |
+| **Interner Server‑Fehler**                         | `500 Internal Server Error`                             | `{ "error": { "code": "ERR_INTERNAL", "message": "Unexpected error in tool`calculate`", "status": 500 } }`|
 | **Kein API‑Key** (OpenAI, Vertex, etc.)            | `401 Unauthorized`                                      | `{ "error": { "code": "ERR_AUTH", "message": "Missing OPENAI_API_KEY", "status": 401 } }`                   |
 
 > **Logging** – Alle Fehler werden über das zentrale `logger`‑Modul (JSON‑Lines) protokolliert; Front‑End kann das `error`‑Objekt direkt anzeigen.

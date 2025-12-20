@@ -1,4 +1,4 @@
-Basierend auf der analysierten `aiRouter.ts` Datei, hier sind die erkannten Routen und Funktionen:
+#
 
 ## 🌐 **AI Router - API Endpoints**
 

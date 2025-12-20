@@ -9,11 +9,33 @@
  */
 
 import { createLogger } from "../../utils/logger.js";
-import db from "../../services/dbService.js";
+import db from "../database/dbService.js";
+import type { SqlValue } from "../database/database.js";
 
 const logger = createLogger("help-seed");
 
-const CATEGORIES = [
+type ArticleStatus = "draft" | "published" | "archived";
+
+interface SeedCategory {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  order: number;
+}
+
+interface SeedArticle {
+  title: string;
+  category: string;
+  excerpt: string;
+  keywords: string;
+  icon: string;
+  path: string;
+  status: ArticleStatus;
+  content: string;
+}
+
+const CATEGORIES: SeedCategory[] = [
   {
     id: "getting-started",
     name: "Erste Schritte",
@@ -86,7 +108,7 @@ const CATEGORIES = [
   },
 ];
 
-const ARTICLES = [
+const ARTICLES: SeedArticle[] = [
   {
     title: "ERP SteinmetZ - Übersicht",
     category: "getting-started",
@@ -317,7 +339,7 @@ async function seedCategories(): Promise<void> {
   for (const category of CATEGORIES) {
     try {
       // Check if category already exists
-      const existing = await db.get(
+      const existing = await db.get<{ id: string }>(
         "SELECT id FROM help_categories WHERE id = ?",
         [category.id],
       );
@@ -330,16 +352,18 @@ async function seedCategories(): Promise<void> {
         continue;
       }
 
+      const params: SqlValue[] = [
+        category.id,
+        category.name,
+        category.icon,
+        category.description,
+        category.order,
+      ];
+
       await db.run(
         `INSERT INTO help_categories (id, name, icon, description, \`order\`)
          VALUES (?, ?, ?, ?, ?)`,
-        [
-          category.id,
-          category.name,
-          category.icon,
-          category.description,
-          category.order,
-        ],
+        params,
       );
 
       logger.info({ categoryId: category.id }, "Seeded category");
@@ -360,7 +384,7 @@ async function seedArticles(): Promise<void> {
   for (const article of ARTICLES) {
     try {
       // Check if article already exists (by title)
-      const existing = await db.get(
+      const existing = await db.get<{ id: number }>(
         "SELECT id FROM help_articles WHERE title = ?",
         [article.title],
       );
@@ -373,21 +397,23 @@ async function seedArticles(): Promise<void> {
         continue;
       }
 
+      const params: SqlValue[] = [
+        article.title,
+        article.content,
+        article.category,
+        article.excerpt,
+        article.keywords,
+        article.icon,
+        article.path,
+        article.status,
+        "system",
+      ];
+
       await db.run(
         `INSERT INTO help_articles 
          (title, content, category, excerpt, keywords, icon, path, status, author, created_at, updated_at, view_count)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), 0)`,
-        [
-          article.title,
-          article.content,
-          article.category,
-          article.excerpt,
-          article.keywords,
-          article.icon,
-          article.path,
-          article.status,
-          "system",
-        ],
+        params,
       );
 
       logger.info({ title: article.title }, "Seeded article");

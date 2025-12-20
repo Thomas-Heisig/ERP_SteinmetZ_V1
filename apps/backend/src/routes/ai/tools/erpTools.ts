@@ -30,8 +30,8 @@ async function ensureTable(
     file: dbFile,
     query: `SELECT name FROM sqlite_master WHERE type='table' AND name=?;`,
     params: [tableName],
-  });
-  if (exists.count === 0) {
+  }) as { count?: number };
+  if ((exists?.count ?? 0) === 0) {
     await toolRegistry.call("query_database", { file: dbFile, query: ddl });
   }
 }
@@ -150,16 +150,16 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
         : `SELECT * FROM orders ORDER BY created_at DESC LIMIT ?`;
 
       const params = status ? [`%${status}%`, limit] : [limit];
-      const result = await toolRegistry.call("query_database", {
+      const result = (await toolRegistry.call("query_database", {
         file: dbFile,
         query,
         params,
-      });
+      })) as { results?: unknown[]; count?: number };
 
       return {
         success: true,
-        orders: result.results,
-        count: result.count,
+        orders: result.results ?? [],
+        count: result.count ?? 0,
         filter: { status },
         database: dbFile,
       };
@@ -203,16 +203,16 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
         );`,
       );
 
-      const result = await toolRegistry.call("query_database", {
+      const result = (await toolRegistry.call("query_database", {
         file: dbFile,
         query: `SELECT * FROM inventory WHERE product LIKE ? LIMIT 10`,
         params: [`%${product}%`],
-      });
+      })) as { results?: unknown[]; count?: number };
 
       return {
         success: true,
-        matches: result.results,
-        count: result.count,
+        matches: result.results ?? [],
+        count: result.count ?? 0,
         product,
         database: dbFile,
       };
@@ -261,15 +261,15 @@ export function registerTools(toolRegistryInstance: typeof toolRegistry) {
         : `SELECT * FROM invoices ORDER BY date DESC`;
       const params = status ? [`%${status}%`] : [];
 
-      const result = await toolRegistry.call("query_database", {
+      const result = (await toolRegistry.call("query_database", {
         file: dbFile,
         query,
         params,
-      });
+      })) as { results?: unknown[]; count?: number };
       return {
         success: true,
-        invoices: result.results,
-        count: result.count,
+        invoices: result.results ?? [],
+        count: result.count ?? 0,
         database: dbFile,
       };
     } catch (err) {

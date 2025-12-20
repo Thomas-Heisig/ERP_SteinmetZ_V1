@@ -79,6 +79,20 @@ export default [
     },
   },
   {
+    files: ["public/**/*.js"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "script",
+      globals: {
+        ...globals.browser,
+      },
+    },
+    rules: {
+      "no-console": "off", // Browser console allowed
+      "no-unused-vars": "warn",
+    },
+  },
+  {
     ignores: [
       "dist/**",
       "node_modules/**",

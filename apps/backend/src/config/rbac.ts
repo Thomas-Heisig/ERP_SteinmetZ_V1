@@ -1,13 +1,24 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/config/rbac.ts
+// Role-Based Access Control (RBAC) Configuration
 
 /**
- * RBAC Configuration
- *
- * Defines default roles and their permissions for the ERP system.
- * This configuration can be overridden in the database.
- *
+ * RBAC Configuration Module
+ * 
+ * Defines default roles, permissions, and role hierarchies for the ERP system.
+ * This configuration provides the foundation for access control and can be
+ * overridden with database values at runtime.
+ * 
+ * Role Hierarchy:
+ * - super_admin: Full system access (unrestricted)
+ * - admin: Administrative access to most modules (can manage users, roles, system settings)
+ * - manager: Departmental management (can manage team members and their work)
+ * - user: Standard user access (can access assigned modules)
+ * - guest: Read-only access to public resources
+ * 
  * @module config/rbac
+ * @see docs/RBAC_CONFIGURATION.md for complete role definitions
+ * @see types/rbac.ts for type definitions
  */
 
 import {
@@ -17,10 +28,19 @@ import {
   type RoleDefinition,
   type RoleHierarchy,
   type Permission,
-} from "../types/rbac.js";
+} from "../routes/rbac/rbac.js";
+import { createLogger } from "../utils/logger.js";
+
+const _logger = createLogger("config:rbac"); // Logger for future use in role operations
 
 /**
  * Permission builder helper
+ * 
+ * Creates a properly formatted permission string from module and action.
+ * 
+ * @param {ModuleNames | string} module - Module name
+ * @param {PermissionActions | string} action - Permission action
+ * @returns {Permission} Formatted permission string (module:action)
  */
 function buildPermission(
   module: ModuleNames | string,
@@ -31,6 +51,9 @@ function buildPermission(
 
 /**
  * Module permission builders
+ * 
+ * Pre-configured permission groups for each module, organized by action type.
+ * These builders make it easy to assign consistent permissions to roles.
  */
 const ModulePermissions = {
   dashboard: {
@@ -176,7 +199,18 @@ const ModulePermissions = {
 };
 
 /**
- * Default RBAC Roles
+ * Default RBAC Role Definitions
+ * 
+ * System roles that are created by default. Each role includes:
+ * - Unique ID for database reference
+ * - Display name for UI presentation
+ * - Description of role purpose
+ * - System flag (cannot be deleted if true)
+ * - Complete permission list
+ * - Creation and hierarchy metadata
+ * 
+ * @constant
+ * @type {RoleDefinition[]}
  */
 export const DEFAULT_ROLES: RoleDefinition[] = [
   {
@@ -568,7 +602,25 @@ export const DEFAULT_ROLES: RoleDefinition[] = [
 
 /**
  * Role Hierarchy Definition
- * Lower level numbers = higher privileges
+ *
+ * Defines the role inheritance chain and privilege levels across the system.
+ * Lower level numbers = higher privileges and broader access.
+ *
+ * Role Chain:
+ * - **SUPER_ADMIN (Level 0)**: Full system access, can manage all roles and permissions
+ * - **ADMIN (Level 1)**: Administrative access, inherits from SUPER_ADMIN
+ * - **MANAGER (Level 2)**: Department/team management, inherits from ADMIN
+ * - **USER (Level 3)**: Standard user access, inherits from MANAGER
+ * - **GUEST (Level 4)**: Limited read-only access, inherits from USER
+ *
+ * @example
+ * // Check if user has privilege to perform action
+ * const userRole = ROLE_HIERARCHY.find(r => r.role === user.role);
+ * const actionRole = ROLE_HIERARCHY.find(r => r.role === requiredRole);
+ * const hasAccess = userRole && actionRole && userRole.level <= actionRole.level;
+ *
+ * @see {@link DEFAULT_ROLES} for role definitions
+ * @see {@link ModulePermissions} for permission structure
  */
 export const ROLE_HIERARCHY: RoleHierarchy[] = [
   {

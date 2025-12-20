@@ -23,7 +23,7 @@ export const navigationStructure: NavigationItem[] = [
     id: "dashboard",
     label: "sidebar.dashboard",
     icon: "🏠",
-    path: "/",
+    path: "/dashboard",
   },
   {
     id: "catalog",

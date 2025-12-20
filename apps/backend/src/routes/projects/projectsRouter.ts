@@ -2,45 +2,40 @@
 // apps/backend/src/routes/projects/projectsRouter.ts
 
 /**
- * Projects Management Router
+ * Projects Router
  *
- * Provides API for project tracking, task management,
- * milestones, and team collaboration.
+ * HTTP API endpoints for project management including projects, tasks,
+ * time tracking, and project analytics.
  *
  * @module routes/projects
+ * @category Routes
  */
 
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import { NotFoundError, ValidationError } from "../../types/errors.js";
+import { NotFoundError, ValidationError } from "../error/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import pino from "pino";
-import db from "../../services/dbService.js";
-import { randomUUID } from "crypto";
+import { createLogger } from "../../utils/logger.js";
+import { projectsService } from "./projectsService.js";
 
+const logger = createLogger("projects-router");
 const router = Router();
-const _logger = pino({ level: process.env.LOG_LEVEL || "info" }); // Reserved for future logging
 
-// Validation schemas
+/* ---------------------------------------------------------
+   VALIDATION SCHEMAS
+--------------------------------------------------------- */
+
 const projectQuerySchema = z.object({
-  status: z.enum(["planning", "active", "on_hold", "completed"]).optional(),
+  status: z.enum(["planning", "active", "on_hold", "completed", "cancelled"]).optional(),
   search: z.string().optional(),
 });
 
 const createProjectSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().optional(),
-  status: z
-    .enum(["planning", "active", "on_hold", "completed"])
-    .default("planning"),
-  startDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-  endDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
+  status: z.enum(["planning", "active", "on_hold", "completed", "cancelled"]).default("planning"),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   budget: z.number().min(0).optional(),
   client: z.string().optional(),
   manager: z.string().optional(),
@@ -55,375 +50,411 @@ const createTaskSchema = z.object({
   status: z.enum(["todo", "in_progress", "review", "done"]).default("todo"),
   priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
   assignee: z.string().optional(),
-  dueDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
+  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   estimatedHours: z.number().min(0).optional(),
 });
 
+const timeEntrySchema = z.object({
+  projectId: z.string(),
+  taskId: z.string().optional(),
+  userId: z.string(),
+  hours: z.number().min(0.25).max(24),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  description: z.string().optional(),
+});
+
+/* ---------------------------------------------------------
+   PROJECTS ENDPOINTS
+--------------------------------------------------------- */
+
 /**
  * GET /api/projects
- * List all projects
+ * List all projects with optional filtering
+ *
+ * @route GET /api/projects
+ * @query {string} [status] - Filter by status
+ * @query {string} [search] - Search projects by name, description, or client
+ * @access Private
+ * @returns {object} List of projects
  */
 router.get(
   "/",
   asyncHandler(async (req: Request, res: Response) => {
-    const query = projectQuerySchema.safeParse(req.query);
+    logger.debug({ query: req.query }, "GET /api/projects");
 
-    if (!query.success) {
-      throw new ValidationError("Invalid query parameters", query.error.issues);
+    const validation = projectQuerySchema.safeParse(req.query);
+    if (!validation.success) {
+      const issues = Object.fromEntries(
+        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+      );
+      throw new ValidationError("Invalid query parameters", issues);
     }
 
-    const { status, search } = query.data;
+    const projects = await projectsService.getProjects(validation.data);
 
-    let sql = "SELECT * FROM projects WHERE 1=1";
-    const params: (string | number)[] = [];
-
-    // Apply filters
-    if (status) {
-      sql += " AND status = ?";
-      params.push(status);
-    }
-    if (search) {
-      sql += " AND (name LIKE ? OR description LIKE ? OR client LIKE ?)";
-      const searchPattern = `%${search}%`;
-      params.push(searchPattern, searchPattern, searchPattern);
-    }
-
-    sql += " ORDER BY created_at DESC";
-
-    const results = await db.all(sql, params);
+    logger.info({ count: projects.length }, "Projects retrieved");
 
     res.json({
       success: true,
-      data: results,
-      count: results.length,
+      data: projects,
+      count: projects.length,
     });
-  }),
+  })
 );
 
 /**
  * GET /api/projects/:id
- * Get a specific project
+ * Get a specific project with tasks
+ *
+ * @route GET /api/projects/:id
+ * @param {string} id - Project ID
+ * @access Private
+ * @returns {object} Project with tasks
  */
 router.get(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const project = await db.get("SELECT * FROM projects WHERE id = ?", [
-      req.params.id,
-    ]);
+    logger.debug({ projectId: req.params.id }, "GET /api/projects/:id");
+
+    const project = await projectsService.getProject(req.params.id);
 
     if (!project) {
       throw new NotFoundError("Project not found");
     }
 
-    // Get project tasks
-    const projectTasks = await db.all(
-      "SELECT * FROM project_tasks WHERE project_id = ? ORDER BY created_at",
-      [req.params.id],
-    );
-
     res.json({
       success: true,
-      data: {
-        ...project,
-        tasks: projectTasks,
-      },
+      data: project,
     });
-  }),
+  })
 );
 
 /**
  * POST /api/projects
  * Create a new project
+ *
+ * @route POST /api/projects
+ * @body {object} Project data (name required)
+ * @access Private
+ * @returns {object} Created project
  */
 router.post(
   "/",
   asyncHandler(async (req: Request, res: Response) => {
-    const validation = createProjectSchema.safeParse(req.body);
+    logger.debug({ body: req.body }, "POST /api/projects");
 
+    const validation = createProjectSchema.safeParse(req.body);
     if (!validation.success) {
-      throw new ValidationError(
-        "Invalid project data",
-        validation.error.issues,
+      const issues = Object.fromEntries(
+        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
       );
+      throw new ValidationError("Invalid project data", issues);
     }
 
-    const id = `proj-${randomUUID()}`;
-    const now = new Date().toISOString();
+    const project = await projectsService.createProject(validation.data);
 
-    await db.run(
-      `INSERT INTO projects (id, name, description, status, start_date, end_date, budget, client, manager, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        id,
-        validation.data.name,
-        validation.data.description || null,
-        validation.data.status,
-        validation.data.startDate || null,
-        validation.data.endDate || null,
-        validation.data.budget || null,
-        validation.data.client || null,
-        validation.data.manager || null,
-        now,
-        now,
-      ],
-    );
-
-    const project = await db.get("SELECT * FROM projects WHERE id = ?", [id]);
+    logger.info({ projectId: project.id, name: project.name }, "Project created");
 
     res.status(201).json({
       success: true,
       data: project,
     });
-  }),
+  })
 );
 
 /**
  * PUT /api/projects/:id
  * Update a project
+ *
+ * @route PUT /api/projects/:id
+ * @param {string} id - Project ID
+ * @body {object} Updated project data
+ * @access Private
+ * @returns {object} Updated project
  */
 router.put(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const existing = await db.get("SELECT * FROM projects WHERE id = ?", [
-      req.params.id,
-    ]);
-
-    if (!existing) {
-      throw new NotFoundError("Project not found");
-    }
+    logger.debug({ projectId: req.params.id, body: req.body }, "PUT /api/projects/:id");
 
     const validation = updateProjectSchema.safeParse(req.body);
-
     if (!validation.success) {
-      throw new ValidationError(
-        "Invalid project data",
-        validation.error.issues,
+      const issues = Object.fromEntries(
+        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
       );
+      throw new ValidationError("Invalid project data", issues);
     }
 
-    const now = new Date().toISOString();
-    const updates = validation.data;
+    const project = await projectsService.updateProject(req.params.id, validation.data);
 
-    // Build dynamic UPDATE query
-    const fields = Object.keys(updates);
-    if (fields.length === 0) {
-      return res.json({ success: true, data: existing });
-    }
-
-    const setClause = fields.map((f) => `${f} = ?`).join(", ");
-    const values = [
-      ...fields.map((f) => (updates as Record<string, unknown>)[f]),
-      now,
-      req.params.id,
-    ];
-
-    await db.run(
-      `UPDATE projects SET ${setClause}, updated_at = ? WHERE id = ?`,
-      values,
-    );
-
-    const updated = await db.get("SELECT * FROM projects WHERE id = ?", [
-      req.params.id,
-    ]);
+    logger.info({ projectId: req.params.id }, "Project updated");
 
     res.json({
       success: true,
-      data: updated,
+      data: project,
     });
-  }),
+  })
 );
 
 /**
  * DELETE /api/projects/:id
  * Delete a project
+ *
+ * @route DELETE /api/projects/:id
+ * @param {string} id - Project ID
+ * @access Private
+ * @returns {object} Deletion confirmation
  */
 router.delete(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const existing = await db.get("SELECT * FROM projects WHERE id = ?", [
-      req.params.id,
-    ]);
+    logger.debug({ projectId: req.params.id }, "DELETE /api/projects/:id");
 
-    if (!existing) {
+    const deleted = await projectsService.deleteProject(req.params.id);
+
+    if (!deleted) {
       throw new NotFoundError("Project not found");
     }
 
-    // Delete project (cascades to tasks)
-    await db.run("DELETE FROM projects WHERE id = ?", [req.params.id]);
+    logger.info({ projectId: req.params.id }, "Project deleted");
 
     res.json({
       success: true,
       message: "Project deleted successfully",
     });
-  }),
+  })
 );
+
+/* ---------------------------------------------------------
+   TASKS ENDPOINTS
+--------------------------------------------------------- */
 
 /**
  * GET /api/projects/:projectId/tasks
- * List all tasks for a project
+ * Get all tasks for a project
+ *
+ * @route GET /api/projects/:projectId/tasks
+ * @param {string} projectId - Project ID
+ * @access Private
+ * @returns {object} List of tasks
  */
 router.get(
   "/:projectId/tasks",
   asyncHandler(async (req: Request, res: Response) => {
-    const project = await db.get("SELECT * FROM projects WHERE id = ?", [
-      req.params.projectId,
-    ]);
+    logger.debug({ projectId: req.params.projectId }, "GET /api/projects/:projectId/tasks");
 
-    if (!project) {
-      throw new NotFoundError("Project not found");
-    }
+    const tasks = await projectsService.getProjectTasks(req.params.projectId);
 
-    const projectTasks = await db.all(
-      "SELECT * FROM project_tasks WHERE project_id = ? ORDER BY created_at",
-      [req.params.projectId],
-    );
+    logger.info({ projectId: req.params.projectId, count: tasks.length }, "Tasks retrieved");
 
     res.json({
       success: true,
-      data: projectTasks,
-      count: projectTasks.length,
+      data: tasks,
+      count: tasks.length,
     });
-  }),
+  })
 );
 
 /**
  * POST /api/projects/tasks
  * Create a new task
+ *
+ * @route POST /api/projects/tasks
+ * @body {object} Task data
+ * @access Private
+ * @returns {object} Created task
  */
 router.post(
   "/tasks",
   asyncHandler(async (req: Request, res: Response) => {
+    logger.debug({ body: req.body }, "POST /api/projects/tasks");
+
     const validation = createTaskSchema.safeParse(req.body);
-
     if (!validation.success) {
-      throw new ValidationError("Invalid task data", validation.error.issues);
+      const issues = Object.fromEntries(
+        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+      );
+      throw new ValidationError("Invalid task data", issues);
     }
 
-    const { projectId } = validation.data;
-    const project = await db.get("SELECT * FROM projects WHERE id = ?", [
-      projectId,
-    ]);
+    const task = await projectsService.createTask(validation.data);
 
-    if (!project) {
-      throw new NotFoundError("Project not found");
-    }
-
-    const id = `task-${randomUUID()}`;
-    const now = new Date().toISOString();
-
-    await db.run(
-      `INSERT INTO project_tasks (id, project_id, title, description, status, priority, assignee, due_date, estimated_hours, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        id,
-        projectId,
-        validation.data.title,
-        validation.data.description || null,
-        validation.data.status,
-        validation.data.priority,
-        validation.data.assignee || null,
-        validation.data.dueDate || null,
-        validation.data.estimatedHours || null,
-        now,
-        now,
-      ],
-    );
-
-    const task = await db.get("SELECT * FROM project_tasks WHERE id = ?", [id]);
+    logger.info({ taskId: task.id, projectId: task.project_id }, "Task created");
 
     res.status(201).json({
       success: true,
       data: task,
     });
-  }),
+  })
 );
 
 /**
  * PUT /api/projects/tasks/:id
  * Update a task
+ *
+ * @route PUT /api/projects/tasks/:id
+ * @param {string} id - Task ID
+ * @body {object} Updated task data
+ * @access Private
+ * @returns {object} Updated task
  */
 router.put(
   "/tasks/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const existing = await db.get("SELECT * FROM project_tasks WHERE id = ?", [
-      req.params.id,
-    ]);
+    logger.debug({ taskId: req.params.id, body: req.body }, "PUT /api/projects/tasks/:id");
 
-    if (!existing) {
-      throw new NotFoundError("Task not found");
-    }
+    const task = await projectsService.updateTask(req.params.id, req.body);
 
-    const now = new Date().toISOString();
-    const updates = req.body;
-
-    // Build dynamic UPDATE query
-    const fields = Object.keys(updates);
-    if (fields.length === 0) {
-      return res.json({ success: true, data: existing });
-    }
-
-    const setClause = fields.map((f) => `${f} = ?`).join(", ");
-    const values = [...fields.map((f) => updates[f]), now, req.params.id];
-
-    await db.run(
-      `UPDATE project_tasks SET ${setClause}, updated_at = ? WHERE id = ?`,
-      values,
-    );
-
-    const updated = await db.get("SELECT * FROM project_tasks WHERE id = ?", [
-      req.params.id,
-    ]);
+    logger.info({ taskId: req.params.id }, "Task updated");
 
     res.json({
       success: true,
-      data: updated,
+      data: task,
     });
-  }),
+  })
+);
+
+/**
+ * DELETE /api/projects/tasks/:id
+ * Delete a task
+ *
+ * @route DELETE /api/projects/tasks/:id
+ * @param {string} id - Task ID
+ * @access Private
+ * @returns {object} Deletion confirmation
+ */
+router.delete(
+  "/tasks/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.debug({ taskId: req.params.id }, "DELETE /api/projects/tasks/:id");
+
+    const deleted = await projectsService.deleteTask(req.params.id);
+
+    if (!deleted) {
+      throw new NotFoundError("Task not found");
+    }
+
+    logger.info({ taskId: req.params.id }, "Task deleted");
+
+    res.json({
+      success: true,
+      message: "Task deleted successfully",
+    });
+  })
+);
+
+/* ---------------------------------------------------------
+   TIME TRACKING ENDPOINTS
+--------------------------------------------------------- */
+
+/**
+ * GET /api/projects/:projectId/time-entries
+ * Get all time entries for a project
+ *
+ * @route GET /api/projects/:projectId/time-entries
+ * @param {string} projectId - Project ID
+ * @access Private
+ * @returns {object} List of time entries
+ */
+router.get(
+  "/:projectId/time-entries",
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.debug({ projectId: req.params.projectId }, "GET /api/projects/:projectId/time-entries");
+
+    const entries = await projectsService.getTimeEntries(req.params.projectId);
+
+    logger.info({ projectId: req.params.projectId, count: entries.length }, "Time entries retrieved");
+
+    res.json({
+      success: true,
+      data: entries,
+      count: entries.length,
+    });
+  })
+);
+
+/**
+ * POST /api/projects/time-entries
+ * Log time spent on a task or project
+ *
+ * @route POST /api/projects/time-entries
+ * @body {object} Time entry data
+ * @access Private
+ * @returns {object} Created time entry
+ */
+router.post(
+  "/time-entries",
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.debug({ body: req.body }, "POST /api/projects/time-entries");
+
+    const validation = timeEntrySchema.safeParse(req.body);
+    if (!validation.success) {
+      const issues = Object.fromEntries(
+        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+      );
+      throw new ValidationError("Invalid time entry data", issues);
+    }
+
+    const entry = await projectsService.logTimeEntry(validation.data);
+
+    logger.info({ entryId: entry.id, projectId: entry.project_id }, "Time entry logged");
+
+    res.status(201).json({
+      success: true,
+      data: entry,
+    });
+  })
+);
+
+/* ---------------------------------------------------------
+   ANALYTICS ENDPOINTS
+--------------------------------------------------------- */
+
+/**
+ * GET /api/projects/:projectId/analytics
+ * Get project analytics and metrics
+ *
+ * @route GET /api/projects/:projectId/analytics
+ * @param {string} projectId - Project ID
+ * @access Private
+ * @returns {object} Project analytics
+ */
+router.get(
+  "/:projectId/analytics",
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.debug({ projectId: req.params.projectId }, "GET /api/projects/:projectId/analytics");
+
+    const analytics = await projectsService.getProjectAnalytics(req.params.projectId);
+
+    res.json({
+      success: true,
+      data: analytics,
+    });
+  })
 );
 
 /**
  * GET /api/projects/stats
- * Get project statistics
+ * Get global project statistics
+ *
+ * @route GET /api/projects/stats
+ * @access Private
+ * @returns {object} Project statistics
  */
 router.get(
   "/stats",
   asyncHandler(async (req: Request, res: Response) => {
-    const totalProjects = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM projects",
-    );
-    const activeProjects = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM projects WHERE status = 'active'",
-    );
-    const completedProjects = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM projects WHERE status = 'completed'",
-    );
-    const totalTasks = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM project_tasks",
-    );
-    const completedTasks = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'done'",
-    );
-    const inProgressTasks = await db.get<{ count: number }>(
-      "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'in_progress'",
-    );
+    logger.debug("GET /api/projects/stats");
 
-    const stats = {
-      totalProjects: totalProjects?.count || 0,
-      activeProjects: activeProjects?.count || 0,
-      completedProjects: completedProjects?.count || 0,
-      totalTasks: totalTasks?.count || 0,
-      completedTasks: completedTasks?.count || 0,
-      inProgressTasks: inProgressTasks?.count || 0,
-    };
+    const stats = await projectsService.getStatistics();
+
+    logger.info(stats as unknown as Record<string, unknown>, "Project statistics retrieved");
 
     res.json({
       success: true,
       data: stats,
     });
-  }),
+  })
 );
 
 export default router;

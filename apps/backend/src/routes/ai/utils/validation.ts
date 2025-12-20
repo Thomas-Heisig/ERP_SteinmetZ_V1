@@ -14,23 +14,23 @@ import { log } from "../utils/logger.js";
 /* 🧩 Grundlegende Typprüfungen                                              */
 /* ========================================================================== */
 
-export function isString(val: any): val is string {
+export function isString(val: unknown): val is string {
   return typeof val === "string";
 }
 
-export function isNumber(val: any): val is number {
+export function isNumber(val: unknown): val is number {
   return typeof val === "number" && !isNaN(val);
 }
 
-export function isBoolean(val: any): val is boolean {
+export function isBoolean(val: unknown): val is boolean {
   return typeof val === "boolean";
 }
 
-export function isArray(val: any): val is any[] {
+export function isArray(val: unknown): val is unknown[] {
   return Array.isArray(val);
 }
 
-export function isObject(val: any): val is Record<string, any> {
+export function isObject(val: unknown): val is Record<string, unknown> {
   return val !== null && typeof val === "object" && !Array.isArray(val);
 }
 
@@ -42,8 +42,8 @@ export function isObject(val: any): val is Record<string, any> {
  * Führt eine Schema-Validierung eines Objekts durch.
  * Unterstützt optionale Felder ("string?") und Typprüfung.
  */
-export function validateSchema<T extends Record<string, any>>(
-  obj: any,
+export function validateSchema<T extends Record<string, unknown>>(
+  obj: unknown,
   schema: Record<
     keyof T,
     | "string"
@@ -129,7 +129,7 @@ export function validateModelName(model: string): boolean {
   return /^[a-zA-Z0-9._-]+$/.test(model);
 }
 
-export function validateAIConfig(config: Record<string, any>): {
+export function validateAIConfig(config: Record<string, unknown>): {
   valid: boolean;
   issues: string[];
 } {
@@ -159,7 +159,7 @@ export function validateAIConfig(config: Record<string, any>): {
   return { valid: issues.length === 0, issues };
 }
 
-export function validateChatMessages(messages: any[]): {
+export function validateChatMessages(messages: unknown[]): {
   valid: boolean;
   errors: string[];
 } {

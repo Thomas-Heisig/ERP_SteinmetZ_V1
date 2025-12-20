@@ -10,11 +10,11 @@ export class GlobalApp {
 
   static set(app: Application) {
     GlobalApp._app = app;
-    (globalThis as any).expressApp = app; // für Alt-Kompatibilität
+    (globalThis as unknown as Record<string, Application>).expressApp = app; // für Alt-Kompatibilität
   }
 
   static get(): Application {
-    const app = GlobalApp._app ?? (globalThis as any).expressApp;
+    const app = GlobalApp._app ?? (globalThis as unknown as Record<string, Application>).expressApp;
     if (!app) throw new Error("GlobalApp: Express-Instanz nicht gesetzt");
     return app;
   }

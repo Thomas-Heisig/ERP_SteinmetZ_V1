@@ -18,9 +18,9 @@ const logger = createLogger("tool-registry");
  * ToolFunction:
  * Asynchrone Funktion mit optionalen Metadaten, die von der ToolRegistry verwaltet wird.
  */
-export type ToolFunction = ((params?: Record<string, any>) => Promise<any>) & {
+export type ToolFunction = ((params?: Record<string, unknown>) => Promise<unknown>) & {
   description?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   category?: string;
   version?: string;
   restricted?: boolean;
@@ -34,7 +34,7 @@ export type ToolFunction = ((params?: Record<string, any>) => Promise<any>) & {
 export interface ToolMetadata {
   name: string;
   description?: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   category?: string;
   version?: string;
   restricted?: boolean;
@@ -48,7 +48,7 @@ export interface ToolMetadata {
 export class ToolRegistry {
   private readonly tools = new Map<string, ToolFunction>();
   private readonly aliases = new Map<string, string>();
-  private readonly listeners: Record<string, ((info: any) => void)[]> = {};
+  private readonly listeners: Record<string, ((info: unknown) => void)[]> = {};
   private readonly meta = {
     version: "2.7",
     lastUpdated: new Date().toISOString(),
@@ -137,9 +137,9 @@ export class ToolRegistry {
 
   async call(
     name: string,
-    params: Record<string, any> = {},
+    params: Record<string, unknown> = {},
     opts: { timeout?: number; sandbox?: boolean; source?: string } = {},
-  ): Promise<any> {
+  ): Promise<unknown> {
     const realName = this.aliases.get(name) ?? name;
     const tool = this.tools.get(realName);
     if (!tool) {
@@ -168,8 +168,8 @@ export class ToolRegistry {
       const duration = Date.now() - start;
       this.emit("afterCall", { name: realName, duration, success: true });
       return result;
-    } catch (err: any) {
-      const msg = err?.message ?? String(err);
+    } catch (error: unknown) {
+      const msg = getErrorMessage(error);
       this.emit("afterCall", { name: realName, success: false, error: msg });
       log("error", `Tool '${realName}' Fehler`, { msg });
       throw new Error(`Fehler beim Ausführen von '${realName}': ${msg}`);
@@ -220,21 +220,18 @@ export class ToolRegistry {
 
   on(
     event: "register" | "beforeCall" | "afterCall" | "unregister" | "clear",
-    handler: (info: any) => void,
+    handler: (info: unknown) => void,
   ) {
     if (!this.listeners[event]) this.listeners[event] = [];
     this.listeners[event].push(handler);
   }
 
-  emit(event: string, data: any): void {
+  emit(event: string, data: unknown): void {
     (this.listeners[event] ?? []).forEach((cb) => {
       try {
         cb(data);
-      } catch (err) {
-        log(
-          "warn",
-          `Listener-Fehler für Event '${event}': ${(err as Error).message}`,
-        );
+      } catch (error: unknown) {
+        log("warn", `Listener-Fehler für Event '${event}': ${getErrorMessage(error)}`);
       }
     });
   }
@@ -243,7 +240,11 @@ export class ToolRegistry {
    * 🔄 Export / Import
    * ───────────────────────────────────────────── */
 
-  exportRegistry(): any {
+  exportRegistry(): {
+    meta: { version: string; lastUpdated: string };
+    tools: ToolMetadata[];
+    aliases: Record<string, string>;
+  } {
     return {
       meta: this.meta,
       tools: this.getToolDefinitions(),
@@ -251,23 +252,26 @@ export class ToolRegistry {
     };
   }
 
-  importRegistry(data: any): void {
-    if (!data?.tools || !Array.isArray(data.tools)) {
+  importRegistry(data: unknown): void {
+    if (!isRecord(data) || !Array.isArray((data as Record<string, unknown>).tools)) {
       throw new Error("Ungültiges Registry-Importformat.");
     }
     this.clear();
-    for (const t of data.tools) {
+    const tools = (data as Record<string, unknown>).tools as Array<Record<string, unknown>>;
+    for (const t of tools) {
       const fn = (async () => ({})) as ToolFunction;
-      fn.description = t.description ?? `Importiertes Tool ${t.name}`;
-      fn.parameters = t.parameters ?? {};
-      fn.category = t.category ?? "general";
-      fn.version = t.version ?? "1.0";
-      fn.restricted = t.restricted ?? false;
+      const name = typeof t.name === "string" ? t.name : `imported_${Date.now()}`;
+      fn.description = (t.description as string) ?? `Importiertes Tool ${name}`;
+      fn.parameters = (t.parameters as Record<string, unknown>) ?? {};
+      fn.category = (t.category as string) ?? "general";
+      fn.version = (t.version as string) ?? "1.0";
+      fn.restricted = Boolean(t.restricted);
       fn.registeredAt = new Date().toISOString();
-      this.tools.set(t.name, fn);
+      this.tools.set(name, fn);
     }
-    if (data.aliases) {
-      for (const [a, target] of Object.entries(data.aliases)) {
+    const aliases = (data as Record<string, unknown>).aliases;
+    if (isRecord(aliases)) {
+      for (const [a, target] of Object.entries(aliases)) {
         if (typeof target === "string") this.aliases.set(a, target);
       }
     }
@@ -278,9 +282,15 @@ export class ToolRegistry {
    * 🧩 Integration (Any-to-Any / Workflow)
    * ───────────────────────────────────────────── */
 
-  async routeAnyToAny(source: string, target: string, payload: any) {
+  async routeAnyToAny(source: string, target: string, payload: unknown) {
     log("info", `🔄 Any-to-Any Call: ${source} → ${target}`, { payload });
-    if (this.has(target)) return await this.call(target, payload);
+    if (this.has(target)) {
+      const params =
+        typeof payload === "object" && payload !== null
+          ? (payload as Record<string, unknown>)
+          : {};
+      return await this.call(target, params);
+    }
     log("warn", `Ziel '${target}' unbekannt.`);
     return { success: false, error: `Unbekanntes Ziel: ${target}` };
   }
@@ -335,3 +345,12 @@ export class ToolRegistry {
 
 /** 🧭 Globale Instanz */
 export const toolRegistry = new ToolRegistry();
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return typeof error === "string" ? error : JSON.stringify(error);
+}

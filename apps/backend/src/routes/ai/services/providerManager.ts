@@ -314,7 +314,7 @@ export class ProviderManager {
       case "eliza":
         return await elizaProvider.respond(messages);
 
-      case "fallback":
+      case "fallback": {
         const response = await generateAIResponse(
           model || "fallback",
           messages
@@ -326,6 +326,7 @@ export class ProviderManager {
             model: model || "fallback",
           }
         };
+      }
 
       default:
         throw new Error(`Unknown provider: ${provider}`);

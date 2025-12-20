@@ -1,6 +1,6 @@
-Basierend auf der analysierten `workflowEngine.ts` Datei, hier sind die erkannten Funktionen und Features:
+#
 
-## ⚙️ **Workflow Engine System - Hauptfunktionen**
+## ⚙️ Workflow Engine System - Hauptfunktionen
 
 ### **Workflow-Management**
 

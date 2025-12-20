@@ -2,9 +2,13 @@
 
 import { Router } from "express";
 import { randomUUID } from "crypto";
-import db from "../../services/dbService.js";
+import db from "../database/dbService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { createICS } from "../../utils/icsGenerator.js";
+import type { SqlValue } from "../database/database.js";
+
+// Import CalendarEvent from types.js
+import type { CalendarEvent, RecurrenceType } from "./types.js";
 
 const router = Router();
 
@@ -18,7 +22,7 @@ router.get(
     const { format = "ics", start, end } = req.query;
 
     let sql = "SELECT * FROM calendar_events WHERE 1=1";
-    const params: unknown[] = [];
+    const params: SqlValue[] = [];
 
     if (start) {
       sql += " AND start_time >= ?";
@@ -93,12 +97,12 @@ router.post(
       ics,
       overwrite = false,
     } = req.body as {
-      events?: any[];
+      events?: Partial<CalendarEvent>[];
       ics?: string;
       overwrite?: boolean;
     };
 
-    let importEvents: any[] = Array.isArray(events) ? events : [];
+    let importEvents: Partial<CalendarEvent>[] = Array.isArray(events) ? events : [];
     if (
       !Array.isArray(events) &&
       typeof ics === "string" &&
@@ -106,7 +110,7 @@ router.post(
     ) {
       try {
         importEvents = parseICS(ics);
-      } catch (e) {
+      } catch (_e) {
         return res.status(400).json({
           success: false,
           error: "Failed to parse ICS content",
@@ -177,7 +181,7 @@ router.post(
 );
 
 // Helper functions
-function eventsToCSV(events: any[]): string {
+function eventsToCSV(events: CalendarEvent[]): string {
   const headers = [
     "Title",
     "Description",
@@ -207,32 +211,54 @@ function eventsToCSV(events: any[]): string {
   return [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
 }
 
-function rowToEvent(row: Record<string, unknown>) {
+function rowToEvent(row: Record<string, unknown>): CalendarEvent {
   return {
     id: row.id as string,
     title: row.title as string,
     description: (row.description as string) ?? "",
-    location: row.location as string,
+    location: row.location as string | undefined,
     start: row.start_time as string,
     end: row.end_time as string,
     allDay: Boolean(row.all_day),
-    color: row.color as string,
-    category: row.category as string,
-    recurrence: (row.recurrence as string) ?? "none",
-    recurrenceEndDate: row.recurrence_end_date as string,
-    reminders: JSON.parse((row.reminders_json as string) ?? "[]"),
-    attendees: JSON.parse((row.attendees_json as string) ?? "[]"),
+    color: row.color as string | undefined,
+    category: row.category as string | undefined,
+    recurrence: ((row.recurrence as string) ?? "none") as RecurrenceType,
+    recurrenceEndDate: row.recurrence_end_date as string | undefined,
+    reminders: JSON.parse((row.reminders_json as string) ?? "[]") as number[],
+    attendees: JSON.parse((row.attendees_json as string) ?? "[]") as string[],
+    status: ((row.status as string) ?? "confirmed") as "confirmed" | "tentative" | "cancelled",
+    priority: ((row.priority as string) ?? "normal") as "low" | "normal" | "high" | "urgent",
+    timezone: (row.timezone as string) ?? "UTC",
+    isPrivate: Boolean(row.is_private),
+    url: row.url as string | undefined,
+    organizer: row.organizer as string | undefined,
     createdBy: (row.created_by as string) ?? "import",
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
 }
 
+// ICS Event während des Parsings
+interface ICSEventData {
+  uid?: string;
+  summary?: string;
+  description?: string;
+  location?: string;
+  categories?: string;
+  color?: string;
+  organizer?: string;
+  attendees?: string[];
+  dtstartRaw?: string;
+  dtstartValueDate?: boolean;
+  dtendRaw?: string;
+  dtendValueDate?: boolean;
+}
+
 // Very basic ICS parser for VEVENT blocks
-function parseICS(ics: string): any[] {
+function parseICS(ics: string): Partial<CalendarEvent>[] {
   const lines = ics.replace(/\r\n|\r/g, "\n").split("\n");
-  const events: any[] = [];
-  let current: any | null = null;
+  const events: Partial<CalendarEvent>[] = [];
+  let current: ICSEventData | null = null;
 
   const flush = () => {
     if (current) {
@@ -249,14 +275,14 @@ function parseICS(ics: string): any[] {
         id: current.uid || undefined,
         title: current.summary || "Unbenannter Termin",
         description: current.description || "",
-        location: current.location || null,
+        location: current.location || undefined,
         start,
         end,
         allDay,
-        color: current.color || null,
-        category: current.categories || null,
-        recurrence: "none",
-        recurrenceEndDate: null,
+        color: current.color || undefined,
+        category: current.categories || undefined,
+        recurrence: "none" as RecurrenceType,
+        recurrenceEndDate: undefined,
         reminders: [],
         attendees,
         createdBy: current.organizer || "import",
@@ -321,7 +347,9 @@ function parseICS(ics: string): any[] {
           const cn = params["CN"] ? unescapeICS(params["CN"]) : undefined;
           const email = value.replace(/^mailto:/i, "");
           current.attendees = current.attendees || [];
-          current.attendees.push(email || cn);
+          if (email || cn) {
+            current.attendees.push(email || cn || "");
+          }
         }
         break;
       case "DTSTART":

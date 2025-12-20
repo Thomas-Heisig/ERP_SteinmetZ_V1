@@ -246,3 +246,9 @@
 [data-theme="lcars"] .submitButton:hover:not(:disabled) {
   background: #cc99ff;
 }
+.passwordHint {
+  display: block;
+  color: #666;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+}

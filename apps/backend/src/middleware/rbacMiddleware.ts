@@ -38,9 +38,9 @@
  */
 
 import { Request, Response, NextFunction } from "express";
-import { getRbacService } from "../services/rbacService.js";
+import { getRbacService } from "../routes/rbac/rbacService.js";
 import { sendForbidden } from "../utils/errorResponse.js";
-import type { Permission } from "../types/rbac.js";
+import type { Permission } from "../routes/rbac/rbac.js";
 
 /**
  * Require specific role

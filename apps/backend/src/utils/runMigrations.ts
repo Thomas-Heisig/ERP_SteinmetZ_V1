@@ -10,7 +10,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import db from "../services/dbService.js";
+import db from "../routes/database/dbService.js";
 import { createLogger } from "./logger.js";
 
 const logger = createLogger("migrations");
@@ -160,7 +160,7 @@ export async function runAllMigrations(): Promise<{
   executed: number;
   failed: number;
 }> {
-  logger.info("Starting database migrations");
+  logger.info({}, "Starting database migrations");
 
   try {
     // Ensure database is initialized
@@ -170,7 +170,7 @@ export async function runAllMigrations(): Promise<{
     const migrations = await getMigrationFiles();
 
     if (migrations.length === 0) {
-      logger.info("No migrations found");
+      logger.info({}, "No migrations found");
       return { success: true, executed: 0, failed: 0 };
     }
 

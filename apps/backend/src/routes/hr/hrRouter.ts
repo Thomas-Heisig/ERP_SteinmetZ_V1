@@ -10,23 +10,26 @@
  */
 
 import { Router, Request, Response } from "express";
-import { z } from "zod";
-import hrService from "../../services/hrService";
+import pino from "pino";
+import { z, type ZodIssue } from "zod";
+
 import { authenticate } from "../../middleware/authMiddleware.js";
+import { asyncHandler } from "../../middleware/asyncHandler";
 import {
   requirePermission,
   requireModuleAccess,
 } from "../../middleware/rbacMiddleware";
-import { asyncHandler } from "../../middleware/asyncHandler";
+import { BadRequestError, NotFoundError } from "../error/errors.js";
 import {
-  EmployeeStatus,
-  ContractType,
   ContractStatus,
-  TimeEntryType,
-  LeaveRequestType,
+  ContractType,
+  EmployeeStatus,
   LeaveRequestStatus,
-} from "../../types/hr";
-import pino from "pino";
+  LeaveRequestType,
+  PaymentMethod,
+  TimeEntryType,
+} from "./hr";
+import hrService from "./hrService";
 
 // Helper function to get authenticated user ID
 function getUserId(req: Request): string {
@@ -38,6 +41,32 @@ function getUserId(req: Request): string {
 
 const router = Router();
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+
+const uuidSchema = z.string().uuid();
+
+function formatValidationErrors(
+  issues: ZodIssue[],
+): Record<string, unknown> {
+  return {
+    issues: issues.map((issue) => ({
+      path: issue.path.join(".") || "root",
+      message: issue.message,
+      code: issue.code,
+    })),
+  };
+}
+
+function parseWithSchema<T>(
+  schema: z.ZodType<T>,
+  data: unknown,
+  message: string,
+): T {
+  const result = schema.safeParse(data);
+  if (!result.success) {
+    throw new BadRequestError(message, formatValidationErrors(result.error.issues));
+  }
+  return result.data;
+}
 
 // Apply authentication and module access to all routes
 router.use(authenticate);
@@ -135,6 +164,58 @@ const createOnboardingTaskSchema = z.object({
   notes: z.string().optional(),
 });
 
+const employeesQuerySchema = z
+  .object({
+    department: z.string().optional(),
+    status: z.nativeEnum(EmployeeStatus).optional(),
+    position: z.string().optional(),
+    search: z.string().optional(),
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(200).default(50),
+    sort_by: z.string().default("last_name"),
+    sort_order: z.enum(["asc", "desc"]).default("asc"),
+  })
+  .strict();
+
+const timeEntriesQuerySchema = z
+  .object({
+    employee_id: uuidSchema,
+    start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  })
+  .strict();
+
+const leaveRequestsQuerySchema = z
+  .object({
+    employee_id: uuidSchema,
+    status: z.nativeEnum(LeaveRequestStatus).optional(),
+  })
+  .strict();
+
+const overtimeQuerySchema = z
+  .object({
+    employee_id: uuidSchema,
+  })
+  .strict();
+
+const payrollQuerySchema = z
+  .object({
+    year: z.coerce.number().int().optional(),
+    month: z.string().optional(),
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().positive().max(200).default(50),
+    sort_by: z.string().optional(),
+    sort_order: z.enum(["asc", "desc"]).default("asc"),
+  })
+  .strict();
+
+const employeePayrollQuerySchema = z
+  .object({
+    year: z.coerce.number().int().optional(),
+    month: z.string().optional(),
+  })
+  .strict();
+
 // ==================== EMPLOYEE ENDPOINTS ====================
 
 /**
@@ -145,19 +226,25 @@ router.get(
   "/employees",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
+    const query = parseWithSchema(
+      employeesQuerySchema,
+      req.query,
+      "Invalid employee query parameters",
+    );
+
     const filters = {
-      department: req.query.department as string | undefined,
-      status: req.query.status as EmployeeStatus | undefined,
-      position: req.query.position as string | undefined,
-      search: req.query.search as string | undefined,
+      department: query.department,
+      status: query.status,
+      position: query.position,
+      search: query.search,
     };
 
     const pagination = {
-      page: parseInt(req.query.page as string) || 1,
-      limit: parseInt(req.query.limit as string) || 50,
-      sort_by: (req.query.sort_by as string) || "last_name",
-      sort_order: (req.query.sort_order as "asc" | "desc") || "asc",
-    };
+      page: query.page,
+      limit: query.limit,
+      sort_by: query.sort_by,
+      sort_order: query.sort_order,
+    } as const;
 
     const result = hrService.getEmployees(filters, pagination);
 
@@ -176,10 +263,11 @@ router.get(
   "/employees/:id",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employee = hrService.getEmployeeWithRelations(req.params.id);
+    const employeeId = parseWithSchema(uuidSchema, req.params.id, "Invalid employee id");
+    const employee = hrService.getEmployeeWithRelations(employeeId);
 
     if (!employee) {
-      throw new Error("Employee not found");
+      throw new NotFoundError("Employee not found", { employeeId });
     }
 
     res.json({
@@ -197,7 +285,11 @@ router.post(
   "/employees",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = createEmployeeSchema.parse(req.body);
+    const validatedData = parseWithSchema(
+      createEmployeeSchema,
+      req.body,
+      "Invalid employee payload",
+    );
     const employee = hrService.createEmployee(validatedData);
 
     logger.info({ employeeId: employee.id }, "Employee created");
@@ -217,11 +309,16 @@ router.put(
   "/employees/:id",
   requirePermission("hr:update"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = updateEmployeeSchema.parse(req.body);
-    const employee = hrService.updateEmployee(req.params.id, validatedData);
+    const employeeId = parseWithSchema(uuidSchema, req.params.id, "Invalid employee id");
+    const validatedData = parseWithSchema(
+      updateEmployeeSchema,
+      req.body,
+      "Invalid employee update payload",
+    );
+    const employee = hrService.updateEmployee(employeeId, validatedData);
 
     if (!employee) {
-      throw new Error("Employee not found");
+      throw new NotFoundError("Employee not found", { employeeId });
     }
 
     logger.info({ employeeId: employee.id }, "Employee updated");
@@ -241,13 +338,14 @@ router.delete(
   "/employees/:id",
   requirePermission("hr:delete"),
   asyncHandler(async (req: Request, res: Response) => {
-    const success = hrService.deleteEmployee(req.params.id);
+    const employeeId = parseWithSchema(uuidSchema, req.params.id, "Invalid employee id");
+    const success = hrService.deleteEmployee(employeeId);
 
     if (!success) {
-      throw new Error("Employee not found");
+      throw new NotFoundError("Employee not found", { employeeId });
     }
 
-    logger.info({ employeeId: req.params.id }, "Employee terminated");
+    logger.info({ employeeId }, "Employee terminated");
 
     res.json({
       success: true,
@@ -266,7 +364,8 @@ router.get(
   "/employees/:employeeId/contracts",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const contracts = hrService.getEmployeeContracts(req.params.employeeId);
+    const employeeId = parseWithSchema(uuidSchema, req.params.employeeId, "Invalid employee id");
+    const contracts = hrService.getEmployeeContracts(employeeId);
 
     res.json({
       success: true,
@@ -283,7 +382,11 @@ router.post(
   "/contracts",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = createContractSchema.parse(req.body);
+    const validatedData = parseWithSchema(
+      createContractSchema,
+      req.body,
+      "Invalid contract payload",
+    );
     const contract = hrService.createContract(validatedData);
 
     logger.info({ contractId: contract.id }, "Contract created");
@@ -303,10 +406,11 @@ router.get(
   "/contracts/:id",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const contract = hrService.getContractById(req.params.id);
+    const contractId = parseWithSchema(uuidSchema, req.params.id, "Invalid contract id");
+    const contract = hrService.getContractById(contractId);
 
     if (!contract) {
-      throw new Error("Contract not found");
+      throw new NotFoundError("Contract not found", { contractId });
     }
 
     res.json({
@@ -324,11 +428,16 @@ router.put(
   "/contracts/:id",
   requirePermission("hr:update"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = createContractSchema.partial().parse(req.body);
-    const contract = hrService.updateContract(req.params.id, validatedData);
+    const contractId = parseWithSchema(uuidSchema, req.params.id, "Invalid contract id");
+    const validatedData = parseWithSchema(
+      createContractSchema.partial(),
+      req.body,
+      "Invalid contract update payload",
+    );
+    const contract = hrService.updateContract(contractId, validatedData);
 
     if (!contract) {
-      throw new Error("Contract not found");
+      throw new NotFoundError("Contract not found", { contractId });
     }
 
     logger.info({ contractId: contract.id }, "Contract updated");
@@ -350,18 +459,16 @@ router.get(
   "/time-entries",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employeeId = req.query.employee_id as string;
-    const startDate = req.query.start_date as string | undefined;
-    const endDate = req.query.end_date as string | undefined;
-
-    if (!employeeId) {
-      throw new Error("employee_id is required");
-    }
+    const query = parseWithSchema(
+      timeEntriesQuerySchema,
+      req.query,
+      "Invalid time entry query parameters",
+    );
 
     const timeEntries = hrService.getEmployeeTimeEntries(
-      employeeId,
-      startDate,
-      endDate,
+      query.employee_id,
+      query.start_date,
+      query.end_date,
     );
 
     res.json({
@@ -379,7 +486,11 @@ router.post(
   "/time-entries",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = createTimeEntrySchema.parse(req.body);
+    const validatedData = parseWithSchema(
+      createTimeEntrySchema,
+      req.body,
+      "Invalid time entry payload",
+    );
     const timeEntry = hrService.createTimeEntry(validatedData);
 
     logger.info({ timeEntryId: timeEntry.id }, "Time entry created");
@@ -400,10 +511,11 @@ router.post(
   requirePermission("hr:approve"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const timeEntry = hrService.approveTimeEntry(req.params.id, userId);
+    const timeEntryId = parseWithSchema(uuidSchema, req.params.id, "Invalid time entry id");
+    const timeEntry = hrService.approveTimeEntry(timeEntryId, userId);
 
     if (!timeEntry) {
-      throw new Error("Time entry not found");
+      throw new NotFoundError("Time entry not found", { timeEntryId });
     }
 
     logger.info({ timeEntryId: timeEntry.id }, "Time entry approved");
@@ -425,16 +537,15 @@ router.get(
   "/leave-requests",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employeeId = req.query.employee_id as string;
-    const status = req.query.status as LeaveRequestStatus | undefined;
-
-    if (!employeeId) {
-      throw new Error("employee_id is required");
-    }
+    const query = parseWithSchema(
+      leaveRequestsQuerySchema,
+      req.query,
+      "Invalid leave request query parameters",
+    );
 
     const leaveRequests = hrService.getEmployeeLeaveRequests(
-      employeeId,
-      status,
+      query.employee_id,
+      query.status,
     );
 
     res.json({
@@ -452,7 +563,11 @@ router.post(
   "/leave-requests",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = createLeaveRequestSchema.parse(req.body);
+    const validatedData = parseWithSchema(
+      createLeaveRequestSchema,
+      req.body,
+      "Invalid leave request payload",
+    );
     const leaveRequest = hrService.createLeaveRequest(validatedData);
 
     logger.info({ leaveRequestId: leaveRequest.id }, "Leave request created");
@@ -473,10 +588,11 @@ router.post(
   requirePermission("hr:approve"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const leaveRequest = hrService.approveLeaveRequest(req.params.id, userId);
+    const leaveRequestId = parseWithSchema(uuidSchema, req.params.id, "Invalid leave request id");
+    const leaveRequest = hrService.approveLeaveRequest(leaveRequestId, userId);
 
     if (!leaveRequest) {
-      throw new Error("Leave request not found");
+      throw new NotFoundError("Leave request not found", { leaveRequestId });
     }
 
     logger.info({ leaveRequestId: leaveRequest.id }, "Leave request approved");
@@ -497,20 +613,21 @@ router.post(
   requirePermission("hr:approve"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const { reason } = req.body;
-
-    if (!reason) {
-      throw new Error("Rejection reason is required");
-    }
+    const leaveRequestId = parseWithSchema(uuidSchema, req.params.id, "Invalid leave request id");
+    const body = parseWithSchema(
+      z.object({ reason: z.string().min(1) }),
+      req.body,
+      "Invalid rejection reason",
+    );
 
     const leaveRequest = hrService.rejectLeaveRequest(
-      req.params.id,
+      leaveRequestId,
       userId,
-      reason,
+      body.reason,
     );
 
     if (!leaveRequest) {
-      throw new Error("Leave request not found");
+      throw new NotFoundError("Leave request not found", { leaveRequestId });
     }
 
     logger.info({ leaveRequestId: leaveRequest.id }, "Leave request rejected");
@@ -550,7 +667,11 @@ router.post(
   "/departments",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = createDepartmentSchema.parse(req.body);
+    const validatedData = parseWithSchema(
+      createDepartmentSchema,
+      req.body,
+      "Invalid department payload",
+    );
     const department = hrService.createDepartment(validatedData);
 
     logger.info({ departmentId: department.id }, "Department created");
@@ -572,10 +693,11 @@ router.get(
   "/onboarding/:id",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const onboarding = hrService.getOnboardingWithTasks(req.params.id);
+    const onboardingId = parseWithSchema(uuidSchema, req.params.id, "Invalid onboarding id");
+    const onboarding = hrService.getOnboardingWithTasks(onboardingId);
 
     if (!onboarding) {
-      throw new Error("Onboarding not found");
+      throw new NotFoundError("Onboarding not found", { onboardingId });
     }
 
     res.json({
@@ -593,7 +715,11 @@ router.post(
   "/onboarding",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = createOnboardingSchema.parse(req.body);
+    const validatedData = parseWithSchema(
+      createOnboardingSchema,
+      req.body,
+      "Invalid onboarding payload",
+    );
     const onboarding = hrService.createOnboarding(validatedData);
 
     logger.info({ onboardingId: onboarding.id }, "Onboarding created");
@@ -613,7 +739,11 @@ router.post(
   "/onboarding/tasks",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = createOnboardingTaskSchema.parse(req.body);
+    const validatedData = parseWithSchema(
+      createOnboardingTaskSchema,
+      req.body,
+      "Invalid onboarding task payload",
+    );
     const task = hrService.createOnboardingTask(validatedData);
 
     logger.info({ taskId: task.id }, "Onboarding task created");
@@ -634,10 +764,11 @@ router.post(
   requirePermission("hr:update"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const task = hrService.completeOnboardingTask(req.params.id, userId);
+    const taskId = parseWithSchema(uuidSchema, req.params.id, "Invalid task id");
+    const task = hrService.completeOnboardingTask(taskId, userId);
 
     if (!task) {
-      throw new Error("Onboarding task not found");
+      throw new NotFoundError("Onboarding task not found", { taskId });
     }
 
     logger.info({ taskId: task.id }, "Onboarding task completed");
@@ -659,7 +790,8 @@ router.get(
   "/employees/:employeeId/documents",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const documents = hrService.getEmployeeDocuments(req.params.employeeId);
+    const employeeId = parseWithSchema(uuidSchema, req.params.employeeId, "Invalid employee id");
+    const documents = hrService.getEmployeeDocuments(employeeId);
 
     res.json({
       success: true,
@@ -678,13 +810,13 @@ router.get(
   "/overtime",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employeeId = req.query.employee_id as string;
+    const query = parseWithSchema(
+      overtimeQuerySchema,
+      req.query,
+      "Invalid overtime query parameters",
+    );
 
-    if (!employeeId) {
-      throw new Error("employee_id is required");
-    }
-
-    const overtime = hrService.getEmployeeOvertime(employeeId);
+    const overtime = hrService.getEmployeeOvertime(query.employee_id);
 
     res.json({
       success: true,
@@ -701,15 +833,19 @@ router.post(
   "/overtime",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = z
-      .object({
-        employee_id: z.string().uuid(),
-        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-        hours: z.number().positive(),
-        reason: z.string().optional(),
-        notes: z.string().optional(),
-      })
-      .parse(req.body);
+    const validatedData = parseWithSchema(
+      z
+        .object({
+          employee_id: uuidSchema,
+          date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+          hours: z.number().positive(),
+          reason: z.string().optional(),
+          notes: z.string().optional(),
+        })
+        .strict(),
+      req.body,
+      "Invalid overtime payload",
+    );
 
     const overtime = hrService.createOvertimeRecord(validatedData);
 
@@ -731,10 +867,11 @@ router.post(
   requirePermission("hr:approve"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const overtime = hrService.approveOvertime(req.params.id, userId);
+    const overtimeId = parseWithSchema(uuidSchema, req.params.id, "Invalid overtime id");
+    const overtime = hrService.approveOvertime(overtimeId, userId);
 
     if (!overtime) {
-      throw new Error("Overtime record not found");
+      throw new NotFoundError("Overtime record not found", { overtimeId });
     }
 
     logger.info({ overtimeId: overtime.id }, "Overtime approved");
@@ -757,6 +894,9 @@ router.get(
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
     const year = parseInt(req.params.year);
+    if (!Number.isFinite(year)) {
+      throw new BadRequestError("Invalid year parameter");
+    }
     const countryCode = (req.query.country_code as string) || "DE";
 
     const params = hrService.getPayrollTaxParams(year, countryCode);
@@ -776,21 +916,25 @@ router.post(
   "/payroll/tax-params",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = z
-      .object({
-        year: z.number().int(),
-        income_tax_rate: z.number().positive(),
-        pension_insurance_rate: z.number().positive(),
-        health_insurance_rate: z.number().positive(),
-        unemployment_insurance_rate: z.number().positive(),
-        church_tax_rate: z.number().positive().optional(),
-        solidarity_surcharge_rate: z.number().positive().optional(),
-        minimum_wage: z.number().positive(),
-        tax_free_allowance: z.number().positive(),
-        country_code: z.string().optional(),
-        notes: z.string().optional(),
-      })
-      .parse(req.body);
+    const validatedData = parseWithSchema(
+      z
+        .object({
+          year: z.number().int(),
+          income_tax_rate: z.number().positive(),
+          pension_insurance_rate: z.number().positive(),
+          health_insurance_rate: z.number().positive(),
+          unemployment_insurance_rate: z.number().positive(),
+          church_tax_rate: z.number().positive().optional(),
+          solidarity_surcharge_rate: z.number().positive().optional(),
+          minimum_wage: z.number().positive(),
+          tax_free_allowance: z.number().positive(),
+          country_code: z.string().optional(),
+          notes: z.string().optional(),
+        })
+        .strict(),
+      req.body,
+      "Invalid payroll tax parameters",
+    );
 
     const params = hrService.createPayrollTaxParams({
       ...validatedData,
@@ -816,17 +960,22 @@ router.get(
   "/payroll",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const year = parseInt(req.query.year as string) || new Date().getFullYear();
-    const month = req.query.month as string | undefined;
+    const query = parseWithSchema(
+      payrollQuerySchema,
+      req.query,
+      "Invalid payroll query parameters",
+    );
 
-    const pagination = {
-      page: parseInt(req.query.page as string) || 1,
-      limit: parseInt(req.query.limit as string) || 50,
-      sort_by: req.query.sort_by as string,
-      sort_order: (req.query.sort_order as "asc" | "desc") || "asc",
-    };
-
-    const result = hrService.getPayrollRecords(year, month, pagination);
+    const result = hrService.getPayrollRecords(
+      query.year ?? new Date().getFullYear(),
+      query.month,
+      {
+        page: query.page,
+        limit: query.limit,
+        sort_by: query.sort_by,
+        sort_order: query.sort_order,
+      },
+    );
 
     res.json({
       success: true,
@@ -843,10 +992,11 @@ router.get(
   "/payroll/:id",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const payroll = hrService.getPayrollRecordById(req.params.id);
+    const payrollId = parseWithSchema(uuidSchema, req.params.id, "Invalid payroll id");
+    const payroll = hrService.getPayrollRecordById(payrollId);
 
     if (!payroll) {
-      throw new Error("Payroll record not found");
+      throw new NotFoundError("Payroll record not found", { payrollId });
     }
 
     res.json({
@@ -864,15 +1014,17 @@ router.get(
   "/employees/:employeeId/payroll",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const year = req.query.year
-      ? parseInt(req.query.year as string)
-      : undefined;
-    const month = req.query.month as string | undefined;
+    const employeeId = parseWithSchema(uuidSchema, req.params.employeeId, "Invalid employee id");
+    const query = parseWithSchema(
+      employeePayrollQuerySchema,
+      req.query,
+      "Invalid employee payroll query parameters",
+    );
 
     const records = hrService.getEmployeePayroll(
-      req.params.employeeId,
-      year,
-      month,
+      employeeId,
+      query.year,
+      query.month,
     );
 
     res.json({
@@ -890,29 +1042,31 @@ router.post(
   "/payroll",
   requirePermission("hr:create"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = z
-      .object({
-        employee_id: z.string().uuid(),
-        month: z.string().regex(/^\d{2}$/),
-        year: z.number().int(),
-        gross_salary: z.number().positive(),
-        bonuses: z.number().nonnegative().optional(),
-        income_tax: z.number().nonnegative().optional(),
-        pension_insurance: z.number().nonnegative().optional(),
-        health_insurance: z.number().nonnegative().optional(),
-        unemployment_insurance: z.number().nonnegative().optional(),
-        church_tax: z.number().nonnegative().optional(),
-        solidarity_surcharge: z.number().nonnegative().optional(),
-        other_deductions: z.number().nonnegative().optional(),
-        payment_method: z
-          .enum(["bank_transfer", "cash", "check", "direct_debit"])
-          .optional(),
-        iban: z.string().optional(),
-        bic: z.string().optional(),
-        creditor_name: z.string().optional(),
-        notes: z.string().optional(),
-      })
-      .parse(req.body);
+    const validatedData = parseWithSchema(
+      z
+        .object({
+          employee_id: uuidSchema,
+          month: z.string().regex(/^\d{2}$/),
+          year: z.number().int(),
+          gross_salary: z.number().positive(),
+          bonuses: z.number().nonnegative().optional(),
+          income_tax: z.number().nonnegative().optional(),
+          pension_insurance: z.number().nonnegative().optional(),
+          health_insurance: z.number().nonnegative().optional(),
+          unemployment_insurance: z.number().nonnegative().optional(),
+          church_tax: z.number().nonnegative().optional(),
+          solidarity_surcharge: z.number().nonnegative().optional(),
+          other_deductions: z.number().nonnegative().optional(),
+          payment_method: z.nativeEnum(PaymentMethod).optional(),
+          iban: z.string().optional(),
+          bic: z.string().optional(),
+          creditor_name: z.string().optional(),
+          notes: z.string().optional(),
+        })
+        .strict(),
+      req.body,
+      "Invalid payroll payload",
+    );
 
     const payroll = hrService.createPayrollRecord(validatedData);
 
@@ -955,15 +1109,19 @@ router.post(
   "/payroll/export/sepa",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = z
-      .object({
-        year: z.number().int(),
-        month: z.string().regex(/^\d{2}$/),
-        company_name: z.string(),
-        company_iban: z.string(),
-        company_bic: z.string(),
-      })
-      .parse(req.body);
+    const validatedData = parseWithSchema(
+      z
+        .object({
+          year: z.number().int(),
+          month: z.string().regex(/^\d{2}$/),
+          company_name: z.string(),
+          company_iban: z.string(),
+          company_bic: z.string(),
+        })
+        .strict(),
+      req.body,
+      "Invalid SEPA export payload",
+    );
 
     const xml = hrService.exportPayrollAsSEPA(
       validatedData.year,

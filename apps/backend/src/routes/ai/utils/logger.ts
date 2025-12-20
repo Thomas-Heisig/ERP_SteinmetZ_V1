@@ -44,7 +44,7 @@ export type LogLevel = "info" | "warn" | "error" | "debug";
 /**
  * Standardisierte Logfunktion mit JSON-Ausgabe.
  */
-export function log(level: LogLevel, msg: string, data?: any): void {
+export function log(level: LogLevel, msg: string, data?: unknown): void {
   const entry = {
     ts: new Date().toISOString(),
     level,
@@ -70,8 +70,9 @@ export function log(level: LogLevel, msg: string, data?: any): void {
   if (LOG_TO_FILE) {
     try {
       fs.appendFileSync(LOG_FILE, jsonLine + "\n", "utf8");
-    } catch (err: any) {
-      console.error("Fehler beim Schreiben der Log-Datei:", err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("Fehler beim Schreiben der Log-Datei:", message);
     }
   }
 
@@ -88,10 +89,11 @@ export function log(level: LogLevel, msg: string, data?: any): void {
 /**
  * Erstellt eine standardisierte Fehlerstruktur für Express-Antworten.
  */
-export function errorResponse(res: any, code: number, msg: string, err?: any) {
-  const detail = err?.message ?? err;
+export function errorResponse(res: unknown, code: number, msg: string, err?: unknown) {
+  const detail = err instanceof Error ? err.message : err;
   log("error", msg, { code, detail });
-  return res.status(code).json({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (res as any).status(code).json({
     success: false,
     error: msg,
     detail,
@@ -102,7 +104,7 @@ export function errorResponse(res: any, code: number, msg: string, err?: any) {
 /**
  * Einfache Debug-Ausgabe (nur wenn NODE_ENV=development).
  */
-export function debugLog(msg: string, data?: any) {
+export function debugLog(msg: string, data?: unknown) {
   if (process.env.NODE_ENV === "development") {
     log("debug", msg, data);
   }

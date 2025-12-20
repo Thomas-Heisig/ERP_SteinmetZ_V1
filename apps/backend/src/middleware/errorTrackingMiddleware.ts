@@ -2,7 +2,7 @@
 // apps/backend/src/middleware/errorTrackingMiddleware.ts
 
 import { Request, Response, NextFunction } from "express";
-import { errorTrackingService } from "../services/errorTrackingService.js";
+import { errorTrackingService } from "../routes/error/errorTrackingService.js";
 
 interface AuthenticatedRequest extends Request {
   user?: {

@@ -11,7 +11,7 @@ export interface ErrorResponse {
   error: {
     code: string;
     message: string;
-    details?: any;
+    details?: Record<string, unknown>;
     timestamp: string;
     path?: string;
   };
@@ -49,7 +49,7 @@ export function sendErrorResponse(
   statusCode: number,
   code: string,
   message: string,
-  details?: any,
+  details?: Record<string, unknown>,
   path?: string,
 ): void {
   const errorResponse: ErrorResponse = {
@@ -72,7 +72,7 @@ export function sendErrorResponse(
 export function sendBadRequest(
   res: Response,
   message: string = "Bad request",
-  details?: any,
+  details?: Record<string, unknown>,
 ): void {
   sendErrorResponse(res, 400, ErrorCode.BAD_REQUEST, message, details);
 }
@@ -83,7 +83,7 @@ export function sendBadRequest(
 export function sendUnauthorized(
   res: Response,
   message: string = "Authentication required",
-  details?: any,
+  details?: Record<string, unknown>,
 ): void {
   sendErrorResponse(res, 401, ErrorCode.UNAUTHORIZED, message, details);
 }
@@ -94,7 +94,7 @@ export function sendUnauthorized(
 export function sendForbidden(
   res: Response,
   message: string = "Insufficient permissions",
-  details?: any,
+  details?: Record<string, unknown>,
 ): void {
   sendErrorResponse(res, 403, ErrorCode.FORBIDDEN, message, details);
 }
@@ -105,7 +105,7 @@ export function sendForbidden(
 export function sendNotFound(
   res: Response,
   message: string = "Resource not found",
-  details?: any,
+  details?: Record<string, unknown>,
 ): void {
   sendErrorResponse(res, 404, ErrorCode.NOT_FOUND, message, details);
 }
@@ -116,7 +116,7 @@ export function sendNotFound(
 export function sendValidationError(
   res: Response,
   message: string = "Validation failed",
-  details?: any,
+  details?: Record<string, unknown>,
 ): void {
   sendErrorResponse(res, 422, ErrorCode.VALIDATION_ERROR, message, details);
 }
@@ -143,7 +143,7 @@ export function sendRateLimitError(
 export function sendInternalError(
   res: Response,
   message: string = "Internal server error",
-  details?: any,
+  details?: Record<string, unknown>,
 ): void {
   sendErrorResponse(res, 500, ErrorCode.INTERNAL_ERROR, message, details);
 }
@@ -154,7 +154,7 @@ export function sendInternalError(
 export function sendServiceUnavailable(
   res: Response,
   message: string = "Service temporarily unavailable",
-  details?: any,
+  details?: Record<string, unknown>,
 ): void {
   sendErrorResponse(res, 503, ErrorCode.SERVICE_UNAVAILABLE, message, details);
 }

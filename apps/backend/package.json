@@ -17,7 +17,9 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "script:create-admin": "tsx src/scripts/createAdminUser.ts",
+    "script:assign-admin-role": "tsx src/scripts/assignAdminRole.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0",

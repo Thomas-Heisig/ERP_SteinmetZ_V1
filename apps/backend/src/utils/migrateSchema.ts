@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 const dbPath = path.resolve(__dirname, "../../data/database.db");
 const migrationsDir = path.resolve(__dirname, "../../data/migrations");
 
-logger.info("📦 Starte Schema-Migration...");
+logger.info({}, "📦 Starte Schema-Migration...");
 logger.info({ dbPath }, "📁 Datenbank");
 logger.info({ migrationsDir }, "📂 Migrations-Ordner");
 
@@ -64,7 +64,7 @@ const migrationFiles = fs
   .sort();
 
 if (migrationFiles.length === 0) {
-  logger.info("ℹ️  Keine Migrationsdateien gefunden.");
+  logger.info({}, "ℹ️  Keine Migrationsdateien gefunden.");
   process.exit(0);
 }
 
@@ -73,19 +73,32 @@ logger.info(
   `📄 Gefundene Migrationen: ${migrationFiles.length}`,
 );
 
-// Hilfsfunktion: Prüft, ob eine Spalte existiert
+/**
+ * Prüft, ob eine Spalte in einer Tabelle existiert
+ * @param table - Tabellenname
+ * @param column - Spaltenname
+ * @returns true, wenn die Spalte existiert
+ */
 function columnExists(table: string, column: string): boolean {
+  interface PragmaTableInfo {
+    name: string;
+  }
+
   try {
-    const info = db.prepare(`PRAGMA table_info(${table});`).all();
-    return info.some((row: any) => row.name === column);
+    const info = db.prepare(`PRAGMA table_info(${table});`).all() as PragmaTableInfo[];
+    return info.some((row) => row.name === column);
   } catch {
     return false;
   }
 }
 // 🔹 Sicherstellen, dass neuere Spalten vorhanden sind
 try {
-  const columns = db.prepare("PRAGMA table_info(schema_migrations);").all();
-  const names = columns.map((c: any) => c.name);
+  interface PragmaTableInfo {
+    name: string;
+  }
+
+  const columns = db.prepare("PRAGMA table_info(schema_migrations);").all() as PragmaTableInfo[];
+  const names = columns.map((c) => c.name);
   if (!names.includes("status")) {
     db.exec(
       "ALTER TABLE schema_migrations ADD COLUMN status TEXT DEFAULT 'success';",
@@ -168,4 +181,4 @@ for (const file of migrationFiles) {
 
 // Abschluss
 db.close();
-logger.info("🎉 Alle Migrationen abgeschlossen!");
+logger.info({}, "🎉 Alle Migrationen abgeschlossen!");

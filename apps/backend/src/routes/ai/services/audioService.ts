@@ -8,7 +8,9 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { performance } from "node:perf_hooks";
 import fetch from "node-fetch";
+import type { BodyInit } from "node-fetch";
 import FormData from "form-data"; // ✅ Wichtig: Node.js-FormData verwenden
 import { log } from "../utils/logger.js";
 import type { AIResponse, AIModuleConfig } from "../types/types.js";
@@ -35,6 +37,8 @@ export const audioConfig: AIModuleConfig = {
 /**
  * Wandelt Audio (z. B. WAV, MP3, M4A) in Text um.
  * Typgesichert und defensiv, da die API-Struktur variieren kann.
+ * @param filePath Absoluter oder relativer Pfad zur Audiodatei
+ * @returns KI-Antwort mit Transkript oder Fehlerdetails
  */
 export async function transcribeAudio(filePath: string): Promise<AIResponse> {
   if (!fs.existsSync(filePath)) {
@@ -45,6 +49,10 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
   if (!apiKey) {
     return { text: "❌ OPENAI_API_KEY fehlt in den Umgebungsvariablen." };
   }
+
+  const startedAt = performance.now();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), audioConfig.timeout_ms);
 
   try {
     const formData = new FormData();
@@ -58,9 +66,8 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
     const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}` },
-      body: formData as any,
-      // @ts-expect-error – node-fetch erlaubt timeout
-      timeout: audioConfig.timeout_ms,
+      body: formData as unknown as BodyInit,
+      signal: controller.signal,
     });
 
     if (!res.ok) {
@@ -72,21 +79,14 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
        Antwort sicher parsen: rawData ist unknown → zuerst prüfen
     ------------------------------------------------------------- */
     const rawData: unknown = await res.json();
+    const textOut = extractText(rawData);
 
-    let textOut: string = "(Keine Transkription erhalten)";
-
-    if (
-      typeof rawData === "object" &&
-      rawData !== null &&
-      "text" in rawData &&
-      typeof (rawData as any).text === "string"
-    ) {
-      textOut = (rawData as any).text;
-    }
+    const durationMs = Math.round(performance.now() - startedAt);
 
     log("info", "Transkription erfolgreich", {
       file: filePath,
       model: audioConfig.model,
+      duration_ms: durationMs,
     });
 
     return {
@@ -95,20 +95,27 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
         provider: "openai",
         model: audioConfig.model,
         source: path.basename(filePath),
-        time_ms: audioConfig.timeout_ms,
+        time_ms: durationMs,
       },
     };
-  } catch (err: any) {
-    log("error", "Fehler bei Transkription", { error: err.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    log("error", "Fehler bei Transkription", {
+      error: message,
+      file: filePath,
+    });
 
     return {
-      text: `❌ Fehler bei Transkription: ${err.message}`,
-      errors: [err.message],
+      text: `❌ Fehler bei Transkription: ${message}`,
+      errors: [message],
       meta: {
         provider: "openai",
         model: audioConfig.model,
       },
     };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -119,6 +126,9 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
 /**
  * Erstellt Sprachdatei (TTS) aus Text.
  * Gibt Pfad zur erzeugten Datei zurück.
+ * @param text Inhalt, der gesprochen werden soll
+ * @param outputPath Zielpfad für die erzeugte Audiodatei
+ * @returns Pfad zur geschriebenen Datei
  */
 export async function textToSpeech(
   text: string,
@@ -129,6 +139,10 @@ export async function textToSpeech(
 
   // Zielordner sicherstellen
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+
+  const startedAt = performance.now();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), audioConfig.timeout_ms);
 
   try {
     const res = await fetch("https://api.openai.com/v1/audio/speech", {
@@ -142,8 +156,7 @@ export async function textToSpeech(
         voice: process.env.TTS_VOICE ?? "alloy",
         input: text,
       }),
-      // @ts-expect-error – node-fetch timeout property
-      timeout: audioConfig.timeout_ms,
+      signal: controller.signal,
     });
 
     if (!res.ok) {
@@ -154,15 +167,22 @@ export async function textToSpeech(
     const buffer = Buffer.from(await res.arrayBuffer());
     fs.writeFileSync(outputPath, buffer);
 
+    const durationMs = Math.round(performance.now() - startedAt);
+
     log("info", "TTS-Datei erstellt", {
       file: outputPath,
       size: buffer.length,
+      duration_ms: durationMs,
     });
 
     return outputPath;
-  } catch (err: any) {
-    log("error", "TTS-Fehler", { error: err.message });
-    throw new Error(`❌ TTS-Fehler: ${err.message}`);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    log("error", "TTS-Fehler", { error: message });
+    throw new Error(`❌ TTS-Fehler: ${message}`);
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -173,6 +193,7 @@ export async function textToSpeech(
 /**
  * Prüft, ob Whisper & TTS verfügbar sind.
  * Defensiv typisiert gegen unknown-JSON-Strukturen.
+ * @returns Objekt mit Verfügbarkeitsflags für Whisper und TTS
  */
 export async function testAudioEndpoints(): Promise<Record<string, boolean>> {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -180,9 +201,13 @@ export async function testAudioEndpoints(): Promise<Record<string, boolean>> {
     return { whisper: false, tts: false };
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), audioConfig.timeout_ms);
+
   try {
     const res = await fetch("https://api.openai.com/v1/models", {
       headers: { Authorization: `Bearer ${apiKey}` },
+      signal: controller.signal,
     });
 
     if (!res.ok) {
@@ -201,17 +226,8 @@ export async function testAudioEndpoints(): Promise<Record<string, boolean>> {
        { data: [ { id: string }, ... ] }
        Diese Struktur wird defensiv verifiziert.
     --------------------------------------------------------- */
-    if (
-      typeof raw === "object" &&
-      raw !== null &&
-      "data" in raw &&
-      Array.isArray((raw as any).data)
-    ) {
-      const models = (raw as any).data as Array<{ id?: unknown }>;
-
-      const ids = models
-        .map((m) => (typeof m.id === "string" ? m.id : ""))
-        .filter((id) => id.length > 0);
+    if (isRecord(raw) && Array.isArray(raw.data)) {
+      const ids = extractModelIds(raw.data);
 
       whisperAvailable = ids.includes("whisper-1");
       ttsAvailable = ids.some((id) => id.includes("tts"));
@@ -223,6 +239,8 @@ export async function testAudioEndpoints(): Promise<Record<string, boolean>> {
     };
   } catch {
     return { whisper: false, tts: false };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -236,3 +254,22 @@ export default {
   textToSpeech,
   testAudioEndpoints,
 };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function extractText(payload: unknown): string {
+  if (isRecord(payload) && typeof payload.text === "string") {
+    return payload.text;
+  }
+  return "(Keine Transkription erhalten)";
+}
+
+function extractModelIds(models: unknown[]): string[] {
+  return models
+    .map((model) =>
+      isRecord(model) && typeof model.id === "string" ? model.id : null,
+    )
+    .filter((id): id is string => Boolean(id));
+}

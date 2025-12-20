@@ -1,223 +1,174 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/reporting/reportingRouter.ts
+
 /**
+ * Reporting Router Module
+ *
+ * Handles all reporting and analytics HTTP endpoints including standard reports,
+ * ad-hoc analyses, AI insights, and dashboard KPIs.
+ *
  * @module ReportingRouter
- * @description Reporting & Analytics - Standard-Reports, Ad-hoc-Analysen, KI-Analytics
+ * @category Routes
  */
 
 import { Router } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { z } from "zod";
-// No error types needed currently
+import { createLogger } from "../../utils/logger.js";
+import { reportingService } from "./reportingService.js";
 
+const logger = createLogger("reporting-router");
 const router = Router();
 
 /* ---------------------------------------------------------
    STANDARD-REPORTS
 --------------------------------------------------------- */
 
-// GET /api/reporting/financial - Finanzberichte
+/**
+ * Get financial reports overview
+ *
+ * Returns available financial reports (balance sheet, P&L, cashflow)
+ * for a specified period and year.
+ *
+ * @route GET /api/reporting/financial
+ * @query {string} [period] - Report period (current_month, last_month, quarter, year)
+ * @query {number} [year] - Report year (defaults to current year)
+ * @access Private
+ * @returns {FinancialReport} Available financial reports
+ */
 router.get(
   "/financial",
   asyncHandler(async (req, res) => {
-    const { period, year } = req.query;
+    const period = req.query.period as string | undefined;
+    const year = req.query.year ? parseInt(req.query.year as string) : undefined;
+    
+    logger.debug({ period, year }, "GET /api/reporting/financial - Fetching financial reports");
 
-    res.json({
-      period: period || "current_month",
-      year: year || new Date().getFullYear(),
-      reports: [
-        {
-          name: "Bilanz",
-          type: "balance_sheet",
-          date: "2025-12-31",
-          available: true,
-        },
-        {
-          name: "Gewinn- und Verlustrechnung",
-          type: "pnl",
-          date: "2025-12-31",
-          available: true,
-        },
-        {
-          name: "Cashflow-Rechnung",
-          type: "cashflow",
-          date: "2025-12-31",
-          available: true,
-        },
-      ],
-    });
+    const reports = await reportingService.getFinancialReports(period, year);
+
+    logger.info({ period, year, count: reports.reports.length }, "Financial reports retrieved");
+    res.json(reports);
   }),
 );
 
-// GET /api/reporting/financial/:type - Spezifischen Finanzbericht abrufen
+/**
+ * Get specific financial report by type
+ *
+ * Returns detailed financial report data for a specific report type
+ * (e.g., P&L, balance sheet, cashflow).
+ *
+ * @route GET /api/reporting/financial/:type
+ * @param {string} type - Report type (pnl, balance_sheet, cashflow)
+ * @query {number} year - Report year
+ * @query {number} [month] - Report month (optional)
+ * @access Private
+ * @returns {PnLReport|BalanceSheetReport|CashflowReport} Detailed report data
+ */
 router.get(
   "/financial/:type",
   asyncHandler(async (req, res) => {
     const { type } = req.params;
-    const { year, month } = req.query;
+    const year = parseInt(req.query.year as string);
+    const month = req.query.month ? parseInt(req.query.month as string) : undefined;
 
-    // Beispiel: Gewinn- und Verlustrechnung
+    logger.debug({ type, year, month }, "GET /api/reporting/financial/:type - Fetching specific report");
+
     if (type === "pnl") {
-      res.json({
-        type: "pnl",
-        period: `${year}-${month || "12"}`,
-        data: {
-          revenue: {
-            sales: 450000,
-            other_income: 12000,
-            total: 462000,
-          },
-          expenses: {
-            materials: 180000,
-            personnel: 120000,
-            operating: 45000,
-            depreciation: 15000,
-            total: 360000,
-          },
-          ebit: 102000,
-          financial_result: -3000,
-          ebt: 99000,
-          taxes: 19800,
-          net_income: 79200,
-        },
-      });
+      const report = await reportingService.getPnLReport(year, month);
+      logger.info({ type, year, month, net_income: report.data.net_income }, "P&L report retrieved");
+      return res.json(report);
     }
 
+    logger.warn({ type }, "Report type not implemented");
     res.json({ message: "Report type not implemented", type });
   }),
 );
 
-// GET /api/reporting/sales - Vertriebsberichte
+/**
+ * Get sales report
+ *
+ * Returns comprehensive sales metrics including revenue, orders,
+ * top customers, products, and regional breakdown.
+ *
+ * @route GET /api/reporting/sales
+ * @access Private
+ * @returns {SalesReport} Sales report with metrics and breakdowns
+ */
 router.get(
   "/sales",
   asyncHandler(async (_req, res) => {
-    res.json({
-      period: "current_month",
-      revenue: {
-        total: 450000,
-        change_percent: 12.5,
-        target: 400000,
-        achievement_percent: 112.5,
-      },
-      orders: {
-        count: 45,
-        average_value: 10000,
-        conversion_rate: 32,
-      },
-      top_customers: [
-        { name: "Musterfirma GmbH", revenue: 85000, orders: 8 },
-        { name: "Beispiel AG", revenue: 72000, orders: 6 },
-        { name: "Test GmbH", revenue: 58000, orders: 5 },
-      ],
-      top_products: [
-        { name: "Grabstein Modell A", quantity: 25, revenue: 175000 },
-        { name: "Gedenktafel", quantity: 35, revenue: 105000 },
-        { name: "Einfassung", quantity: 15, revenue: 75000 },
-      ],
-      by_region: [
-        { region: "Bayern", revenue: 180000, percentage: 40 },
-        { region: "Baden-Württemberg", revenue: 135000, percentage: 30 },
-        { region: "Hessen", revenue: 90000, percentage: 20 },
-        { region: "Andere", revenue: 45000, percentage: 10 },
-      ],
-    });
+    logger.debug("GET /api/reporting/sales - Fetching sales report");
+
+    const report = await reportingService.getSalesReport();
+
+    logger.info({ revenue: report.revenue.total, orders: report.orders.count }, "Sales report retrieved");
+    res.json(report);
   }),
 );
 
-// GET /api/reporting/production - Produktionsberichte
+/**
+ * Get production report
+ *
+ * Returns production metrics including output, OEE, downtime,
+ * and product breakdown.
+ *
+ * @route GET /api/reporting/production
+ * @access Private
+ * @returns {ProductionReport} Production metrics and efficiency data
+ */
 router.get(
   "/production",
   asyncHandler(async (_req, res) => {
-    res.json({
-      period: "current_month",
-      output: {
-        units_produced: 156,
-        target: 150,
-        achievement_percent: 104,
-      },
-      efficiency: {
-        oee: 87.5,
-        availability: 96,
-        performance: 92,
-        quality: 98.5,
-      },
-      downtime: {
-        total_hours: 24,
-        planned: 12,
-        unplanned: 12,
-        reasons: [
-          { reason: "Wartung", hours: 12 },
-          { reason: "Materialwechsel", hours: 6 },
-          { reason: "Störung", hours: 6 },
-        ],
-      },
-      by_product: [
-        { product: "Grabstein Modell A", quantity: 65, percentage: 42 },
-        { product: "Gedenktafel", quantity: 48, percentage: 31 },
-        { product: "Einfassung", quantity: 43, percentage: 27 },
-      ],
-    });
+    logger.debug("GET /api/reporting/production - Fetching production report");
+
+    const report = await reportingService.getProductionReport();
+
+    logger.info({ oee: report.efficiency.oee, units: report.output.units_produced }, "Production report retrieved");
+    res.json(report);
   }),
 );
 
-// GET /api/reporting/hr - Personalberichte
+/**
+ * Get HR report
+ *
+ * Returns human resources metrics including headcount, attendance,
+ * and overtime statistics.
+ *
+ * @route GET /api/reporting/hr
+ * @access Private
+ * @returns {HRReport} HR metrics and department breakdown
+ */
 router.get(
   "/hr",
   asyncHandler(async (_req, res) => {
-    res.json({
-      period: "current_month",
-      headcount: {
-        total: 45,
-        full_time: 38,
-        part_time: 7,
-        contractors: 3,
-      },
-      by_department: [
-        { department: "Produktion", count: 25 },
-        { department: "Vertrieb", count: 8 },
-        { department: "Administration", count: 7 },
-        { department: "Entwicklung", count: 5 },
-      ],
-      attendance: {
-        presence_rate: 96.5,
-        sick_days: 18,
-        vacation_days: 32,
-      },
-      overtime: {
-        total_hours: 156,
-        average_per_employee: 3.5,
-      },
-    });
+    logger.debug("GET /api/reporting/hr - Fetching HR report");
+
+    const report = await reportingService.getHRReport();
+
+    logger.info({ headcount: report.headcount.total, presence_rate: report.attendance.presence_rate }, "HR report retrieved");
+    res.json(report);
   }),
 );
 
-// GET /api/reporting/inventory - Lagerberichte
+/**
+ * Get inventory report
+ *
+ * Returns inventory metrics including valuation, turnover,
+ * movements, and stock status.
+ *
+ * @route GET /api/reporting/inventory
+ * @access Private
+ * @returns {InventoryReport} Inventory metrics and status
+ */
 router.get(
   "/inventory",
   asyncHandler(async (_req, res) => {
-    res.json({
-      period: "current",
-      value: {
-        total: 485000,
-        raw_materials: 285000,
-        work_in_progress: 125000,
-        finished_goods: 75000,
-      },
-      turnover: {
-        rate: 8.5,
-        days: 43,
-      },
-      movements: {
-        inbound: 125000,
-        outbound: 145000,
-        net: -20000,
-      },
-      status: {
-        ok: 85,
-        low_stock: 12,
-        overstock: 3,
-      },
-    });
+    logger.debug("GET /api/reporting/inventory - Fetching inventory report");
+
+    const report = await reportingService.getInventoryReport();
+
+    logger.info({ total_value: report.value.total, turnover_rate: report.turnover.rate }, "Inventory report retrieved");
+    res.json(report);
   }),
 );
 
@@ -225,12 +176,22 @@ router.get(
    AD-HOC ANALYSEN
 --------------------------------------------------------- */
 
-// POST /api/reporting/adhoc - Ad-hoc Analyse ausführen
+/**
+ * Execute ad-hoc analysis
+ *
+ * Runs a custom data analysis query with specified dimensions,
+ * measures, filters, and sorting.
+ *
+ * @route POST /api/reporting/adhoc
+ * @body {AdhocQuery} Query configuration
+ * @access Private
+ * @returns {AdhocResult} Query results with execution metadata
+ */
 const adhocSchema = z.object({
-  name: z.string(),
-  datasource: z.string(),
-  dimensions: z.array(z.string()),
-  measures: z.array(z.string()),
+  name: z.string().min(1, "Name is required"),
+  datasource: z.string().min(1, "Datasource is required"),
+  dimensions: z.array(z.string()).min(1, "At least one dimension required"),
+  measures: z.array(z.string()).min(1, "At least one measure required"),
   filters: z
     .array(
       z.object({
@@ -249,34 +210,46 @@ const adhocSchema = z.object({
       }),
     )
     .optional(),
-  limit: z.number().optional(),
+  limit: z.number().positive().optional(),
 });
 
 router.post(
   "/adhoc",
   asyncHandler(async (req, res) => {
-    const validatedData = adhocSchema.parse(req.body);
+    logger.debug({ name: req.body.name, datasource: req.body.datasource }, "POST /api/reporting/adhoc - Executing ad-hoc analysis");
 
-    // TODO: Dynamische Abfrage ausführen
+    const validatedData = adhocSchema.parse(req.body);
+    const result = await reportingService.executeAdhocAnalysis(validatedData);
+
+    logger.info(
+      {
+        name: validatedData.name,
+        rows: result.results.total_rows,
+        execution_time: result.results.execution_time_ms,
+      },
+      "Ad-hoc analysis completed"
+    );
+
     res.json({
       message: "Analyse ausgeführt",
-      query: validatedData,
-      results: {
-        rows: [
-          { customer: "Musterfirma GmbH", revenue: 85000, orders: 8 },
-          { customer: "Beispiel AG", revenue: 72000, orders: 6 },
-        ],
-        total_rows: 2,
-        execution_time_ms: 45,
-      },
-      executed_at: new Date().toISOString(),
+      ...result,
     });
   }),
 );
 
-// POST /api/reporting/adhoc/save - Ad-hoc Analyse speichern
+/**
+ * Save ad-hoc analysis
+ *
+ * Saves an ad-hoc analysis query for later reuse and optionally
+ * schedules it for automatic execution.
+ *
+ * @route POST /api/reporting/adhoc/save
+ * @body {object} Analysis configuration with optional schedule
+ * @access Private
+ * @returns {object} Saved analysis with ID
+ */
 const saveAnalysisSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
   query: adhocSchema,
   schedule: z
@@ -291,15 +264,21 @@ const saveAnalysisSchema = z.object({
 router.post(
   "/adhoc/save",
   asyncHandler(async (req, res) => {
+    logger.debug({ name: req.body.name }, "POST /api/reporting/adhoc/save - Saving analysis");
+
     const validatedData = saveAnalysisSchema.parse(req.body);
 
+    // TODO: Save to database
+    const saved = {
+      id: Date.now(),
+      ...validatedData,
+      created_at: new Date().toISOString(),
+    };
+
+    logger.info({ id: saved.id, name: validatedData.name }, "Analysis saved");
     res.status(201).json({
       message: "Analyse gespeichert",
-      data: {
-        id: Date.now(),
-        ...validatedData,
-        created_at: new Date().toISOString(),
-      },
+      data: saved,
     });
   }),
 );
@@ -308,127 +287,78 @@ router.post(
    KI-ANALYTICS
 --------------------------------------------------------- */
 
-// GET /api/reporting/ai/predictions - Vorhersagen abrufen
+/**
+ * Get AI predictions
+ *
+ * Returns AI-powered forecasts for sales, demand, and churn risk
+ * with confidence intervals.
+ *
+ * @route GET /api/reporting/ai/predictions
+ * @access Private
+ * @returns {AIPrediction} Predictions with confidence levels
+ */
 router.get(
   "/ai/predictions",
   asyncHandler(async (_req, res) => {
-    res.json({
-      sales_forecast: {
-        next_month: {
-          predicted_revenue: 485000,
-          confidence: 87,
-          range: { min: 450000, max: 520000 },
-        },
-        next_quarter: {
-          predicted_revenue: 1420000,
-          confidence: 78,
-          range: { min: 1300000, max: 1550000 },
-        },
+    logger.debug("GET /api/reporting/ai/predictions - Fetching AI predictions");
+
+    const predictions = await reportingService.getAIPredictions();
+
+    logger.info(
+      {
+        next_month_forecast: predictions.sales_forecast.next_month.predicted_revenue,
+        at_risk_customers: predictions.churn_risk.at_risk_customers,
       },
-      demand_forecast: {
-        top_items: [
-          {
-            item: "Grabstein Modell A",
-            predicted_demand: 28,
-            confidence: 92,
-          },
-          {
-            item: "Gedenktafel",
-            predicted_demand: 35,
-            confidence: 88,
-          },
-        ],
-      },
-      churn_risk: {
-        at_risk_customers: 5,
-        high_risk: [
-          {
-            customer: "Alte Firma AG",
-            risk_score: 0.85,
-            reason: "Keine Bestellung seit 6 Monaten",
-          },
-        ],
-      },
-    });
+      "AI predictions retrieved"
+    );
+
+    res.json(predictions);
   }),
 );
 
-// GET /api/reporting/ai/insights - KI-generierte Insights
+/**
+ * Get AI insights
+ *
+ * Returns AI-generated insights about opportunities, risks,
+ * and optimizations based on data analysis.
+ *
+ * @route GET /api/reporting/ai/insights
+ * @access Private
+ * @returns {AIInsight[]} Array of actionable insights
+ */
 router.get(
   "/ai/insights",
   asyncHandler(async (_req, res) => {
-    res.json({
-      insights: [
-        {
-          id: 1,
-          type: "opportunity",
-          priority: "high",
-          title: "Umsatzpotenzial bei Bestandskunden",
-          description:
-            "15 Kunden haben ähnliche Profile wie Ihre Top-Kunden, bestellen aber 40% weniger",
-          potential_value: 120000,
-          action: "Gezielte Ansprache mit personalisierten Angeboten",
-        },
-        {
-          id: 2,
-          type: "risk",
-          priority: "medium",
-          title: "Lieferkettenrisiko",
-          description:
-            "Abhängigkeit von einem Hauptlieferanten bei kritischen Materialien",
-          potential_impact: "Produktionsausfall bis zu 2 Wochen",
-          action: "Alternative Lieferanten qualifizieren",
-        },
-        {
-          id: 3,
-          type: "optimization",
-          priority: "medium",
-          title: "Produktionseffizienz",
-          description:
-            "Maschinenauslastung könnte durch bessere Reihenfolgeplanung um 8% gesteigert werden",
-          potential_savings: 25000,
-          action:
-            "Optimierungsalgorithmus für Produktionsplanung implementieren",
-        },
-      ],
-    });
+    logger.debug("GET /api/reporting/ai/insights - Fetching AI insights");
+
+    const insights = await reportingService.getAIInsights();
+
+    logger.info({ count: insights.length, high_priority: insights.filter((i) => i.priority === "high").length }, "AI insights retrieved");
+
+    res.json({ insights });
   }),
 );
 
-// GET /api/reporting/ai/trends - Trend-Analysen
+/**
+ * Get AI trend analysis
+ *
+ * Returns AI-powered trend analysis for key business metrics
+ * with contributing factors.
+ *
+ * @route GET /api/reporting/ai/trends
+ * @access Private
+ * @returns {AITrend[]} Array of trend analyses
+ */
 router.get(
   "/ai/trends",
   asyncHandler(async (_req, res) => {
-    res.json({
-      trends: [
-        {
-          category: "Umsatz",
-          trend: "increasing",
-          change_percent: 12.5,
-          confidence: 94,
-          factors: [
-            "Saisonaler Anstieg",
-            "Erfolgreiche Marketing-Kampagne",
-            "Neukundengewinnung",
-          ],
-        },
-        {
-          category: "Produktqualität",
-          trend: "stable",
-          change_percent: 0.5,
-          confidence: 98,
-          factors: ["Konstante Prozessqualität", "Regelmäßige Wartung"],
-        },
-        {
-          category: "Lieferzeiten",
-          trend: "increasing",
-          change_percent: 15,
-          confidence: 88,
-          factors: ["Lieferengpässe bei Rohstoffen", "Hohe Auslastung"],
-          alert: true,
-        },
-      ],
-    });
+    logger.debug("GET /api/reporting/ai/trends - Fetching AI trends");
+
+    const trends = await reportingService.getAITrends();
+
+    logger.info({ count: trends.length, alerts: trends.filter((t) => t.alert).length }, "AI trends retrieved");
+
+    res.json({ trends });
   }),
 );
 
@@ -436,54 +366,74 @@ router.get(
    DASHBOARD-DATEN
 --------------------------------------------------------- */
 
-// GET /api/reporting/dashboard-kpis - KPIs für Dashboard
+/**
+ * Get dashboard KPIs
+ *
+ * Returns key performance indicators for the main dashboard
+ * with current values, changes, and trends.
+ *
+ * @route GET /api/reporting/dashboard-kpis
+ * @access Private
+ * @returns {DashboardKPIs} KPIs with trend information
+ */
 router.get(
   "/dashboard-kpis",
   asyncHandler(async (_req, res) => {
+    logger.debug("GET /api/reporting/dashboard-kpis - Fetching dashboard KPIs");
+
+    const kpis = await reportingService.getDashboardKPIs();
+
+    logger.info({ revenue: kpis.revenue.value, profit_margin: kpis.profit_margin.value }, "Dashboard KPIs retrieved");
+
     res.json({
       kpis: [
         {
           name: "Umsatz (Monat)",
-          value: 450000,
+          value: kpis.revenue.value,
           unit: "EUR",
-          change: 12.5,
-          trend: "up",
-          target: 400000,
-          status: "good",
+          change: kpis.revenue.change,
+          trend: kpis.revenue.trend,
+          status: kpis.revenue.change > 0 ? "good" : "warning",
         },
         {
-          name: "Offene Aufträge",
-          value: 45,
-          unit: "Stk",
-          change: 5,
-          trend: "up",
-          status: "normal",
-        },
-        {
-          name: "Produktionsauslastung",
-          value: 87,
+          name: "Gewinnmarge",
+          value: kpis.profit_margin.value,
           unit: "%",
-          change: -3,
-          trend: "down",
-          target: 90,
-          status: "warning",
+          change: kpis.profit_margin.change,
+          trend: kpis.profit_margin.trend,
+          status: kpis.profit_margin.value > 15 ? "good" : "normal",
         },
         {
-          name: "Lagerbestand",
-          value: 485000,
-          unit: "EUR",
-          change: -4,
-          trend: "down",
-          status: "normal",
+          name: "Kundenzufriedenheit",
+          value: kpis.customer_satisfaction.value,
+          unit: "/5",
+          change: kpis.customer_satisfaction.change,
+          trend: kpis.customer_satisfaction.trend,
+          status: kpis.customer_satisfaction.value >= 4.5 ? "good" : "normal",
         },
         {
-          name: "Qualitätsrate",
-          value: 97.8,
+          name: "Lieferperformance",
+          value: kpis.delivery_performance.value,
           unit: "%",
-          change: 0.3,
-          trend: "up",
-          target: 98,
-          status: "good",
+          change: kpis.delivery_performance.change,
+          trend: kpis.delivery_performance.trend,
+          status: kpis.delivery_performance.value >= 95 ? "good" : "warning",
+        },
+        {
+          name: "Produktionseffizienz",
+          value: kpis.production_efficiency.value,
+          unit: "%",
+          change: kpis.production_efficiency.change,
+          trend: kpis.production_efficiency.trend,
+          status: kpis.production_efficiency.value >= 85 ? "good" : "normal",
+        },
+        {
+          name: "Mitarbeiterauslastung",
+          value: kpis.employee_utilization.value,
+          unit: "%",
+          change: kpis.employee_utilization.change,
+          trend: kpis.employee_utilization.trend,
+          status: kpis.employee_utilization.value >= 90 ? "good" : "normal",
         },
       ],
       updated_at: new Date().toISOString(),

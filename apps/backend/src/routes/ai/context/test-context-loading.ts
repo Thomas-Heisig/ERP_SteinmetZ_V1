@@ -102,7 +102,8 @@ async function testContextLoading(): Promise<void> {
     logger.info("=".repeat(60));
   } catch (error) {
     logger.error("❌ TEST FAILED WITH ERROR:");
-    logger.error(error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    logger.error(errorMsg);
     process.exit(1);
   }
 }

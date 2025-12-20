@@ -344,7 +344,7 @@ export class WorkflowEngine {
         }
 
         dlog(`Starte Schleife über ${list.length} Elemente...`);
-        const loopResults: any[] = [];
+        const loopResults: unknown[] = [];
 
         for (let j = 0; j < list.length; j++) {
           const item = list[j];
@@ -408,6 +408,7 @@ export class WorkflowEngine {
       }
 
       default:
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         throw new Error(`Unbekannter Schritt-Typ: ${(step as any).type}`);
     }
   }
@@ -418,10 +419,10 @@ export class WorkflowEngine {
 
   private async executeSteps(
     steps: WorkflowStep[],
-    contextVars: Record<string, any>,
+    contextVars: Record<string, unknown>,
     debug = false,
   ) {
-    const nestedResults: any[] = [];
+    const nestedResults: unknown[] = [];
     for (const step of steps) {
       const res = await this.executeSingleStep(
         step,
@@ -437,21 +438,22 @@ export class WorkflowEngine {
   }
 
   private interpolateParams(
-    params: Record<string, any>,
-    context: Record<string, any>,
-  ): Record<string, any> {
-    const resolved: Record<string, any> = {};
+    params: Record<string, unknown>,
+    context: Record<string, unknown>,
+  ): Record<string, unknown> {
+    const resolved: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(params)) {
       resolved[key] = this.interpolate(value, context);
     }
     return resolved;
   }
 
-  private interpolate(value: any, context: Record<string, any>): any {
+  private interpolate(value: unknown, context: Record<string, unknown>): unknown {
     if (typeof value === "string") {
       return value.replace(/\{\{(.*?)\}\}/g, (_, expr) => {
         try {
           const path = expr.trim().split(".");
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           let ref: any = context;
           for (const p of path) ref = ref?.[p];
           return ref ?? `{{${expr}}}`; // Falls nicht gefunden, Original zurückgeben
@@ -462,14 +464,14 @@ export class WorkflowEngine {
     } else if (Array.isArray(value)) {
       return value.map((item) => this.interpolate(item, context));
     } else if (typeof value === "object" && value !== null) {
-      return this.interpolateParams(value, context);
+      return this.interpolateParams(value as Record<string, unknown>, context);
     }
     return value;
   }
 
   private evaluateCondition(
     expr: string,
-    context: Record<string, any>,
+    context: Record<string, unknown>,
   ): boolean {
     try {
       const replaced = this.interpolate(expr, context);
@@ -511,28 +513,32 @@ export class WorkflowEngine {
   /* ─────────────────────────────────────────────
    * 💾 Export / Import
    * ───────────────────────────────────────────── */
-  exportWorkflows(): any {
+  exportWorkflows(): unknown {
     return Array.from(this.workflows.entries()).map(([name, def]) => ({
       name,
       def: this.normalizeWorkflowDefinition(def),
     }));
   }
 
-  importWorkflows(data: any[]): void {
+  importWorkflows(data: unknown[]): void {
     let imported = 0;
     let skipped = 0;
 
     for (const wf of data) {
       try {
-        const name = wf.name || wf.def?.name;
-        if (name && wf.def) {
-          this.registerWorkflow(name, wf.def);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const name = (wf as any).name || (wf as any).def?.name;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (name && (wf as any).def) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          this.registerWorkflow(name, (wf as any).def);
           imported++;
         } else {
           skipped++;
         }
-      } catch (err: any) {
-        log("error", `Fehler beim Import von Workflow`, { error: err.message });
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        log("error", `Fehler beim Import von Workflow`, { error: message });
         skipped++;
       }
     }
@@ -593,8 +599,9 @@ try {
   } else {
     log("warn", "Workflow-Datei data_export.json wurde nicht gefunden.");
   }
-} catch (err: any) {
+} catch (err: unknown) {
+  const message = err instanceof Error ? err.message : String(err);
   log("error", "Fehler beim Laden des Workflows 'data_export'", {
-    error: err.message,
+    error: message,
   });
 }

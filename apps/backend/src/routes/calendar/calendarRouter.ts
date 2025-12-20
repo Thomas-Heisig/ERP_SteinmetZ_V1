@@ -61,83 +61,47 @@
 
 import { Router, Request, Response } from "express";
 import { randomUUID } from "crypto";
-import db from "../../services/dbService.js";
+import db from "../database/dbService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import { BadRequestError, NotFoundError } from "../../types/errors.js";
-import type { SqlValue } from "../../types/database.js";
+import { BadRequestError, NotFoundError } from "../error/errors.js";
+import { createLogger } from "../../utils/logger.js";
+import type { SqlValue } from "../database/database.js";
+import {
+  type CalendarEvent,
+  type RecurrenceType,
+  createEventSchema,
+  updateEventSchema,
+  eventQuerySchema,
+} from "./types.js";
 
 const router = Router();
+const logger = createLogger("calendar");
 
-// Wiederholungs-Typen
-export const RECURRENCE_TYPES = [
-  "none",
-  "daily",
-  "weekly",
-  "biweekly",
-  "monthly",
-  "yearly",
-] as const;
+// Re-export types from types.js
+export type { CalendarEvent, RecurrenceType } from "./types.js";
+export { RECURRENCE_TYPES } from "./types.js";
 
-export type RecurrenceType = (typeof RECURRENCE_TYPES)[number];
-
-export interface CalendarEvent {
-  id: string;
-  title: string;
-  description: string;
-  location?: string;
-  start: string; // ISO datetime
-  end: string; // ISO datetime
-  allDay: boolean;
-  color?: string;
-  category?: string;
-  recurrence: RecurrenceType;
-  recurrenceEndDate?: string;
-  reminders: number[]; // Minutes before event
-  attendees: string[];
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Tabelle für Events erstellen
+/**
+ * Verify calendar_events table exists
+ * Note: Table is created by migration 052_add_missing_crm_calendar_columns.sql
+ */
 async function ensureEventsTable(): Promise<void> {
   try {
-    await db.exec(`
-      CREATE TABLE IF NOT EXISTS calendar_events (
-        id TEXT PRIMARY KEY,
-        title TEXT NOT NULL,
-        description TEXT,
-        location TEXT,
-        start_time TEXT NOT NULL,
-        end_time TEXT NOT NULL,
-        all_day BOOLEAN DEFAULT 0,
-        color TEXT,
-        category TEXT,
-        recurrence TEXT DEFAULT 'none',
-        recurrence_end_date TEXT,
-        reminders_json TEXT DEFAULT '[]',
-        attendees_json TEXT DEFAULT '[]',
-        created_by TEXT,
-        created_at TEXT DEFAULT (datetime('now')),
-        updated_at TEXT DEFAULT (datetime('now'))
-      )
-    `);
-
-    await db.exec(
-      `CREATE INDEX IF NOT EXISTS idx_events_start ON calendar_events(start_time)`,
+    const tables = await db.all<{ name: string }>(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name = 'calendar_events'"
     );
-    await db.exec(
-      `CREATE INDEX IF NOT EXISTS idx_events_end ON calendar_events(end_time)`,
-    );
-    await db.exec(
-      `CREATE INDEX IF NOT EXISTS idx_events_category ON calendar_events(category)`,
-    );
+    
+    if (tables.length === 0) {
+      logger.warn("Calendar events table not found - migrations may not have run");
+    } else {
+      logger.info("Calendar events table verified");
+    }
   } catch (error) {
-    console.error("❌ [Calendar] Failed to create events table:", error);
+    logger.error({ error }, "Failed to verify calendar events table");
   }
 }
 
-// Initialisierung
+// Verify tables on startup
 ensureEventsTable();
 
 /**
@@ -147,31 +111,45 @@ ensureEventsTable();
 router.get(
   "/events",
   asyncHandler(async (req: Request, res: Response) => {
+    // Zod-Validierung der Query-Parameter
+    const validated = eventQuerySchema.parse(req.query);
     const {
       start,
       end,
       category,
       search,
-      limit = "500",
-      offset = "0",
-    } = req.query;
+      status,
+      priority,
+      limit = 500,
+      offset = 0,
+    } = validated;
 
     let sql = "SELECT * FROM calendar_events WHERE 1=1";
     const params: SqlValue[] = [];
 
     if (start) {
       sql += " AND end_time >= ?";
-      params.push(start as string);
+      params.push(start);
     }
 
     if (end) {
       sql += " AND start_time <= ?";
-      params.push(end as string);
+      params.push(end);
     }
 
     if (category) {
       sql += " AND category = ?";
-      params.push(category as string);
+      params.push(category);
+    }
+
+    if (status) {
+      sql += " AND status = ?";
+      params.push(status);
+    }
+
+    if (priority) {
+      sql += " AND priority = ?";
+      params.push(priority);
     }
 
     if (search) {
@@ -182,7 +160,7 @@ router.get(
 
     sql += " ORDER BY start_time ASC";
     sql += ` LIMIT ? OFFSET ?`;
-    params.push(Number(limit), Number(offset));
+    params.push(limit, offset);
 
     const rows = await db.all<Record<string, unknown>>(sql, params);
 
@@ -192,8 +170,8 @@ router.get(
     if (start && end) {
       events = expandRecurringEvents(
         events,
-        new Date(start as string),
-        new Date(end as string),
+        new Date(start),
+        new Date(end),
       );
     }
 
@@ -236,6 +214,8 @@ router.get(
 router.post(
   "/events",
   asyncHandler(async (req: Request, res: Response) => {
+    // Zod-Validierung
+    const validated = createEventSchema.parse(req.body);
     const {
       title,
       description = "",
@@ -249,16 +229,14 @@ router.post(
       recurrenceEndDate,
       reminders = [],
       attendees = [],
+      status = "confirmed",
+      priority = "normal",
+      timezone = "UTC",
+      isPrivate = false,
+      url,
+      organizer,
       createdBy = "anonymous",
-    } = req.body;
-
-    if (!title || title.trim() === "") {
-      throw new BadRequestError("Title is required");
-    }
-
-    if (!start || !end) {
-      throw new BadRequestError("Start and end times are required");
-    }
+    } = validated;
 
     const id = randomUUID();
     const now = new Date().toISOString();
@@ -267,11 +245,12 @@ router.post(
       `INSERT INTO calendar_events (
       id, title, description, location, start_time, end_time,
       all_day, color, category, recurrence, recurrence_end_date,
-      reminders_json, attendees_json, created_by, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      reminders_json, attendees_json, status, priority, timezone,
+      is_private, url, organizer, created_by, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
-        title.trim(),
+        title,
         description,
         location ?? null,
         start,
@@ -283,6 +262,12 @@ router.post(
         recurrenceEndDate ?? null,
         JSON.stringify(reminders),
         JSON.stringify(attendees),
+        status,
+        priority,
+        timezone,
+        isPrivate ? 1 : 0,
+        url ?? null,
+        organizer ?? null,
         createdBy,
         now,
         now,
@@ -291,7 +276,7 @@ router.post(
 
     const newEvent: CalendarEvent = {
       id,
-      title: title.trim(),
+      title,
       description,
       location,
       start,
@@ -303,6 +288,12 @@ router.post(
       recurrenceEndDate,
       reminders,
       attendees,
+      status,
+      priority,
+      timezone,
+      isPrivate,
+      url,
+      organizer,
       createdBy,
       createdAt: now,
       updatedAt: now,
@@ -333,6 +324,9 @@ router.put(
     }
 
     const existing = rowToEvent(existingRow);
+    
+    // Zod-Validierung mit Fallback auf existierende Werte
+    const validated = updateEventSchema.parse(req.body);
     const {
       title = existing.title,
       description = existing.description,
@@ -346,7 +340,13 @@ router.put(
       recurrenceEndDate = existing.recurrenceEndDate,
       reminders = existing.reminders,
       attendees = existing.attendees,
-    } = req.body;
+      status = existing.status,
+      priority = existing.priority,
+      timezone = existing.timezone,
+      isPrivate = existing.isPrivate,
+      url = existing.url,
+      organizer = existing.organizer,
+    } = { ...existing, ...validated };
 
     const now = new Date().toISOString();
 
@@ -355,7 +355,8 @@ router.put(
       title = ?, description = ?, location = ?, start_time = ?,
       end_time = ?, all_day = ?, color = ?, category = ?,
       recurrence = ?, recurrence_end_date = ?, reminders_json = ?,
-      attendees_json = ?, updated_at = ?
+      attendees_json = ?, status = ?, priority = ?, timezone = ?,
+      is_private = ?, url = ?, organizer = ?, updated_at = ?
     WHERE id = ?`,
       [
         title,
@@ -370,6 +371,12 @@ router.put(
         recurrenceEndDate ?? null,
         JSON.stringify(reminders),
         JSON.stringify(attendees),
+        status,
+        priority,
+        timezone ?? "UTC",
+        isPrivate ? 1 : 0,
+        url ?? null,
+        organizer ?? null,
         now,
         id,
       ],
@@ -389,6 +396,12 @@ router.put(
       recurrenceEndDate,
       reminders,
       attendees,
+      status,
+      priority,
+      timezone,
+      isPrivate,
+      url,
+      organizer,
       createdBy: existing.createdBy,
       createdAt: existing.createdAt,
       updatedAt: now,
@@ -493,6 +506,12 @@ function rowToEvent(row: Record<string, unknown>): CalendarEvent {
     recurrenceEndDate: row.recurrence_end_date as string | undefined,
     reminders: JSON.parse((row.reminders_json as string) ?? "[]"),
     attendees: JSON.parse((row.attendees_json as string) ?? "[]"),
+    status: (row.status as "confirmed" | "tentative" | "cancelled") ?? "confirmed",
+    priority: (row.priority as "low" | "normal" | "high" | "urgent") ?? "normal",
+    timezone: (row.timezone as string) ?? "UTC",
+    isPrivate: Boolean(row.is_private),
+    url: row.url as string | undefined,
+    organizer: row.organizer as string | undefined,
     createdBy: (row.created_by as string) ?? "anonymous",
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
@@ -593,6 +612,10 @@ router.get(
       allDay: number;
       recurring: number;
       withAttendees: number;
+      confirmed: number;
+      tentative: number;
+      cancelled: number;
+      highPriority: number;
     }>(
       `
       SELECT
@@ -600,7 +623,11 @@ router.get(
         SUM(CASE WHEN start_time > datetime('now') THEN 1 ELSE 0 END) as upcoming,
         SUM(all_day) as allDay,
         SUM(CASE WHEN recurrence != 'none' THEN 1 ELSE 0 END) as recurring,
-        SUM(CASE WHEN json_array_length(attendees_json) > 0 THEN 1 ELSE 0 END) as withAttendees
+        SUM(CASE WHEN json_array_length(attendees_json) > 0 THEN 1 ELSE 0 END) as withAttendees,
+        SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) as confirmed,
+        SUM(CASE WHEN status = 'tentative' THEN 1 ELSE 0 END) as tentative,
+        SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled,
+        SUM(CASE WHEN priority IN ('high', 'urgent') THEN 1 ELSE 0 END) as highPriority
       FROM calendar_events
       ${statsWhere}
     `,
@@ -614,38 +641,42 @@ router.get(
       catConditions.push("start_time BETWEEN ? AND ?");
       catParams.push(start as string, end as string);
     }
+
     const categories = await db.all<{ category: string; count: number }>(
-      `SELECT category, COUNT(*) as count
-       FROM calendar_events
-       WHERE ${catConditions.join(" AND ")}
-       GROUP BY category
-       ORDER BY count DESC`,
+      `
+      SELECT category, COUNT(*) as count
+      FROM calendar_events
+      WHERE ${catConditions.join(" AND ")}
+      GROUP BY category
+      ORDER BY count DESC
+    `,
       catParams,
     );
 
-    // Get events per day of week
-    const dowWhere = hasRange ? "WHERE start_time BETWEEN ? AND ?" : "";
-    const dowParams: SqlValue[] = hasRange
-      ? [start as string, end as string]
-      : [];
-    const daysOfWeek = await db.all<{ day: number; count: number }>(
-      `SELECT CAST(strftime('%w', start_time) AS INTEGER) as day, COUNT(*) as count
-       FROM calendar_events
-       ${dowWhere}
-       GROUP BY day
-       ORDER BY day`,
-      dowParams,
+    // Get events per status
+    const statusConditions: string[] = ["1=1"];
+    const statusParams: SqlValue[] = [];
+    if (hasRange) {
+      statusConditions.push("start_time BETWEEN ? AND ?");
+      statusParams.push(start as string, end as string);
+    }
+
+    const statuses = await db.all<{ status: string; count: number }>(
+      `
+      SELECT status, COUNT(*) as count
+      FROM calendar_events
+      WHERE ${statusConditions.join(" AND ")}
+      GROUP BY status
+    `,
+      statusParams,
     );
 
     res.json({
       success: true,
       data: {
-        ...stats,
-        categories,
-        daysOfWeek: daysOfWeek.map((row) => ({
-          day: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"][row.day],
-          count: row.count,
-        })),
+        summary: stats,
+        byCategory: categories,
+        byStatus: statuses,
       },
     });
   }),
@@ -728,16 +759,46 @@ router.post(
               `INSERT INTO calendar_events (
                 id, title, description, location, start_time, end_time,
                 all_day, color, category, recurrence, recurrence_end_date,
-                reminders_json, attendees_json, created_by, created_at, updated_at
+                reminders_json, attendees_json, status, priority, timezone,
+                is_private, url, organizer, created_by, created_at, updated_at
               ) SELECT ?, title, description, location, start_time, end_time,
                 all_day, color, category, recurrence, recurrence_end_date,
-                reminders_json, attendees_json, created_by, ?, ?
+                reminders_json, attendees_json, status, priority, timezone,
+                is_private, url, organizer, created_by, ?, ?
               FROM calendar_events WHERE id = ?`,
               [newId, now, now, eventId],
             );
             changes++;
           }
         }
+        break;
+      }
+
+      case "updateStatus": {
+        const { status } = req.body.data ?? {};
+        if (!status || !["confirmed", "tentative", "cancelled"].includes(status)) {
+          throw new BadRequestError("Valid status required for updateStatus action");
+        }
+        const placeholders3 = eventIds.map(() => "?").join(",");
+        const result3 = await db.run(
+          `UPDATE calendar_events SET status = ?, updated_at = ? WHERE id IN (${placeholders3})`,
+          [status, new Date().toISOString(), ...eventIds],
+        );
+        changes = result3.changes || 0;
+        break;
+      }
+
+      case "updatePriority": {
+        const { priority } = req.body.data ?? {};
+        if (!priority || !["low", "normal", "high", "urgent"].includes(priority)) {
+          throw new BadRequestError("Valid priority required for updatePriority action");
+        }
+        const placeholders4 = eventIds.map(() => "?").join(",");
+        const result4 = await db.run(
+          `UPDATE calendar_events SET priority = ?, updated_at = ? WHERE id IN (${placeholders4})`,
+          [priority, new Date().toISOString(), ...eventIds],
+        );
+        changes = result4.changes || 0;
         break;
       }
 

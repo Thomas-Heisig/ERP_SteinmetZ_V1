@@ -10,27 +10,32 @@
  */
 
 import express, { Request, Response, Router } from "express";
+import { z, type ZodIssue } from "zod";
+
+import { BadRequestError, NotFoundError } from "../error/errors.js";
+import db from "../database/dbService.js";
 import { createLogger } from "../../utils/logger.js";
-import db from "../../services/dbService.js";
+import type { SqlValue } from "../database/database.js";
 
 const router: Router = express.Router();
 const logger = createLogger("help");
 
-// Types
-interface HelpArticle {
-  id?: number;
+type ArticleStatus = "draft" | "published" | "archived";
+
+interface HelpArticleRecord {
+  id: number;
   title: string;
   content: string;
   category: string;
-  excerpt?: string;
-  keywords?: string;
-  icon?: string;
-  path?: string;
-  status: "draft" | "published" | "archived";
-  author?: string;
-  created_at?: string;
-  updated_at?: string;
-  view_count?: number;
+  excerpt: string;
+  keywords: string;
+  icon: string;
+  path: string;
+  status: ArticleStatus;
+  author: string;
+  created_at: string;
+  updated_at: string;
+  view_count: number;
 }
 
 interface HelpCategory {
@@ -41,30 +46,155 @@ interface HelpCategory {
   order: number;
 }
 
+interface HelpSearchResult {
+  id: number;
+  title: string;
+  category: string;
+  excerpt: string;
+  icon: string;
+  path: string;
+  view_count: number;
+  relevance: number;
+}
+
+interface HelpStats {
+  totalArticles: number;
+  publishedArticles: number;
+  draftArticles: number;
+  totalViews: number;
+  topArticles: Array<
+    Pick<HelpArticleRecord, "id" | "title" | "category" | "view_count">
+  >;
+}
+
+const articleStatusSchema = z.enum(["draft", "published", "archived"]);
+
+const listArticlesQuerySchema = z
+  .object({
+    category: z.string().min(1).optional(),
+    status: articleStatusSchema.optional(),
+    search: z.string().trim().min(1).optional(),
+    limit: z.coerce.number().int().positive().max(100).default(50),
+    offset: z.coerce.number().int().nonnegative().default(0),
+  })
+  .strict();
+
+const createArticleSchema = z
+  .object({
+    title: z.string().min(1).max(200),
+    content: z.string().min(1),
+    category: z.string().min(1),
+    excerpt: z.string().max(500).optional(),
+    keywords: z.string().max(500).optional(),
+    icon: z.string().max(32).optional(),
+    path: z.string().max(500).optional(),
+    status: articleStatusSchema.default("draft"),
+    author: z.string().max(120).optional(),
+  })
+  .strict();
+
+const updateArticleSchema = z
+  .object({
+    title: z.string().min(1).max(200).optional(),
+    content: z.string().min(1).optional(),
+    category: z.string().min(1).optional(),
+    excerpt: z.string().max(500).optional(),
+    keywords: z.string().max(500).optional(),
+    icon: z.string().max(32).optional(),
+    path: z.string().max(500).optional(),
+    status: articleStatusSchema.optional(),
+    author: z.string().max(120).optional(),
+  })
+  .strict()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided for update",
+    path: ["body"],
+  });
+
+const categorySchema = z
+  .object({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    icon: z.string().max(16).optional().default(""),
+    description: z.string().max(500).optional().default(""),
+    order: z.coerce.number().int().nonnegative().default(999),
+  })
+  .strict();
+
+const searchQuerySchema = z
+  .object({
+    q: z.string().trim().min(1),
+    category: z.string().min(1).optional(),
+    limit: z.coerce.number().int().positive().max(100).default(20),
+  })
+  .strict();
+
+function formatValidationErrors(
+  issues: ZodIssue[],
+): Record<string, unknown> {
+  return {
+    issues: issues.map((issue) => ({
+      path: issue.path.join(".") || "root",
+      message: issue.message,
+      code: issue.code,
+    })),
+  };
+}
+
+function parseArticleId(idParam: string): number {
+  const id = Number(idParam);
+  if (!Number.isFinite(id) || id <= 0) {
+    throw new BadRequestError("Article id must be a positive number");
+  }
+  return id;
+}
+
+function handleError(
+  res: Response,
+  error: unknown,
+  fallbackMessage: string,
+): void {
+  if (error instanceof BadRequestError || error instanceof NotFoundError) {
+    const status = error.statusCode ?? 400;
+    res.status(status).json({
+      success: false,
+      error: error.message,
+      details: error.details,
+    });
+    return;
+  }
+
+  logger.error({ error }, fallbackMessage);
+  res.status(500).json({ success: false, error: fallbackMessage });
+}
+
 /**
  * GET /api/help/articles
  * Get all help articles with optional filtering
  */
 router.get("/articles", async (req: Request, res: Response) => {
   try {
-    const { category, status, search, limit, offset } = req.query;
+    const validation = listArticlesQuerySchema.safeParse(req.query);
+    if (!validation.success) {
+      throw new BadRequestError(
+        "Invalid query parameters",
+        formatValidationErrors(validation.error.issues),
+      );
+    }
+
+    const { category, status, search, limit, offset } = validation.data;
 
     let query = "SELECT * FROM help_articles WHERE 1=1";
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (category) {
       query += " AND category = ?";
       params.push(category);
     }
 
-    if (status) {
-      query += " AND status = ?";
-      params.push(status);
-    } else {
-      // Default to only published articles
-      query += " AND status = ?";
-      params.push("published");
-    }
+    const effectiveStatus: ArticleStatus = status ?? "published";
+    query += " AND status = ?";
+    params.push(effectiveStatus);
 
     if (search) {
       query +=
@@ -73,22 +203,13 @@ router.get("/articles", async (req: Request, res: Response) => {
       params.push(searchTerm, searchTerm, searchTerm, searchTerm);
     }
 
-    query += " ORDER BY created_at DESC";
+    query += " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+    params.push(limit, offset);
 
-    if (limit) {
-      query += " LIMIT ?";
-      params.push(Number(limit));
-    }
-
-    if (offset) {
-      query += " OFFSET ?";
-      params.push(Number(offset));
-    }
-
-    const articles = await db.all(query, params);
+    const articles = await db.all<HelpArticleRecord>(query, params);
 
     logger.info(
-      { count: articles.length, category, status, search },
+      { count: articles.length, category, status: effectiveStatus, search },
       "Retrieved help articles",
     );
 
@@ -98,11 +219,7 @@ router.get("/articles", async (req: Request, res: Response) => {
       count: articles.length,
     });
   } catch (error) {
-    logger.error({ error }, "Failed to retrieve help articles");
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve help articles",
-    });
+    handleError(res, error, "Failed to retrieve help articles");
   }
 });
 
@@ -112,40 +229,30 @@ router.get("/articles", async (req: Request, res: Response) => {
  */
 router.get("/articles/:id", async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const articleId = parseArticleId(req.params.id);
 
-    const article = await db.get("SELECT * FROM help_articles WHERE id = ?", [
-      id,
-    ]);
-
-    if (!article) {
-      return res.status(404).json({
-        success: false,
-        error: "Article not found",
-      });
-    }
-
-    // Increment view count
-    await db.run(
-      "UPDATE help_articles SET view_count = view_count + 1 WHERE id = ?",
-      [id],
+    const article = await db.get<HelpArticleRecord>(
+      "SELECT * FROM help_articles WHERE id = ?",
+      [articleId],
     );
 
-    logger.info({ articleId: id }, "Retrieved help article");
+    if (!article) {
+      throw new NotFoundError("Article not found", { articleId });
+    }
+
+    await db.run(
+      "UPDATE help_articles SET view_count = view_count + 1 WHERE id = ?",
+      [articleId],
+    );
+
+    logger.info({ articleId }, "Retrieved help article");
 
     res.json({
       success: true,
-      article,
+      article: { ...article, view_count: article.view_count + 1 },
     });
   } catch (error) {
-    logger.error(
-      { error, id: req.params.id },
-      "Failed to retrieve help article",
-    );
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve help article",
-    });
+    handleError(res, error, "Failed to retrieve help article");
   }
 });
 
@@ -155,46 +262,44 @@ router.get("/articles/:id", async (req: Request, res: Response) => {
  */
 router.post("/articles", async (req: Request, res: Response) => {
   try {
-    const article: HelpArticle = req.body;
-
-    // Validate required fields
-    if (!article.title || !article.content || !article.category) {
-      return res.status(400).json({
-        success: false,
-        error: "Missing required fields: title, content, category",
-      });
+    const validation = createArticleSchema.safeParse(req.body);
+    if (!validation.success) {
+      throw new BadRequestError(
+        "Invalid article data",
+        formatValidationErrors(validation.error.issues),
+      );
     }
+
+    const article = validation.data;
+    const params: SqlValue[] = [
+      article.title,
+      article.content,
+      article.category,
+      article.excerpt ?? "",
+      article.keywords ?? "",
+      article.icon ?? "",
+      article.path ?? "",
+      article.status,
+      article.author ?? "system",
+    ];
 
     const result = await db.run(
       `INSERT INTO help_articles 
        (title, content, category, excerpt, keywords, icon, path, status, author, created_at, updated_at, view_count)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'), 0)`,
-      [
-        article.title,
-        article.content,
-        article.category,
-        article.excerpt || "",
-        article.keywords || "",
-        article.icon || "",
-        article.path || "",
-        article.status || "draft",
-        article.author || "system",
-      ],
+      params,
     );
 
-    logger.info({ articleId: result.lastID }, "Created new help article");
+    const articleId = Number(result.lastID ?? 0);
+    logger.info({ articleId }, "Created new help article");
 
     res.status(201).json({
       success: true,
-      id: result.lastID,
+      id: articleId,
       message: "Help article created successfully",
     });
   } catch (error) {
-    logger.error({ error }, "Failed to create help article");
-    res.status(500).json({
-      success: false,
-      error: "Failed to create help article",
-    });
+    handleError(res, error, "Failed to create help article");
   }
 });
 
@@ -204,51 +309,88 @@ router.post("/articles", async (req: Request, res: Response) => {
  */
 router.put("/articles/:id", async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const article: HelpArticle = req.body;
+    const articleId = parseArticleId(req.params.id);
 
-    // Check if article exists
-    const existing = await db.get("SELECT id FROM help_articles WHERE id = ?", [
-      id,
-    ]);
-
-    if (!existing) {
-      return res.status(404).json({
-        success: false,
-        error: "Article not found",
-      });
+    const validation = updateArticleSchema.safeParse(req.body);
+    if (!validation.success) {
+      throw new BadRequestError(
+        "Invalid article update data",
+        formatValidationErrors(validation.error.issues),
+      );
     }
 
-    await db.run(
-      `UPDATE help_articles 
-       SET title = ?, content = ?, category = ?, excerpt = ?, keywords = ?, 
-           icon = ?, path = ?, status = ?, updated_at = datetime('now')
-       WHERE id = ?`,
-      [
-        article.title,
-        article.content,
-        article.category,
-        article.excerpt || "",
-        article.keywords || "",
-        article.icon || "",
-        article.path || "",
-        article.status,
-        id,
-      ],
+    const article = validation.data;
+
+    const existing = await db.get<{ id: number }>(
+      "SELECT id FROM help_articles WHERE id = ?",
+      [articleId],
     );
 
-    logger.info({ articleId: id }, "Updated help article");
+    if (!existing) {
+      throw new NotFoundError("Article not found", { articleId });
+    }
+
+    const sets: string[] = [];
+    const params: SqlValue[] = [];
+
+    if (article.title !== undefined) {
+      sets.push("title = ?");
+      params.push(article.title);
+    }
+    if (article.content !== undefined) {
+      sets.push("content = ?");
+      params.push(article.content);
+    }
+    if (article.category !== undefined) {
+      sets.push("category = ?");
+      params.push(article.category);
+    }
+    if (article.excerpt !== undefined) {
+      sets.push("excerpt = ?");
+      params.push(article.excerpt);
+    }
+    if (article.keywords !== undefined) {
+      sets.push("keywords = ?");
+      params.push(article.keywords);
+    }
+    if (article.icon !== undefined) {
+      sets.push("icon = ?");
+      params.push(article.icon);
+    }
+    if (article.path !== undefined) {
+      sets.push("path = ?");
+      params.push(article.path);
+    }
+    if (article.status !== undefined) {
+      sets.push("status = ?");
+      params.push(article.status);
+    }
+    if (article.author !== undefined) {
+      sets.push("author = ?");
+      params.push(article.author);
+    }
+
+    sets.push("updated_at = datetime('now')");
+
+    const updateSql = `UPDATE help_articles SET ${sets.join(", ")} WHERE id = ?`;
+    params.push(articleId);
+
+    await db.run(updateSql, params);
+
+    const updatedArticle = await db.get<HelpArticleRecord>(
+      "SELECT * FROM help_articles WHERE id = ?",
+      [articleId],
+    );
+
+    logger.info({ articleId }, "Updated help article");
 
     res.json({
       success: true,
       message: "Help article updated successfully",
+      article: updatedArticle,
     });
   } catch (error) {
-    logger.error({ error, id: req.params.id }, "Failed to update help article");
-    res.status(500).json({
-      success: false,
-      error: "Failed to update help article",
-    });
+    handleError(res, error, "Failed to update help article");
   }
 });
 
@@ -258,34 +400,27 @@ router.put("/articles/:id", async (req: Request, res: Response) => {
  */
 router.delete("/articles/:id", async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const articleId = parseArticleId(req.params.id);
 
-    // Check if article exists
-    const existing = await db.get("SELECT id FROM help_articles WHERE id = ?", [
-      id,
-    ]);
+    const existing = await db.get<{ id: number }>(
+      "SELECT id FROM help_articles WHERE id = ?",
+      [articleId],
+    );
 
     if (!existing) {
-      return res.status(404).json({
-        success: false,
-        error: "Article not found",
-      });
+      throw new NotFoundError("Article not found", { articleId });
     }
 
-    await db.run("DELETE FROM help_articles WHERE id = ?", [id]);
+    await db.run("DELETE FROM help_articles WHERE id = ?", [articleId]);
 
-    logger.info({ articleId: id }, "Deleted help article");
+    logger.info({ articleId }, "Deleted help article");
 
     res.json({
       success: true,
       message: "Help article deleted successfully",
     });
   } catch (error) {
-    logger.error({ error, id: req.params.id }, "Failed to delete help article");
-    res.status(500).json({
-      success: false,
-      error: "Failed to delete help article",
-    });
+    handleError(res, error, "Failed to delete help article");
   }
 });
 
@@ -295,7 +430,7 @@ router.delete("/articles/:id", async (req: Request, res: Response) => {
  */
 router.get("/categories", async (_req: Request, res: Response) => {
   try {
-    const categories = await db.all(
+    const categories = await db.all<HelpCategory>(
       "SELECT * FROM help_categories ORDER BY `order` ASC",
     );
 
@@ -306,11 +441,7 @@ router.get("/categories", async (_req: Request, res: Response) => {
       categories,
     });
   } catch (error) {
-    logger.error({ error }, "Failed to retrieve help categories");
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve help categories",
-    });
+    handleError(res, error, "Failed to retrieve help categories");
   }
 });
 
@@ -320,15 +451,15 @@ router.get("/categories", async (_req: Request, res: Response) => {
  */
 router.post("/categories", async (req: Request, res: Response) => {
   try {
-    const category: HelpCategory = req.body;
-
-    // Validate required fields
-    if (!category.id || !category.name) {
-      return res.status(400).json({
-        success: false,
-        error: "Missing required fields: id, name",
-      });
+    const validation = categorySchema.safeParse(req.body);
+    if (!validation.success) {
+      throw new BadRequestError(
+        "Invalid category data",
+        formatValidationErrors(validation.error.issues),
+      );
     }
+
+    const category = validation.data;
 
     await db.run(
       `INSERT INTO help_categories (id, name, icon, description, \`order\`)
@@ -336,9 +467,9 @@ router.post("/categories", async (req: Request, res: Response) => {
       [
         category.id,
         category.name,
-        category.icon || "",
-        category.description || "",
-        category.order || 999,
+        category.icon ?? "",
+        category.description ?? "",
+        category.order,
       ],
     );
 
@@ -349,11 +480,7 @@ router.post("/categories", async (req: Request, res: Response) => {
       message: "Help category created successfully",
     });
   } catch (error) {
-    logger.error({ error }, "Failed to create help category");
-    res.status(500).json({
-      success: false,
-      error: "Failed to create help category",
-    });
+    handleError(res, error, "Failed to create help category");
   }
 });
 
@@ -363,14 +490,15 @@ router.post("/categories", async (req: Request, res: Response) => {
  */
 router.get("/search", async (req: Request, res: Response) => {
   try {
-    const { q, category, limit = "20" } = req.query;
-
-    if (!q) {
-      return res.status(400).json({
-        success: false,
-        error: "Search query (q) is required",
-      });
+    const validation = searchQuerySchema.safeParse(req.query);
+    if (!validation.success) {
+      throw new BadRequestError(
+        "Invalid search parameters",
+        formatValidationErrors(validation.error.issues),
+      );
     }
+
+    const { q, category, limit } = validation.data;
 
     let query = `
       SELECT id, title, category, excerpt, icon, path, view_count,
@@ -386,7 +514,7 @@ router.get("/search", async (req: Request, res: Response) => {
     `;
 
     const searchTerm = `%${q}%`;
-    const params: any[] = [
+    const params: SqlValue[] = [
       searchTerm,
       searchTerm,
       searchTerm,
@@ -402,9 +530,9 @@ router.get("/search", async (req: Request, res: Response) => {
     }
 
     query += " ORDER BY relevance DESC, view_count DESC LIMIT ?";
-    params.push(Number(limit));
+    params.push(limit);
 
-    const results = await db.all(query, params);
+    const results = await db.all<HelpSearchResult>(query, params);
 
     logger.info(
       { query: q, category, count: results.length },
@@ -417,11 +545,7 @@ router.get("/search", async (req: Request, res: Response) => {
       count: results.length,
     });
   } catch (error) {
-    logger.error({ error }, "Failed to search help articles");
-    res.status(500).json({
-      success: false,
-      error: "Failed to search help articles",
-    });
+    handleError(res, error, "Failed to search help articles");
   }
 });
 
@@ -431,40 +555,40 @@ router.get("/search", async (req: Request, res: Response) => {
  */
 router.get("/stats", async (_req: Request, res: Response) => {
   try {
-    const totalArticles = await db.get(
+    const totalArticles = await db.get<{ count: number }>(
       "SELECT COUNT(*) as count FROM help_articles",
     );
-    const publishedArticles = await db.get(
+    const publishedArticles = await db.get<{ count: number }>(
       "SELECT COUNT(*) as count FROM help_articles WHERE status = 'published'",
     );
-    const draftArticles = await db.get(
+    const draftArticles = await db.get<{ count: number }>(
       "SELECT COUNT(*) as count FROM help_articles WHERE status = 'draft'",
     );
-    const totalViews = await db.get(
+    const totalViews = await db.get<{ total: number | null }>(
       "SELECT SUM(view_count) as total FROM help_articles",
     );
-    const topArticles = await db.all(
+    const topArticles = await db.all<
+      Pick<HelpArticleRecord, "id" | "title" | "category" | "view_count">
+    >(
       "SELECT id, title, category, view_count FROM help_articles ORDER BY view_count DESC LIMIT 5",
     );
 
-    logger.info("Retrieved help statistics");
+    const stats: HelpStats = {
+      totalArticles: totalArticles?.count ?? 0,
+      publishedArticles: publishedArticles?.count ?? 0,
+      draftArticles: draftArticles?.count ?? 0,
+      totalViews: totalViews?.total ?? 0,
+      topArticles,
+    };
+
+    logger.info(stats as unknown as Record<string, unknown>, "Retrieved help statistics");
 
     res.json({
       success: true,
-      stats: {
-        totalArticles: totalArticles.count,
-        publishedArticles: publishedArticles.count,
-        draftArticles: draftArticles.count,
-        totalViews: totalViews.total || 0,
-        topArticles,
-      },
+      stats,
     });
   } catch (error) {
-    logger.error({ error }, "Failed to retrieve help statistics");
-    res.status(500).json({
-      success: false,
-      error: "Failed to retrieve help statistics",
-    });
+    handleError(res, error, "Failed to retrieve help statistics");
   }
 });
 

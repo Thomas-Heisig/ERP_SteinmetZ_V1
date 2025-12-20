@@ -1,4 +1,4 @@
-Basierend auf der analysierten `types.ts` Datei, hier sind die erkannten Typen und Schnittstellen für das ERP-KI-System:
+#
 
 ## 🏗️ **Types - Hauptkategorien**
 

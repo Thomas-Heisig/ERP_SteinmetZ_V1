@@ -1,4 +1,4 @@
-Basierend auf der analysierten `aiUtils.ts` Datei, hier sind die erkannten Funktionen und Routen:
+#
 
 ## 🧠 **AI Utils - Hauptfunktionen**
 

@@ -17,17 +17,10 @@ export function registerTools(toolRegistry: {
       if (!expression || typeof expression !== "string")
         throw new Error("Kein gültiger Ausdruck.");
 
-      const safeExpr = expression.replace(/[^0-9+\-*/().,^√%πe\s]/gi, "");
-      const parsed = safeExpr
-        .replace(/π/g, "Math.PI")
-        .replace(/√/g, "Math.sqrt")
-        .replace(/\^/g, "**")
-        .replace(/%/g, "/100");
-
+      const parsed = sanitizeExpression(expression);
       const result = Function(`"use strict"; return (${parsed})`)();
 
-      if (typeof result !== "number" || isNaN(result))
-        throw new Error("Ungültiges Ergebnis.");
+      if (!isNumber(result)) throw new Error("Ungültiges Ergebnis.");
 
       return {
         success: true,
@@ -37,10 +30,10 @@ export function registerTools(toolRegistry: {
         formatted: `= ${result.toLocaleString("de-DE", { maximumFractionDigits: 10 })}`,
         type: typeof result,
       };
-    } catch (err) {
+    } catch (error) {
       return {
         success: false,
-        error: String(err),
+        error: getErrorMessage(error),
         message: "Berechnung fehlgeschlagen.",
       };
     }
@@ -64,15 +57,18 @@ export function registerTools(toolRegistry: {
       if (!Array.isArray(values) || values.length === 0)
         throw new Error("Leere Werte-Liste.");
 
-      const sorted = [...values].sort((a, b) => a - b);
-      const n = values.length;
-      const sum = values.reduce((a, b) => a + b, 0);
+      const nums = values.map((v) => Number(v)).filter((v) => isNumber(v));
+      if (nums.length === 0) throw new Error("Keine numerischen Werte.");
+
+      const sorted = [...nums].sort((a, b) => a - b);
+      const n = nums.length;
+      const sum = nums.reduce((a, b) => a + b, 0);
       const mean = sum / n;
       const median =
         n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
       const min = sorted[0];
       const max = sorted[n - 1];
-      const variance = values.reduce((acc, v) => acc + (v - mean) ** 2, 0) / n;
+      const variance = nums.reduce((acc, v) => acc + (v - mean) ** 2, 0) / n;
       const stdDev = Math.sqrt(variance);
 
       return {
@@ -86,8 +82,8 @@ export function registerTools(toolRegistry: {
         variance,
         stdDev,
       };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -111,24 +107,28 @@ export function registerTools(toolRegistry: {
     mode?: "of" | "increase" | "decrease";
   }) => {
     try {
+      const v = Number(value);
+      const p = Number(percent);
+      if (!isNumber(v) || !isNumber(p)) throw new Error("Ungültige Werte.");
+
       let result: number;
-      if (mode === "increase") result = value * (1 + percent / 100);
-      else if (mode === "decrease") result = value * (1 - percent / 100);
-      else result = (value * percent) / 100;
+      if (mode === "increase") result = v * (1 + p / 100);
+      else if (mode === "decrease") result = v * (1 - p / 100);
+      else result = (v * p) / 100;
 
       return {
         success: true,
-        value,
-        percent,
+        value: v,
+        percent: p,
         mode,
         result,
         formatted:
           mode === "of"
-            ? `${percent}% von ${value} = ${result.toFixed(2)}`
-            : `${mode === "increase" ? "+" : "-"}${percent}% ergibt ${result.toFixed(2)}`,
+            ? `${p}% von ${v} = ${result.toFixed(2)}`
+            : `${mode === "increase" ? "+" : "-"}${p}% ergibt ${result.toFixed(2)}`,
       };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -171,17 +171,19 @@ export function registerTools(toolRegistry: {
 
       if (!base || !target) throw new Error("Unbekannte Einheit.");
 
-      const result = (value * base) / target;
+      const v = Number(value);
+      if (!isNumber(v)) throw new Error("Ungültiger Wert.");
+      const result = (v * base) / target;
       return {
         success: true,
-        value,
+        value: v,
         from,
         to,
         result,
         formatted: `${value} ${from} = ${result.toFixed(6)} ${to}`,
       };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -193,6 +195,7 @@ export function registerTools(toolRegistry: {
     to: "Zieleinheit",
   };
   convertUnitTool.category = "conversions";
+  convertUnitTool.version = "1.0";
   toolRegistry.register("convert_unit", convertUnitTool);
 
   /* ─────────────────────────────────────────────
@@ -206,9 +209,11 @@ export function registerTools(toolRegistry: {
       const variable = (lhs.match(/[a-zA-Z]/) || [])[0];
       if (!variable) throw new Error("Keine Variable gefunden.");
 
+      const lhsParsed = sanitizeExpression(lhs);
+      const rhsParsed = sanitizeExpression(rhs);
       const f = (x: number) =>
         Function(
-          `"use strict"; const ${variable}=${x}; return (${lhs})-(${rhs})`,
+          `"use strict"; const ${variable}=${x}; return (${lhsParsed})-(${rhsParsed})`,
         )();
       let x = 1;
       for (let i = 0; i < 20; i++) {
@@ -225,8 +230,8 @@ export function registerTools(toolRegistry: {
         solution: x,
         formatted: `${variable} ≈ ${x.toFixed(6)}`,
       };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -235,6 +240,7 @@ export function registerTools(toolRegistry: {
     equation: "Algebraische Gleichung mit einer Variablen",
   };
   solveEquationTool.category = "algebra";
+  solveEquationTool.version = "1.0";
   toolRegistry.register("solve_equation", solveEquationTool);
 
   /* ─────────────────────────────────────────────
@@ -246,19 +252,14 @@ export function registerTools(toolRegistry: {
         throw new Error("Keine Ausdrücke.");
 
       const results = expressions.map((expr) => {
-        const clean = expr.replace(/[^0-9+\-*/().,^√%πe\s]/gi, "");
-        const parsed = clean
-          .replace(/π/g, "Math.PI")
-          .replace(/√/g, "Math.sqrt")
-          .replace(/\^/g, "**")
-          .replace(/%/g, "/100");
+        const parsed = sanitizeExpression(expr);
         const result = Function(`"use strict"; return (${parsed})`)();
         return { expression: expr, result };
-      });
+      }).filter((r) => isNumber(r.result));
 
       return { success: true, count: results.length, results };
-    } catch (err) {
-      return { success: false, error: String(err) };
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) };
     }
   }) as ToolFunction;
 
@@ -266,5 +267,25 @@ export function registerTools(toolRegistry: {
     "Berechnet mehrere mathematische Ausdrücke gleichzeitig.";
   batchCalcTool.parameters = { expressions: "Array mathematischer Ausdrücke" };
   batchCalcTool.category = "calculations";
+  batchCalcTool.version = "1.0";
   toolRegistry.register("batch_calculate", batchCalcTool);
+}
+
+function sanitizeExpression(expression: string): string {
+  const safeExpr = expression.replace(/[^0-9+\-*/().,^√%πe\s]/gi, "");
+  return safeExpr
+    .replace(/π/g, "Math.PI")
+    .replace(/\be\b/g, "Math.E")
+    .replace(/√/g, "Math.sqrt")
+    .replace(/\^/g, "**")
+    .replace(/%/g, "/100");
+}
+
+function isNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return typeof error === "string" ? error : JSON.stringify(error);
 }

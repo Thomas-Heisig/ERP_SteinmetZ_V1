@@ -17,6 +17,21 @@ const logger = createLogger("apiKeyService");
 const SETTINGS_FILE = path.resolve("config", "api_keys.json");
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || "default-key-change-me";
 
+// Flag to ensure warning is only shown once
+let hasWarnedAboutDefaultKey = false;
+
+function ensureConfigDir() {
+  const dir = path.dirname(SETTINGS_FILE);
+  return fs.mkdir(dir, { recursive: true }).catch(() => {});
+}
+
+function warnIfDefaultKey() {
+  if (ENCRYPTION_KEY === "default-key-change-me" && !hasWarnedAboutDefaultKey) {
+    logger.warn("Using default ENCRYPTION_KEY – set a secure value in env.");
+    hasWarnedAboutDefaultKey = true;
+  }
+}
+
 export interface APIKeySettings {
   openai?: string;
   anthropic?: string;
@@ -80,6 +95,8 @@ function decrypt(encryptedText: string): string {
  */
 export async function loadAPIKeys(): Promise<APIKeySettings> {
   try {
+    await ensureConfigDir();
+    warnIfDefaultKey();
     const data = await fs.readFile(SETTINGS_FILE, "utf8");
     const encrypted = JSON.parse(data) as APIKeySettings;
     
@@ -114,8 +131,11 @@ export async function loadAPIKeys(): Promise<APIKeySettings> {
     return decrypted;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      logger.info("No API keys file found, returning empty settings");
-      return {};
+      logger.info("No API keys file found, creating empty settings file");
+      const empty: APIKeySettings = { lastUpdated: new Date().toISOString() };
+      await ensureConfigDir();
+      await fs.writeFile(SETTINGS_FILE, JSON.stringify(empty, null, 2), "utf8");
+      return empty;
     }
     
     logger.error({ error }, "Failed to load API keys");
@@ -129,8 +149,8 @@ export async function loadAPIKeys(): Promise<APIKeySettings> {
 export async function saveAPIKeys(settings: APIKeySettings): Promise<void> {
   try {
     // Ensure config directory exists
-    const configDir = path.dirname(SETTINGS_FILE);
-    await fs.mkdir(configDir, { recursive: true });
+    await ensureConfigDir();
+    warnIfDefaultKey();
     
     // Encrypt all keys
     const encrypted: APIKeySettings = {

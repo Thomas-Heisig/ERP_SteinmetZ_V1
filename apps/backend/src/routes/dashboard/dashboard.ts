@@ -1,351 +1,717 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/dashboard/dashboard.ts
 
-import os from "os";
-import { Router } from "express";
+/**
+ * Main Dashboard Router
+ * 
+ * Provides system health, overview, KPIs, tasks, notifications,
+ * and widget stats for the dashboard interface.
+ * 
+ * ✅ Uses DashboardService (Singleton with DatabaseManager)
+ * ✅ Utility functions (pagination, filtering, error handling)
+ * ✅ Zod validation
+ * ✅ Comprehensive JSDoc
+ * ✅ No CREATE TABLE statements (migrations only)
+ *
+ * @module routes/dashboard
+ * 
+ * @example
+ * ```typescript
+ * // Get paginated tasks
+ * GET /api/dashboard/tasks?limit=20&offset=0&status=pending
+ * 
+ * // Create task
+ * POST /api/dashboard/tasks
+ * {
+ *   "userId": "user-123",
+ *   "title": "Review Report",
+ *   "priority": "high",
+ *   "dueDate": "2025-12-25"
+ * }
+ * 
+ * // Mark notification as read
+ * PUT /api/dashboard/notifications/:id
+ * { "read": true }
+ * ```
+ */
 
-import { existsSync, readFileSync } from "fs";
-import path from "path";
+import { Router, type Request, type Response } from "express";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { BadRequestError } from "../error/errors.js";
+import dashboardService from "./DashboardService.js";
 import comprehensiveRouter from "./comprehensive.js";
+import {
+  createTaskSchema,
+  updateTaskSchema,
+  queryTaskSchema,
+  createNotificationSchema,
+  updateNotificationSchema,
+  queryNotificationSchema,
+  createWidgetSchema,
+  updateWidgetSchema,
+  queryWidgetSchema,
+  createLayoutSchema,
+  updateLayoutSchema,
+  createFavoriteSchema,
+  type ActivityItem,
+} from "./types.js";
 
 const router = Router();
 
 // Mount comprehensive dashboard routes
 router.use("/comprehensive", comprehensiveRouter);
 
-/* ---------------------------------------------------------
-   Systemstatus
---------------------------------------------------------- */
-router.get("/health", (_req, res) => {
-  res.json({
-    status: "healthy",
-    uptime: process.uptime(),
-    hostname: os.hostname(),
-    platform: os.platform(),
-    node_version: process.version,
-    memory: {
-      free: Math.round(os.freemem() / 1024 / 1024) + " MB",
-      total: Math.round(os.totalmem() / 1024 / 1024) + " MB",
-    },
-    loadavg: os.loadavg(),
-    timestamp: new Date().toISOString(),
-  });
-});
+// ==========================================================================
+// SYSTEM HEALTH ROUTES
+// ==========================================================================
 
-/* ---------------------------------------------------------
-   Dashboard-Übersicht: System + AI + ERP-Daten
---------------------------------------------------------- */
+/**
+ * GET /api/dashboard/health
+ * Get system health status
+ * 
+ * @returns {SystemHealth} System health metrics
+ */
 router.get(
-  "/overview",
-  asyncHandler(async (_req, res) => {
-    // Beispielhafte "ERP"-Werte (später echte Datenbank-Abfragen)
-    const erpStats = {
-      openOrders: 14,
-      pendingInvoices: 7,
-      stockItems: 1240,
-      customers: 328,
-    };
-
-    // AI-Komponentenstatus
-    const aiStatus = {
-      fallback_config_source: process.env.FALLBACK_CONFIG_SOURCE ?? "defaults",
-      wiki_enabled: (process.env.FALLBACK_WIKI ?? "1") !== "0",
-      modules: {
-        fallback_ai: true,
-        annotator_ai: existsSync(
-          path.join(process.cwd(), "src/routes/ai/annotator_ai.ts"),
-        ),
-        rag_ai: existsSync(path.join(process.cwd(), "src/routes/ai/rag_ai.ts")),
-      },
-    };
-
-    // Versionsinformationen
-    const packageJson = JSON.parse(
-      readFileSync(path.join(process.cwd(), "package.json"), "utf8"),
-    );
-    const versionInfo = {
-      name: packageJson.name,
-      version: packageJson.version,
-      description: packageJson.description,
-    };
-
-    res.json({
-      system: {
-        uptime: process.uptime(),
-        cpu: os.cpus().length,
-        loadavg: os.loadavg().map((x) => x.toFixed(2)),
-        memory: {
-          free: Math.round(os.freemem() / 1024 / 1024) + " MB",
-          total: Math.round(os.totalmem() / 1024 / 1024) + " MB",
-        },
-      },
-      ai: aiStatus,
-      erp: erpStats,
-      version: versionInfo,
-      timestamp: new Date().toISOString(),
-    });
-  }),
+  "/health",
+  asyncHandler(async (_req: Request, res: Response) => {
+    const health = await dashboardService.getSystemHealth();
+    res.json(health);
+  })
 );
 
-/* ---------------------------------------------------------
-   (optional) Letzte Logs / Chat-Kontext
---------------------------------------------------------- */
-router.get("/context", (_req, res) => {
+/**
+ * GET /api/dashboard/overview
+ * Get comprehensive system, AI, and ERP overview
+ * 
+ * @returns {DashboardOverview} Complete dashboard overview
+ */
+router.get(
+  "/overview",
+  asyncHandler(async (_req: Request, res: Response) => {
+    const overview = await dashboardService.getDashboardOverview();
+    res.json(overview);
+  })
+);
+
+/**
+ * GET /api/dashboard/context
+ * Get last context log entries
+ * 
+ * @returns {object} Last 10 log entries
+ */
+router.get("/context", (_req: Request, res: Response) => {
   const logFile = path.join(process.cwd(), "data", "chat_context.log");
   if (existsSync(logFile)) {
     const content = readFileSync(logFile, "utf8").split("\n").slice(-10);
-    res.json({ context: content });
+    res.json({ success: true, context: content });
   } else {
-    res.json({ context: [] });
+    res.json({ success: true, context: [] });
   }
 });
 
-/* ---------------------------------------------------------
-   Dashboard KPIs - Key Performance Indicators
---------------------------------------------------------- */
+// ==========================================================================
+// KPI ROUTES
+// ==========================================================================
+
+/**
+ * GET /api/dashboard/kpis
+ * Get dashboard KPIs
+ * 
+ * @query {string} category - Filter by category (optional)
+ * @query {number} days - Number of days (default: 7)
+ * 
+ * @returns {DashboardKPI[]} List of KPIs
+ */
 router.get(
   "/kpis",
-  asyncHandler(async (_req, res) => {
-    const db = (await import("../../services/dbService.js")).default;
+  asyncHandler(async (req: Request, res: Response) => {
+    const category = req.query.category as string | undefined;
+    const days = req.query.days
+      ? parseInt(req.query.days as string, 10)
+      : 7;
 
-    // Get recent KPIs from database
-    const kpis = await db.all(
-      `SELECT * FROM dashboard_kpis 
-       WHERE date >= date('now', '-7 days') 
-       ORDER BY date DESC, name ASC`,
-    );
+    const kpis = await dashboardService.getKPIs({ category, days });
 
     res.json({
       success: true,
       data: kpis,
       count: kpis.length,
     });
-  }),
+  })
 );
 
-/* ---------------------------------------------------------
-   Dashboard Tasks
---------------------------------------------------------- */
+/**
+ * POST /api/dashboard/kpis
+ * Create new KPI entry
+ * 
+ * @body {object} KPI data
+ * 
+ * @returns {DashboardKPI} Created KPI
+ */
+router.post(
+  "/kpis",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { category, name, value, unit, target, date } = req.body;
+
+    if (!category || !name || value === undefined) {
+      throw new BadRequestError("Missing required fields: category, name, value");
+    }
+
+    const kpi = await dashboardService.createKPI({
+      category,
+      name,
+      value,
+      unit,
+      target,
+      date,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: kpi,
+    });
+  })
+);
+
+// ==========================================================================
+// TASKS ROUTES
+// ==========================================================================
+
+/**
+ * GET /api/dashboard/tasks
+ * Get dashboard tasks with pagination and filtering
+ * 
+ * @query {string} userId - Filter by user ID
+ * @query {string} status - Filter by status (pending, in_progress, completed, etc.)
+ * @query {string} priority - Filter by priority (low, normal, high, urgent, critical)
+ * @query {string} assignedTo - Filter by assigned user
+ * @query {string} tags - Filter by tags (partial match)
+ * @query {string} dueBefore - Filter tasks due before date (ISO 8601)
+ * @query {string} dueAfter - Filter tasks due after date (ISO 8601)
+ * @query {number} limit - Results per page (default: 50)
+ * @query {number} offset - Pagination offset (default: 0)
+ * @query {string} sortBy - Sort field
+ * @query {string} sortOrder - Sort order (asc, desc)
+ * 
+ * @returns {PaginatedResult<DashboardTask>} Paginated tasks
+ */
 router.get(
   "/tasks",
-  asyncHandler(async (req, res) => {
-    const db = (await import("../../services/dbService.js")).default;
-    const { status, priority } = req.query;
-
-    let sql = "SELECT * FROM dashboard_tasks WHERE 1=1";
-    const params: any[] = [];
-
-    if (status) {
-      const statuses = Array.isArray(status) ? status : [status];
-      sql += ` AND status IN (${statuses.map(() => "?").join(",")})`;
-      params.push(...statuses);
-    }
-
-    if (priority) {
-      sql += " AND priority = ?";
-      params.push(priority);
-    }
-
-    sql += " ORDER BY priority DESC, due_date ASC";
-
-    const tasks = await db.all(sql, params);
-
-    res.json({
-      success: true,
-      data: tasks,
-      count: tasks.length,
-    });
-  }),
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = queryTaskSchema.parse(req.query);
+    const filters = {
+      userId: validated.userId,
+      status: validated.status,
+      priority: validated.priority,
+      assignedTo: validated.assignedTo,
+      dueBefore: validated.dueBefore,
+      dueAfter: validated.dueAfter,
+      limit: validated.limit ? Number(validated.limit) : undefined,
+      offset: validated.offset ? Number(validated.offset) : undefined,
+    };
+    const result = await dashboardService.getTasks(filters);
+    res.json(result);
+  })
 );
 
-/* ---------------------------------------------------------
-   Dashboard Notifications
---------------------------------------------------------- */
+/**
+ * GET /api/dashboard/tasks/:id
+ * Get task by ID
+ * 
+ * @param {string} id - Task ID
+ * 
+ * @returns {DashboardTask} Task details
+ */
+router.get(
+  "/tasks/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const task = await dashboardService.getTaskById(req.params.id);
+    res.json({ success: true, data: task });
+  })
+);
+
+/**
+ * POST /api/dashboard/tasks
+ * Create a new task
+ * 
+ * @body {CreateTaskInput} Task data
+ * 
+ * @returns {DashboardTask} Created task
+ */
+router.post(
+  "/tasks",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = createTaskSchema.parse(req.body);
+    const task = await dashboardService.createTask(validated);
+    res.status(201).json({ success: true, data: task });
+  })
+);
+
+/**
+ * PUT /api/dashboard/tasks/:id
+ * Update a task
+ * 
+ * @param {string} id - Task ID
+ * @body {UpdateTaskInput} Update data
+ * 
+ * @returns {DashboardTask} Updated task
+ */
+router.put(
+  "/tasks/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = updateTaskSchema.parse(req.body);
+    const task = await dashboardService.updateTask(req.params.id, validated);
+    res.json({ success: true, data: task });
+  })
+);
+
+/**
+ * DELETE /api/dashboard/tasks/:id
+ * Delete a task
+ * 
+ * @param {string} id - Task ID
+ * 
+ * @returns {object} Success message
+ */
+router.delete(
+  "/tasks/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    await dashboardService.deleteTask(req.params.id);
+    res.json({ success: true, message: "Task deleted successfully" });
+  })
+);
+
+// ==========================================================================
+// NOTIFICATIONS ROUTES
+// ==========================================================================
+
+/**
+ * GET /api/dashboard/notifications
+ * Get dashboard notifications with pagination and filtering
+ * 
+ * @query {string} userId - Filter by user ID
+ * @query {boolean} read - Filter by read status
+ * @query {string} type - Filter by type (info, warning, error, success, alert)
+ * @query {string} createdAfter - Filter by creation date (after)
+ * @query {string} createdBefore - Filter by creation date (before)
+ * @query {number} limit - Results per page (default: 50)
+ * @query {number} offset - Pagination offset (default: 0)
+ * @query {string} sortBy - Sort field
+ * @query {string} sortOrder - Sort order (asc, desc)
+ * 
+ * @returns {PaginatedResult<DashboardNotification>} Paginated notifications
+ */
 router.get(
   "/notifications",
-  asyncHandler(async (req, res) => {
-    const db = (await import("../../services/dbService.js")).default;
-    const { read, user_id, limit = "10" } = req.query;
-
-    let sql = "SELECT * FROM dashboard_notifications WHERE 1=1";
-    const params: any[] = [];
-
-    if (read !== undefined) {
-      sql += " AND read = ?";
-      params.push(read === "true" ? 1 : 0);
-    }
-
-    if (user_id) {
-      sql += " AND user_id = ?";
-      params.push(user_id);
-    }
-
-    sql += " ORDER BY created_at DESC LIMIT ?";
-    params.push(parseInt(limit as string, 10));
-
-    const notifications = await db.all(sql, params);
-
-    res.json({
-      success: true,
-      data: notifications,
-      count: notifications.length,
-    });
-  }),
-);
-
-/* ---------------------------------------------------------
-   Dashboard Widgets Data
---------------------------------------------------------- */
-router.get(
-  "/widgets/stats",
-  asyncHandler(async (_req, res) => {
-    // Provide comprehensive stats for dashboard widgets
-    const stats = {
-      sales: {
-        today: 15420,
-        yesterday: 12340,
-        thisWeek: 89760,
-        lastWeek: 78450,
-        trend: "+14.4%",
-      },
-      orders: {
-        total: 1248,
-        pending: 14,
-        processing: 23,
-        completed: 1211,
-        trend: "+8.2%",
-      },
-      customers: {
-        total: 328,
-        new: 12,
-        active: 287,
-        inactive: 41,
-        trend: "+3.8%",
-      },
-      inventory: {
-        totalItems: 1240,
-        lowStock: 8,
-        outOfStock: 2,
-        inStock: 1230,
-        trend: "-0.6%",
-      },
-      finance: {
-        revenue: 125340,
-        expenses: 45280,
-        profit: 80060,
-        margin: "63.9%",
-        trend: "+12.5%",
-      },
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = queryNotificationSchema.parse(req.query);
+    const filters = {
+      userId: validated.userId,
+      type: validated.type,
+      read:
+        typeof validated.read === "string"
+          ? validated.read === "true"
+          : undefined,
+      limit: validated.limit ? Number(validated.limit) : undefined,
+      offset: validated.offset ? Number(validated.offset) : undefined,
     };
-
-    res.json({
-      success: true,
-      data: stats,
-      timestamp: new Date().toISOString(),
-    });
-  }),
+    const result = await dashboardService.getNotifications(filters);
+    res.json(result);
+  })
 );
 
-/* ---------------------------------------------------------
-   Recent Activities for Dashboard
---------------------------------------------------------- */
+/**
+ * GET /api/dashboard/notifications/:id
+ * Get notification by ID
+ * 
+ * @param {string} id - Notification ID
+ * 
+ * @returns {DashboardNotification} Notification details
+ */
+router.get(
+  "/notifications/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const notification = await dashboardService.getNotificationById(
+      req.params.id
+    );
+    res.json({ success: true, data: notification });
+  })
+);
+
+/**
+ * POST /api/dashboard/notifications
+ * Create a new notification
+ * 
+ * @body {CreateNotificationInput} Notification data
+ * 
+ * @returns {DashboardNotification} Created notification
+ */
+router.post(
+  "/notifications",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = createNotificationSchema.parse(req.body);
+    const notification = await dashboardService.createNotification(validated);
+    res.status(201).json({ success: true, data: notification });
+  })
+);
+
+/**
+ * PUT /api/dashboard/notifications/:id
+ * Update a notification (mark as read/unread)
+ * 
+ * @param {string} id - Notification ID
+ * @body {UpdateNotificationInput} Update data
+ * 
+ * @returns {DashboardNotification} Updated notification
+ */
+router.put(
+  "/notifications/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = updateNotificationSchema.parse(req.body);
+    const notification = await dashboardService.updateNotification(
+      req.params.id,
+      validated
+    );
+    res.json({ success: true, data: notification });
+  })
+);
+
+/**
+ * DELETE /api/dashboard/notifications/:id
+ * Delete a notification
+ * 
+ * @param {string} id - Notification ID
+ * 
+ * @returns {object} Success message
+ */
+router.delete(
+  "/notifications/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    await dashboardService.deleteNotification(req.params.id);
+    res.json({ success: true, message: "Notification deleted successfully" });
+  })
+);
+
+// ==========================================================================
+// WIDGETS ROUTES (CRUD)
+// ==========================================================================
+
+/**
+ * GET /api/dashboard/widgets
+ * Get widgets with pagination and filtering
+ *
+ * @query {string} userId
+ * @query {string} widgetType
+ * @query {string} dataSource
+ * @query {string} isVisible
+ * @query {number} limit
+ * @query {number} offset
+ * @query {string} sortBy
+ * @query {string} sortOrder
+ */
+router.get(
+  "/widgets",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = queryWidgetSchema.parse(req.query);
+    const filters: {
+      userId?: string;
+      widgetType?: string;
+      dataSource?: string;
+      isVisible?: boolean;
+      limit?: number;
+      offset?: number;
+    } = {
+      userId: validated.userId,
+      widgetType: validated.widgetType,
+      dataSource: validated.dataSource,
+      isVisible:
+        typeof validated.isVisible === "string"
+          ? validated.isVisible === "true"
+          : undefined,
+      limit: validated.limit ? Number(validated.limit) : undefined,
+      offset: validated.offset ? Number(validated.offset) : undefined,
+    };
+    const result = await dashboardService.getWidgets(filters);
+    res.json(result);
+  })
+);
+
+/**
+ * POST /api/dashboard/widgets
+ * Create a new widget
+ */
+router.post(
+  "/widgets",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = createWidgetSchema.parse(req.body);
+    const widget = await dashboardService.createWidget(validated);
+    res.status(201).json({ success: true, data: widget });
+  })
+);
+
+/**
+ * PUT /api/dashboard/widgets/:id
+ * Update an existing widget
+ */
+router.put(
+  "/widgets/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = updateWidgetSchema.parse(req.body);
+    const widget = await dashboardService.updateWidget(req.params.id, validated);
+    res.json({ success: true, data: widget });
+  })
+);
+
+/**
+ * DELETE /api/dashboard/widgets/:id
+ * Delete a widget
+ */
+router.delete(
+  "/widgets/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    await dashboardService.deleteWidget(req.params.id);
+    res.json({ success: true, message: "Widget deleted successfully" });
+  })
+);
+
+// ==========================================================================
+// LAYOUTS ROUTES (CRUD)
+// ==========================================================================
+
+/**
+ * GET /api/dashboard/layouts
+ * Get layouts for a user
+ * @query {string} userId - Required
+ */
+router.get(
+  "/layouts",
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.query.userId as string | undefined;
+    if (!userId) throw new BadRequestError("Missing required query: userId");
+    const layouts = await dashboardService.getLayouts(userId);
+    res.json({ success: true, data: layouts, count: layouts.length });
+  })
+);
+
+/**
+ * POST /api/dashboard/layouts
+ * Create a new layout
+ */
+router.post(
+  "/layouts",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = createLayoutSchema.parse(req.body);
+    const layout = await dashboardService.createLayout(validated);
+    res.status(201).json({ success: true, data: layout });
+  })
+);
+
+/**
+ * PUT /api/dashboard/layouts/:id
+ * Update an existing layout
+ */
+router.put(
+  "/layouts/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = updateLayoutSchema.parse(req.body);
+    const layout = await dashboardService.updateLayout(req.params.id, validated);
+    res.json({ success: true, data: layout });
+  })
+);
+
+/**
+ * DELETE /api/dashboard/layouts/:id
+ * Delete a layout
+ */
+router.delete(
+  "/layouts/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    await dashboardService.deleteLayout(req.params.id);
+    res.json({ success: true, message: "Layout deleted successfully" });
+  })
+);
+
+// ==========================================================================
+// FAVORITES ROUTES (CRUD)
+// ==========================================================================
+
+/**
+ * GET /api/dashboard/favorites
+ * Get favorites for a user
+ * @query {string} userId - Required
+ */
+router.get(
+  "/favorites",
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.query.userId as string | undefined;
+    if (!userId) throw new BadRequestError("Missing required query: userId");
+    const favorites = await dashboardService.getFavorites(userId);
+    res.json({ success: true, data: favorites, count: favorites.length });
+  })
+);
+
+/**
+ * POST /api/dashboard/favorites
+ * Add a new favorite
+ */
+router.post(
+  "/favorites",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = createFavoriteSchema.parse(req.body);
+    const favorite = await dashboardService.addFavorite(validated);
+    res.status(201).json({ success: true, data: favorite });
+  })
+);
+
+/**
+ * DELETE /api/dashboard/favorites/:id
+ * Delete a favorite
+ */
+router.delete(
+  "/favorites/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    await dashboardService.deleteFavorite(req.params.id);
+    res.json({ success: true, message: "Favorite deleted successfully" });
+  })
+);
+
+// ==========================================================================
+// WIDGETS STATS ROUTES
+// ==========================================================================
+
+/**
+ * GET /api/dashboard/widgets/stats
+ * Get comprehensive stats for dashboard widgets
+ * 
+ * @returns {DashboardStats} Widget statistics
+ */
+router.get("/widgets/stats", (_req: Request, res: Response) => {
+  const stats = {
+    totalTasks: 45,
+    completedTasks: 28,
+    pendingTasks: 17,
+    overdueTasks: 3,
+    unreadNotifications: 8,
+    totalRevenue: 1250000,
+    newCustomers: 23,
+    activeProjects: 12,
+  };
+
+  res.json({
+    success: true,
+    data: stats,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// ==========================================================================
+// ACTIVITIES ROUTES
+// ==========================================================================
+
+/**
+ * GET /api/dashboard/activities
+ * Get recent activities for dashboard
+ * 
+ * @query {number} limit - Max number of activities (default: 10)
+ * 
+ * @returns {ActivityItem[]} Recent activities
+ */
 router.get(
   "/activities",
-  asyncHandler(async (_req, res) => {
-    const activities = [
+  asyncHandler(async (req: Request, res: Response) => {
+    const limit = req.query.limit
+      ? parseInt(req.query.limit as string, 10)
+      : 10;
+
+    const activities: ActivityItem[] = [
       {
-        id: 1,
-        type: "order",
-        title: "Neue Bestellung #1234",
-        description: "Kunde Schmidt GmbH hat eine Bestellung aufgegeben",
-        timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 min ago
-        icon: "📦",
-        status: "success",
+        id: "1",
+        type: "task_completed",
+        title: "Task Completed",
+        description: "Quarterly Report completed by John Doe",
+        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+        icon: "check-circle",
+        user: {
+          id: "user-1",
+          name: "John Doe",
+          avatar: "/avatars/john.jpg",
+        },
       },
       {
-        id: 2,
-        type: "invoice",
-        title: "Rechnung bezahlt #5678",
-        description: "Zahlung von 5.450 € eingegangen",
-        timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15 min ago
-        icon: "💰",
-        status: "success",
+        id: "2",
+        type: "notification_sent",
+        title: "Notification Sent",
+        description: "Invoice #1234 sent to customer",
+        timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+        icon: "bell",
       },
       {
-        id: 3,
-        type: "customer",
-        title: "Neuer Kunde registriert",
-        description: "Müller AG wurde als Kunde angelegt",
-        timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min ago
-        icon: "👤",
-        status: "info",
+        id: "3",
+        type: "kpi_updated",
+        title: "KPI Updated",
+        description: "Revenue KPI updated - Target reached",
+        timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+        icon: "trending-up",
       },
-      {
-        id: 4,
-        type: "inventory",
-        title: "Niedriger Lagerbestand",
-        description: "Artikel A123 hat nur noch 5 Einheiten auf Lager",
-        timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(), // 45 min ago
-        icon: "⚠️",
-        status: "warning",
-      },
-      {
-        id: 5,
-        type: "system",
-        title: "Backup abgeschlossen",
-        description: "Tägliches Backup erfolgreich durchgeführt",
-        timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(), // 2 hours ago
-        icon: "💾",
-        status: "success",
-      },
-    ];
+    ].slice(0, limit);
 
     res.json({
       success: true,
       data: activities,
       count: activities.length,
-      timestamp: new Date().toISOString(),
     });
-  }),
+  })
 );
 
-/* ---------------------------------------------------------
-   Quick Links for Dashboard
---------------------------------------------------------- */
-router.get("/quick-links", (_req, res) => {
+/**
+ * GET /api/dashboard/quick-links
+ * Get quick links for dashboard navigation
+ * 
+ * @returns {object[]} Quick links
+ */
+router.get("/quick-links", (_req: Request, res: Response) => {
   const quickLinks = [
     {
-      id: 1,
-      title: "Neue Rechnung",
-      description: "Rechnung erstellen",
-      path: "/finance/invoices/new",
-      icon: "📄",
-      color: "#4CAF50",
+      id: "1",
+      category: "Finance",
+      title: "Revenue Dashboard",
+      url: "/dashboard/finance/revenue",
+      icon: "dollar-sign",
+      color: "green",
     },
     {
-      id: 2,
-      title: "Neuer Kunde",
-      description: "Kunde anlegen",
-      path: "/crm/customers/new",
-      icon: "👤",
-      color: "#2196F3",
+      id: "2",
+      category: "HR",
+      title: "Employee Directory",
+      url: "/hr/employees",
+      icon: "users",
+      color: "blue",
     },
     {
-      id: 3,
-      title: "Bestellung erfassen",
-      description: "Neue Bestellung",
-      path: "/orders/new",
-      icon: "🛒",
-      color: "#FF9800",
+      id: "3",
+      category: "Production",
+      title: "Production Schedule",
+      url: "/production/schedule",
+      icon: "calendar",
+      color: "orange",
     },
     {
-      id: 4,
-      title: "Berichte",
-      description: "Berichte anzeigen",
-      path: "/reports",
-      icon: "📊",
-      color: "#9C27B0",
+      id: "4",
+      category: "CRM",
+      title: "Customer List",
+      url: "/crm/customers",
+      icon: "briefcase",
+      color: "purple",
+    },
+    {
+      id: "5",
+      category: "Warehouse",
+      title: "Inventory Overview",
+      url: "/warehouse/inventory",
+      icon: "package",
+      color: "indigo",
     },
   ];
 

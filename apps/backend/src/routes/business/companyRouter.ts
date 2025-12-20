@@ -8,8 +8,8 @@
 import { Router } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { z } from "zod";
-import { BadRequestError, NotFoundError } from "../../types/errors.js";
-import db from "../../services/dbService.js";
+import { NotFoundError } from "../error/errors.js";
+import db from "../database/dbService.js";
 import { createLogger } from "../../utils/logger.js";
 
 const router = Router();
@@ -225,7 +225,7 @@ router.post(
       ],
     );
 
-    logger.info("Company created", { id, name: validatedData.official_name });
+    logger.info({ id, name: validatedData.official_name }, "Company created");
 
     res.status(201).json({
       message: "Company created successfully",
@@ -285,7 +285,7 @@ router.put(
       ],
     );
 
-    logger.info("Company updated", { id, name: validatedData.official_name });
+    logger.info({ id, name: validatedData.official_name }, "Company updated");
 
     res.json({ message: "Company updated successfully" });
   }),
@@ -311,7 +311,7 @@ router.delete(
       [id],
     );
 
-    logger.info("Company deactivated", { id });
+    logger.info({ id }, "Company deactivated");
 
     res.json({ message: "Company deactivated successfully" });
   }),
@@ -362,7 +362,7 @@ router.post(
       ],
     );
 
-    logger.info("Legal info added", { company_id: id });
+    logger.info({ company_id: id }, "Legal info added");
 
     res.status(201).json({ message: "Legal info added successfully" });
   }),
@@ -410,7 +410,7 @@ router.post(
       ],
     );
 
-    logger.info("Tax info added", { company_id: id });
+    logger.info({ company_id: id }, "Tax info added");
 
     res.status(201).json({ message: "Tax info added successfully" });
   }),
@@ -472,10 +472,10 @@ router.post(
       ],
     );
 
-    logger.info("Bank account added", {
+    logger.info({
       company_id: id,
       iban: validatedData.iban,
-    });
+    }, "Bank account added");
 
     res.status(201).json({ message: "Bank account added successfully" });
   }),
@@ -526,10 +526,10 @@ router.post(
       ],
     );
 
-    logger.info("Communication channel added", {
+    logger.info({
       company_id: id,
       type: validatedData.channel_type,
-    });
+    }, "Communication channel added");
 
     res
       .status(201)

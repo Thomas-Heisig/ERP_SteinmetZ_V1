@@ -334,7 +334,7 @@ export interface WorkflowDefinition {
   tags?: string[];
 
   /** Workflow-Variablen (Standardwerte bei Start) */
-  variables?: Record<string, any>;
+  variables?: Record<string, unknown>;
 
   /** Gibt an, ob der Workflow aktiv ist */
   enabled?: boolean;
@@ -586,7 +586,7 @@ export interface AIModuleConfig {
     | "training"
     | "fallback"
     | "custom";
-  meta?: Record<string, any>;
+  meta?: Record<string, unknown>;
   // Ergänzungen für erweiterte Modulkonfiguration
   health_check_endpoint?: string;
   retry_config?: {
@@ -650,7 +650,7 @@ export interface AIAgentStatus {
   failed_requests?: number;
   success_rate?: number;
   provider?: Provider;
-  diagnostics?: Record<string, any>;
+  diagnostics?: Record<string, unknown>;
   system_load?: { cpu?: number; memory?: number; disk?: number };
   updated_at?: string;
   // Ergänzungen für erweiterten Status
@@ -691,7 +691,7 @@ export interface AIClusterState {
     cache_efficiency?: number;
     cost_per_request?: number;
   };
-  config_snapshot?: Record<string, any>;
+  config_snapshot?: Record<string, unknown>;
   // Ergänzungen für erweiterten Cluster-Zustand
   load_balancing?: {
     strategy: "round_robin" | "least_connections" | "weighted";
@@ -718,13 +718,13 @@ export interface AIOptions {
   maxTokens?: number;
   systemPrompt?: string;
   timeoutMs?: number;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   stream?: boolean;
   // Ergänzungen für erweiterte Optionen
   tools?: Array<{
     name: string;
     description: string;
-    parameters: Record<string, any>;
+    parameters: Record<string, unknown>;
   }>;
   tool_choice?: "auto" | "none" | "required";
   stop_sequences?: string[];
@@ -742,14 +742,14 @@ export interface ModelResponse {
   duration_ms?: number;
   tool_calls?: Array<{
     name: string;
-    parameters: Record<string, any>;
+    parameters: Record<string, unknown>;
     // Ergänzungen für erweiterte Tool-Aufrufe
     id?: string;
     type?: "function";
   }>;
   success?: boolean;
   errors?: string[];
-  meta?: Record<string, any>;
+  meta?: Record<string, unknown>;
   // Ergänzungen für erweiterte Antworten
   finish_reason?: "stop" | "length" | "tool_calls" | "content_filter";
   usage?: {
@@ -773,14 +773,14 @@ export interface AuditLogEntry {
   timestamp: string;
   user?: string;
   action: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   success?: boolean;
   duration_ms?: number;
   workflow?: string;
   tool?: string;
   error?: string;
   category?: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   source_ip?: string;
   // Ergänzungen für erweiterte Audit-Logs
   session_id?: string;
@@ -845,8 +845,8 @@ export interface ChatSession {
   messages: ChatMessage[];
   createdAt: string;
   updatedAt: string;
-  context?: Record<string, any>;
-  metadata?: Record<string, any>;
+  context?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
   // Ergänzungen für erweiterte Session-Verwaltung
   user_id?: string;
   organization_id?: string;
@@ -890,7 +890,7 @@ export interface PipelineRun {
   finished_at?: string;
   stages_executed: string[];
   success: boolean;
-  results: Record<string, any>;
+  results: Record<string, unknown>;
   errors?: string[];
   duration_ms?: number;
   initiator?: string;
@@ -928,16 +928,16 @@ export interface APIRequestLog {
   response_size_bytes?: number;
   endpoint_category?: string;
   user_id?: string;
-  query_params?: Record<string, any>;
+  query_params?: Record<string, unknown>;
   error_code?: string;
 }
 
-export interface APIResponseEnvelope<T = any> {
+export interface APIResponseEnvelope<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
   status_code?: number;
-  meta?: Record<string, any>;
+  meta?: Record<string, unknown>;
   // Ergänzungen für erweiterte API-Antworten
   pagination?: {
     page: number;
@@ -957,7 +957,7 @@ export type SanitizeMessagesFn = (messages: ChatMessage[]) => ChatMessage[];
 export type WithTimeoutFn = <T>(promise: Promise<T>, ms?: number) => Promise<T>;
 export type ToolExecutionFn = (
   name: string,
-  params?: Record<string, any>,
+  params?: Record<string, unknown>,
 ) => Promise<ToolResult>;
 
 // Neue Utility-Typen
@@ -1004,7 +1004,7 @@ export interface KnowledgeItem {
     valid_until: string;
   };
   dependencies?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /* ========================================================================== */
@@ -1042,7 +1042,7 @@ export interface SecurityContext {
   roles: string[];
   permissions: string[];
   organization_id?: string;
-  session_attributes: Record<string, any>;
+  session_attributes: Record<string, unknown>;
   auth_method: "jwt" | "api_key" | "session" | "none";
 }
 
@@ -1051,7 +1051,7 @@ export interface SystemEvent {
   type: string;
   source: string;
   timestamp: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   severity: "info" | "warning" | "error" | "critical";
   correlation_id?: string;
 }

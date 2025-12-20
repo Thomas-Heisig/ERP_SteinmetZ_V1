@@ -71,7 +71,7 @@ import {
   audioRateLimiter,
 } from "../../middleware/rateLimiters.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import { BadRequestError, NotFoundError } from "../../types/errors.js";
+import { BadRequestError, NotFoundError } from "../error/errors.js";
 
 // Services
 import { getModelOverview } from "./services/modelService.js";
@@ -85,7 +85,6 @@ import { translateText } from "./services/translationService.js";
 import { providerManager } from "./services/providerManager.js";
 import {
   loadAPIKeys,
-  saveAPIKeys,
   updateAPIKey,
   deleteAPIKey,
   validateAPIKey,
@@ -110,9 +109,6 @@ import { log } from "./utils/logger.js";
 
 import { nowISO } from "./utils/helpers.js";
 import { sanitizeMessages } from "./utils/aiUtils.js";
-
-// Provider (Fallback)
-import generateAIResponse from "./providers/fallbackProvider.js";
 
 import type { ChatMessage } from "./types/types.js";
 
@@ -170,8 +166,14 @@ const workflowRunSchema = z
 router.get(
   "/models",
   asyncHandler(async (_req, res) => {
-    const models = await getModelOverview();
-    res.json({ success: true, models });
+    try {
+      const models = getModelOverview();
+      res.json({ success: true, models: models || [] });
+    } catch (error) {
+      console.error("Error loading models:", error);
+      // Return empty list on error instead of failing
+      res.json({ success: true, models: [] });
+    }
   }),
 );
 
@@ -242,7 +244,13 @@ router.post(
 
 // Alle Sessions abrufen
 router.get("/sessions", (_req, res) => {
-  res.json({ success: true, sessions: Array.from(chatSessions.values()) });
+  try {
+    const sessions = Array.from(chatSessions.values());
+    res.json({ success: true, sessions: sessions || [] });
+  } catch (error) {
+    console.error("Error loading sessions:", error);
+    res.json({ success: true, sessions: [] });
+  }
 });
 
 // Neue Session erstellen (für QuickChat frontend)
@@ -545,8 +553,25 @@ router.get("/status", (_req, res) => {
 router.get(
   "/providers",
   asyncHandler(async (_req, res) => {
-    const providers = await providerManager.getProviderStatus();
-    res.json({ success: true, providers });
+    try {
+      const providers = await providerManager.getProviderStatus();
+      res.json({ success: true, providers: providers || [] });
+    } catch (error) {
+      console.error("Error loading providers:", error);
+      // Return empty list with offline status on error
+      res.json({ 
+        success: true, 
+        providers: [
+          { 
+            provider: "ollama", 
+            available: false, 
+            status: "offline", 
+            message: "Failed to check provider status",
+            lastChecked: new Date().toISOString() 
+          }
+        ] 
+      });
+    }
   }),
 );
 

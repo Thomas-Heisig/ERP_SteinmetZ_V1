@@ -159,7 +159,7 @@ export async function callAzureOpenAI(
     fallbackOnError: true,
     apiVersion: process.env.AZURE_OPENAI_API_VERSION || "2024-02-01",
     deploymentName: process.env.AZURE_OPENAI_DEPLOYMENT,
-    ...options.context?.azureConfig,
+    ...(options.context?.azureConfig || {}),
   };
 
   try {
@@ -361,11 +361,18 @@ function prepareToolsForOpenAI(): Array<{
         parameters: {
           type: "object",
           properties: tool.parameters || {},
-          required: tool.parameters
-            ? Object.keys(tool.parameters).filter(
-                (key) => tool.parameters?.[key]?.required,
-              )
-            : [],
+          required: (() => {
+            const params =
+              typeof tool.parameters === "object" && tool.parameters !== null
+                ? (tool.parameters as Record<string, unknown>)
+                : {};
+            return Object.keys(params).filter((key) => {
+              const val = params[key] as { required?: boolean } | unknown;
+              return typeof val === "object" && val !== null
+                ? Boolean((val as { required?: boolean }).required)
+                : false;
+            });
+          })(),
         },
       },
     }))

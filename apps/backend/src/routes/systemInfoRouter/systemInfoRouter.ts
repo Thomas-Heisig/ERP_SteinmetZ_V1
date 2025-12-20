@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/systemInfoRouter/systemInfoRouter.ts
 
-import { Router, Request, Response } from "express";
-import systemInfoService from "../../services/systemInfoService.js";
+import { Router, Request, Response, Application } from "express";
+import systemInfoService from "../other/systemInfoService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 
 const router = Router();
@@ -10,8 +10,8 @@ const router = Router();
 /* -----------------------------------------------------------
    Utility: Express-App zuverlässig bestimmen
 ----------------------------------------------------------- */
-function resolveApp(req: Request): import("express").Application {
-  return (req.app as any) ?? (globalThis as any).expressApp;
+function resolveApp(req: Request): Application {
+  return (req.app as Application) ?? ((globalThis as { expressApp?: Application }).expressApp as Application);
 }
 
 /* -----------------------------------------------------------
@@ -32,7 +32,7 @@ router.get(
 router.get(
   "/routes",
   asyncHandler(async (_req: Request, res: Response) => {
-    const app = (globalThis as any).expressApp;
+    const app = (globalThis as { expressApp?: Application }).expressApp;
 
     if (!app) {
       throw new Error("Express-App nicht verfügbar");
@@ -41,7 +41,7 @@ router.get(
     // Router-Initialisierung sicherstellen
     if (!app._router || !Array.isArray(app._router.stack)) {
       // Once-only init Route
-      app.get("/__init_router__", (_r: any, _s: any) => {});
+      app.get("/__init_router__", (_r: Request, _s: Response) => {});
     }
 
     if (!app._router || !Array.isArray(app._router.stack)) {

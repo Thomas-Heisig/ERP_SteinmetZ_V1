@@ -1,0 +1,9 @@
+{
+  "id": "chat_2a854d39-8151-463b-ae6b-36c8381560d5",
+  "model": "qwen2.5:3b",
+  "provider": "ollama",
+  "messages": [],
+  "createdAt": "2025-12-20T15:10:04.304Z",
+  "updatedAt": "2025-12-20T15:10:04.304Z",
+  "tokensUsed": 0
+}

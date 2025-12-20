@@ -229,7 +229,7 @@ export function registerTools(toolRegistry: {
       const resolved = path.resolve(filepath);
       const content = await fs.promises.readFile(resolved, "utf8");
 
-      let data: any = content;
+      let data: string | Record<string, unknown> | unknown[] = content;
       let type = "text";
       if (
         /^\s*\{[\s\S]*\}\s*$/.test(content) ||

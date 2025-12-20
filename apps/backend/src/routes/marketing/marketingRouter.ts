@@ -12,10 +12,10 @@
 
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import { NotFoundError, ValidationError } from "../../types/errors.js";
+import { NotFoundError, ValidationError } from "../error/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { createLogger } from "../../utils/logger.js";
-import db from "../../services/dbService.js";
+import db from "../database/dbService.js";
 import { randomUUID } from "crypto";
 
 const router = Router();
@@ -120,15 +120,15 @@ router.get(
     const { status, type } = req.query;
 
     let sql = "SELECT * FROM marketing_campaigns WHERE 1=1";
-    const params: any[] = [];
+    const params: string[] = [];
 
     if (status) {
       sql += " AND status = ?";
-      params.push(status);
+      params.push(status as string);
     }
     if (type) {
       sql += " AND type = ?";
-      params.push(type);
+      params.push(type as string);
     }
 
     sql += " ORDER BY created_at DESC";
@@ -178,7 +178,7 @@ router.post(
     if (!validation.success) {
       throw new ValidationError(
         "Invalid campaign data",
-        validation.error.issues,
+        { issues: validation.error.issues },
       );
     }
 
@@ -240,7 +240,7 @@ router.put(
     if (!validation.success) {
       throw new ValidationError(
         "Invalid campaign data",
-        validation.error.issues,
+        { issues: validation.error.issues },
       );
     }
 
@@ -253,15 +253,15 @@ router.put(
     }
 
     const setClause = fields.map((f) => `${f} = ?`).join(", ");
-    const values = [
-      ...fields.map((f) => (updates as any)[f]),
+    const values: Array<unknown> = [
+      ...fields.map((f) => (updates as Record<string, unknown>)[f]),
       now,
       req.params.id,
     ];
 
     await db.run(
       `UPDATE marketing_campaigns SET ${setClause}, updated_at = ? WHERE id = ?`,
-      values,
+      values as Array<string | number | null>,
     );
 
     const updated = await db.get(
@@ -337,11 +337,11 @@ router.get(
     const { status } = req.query;
 
     let sql = "SELECT * FROM marketing_forms WHERE 1=1";
-    const params: any[] = [];
+    const params: string[] = [];
 
     if (status) {
       sql += " AND status = ?";
-      params.push(status);
+      params.push(status as string);
     }
 
     sql += " ORDER BY created_at DESC";
@@ -388,7 +388,7 @@ router.post(
     const validation = createFormSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid form data", validation.error.issues);
+      throw new ValidationError("Invalid form data", { issues: validation.error.issues });
     }
 
     const id = `form-${randomUUID()}`;
@@ -449,7 +449,7 @@ router.post(
         submissionId,
         req.params.id,
         JSON.stringify(req.body),
-        req.ip,
+        req.ip || null,
         req.get("user-agent") || null,
         req.get("referer") || null,
         now,
@@ -484,11 +484,11 @@ router.get(
     const { status } = req.query;
 
     let sql = "SELECT * FROM marketing_landing_pages WHERE 1=1";
-    const params: any[] = [];
+    const params: string[] = [];
 
     if (status) {
       sql += " AND status = ?";
-      params.push(status);
+      params.push(status as string);
     }
 
     sql += " ORDER BY created_at DESC";
@@ -510,7 +510,7 @@ router.get(
 router.get(
   "/landing-pages/:slug",
   asyncHandler(async (req: Request, res: Response) => {
-    const page = await db.get(
+    const page = await db.get<{ id: string }>(
       "SELECT * FROM marketing_landing_pages WHERE slug = ? AND status = 'published'",
       [req.params.slug],
     );
@@ -544,7 +544,7 @@ router.post(
     if (!validation.success) {
       throw new ValidationError(
         "Invalid landing page data",
-        validation.error.issues,
+        { issues: validation.error.issues },
       );
     }
 
@@ -597,11 +597,11 @@ router.get(
     const { status } = req.query;
 
     let sql = "SELECT * FROM marketing_events WHERE 1=1";
-    const params: any[] = [];
+    const params: string[] = [];
 
     if (status) {
       sql += " AND status = ?";
-      params.push(status);
+      params.push(status as string);
     }
 
     sql += " ORDER BY start_date DESC";
@@ -626,7 +626,7 @@ router.post(
     const validation = createEventSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid event data", validation.error.issues);
+      throw new ValidationError("Invalid event data", { issues: validation.error.issues });
     }
 
     const id = `evt-${randomUUID()}`;
@@ -748,7 +748,7 @@ router.post(
     if (!validation.success) {
       throw new ValidationError(
         "Invalid segment data",
-        validation.error.issues,
+        { issues: validation.error.issues },
       );
     }
 

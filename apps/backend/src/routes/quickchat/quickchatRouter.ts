@@ -4,67 +4,30 @@
 /**
  * QuickChat Router
  *
- * AI-powered chat assistant API providing natural language interactions,
- * command execution, and context-aware responses. Supports session management
- * and multi-turn conversations.
- *
- * @remarks
- * This router provides:
- * - Natural language message processing
- * - Command system with slash commands (/rechnung, /mahnung, etc.)
- * - Session-based conversation history
- * - Context preservation across messages
- * - Zod-based request validation
- * - Error handling with standardized responses
- * - Rate limiting support
- *
- * Features:
- * - AI chat completions with context
- * - Slash command execution
- * - Session CRUD operations
- * - Conversation history retrieval
- * - Metadata tagging and priorities
+ * AI-powered chat assistant API with multi-provider support, tool execution,
+ * workflow orchestration, and advanced AI capabilities (vision, audio, translation).
  *
  * @module routes/quickchat
- *
- * @example
- * ```typescript
- * // Send a message
- * POST /api/quickchat/message
- * {
- *   "sessionId": "uuid-string",
- *   "message": "Create an invoice for customer ABC",
- *   "context": { "customerId": "ABC" }
- * }
- *
- * // Execute a command
- * POST /api/quickchat/command
- * {
- *   "command": "/rechnung",
- *   "args": "Kunde: ABC, Betrag: 100€"
- * }
- *
- * // Get conversation history
- * GET /api/quickchat/sessions/:sessionId/messages
- * ```
+ * @category Routes
  */
 
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import {
-  BadRequestError,
-  NotFoundError,
-  ValidationError,
-} from "../../types/errors.js";
+import { ValidationError, NotFoundError } from "../error/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { createLogger } from "../../utils/logger.js";
+import { quickchatService } from "./quickchatService.js";
 
+const logger = createLogger("quickchat-router");
 const router = Router();
-const _logger = createLogger("quickchat"); // Reserved for future logging
 
-// ✅ IMPROVED: Enhanced validation schemas with better error messages
+/* ---------------------------------------------------------
+   VALIDATION SCHEMAS
+--------------------------------------------------------- */
+
 const messageSchema = z.object({
   sessionId: z.string().uuid("Invalid session ID format").optional(),
+  userId: z.string().optional(),
   message: z
     .string()
     .trim()
@@ -78,230 +41,232 @@ const messageSchema = z.object({
       tags: z.array(z.string()).optional(),
     })
     .optional(),
+  preferences: z
+    .object({
+      provider: z.string().optional(),
+      model: z.string().optional(),
+      temperature: z.number().min(0).max(2).optional(),
+      maxTokens: z.number().positive().optional(),
+      stream: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 const commandSchema = z.object({
   command: z.string().trim().min(1, "Command cannot be empty"),
   args: z.string().trim().optional(),
   context: z.record(z.string(), z.unknown()).optional(),
-  options: z
+});
+
+const sessionCreateSchema = z.object({
+  userId: z.string().optional(),
+  context: z.record(z.string(), z.unknown()).optional(),
+  preferences: z
     .object({
-      silent: z.boolean().optional(),
-      async: z.boolean().optional(),
+      provider: z.string().optional(),
+      model: z.string().optional(),
+      temperature: z.number().optional(),
+      maxTokens: z.number().optional(),
     })
     .optional(),
 });
 
-// Command definitions
-export const COMMANDS = {
-  "/rechnung": {
-    name: "Rechnung erstellen",
-    description: "Erstellt eine neue Rechnung",
-    handler: "createInvoice",
-  },
-  "/angebot": {
-    name: "Angebot erstellen",
-    description: "Erstellt ein neues Angebot",
-    handler: "createQuote",
-  },
-  "/bericht": {
-    name: "Bericht generieren",
-    description: "Generiert einen Bericht",
-    handler: "generateReport",
-  },
-  "/idee": {
-    name: "Idee parken",
-    description: "Parkt eine neue Idee schnell",
-    handler: "parkIdea",
-  },
-  "/termin": {
-    name: "Termin erstellen",
-    description: "Erstellt einen neuen Termin",
-    handler: "createEvent",
-  },
-  "/suche": {
-    name: "Suche",
-    description: "Durchsucht das System",
-    handler: "search",
-  },
-  "/hilfe": {
-    name: "Hilfe",
-    description: "Zeigt verfügbare Befehle",
-    handler: "help",
-  },
-} as const;
-
-export type CommandKey = keyof typeof COMMANDS;
-
-export interface QuickChatMessage {
-  id: string;
-  role: "user" | "assistant" | "system";
-  content: string;
-  timestamp: string;
-  command?: CommandKey;
-  commandResult?: unknown;
-}
-
-export interface QuickChatSession {
-  id: string;
-  messages: QuickChatMessage[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-// In-memory session store (in production würde das in Redis/DB sein)
-const sessions = new Map<string, QuickChatSession>();
+/* ---------------------------------------------------------
+   ENDPOINTS
+--------------------------------------------------------- */
 
 /**
- * POST /api/quickchat/message
- * Nachricht an QuickChat senden
+ * Send a message to QuickChat
+ *
+ * Processes user messages with AI, executes commands, and maintains
+ * conversation context.
+ *
+ * @route POST /api/quickchat/message
+ * @body {object} Message data with sessionId, message, context, preferences
+ * @access Private
+ * @returns {object} AI response with session ID and metadata
  */
 router.post(
   "/message",
   asyncHandler(async (req: Request, res: Response) => {
-    // Validate input
+    logger.debug({ body: req.body }, "POST /api/quickchat/message");
+
     const validationResult = messageSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid request body",
-        validationResult.error.issues,
+      const issues = Object.fromEntries(
+        validationResult.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
       );
+      throw new ValidationError("Invalid request body", issues);
     }
 
-    const { sessionId, message, context } = validationResult.data;
+    const result = await quickchatService.sendMessage(validationResult.data);
 
-    // Session holen oder erstellen
-    const effectiveSessionId = sessionId || crypto.randomUUID();
-    let session = sessions.get(effectiveSessionId);
-    if (!session) {
-      session = {
-        id: effectiveSessionId,
-        messages: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      sessions.set(session.id, session);
-    }
-
-    // User-Nachricht hinzufügen
-    const userMessage: QuickChatMessage = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content: message,
-      timestamp: new Date().toISOString(),
-    };
-    session.messages.push(userMessage);
-
-    // Prüfen ob es ein Command ist
-    const trimmedMessage = message.trim();
-    let response: string;
-    let commandResult: unknown;
-
-    if (trimmedMessage.startsWith("/")) {
-      const parts = trimmedMessage.split(" ");
-      const cmd = parts[0] as CommandKey;
-      const args = parts.slice(1).join(" ");
-
-      if (cmd in COMMANDS) {
-        const _commandInfo = COMMANDS[cmd];
-        const result = await executeCommand(cmd, args, context);
-        commandResult = result;
-        response = result.message;
-        userMessage.command = cmd;
-      } else {
-        response = `Unbekannter Befehl: ${cmd}\n\nVerfügbare Befehle:\n${Object.entries(
-          COMMANDS,
-        )
-          .map(([k, v]) => `${k} - ${v.description}`)
-          .join("\n")}`;
-      }
-    } else {
-      // Normale Nachricht - einfache Antwort (in Produktion würde hier AI kommen)
-      response = await generateAIResponse(message, session.messages, context);
-    }
-
-    // Assistant-Antwort hinzufügen
-    const assistantMessage: QuickChatMessage = {
-      id: crypto.randomUUID(),
-      role: "assistant",
-      content: response,
-      timestamp: new Date().toISOString(),
-      commandResult,
-    };
-    session.messages.push(assistantMessage);
-    session.updatedAt = new Date().toISOString();
+    logger.info(
+      {
+        sessionId: result.sessionId,
+        messageLength: result.message.content.length,
+      },
+      "Message processed successfully"
+    );
 
     res.json({
       success: true,
-      sessionId: session.id,
-      message: assistantMessage,
-      commandResult,
+      data: result,
     });
-  }),
+  })
 );
 
 /**
- * POST /api/quickchat/command
- * Direkter Command-Aufruf
+ * Execute a command directly
+ *
+ * Executes slash commands without full AI processing.
+ *
+ * @route POST /api/quickchat/command
+ * @body {object} Command with args and context
+ * @access Private
+ * @returns {object} Command execution result
  */
 router.post(
   "/command",
   asyncHandler(async (req: Request, res: Response) => {
-    // Validate input
+    logger.debug({ body: req.body }, "POST /api/quickchat/command");
+
     const validationResult = commandSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid request body",
-        validationResult.error.issues,
+      const issues = Object.fromEntries(
+        validationResult.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
       );
+      throw new ValidationError("Invalid request body", issues);
     }
 
-    const { command, args, context } = validationResult.data;
+    const { command, args } = validationResult.data;
     const cmd = command.startsWith("/") ? command : `/${command}`;
 
-    if (!(cmd in COMMANDS)) {
-      throw new BadRequestError(`Unknown command: ${cmd}`, {
-        availableCommands: Object.keys(COMMANDS),
-      });
-    }
+    // Create temporary session for command execution
+    const session = await quickchatService.createSession({});
+    const result = await quickchatService.executeCommand(`${cmd} ${args || ""}`, session);
 
-    const result = await executeCommand(cmd as CommandKey, args || "", context);
+    logger.info({ command: cmd, success: result.success }, "Command executed");
 
     res.json({
       success: true,
-      command: cmd,
-      result,
+      data: result,
     });
-  }),
+  })
 );
 
 /**
- * GET /api/quickchat/commands
- * Liste verfügbarer Commands
+ * List available commands
+ *
+ * Returns all slash commands with descriptions and required tools.
+ *
+ * @route GET /api/quickchat/commands
+ * @access Public
+ * @returns {object} List of available commands
  */
 router.get(
   "/commands",
   asyncHandler(async (_req: Request, res: Response) => {
+    logger.debug("GET /api/quickchat/commands");
+
+    const commands = quickchatService.getCommands();
+
     res.json({
       success: true,
-      commands: Object.entries(COMMANDS).map(([key, value]) => ({
-        command: key,
-        name: value.name,
-        description: value.description,
-      })),
+      data: {
+        commands: Object.entries(commands).map(([key, value]) => ({
+          command: key,
+          name: value.name,
+          description: value.description,
+          tools: value.tools,
+        })),
+      },
     });
-  }),
+  })
 );
 
 /**
- * GET /api/quickchat/sessions/:id
- * Session-Historie abrufen
+ * Get QuickChat capabilities
+ *
+ * Returns available providers, models, tools, workflows, and features.
+ *
+ * @route GET /api/quickchat/capabilities
+ * @access Public
+ * @returns {object} System capabilities
+ */
+router.get(
+  "/capabilities",
+  asyncHandler(async (_req: Request, res: Response) => {
+    logger.debug("GET /api/quickchat/capabilities");
+
+    const capabilities = await quickchatService.getCapabilities();
+
+    logger.info(
+      {
+        providers: capabilities.providers.length,
+        tools: capabilities.tools.length,
+      },
+      "Capabilities retrieved"
+    );
+
+    res.json({
+      success: true,
+      data: capabilities,
+    });
+  })
+);
+
+/**
+ * Create a new session
+ *
+ * Creates a new chat session with optional user ID and preferences.
+ *
+ * @route POST /api/quickchat/sessions
+ * @body {object} Session configuration
+ * @access Private
+ * @returns {object} Created session
+ */
+router.post(
+  "/sessions",
+  asyncHandler(async (req: Request, res: Response) => {
+    logger.debug({ body: req.body }, "POST /api/quickchat/sessions");
+
+    const validationResult = sessionCreateSchema.safeParse(req.body);
+    if (!validationResult.success) {
+      const issues = Object.fromEntries(
+        validationResult.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+      );
+      throw new ValidationError("Invalid request body", issues);
+    }
+
+    const session = await quickchatService.createSession(validationResult.data);
+
+    logger.info({ sessionId: session.id }, "Session created");
+
+    res.status(201).json({
+      success: true,
+      data: session,
+    });
+  })
+);
+
+/**
+ * Get a session by ID
+ *
+ * Retrieves session with full message history and context.
+ *
+ * @route GET /api/quickchat/sessions/:id
+ * @param {string} id - Session ID
+ * @access Private
+ * @returns {object} Session data
  */
 router.get(
   "/sessions/:id",
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const session = sessions.get(id);
+    logger.debug({ sessionId: id }, "GET /api/quickchat/sessions/:id");
+
+    const session = await quickchatService.getSession(id);
 
     if (!session) {
       throw new NotFoundError("Session not found", { sessionId: id });
@@ -309,135 +274,66 @@ router.get(
 
     res.json({
       success: true,
-      session,
+      data: session,
     });
-  }),
+  })
 );
 
 /**
- * DELETE /api/quickchat/sessions/:id
- * Session löschen
+ * List all sessions
+ *
+ * Lists all sessions, optionally filtered by user ID.
+ *
+ * @route GET /api/quickchat/sessions
+ * @query {string} [userId] - Filter by user ID
+ * @access Private
+ * @returns {object} List of sessions
+ */
+router.get(
+  "/sessions",
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.query.userId as string | undefined;
+    logger.debug({ userId }, "GET /api/quickchat/sessions");
+
+    const sessions = await quickchatService.listSessions(userId);
+
+    logger.info({ count: sessions.length, userId }, "Sessions listed");
+
+    res.json({
+      success: true,
+      data: {
+        sessions,
+        count: sessions.length,
+      },
+    });
+  })
+);
+
+/**
+ * Delete a session
+ *
+ * Permanently deletes a session and all its messages.
+ *
+ * @route DELETE /api/quickchat/sessions/:id
+ * @param {string} id - Session ID
+ * @access Private
+ * @returns {object} Deletion confirmation
  */
 router.delete(
   "/sessions/:id",
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const deleted = sessions.delete(id);
+    logger.debug({ sessionId: id }, "DELETE /api/quickchat/sessions/:id");
+
+    const deleted = await quickchatService.deleteSession(id);
+
+    logger.info({ sessionId: id, deleted }, "Session deleted");
 
     res.json({
       success: true,
-      deleted,
+      data: { deleted },
     });
-  }),
+  })
 );
-
-// Command-Execution
-async function executeCommand(
-  command: CommandKey,
-  args: string,
-  _context?: unknown,
-): Promise<{ success: boolean; message: string; data?: unknown }> {
-  switch (command) {
-    case "/rechnung":
-      return {
-        success: true,
-        message: `Rechnung wird erstellt für: ${args || "Neuer Kunde"}`,
-        data: { type: "invoice", status: "draft", args },
-      };
-
-    case "/angebot":
-      return {
-        success: true,
-        message: `Angebot wird erstellt: ${args || "Neues Angebot"}`,
-        data: { type: "quote", status: "draft", args },
-      };
-
-    case "/bericht":
-      return {
-        success: true,
-        message: `Bericht "${args || "Standard-Bericht"}" wird generiert...`,
-        data: { type: "report", name: args || "Standard-Bericht" },
-      };
-
-    case "/idee": {
-      // Hier würde die Integration mit dem Innovation-Modul sein
-      const ideaId = crypto.randomUUID();
-      return {
-        success: true,
-        message: `Idee geparkt: "${args || "Neue Idee"}"`,
-        data: { type: "idea", id: ideaId, title: args, phase: "parked" },
-      };
-    }
-
-    case "/termin":
-      return {
-        success: true,
-        message: `Termin wird erstellt: ${args || "Neuer Termin"}`,
-        data: { type: "event", title: args },
-      };
-
-    case "/suche":
-      return {
-        success: true,
-        message: `Suche nach: "${args}"`,
-        data: { type: "search", query: args, results: [] },
-      };
-
-    case "/hilfe": {
-      const helpText = Object.entries(COMMANDS)
-        .map(([k, v]) => `**${k}** - ${v.description}`)
-        .join("\n");
-      return {
-        success: true,
-        message: `Verfügbare Befehle:\n\n${helpText}`,
-        data: { type: "help", commands: Object.keys(COMMANDS) },
-      };
-    }
-
-    default:
-      return {
-        success: false,
-        message: `Befehl nicht implementiert: ${command}`,
-      };
-  }
-}
-
-// Einfache AI-Response (Placeholder - in Produktion würde hier ein AI-Provider stehen)
-async function generateAIResponse(
-  message: string,
-  _history: QuickChatMessage[],
-  _context?: unknown,
-): Promise<string> {
-  // Hier würde normalerweise der AI-Provider aufgerufen werden
-  // Für jetzt eine einfache Pattern-basierte Antwort
-
-  const lowerMessage = message.toLowerCase();
-
-  if (lowerMessage.includes("hilfe") || lowerMessage.includes("help")) {
-    return `Wie kann ich Ihnen helfen? Verfügbare Befehle:\n${Object.entries(
-      COMMANDS,
-    )
-      .map(([k, v]) => `• ${k} - ${v.description}`)
-      .join("\n")}\n\nOder stellen Sie mir einfach eine Frage!`;
-  }
-
-  if (lowerMessage.includes("hallo") || lowerMessage.includes("hi")) {
-    return "Hallo! Ich bin der ERP SteinmetZ Assistent. Wie kann ich Ihnen helfen?";
-  }
-
-  if (lowerMessage.includes("rechnung")) {
-    return "Möchten Sie eine Rechnung erstellen? Nutzen Sie /rechnung [Kundenname] oder geben Sie mir mehr Details.";
-  }
-
-  if (lowerMessage.includes("termin")) {
-    return "Möchten Sie einen Termin erstellen? Nutzen Sie /termin [Beschreibung] oder sagen Sie mir wann und mit wem.";
-  }
-
-  if (lowerMessage.includes("idee")) {
-    return "Eine neue Idee? Nutzen Sie /idee [Ihre Idee] um sie schnell zu parken.";
-  }
-
-  return `Ich habe Ihre Nachricht erhalten: "${message}"\n\nFür schnelle Aktionen nutzen Sie Befehle wie /hilfe, /rechnung, /idee oder /termin.`;
-}
 
 export default router;

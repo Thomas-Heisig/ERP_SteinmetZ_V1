@@ -8,14 +8,59 @@
 
 import os from "node:os";
 import path from "node:path";
-import fetch from "node-fetch";
 import { log } from "../utils/logger.js";
 
 import { getProviderStatus } from "./chatService.js";
 import { toolRegistry } from "../tools/registry.js";
 import { workflowEngine } from "../workflows/workflowEngine.js";
-import { audioConfig } from "./audioService.js";
+import { audioConfig, testAudioEndpoints } from "./audioService.js";
 import type { AIResponse } from "../types/types.js";
+
+type ProviderStatus = Awaited<ReturnType<typeof getProviderStatus>>[number];
+
+interface ProviderSummary {
+  list: ProviderStatus[];
+  activeCount: number;
+  total: number;
+}
+
+interface ToolSummary {
+  count: number;
+  list: string[];
+}
+
+interface WorkflowSummary {
+  count: number;
+  list: string[];
+}
+
+interface AudioDiagnostics {
+  available: boolean;
+  details: string;
+  model?: string;
+}
+
+interface SystemInfo {
+  hostname: string;
+  platform: NodeJS.Platform;
+  uptime_min: number;
+  cpu: {
+    cores: number;
+    load1: number;
+    load5: number;
+    load15: number;
+  };
+  memory: {
+    totalGB: number;
+    freeGB: number;
+  };
+  paths: {
+    cwd: string;
+    tmp: string;
+    dataDir: string;
+    logDir: string;
+  };
+}
 
 /* ========================================================================== */
 /* 🧠 Diagnose-Hauptfunktion                                                 */
@@ -57,11 +102,13 @@ export async function runSystemDiagnostics(): Promise<AIResponse> {
         source: "diagnosticService.ts",
       },
     };
-  } catch (err: any) {
-    log("error", "Systemdiagnose fehlgeschlagen", { error: err.message });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+
+    log("error", "Systemdiagnose fehlgeschlagen", { error: message });
     return {
-      text: `❌ Systemdiagnose-Fehler: ${err.message}`,
-      errors: [err.message],
+      text: `❌ Systemdiagnose-Fehler: ${message}`,
+      errors: [message],
       meta: { provider: "diagnosticService" },
     };
   }
@@ -71,17 +118,19 @@ export async function runSystemDiagnostics(): Promise<AIResponse> {
 /* 📡 Provider-Prüfung                                                       */
 /* ========================================================================== */
 
-async function checkProviders() {
+async function checkProviders(): Promise<ProviderSummary> {
   try {
     const status = await getProviderStatus();
     const active = status.filter((s) => s.available);
+
     return {
       list: status,
       activeCount: active.length,
       total: status.length,
     };
-  } catch (err: any) {
-    log("error", "Providerprüfung fehlgeschlagen", { error: err.message });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    log("error", "Providerprüfung fehlgeschlagen", { error: message });
     return { list: [], activeCount: 0, total: 0 };
   }
 }
@@ -90,22 +139,24 @@ async function checkProviders() {
 /* 🧩 Tools & Workflows                                                     */
 /* ========================================================================== */
 
-async function checkTools() {
+async function checkTools(): Promise<ToolSummary> {
   try {
     const all = toolRegistry.getToolDefinitions?.() ?? [];
     return { count: all.length, list: all.map((t) => t.name ?? "unknown") };
-  } catch (err: any) {
-    log("error", "Toolprüfung fehlgeschlagen", { error: err.message });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    log("error", "Toolprüfung fehlgeschlagen", { error: message });
     return { count: 0, list: [] };
   }
 }
 
-async function checkWorkflows() {
+async function checkWorkflows(): Promise<WorkflowSummary> {
   try {
     const all = workflowEngine.getWorkflowDefinitions?.() ?? [];
     return { count: all.length, list: all.map((w) => w.name ?? "unnamed") };
-  } catch (err: any) {
-    log("error", "Workflowprüfung fehlgeschlagen", { error: err.message });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    log("error", "Workflowprüfung fehlgeschlagen", { error: message });
     return { count: 0, list: [] };
   }
 }
@@ -113,50 +164,27 @@ async function checkWorkflows() {
 /* ========================================================================== */
 /* 🗣️ Audio-Systemprüfung                                                   */
 /* ========================================================================== */
-
-interface OpenAIModelsResponse {
-  data?: { id: string }[];
-}
-
-async function checkAudio() {
+async function checkAudio(): Promise<AudioDiagnostics> {
   try {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return { available: false, details: "OPENAI_API_KEY fehlt" };
     }
 
-    const res = await fetch("https://api.openai.com/v1/models", {
-      headers: { Authorization: `Bearer ${apiKey}` },
-    });
+    const endpoints = await testAudioEndpoints();
+    const available = endpoints.whisper || endpoints.tts;
 
-    if (!res.ok) {
-      return { available: false, details: `HTTP ${res.status}` };
-    }
-
-    const json = await res.json();
-    const data = json as OpenAIModelsResponse; // ✔ sicheres Casting
-
-    const modelList = Array.isArray(data.data) ? data.data : [];
-
-    const modelNames = modelList.map((m) => m.id);
-
-    const whisper = modelNames.includes("whisper-1");
-    const tts = modelNames.some(
-      (n) => typeof n === "string" && n.includes("tts"),
-    );
-
-    const detailText =
-      [whisper ? "Whisper" : "", tts ? "TTS" : ""].filter(Boolean).join(", ") ||
-      "Keine Audio-Modelle gefunden";
+    const detailText = formatAudioDetails(endpoints.whisper, endpoints.tts);
 
     return {
-      available: whisper || tts,
+      available,
       details: detailText,
       model: audioConfig.model,
     };
-  } catch (err: any) {
-    log("error", "Audioprüfung fehlgeschlagen", { error: err.message });
-    return { available: false, details: err.message };
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    log("error", "Audioprüfung fehlgeschlagen", { error: message });
+    return { available: false, details: message };
   }
 }
 
@@ -164,7 +192,7 @@ async function checkAudio() {
 /* 💻 Systeminformationen                                                  */
 /* ========================================================================== */
 
-async function checkSystemInfo() {
+async function checkSystemInfo(): Promise<SystemInfo> {
   const uptimeMin = Math.floor(os.uptime() / 60);
   const load = os.loadavg();
 
@@ -185,8 +213,8 @@ async function checkSystemInfo() {
     paths: {
       cwd: process.cwd(),
       tmp: os.tmpdir(),
-      dataDir: path.resolve("ERP_SteinmetZ_V1", "data"),
-      logDir: path.resolve("ERP_SteinmetZ_V1", "logs"),
+      dataDir: path.resolve("data"),
+      logDir: path.resolve("logs"),
     },
   };
 }
@@ -203,3 +231,16 @@ export default {
   checkWorkflows,
   checkSystemInfo,
 };
+
+function formatAudioDetails(whisper: boolean, tts: boolean): string {
+  const parts = [whisper ? "Whisper" : "", tts ? "TTS" : ""]
+    .filter(Boolean)
+    .join(", ");
+
+  return parts || "Keine Audio-Modelle gefunden";
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return typeof error === "string" ? error : JSON.stringify(error);
+}

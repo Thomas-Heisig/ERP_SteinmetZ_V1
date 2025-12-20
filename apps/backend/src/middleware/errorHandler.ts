@@ -1,6 +1,6 @@
 // src/middleware/errorHandler.ts
 import { Request, Response, NextFunction } from "express";
-import { APIError, ErrorCode, ErrorDetails } from "../types/errors.js";
+import { APIError, ErrorCode, ErrorDetails } from "../routes/error/errors.js";
 import { log } from "../routes/ai/utils/logger.js";
 
 interface ValidationError {

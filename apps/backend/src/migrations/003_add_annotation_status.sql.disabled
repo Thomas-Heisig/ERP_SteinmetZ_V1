@@ -1,0 +1,11 @@
+-- SPDX-License-Identifier: MIT
+-- Migration 003: Annotation-Status hinzufügen
+-- SQLite compatible version
+
+-- Add annotation_status column if it doesn't exist
+-- Note: SQLite doesn't have IF NOT EXISTS for ALTER TABLE, so we handle this via application logic
+-- or use a workaround with CREATE TABLE IF NOT EXISTS and copying data
+
+-- For SQLite, we can use a simple pragma to add the column
+-- The application should handle the error if the column already exists
+ALTER TABLE nodes ADD COLUMN annotation_status TEXT DEFAULT 'unannotated';

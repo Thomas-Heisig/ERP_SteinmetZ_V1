@@ -8,9 +8,10 @@
 import { Router } from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { z } from "zod";
-import { NotFoundError, BadRequestError } from "../../types/errors.js";
-import db from "../../services/dbService.js";
+import { NotFoundError, BadRequestError } from "../error/errors.js";
+import db from "../database/dbService.js";
 import { createLogger } from "../../utils/logger.js";
+import type { SqlValue } from "../database/database.js";
 
 const router = Router();
 const logger = createLogger("documents");
@@ -83,7 +84,7 @@ router.get(
     const { company_id, category, status } = req.query;
 
     let query = `SELECT * FROM business_doc_templates WHERE is_active = 1`;
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (company_id) {
       query += ` AND company_id = ?`;
@@ -166,14 +167,14 @@ router.post(
         template_id, version, version_note, content, is_current
       ) VALUES (?, ?, ?, ?, 1)`,
       [
-        result.lastID,
+        result.lastID ?? 0,
         validatedData.version,
         "Initial version",
-        validatedData.template_content,
+        validatedData.template_content ?? null,
       ],
     );
 
-    logger.info("Template created", { name: validatedData.name });
+    logger.info({ name: validatedData.name }, "Template created");
 
     res.status(201).json({
       message: "Template created successfully",
@@ -236,12 +237,12 @@ router.put(
           id,
           validatedData.version,
           "Updated version",
-          validatedData.template_content,
+          validatedData.template_content ?? null,
         ],
       );
     }
 
-    logger.info("Template updated", { id, name: validatedData.name });
+    logger.info({ id, name: validatedData.name }, "Template updated");
 
     res.json({ message: "Template updated successfully" });
   }),
@@ -273,7 +274,7 @@ router.post(
       [approved_by, id],
     );
 
-    logger.info("Template approved", { id, approved_by });
+    logger.info({ id, approved_by }, "Template approved");
 
     res.json({ message: "Template approved successfully" });
   }),
@@ -309,7 +310,7 @@ router.get(
     const { company_id, workflow_type } = req.query;
 
     let query = `SELECT * FROM business_workflows WHERE is_active = 1`;
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (company_id) {
       query += ` AND company_id = ?`;
@@ -381,7 +382,7 @@ router.post(
       ],
     );
 
-    logger.info("Workflow created", { name: validatedData.name });
+    logger.info({ name: validatedData.name }, "Workflow created");
 
     res.status(201).json({ message: "Workflow created successfully" });
   }),
@@ -404,7 +405,7 @@ router.post(
     }
 
     // Parse steps to determine first approver
-    const steps = JSON.parse(workflow.steps);
+    const steps = JSON.parse(String(workflow.steps || "[]"));
     const firstStep = steps[0];
 
     const result = await db.run(
@@ -421,10 +422,13 @@ router.post(
       ],
     );
 
-    logger.info("Workflow instance started", {
-      workflow_id: id,
-      instance_id: result.lastID,
-    });
+    logger.info(
+      {
+        workflow_id: id,
+        instance_id: result.lastID,
+      },
+      "Workflow instance started",
+    );
 
     res.status(201).json({
       message: "Workflow started successfully",
@@ -451,7 +455,7 @@ router.get(
     // Get workflow definition
     const workflow = await db.get(
       `SELECT * FROM business_workflows WHERE id = ?`,
-      [instance.workflow_id],
+      [String(instance.workflow_id || "")],
     );
 
     res.json({
@@ -472,7 +476,7 @@ router.get(
     const { company_id, document_type, archive_status } = req.query;
 
     let query = `SELECT * FROM business_doc_archive WHERE 1=1`;
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (company_id) {
       query += ` AND company_id = ?`;
@@ -539,7 +543,7 @@ router.post(
       ],
     );
 
-    logger.info("Document archived", { name: validatedData.document_name });
+    logger.info({ name: validatedData.document_name }, "Document archived");
 
     res.status(201).json({ message: "Document archived successfully" });
   }),
@@ -555,7 +559,7 @@ router.get(
       throw new BadRequestError("Search query is required");
     }
 
-    let sql = `SELECT * FROM business_doc_archive WHERE company_id = ? AND (
+    const sql = `SELECT * FROM business_doc_archive WHERE company_id = ? AND (
       document_name LIKE ? OR
       document_type LIKE ? OR
       document_category LIKE ? OR
@@ -564,7 +568,7 @@ router.get(
 
     const searchTerm = `%${query}%`;
     const documents = await db.all(sql, [
-      company_id,
+      String(company_id ?? ""),
       searchTerm,
       searchTerm,
       searchTerm,

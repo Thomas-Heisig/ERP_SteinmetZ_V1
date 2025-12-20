@@ -1,4 +1,4 @@
-Basierend auf der analysierten `conversationContext.ts` Datei, hier sind die erkannten Funktionen und Routen:
+#
 
 ## 🧠 **ConversationContext Klasse - Hauptfunktionen**
 

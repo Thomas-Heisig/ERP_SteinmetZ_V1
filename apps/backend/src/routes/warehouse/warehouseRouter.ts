@@ -1,529 +1,509 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/routes/warehouse/warehouseRouter.ts
+
 /**
  * @module WarehouseRouter
- * @description Lager & Logistik - Bestandsführung, Kommissionierung, Versand
+ * @description Warehouse Management API - Stock, Picking, Shipments, Inventory
  */
 
-import { Router } from "express";
-import { asyncHandler } from "../../middleware/asyncHandler.js";
-import { z } from "zod";
-import { BadRequestError } from "../../types/errors.js";
+import { Router, Request, Response, NextFunction, RequestHandler } from 'express';
+import { WarehouseService } from '../../service/WarehouseService.js';
+import { DatabaseService } from '../../service/DatabaseService.js';
+import { BadRequestError, NotFoundError } from '../../types/errors.js';
+import {
+  CreateStockMovementSchema,
+  CreateLocationSchema,
+  CreatePickingListSchema,
+  CompletePickingSchema,
+  CreateShipmentSchema,
+  CreateInventoryCountSchema,
+  WarehouseFiltersSchema,
+} from '../../types/warehouse.js';
+import { createLogger } from '../../utils/logger.js';
+import { z } from 'zod';
 
 const router = Router();
+const logger = createLogger('WarehouseRouter');
 
-/* ---------------------------------------------------------
-   BESTANDSFÜHRUNG
---------------------------------------------------------- */
+type WarehouseRequest = Request & {
+  warehouseService: WarehouseService;
+  user?: { id?: string };
+};
 
-// GET /api/warehouse/stock - Gesamtbestand abrufen
-router.get(
-  "/stock",
-  asyncHandler(async (req, res) => {
-    const category = req.query.category as string | undefined;
-    const lowStock = req.query.lowStock === "true";
+/**
+ * Async error handler wrapper for Express routes
+ */
+const asyncHandler =
+  (
+    fn: (req: WarehouseRequest, res: Response, next: NextFunction) => Promise<unknown>
+  ): RequestHandler =>
+  (req, res, next) => {
+    Promise.resolve(fn(req as WarehouseRequest, res, next)).catch(next);
+  };
 
-    let items = [
-      {
-        id: 101,
-        material: "Schwarzer Granit, poliert",
-        category: "Rohstoffe",
-        quantity: 12,
-        unit: "m²",
-        location: "Lager A-01",
-        min_stock: 20,
-        value: 30000,
-        status: "low",
-      },
-      {
-        id: 102,
-        material: "Grauer Marmor",
-        category: "Rohstoffe",
-        quantity: 35,
-        unit: "m²",
-        location: "Lager A-02",
-        min_stock: 15,
-        value: 52500,
-        status: "ok",
-      },
-      {
-        id: 201,
-        material: "Polierscheiben",
-        category: "Betriebsstoffe",
-        quantity: 150,
-        unit: "Stk",
-        location: "Lager B-12",
-        min_stock: 100,
-        value: 750,
-        status: "ok",
-      },
-    ];
+// ═════════════════════════════════════════════════════════════════════════════
+// MIDDLEWARE
+// ═════════════════════════════════════════════════════════════════════════════
 
-    if (category) {
-      items = items.filter((item) => item.category === category);
-    }
-
-    if (lowStock) {
-      items = items.filter((item) => item.quantity < item.min_stock);
-    }
-
-    res.json({
-      items,
-      summary: {
-        total_items: items.length,
-        total_value: items.reduce((sum, item) => sum + item.value, 0),
-        low_stock_items: items.filter((i) => i.quantity < i.min_stock).length,
-      },
-    });
-  }),
-);
-
-// GET /api/warehouse/stock/:id - Einzelner Artikel
-router.get(
-  "/stock/:id",
-  asyncHandler(async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      throw new BadRequestError("Ungültige Artikel-ID");
-    }
-
-    res.json({
-      id,
-      material: "Schwarzer Granit, poliert",
-      category: "Rohstoffe",
-      quantity: 12,
-      unit: "m²",
-      location: "Lager A-01",
-      min_stock: 20,
-      reorder_point: 25,
-      unit_cost: 2500,
-      total_value: 30000,
-      status: "low",
-      movements: [
-        {
-          date: "2025-12-17",
-          type: "outgoing",
-          quantity: 3,
-          reference: "FO-2025-001",
-          balance_after: 12,
-        },
-        {
-          date: "2025-12-15",
-          type: "incoming",
-          quantity: 5,
-          reference: "PO-2025-001",
-          balance_after: 15,
-        },
-      ],
-      reservations: [
-        {
-          order_id: "OR-2025-002",
-          quantity: 2,
-          reserved_until: "2025-12-25",
-        },
-      ],
-    });
-  }),
-);
-
-// POST /api/warehouse/stock/movement - Bestandsbewegung erfassen
-const movementSchema = z.object({
-  item_id: z.number(),
-  type: z.enum(["incoming", "outgoing", "transfer", "adjustment"]),
-  quantity: z.number().positive(),
-  reference: z.string().optional(),
-  from_location: z.string().optional(),
-  to_location: z.string().optional(),
-  notes: z.string().optional(),
+/**
+ * Initialize WarehouseService for route handlers
+ */
+router.use((req, _res, next) => {
+  const db = new DatabaseService({
+    driver: 'sqlite',
+    sqliteFile: './data/dev.sqlite3',
+  });
+  (req as WarehouseRequest).warehouseService = new WarehouseService(db);
+  next();
 });
 
-router.post(
-  "/stock/movement",
+// ═════════════════════════════════════════════════════════════════════════════
+// STOCK MANAGEMENT
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * GET /api/warehouse/stock
+ * Get all stock items with optional filtering
+ * @query category - Filter by category
+ * @query status - Filter by status (low, ok, overstock)
+ * @query location_id - Filter by location
+ * @query limit - Result limit (default: 50, max: 1000)
+ * @query offset - Result offset (default: 0)
+ * @returns Array of stock items
+ */
+router.get(
+  '/stock',
   asyncHandler(async (req, res) => {
-    const validatedData = movementSchema.parse(req.body);
+    const filters = WarehouseFiltersSchema.parse(req.query);
+    const items = await req.warehouseService.getStockItems(filters);
 
-    // TODO: Bestand aktualisieren
-    res.status(201).json({
-      message: "Bestandsbewegung erfasst",
-      data: {
-        id: Date.now(),
-        ...validatedData,
-        timestamp: new Date().toISOString(),
-        user: "current_user", // TODO: Aus Session
-      },
-    });
-  }),
-);
-
-/* ---------------------------------------------------------
-   LAGERPLÄTZE
---------------------------------------------------------- */
-
-// GET /api/warehouse/locations - Alle Lagerplätze
-router.get(
-  "/locations",
-  asyncHandler(async (_req, res) => {
     res.json({
-      locations: [
-        {
-          id: "A-01",
-          zone: "A",
-          type: "Rohstoffe",
-          capacity: 50,
-          occupied: 12,
-          utilization: 24,
-          items: 1,
-        },
-        {
-          id: "A-02",
-          zone: "A",
-          type: "Rohstoffe",
-          capacity: 50,
-          occupied: 35,
-          utilization: 70,
-          items: 1,
-        },
-        {
-          id: "B-12",
-          zone: "B",
-          type: "Betriebsstoffe",
-          capacity: 200,
-          occupied: 150,
-          utilization: 75,
-          items: 1,
-        },
-      ],
-      zones: [
-        { name: "A", type: "Rohstoffe", utilization: 47 },
-        { name: "B", type: "Betriebsstoffe", utilization: 63 },
-        { name: "C", type: "Fertigwaren", utilization: 82 },
-      ],
+      success: true,
+      data: items,
+      count: items.length,
     });
-  }),
+  })
 );
 
-/* ---------------------------------------------------------
-   KOMMISSIONIERUNG
---------------------------------------------------------- */
-
-// GET /api/warehouse/picking - Kommissionierlisten
+/**
+ * GET /api/warehouse/stock/:id
+ * Get a single stock item by ID
+ * @param id - Stock item ID
+ * @returns Stock item object with movement history
+ */
 router.get(
-  "/picking",
+  '/stock/:id',
+  asyncHandler(async (req, res) => {
+    if (!req.params.id) {
+      throw new BadRequestError('Stock item ID is required');
+    }
+
+    const item = await req.warehouseService.getStockItemById(req.params.id);
+
+    res.json({
+      success: true,
+      data: item,
+    });
+  })
+);
+
+/**
+ * POST /api/warehouse/stock/movement
+ * Record a stock movement (incoming, outgoing, transfer, adjustment)
+ * @body CreateStockMovement - Movement data
+ * @returns Recorded movement
+ */
+router.post(
+  '/stock/movement',
+  asyncHandler(async (req, res) => {
+    const validatedData = CreateStockMovementSchema.parse(req.body);
+    const userId = req.user?.id || 'system'; // From auth middleware
+
+    const movement = await req.warehouseService.recordStockMovement(
+      validatedData,
+      userId
+    );
+
+    logger.info(
+      { movementId: movement.id, type: movement.type },
+      'Stock movement recorded via API'
+    );
+
+    res.status(201).json({
+      success: true,
+      data: movement,
+    });
+  })
+);
+
+// ═════════════════════════════════════════════════════════════════════════════
+// WAREHOUSE LOCATIONS
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * GET /api/warehouse/locations
+ * Get all warehouse locations
+ * @returns Array of warehouse locations
+ */
+router.get(
+  '/locations',
+  asyncHandler(async (req, res) => {
+    const locations = await req.warehouseService.getWarehouseLocations();
+
+    res.json({
+      success: true,
+      data: locations,
+      count: locations.length,
+    });
+  })
+);
+
+/**
+ * POST /api/warehouse/locations
+ * Create a new warehouse location
+ * @body CreateLocation - Location data
+ * @returns Created location
+ */
+router.post(
+  '/locations',
+  asyncHandler(async (req, res) => {
+    const validatedData = CreateLocationSchema.parse(req.body);
+
+    const location = await req.warehouseService.createWarehouseLocation(
+      validatedData
+    );
+
+    logger.info({ locationId: location.id }, 'Warehouse location created via API');
+
+    res.status(201).json({
+      success: true,
+      data: location,
+    });
+  })
+);
+
+// ═════════════════════════════════════════════════════════════════════════════
+// PICKING LISTS
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * GET /api/warehouse/picking
+ * Get all picking lists with optional status filter
+ * @query status - Filter by status (open, in_progress, completed, cancelled)
+ * @returns Array of picking lists
+ */
+router.get(
+  '/picking',
   asyncHandler(async (req, res) => {
     const status = req.query.status as string | undefined;
+    const lists = await req.warehouseService.getPickingLists(status);
 
-    let lists = [
-      {
-        id: "PL-2025-001",
-        order_id: "OR-2025-001",
-        customer: "Musterfirma GmbH",
-        status: "open",
-        priority: "high",
-        created_at: "2025-12-17T08:00:00Z",
-        items_count: 5,
-        picker: null,
-      },
-      {
-        id: "PL-2025-002",
-        order_id: "OR-2025-002",
-        customer: "Beispiel AG",
-        status: "in_progress",
-        priority: "normal",
-        created_at: "2025-12-17T09:30:00Z",
-        items_count: 3,
-        picker: "Tom Weber",
-      },
-      {
-        id: "PL-2025-003",
-        order_id: "OR-2025-003",
-        customer: "Test GmbH",
-        status: "completed",
-        priority: "low",
-        created_at: "2025-12-16T14:00:00Z",
-        items_count: 2,
-        picker: "Lisa Müller",
-        completed_at: "2025-12-17T10:15:00Z",
-      },
-    ];
+    res.json({
+      success: true,
+      data: lists,
+      count: lists.length,
+    });
+  })
+);
 
-    if (status) {
-      lists = lists.filter((list) => list.status === status);
+/**
+ * GET /api/warehouse/picking/:id
+ * Get a single picking list with items
+ * @param id - Picking list ID
+ * @returns Picking list with items
+ */
+router.get(
+  '/picking/:id',
+  asyncHandler(async (req, res) => {
+    if (!req.params.id) {
+      throw new BadRequestError('Picking list ID is required');
     }
 
-    res.json({ picking_lists: lists });
-  }),
-);
-
-// GET /api/warehouse/picking/:id - Einzelne Kommissionierliste
-router.get(
-  "/picking/:id",
-  asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const list = await req.warehouseService.getPickingListById(req.params.id);
 
     res.json({
-      id,
-      order_id: "OR-2025-001",
-      customer: {
-        name: "Musterfirma GmbH",
-        address: "Musterstr. 1, 12345 Musterstadt",
-      },
-      status: "open",
-      priority: "high",
-      created_at: "2025-12-17T08:00:00Z",
-      items: [
-        {
-          position: 1,
-          material: "Grabstein Modell A",
-          quantity: 1,
-          unit: "Stk",
-          location: "C-15",
-          picked: false,
-          picked_quantity: 0,
-        },
-        {
-          position: 2,
-          material: "Verpackungsmaterial",
-          quantity: 1,
-          unit: "Set",
-          location: "B-20",
-          picked: false,
-          picked_quantity: 0,
-        },
-      ],
-      route: {
-        optimized: true,
-        distance_meters: 125,
-        estimated_time_minutes: 15,
-      },
+      success: true,
+      data: list,
     });
-  }),
+  })
 );
 
-// POST /api/warehouse/picking/:id/assign - Kommissionierer zuweisen
+/**
+ * POST /api/warehouse/picking
+ * Create a new picking list
+ * @body CreatePickingList - Picking list data with items
+ * @returns Created picking list
+ */
 router.post(
-  "/picking/:id/assign",
+  '/picking',
   asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const { picker_id } = req.body;
+    const validatedData = CreatePickingListSchema.parse(req.body);
+    const userId = req.user?.id || 'system';
 
-    res.json({
-      message: "Kommissionierer zugewiesen",
-      data: {
-        picking_list_id: id,
-        picker_id,
-        assigned_at: new Date().toISOString(),
-      },
+    const list = await req.warehouseService.createPickingList(
+      validatedData,
+      userId
+    );
+
+    logger.info(
+      { pickingListId: list.id, orderId: list.order_id },
+      'Picking list created via API'
+    );
+
+    res.status(201).json({
+      success: true,
+      data: list,
     });
-  }),
+  })
 );
 
-// POST /api/warehouse/picking/:id/complete - Kommissionierung abschließen
-const completePickingSchema = z.object({
-  items: z.array(
-    z.object({
-      position: z.number(),
-      picked_quantity: z.number(),
-      notes: z.string().optional(),
-    }),
-  ),
-});
-
+/**
+ * POST /api/warehouse/picking/:id/assign
+ * Assign a picker to a picking list
+ * @param id - Picking list ID
+ * @body picker_id - Picker user ID
+ */
 router.post(
-  "/picking/:id/complete",
+  '/picking/:id/assign',
   asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const validatedData = completePickingSchema.parse(req.body);
+    if (!req.params.id) {
+      throw new BadRequestError('Picking list ID is required');
+    }
+
+    if (!req.body.picker_id) {
+      throw new BadRequestError('Picker ID is required');
+    }
+
+    await req.warehouseService.assignPicker(req.params.id, req.body.picker_id);
+
+    logger.info(
+      { pickingListId: req.params.id, pickerId: req.body.picker_id },
+      'Picker assigned via API'
+    );
 
     res.json({
-      message: "Kommissionierung abgeschlossen",
-      data: {
-        picking_list_id: id,
-        ...validatedData,
-        completed_at: new Date().toISOString(),
-      },
+      success: true,
+      message: 'Picker assigned successfully',
     });
-  }),
+  })
 );
 
-/* ---------------------------------------------------------
-   VERSAND & LOGISTIK
---------------------------------------------------------- */
+/**
+ * POST /api/warehouse/picking/:id/complete
+ * Complete a picking list
+ * @param id - Picking list ID
+ * @body items - Array of picked items
+ */
+router.post(
+  '/picking/:id/complete',
+  asyncHandler(async (req, res) => {
+    if (!req.params.id) {
+      throw new BadRequestError('Picking list ID is required');
+    }
 
-// GET /api/warehouse/shipments - Alle Versendungen
+    const validatedData = CompletePickingSchema.parse(req.body);
+
+    await req.warehouseService.completePicking(req.params.id, validatedData);
+
+    logger.info(
+      { pickingListId: req.params.id },
+      'Picking completed via API'
+    );
+
+    res.json({
+      success: true,
+      message: 'Picking completed successfully',
+    });
+  })
+);
+
+// ═════════════════════════════════════════════════════════════════════════════
+// SHIPMENTS
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * GET /api/warehouse/shipments
+ * Get all shipments with optional status filter
+ * @query status - Filter by status
+ * @returns Array of shipments
+ */
 router.get(
-  "/shipments",
+  '/shipments',
   asyncHandler(async (req, res) => {
     const status = req.query.status as string | undefined;
+    const shipments = await req.warehouseService.getShipments(status);
 
-    let shipments = [
-      {
-        id: "SH-2025-001",
-        order_id: "OR-2025-001",
-        customer: "Musterfirma GmbH",
-        carrier: "DHL",
-        tracking_number: "1234567890",
-        status: "in_transit",
-        shipped_date: "2025-12-17",
-        estimated_delivery: "2025-12-19",
-      },
-      {
-        id: "SH-2025-002",
-        order_id: "OR-2025-002",
-        customer: "Beispiel AG",
-        carrier: "UPS",
-        tracking_number: "0987654321",
-        status: "delivered",
-        shipped_date: "2025-12-15",
-        delivered_date: "2025-12-17",
-      },
-    ];
+    res.json({
+      success: true,
+      data: shipments,
+      count: shipments.length,
+    });
+  })
+);
 
-    if (status) {
-      shipments = shipments.filter((s) => s.status === status);
+/**
+ * POST /api/warehouse/shipments
+ * Create a new shipment
+ * @body CreateShipment - Shipment data
+ * @returns Created shipment
+ */
+router.post(
+  '/shipments',
+  asyncHandler(async (req, res) => {
+    const validatedData = CreateShipmentSchema.parse(req.body);
+
+    const shipment = await req.warehouseService.createShipment(validatedData);
+
+    logger.info(
+      { shipmentId: shipment.id, orderId: shipment.order_id },
+      'Shipment created via API'
+    );
+
+    res.status(201).json({
+      success: true,
+      data: shipment,
+    });
+  })
+);
+
+/**
+ * GET /api/warehouse/shipments/:id/tracking
+ * Get shipment tracking information
+ * @param id - Shipment ID
+ * @returns Shipment with tracking events
+ */
+router.get(
+  '/shipments/:id/tracking',
+  asyncHandler(async (req, res) => {
+    if (!req.params.id) {
+      throw new BadRequestError('Shipment ID is required');
     }
 
-    res.json({ shipments });
-  }),
-);
-
-// POST /api/warehouse/shipments - Neue Versendung erfassen
-const shipmentSchema = z.object({
-  order_id: z.string(),
-  carrier: z.string(),
-  service_level: z.string().optional(),
-  packages: z.array(
-    z.object({
-      weight_kg: z.number().positive(),
-      length_cm: z.number().positive(),
-      width_cm: z.number().positive(),
-      height_cm: z.number().positive(),
-      description: z.string().optional(),
-    }),
-  ),
-  shipping_address: z.object({
-    name: z.string(),
-    street: z.string(),
-    zip: z.string(),
-    city: z.string(),
-    country: z.string(),
-  }),
-  notes: z.string().optional(),
-});
-
-router.post(
-  "/shipments",
-  asyncHandler(async (req, res) => {
-    const validatedData = shipmentSchema.parse(req.body);
-
-    // TODO: Label erstellen, Tracking-Nummer vom Carrier holen
-    const shipmentNumber = `SH-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, "0")}`;
-
-    res.status(201).json({
-      message: "Versendung erstellt",
-      data: {
-        id: shipmentNumber,
-        ...validatedData,
-        tracking_number: "TRACKING" + Date.now(),
-        status: "prepared",
-        created_at: new Date().toISOString(),
-      },
-    });
-  }),
-);
-
-// GET /api/warehouse/shipments/:id/tracking - Sendungsverfolgung
-router.get(
-  "/shipments/:id/tracking",
-  asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const tracking = await req.warehouseService.getShipmentTracking(
+      req.params.id
+    );
 
     res.json({
-      shipment_id: id,
-      tracking_number: "1234567890",
-      carrier: "DHL",
-      status: "in_transit",
-      events: [
-        {
-          timestamp: "2025-12-17T14:30:00Z",
-          location: "Versandzentrum München",
-          status: "departed",
-          description: "Sendung hat das Versandzentrum verlassen",
-        },
-        {
-          timestamp: "2025-12-17T10:00:00Z",
-          location: "Versandzentrum München",
-          status: "arrived",
-          description: "Sendung im Versandzentrum angekommen",
-        },
-        {
-          timestamp: "2025-12-17T08:00:00Z",
-          location: "Abholstation Musterstadt",
-          status: "picked_up",
-          description: "Sendung abgeholt",
-        },
-      ],
-      estimated_delivery: "2025-12-19T18:00:00Z",
+      success: true,
+      data: tracking,
     });
-  }),
+  })
 );
 
-/* ---------------------------------------------------------
-   INVENTUR
---------------------------------------------------------- */
+// ═════════════════════════════════════════════════════════════════════════════
+// INVENTORY COUNT
+// ═════════════════════════════════════════════════════════════════════════════
 
-// GET /api/warehouse/inventory - Inventurlisten
-router.get(
-  "/inventory",
-  asyncHandler(async (_req, res) => {
-    res.json({
-      inventories: [
-        {
-          id: 1,
-          name: "Jahresinventur 2025",
-          type: "full",
-          status: "planned",
-          scheduled_date: "2025-12-31",
-          zones: ["A", "B", "C"],
-        },
-        {
-          id: 2,
-          name: "Stichprobe Q4",
-          type: "spot_check",
-          status: "completed",
-          scheduled_date: "2025-12-15",
-          completed_date: "2025-12-15",
-          zones: ["A"],
-          discrepancies: 2,
-        },
-      ],
-    });
-  }),
-);
-
-// POST /api/warehouse/inventory - Neue Inventur anlegen
-const inventorySchema = z.object({
-  name: z.string(),
-  type: z.enum(["full", "spot_check", "cycle"]),
-  scheduled_date: z.string(),
-  zones: z.array(z.string()),
-  notes: z.string().optional(),
-});
-
+/**
+ * POST /api/warehouse/inventory-count
+ * Create a new inventory count
+ * @body CreateInventoryCount - Inventory count data
+ * @returns Created inventory count
+ */
 router.post(
-  "/inventory",
+  '/inventory-count',
   asyncHandler(async (req, res) => {
-    const validatedData = inventorySchema.parse(req.body);
+    const validatedData = CreateInventoryCountSchema.parse(req.body);
+    const userId = req.user?.id || 'system';
+
+    const count = await req.warehouseService.createInventoryCount(
+      validatedData,
+      userId
+    );
+
+    logger.info(
+      { countId: count.id, type: count.type },
+      'Inventory count created via API'
+    );
 
     res.status(201).json({
-      message: "Inventur angelegt",
-      data: {
-        id: Date.now(),
-        ...validatedData,
-        status: "planned",
-        created_at: new Date().toISOString(),
+      success: true,
+      data: count,
+    });
+  })
+);
+
+// ═════════════════════════════════════════════════════════════════════════════
+// ANALYTICS
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * GET /api/warehouse/analytics
+ * Get warehouse analytics and KPIs
+ * @returns Warehouse analytics data
+ */
+router.get(
+  '/analytics',
+  asyncHandler(async (req, res) => {
+    const analytics = await req.warehouseService.getAnalytics();
+
+    res.json({
+      success: true,
+      data: analytics,
+    });
+  })
+);
+
+// ═════════════════════════════════════════════════════════════════════════════
+// ERROR HANDLING
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Global error handler for validation errors
+ */
+router.use(
+  (
+    err: unknown,
+    _req: Request,
+    res: Response,
+    _next: NextFunction
+  ) => {
+    if (err instanceof z.ZodError) {
+      const details = err.issues.reduce<Record<string, string>>(
+        (acc, issue) => {
+          const path = issue.path.join('.');
+          acc[path] = issue.message;
+          return acc;
+        },
+        {}
+      );
+
+      logger.warn({ errors: details }, 'Validation error');
+
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Validation failed',
+          details,
+        },
+      });
+    }
+
+    if (err instanceof BadRequestError || err instanceof NotFoundError) {
+      logger.warn({ error: err.message }, 'Request error');
+
+      return res.status(err.statusCode).json({
+        success: false,
+        error: {
+          code: err.code,
+          message: err.message,
+          details: err.details,
+        },
+      });
+    }
+
+    // Unexpected error
+    logger.error({ error: err }, 'Unexpected error');
+
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'An unexpected error occurred',
       },
     });
-  }),
+  }
 );
 
 export default router;

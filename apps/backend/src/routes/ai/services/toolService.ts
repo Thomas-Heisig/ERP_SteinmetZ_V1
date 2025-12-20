@@ -30,15 +30,7 @@ export const toolServiceConfig: AIModuleConfig = {
 /* ========================================================================== */
 
 export function loadAvailableTools(): string[] {
-  const toolDir = path.resolve(
-    "ERP_SteinmetZ_V1",
-    "apps",
-    "backend",
-    "src",
-    "routes",
-    "ai",
-    "tools",
-  );
+  const toolDir = path.resolve("apps", "backend", "src", "routes", "ai", "tools");
   if (!fs.existsSync(toolDir)) return [];
 
   const files = fs
@@ -60,7 +52,7 @@ export function listRegisteredTools(): string[] {
 
 export async function runTool(
   toolName: string,
-  params: Record<string, any> = {},
+  params: Record<string, unknown> = {},
 ): Promise<string> {
   try {
     const start = Date.now();
@@ -74,15 +66,17 @@ export async function runTool(
 
     if (typeof result === "string") return result;
 
+    const payload = isRecord(result) || Array.isArray(result) ? result : { value: result };
     return JSON.stringify({
       success: true,
       tool: toolName,
-      result,
+      result: payload,
       duration_ms: duration,
     });
-  } catch (err: any) {
-    log("error", `Tool "${toolName}" Fehler`, { error: err.message });
-    return `❌ Tool-Fehler (${toolName}): ${err.message}`;
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    log("error", `Tool "${toolName}" Fehler`, { error: message });
+    return `❌ Tool-Fehler (${toolName}): ${message}`;
   }
 }
 
@@ -104,27 +98,26 @@ export interface ToolMetadata {
  * Fällt automatisch zurück, wenn `describe()` nicht existiert.
  */
 export function getToolMetadata(): ToolMetadata[] {
-  const registry: any = toolRegistry as any;
+  const reg = toolRegistry as unknown;
 
-  // Falls Registry describe() hat → nutzen
-  if (typeof registry.describe === "function") {
-    return registry.describe();
+  if (hasDescribe(reg)) {
+    const described = reg.describe();
+    if (Array.isArray(described)) return described as ToolMetadata[];
   }
 
-  // Falls nur getToolDefinitions() existiert → konvertieren
-  if (typeof registry.getToolDefinitions === "function") {
-    return registry.getToolDefinitions().map((t: any) => ({
+  if (hasGetToolDefinitions(reg)) {
+    const defs = reg.getToolDefinitions();
+    return defs.map((t) => ({
       name: t.name,
       description: t.description ?? "Kein Beschreibungstext",
-      category: t.category ?? "Allgemein",
-      params: t.parameters ?? {},
+      category: (t as { category?: string }).category ?? "Allgemein",
+      params: (t as { parameters?: Record<string, string> }).parameters ?? {},
       example: "",
-      last_used: t.registeredAt ?? "",
+      last_used: (t as { registeredAt?: string }).registeredAt ?? "",
     }));
   }
 
-  // Fallback – nur Namen ausgeben
-  return toolRegistry.list().map((name: string) => ({
+  return toolRegistry.list().map((name) => ({
     name,
     description: "Keine Metadaten verfügbar",
   }));
@@ -142,12 +135,12 @@ export function isToolAvailable(toolName: string): boolean {
  * Lädt Tools neu (sicherer Fallback, falls reload() fehlt)
  */
 export function reloadTools(): string[] {
-  const registry: any = toolRegistry as any;
   try {
     const names = loadAvailableTools();
 
-    if (typeof registry.reload === "function") {
-      registry.reload();
+    const reg = toolRegistry as unknown;
+    if (hasReload(reg)) {
+      reg.reload();
     } else {
       log(
         "warn",
@@ -157,8 +150,9 @@ export function reloadTools(): string[] {
 
     log("info", "Tools neu geladen", { count: names.length });
     return names;
-  } catch (err: any) {
-    log("error", "Fehler beim Neuladen der Tools", { error: err.message });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    log("error", "Fehler beim Neuladen der Tools", { error: message });
     return [];
   }
 }
@@ -197,3 +191,32 @@ export default {
   reloadTools,
   getToolServiceStatus,
 };
+
+function hasDescribe(obj: unknown): obj is { describe: () => ToolMetadata[] } {
+  if (!isRecord(obj)) return false;
+  const d = (obj as Record<string, unknown>)["describe"];
+  return typeof d === "function";
+}
+
+function hasGetToolDefinitions(obj: unknown): obj is {
+  getToolDefinitions: () => Array<{ name: string; description?: string }>;
+} {
+  if (!isRecord(obj)) return false;
+  const fn = (obj as Record<string, unknown>)["getToolDefinitions"];
+  return typeof fn === "function";
+}
+
+function hasReload(obj: unknown): obj is { reload: () => void } {
+  if (!isRecord(obj)) return false;
+  const fn = (obj as Record<string, unknown>)["reload"];
+  return typeof fn === "function";
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return typeof error === "string" ? error : JSON.stringify(error);
+}

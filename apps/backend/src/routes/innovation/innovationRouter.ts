@@ -50,10 +50,12 @@
  */
 
 import { Router, Request, Response } from "express";
-import { z } from "zod";
-import db from "../../services/dbService.js";
+import crypto from "node:crypto";
+import { z, type ZodIssue } from "zod";
+
+import db from "../database/dbService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import { NotFoundError } from "../../types/errors.js";
+import { BadRequestError, NotFoundError } from "../error/errors.js";
 import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("innovation");
@@ -155,23 +157,28 @@ const ideaPhaseSchema = z.enum([
 
 const getIdeasQuerySchema = z.object({
   phase: ideaPhaseSchema.optional(),
-  priority: z.coerce.number().int().min(0).optional(),
+  priority: z.coerce.number().int().min(0).max(100).optional(),
   author: z.string().min(1).max(100).optional(),
   search: z.string().min(1).max(200).optional(),
-  limit: z.coerce.number().int().positive().optional().default(100),
-  offset: z.coerce.number().int().min(0).optional().default(0),
+  sortBy: z.enum(["priority", "created_at", "updated_at", "due_date"]).default("priority"),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+  limit: z.coerce.number().int().positive().max(200).default(100),
+  offset: z.coerce.number().int().min(0).default(0),
 });
 
 const createIdeaSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().max(5000).optional().default(""),
   phase: ideaPhaseSchema.optional().default("parked"),
-  priority: z.number().int().min(0).max(10).optional().default(0),
+  priority: z.number().int().min(0).max(100).optional().default(0),
   author: z.string().min(1).max(100).optional().default("anonymous"),
   assignee: z.string().min(1).max(100).optional(),
   tags: z.array(z.string().max(50)).optional().default([]),
+  attachments: z.array(z.string().max(500)).optional().default([]),
+  relatedTasks: z.array(z.string().uuid()).optional().default([]),
   milestone: z.string().max(100).optional(),
   estimatedEffort: z.number().positive().optional(),
+  actualEffort: z.number().positive().optional(),
   dueDate: z.string().datetime().optional(),
 });
 
@@ -179,7 +186,7 @@ const updateIdeaSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   description: z.string().max(5000).optional(),
   phase: ideaPhaseSchema.optional(),
-  priority: z.number().int().min(0).max(10).optional(),
+  priority: z.number().int().min(0).max(100).optional(),
   assignee: z.string().min(1).max(100).optional(),
   tags: z.array(z.string().max(50)).optional(),
   attachments: z.array(z.string().max(500)).optional(),
@@ -198,6 +205,28 @@ const updatePhaseSchema = z.object({
   changedBy: z.string().min(1).max(100).optional().default("system"),
 });
 
+function formatValidationErrors(issues: ZodIssue[]): Record<string, unknown> {
+  return {
+    issues: issues.map((issue) => ({
+      path: issue.path.join(".") || "root",
+      message: issue.message,
+      code: issue.code,
+    })),
+  };
+}
+
+function parseWithSchema<T>(
+  schema: z.ZodType<T>,
+  data: unknown,
+  message: string,
+): T {
+  const result = schema.safeParse(data);
+  if (!result.success) {
+    throw new BadRequestError(message, formatValidationErrors(result.error.issues));
+  }
+  return result.data;
+}
+
 /* ========================================================================== */
 /* Routes                                                                     */
 /* ========================================================================== */
@@ -209,11 +238,16 @@ const updatePhaseSchema = z.object({
 router.get(
   "/ideas",
   asyncHandler(async (req: Request, res: Response) => {
-    const validated = getIdeasQuerySchema.parse(req.query);
-    const { phase, priority, author, search, limit, offset } = validated;
+    const validated = parseWithSchema(
+      getIdeasQuerySchema,
+      req.query,
+      "Invalid idea query parameters",
+    );
+    const { phase, priority, author, search, sortBy, sortOrder, limit, offset } =
+      validated;
 
-    let sql = "SELECT * FROM ideas WHERE 1=1";
-    const params: unknown[] = [];
+    let sql = "FROM ideas WHERE 1=1";
+    const params: Array<string | number> = [];
 
     if (phase) {
       sql += " AND phase = ?";
@@ -221,7 +255,7 @@ router.get(
     }
 
     if (priority !== undefined) {
-      sql += " AND priority >= ?";
+      sql += " AND priority = ?";
       params.push(priority);
     }
 
@@ -236,17 +270,26 @@ router.get(
       params.push(searchTerm, searchTerm);
     }
 
-    sql += " ORDER BY priority DESC, created_at DESC";
-    sql += ` LIMIT ? OFFSET ?`;
-    params.push(limit, offset);
+    const countRow = await db.get<{ count: number }>(
+      `SELECT COUNT(*) as count ${sql}`,
+      params,
+    );
 
-    const rows = await db.all<Record<string, unknown>>(sql, params);
+    const rows = await db.all<Record<string, unknown>>(
+      `SELECT * ${sql} ORDER BY ${sortBy} ${sortOrder} LIMIT ? OFFSET ?`,
+      [...params, limit, offset],
+    );
+
     const ideas = rows.map(rowToIdea);
 
     res.json({
       success: true,
       data: ideas,
-      total: ideas.length,
+      pagination: {
+        total: countRow?.count ?? ideas.length,
+        limit,
+        offset,
+      },
     });
   }),
 );
@@ -282,7 +325,11 @@ router.get(
 router.post(
   "/ideas",
   asyncHandler(async (req: Request, res: Response) => {
-    const validated = createIdeaSchema.parse(req.body);
+    const validated = parseWithSchema(
+      createIdeaSchema,
+      req.body,
+      "Invalid idea payload",
+    );
     const {
       title,
       description,
@@ -291,8 +338,11 @@ router.post(
       author,
       assignee,
       tags,
+      attachments,
+      relatedTasks,
       milestone,
       estimatedEffort,
+      actualEffort,
       dueDate,
     } = validated;
 
@@ -313,8 +363,8 @@ router.post(
       `INSERT INTO ideas (
         id, title, description, phase, priority, author, assignee,
         tags_json, attachments_json, related_tasks_json, phase_history_json,
-        milestone, estimated_effort, due_date, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        milestone, estimated_effort, actual_effort, due_date, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         title.trim(),
@@ -324,11 +374,12 @@ router.post(
         author,
         assignee ?? null,
         JSON.stringify(tags),
-        JSON.stringify([]),
-        JSON.stringify([]),
+        JSON.stringify(attachments),
+        JSON.stringify(relatedTasks),
         JSON.stringify(phaseHistory),
         milestone ?? null,
         estimatedEffort ?? null,
+        actualEffort ?? null,
         dueDate ?? null,
         now,
         now,
@@ -344,15 +395,18 @@ router.post(
       author,
       assignee,
       tags,
-      attachments: [],
-      relatedTasks: [],
+      attachments,
+      relatedTasks,
       phaseHistory,
       milestone,
       estimatedEffort,
+      actualEffort,
       dueDate,
       createdAt: now,
       updatedAt: now,
     };
+
+    logger.info({ ideaId: id, phase }, "Idea created");
 
     res.status(201).json({
       success: true,
@@ -369,7 +423,11 @@ router.put(
   "/ideas/:id",
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const validated = updateIdeaSchema.parse(req.body);
+    const validated = parseWithSchema(
+      updateIdeaSchema,
+      req.body,
+      "Invalid idea update payload",
+    );
 
     const existingRow = await db.get<Record<string, unknown>>(
       "SELECT * FROM ideas WHERE id = ?",
@@ -462,6 +520,8 @@ router.put(
       updatedAt: now,
     };
 
+    logger.info({ ideaId: id, phase }, "Idea updated");
+
     res.json({
       success: true,
       data: updatedIdea,
@@ -477,7 +537,11 @@ router.patch(
   "/ideas/:id/phase",
   asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const validated = updatePhaseSchema.parse(req.body);
+    const validated = parseWithSchema(
+      updatePhaseSchema,
+      req.body,
+      "Invalid phase payload",
+    );
     const { phase, comment, changedBy } = validated;
 
     const existingRow = await db.get<Record<string, unknown>>(
@@ -508,6 +572,8 @@ router.patch(
       [phase, JSON.stringify(phaseHistory), now, id],
     );
 
+    logger.info({ ideaId: id, phase }, "Idea phase changed");
+
     res.json({
       success: true,
       data: {
@@ -533,6 +599,8 @@ router.delete(
     if (result.changes === 0) {
       throw new NotFoundError("Idea not found");
     }
+
+    logger.info({ ideaId: id }, "Idea deleted");
 
     res.json({
       success: true,
@@ -616,6 +684,84 @@ router.get(
         milestones,
         noMilestone,
         total: ideas.length,
+      },
+    });
+  }),
+);
+
+/**
+ * GET /api/innovation/ideas/:id/history
+ * Vollständige Phasen-Historie einer Idee
+ */
+router.get(
+  "/ideas/:id/history",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const row = await db.get<Record<string, unknown>>(
+      "SELECT phase_history_json FROM ideas WHERE id = ?",
+      [id],
+    );
+
+    if (!row) {
+      throw new NotFoundError("Idea not found");
+    }
+
+    const history = JSON.parse((row.phase_history_json as string) ?? "[]") as PhaseChange[];
+
+    res.json({
+      success: true,
+      data: history,
+    });
+  }),
+);
+
+/**
+ * GET /api/innovation/stats
+ * Aggregierte Innovation-Kennzahlen
+ */
+router.get(
+  "/stats",
+  asyncHandler(async (_req: Request, res: Response) => {
+    const totals = await db.get<{ count: number }>(
+      "SELECT COUNT(*) as count FROM ideas",
+    );
+
+    const phaseCountsRows = await db.all<{ phase: string; count: number }>(
+      "SELECT phase, COUNT(*) as count FROM ideas GROUP BY phase",
+    );
+
+    const completionDurations = await db.all<{ days: number }>(
+      `SELECT JULIANDAY(updated_at) - JULIANDAY(created_at) as days
+       FROM ideas WHERE phase = 'completed' AND updated_at IS NOT NULL AND created_at IS NOT NULL`,
+    );
+
+    const topContributors = await db.all<{ author: string; count: number }>(
+      "SELECT author, COUNT(*) as count FROM ideas GROUP BY author ORDER BY count DESC LIMIT 5",
+    );
+
+    const byPhase = Object.fromEntries(
+      IDEA_PHASES.map((phase) => [phase, 0]),
+    ) as Record<IdeaPhase, number>;
+    for (const row of phaseCountsRows) {
+      const key = row.phase as IdeaPhase;
+      if (byPhase[key] !== undefined) {
+        byPhase[key] = row.count;
+      }
+    }
+
+    const avgCompletionTime =
+      completionDurations.length > 0
+        ? completionDurations.reduce((sum, row) => sum + row.days, 0) /
+          completionDurations.length
+        : 0;
+
+    res.json({
+      success: true,
+      data: {
+        totalIdeas: totals?.count ?? 0,
+        byPhase,
+        avgCompletionTime,
+        topContributors,
       },
     });
   }),

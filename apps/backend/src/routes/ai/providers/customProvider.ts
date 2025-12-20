@@ -23,12 +23,14 @@ import { ConversationContext } from "../context/conversationContext.js";
 /* 🏗️ Typdefinitionen und Konfiguration                                    */
 /* ========================================================================== */
 
+type CustomRequestFormat = "openai" | "anthropic" | "generic" | "custom";
+
 interface CustomProviderConfig {
   timeoutMs?: number;
   retryAttempts?: number;
   enableToolCalls?: boolean;
   fallbackOnError?: boolean;
-  requestFormat?: "openai" | "anthropic" | "generic" | "custom";
+  requestFormat?: CustomRequestFormat;
   responseMapping?: {
     text?: string[];
     error?: string[];
@@ -36,14 +38,32 @@ interface CustomProviderConfig {
   };
 }
 
+interface CustomRequestMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface CustomToolDefinition {
+  name: string;
+  description?: string;
+  parameters?: Record<string, unknown>;
+  required?: string[];
+}
+
+interface CustomToolCall {
+  name: string;
+  parameters: Record<string, unknown>;
+}
+
 interface CustomRequestPayload {
   model: string;
-  messages: any[];
+  messages: CustomRequestMessage[];
   temperature?: number;
   max_tokens?: number;
   system?: string;
-  tools?: any[];
-  [key: string]: any;
+  tools?: CustomToolDefinition[];
+  [key: string]: unknown;
 }
 
 /* ========================================================================== */
@@ -117,7 +137,7 @@ function buildRequestPayload(
   config: CustomProviderConfig = {},
 ): CustomRequestPayload {
   const usedModel = model || customConfig.model;
-  const requestFormat = config.requestFormat || "generic";
+  const requestFormat: CustomRequestFormat = config.requestFormat || "generic";
 
   // Basis-Payload
   const payload: CustomRequestPayload = {
@@ -185,7 +205,7 @@ function prepareMessages(
   _format: string,
 ): {
   systemPrompt?: string;
-  chatMessages: unknown[];
+  chatMessages: CustomRequestMessage[];
 } {
   if (!Array.isArray(messages) || messages.length === 0) {
     return { systemPrompt: undefined, chatMessages: [] };
@@ -201,10 +221,12 @@ function prepareMessages(
     systemMessages.length > 0 ? systemMessages.join("\n\n") : undefined;
 
   // Chat-Nachrichten mappen
-  const chatMessages = messages
+  const chatMessages: CustomRequestMessage[] = messages
     .filter((m) => m.role !== "system")
     .map((m) => ({
-      role: m.role === "assistant" ? "assistant" : "user",
+      role: (m.role === "assistant" ? "assistant" : "user") as
+        | "assistant"
+        | "user",
       content: String(m.content || ""),
       ...(m.metadata && { metadata: m.metadata }),
     }))
@@ -213,20 +235,27 @@ function prepareMessages(
   return { systemPrompt, chatMessages };
 }
 
-function prepareToolsForCustomAPI(): any[] {
+function prepareToolsForCustomAPI(): CustomToolDefinition[] {
   const tools = toolRegistry.getToolDefinitions();
   return tools
-    .map((tool) => ({
+    .map<CustomToolDefinition>((tool) => ({
       name: tool.name,
       description: tool.description || `Tool: ${tool.name}`,
       parameters: tool.parameters || {},
-      required: tool.parameters
-        ? Object.keys(tool.parameters).filter(
-            (key) => tool.parameters?.[key]?.required,
-          )
-        : [],
+      required: (() => {
+        const params =
+          typeof tool.parameters === "object" && tool.parameters !== null
+            ? (tool.parameters as Record<string, unknown>)
+            : {};
+        return Object.keys(params).filter((key) => {
+          const val = params[key] as { required?: boolean } | unknown;
+          return typeof val === "object" && val !== null
+            ? Boolean((val as { required?: boolean }).required)
+            : false;
+        });
+      })(),
     }))
-    .filter((tool) => tool.name && tool.description);
+    .filter((tool) => Boolean(tool.name && tool.description));
 }
 
 /* ========================================================================== */
@@ -240,18 +269,30 @@ export async function callCustomAPI(
   context: ConversationContext = new ConversationContext(),
 ): Promise<ModelResponse> {
   const startTime = Date.now();
+  const envFormat = (process.env.CUSTOM_AI_FORMAT || "generic")
+    .toLowerCase()
+    .trim();
+  const requestFormat: CustomRequestFormat = [
+    "openai",
+    "anthropic",
+    "generic",
+    "custom",
+  ].includes(envFormat as CustomRequestFormat)
+    ? (envFormat as CustomRequestFormat)
+    : "generic";
+
   const config: CustomProviderConfig = {
     timeoutMs: options.timeoutMs || customConfig.timeout_ms,
     retryAttempts: 2,
     enableToolCalls: true,
     fallbackOnError: true,
-    requestFormat: (process.env.CUSTOM_AI_FORMAT as any) || "generic",
+    requestFormat,
     responseMapping: {
       text: ["text", "response", "message", "content", "answer"],
       error: ["error", "error_message", "err"],
       tokens: ["tokens", "usage.total_tokens", "usage.tokens"],
     },
-    ...options.context?.customConfig,
+    ...(options.context?.customConfig || {}),
   };
 
   const apiUrl = customConfig.endpoint;
@@ -293,7 +334,7 @@ export async function callCustomAPI(
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const data: any = await response.json();
+        const data = (await response.json()) as unknown;
         const duration = Date.now() - startTime;
 
         // Response verarbeiten
@@ -327,15 +368,15 @@ export async function callCustomAPI(
         });
 
         return processedResponse;
-      } catch (error: any) {
-        lastError = error;
+      } catch (error: unknown) {
+        lastError = error instanceof Error ? error : new Error(String(error));
         if (attempt < (config.retryAttempts || 0)) {
           const waitTime = Math.pow(2, attempt) * 1000; // Exponential backoff
           log(
             "warn",
             `CustomProvider Versuch ${attempt + 1} fehlgeschlagen, retry in ${waitTime}ms`,
             {
-              error: error.message,
+              error: lastError.message,
             },
           );
           await new Promise((resolve) => setTimeout(resolve, waitTime));
@@ -345,22 +386,23 @@ export async function callCustomAPI(
     }
 
     throw lastError || new Error("Unbekannter Fehler bei Custom Provider");
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = Date.now() - startTime;
+    const err = error instanceof Error ? error : new Error(String(error));
 
     log("error", "CustomProvider Fehler", {
       model: usedModel,
-      error: error.message,
+      error: err.message,
       endpoint: apiUrl,
       duration_ms: duration,
     });
 
     // Fallback Response bei aktiviertem Fallback
     if (config.fallbackOnError) {
-      return createFallbackResponse(usedModel, error, duration);
+      return createFallbackResponse(usedModel, err, duration);
     }
 
-    throw new Error(`Custom Provider Fehler: ${error.message}`);
+    throw new Error(`Custom Provider Fehler: ${err.message}`);
   }
 }
 
@@ -369,7 +411,7 @@ export async function callCustomAPI(
 /* ========================================================================== */
 
 function processCustomResponse(
-  data: any,
+  data: unknown,
   model: string,
   duration: number,
   config: CustomProviderConfig,
@@ -402,7 +444,10 @@ function processCustomResponse(
     tokens_in: typeof tokens === "number" ? tokens : undefined,
     tokens_out: undefined,
     duration_ms: duration,
-    tool_calls: toolCalls,
+    tool_calls: toolCalls.map((tc) => ({
+      name: tc.name,
+      parameters: tc.parameters,
+    })),
     success: true,
     meta: {
       source: "custom_api",
@@ -412,15 +457,22 @@ function processCustomResponse(
   };
 }
 
-function extractField(data: any, paths: string[]): any {
+function extractField(data: unknown, paths: string[]): unknown {
+  if (data === null || data === undefined) return undefined;
+
   for (const path of paths) {
     if (path.includes(".")) {
       // Tiefe Pfade wie "usage.total_tokens"
       const parts = path.split(".");
-      let value = data;
+      let value: unknown = data;
       for (const part of parts) {
-        if (value && typeof value === "object" && part in value) {
-          value = value[part];
+        if (
+          value &&
+          typeof value === "object" &&
+          !Array.isArray(value) &&
+          part in value
+        ) {
+          value = (value as Record<string, unknown>)[part];
         } else {
           value = undefined;
           break;
@@ -429,8 +481,13 @@ function extractField(data: any, paths: string[]): any {
       if (value !== undefined) return value;
     } else {
       // Flache Pfade
-      if (data && data[path] !== undefined) {
-        return data[path];
+      if (
+        data &&
+        typeof data === "object" &&
+        !Array.isArray(data) &&
+        (data as Record<string, unknown>)[path] !== undefined
+      ) {
+        return (data as Record<string, unknown>)[path];
       }
     }
   }
@@ -438,31 +495,78 @@ function extractField(data: any, paths: string[]): any {
 }
 
 function extractToolCalls(
-  data: any,
-): Array<{ name: string; parameters: Record<string, any> }> {
-  const toolCalls: Array<{ name: string; parameters: Record<string, any> }> =
-    [];
+  data: unknown,
+): CustomToolCall[] {
+  const toolCalls: CustomToolCall[] = [];
+
+  if (!data || typeof data !== "object") {
+    return toolCalls;
+  }
 
   // Verschiedene Tool-Call Formate unterstützen
-  if (Array.isArray(data.tool_calls)) {
-    toolCalls.push(...data.tool_calls);
+  const typed = data as Record<string, unknown>;
+
+  if (Array.isArray(typed.tool_calls)) {
+    typed.tool_calls.forEach((tc) => {
+      if (tc && typeof tc === "object") {
+        const name = (tc as Record<string, unknown>).name;
+        if (typeof name === "string" && name.trim().length > 0) {
+          toolCalls.push({
+            name,
+            parameters:
+              ((tc as Record<string, unknown>).parameters as Record<
+                string,
+                unknown
+              >) || {},
+          });
+        }
+      }
+    });
   }
-  if (Array.isArray(data.tools)) {
-    toolCalls.push(...data.tools);
+  if (Array.isArray(typed.tools)) {
+    typed.tools.forEach((tc) => {
+      if (tc && typeof tc === "object") {
+        const name = (tc as Record<string, unknown>).name;
+        if (typeof name === "string" && name.trim().length > 0) {
+          toolCalls.push({
+            name,
+            parameters:
+              ((tc as Record<string, unknown>).parameters as Record<
+                string,
+                unknown
+              >) || {},
+          });
+        }
+      }
+    });
   }
-  if (data.function_calls && Array.isArray(data.function_calls)) {
-    toolCalls.push(
-      ...data.function_calls.map((fc: any) => ({
-        name: fc.function?.name || fc.name,
-        parameters: fc.function?.arguments || fc.parameters || {},
-      })),
-    );
+  if (Array.isArray(typed.function_calls)) {
+    typed.function_calls.forEach((fc) => {
+      if (fc && typeof fc === "object") {
+        const record = fc as Record<string, unknown>;
+        const fn = record.function as Record<string, unknown> | undefined;
+        const name =
+          (typeof fn?.name === "string" && fn.name) ||
+          (typeof record.name === "string" && record.name) ||
+          undefined;
+
+        if (name) {
+          toolCalls.push({
+            name,
+            parameters:
+              (fn?.arguments as Record<string, unknown> | undefined) ||
+              (record.parameters as Record<string, unknown> | undefined) ||
+              {},
+          });
+        }
+      }
+    });
   }
 
   return toolCalls;
 }
 
-async function executeToolCalls(toolCalls: any[]): Promise<ToolResult[]> {
+async function executeToolCalls(toolCalls: CustomToolCall[]): Promise<ToolResult[]> {
   const results: ToolResult[] = [];
 
   for (const toolCall of toolCalls) {
@@ -490,10 +594,11 @@ async function executeToolCalls(toolCalls: any[]): Promise<ToolResult[]> {
         source_tool: toolName,
         timestamp: new Date().toISOString(),
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
       results.push({
         success: false,
-        error: error.message,
+        error: err.message,
         runtime_ms: Date.now() - startTime,
         source_tool: toolCall.name || "unknown",
         timestamp: new Date().toISOString(),
@@ -518,16 +623,18 @@ function formatToolResults(results: ToolResult[]): string {
   return `\n\n---\n**Tool-Ausführungen:**\n${summary}`;
 }
 
+
 /* ========================================================================== */
 /* 🛡️ Fallback & Error Handling                                           */
 /* ========================================================================== */
 
 function createFallbackResponse(
   model: string,
-  error: any,
+  error: unknown,
   duration: number,
 ): ModelResponse {
-  const fallbackText = `Entschuldigung, es gab einen Verbindungsfehler zum Custom API Endpoint (${error.message}). 
+  const err = error instanceof Error ? error : new Error(String(error));
+  const fallbackText = `Entschuldigung, es gab einen Verbindungsfehler zum Custom API Endpoint (${err.message}). 
 Bitte versuchen Sie es später erneut oder verwenden Sie einen anderen Provider.`;
 
   return {
@@ -536,10 +643,10 @@ Bitte versuchen Sie es später erneut oder verwenden Sie einen anderen Provider.
     text: fallbackText,
     duration_ms: duration,
     success: false,
-    errors: [error.message],
+    errors: [err.message],
     meta: {
       source: "fallback",
-      error_type: error.name || "API_ERROR",
+      error_type: err.name || "API_ERROR",
     },
   };
 }
@@ -561,9 +668,16 @@ export function isCustomModel(modelId: string): boolean {
   );
 }
 
+export interface CustomHealthDetails {
+  status?: number;
+  statusText?: string;
+  endpoint?: string;
+  error?: string;
+}
+
 export async function testCustomAPI(): Promise<{
   success: boolean;
-  details?: any;
+  details?: CustomHealthDetails;
 }> {
   try {
     const endpoint = customConfig.endpoint;
@@ -588,11 +702,12 @@ export async function testCustomAPI(): Promise<{
         endpoint: customConfig.endpoint,
       },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error instanceof Error ? error : new Error(String(error));
     return {
       success: false,
       details: {
-        error: error.message,
+        error: err.message,
         endpoint: customConfig.endpoint,
       },
     };
@@ -638,7 +753,10 @@ export const customProvider = {
   config: customConfig,
 
   // Erweiterte Methoden
-  async healthCheck(): Promise<{ healthy: boolean; details?: any }> {
+  async healthCheck(): Promise<{
+    healthy: boolean;
+    details?: CustomHealthDetails | ReturnType<typeof validateCustomConfig>;
+  }> {
     try {
       const configCheck = validateCustomConfig();
       if (!configCheck.valid) {
@@ -650,10 +768,11 @@ export const customProvider = {
         healthy: connectionTest.success,
         details: connectionTest.details,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
       return {
         healthy: false,
-        details: { error: error.message },
+        details: { error: err.message },
       };
     }
   },

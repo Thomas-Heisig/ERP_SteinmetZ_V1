@@ -15,7 +15,7 @@ import {
   checkFallbackHealth,
   getAvailableProviders,
   getBestAvailableProvider,
-} from "../../services/aiProviderHealthService.js";
+} from "../aiAnnotatorRouter/aiProviderHealthService.js";
 
 const router = Router();
 

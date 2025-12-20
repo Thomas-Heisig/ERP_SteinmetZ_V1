@@ -4,64 +4,86 @@
 /**
  * Document Management System Router
  *
- * Provides comprehensive document management including repository,
- * versioning, OCR integration, AI-based tagging, full-text search,
- * workflow automation, and retention policies.
- *
- * @remarks
- * This router provides:
- * - Document upload with versioning
- * - OCR integration for document scanning
- * - AI-based keyword tagging and classification
- * - Full-text search with highlighting
- * - Document approval workflows
- * - E-signature integration support
- * - Retention policies management
- *
- * Features:
- * - Multi-file upload support
- * - Version control and history
- * - Metadata management
- * - Access control and permissions
+ * Provides comprehensive document management including:
+ * - Document upload with versioning and checksum validation
+ * - OCR integration for text extraction
+ * - AI-based tagging and classification
+ * - Full-text search with filters
+ * - Workflow automation with multi-step approval
+ * - E-signature integration
+ * - Retention policy management
  * - Audit trail for all operations
- * - Document linking and relationships
  *
  * @module routes/documents
- *
- * @example
- * ```typescript
- * // Upload document
- * POST /api/documents/upload
- * Content-Type: multipart/form-data
- * {
- *   "file": <binary>,
- *   "category": "invoice",
- *   "tags": ["wichtig", "2024"],
- *   "metadata": {"customer": "ABC GmbH"}
- * }
- *
- * // Search documents
- * GET /api/documents/search?query=rechnung&type=pdf
- *
- * // Start approval workflow
- * POST /api/documents/:id/workflows/approval
- * {
- *   "approvers": ["user-123", "user-456"],
- *   "deadline": "2024-12-31"
- * }
- * ```
  */
 
 import { Router, Request, Response } from "express";
 import { z } from "zod";
-import { BadRequestError, ValidationError } from "../../types/errors.js";
+import { BadRequestError } from "../error/errors.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import pino from "pino";
+import { DatabaseManager } from "../database/index.js";
+import { DocumentService } from "./services/documentService.js";
+import { WorkflowService } from "./services/workflowService.js";
+import { SignatureService } from "./services/signatureService.js";
+import { SearchService } from "./services/searchService.js";
+import { RetentionService } from "./services/retentionService.js";
 
 const router = Router();
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 
-// Validation schemas
+// Type for authenticated requests
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string;
+    email?: string;
+  };
+}
+
+// Services initialized lazily (NOT at module level)
+let documentService: DocumentService | null = null;
+let workflowService: WorkflowService | null = null;
+let signatureService: SignatureService | null = null;
+let searchService: SearchService | null = null;
+let retentionService: RetentionService | null = null;
+
+/**
+ * Lazy initialize services on first request (synchronous)
+ */
+function initializeServices(): void {
+  if (documentService) return; // Already initialized
+
+  try {
+    // DatabaseManager is exported as an instance (singleton)
+    const dbInstance = DatabaseManager.getDatabase();
+
+    documentService = new DocumentService(dbInstance);
+    workflowService = new WorkflowService(dbInstance);
+    signatureService = new SignatureService(dbInstance);
+    searchService = new SearchService(dbInstance);
+    retentionService = new RetentionService(dbInstance);
+    logger.info("Document services initialized");
+  } catch (error) {
+    logger.error({ error }, "Failed to initialize document services");
+    throw error;
+  }
+}
+
+// Middleware to ensure services are initialized
+router.use((req: Request, res: Response, next) => {
+  try {
+    initializeServices();
+    next();
+  } catch (error) {
+    logger.error({ error }, "Service initialization failed");
+    res.status(503).json({ success: false, error: "Services unavailable" });
+  }
+});
+
+// ============================================================================
+// VALIDATION SCHEMAS
+// ============================================================================
+
 const uploadDocumentSchema = z.object({
   category: z.enum([
     "invoice",
@@ -82,124 +104,84 @@ const searchDocumentsSchema = z.object({
   query: z.string().optional(),
   category: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  startDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-  endDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
   fileType: z.string().optional(),
 });
 
-const createWorkflowSchema = z.object({
+const workflowSchema = z.object({
   type: z.enum(["approval", "review", "signature"]),
   approvers: z.array(z.string()).min(1),
-  deadline: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
+  deadline: z.string().optional(),
   description: z.string().optional(),
 });
 
-const updateRetentionPolicySchema = z.object({
+const retentionPolicySchema = z.object({
   retentionYears: z.number().int().min(1).max(30),
-  reason: z.string().min(1),
+  reason: z.string().optional(),
 });
 
 // ============================================================================
-// DOCUMENT REPOSITORY
+// DOCUMENT MANAGEMENT ENDPOINTS
 // ============================================================================
 
 /**
  * GET /api/documents
  * Get all documents with optional filters
+ * @route GET /api/documents
+ * @access Private
  */
 router.get(
   "/",
   asyncHandler(async (req: Request, res: Response) => {
-    // TODO: Replace with actual database query
-    const mockDocuments = [
-      {
-        id: "doc-1",
-        title: "Rechnung ABC GmbH",
-        category: "invoice",
-        fileType: "pdf",
-        size: 245678,
-        uploadedAt: new Date().toISOString(),
-        uploadedBy: "user-123",
-        version: 1,
-        tags: ["rechnung", "2024", "kunde-abc"],
-        status: "active",
-      },
-      {
-        id: "doc-2",
-        title: "Arbeitsvertrag Max Mustermann",
-        category: "contract",
-        fileType: "pdf",
-        size: 189234,
-        uploadedAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-        uploadedBy: "user-456",
-        version: 2,
-        tags: ["vertrag", "personal"],
-        status: "approved",
-      },
-    ];
+    if (!documentService) throw new Error("Document service not initialized");
+
+    const { category, status } = req.query;
+    const userId = (req as AuthenticatedRequest).user?.id;
+
+    const documents = await documentService.getAllDocuments({
+      category: category as string,
+      status: status as string,
+      userId,
+    });
 
     res.json({
       success: true,
-      data: mockDocuments,
-      count: mockDocuments.length,
+      data: documents,
+      count: documents.length,
     });
   }),
 );
 
 /**
  * GET /api/documents/:id
- * Get a single document by ID
+ * Get a single document by ID with full details
+ * @route GET /api/documents/:id
+ * @access Private
  */
 router.get(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!documentService) throw new Error("Document service not initialized");
+    if (!searchService) throw new Error("Search service not initialized");
+
     const { id } = req.params;
 
-    // TODO: Replace with actual database query
-    const mockDocument = {
-      id,
-      title: "Rechnung ABC GmbH",
-      category: "invoice",
-      fileType: "pdf",
-      fileName: "rechnung-abc-2024.pdf",
-      size: 245678,
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: "user-123",
-      version: 1,
-      tags: ["rechnung", "2024", "kunde-abc"],
-      status: "active",
-      metadata: {
-        customer: "ABC GmbH",
-        amount: 1500.0,
-        invoiceNumber: "RE-2024-001",
-      },
-      ocrData: {
-        extracted: true,
-        text: "Rechnung Nr. RE-2024-001...",
-        confidence: 0.95,
-      },
-      versions: [
-        {
-          version: 1,
-          uploadedAt: new Date().toISOString(),
-          uploadedBy: "user-123",
-          changes: "Initial upload",
-        },
-      ],
-    };
+    const document = await documentService.getDocumentById(id);
+    const metadata = documentService.getMetadata(id);
+    const tags = documentService.getTags(id);
+    const versions = await documentService.getDocumentVersions(id);
+    const ocrData = await searchService.getOCRData(id);
 
     res.json({
       success: true,
-      data: mockDocument,
+      data: {
+        ...document,
+        metadata,
+        tags,
+        versions,
+        ocrData,
+      },
     });
   }),
 );
@@ -207,40 +189,40 @@ router.get(
 /**
  * POST /api/documents/upload
  * Upload a new document
+ * @route POST /api/documents/upload
+ * @access Private
  */
 router.post(
   "/upload",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!documentService) throw new Error("Document service not initialized");
+
     // Validate input
     const validationResult = uploadDocumentSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid document data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid document data");
     }
 
     const documentData = validationResult.data;
+    const userId = (req as AuthenticatedRequest).user?.id || "system";
 
-    // TODO: Handle actual file upload with multer
-    // TODO: Store in file system or cloud storage
-    // TODO: Generate document ID
-    // TODO: Extract text with OCR if applicable
-    // TODO: Generate AI-based tags
-
-    const newDocument = {
-      id: `doc-${Date.now()}`,
-      ...documentData,
-      fileName: "uploaded-file.pdf", // Would come from multer
-      fileType: "pdf", // Would be detected
-      size: 245678, // Would come from file
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: "current-user-id", // Would come from auth
-      version: 1,
-      status: "active",
+    // TODO: Integrate with multer for actual file upload
+    // For now, use mock file data
+    const mockFileInfo = {
+      fileName: documentData.title + ".pdf",
+      fileType: "application/pdf",
+      fileSize: 245678,
+      storagePath: `/storage/documents/${Date.now()}.pdf`,
+      buffer: Buffer.from("mock file content"),
     };
 
-    logger.info({ documentId: newDocument.id }, "Document uploaded");
+    const newDocument = await documentService.createDocument(
+      documentData,
+      mockFileInfo,
+      userId,
+    );
+
+    logger.info({ documentId: newDocument.id }, "Document uploaded successfully");
 
     res.status(201).json({
       success: true,
@@ -253,29 +235,37 @@ router.post(
 /**
  * POST /api/documents/:id/versions
  * Upload a new version of an existing document
+ * @route POST /api/documents/:id/versions
+ * @access Private
  */
 router.post(
   "/:id/versions",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!documentService) throw new Error("Document service not initialized");
+
     const { id } = req.params;
+    const { changes } = req.body;
+    const userId = (req as AuthenticatedRequest).user?.id || "system";
 
-    // TODO: Validate document exists
-    // TODO: Handle file upload
-    // TODO: Increment version number
-    // TODO: Store new version
+    // Verify document exists
+    await documentService.getDocumentById(id);
 
-    const newVersion = {
-      documentId: id,
-      version: 2,
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: "current-user-id",
-      changes: req.body.changes || "Updated document",
+    // TODO: Integrate with multer for actual file upload
+    const mockFileInfo = {
+      fileName: "updated-file.pdf",
+      fileSize: 256789,
+      storagePath: `/storage/documents/${Date.now()}.pdf`,
+      buffer: Buffer.from("updated mock file content"),
     };
 
-    logger.info(
-      { documentId: id, version: 2 },
-      "New document version uploaded",
+    const newVersion = await documentService.uploadVersion(
+      id,
+      mockFileInfo,
+      changes || "Updated document",
+      userId,
     );
+
+    logger.info({ documentId: id, version: newVersion.version }, "New document version created");
 
     res.status(201).json({
       success: true,
@@ -287,17 +277,21 @@ router.post(
 
 /**
  * DELETE /api/documents/:id
- * Delete a document (soft delete)
+ * Delete a document (soft delete with retention check)
+ * @route DELETE /api/documents/:id
+ * @access Private
  */
 router.delete(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!documentService) throw new Error("Document service not initialized");
+
     const { id } = req.params;
+    const userId = (req as AuthenticatedRequest).user?.id || "system";
 
-    // TODO: Soft delete document in database
-    // TODO: Check retention policy before deletion
+    await documentService.deleteDocument(id, userId);
 
-    logger.info({ documentId: id }, "Document deleted");
+    logger.info({ documentId: id, userId }, "Document deleted");
 
     res.json({
       success: true,
@@ -307,51 +301,35 @@ router.delete(
 );
 
 // ============================================================================
-// SEARCH & OCR
+// SEARCH AND OCR ENDPOINTS
 // ============================================================================
 
 /**
  * GET /api/documents/search
- * Full-text search across documents
+ * Full-text search across documents with filters
+ * @route GET /api/documents/search
+ * @access Private
  */
 router.get(
   "/search",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!searchService) throw new Error("Search service not initialized");
+
     const validationResult = searchDocumentsSchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid search parameters",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid search parameters");
     }
 
-    const {
-      query,
-      category: _category,
-      tags: _tags,
-      fileType: _fileType,
-    } = validationResult.data;
+    const searchParams = validationResult.data;
+    const results = await searchService.searchDocuments(searchParams);
 
-    // TODO: Implement full-text search with highlighting
-    // TODO: Search in OCR-extracted text
-    // TODO: Apply filters
-
-    const mockResults = [
-      {
-        id: "doc-1",
-        title: "Rechnung ABC GmbH",
-        category: "invoice",
-        snippet: "...Rechnung Nr. RE-2024-001 für ABC GmbH...",
-        relevance: 0.95,
-        highlights: ["Rechnung", "ABC GmbH"],
-      },
-    ];
+    logger.info({ query: searchParams.query, resultCount: results.length }, "Search completed");
 
     res.json({
       success: true,
-      data: mockResults,
-      count: mockResults.length,
-      query,
+      data: results,
+      count: results.length,
+      query: searchParams.query,
     });
   }),
 );
@@ -359,22 +337,46 @@ router.get(
 /**
  * POST /api/documents/:id/ocr
  * Trigger OCR processing for a document
+ * @route POST /api/documents/:id/ocr
+ * @access Private
  */
 router.post(
   "/:id/ocr",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!documentService) throw new Error("Document service not initialized");
+    if (!searchService) throw new Error("Search service not initialized");
+
     const { id } = req.params;
 
-    // TODO: Queue OCR processing job
-    // TODO: Use Tesseract or cloud OCR service
-    // TODO: Store extracted text
+    // Verify document exists
+    await documentService.getDocumentById(id);
 
-    logger.info({ documentId: id }, "OCR processing started");
+    // TODO: Queue OCR processing job with BullMQ
+    // For now, store mock OCR data
+    const jobId = `ocr-job-${Date.now()}`;
+
+    // Mock OCR processing result
+    setTimeout(async () => {
+      try {
+        if (!searchService) return;
+        await searchService.saveOCRData(id, {
+          extractedText: "Sample extracted text from document...",
+          language: "deu",
+          confidence: 0.95,
+          provider: "tesseract",
+          processingTimeMs: 1500,
+        });
+      } catch (error) {
+        logger.error({ error, documentId: id }, "OCR processing failed");
+      }
+    }, 100);
+
+    logger.info({ documentId: id, jobId }, "OCR processing started");
 
     res.json({
       success: true,
       message: "OCR processing started",
-      jobId: `ocr-job-${Date.now()}`,
+      jobId,
     });
   }),
 );
@@ -382,18 +384,28 @@ router.post(
 /**
  * POST /api/documents/:id/ai-tags
  * Generate AI-based tags for a document
+ * @route POST /api/documents/:id/ai-tags
+ * @access Private
  */
 router.post(
   "/:id/ai-tags",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!documentService) throw new Error("Document service not initialized");
+
     const { id } = req.params;
 
-    // TODO: Use AI to analyze document content
-    // TODO: Generate relevant tags
-    // TODO: Classify document type
+    // Verify document exists
+    await documentService.getDocumentById(id);
+
+    // TODO: Integrate with OpenAI/Anthropic API
+    // For now, generate mock AI tags
+    const generatedTags = ["rechnung", "kunde", "2024", "zahlung"];
+
+    // Save AI-generated tags
+    documentService.saveTags(id, generatedTags, "ai_generated", 0.92);
 
     const aiTags = {
-      generatedTags: ["rechnung", "kunde", "2024", "zahlung"],
+      generatedTags,
       category: "invoice",
       confidence: 0.92,
       entities: [
@@ -402,7 +414,7 @@ router.post(
       ],
     };
 
-    logger.info({ documentId: id }, "AI tags generated");
+    logger.info({ documentId: id, tagCount: generatedTags.length }, "AI tags generated");
 
     res.json({
       success: true,
@@ -412,52 +424,49 @@ router.post(
 );
 
 // ============================================================================
-// WORKFLOW AUTOMATION
+// WORKFLOW AUTOMATION ENDPOINTS
 // ============================================================================
 
 /**
  * POST /api/documents/:id/workflows
  * Start a workflow for a document
+ * @route POST /api/documents/:id/workflows
+ * @access Private
  */
 router.post(
   "/:id/workflows",
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    if (!documentService) throw new Error("Document service not initialized");
+    if (!workflowService) throw new Error("Workflow service not initialized");
 
-    const validationResult = createWorkflowSchema.safeParse(req.body);
+    const { id } = req.params;
+    const userId = (req as AuthenticatedRequest).user?.id || "system";
+
+    // Verify document exists
+    await documentService.getDocumentById(id);
+
+    // Validate workflow data
+    const validationResult = workflowSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid workflow data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid workflow data");
     }
 
     const workflowData = validationResult.data;
 
-    // TODO: Create workflow instance
-    // TODO: Send notifications to approvers
-    // TODO: Track workflow state
-
-    const workflow = {
-      id: `wf-${Date.now()}`,
-      documentId: id,
-      type: workflowData.type,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-      approvers: workflowData.approvers,
-      currentStep: 1,
-      totalSteps: workflowData.approvers.length,
-    };
+    const workflow = await workflowService.startWorkflow(
+      id,
+      workflowData,
+      userId,
+    );
 
     logger.info(
-      { documentId: id, workflowId: workflow.id },
+      { documentId: id, workflowId: workflow.id, type: workflowData.type },
       "Workflow started",
     );
 
     res.status(201).json({
       success: true,
       data: workflow,
-      message: "Workflow started successfully",
     });
   }),
 );
@@ -465,28 +474,26 @@ router.post(
 /**
  * GET /api/documents/:id/workflows
  * Get all workflows for a document
+ * @route GET /api/documents/:id/workflows
+ * @access Private
  */
 router.get(
   "/:id/workflows",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!documentService) throw new Error("Document service not initialized");
+    if (!workflowService) throw new Error("Workflow service not initialized");
+
     const { id } = req.params;
 
-    // TODO: Query workflows from database
+    // Verify document exists
+    await documentService.getDocumentById(id);
 
-    const mockWorkflows = [
-      {
-        id: "wf-1",
-        documentId: id,
-        type: "approval",
-        status: "completed",
-        createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
-        completedAt: new Date(Date.now() - 1 * 86400000).toISOString(),
-      },
-    ];
+    const workflows = await workflowService.getDocumentWorkflows(id);
 
     res.json({
       success: true,
-      data: mockWorkflows,
+      data: workflows,
+      count: workflows.length,
     });
   }),
 );
@@ -494,19 +501,28 @@ router.get(
 /**
  * POST /api/documents/:id/workflows/:workflowId/approve
  * Approve a workflow step
+ * @route POST /api/documents/:id/workflows/:workflowId/approve
+ * @access Private
  */
 router.post(
   "/:id/workflows/:workflowId/approve",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!workflowService) throw new Error("Workflow service not initialized");
+
     const { id, workflowId } = req.params;
-    const { comment: _comment } = req.body;
+    const { stepNumber, comment } = req.body;
+    const userId = (req as AuthenticatedRequest).user?.id || "system";
 
-    // TODO: Validate user is authorized approver
-    // TODO: Update workflow state
-    // TODO: Move to next step or complete workflow
-    // TODO: Send notifications
+    if (stepNumber === undefined) {
+      throw new BadRequestError("stepNumber is required");
+    }
 
-    logger.info({ documentId: id, workflowId }, "Workflow step approved");
+    await workflowService.approveStep(workflowId, stepNumber, userId, comment);
+
+    logger.info(
+      { documentId: id, workflowId, stepNumber, userId },
+      "Workflow step approved",
+    );
 
     res.json({
       success: true,
@@ -518,141 +534,164 @@ router.post(
 /**
  * POST /api/documents/:id/workflows/:workflowId/reject
  * Reject a workflow step
+ * @route POST /api/documents/:id/workflows/:workflowId/reject
+ * @access Private
  */
 router.post(
   "/:id/workflows/:workflowId/reject",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!workflowService) throw new Error("Workflow service not initialized");
+
     const { id, workflowId } = req.params;
-    const { reason } = req.body;
+    const { stepNumber, reason } = req.body;
+    const userId = (req as AuthenticatedRequest).user?.id || "system";
+
+    if (stepNumber === undefined) {
+      throw new BadRequestError("stepNumber is required");
+    }
 
     if (!reason) {
       throw new BadRequestError("Rejection reason is required");
     }
 
-    // TODO: Update workflow state to rejected
-    // TODO: Send notifications
+    await workflowService.rejectStep(workflowId, stepNumber, userId, reason);
 
-    logger.info({ documentId: id, workflowId }, "Workflow rejected");
+    logger.info(
+      { documentId: id, workflowId, stepNumber, userId },
+      "Workflow step rejected",
+    );
 
     res.json({
       success: true,
-      message: "Workflow rejected",
+      message: "Workflow step rejected",
     });
   }),
 );
 
 // ============================================================================
-// E-SIGNATURE INTEGRATION
+// E-SIGNATURE ENDPOINTS
 // ============================================================================
 
 /**
  * POST /api/documents/:id/sign
  * Request e-signature for a document
+ * @route POST /api/documents/:id/sign
+ * @access Private
  */
 router.post(
   "/:id/sign",
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { signers, message: _message } = req.body;
+    if (!documentService) throw new Error("Document service not initialized");
+    if (!signatureService) throw new Error("Signature service not initialized");
 
-    if (!signers || !Array.isArray(signers) || signers.length === 0) {
+    const { id } = req.params;
+    const { signers } = req.body;
+
+    if (!Array.isArray(signers) || signers.length === 0) {
       throw new BadRequestError("At least one signer is required");
     }
 
-    // TODO: Integration with e-signature provider (DocuSign, Adobe Sign, etc.)
-    // TODO: Create signature request
-    // TODO: Send email to signers
+    // Verify document exists
+    await documentService.getDocumentById(id);
 
-    const signatureRequest = {
-      id: `sig-${Date.now()}`,
-      documentId: id,
+    const signatureRequest = await signatureService.createSignatureRequest(id, {
       signers,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + 30 * 86400000).toISOString(),
-    };
+      provider: req.body.provider || "internal",
+    });
 
-    logger.info(
-      { documentId: id, signatureId: signatureRequest.id },
-      "Signature request created",
-    );
+    logger.info({ documentId: id, signerCount: signers.length }, "Signature request created");
 
     res.status(201).json({
       success: true,
       data: signatureRequest,
-      message: "Signature request sent",
+      message: "Signature request created",
     });
   }),
 );
 
 /**
  * GET /api/documents/:id/signatures
- * Get signature status for a document
+ * Get all signatures for a document
+ * @route GET /api/documents/:id/signatures
+ * @access Private
  */
 router.get(
   "/:id/signatures",
   asyncHandler(async (req: Request, res: Response) => {
+    if (!documentService) throw new Error("Document service not initialized");
+    if (!signatureService) throw new Error("Signature service not initialized");
+
     const { id } = req.params;
 
-    // TODO: Query signature requests from database
+    // Verify document exists
+    await documentService.getDocumentById(id);
 
-    const mockSignatures = [
-      {
-        id: "sig-1",
-        documentId: id,
-        signer: "user-123",
-        status: "completed",
-        signedAt: new Date().toISOString(),
-      },
-    ];
+    const signatures = await signatureService.getDocumentSignatures(id);
 
     res.json({
       success: true,
-      data: mockSignatures,
+      data: signatures,
+      count: signatures.length,
+    });
+  }),
+);
+
+/**
+ * PUT /api/documents/signatures/:signatureId
+ * Update signature status
+ * @route PUT /api/documents/signatures/:signatureId
+ * @access Private
+ */
+router.put(
+  "/signatures/:signatureId",
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!signatureService) throw new Error("Signature service not initialized");
+
+    const { signatureId } = req.params;
+    const { status } = req.body;
+
+    if (!["signed", "declined", "expired"].includes(status)) {
+      throw new BadRequestError("Invalid signature status");
+    }
+
+    const ipAddress = req.ip || (req.headers["x-forwarded-for"] as string) || "unknown";
+
+    await signatureService.updateSignatureStatus(
+      signatureId,
+      status,
+      ipAddress,
+    );
+
+    logger.info({ signatureId, status }, "Signature status updated");
+
+    res.json({
+      success: true,
+      message: "Signature status updated",
     });
   }),
 );
 
 // ============================================================================
-// RETENTION POLICIES
+// RETENTION POLICY ENDPOINTS
 // ============================================================================
 
 /**
  * GET /api/documents/retention-policies
- * Get retention policies
+ * Get all retention policies
+ * @route GET /api/documents/retention-policies
+ * @access Private
  */
 router.get(
   "/retention-policies",
-  asyncHandler(async (_req: Request, res: Response) => {
-    // TODO: Query from database
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!retentionService) throw new Error("Retention service not initialized");
 
-    const mockPolicies = [
-      {
-        id: "policy-1",
-        category: "invoice",
-        retentionYears: 10,
-        description: "Rechnungen müssen 10 Jahre aufbewahrt werden (HGB §257)",
-        legalBasis: "HGB §257",
-      },
-      {
-        id: "policy-2",
-        category: "contract",
-        retentionYears: 6,
-        description: "Verträge 6 Jahre aufbewahren",
-        legalBasis: "BGB §195",
-      },
-      {
-        id: "policy-3",
-        category: "employee_document",
-        retentionYears: 3,
-        description: "Personalunterlagen 3 Jahre nach Ausscheiden",
-        legalBasis: "DSGVO Art. 17",
-      },
-    ];
+    const policies = await retentionService.getAllPolicies();
 
     res.json({
       success: true,
-      data: mockPolicies,
+      data: policies,
+      count: policies.length,
     });
   }),
 );
@@ -660,105 +699,106 @@ router.get(
 /**
  * PUT /api/documents/:id/retention-policy
  * Update retention policy for a document
+ * @route PUT /api/documents/:id/retention-policy
+ * @access Private
  */
 router.put(
   "/:id/retention-policy",
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    if (!documentService) throw new Error("Document service not initialized");
+    if (!retentionService) throw new Error("Retention service not initialized");
 
-    const validationResult = updateRetentionPolicySchema.safeParse(req.body);
+    const { id } = req.params;
+    const userId = (req as AuthenticatedRequest).user?.id || "system";
+
+    // Validate input
+    const validationResult = retentionPolicySchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid retention policy data",
-        validationResult.error.issues,
-      );
+      throw new BadRequestError("Invalid retention policy data");
     }
 
     const { retentionYears, reason } = validationResult.data;
 
-    // TODO: Update document retention policy
-    // TODO: Log policy change for audit
+    // Verify document exists
+    await documentService.getDocumentById(id);
 
-    logger.info(
-      { documentId: id, retentionYears, reason },
-      "Retention policy updated",
+    await retentionService.updateDocumentRetention(
+      id,
+      retentionYears,
+      reason || "Updated by user",
+      userId,
     );
+
+    logger.info({ documentId: id, retentionYears, userId }, "Retention policy updated");
 
     res.json({
       success: true,
       message: "Retention policy updated",
-      data: {
-        documentId: id,
-        retentionYears,
-        expiresAt: new Date(
-          Date.now() + retentionYears * 365 * 86400000,
-        ).toISOString(),
-      },
     });
   }),
 );
 
 /**
  * GET /api/documents/expiring
- * Get documents expiring soon
+ * Get documents expiring within specified days
+ * @route GET /api/documents/expiring
+ * @access Private
  */
 router.get(
   "/expiring",
   asyncHandler(async (req: Request, res: Response) => {
-    const { days: _days = 30 } = req.query;
+    if (!documentService) throw new Error("Document service not initialized");
 
-    // TODO: Query documents expiring within X days
+    let days = 30;
+    if (req.query.days) {
+      const parsedDays = parseInt(req.query.days as string);
+      if (!isNaN(parsedDays) && parsedDays > 0) {
+        days = parsedDays;
+      }
+    }
 
-    const mockExpiringDocs = [
-      {
-        id: "doc-5",
-        title: "Alter Vertrag",
-        category: "contract",
-        expiresAt: new Date(Date.now() + 15 * 86400000).toISOString(),
-        daysUntilExpiration: 15,
-      },
-    ];
+    const expiringDocuments = await documentService.getExpiringDocuments(days);
+
+    logger.info({ days, count: expiringDocuments.length }, "Expiring documents retrieved");
 
     res.json({
       success: true,
-      data: mockExpiringDocs,
-      count: mockExpiringDocs.length,
+      data: expiringDocuments,
+      count: expiringDocuments.length,
     });
   }),
 );
 
 // ============================================================================
-// STATISTICS
+// STATISTICS ENDPOINTS
 // ============================================================================
 
 /**
  * GET /api/documents/statistics
- * Get document management statistics
+ * Get document statistics
+ * @route GET /api/documents/statistics
+ * @access Private
  */
 router.get(
   "/statistics",
-  asyncHandler(async (_req: Request, res: Response) => {
-    // TODO: Calculate from database
+  asyncHandler(async (req: Request, res: Response) => {
+    if (!documentService) throw new Error("Document service not initialized");
+    if (!workflowService) throw new Error("Workflow service not initialized");
+    if (!signatureService) throw new Error("Signature service not initialized");
 
-    const mockStats = {
-      totalDocuments: 1247,
-      totalSize: 5234567890, // bytes
-      byCategory: {
-        invoice: 456,
-        contract: 123,
-        employee_document: 234,
-        report: 189,
-        correspondence: 145,
-        other: 100,
-      },
-      pendingWorkflows: 12,
-      pendingSignatures: 5,
-      expiringDocuments: 8,
-    };
+    const stats = documentService.getStatistics();
+    const pendingWorkflows = workflowService.getPendingWorkflowsCount();
+    const pendingSignatures = signatureService.getPendingSignaturesCount();
+
+    logger.info({ totalDocuments: stats.totalDocuments, pendingWorkflows, pendingSignatures }, "Statistics retrieved");
 
     res.json({
       success: true,
-      data: mockStats,
+      data: {
+        ...stats,
+        pendingWorkflows,
+        pendingSignatures,
+      },
     });
   }),
 );

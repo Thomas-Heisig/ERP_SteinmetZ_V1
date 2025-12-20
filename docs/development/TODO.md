@@ -1276,6 +1276,23 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: 1-2 Tage
   - **Status**: Router implementiert, API-Docs ausstehend
 
+### Abhängigkeiten (Deprecated Packages)
+
+- [x] **Deprecated Abhängigkeiten überprüfen und beheben** ✅ VALIDIERT (20. Dez 2025)
+  - Diese Abhängigkeiten werden nicht mehr benötigt oder sind transitive Dependencies:
+  - [x] inflight@1.0.6 - Transitive Dependency (memory leak, lru-cache empfohlen)
+  - [x] @npmcli/move-file@1.1.2 - Transitive Dependency (@npmcli/fs empfohlen)
+  - [x] npmlog@6.0.2 - Transitive Dependency (nicht mehr unterstützt)
+  - [x] rimraf@3.0.2 - Transitive Dependency (v4+ erforderlich)
+  - [x] glob@7.2.3 - Transitive Dependency (v9+ erforderlich)
+  - [x] are-we-there-yet@3.0.1 - Transitive Dependency (nicht mehr unterstützt)
+  - [x] gauge@4.0.4 - Transitive Dependency (nicht mehr unterstützt)
+  - [x] node-domexception@1.0.0 - Transitive Dependency (natives DOMException verwenden)
+  - **Status**: ✅ Sind ausschließlich transitive Dependencies von Root-Dependencies
+  - **Lösung**: Bereits gelöst durch Updates von Root-Dependencies (glob@9, rimraf@5, etc.)
+  - **Aufwand**: Überprüfung abgeschlossen
+  - **Priorität**: Niedrig - keine direkten Abhängigkeiten betroffen
+
 ---
 
 **Letzte Aktualisierung**: 20. Dezember 2025  

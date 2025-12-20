@@ -27,21 +27,61 @@ import { workflowEngine } from "../workflows/workflowEngine.js";
 /* ⚙️ System-Konfiguration                                                   */
 /* ========================================================================== */
 
-const ACTIVE_PROVIDER = process.env.AI_PROVIDER?.toLowerCase() ?? "ollama";
+const ACTIVE_PROVIDER: ProviderName = (process.env.AI_PROVIDER?.toLowerCase() ?? "ollama") as ProviderName;
 const FALLBACK_ENABLED = process.env.AI_FALLBACK_ENABLED === "1";
-const FALLBACK_PROVIDER =
-  process.env.AI_FALLBACK_PROVIDER?.toLowerCase() ?? "eliza";
+const FALLBACK_PROVIDER: ProviderName =
+  (process.env.AI_FALLBACK_PROVIDER?.toLowerCase() ?? "eliza") as ProviderName;
+
+type ProviderName =
+  | "openai"
+  | "azure"
+  | "azureopenai"
+  | "vertex"
+  | "ollama"
+  | "huggingface"
+  | "local"
+  | "llama"
+  | "llamacpp"
+  | "custom"
+  | "eliza";
+
+interface ChatRequestOptions extends Record<string, unknown> {
+  provider?: string;
+}
+
+interface ToolCall {
+  name: string;
+  parameters?: Record<string, unknown>;
+}
+
+type WorkflowRunner = (
+  name: string,
+  input: Record<string, unknown>,
+) => Promise<unknown>;
+
+interface WorkflowEngineLike {
+  runWorkflow?: WorkflowRunner;
+  execute?: WorkflowRunner;
+  start?: WorkflowRunner;
+  getWorkflowDefinitions?(): unknown[];
+}
 
 /* ========================================================================== */
 /* 🧠 Chat-Handler                                                           */
 /* ========================================================================== */
 
+/**
+ * Zentraler Entry-Point für Chat-Anfragen inkl. Tool- und Fallback-Unterstützung.
+ * @param model Zielmodell (z. B. "gpt-4o-mini")
+ * @param messages Verlauf der Unterhaltung
+ * @param options optionale Provider-Overrides und Modellparameter
+ */
 export async function handleChatRequest(
   model: string,
   messages: ChatMessage[],
-  options: Record<string, any> = {},
+  options: ChatRequestOptions = {},
 ): Promise<AIResponse> {
-  const provider = options.provider?.toLowerCase() ?? ACTIVE_PROVIDER;
+  const provider = normalizeProvider(options.provider ?? ACTIVE_PROVIDER);
 
   log("info", "ChatService gestartet", {
     provider,
@@ -102,8 +142,10 @@ export async function handleChatRequest(
     }
 
     return response;
-  } catch (err: any) {
-    log("error", "ChatService Fehler", { provider, error: err.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    log("error", "ChatService Fehler", { provider, error: message });
 
     if (FALLBACK_ENABLED) {
       log("info", "Fallback aktiviert", {
@@ -121,11 +163,13 @@ export async function handleChatRequest(
               originalProvider: provider,
               fallbackUsed: true,
             },
-            errors: [err.message],
+            errors: [message],
           };
-        } catch (elizaErr: any) {
+        } catch (elizaError: unknown) {
+          const elizaMessage =
+            elizaError instanceof Error ? elizaError.message : String(elizaError);
           log("warn", "Eliza Fallback fehlgeschlagen", {
-            error: elizaErr.message,
+            error: elizaMessage,
           });
         }
       }
@@ -133,7 +177,9 @@ export async function handleChatRequest(
       // Simple fallback as last resort
       const fb = await callFallback(model, messages);
       const fbText =
-        typeof fb === "string" ? fb : ((fb as any)?.text ?? "Fallback aktiv.");
+        typeof fb === "string"
+          ? fb
+          : getTextFromUnknown(fb) ?? "Fallback aktiv.";
       return {
         text: fbText,
         meta: {
@@ -142,13 +188,13 @@ export async function handleChatRequest(
           originalProvider: provider,
           fallbackUsed: true,
         },
-        errors: [err.message],
+        errors: [message],
       };
     }
 
     return {
-      text: `❌ Fehler: ${err.message}`,
-      errors: [err.message],
+      text: `❌ Fehler: ${message}`,
+      errors: [message],
       meta: { provider, model },
     };
   }
@@ -158,18 +204,14 @@ export async function handleChatRequest(
 /* 🧰 Tool-Unterstützung                                                    */
 /* ========================================================================== */
 
-async function executeToolCalls(
-  toolCalls: { name: string; parameters?: Record<string, any> }[],
-): Promise<string[]> {
+async function executeToolCalls(toolCalls: ToolCall[]): Promise<string[]> {
   const results: string[] = [];
   for (const call of toolCalls) {
     try {
-      const res = await toolRegistry.call(call.name, call.parameters ?? {});
-      results.push(
-        `✅ Tool "${call.name}" erfolgreich (${Object.keys(res).length} Felder).`,
-      );
-    } catch (err: any) {
-      results.push(`❌ Tool "${call.name}" Fehler: ${err.message}`);
+      const result = await toolRegistry.call(call.name, call.parameters ?? {});
+      results.push(formatToolSuccess(call.name, result));
+    } catch (error: unknown) {
+      results.push(formatToolError(call.name, error));
     }
   }
   return results;
@@ -179,34 +221,30 @@ async function executeToolCalls(
 /* 🔁 Workflow-Unterstützung                                                */
 /* ========================================================================== */
 
+/**
+ * Führt einen registrierten Workflow aus (mit Abwärtskompatibilität zu Legacy-Runnern).
+ * @param name Name des Workflows
+ * @param input Eingabedaten für den Workflow
+ */
 export async function handleWorkflow(
   name: string,
-  input: Record<string, any> = {},
+  input: Record<string, unknown> = {},
 ): Promise<AIResponse> {
   try {
-    const runFn =
-      (workflowEngine as any).runWorkflow ||
-      (workflowEngine as any).execute ||
-      (workflowEngine as any).start;
-
-    if (typeof runFn !== "function") {
-      throw new Error(
-        "Workflow-Engine unterstützt keine runWorkflow/execute-Methode.",
-      );
-    }
-
-    const result = await runFn.call(workflowEngine, name, input);
+    const runFn = resolveWorkflowRunner(workflowEngine);
+    const result = await runFn(name, input);
 
     return {
       text: `Workflow "${name}" erfolgreich ausgeführt.`,
       data: result,
       meta: { provider: "workflowEngine", workflow: name },
     };
-  } catch (err: any) {
-    log("error", "Workflow-Fehler", { name, error: err.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    log("error", "Workflow-Fehler", { name, error: message });
     return {
-      text: `❌ Workflow-Fehler: ${err.message}`,
-      errors: [err.message],
+      text: `❌ Workflow-Fehler: ${message}`,
+      errors: [message],
     };
   }
 }
@@ -215,10 +253,13 @@ export async function handleWorkflow(
 /* 📊 Statusabfragen                                                       */
 /* ========================================================================== */
 
+/**
+ * Liefert eine Übersicht, welche Provider basierend auf Konfiguration/Health erreichbar sind.
+ */
 export async function getProviderStatus(): Promise<
-  { provider: string; available: boolean }[]
+  { provider: ProviderName; available: boolean }[]
 > {
-  const providers = [
+  const providers: ProviderName[] = [
     "openai",
     "ollama",
     "vertex",
@@ -237,7 +278,7 @@ export async function getProviderStatus(): Promise<
   return results;
 }
 
-async function isProviderAvailable(provider: string): Promise<boolean> {
+async function isProviderAvailable(provider: ProviderName): Promise<boolean> {
   try {
     switch (provider) {
       case "openai":
@@ -264,6 +305,9 @@ async function isProviderAvailable(provider: string): Promise<boolean> {
 /* 🧾 Systeminfo                                                           */
 /* ========================================================================== */
 
+/**
+ * Gibt aktuelle Chat-Subsystem-Informationen zurück (Provider, Tools, Workflows).
+ */
 export function getChatSystemInfo() {
   return {
     activeProvider: ACTIVE_PROVIDER,
@@ -283,3 +327,63 @@ export default {
   getProviderStatus,
   getChatSystemInfo,
 };
+
+function formatToolSuccess(name: string, result: unknown): string {
+  if (isRecord(result)) {
+    return `✅ Tool "${name}" erfolgreich (${Object.keys(result).length} Felder).`;
+  }
+  if (typeof result === "string") {
+    return `✅ Tool "${name}" erfolgreich: ${result}`;
+  }
+  return `✅ Tool "${name}" erfolgreich.`;
+}
+
+function formatToolError(name: string, error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  return `❌ Tool "${name}" Fehler: ${message}`;
+}
+
+function resolveWorkflowRunner(engine: WorkflowEngineLike): WorkflowRunner {
+  const candidate = engine.runWorkflow || engine.execute || engine.start;
+  if (typeof candidate !== "function") {
+    throw new Error(
+      "Workflow-Engine unterstützt keine runWorkflow/execute/start-Methode.",
+    );
+  }
+  return candidate.bind(engine);
+}
+
+function getTextFromUnknown(value: unknown): string | undefined {
+  if (isRecord(value) && typeof value.text === "string") {
+    return value.text;
+  }
+  return undefined;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function normalizeProvider(value: unknown): ProviderName {
+  if (typeof value === "string") {
+    const normalized = value.toLowerCase();
+    return isProviderName(normalized) ? normalized : ACTIVE_PROVIDER;
+  }
+  return ACTIVE_PROVIDER as ProviderName;
+}
+
+function isProviderName(value: string): value is ProviderName {
+  return (
+    value === "openai" ||
+    value === "azure" ||
+    value === "azureopenai" ||
+    value === "vertex" ||
+    value === "ollama" ||
+    value === "huggingface" ||
+    value === "local" ||
+    value === "llama" ||
+    value === "llamacpp" ||
+    value === "custom" ||
+    value === "eliza"
+  );
+}

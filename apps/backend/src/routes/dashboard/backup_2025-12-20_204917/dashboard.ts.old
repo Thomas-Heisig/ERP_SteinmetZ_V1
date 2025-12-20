@@ -1,0 +1,913 @@
+// SPDX-License-Identifier: MIT
+// apps/backend/src/routes/dashboard/dashboard.ts
+
+/**
+ * Main Dashboard Router
+ * 
+ * Provides system health, overview, KPIs, tasks, notifications,
+ * and widget stats for the dashboard interface.
+ *
+ * @module routes/dashboard
+ */
+
+import { Router, type Request, type Response } from "express";
+import { randomUUID } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import db from "../database/dbService.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { NotFoundError } from "../error/errors.js";
+import type { SqlValue } from "../database/database.js";
+import { createLogger } from "../../utils/logger.js";
+import comprehensiveRouter from "./comprehensive.js";
+import {
+  createTaskSchema,
+  updateTaskSchema,
+  queryTaskSchema,
+  createNotificationSchema,
+  updateNotificationSchema,
+  queryNotificationSchema,
+  type DashboardTask,
+  type DashboardNotification,
+  type DashboardKPI,
+  type ActivityItem,
+} from "./types.js";
+
+const router = Router();
+const logger = createLogger("dashboard");
+
+// Mount comprehensive dashboard routes
+router.use("/comprehensive", comprehensiveRouter);
+
+// ============================================================================
+// DATABASE INITIALIZATION
+// ============================================================================
+
+/**
+ * Verify dashboard tables exist
+ * Note: Tables are created by migrations (010_create_all_modules_tables.sql and 051_add_user_id_to_dashboard_tables.sql)
+ * This function only verifies they exist and logs status
+ */
+async function ensureTables(): Promise<void> {
+  try {
+    // Verify tables exist (created by migrations)
+    const tables = await db.all<{ name: string }>(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('dashboard_kpis', 'dashboard_tasks', 'dashboard_notifications')"
+    );
+    
+    const tableNames = tables.map(t => t.name);
+    const requiredTables = ['dashboard_kpis', 'dashboard_tasks', 'dashboard_notifications'];
+    const missingTables = requiredTables.filter(t => !tableNames.includes(t));
+    
+    if (missingTables.length > 0) {
+      logger.warn({ missingTables }, "Dashboard tables not found - migrations may not have run");
+    } else {
+      logger.info("Dashboard tables verified successfully");
+    }
+  } catch (error) {
+    logger.error({ error }, "Failed to verify dashboard tables");
+    throw error;
+  }
+}
+
+ensureTables();
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+function rowToTask(row: Record<string, unknown>): DashboardTask {
+  return {
+    id: row.id as string,
+    userId: row.user_id as string,
+    title: row.title as string,
+    description: row.description as string | undefined,
+    status: row.status as DashboardTask["status"],
+    priority: row.priority as DashboardTask["priority"],
+    dueDate: row.due_date as string | undefined,
+    completedAt: row.completed_at as string | undefined,
+    assignedTo: row.assigned_to as string | undefined,
+    tags: row.tags as string | undefined,
+    relatedTo: row.related_to as string | undefined,
+    relatedType: row.related_type as string | undefined,
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}
+
+function rowToNotification(row: Record<string, unknown>): DashboardNotification {
+  return {
+    id: row.id as string,
+    userId: row.user_id as string,
+    type: row.type as DashboardNotification["type"],
+    title: row.title as string,
+    message: row.message as string,
+    read: Boolean(row.read),
+    actionUrl: row.action_url as string | undefined,
+    actionLabel: row.action_label as string | undefined,
+    metadata: row.metadata as string | undefined,
+    createdAt: row.created_at as string,
+    readAt: row.read_at as string | undefined,
+  };
+}
+
+function rowToKPI(row: Record<string, unknown>): DashboardKPI {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    category: row.category as string,
+    value: row.value as number,
+    unit: row.unit as string | undefined,
+    trend: row.trend as DashboardKPI["trend"] | undefined,
+    trendValue: row.trend_value as number | undefined,
+    target: row.target as number | undefined,
+    description: row.description as string | undefined,
+    date: row.date as string,
+    createdAt: row.created_at as string,
+  };
+}
+
+// ============================================================================
+// SYSTEM HEALTH ROUTES
+// ============================================================================
+
+/**
+ * GET /api/dashboard/health
+ * Get system health status
+ */
+router.get("/health", (_req: Request, res: Response) => {
+  logger.info("Health check requested");
+
+  res.json({
+    status: "healthy",
+    uptime: process.uptime(),
+    hostname: os.hostname(),
+    platform: os.platform(),
+    node_version: process.version,
+    memory: {
+      free: Math.round(os.freemem() / 1024 / 1024) + " MB",
+      total: Math.round(os.totalmem() / 1024 / 1024) + " MB",
+    },
+    loadavg: os.loadavg(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+/**
+ * GET /api/dashboard/overview
+ * Get comprehensive system and ERP overview
+ */
+router.get(
+  "/overview",
+  asyncHandler(async (_req: Request, res: Response) => {
+    logger.info("Fetching dashboard overview");
+
+    // ERP statistics (placeholder - will be replaced with real data)
+    const erpStats = {
+      openOrders: 14,
+      pendingInvoices: 7,
+      stockItems: 1240,
+      customers: 328,
+    };
+
+    // AI component status
+    const aiStatus = {
+      fallback_config_source: process.env.FALLBACK_CONFIG_SOURCE ?? "defaults",
+      wiki_enabled: (process.env.FALLBACK_WIKI ?? "1") !== "0",
+      modules: {
+        fallback_ai: true,
+        annotator_ai: existsSync(
+          path.join(process.cwd(), "src/routes/ai/annotator_ai.ts")
+        ),
+        rag_ai: existsSync(path.join(process.cwd(), "src/routes/ai/rag_ai.ts")),
+      },
+    };
+
+    // Version information
+    const packageJsonPath = path.join(process.cwd(), "package.json");
+    let versionInfo = {
+      name: "erp-steinmetz",
+      version: "1.0.0",
+      description: "ERP System",
+    };
+
+    if (existsSync(packageJsonPath)) {
+      try {
+        const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"));
+        versionInfo = {
+          name: packageJson.name || versionInfo.name,
+          version: packageJson.version || versionInfo.version,
+          description: packageJson.description || versionInfo.description,
+        };
+      } catch (error) {
+        logger.error({ error }, "Failed to read package.json");
+      }
+    }
+
+    res.json({
+      system: {
+        uptime: process.uptime(),
+        cpu: os.cpus().length,
+        loadavg: os.loadavg().map((x) => x.toFixed(2)),
+        memory: {
+          free: Math.round(os.freemem() / 1024 / 1024) + " MB",
+          total: Math.round(os.totalmem() / 1024 / 1024) + " MB",
+        },
+      },
+      ai: aiStatus,
+      erp: erpStats,
+      version: versionInfo,
+      timestamp: new Date().toISOString(),
+    });
+  })
+);
+
+/**
+ * GET /api/dashboard/context
+ * Get last context log entries
+ */
+router.get("/context", (_req: Request, res: Response) => {
+  logger.info("Fetching context log");
+
+  const logFile = path.join(process.cwd(), "data", "chat_context.log");
+
+  if (existsSync(logFile)) {
+    try {
+      const logs = readFileSync(logFile, "utf8").split("\n").filter(Boolean).slice(-10);
+      res.json({ context: logs });
+    } catch (error) {
+      logger.error({ error }, "Failed to read context log");
+      res.json({ context: [] });
+    }
+  } else {
+    res.json({ context: [] });
+  }
+});
+
+// ============================================================================
+// KPI ROUTES
+// ============================================================================
+
+/**
+ * GET /api/dashboard/kpis
+ * Get dashboard KPIs
+ */
+router.get(
+  "/kpis",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { category, days = "7" } = req.query;
+
+    logger.info({ category, days }, "Fetching KPIs");
+
+    let sql = "SELECT * FROM dashboard_kpis WHERE date >= date('now', '-' || ? || ' days')";
+    const params: SqlValue[] = [parseInt(days as string, 10)];
+
+    if (category && typeof category === "string") {
+      sql += " AND category = ?";
+      params.push(category);
+    }
+
+    sql += " ORDER BY date DESC, name ASC";
+
+    const kpisRows = await db.all(sql, params);
+    const kpis = kpisRows.map(rowToKPI);
+
+    res.json({
+      success: true,
+      data: kpis,
+      count: kpis.length,
+    });
+  })
+);
+
+// ============================================================================
+// TASKS ROUTES
+// ============================================================================
+
+/**
+ * GET /api/dashboard/tasks
+ * Get dashboard tasks
+ */
+router.get(
+  "/tasks",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = queryTaskSchema.parse(req.query);
+
+    logger.info({ filters: validated }, "Fetching tasks");
+
+    let sql = "SELECT * FROM dashboard_tasks WHERE 1=1";
+    const params: SqlValue[] = [];
+
+    if (validated.status) {
+      sql += " AND status = ?";
+      params.push(validated.status);
+    }
+
+    if (validated.priority) {
+      sql += " AND priority = ?";
+      params.push(validated.priority);
+    }
+
+    if (validated.userId) {
+      sql += " AND user_id = ?";
+      params.push(validated.userId);
+    }
+
+    if (validated.assignedTo) {
+      sql += " AND assigned_to = ?";
+      params.push(validated.assignedTo);
+    }
+
+    if (validated.dueBefore) {
+      sql += " AND due_date <= ?";
+      params.push(validated.dueBefore);
+    }
+
+    if (validated.dueAfter) {
+      sql += " AND due_date >= ?";
+      params.push(validated.dueAfter);
+    }
+
+    sql += " ORDER BY priority DESC, due_date ASC";
+
+    if (validated.limit) {
+      sql += " LIMIT ?";
+      params.push(parseInt(validated.limit, 10));
+    }
+
+    if (validated.offset) {
+      sql += " OFFSET ?";
+      params.push(parseInt(validated.offset, 10));
+    }
+
+    const tasksRows = await db.all(sql, params);
+    const tasks = tasksRows.map(rowToTask);
+
+    res.json({
+      success: true,
+      data: tasks,
+      count: tasks.length,
+    });
+  })
+);
+
+/**
+ * GET /api/dashboard/tasks/:id
+ * Get task by ID
+ */
+router.get(
+  "/tasks/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    logger.info({ taskId: id }, "Fetching task");
+
+    const taskRow = await db.get("SELECT * FROM dashboard_tasks WHERE id = ?", [id]);
+    if (!taskRow) {
+      throw new NotFoundError("Task not found");
+    }
+
+    const task = rowToTask(taskRow);
+
+    res.json({
+      success: true,
+      data: task,
+    });
+  })
+);
+
+/**
+ * POST /api/dashboard/tasks
+ * Create a new task
+ */
+router.post(
+  "/tasks",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = createTaskSchema.parse(req.body);
+
+    logger.info({ userId: validated.userId }, "Creating new task");
+
+    const id = randomUUID();
+    const now = new Date().toISOString();
+
+    await db.run(
+      `INSERT INTO dashboard_tasks (
+        id, user_id, title, description, status, priority, due_date,
+        assigned_to, tags, related_to, related_type, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        validated.userId,
+        validated.title,
+        validated.description ?? null,
+        validated.status,
+        validated.priority,
+        validated.dueDate ?? null,
+        validated.assignedTo ?? null,
+        validated.tags ?? null,
+        validated.relatedTo ?? null,
+        validated.relatedType ?? null,
+        now,
+        now,
+      ]
+    );
+
+    const taskRow = await db.get("SELECT * FROM dashboard_tasks WHERE id = ?", [id]);
+    if (!taskRow) {
+      throw new NotFoundError("Task not found after creation");
+    }
+
+    const task = rowToTask(taskRow);
+
+    res.status(201).json({
+      success: true,
+      data: task,
+    });
+  })
+);
+
+/**
+ * PUT /api/dashboard/tasks/:id
+ * Update a task
+ */
+router.put(
+  "/tasks/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const validated = updateTaskSchema.parse(req.body);
+
+    logger.info({ taskId: id }, "Updating task");
+
+    const existing = await db.get("SELECT * FROM dashboard_tasks WHERE id = ?", [id]);
+    if (!existing) {
+      throw new NotFoundError("Task not found");
+    }
+
+    const updates: string[] = [];
+    const params: SqlValue[] = [];
+
+    const fieldMapping: Record<string, string> = {
+      title: "title",
+      description: "description",
+      status: "status",
+      priority: "priority",
+      dueDate: "due_date",
+      completedAt: "completed_at",
+      assignedTo: "assigned_to",
+      tags: "tags",
+      relatedTo: "related_to",
+      relatedType: "related_type",
+    };
+
+    Object.entries(validated).forEach(([key, value]) => {
+      if (value !== undefined) {
+        const dbField = fieldMapping[key];
+        if (dbField) {
+          updates.push(`${dbField} = ?`);
+          params.push(value as SqlValue);
+        }
+      }
+    });
+
+    if (updates.length > 0) {
+      updates.push("updated_at = ?");
+      params.push(new Date().toISOString());
+      params.push(id);
+
+      await db.run(
+        `UPDATE dashboard_tasks SET ${updates.join(", ")} WHERE id = ?`,
+        params
+      );
+    }
+
+    const updatedRow = await db.get("SELECT * FROM dashboard_tasks WHERE id = ?", [id]);
+    if (!updatedRow) {
+      throw new NotFoundError("Task not found after update");
+    }
+
+    const task = rowToTask(updatedRow);
+
+    res.json({
+      success: true,
+      data: task,
+    });
+  })
+);
+
+/**
+ * DELETE /api/dashboard/tasks/:id
+ * Delete a task
+ */
+router.delete(
+  "/tasks/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    logger.info({ taskId: id }, "Deleting task");
+
+    const result = await db.run("DELETE FROM dashboard_tasks WHERE id = ?", [id]);
+    if (result.changes === 0) {
+      throw new NotFoundError("Task not found");
+    }
+
+    res.json({
+      success: true,
+      message: "Task deleted successfully",
+    });
+  })
+);
+
+// ============================================================================
+// NOTIFICATIONS ROUTES
+// ============================================================================
+
+/**
+ * GET /api/dashboard/notifications
+ * Get dashboard notifications
+ */
+router.get(
+  "/notifications",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = queryNotificationSchema.parse(req.query);
+
+    logger.info({ filters: validated }, "Fetching notifications");
+
+    let sql = "SELECT * FROM dashboard_notifications WHERE 1=1";
+    const params: SqlValue[] = [];
+
+    if (validated.userId) {
+      sql += " AND user_id = ?";
+      params.push(validated.userId);
+    }
+
+    if (validated.type) {
+      sql += " AND type = ?";
+      params.push(validated.type);
+    }
+
+    if (validated.read === "true") {
+      sql += " AND read = 1";
+    } else if (validated.read === "false") {
+      sql += " AND read = 0";
+    }
+
+    sql += " ORDER BY created_at DESC";
+
+    if (validated.limit) {
+      sql += " LIMIT ?";
+      params.push(parseInt(validated.limit, 10));
+    }
+
+    if (validated.offset) {
+      sql += " OFFSET ?";
+      params.push(parseInt(validated.offset, 10));
+    }
+
+    const notificationsRows = await db.all(sql, params);
+    const notifications = notificationsRows.map(rowToNotification);
+
+    res.json({
+      success: true,
+      data: notifications,
+      count: notifications.length,
+    });
+  })
+);
+
+/**
+ * GET /api/dashboard/notifications/:id
+ * Get notification by ID
+ */
+router.get(
+  "/notifications/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    logger.info({ notificationId: id }, "Fetching notification");
+
+    const notificationRow = await db.get(
+      "SELECT * FROM dashboard_notifications WHERE id = ?",
+      [id]
+    );
+    if (!notificationRow) {
+      throw new NotFoundError("Notification not found");
+    }
+
+    const notification = rowToNotification(notificationRow);
+
+    res.json({
+      success: true,
+      data: notification,
+    });
+  })
+);
+
+/**
+ * POST /api/dashboard/notifications
+ * Create a new notification
+ */
+router.post(
+  "/notifications",
+  asyncHandler(async (req: Request, res: Response) => {
+    const validated = createNotificationSchema.parse(req.body);
+
+    logger.info({ userId: validated.userId }, "Creating new notification");
+
+    const id = randomUUID();
+    const now = new Date().toISOString();
+
+    await db.run(
+      `INSERT INTO dashboard_notifications (
+        id, user_id, type, title, message, read, action_url, action_label, metadata, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        validated.userId,
+        validated.type,
+        validated.title,
+        validated.message,
+        validated.read ? 1 : 0,
+        validated.actionUrl ?? null,
+        validated.actionLabel ?? null,
+        validated.metadata ?? null,
+        now,
+      ]
+    );
+
+    const notificationRow = await db.get(
+      "SELECT * FROM dashboard_notifications WHERE id = ?",
+      [id]
+    );
+    if (!notificationRow) {
+      throw new NotFoundError("Notification not found after creation");
+    }
+
+    const notification = rowToNotification(notificationRow);
+
+    res.status(201).json({
+      success: true,
+      data: notification,
+    });
+  })
+);
+
+/**
+ * PUT /api/dashboard/notifications/:id
+ * Update a notification (mark as read/unread)
+ */
+router.put(
+  "/notifications/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const validated = updateNotificationSchema.parse(req.body);
+
+    logger.info({ notificationId: id }, "Updating notification");
+
+    const existing = await db.get(
+      "SELECT * FROM dashboard_notifications WHERE id = ?",
+      [id]
+    );
+    if (!existing) {
+      throw new NotFoundError("Notification not found");
+    }
+
+    const readAt = validated.read ? new Date().toISOString() : null;
+
+    await db.run(
+      "UPDATE dashboard_notifications SET read = ?, read_at = ? WHERE id = ?",
+      [validated.read ? 1 : 0, readAt, id]
+    );
+
+    const updatedRow = await db.get(
+      "SELECT * FROM dashboard_notifications WHERE id = ?",
+      [id]
+    );
+    if (!updatedRow) {
+      throw new NotFoundError("Notification not found after update");
+    }
+
+    const notification = rowToNotification(updatedRow);
+
+    res.json({
+      success: true,
+      data: notification,
+    });
+  })
+);
+
+/**
+ * DELETE /api/dashboard/notifications/:id
+ * Delete a notification
+ */
+router.delete(
+  "/notifications/:id",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    logger.info({ notificationId: id }, "Deleting notification");
+
+    const result = await db.run("DELETE FROM dashboard_notifications WHERE id = ?", [id]);
+    if (result.changes === 0) {
+      throw new NotFoundError("Notification not found");
+    }
+
+    res.json({
+      success: true,
+      message: "Notification deleted successfully",
+    });
+  })
+);
+
+// ============================================================================
+// WIDGETS STATS ROUTES
+// ============================================================================
+
+/**
+ * GET /api/dashboard/widgets/stats
+ * Get comprehensive stats for dashboard widgets
+ */
+router.get("/widgets/stats", (_req: Request, res: Response) => {
+  logger.info("Fetching widget stats");
+
+  const stats = {
+    sales: {
+      today: 15420,
+      yesterday: 12340,
+      thisWeek: 89760,
+      lastWeek: 78450,
+      trend: "+14.4%",
+    },
+    orders: {
+      total: 1248,
+      pending: 14,
+      processing: 23,
+      completed: 1211,
+      trend: "+8.2%",
+    },
+    customers: {
+      total: 328,
+      new: 12,
+      active: 287,
+      inactive: 41,
+      trend: "+3.8%",
+    },
+    inventory: {
+      totalItems: 1240,
+      lowStock: 8,
+      outOfStock: 2,
+      inStock: 1230,
+      trend: "-0.6%",
+    },
+    finance: {
+      revenue: 125340,
+      expenses: 45280,
+      profit: 80060,
+      margin: "63.9%",
+      trend: "+12.5%",
+    },
+  };
+
+  res.json({
+    success: true,
+    data: stats,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// ============================================================================
+// ACTIVITIES ROUTES
+// ============================================================================
+
+/**
+ * GET /api/dashboard/activities
+ * Get recent activities for dashboard
+ */
+router.get("/activities", (_req: Request, res: Response) => {
+  logger.info("Fetching recent activities");
+
+  const activities: ActivityItem[] = [
+    {
+      id: "1",
+      type: "order",
+      title: "New order received",
+      description: "Order #12345 from ACME Corp",
+      timestamp: new Date(Date.now() - 5 * 60000).toISOString(),
+      icon: "shopping-cart",
+      url: "/orders/12345",
+    },
+    {
+      id: "2",
+      type: "invoice",
+      title: "Invoice paid",
+      description: "Invoice #INV-2024-001 marked as paid",
+      timestamp: new Date(Date.now() - 15 * 60000).toISOString(),
+      icon: "file-text",
+      url: "/invoices/INV-2024-001",
+    },
+    {
+      id: "3",
+      type: "customer",
+      title: "New customer registered",
+      description: "GlobalTech Solutions joined",
+      timestamp: new Date(Date.now() - 30 * 60000).toISOString(),
+      icon: "user-plus",
+      url: "/customers/new",
+    },
+    {
+      id: "4",
+      type: "inventory",
+      title: "Low stock alert",
+      description: "Product XYZ-123 below threshold",
+      timestamp: new Date(Date.now() - 45 * 60000).toISOString(),
+      icon: "alert-triangle",
+      url: "/inventory/XYZ-123",
+    },
+    {
+      id: "5",
+      type: "task",
+      title: "Task completed",
+      description: "Monthly report generation finished",
+      timestamp: new Date(Date.now() - 60 * 60000).toISOString(),
+      icon: "check-circle",
+      url: "/tasks/report-monthly",
+    },
+  ];
+
+  res.json({
+    success: true,
+    data: activities,
+    count: activities.length,
+  });
+});
+
+// ============================================================================
+// QUICK LINKS ROUTES
+// ============================================================================
+
+/**
+ * GET /api/dashboard/quick-links
+ * Get quick links for dashboard
+ */
+router.get("/quick-links", (_req: Request, res: Response) => {
+  logger.info("Fetching quick links");
+
+  const quickLinks = [
+    {
+      id: "orders",
+      title: "Orders",
+      description: "Manage customer orders",
+      icon: "shopping-cart",
+      url: "/orders",
+      category: "sales",
+    },
+    {
+      id: "invoices",
+      title: "Invoices",
+      description: "View and create invoices",
+      icon: "file-text",
+      url: "/invoices",
+      category: "finance",
+    },
+    {
+      id: "customers",
+      title: "Customers",
+      description: "Customer management",
+      icon: "users",
+      url: "/customers",
+      category: "crm",
+    },
+    {
+      id: "inventory",
+      title: "Inventory",
+      description: "Stock management",
+      icon: "package",
+      url: "/inventory",
+      category: "warehouse",
+    },
+    {
+      id: "reports",
+      title: "Reports",
+      description: "Analytics and reports",
+      icon: "bar-chart",
+      url: "/reports",
+      category: "analytics",
+    },
+    {
+      id: "settings",
+      title: "Settings",
+      description: "System configuration",
+      icon: "settings",
+      url: "/settings",
+      category: "admin",
+    },
+  ];
+
+  res.json({
+    success: true,
+    data: quickLinks,
+    count: quickLinks.length,
+  });
+});
+
+export default router;

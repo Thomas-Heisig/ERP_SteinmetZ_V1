@@ -38,8 +38,8 @@
  */
 
 import { Request, Response, NextFunction } from "express";
-import { AuthService } from "../services/authService.js";
-import type { AuthContext } from "../types/auth.js";
+import { AuthService } from "../routes/auth/authService.js";
+import type { AuthContext } from "../routes/auth/auth.js";
 import {
   sendUnauthorized,
   sendForbidden,
