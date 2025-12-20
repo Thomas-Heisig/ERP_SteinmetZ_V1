@@ -87,8 +87,14 @@ export interface ProviderStatus {
   provider: ChatProvider;
   /** Is provider available */
   available: boolean;
+  /** Provider status */
+  status: "online" | "offline" | "error" | "unknown";
   /** Status message */
   message?: string;
+  /** Response latency in ms */
+  latency?: number;
+  /** Last check timestamp */
+  lastChecked: string;
 }
 
 /**

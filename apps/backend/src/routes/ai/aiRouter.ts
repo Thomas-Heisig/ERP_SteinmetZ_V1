@@ -82,6 +82,7 @@ import {
 } from "./services/settingsService.js";
 import { transcribeAudio } from "./services/audioService.js";
 import { translateText } from "./services/translationService.js";
+import { providerManager } from "./services/providerManager.js";
 
 // Health Router
 import healthRouter from "./healthRouter.js";
@@ -200,7 +201,13 @@ router.post(
     session.messages.push(inbound);
 
     const cleanMessages = sanitizeMessages(session.messages);
-    const aiResponse = await generateAIResponse(session.model, cleanMessages);
+    
+    // Use provider manager for intelligent provider selection and fallback
+    const aiResponse = await providerManager.sendMessage(
+      cleanMessages,
+      session.provider, // Use session's preferred provider
+      session.model
+    );
 
     const responseText =
       typeof aiResponse === "object" && "text" in aiResponse
@@ -216,7 +223,11 @@ router.post(
     session.messages.push(outbound);
     session.updatedAt = nowISO();
 
-    log("info", "KI-Antwort generiert", { sessionId: session.id });
+    log("info", "KI-Antwort generiert", { 
+      sessionId: session.id, 
+      provider: aiResponse.provider,
+      model: aiResponse.model
+    });
     res.json({ success: true, response: outbound });
   }),
 );
@@ -226,11 +237,89 @@ router.get("/sessions", (_req, res) => {
   res.json({ success: true, sessions: Array.from(chatSessions.values()) });
 });
 
+// Neue Session erstellen (für QuickChat frontend)
+router.post(
+  "/sessions",
+  aiRateLimiter,
+  asyncHandler(async (req, res) => {
+    const { model, provider } = req.body;
+    const session = await createSession(model || "qwen2.5:3b", provider || "ollama");
+    res.json({ success: true, session });
+  }),
+);
+
+// Session-Details abrufen
+router.get(
+  "/sessions/:id",
+  asyncHandler(async (req, res) => {
+    const session = getSession(req.params.id);
+    if (!session) throw new NotFoundError("Session nicht gefunden");
+    res.json({ success: true, session });
+  }),
+);
+
+// Nachricht an Session senden (QuickChat frontend endpoint)
+router.post(
+  "/sessions/:id/messages",
+  aiRateLimiter,
+  asyncHandler(async (req, res) => {
+    const session = getSession(req.params.id);
+    if (!session) throw new NotFoundError("Session nicht gefunden");
+
+    const validated = chatMessageSchema.parse(req.body);
+    const message = validated.message.trim();
+
+    const inbound: ChatMessage = {
+      role: "user",
+      content: message,
+      timestamp: nowISO(),
+    };
+    session.messages.push(inbound);
+
+    const cleanMessages = sanitizeMessages(session.messages);
+    
+    // Use provider manager for intelligent provider selection and fallback
+    const aiResponse = await providerManager.sendMessage(
+      cleanMessages,
+      session.provider,
+      session.model
+    );
+
+    const responseText =
+      typeof aiResponse === "object" && "text" in aiResponse
+        ? aiResponse.text
+        : String(aiResponse);
+
+    const outbound: ChatMessage = {
+      role: "assistant",
+      content: responseText,
+      timestamp: nowISO(),
+    };
+
+    session.messages.push(outbound);
+    session.updatedAt = nowISO();
+
+    log("info", "KI-Antwort generiert", { 
+      sessionId: session.id, 
+      provider: aiResponse.provider,
+      model: aiResponse.model
+    });
+    
+    // Return response in format expected by frontend
+    res.json({ 
+      success: true, 
+      message: responseText,
+      provider: aiResponse.provider,
+      model: aiResponse.model
+    });
+  }),
+);
+
 // Session löschen
 router.delete(
-  "/chat/:sessionId",
+  "/sessions/:id",
   asyncHandler(async (req, res) => {
-    const ok = removeSession(req.params.sessionId);
+    const ok = removeSession(req.params.id);
     if (!ok) throw new NotFoundError("Session nicht gefunden");
     res.json({ success: true, message: "Session gelöscht" });
   }),
@@ -351,8 +440,36 @@ router.get("/status", (_req, res) => {
 });
 
 /* ========================================================================== */
-/* 🏥 Provider Health Checks                                                  */
+/* 🏥 Provider Status & Health Checks                                         */
 /* ========================================================================== */
+
+// Get provider status (for QuickChat traffic light indicator)
+router.get(
+  "/providers",
+  asyncHandler(async (_req, res) => {
+    const providers = await providerManager.getProviderStatus();
+    res.json({ success: true, providers });
+  }),
+);
+
+// Get system status with provider information
+router.get(
+  "/system/status",
+  asyncHandler(async (_req, res) => {
+    const providers = await providerManager.getProviderStatus();
+    const activeProvider = providers.find(p => p.available)?.provider || "none";
+    
+    res.json({
+      success: true,
+      timestamp: nowISO(),
+      modelCount: getModelOverview().length,
+      toolCount: toolRegistry.count(),
+      systemStatus: providers.some(p => p.available) ? "healthy" : "degraded",
+      activeProvider,
+      fallbackEnabled: true,
+    });
+  }),
+);
 
 router.use("/health", healthRouter);
 

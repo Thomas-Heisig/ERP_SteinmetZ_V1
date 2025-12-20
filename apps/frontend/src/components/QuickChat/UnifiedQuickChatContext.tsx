@@ -76,6 +76,7 @@ export const UnifiedQuickChatProvider: React.FC<
     null,
   );
   const [models, setModels] = useState<AIModel[]>([]);
+  const [providers, setProviders] = useState<ProviderStatus[]>([]);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -324,10 +325,12 @@ export const UnifiedQuickChatProvider: React.FC<
   /**
    * Get provider status
    */
-  const getProviders = useCallback(async (): Promise<ProviderStatus[]> => {
+  const loadProviders = useCallback(async (): Promise<ProviderStatus[]> => {
     try {
       const data = await apiCall<{ providers: ProviderStatus[] }>("/providers");
-      return data.providers || [];
+      const loadedProviders = data.providers || [];
+      setProviders(loadedProviders);
+      return loadedProviders;
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to load providers";
@@ -385,7 +388,15 @@ export const UnifiedQuickChatProvider: React.FC<
   useEffect(() => {
     loadSessions();
     loadModels();
-  }, [loadSessions, loadModels]);
+    loadProviders();
+    
+    // Refresh provider status every 30 seconds
+    const interval = setInterval(() => {
+      loadProviders();
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, [loadSessions, loadModels, loadProviders]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -400,6 +411,7 @@ export const UnifiedQuickChatProvider: React.FC<
     sessions,
     currentSession,
     models,
+    providers,
     settings,
     loading,
     error,
@@ -410,7 +422,7 @@ export const UnifiedQuickChatProvider: React.FC<
     sendMessage,
     streamMessage,
     loadModels,
-    getProviders,
+    getProviders: loadProviders,
     updateSettings,
     getSystemStatus,
     clearError,
