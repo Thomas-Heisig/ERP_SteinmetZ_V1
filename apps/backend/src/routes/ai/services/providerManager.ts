@@ -231,8 +231,10 @@ export class ProviderManager {
     logger.error("All providers failed, using basic fallback");
     return {
       text: "Es tut mir leid, derzeit sind keine KI-Provider verfügbar. Bitte versuchen Sie es später erneut.",
-      provider: "fallback",
-      model: "none",
+      meta: {
+        provider: "fallback",
+        model: "none",
+      }
     };
   }
 
@@ -279,15 +281,16 @@ export class ProviderManager {
         return await elizaProvider.respond(messages);
 
       case "fallback":
-        const lastMessage = messages[messages.length - 1];
         const response = await generateAIResponse(
           model || "fallback",
           messages
         );
         return {
           text: typeof response === "string" ? response : response.text,
-          provider: "fallback",
-          model: model || "fallback",
+          meta: {
+            provider: "fallback",
+            model: model || "fallback",
+          }
         };
 
       default:

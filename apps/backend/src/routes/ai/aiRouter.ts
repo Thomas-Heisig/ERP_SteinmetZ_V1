@@ -225,8 +225,8 @@ router.post(
 
     log("info", "KI-Antwort generiert", { 
       sessionId: session.id, 
-      provider: aiResponse.provider,
-      model: aiResponse.model
+      provider: aiResponse.meta?.provider,
+      model: aiResponse.meta?.model
     });
     res.json({ success: true, response: outbound });
   }),
@@ -301,16 +301,16 @@ router.post(
 
     log("info", "KI-Antwort generiert", { 
       sessionId: session.id, 
-      provider: aiResponse.provider,
-      model: aiResponse.model
+      provider: aiResponse.meta?.provider,
+      model: aiResponse.meta?.model
     });
     
     // Return response in format expected by frontend
     res.json({ 
       success: true, 
       message: responseText,
-      provider: aiResponse.provider,
-      model: aiResponse.model
+      provider: aiResponse.meta?.provider,
+      model: aiResponse.meta?.model
     });
   }),
 );
