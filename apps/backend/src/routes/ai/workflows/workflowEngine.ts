@@ -12,7 +12,13 @@ import { ConversationContext } from "../context/conversationContext.js";
 import { log } from "../utils/logger.js";
 import { sanitizeString } from "../utils/helpers.js"; // <- sleep entfernt
 import { validateSchema, logValidationErrors } from "../utils/validation.js";
-import type { WorkflowDefinition, WorkflowStep } from "../types/types.js";
+import type {
+  WorkflowDefinition,
+  WorkflowStep,
+  WorkflowInput,
+  WorkflowResult,
+  WorkflowContext,
+} from "../types/types.js";
 import fs from "fs";
 import path from "path";
 
@@ -136,9 +142,9 @@ export class WorkflowEngine {
   private normalizeWorkflowStep(step: WorkflowStep): WorkflowStep {
     const normalized: WorkflowStep = { ...step };
 
-    // Legacy: action -> tool, ohne Typfehler
-    if ((normalized as any).action && !normalized.tool) {
-      normalized.tool = (normalized as any).action as string;
+    // Legacy: action -> tool (proper type handling)
+    if (normalized.action && !normalized.tool) {
+      normalized.tool = normalized.action;
       log("debug", `Konvertiere action → tool (${normalized.tool})`);
     }
 
@@ -183,9 +189,9 @@ export class WorkflowEngine {
    * ───────────────────────────────────────────── */
   async executeWorkflow(
     name: string,
-    input: Record<string, any> = {},
+    input: WorkflowInput = {},
     debug = false,
-  ): Promise<any> {
+  ): Promise<WorkflowResult> {
     const wf = this.workflows.get(name);
     if (!wf) {
       throw new Error(
@@ -193,14 +199,14 @@ export class WorkflowEngine {
       );
     }
 
-    const contextVars: Record<string, any> = {
+    const contextVars: WorkflowContext = {
       input,
       last_result: null,
       timestamp: new Date().toISOString().replace(/[:.]/g, "-"),
     };
-    const results: any[] = [];
+    const results: WorkflowResult[] = [];
 
-    const dlog = (msg: string, data?: any) => {
+    const dlog = (msg: string, data?: unknown) => {
       if (debug) logger.debug({ workflowName: name, data }, msg);
     };
 
@@ -227,14 +233,15 @@ export class WorkflowEngine {
         if (result !== undefined) {
           results.push({ step: stepDesc, result });
         }
-      } catch (err: any) {
-        dlog(`❌ Fehler in Schritt ${stepNumber}: ${err.message}`);
+      } catch (err: unknown) {
+        const error = err instanceof Error ? err : new Error(String(err));
+        dlog(`❌ Fehler in Schritt ${stepNumber}: ${error.message}`);
 
         log("error", `Fehler in Workflow-Schritt`, {
           workflow: name,
           step_number: stepNumber,
           step_type: step.type,
-          error: err.message,
+          error: error.message,
         });
 
         const errorMode = wf.on_error ?? "stop";
@@ -272,11 +279,11 @@ export class WorkflowEngine {
    * ───────────────────────────────────────────── */
   private async executeSingleStep(
     step: WorkflowStep,
-    contextVars: Record<string, any>,
+    contextVars: WorkflowContext,
     workflowName: string,
     debug = false,
-  ): Promise<any> {
-    const dlog = (msg: string, data?: any) => {
+  ): Promise<WorkflowResult> {
+    const dlog = (msg: string, data?: unknown) => {
       if (debug) logger.debug({ workflowName, data }, msg);
     };
 
