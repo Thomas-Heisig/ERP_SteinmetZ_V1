@@ -38,15 +38,43 @@ This directory contains detailed documentation for all ERP SteinmetZ modules.
 
 - **[Documents](./documents/README.md)** - Document management system
 
+- **[CRM](./crm/README.md)** - Customer Relationship Management
+
+- **[Sales](./sales/README.md)** - Sales management and order processing
+
+- **[Marketing](./marketing-automation/README.md)** - Marketing automation and campaigns
+
+- **[Inventory](./inventory/README.md)** - Inventory and stock management
+
+- **[Procurement](./procurement/README.md)** - Purchase orders and supplier management
+
+- **[Production](./production/README.md)** - Manufacturing and production management
+
+- **[Warehouse](./warehouse/README.md)** - Warehouse management system (WMS)
+
+- **[Projects](./projects/README.md)** - Project management and tracking
+
+- **[Business](./business/README.md)** - Core business settings and organization
+
 ### System & Integration
 
 - **[Auth](./auth/README.md)** - Authentication and authorization
 
 - **[Calendar](./calendar/README.md)** - Calendar and scheduling
 
+- **[Communication](./communication/README.md)** - Email and messaging system
+
 - **[Diagnostics](./diagnostics/README.md)** - System diagnostics and health checks
 
+- **[Monitoring](./monitoring/README.md)** - System health and performance monitoring
+
+- **[Metrics](./metrics/README.md)** - KPI tracking and business metrics
+
 - **[System Info](./system-info/README.md)** - System information and status
+
+- **[Search Analytics](./search-analytics/README.md)** - Search behavior analytics
+
+- **[Reporting](./reporting/README.md)** - Business intelligence and reporting
 
 - **[Geschäftsverwaltung (Business Management)](./GESCHAEFTSVERWALTUNG_MODULE.md)** - Business management module (German)
 
@@ -65,6 +93,15 @@ This directory contains detailed documentation for all ERP SteinmetZ modules.
 - [Finance](./finance/README.md)
 - [HR](./hr/README.md)
 - [Documents](./documents/README.md)
+- [CRM](./crm/README.md)
+- [Sales](./sales/README.md)
+- [Marketing](./marketing-automation/README.md)
+- [Inventory](./inventory/README.md)
+- [Procurement](./procurement/README.md)
+- [Production](./production/README.md)
+- [Warehouse](./warehouse/README.md)
+- [Projects](./projects/README.md)
+- [Business](./business/README.md)
 - [Innovation](./innovation/README.md)
 
 **Dashboard & Analytics:**
@@ -76,8 +113,13 @@ This directory contains detailed documentation for all ERP SteinmetZ modules.
 
 - [Auth](./auth/README.md)
 - [Calendar](./calendar/README.md)
+- [Communication](./communication/README.md)
 - [Diagnostics](./diagnostics/README.md)
+- [Monitoring](./monitoring/README.md)
+- [Metrics](./metrics/README.md)
 - [System Info](./system-info/README.md)
+- [Search Analytics](./search-analytics/README.md)
+- [Reporting](./reporting/README.md)
 
 ## Documentation Standards
 
