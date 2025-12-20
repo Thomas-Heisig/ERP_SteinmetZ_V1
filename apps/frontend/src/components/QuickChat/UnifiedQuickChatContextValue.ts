@@ -27,6 +27,7 @@ export interface UnifiedQuickChatContextValue {
   sessions: ChatSession[];
   currentSession: ChatSession | null;
   models: AIModel[];
+  providers: ProviderStatus[];
   settings: Settings;
   loading: boolean;
   error: string | null;

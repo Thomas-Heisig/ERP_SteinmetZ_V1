@@ -18,6 +18,8 @@ import React, {
   useMemo,
 } from "react";
 import { useUnifiedQuickChat } from "./useUnifiedQuickChat";
+import { ProviderStatusIndicator } from "./ProviderStatusIndicator";
+import { APIKeySettings } from "./APIKeySettings";
 import styles from "./UnifiedQuickChat.module.css";
 import type {
   TabName,
@@ -56,6 +58,7 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
     sessions,
     currentSession,
     models,
+    providers,
     settings,
     loading,
     error,
@@ -228,6 +231,7 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
                           : "Bereit"}
                   </span>
                 </div>
+                <ProviderStatusIndicator providers={providers} compact />
               </div>
             </div>
           </div>
@@ -474,12 +478,19 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
                       className={styles.settingInput}
                     />
                   </div>
+
+                  <hr className={styles.divider} />
+
+                  <APIKeySettings />
                 </div>
               )}
 
               {activeTab === "info" && (
                 <div className={styles.infoTab}>
                   <h3>System Information</h3>
+                  
+                  <ProviderStatusIndicator providers={providers} />
+                  
                   <div className={styles.infoCard}>
                     <h4>Provider Konfiguration</h4>
                     <p>

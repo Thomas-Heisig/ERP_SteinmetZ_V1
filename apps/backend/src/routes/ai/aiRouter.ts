@@ -82,6 +82,15 @@ import {
 } from "./services/settingsService.js";
 import { transcribeAudio } from "./services/audioService.js";
 import { translateText } from "./services/translationService.js";
+import { providerManager } from "./services/providerManager.js";
+import {
+  loadAPIKeys,
+  saveAPIKeys,
+  updateAPIKey,
+  deleteAPIKey,
+  validateAPIKey,
+  getSanitizedAPIKeys,
+} from "./services/apiKeyService.js";
 
 // Health Router
 import healthRouter from "./healthRouter.js";
@@ -200,7 +209,13 @@ router.post(
     session.messages.push(inbound);
 
     const cleanMessages = sanitizeMessages(session.messages);
-    const aiResponse = await generateAIResponse(session.model, cleanMessages);
+    
+    // Use provider manager for intelligent provider selection and fallback
+    const aiResponse = await providerManager.sendMessage(
+      cleanMessages,
+      session.provider, // Use session's preferred provider
+      session.model
+    );
 
     const responseText =
       typeof aiResponse === "object" && "text" in aiResponse
@@ -216,7 +231,11 @@ router.post(
     session.messages.push(outbound);
     session.updatedAt = nowISO();
 
-    log("info", "KI-Antwort generiert", { sessionId: session.id });
+    log("info", "KI-Antwort generiert", { 
+      sessionId: session.id, 
+      provider: aiResponse.meta?.provider,
+      model: aiResponse.meta?.model
+    });
     res.json({ success: true, response: outbound });
   }),
 );
@@ -226,11 +245,89 @@ router.get("/sessions", (_req, res) => {
   res.json({ success: true, sessions: Array.from(chatSessions.values()) });
 });
 
+// Neue Session erstellen (für QuickChat frontend)
+router.post(
+  "/sessions",
+  aiRateLimiter,
+  asyncHandler(async (req, res) => {
+    const { model, provider } = req.body;
+    const session = await createSession(model || "qwen2.5:3b", provider || "ollama");
+    res.json({ success: true, session });
+  }),
+);
+
+// Session-Details abrufen
+router.get(
+  "/sessions/:id",
+  asyncHandler(async (req, res) => {
+    const session = getSession(req.params.id);
+    if (!session) throw new NotFoundError("Session nicht gefunden");
+    res.json({ success: true, session });
+  }),
+);
+
+// Nachricht an Session senden (QuickChat frontend endpoint)
+router.post(
+  "/sessions/:id/messages",
+  aiRateLimiter,
+  asyncHandler(async (req, res) => {
+    const session = getSession(req.params.id);
+    if (!session) throw new NotFoundError("Session nicht gefunden");
+
+    const validated = chatMessageSchema.parse(req.body);
+    const message = validated.message.trim();
+
+    const inbound: ChatMessage = {
+      role: "user",
+      content: message,
+      timestamp: nowISO(),
+    };
+    session.messages.push(inbound);
+
+    const cleanMessages = sanitizeMessages(session.messages);
+    
+    // Use provider manager for intelligent provider selection and fallback
+    const aiResponse = await providerManager.sendMessage(
+      cleanMessages,
+      session.provider,
+      session.model
+    );
+
+    const responseText =
+      typeof aiResponse === "object" && "text" in aiResponse
+        ? aiResponse.text
+        : String(aiResponse);
+
+    const outbound: ChatMessage = {
+      role: "assistant",
+      content: responseText,
+      timestamp: nowISO(),
+    };
+
+    session.messages.push(outbound);
+    session.updatedAt = nowISO();
+
+    log("info", "KI-Antwort generiert", { 
+      sessionId: session.id, 
+      provider: aiResponse.meta?.provider,
+      model: aiResponse.meta?.model
+    });
+    
+    // Return response in format expected by frontend
+    res.json({ 
+      success: true, 
+      message: responseText,
+      provider: aiResponse.meta?.provider,
+      model: aiResponse.meta?.model
+    });
+  }),
+);
+
 // Session löschen
 router.delete(
-  "/chat/:sessionId",
+  "/sessions/:id",
   asyncHandler(async (req, res) => {
-    const ok = removeSession(req.params.sessionId);
+    const ok = removeSession(req.params.id);
     if (!ok) throw new NotFoundError("Session nicht gefunden");
     res.json({ success: true, message: "Session gelöscht" });
   }),
@@ -297,6 +394,96 @@ router.patch(
 );
 
 /* ========================================================================== */
+/* 🔑 API Key Management                                                      */
+/* ========================================================================== */
+
+// Get sanitized API keys (for display only)
+router.get(
+  "/api-keys",
+  asyncHandler(async (_req, res) => {
+    const keys = await getSanitizedAPIKeys();
+    res.json({ success: true, keys });
+  }),
+);
+
+// Update an API key
+router.put(
+  "/api-keys/:provider",
+  asyncHandler(async (req, res) => {
+    const { provider } = req.params;
+    const { value } = req.body;
+
+    if (!value) {
+      throw new BadRequestError("API key value is required");
+    }
+
+    // Validate based on provider
+    if (provider === "azure") {
+      if (!value.apiKey || !value.endpoint) {
+        throw new BadRequestError("Azure requires both apiKey and endpoint");
+      }
+      if (!validateAPIKey(provider, value.apiKey)) {
+        throw new BadRequestError("Invalid Azure API key format");
+      }
+    } else {
+      if (!validateAPIKey(provider, value)) {
+        throw new BadRequestError(`Invalid ${provider} API key format`);
+      }
+    }
+
+    await updateAPIKey(provider, value);
+    res.json({ success: true, message: "API key updated successfully" });
+  }),
+);
+
+// Delete an API key
+router.delete(
+  "/api-keys/:provider",
+  asyncHandler(async (req, res) => {
+    const { provider } = req.params;
+    await deleteAPIKey(provider);
+    res.json({ success: true, message: "API key deleted successfully" });
+  }),
+);
+
+// Test an API key connection
+router.post(
+  "/api-keys/:provider/test",
+  asyncHandler(async (req, res) => {
+    const { provider } = req.params;
+    
+    // For now, just validate the format
+    // In production, this would actually test the connection
+    const keys = await loadAPIKeys();
+    let isValid = false;
+    
+    switch (provider) {
+      case "openai":
+        isValid = !!keys.openai && validateAPIKey(provider, keys.openai);
+        break;
+      case "anthropic":
+        isValid = !!keys.anthropic && validateAPIKey(provider, keys.anthropic);
+        break;
+      case "azure":
+        isValid = !!keys.azure?.apiKey && validateAPIKey(provider, keys.azure.apiKey);
+        break;
+      case "huggingface":
+        isValid = !!keys.huggingface && validateAPIKey(provider, keys.huggingface);
+        break;
+      default:
+        isValid = !!keys.custom?.[provider];
+    }
+    
+    res.json({
+      success: true,
+      provider,
+      valid: isValid,
+      message: isValid ? "API key is valid" : "API key not configured or invalid",
+    });
+  }),
+);
+
+/* ========================================================================== */
 /* 🧠 Tools & Workflows                                                       */
 /* ========================================================================== */
 
@@ -351,8 +538,36 @@ router.get("/status", (_req, res) => {
 });
 
 /* ========================================================================== */
-/* 🏥 Provider Health Checks                                                  */
+/* 🏥 Provider Status & Health Checks                                         */
 /* ========================================================================== */
+
+// Get provider status (for QuickChat traffic light indicator)
+router.get(
+  "/providers",
+  asyncHandler(async (_req, res) => {
+    const providers = await providerManager.getProviderStatus();
+    res.json({ success: true, providers });
+  }),
+);
+
+// Get system status with provider information
+router.get(
+  "/system/status",
+  asyncHandler(async (_req, res) => {
+    const providers = await providerManager.getProviderStatus();
+    const activeProvider = providers.find(p => p.available)?.provider || "none";
+    
+    res.json({
+      success: true,
+      timestamp: nowISO(),
+      modelCount: getModelOverview().length,
+      toolCount: toolRegistry.count(),
+      systemStatus: providers.some(p => p.available) ? "healthy" : "degraded",
+      activeProvider,
+      fallbackEnabled: true,
+    });
+  }),
+);
 
 router.use("/health", healthRouter);
 
