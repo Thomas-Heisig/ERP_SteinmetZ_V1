@@ -20,12 +20,12 @@
 ### Using DatabaseRouterFactory (Recommended)
 
 ```typescript
-import { DatabaseRouterFactory } from './database/index.js';
+import { DatabaseRouterFactory } from "./database/index.js";
 
-const factory = new DatabaseRouterFactory('users');
+const factory = new DatabaseRouterFactory("users");
 
-factory.get('/', async (req, res, db) => {
-  const users = await db.query('SELECT * FROM users');
+factory.get("/", async (req, res, db) => {
+  const users = await db.query("SELECT * FROM users");
   res.json(users);
 });
 
@@ -35,13 +35,13 @@ export default factory.getRouter();
 ### Using DatabaseManager Directly
 
 ```typescript
-import { DatabaseManager } from './database/index.js';
+import { DatabaseManager } from "./database/index.js";
 
 // Initialize on app startup
 await DatabaseManager.initialize();
 
 // Use in routes
-const users = await DatabaseManager.query('SELECT * FROM users');
+const users = await DatabaseManager.query("SELECT * FROM users");
 ```
 
 ---
@@ -51,7 +51,7 @@ const users = await DatabaseManager.query('SELECT * FROM users');
 ### ✨ New Components
 
 | Component | Purpose | Status |
-|-----------|---------|--------|
+| --------- | ------- | ------ |
 
 | **DatabaseManager.ts** | Singleton with lazy initialization | ✅ Ready |
 | **DatabaseRouterFactory.ts** | Express router with DB context | ✅ Ready |
@@ -62,7 +62,7 @@ const users = await DatabaseManager.query('SELECT * FROM users');
 ### 📚 Documentation
 
 | Document | Focus |
-|----------|-------|
+| -------- | ----- |
 
 | **IMPROVEMENTS.md** | Complete API reference with examples |
 | **REDESIGN_SUMMARY.md** | Feature comparison and migration guide |
@@ -72,7 +72,7 @@ const users = await DatabaseManager.query('SELECT * FROM users');
 ### 🔧 Core Services
 
 | File | Purpose |
-|------|---------|
+| ---- | ------- |
 
 | **dbService.ts** | Main database implementation |
 | **database.ts** | Type definitions (unified) |
@@ -89,10 +89,10 @@ No more "Database not initialized" errors!
 
 ```typescript
 // Safe to import and use at any time
-import { DatabaseManager } from './database/index.js';
+import { DatabaseManager } from "./database/index.js";
 
 // Automatically initializes on first use
-const users = await DatabaseManager.query('SELECT * FROM users');
+const users = await DatabaseManager.query("SELECT * FROM users");
 ```
 
 ### 2. **Router Integration** ✨
@@ -100,11 +100,11 @@ const users = await DatabaseManager.query('SELECT * FROM users');
 Express routers with automatic database context
 
 ```typescript
-const factory = new DatabaseRouterFactory('resource');
+const factory = new DatabaseRouterFactory("resource");
 
-factory.get('/', async (req, res, db) => {
+factory.get("/", async (req, res, db) => {
   // db is automatically injected and initialized
-  const items = await db.query('SELECT * FROM items');
+  const items = await db.query("SELECT * FROM items");
   res.json(items);
 });
 ```
@@ -117,14 +117,14 @@ import {
   buildWhereClause,
   formatDatabaseError,
   retryOperation,
-  batchOperations
-} from './database/index.js';
+  batchOperations,
+} from "./database/index.js";
 
 // Pagination
 const { page, limit, offset } = parsePagination(req);
 
 // WHERE clause
-const { where, params } = buildWhereClause({ status: 'active' });
+const { where, params } = buildWhereClause({ status: "active" });
 
 // Error handling
 const formatted = formatDatabaseError(error);
@@ -147,7 +147,7 @@ interface User {
   email: string;
 }
 
-const users = await db.query<User>('SELECT * FROM users');
+const users = await db.query<User>("SELECT * FROM users");
 // users is typed as User[]
 ```
 
@@ -156,10 +156,10 @@ const users = await db.query<User>('SELECT * FROM users');
 User-friendly error messages
 
 ```typescript
-import { formatDatabaseError } from './database/index.js';
+import { formatDatabaseError } from "./database/index.js";
 
 try {
-  await db.execute('INSERT INTO users...');
+  await db.execute("INSERT INTO users...");
 } catch (error) {
   const formatted = formatDatabaseError(error);
   // Handles UNIQUE constraint, FOREIGN KEY, NOT NULL, etc.
@@ -237,7 +237,7 @@ DATABASE_URL=postgresql://user:pass@host/db
 ### Application Startup
 
 ```typescript
-import { initializeDatabase } from './bootstrap-database.js';
+import { initializeDatabase } from "./bootstrap-database.js";
 
 async function start() {
   // Initialize database first
@@ -245,7 +245,7 @@ async function start() {
 
   // Then setup app
   app.use(middleware);
-  app.use('/api', routes);
+  app.use("/api", routes);
 
   // Start server
   app.listen(3000);
@@ -259,15 +259,15 @@ start().catch(console.error);
 ## 🧪 Testing
 
 ```typescript
-import { DatabaseManager } from './database/index.js';
+import { DatabaseManager } from "./database/index.js";
 
-describe('API Endpoints', () => {
+describe("API Endpoints", () => {
   beforeAll(async () => {
     await DatabaseManager.initialize();
   });
 
-  it('should fetch users', async () => {
-    const users = await DatabaseManager.query('SELECT * FROM users');
+  it("should fetch users", async () => {
+    const users = await DatabaseManager.query("SELECT * FROM users");
     expect(users).toBeInstanceOf(Array);
   });
 });
@@ -280,22 +280,26 @@ describe('API Endpoints', () => {
 ### Example 1: Users Router
 
 ```typescript
-import { DatabaseRouterFactory, parsePagination, createPaginatedResult } from './database/index.js';
+import {
+  DatabaseRouterFactory,
+  parsePagination,
+  createPaginatedResult,
+} from "./database/index.js";
 
-const factory = new DatabaseRouterFactory('users');
+const factory = new DatabaseRouterFactory("users");
 
-factory.get('/', async (req, res, db) => {
+factory.get("/", async (req, res, db) => {
   const { page, limit, offset } = parsePagination(req);
-  
-  const users = await db.query(
-    'SELECT * FROM users LIMIT ? OFFSET ?',
-    [limit, offset]
+
+  const users = await db.query("SELECT * FROM users LIMIT ? OFFSET ?", [
+    limit,
+    offset,
+  ]);
+
+  const total = await db.queryOne<{ count: number }>(
+    "SELECT COUNT(*) as count FROM users",
   );
-  
-  const total = await db.queryOne<{count: number}>(
-    'SELECT COUNT(*) as count FROM users'
-  );
-  
+
   const result = createPaginatedResult(users, total?.count || 0, page, limit);
   res.json(result);
 });
@@ -306,19 +310,16 @@ export default factory.getRouter();
 ### Example 2: Search with Filters
 
 ```typescript
-factory.get('/search', async (req, res, db) => {
-  import { buildWhereClause } from './database/index.js';
-  
+factory.get("/search", async (req, res, db) => {
+  import { buildWhereClause } from "./database/index.js";
+
   const { where, params } = buildWhereClause({
     status: req.query.status as string,
     role: req.query.role as string,
   });
-  
-  const users = await db.query(
-    `SELECT * FROM users ${where}`,
-    params
-  );
-  
+
+  const users = await db.query(`SELECT * FROM users ${where}`, params);
+
   res.json(users);
 });
 ```
@@ -326,13 +327,13 @@ factory.get('/search', async (req, res, db) => {
 ### Example 3: Error Handling
 
 ```typescript
-factory.post('/users', async (req, res, db) => {
-  import { formatDatabaseError } from './database/index.js';
-  
+factory.post("/users", async (req, res, db) => {
+  import { formatDatabaseError } from "./database/index.js";
+
   try {
     const result = await db.execute(
-      'INSERT INTO users (name, email) VALUES (?, ?)',
-      [req.body.name, req.body.email]
+      "INSERT INTO users (name, email) VALUES (?, ?)",
+      [req.body.name, req.body.email],
     );
     res.status(201).json({ id: result.lastID });
   } catch (error) {
@@ -367,7 +368,7 @@ const db = DatabaseManager.getDatabase();
 
 ```typescript
 // ✅ CORRECT
-factory.get('/', async (req, res, db) => {
+factory.get("/", async (req, res, db) => {
   // db is automatically injected
   const data = await db.query(sql);
 });
@@ -380,7 +381,7 @@ factory.get('/', async (req, res, db) => {
 
 ```typescript
 // ✅ TYPE SAFE
-const users = await db.query<User>('SELECT * FROM users');
+const users = await db.query<User>("SELECT * FROM users");
 ```
 
 ---
@@ -391,8 +392,8 @@ const users = await db.query<User>('SELECT * FROM users');
 
    ```typescript
    // ✅ SAFE
-   await db.query('SELECT * FROM users WHERE id = ?', [userId]);
-   
+   await db.query("SELECT * FROM users WHERE id = ?", [userId]);
+
    // ❌ UNSAFE
    await db.query(`SELECT * FROM users WHERE id = '${userId}'`);
    ```
@@ -400,7 +401,7 @@ const users = await db.query<User>('SELECT * FROM users');
 2. **Use safeIdentifier() for table names**
 
    ```typescript
-   const table = safeIdentifier('users'); // Validates name
+   const table = safeIdentifier("users"); // Validates name
    ```
 
 3. **Handle errors without leaking info**
@@ -445,7 +446,7 @@ const users = await db.query<User>('SELECT * FROM users');
 ## 📞 Support Resources
 
 | Topic | Resource |
-|-------|----------|
+| ----- | -------- |
 
 | **Detailed Usage** | [IMPROVEMENTS.md](./IMPROVEMENTS.md) |
 | **Architecture** | [ARCHITECTURE.md](./ARCHITECTURE.md) |
@@ -463,7 +464,7 @@ const users = await db.query<User>('SELECT * FROM users');
 ✨ **Unified Types** - All types in database.ts  
 ✨ **Comprehensive Docs** - 4 detailed guides  
 ✨ **Error Handling** - formatDatabaseError() utility  
-✨ **Type Safety** - Zero any types in public API  
+✨ **Type Safety** - Zero any types in public API
 
 ---
 

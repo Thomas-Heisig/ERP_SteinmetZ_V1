@@ -47,7 +47,7 @@ Das Document Management System (DMS) bietet umfassende Funktionen für die Verwa
 ✅ **E-Signature** - Elektronische Unterschriften mit Audit-Trail  
 ✅ **Retention Policies** - Aufbewahrungsfristen nach deutschem Recht (HGB, DSGVO)  
 ✅ **Zugriffskontrolle** - Rollenbasierte Berechtigungen und Dokumentenebenen-Sicherheit  
-✅ **Audit-Trail** - Vollständige Protokollierung aller Aktionen  
+✅ **Audit-Trail** - Vollständige Protokollierung aller Aktionen
 
 ### Dateityp-Unterstützung
 
@@ -55,8 +55,6 @@ Das Document Management System (DMS) bietet umfassende Funktionen für die Verwa
 - **Bilder:** JPG, PNG, GIF, TIFF, BMP
 - **Archive:** ZIP, RAR, 7Z
 - **Max. Dateigröße:** 500 MB (konfigurierbar)
-
-
 
 ---
 
@@ -369,15 +367,15 @@ curl -H "Authorization: Bearer <token>" \
 
 **Query Parameter:**
 
-| Parameter | Typ | Beschreibung |
-| --- | --- | --- |
-| `page` | number | Seite (Default: 1) |
-| `limit` | number | Items pro Seite (Default: 20, Max: 100) |
-| `category` | string | Filterung nach Kategorie |
-| `tags` | string | Komma-getrennte Tags |
-| `status` | string | active, archived, deleted |
-| `sortBy` | string | uploadedAt, title, size |
-| `sortOrder` | string | asc, desc |
+| Parameter   | Typ    | Beschreibung                            |
+| ----------- | ------ | --------------------------------------- |
+| `page`      | number | Seite (Default: 1)                      |
+| `limit`     | number | Items pro Seite (Default: 20, Max: 100) |
+| `category`  | string | Filterung nach Kategorie                |
+| `tags`      | string | Komma-getrennte Tags                    |
+| `status`    | string | active, archived, deleted               |
+| `sortBy`    | string | uploadedAt, title, size                 |
+| `sortOrder` | string | asc, desc                               |
 
 **Response:**
 
@@ -495,16 +493,16 @@ curl -X POST -H "Authorization: Bearer <token>" \
 
 **Kategorien:**
 
-| Kategorie | Aufbewahrung | Rechtsgrundlage |
-| --- | --- | --- |
-| `invoice` | 10 Jahre | HGB §257 |
-| `contract` | 6 Jahre | BGB §195 |
-| `employee_document` | 3 Jahre* | DSGVO Art. 17 |
-| `report` | 5 Jahre | Firmenpolicy |
-| `correspondence` | 5 Jahre | Firmenpolicy |
-| `other` | 1 Jahr | Firmenpolicy |
+| Kategorie           | Aufbewahrung | Rechtsgrundlage |
+| ------------------- | ------------ | --------------- |
+| `invoice`           | 10 Jahre     | HGB §257        |
+| `contract`          | 6 Jahre      | BGB §195        |
+| `employee_document` | 3 Jahre\*    | DSGVO Art. 17   |
+| `report`            | 5 Jahre      | Firmenpolicy    |
+| `correspondence`    | 5 Jahre      | Firmenpolicy    |
+| `other`             | 1 Jahr       | Firmenpolicy    |
 
-*nach Ausscheiden
+\*nach Ausscheiden
 
 **Response (201 Created):**
 
@@ -595,15 +593,15 @@ curl -H "Authorization: Bearer <token>" \
 
 **Query Parameter:**
 
-| Parameter | Typ | Beschreibung |
-| --- | --- | --- |
-| `query` | string | Suchbegriff (erforderlich) |
-| `category` | string | Filtere nach Kategorie |
-| `tags` | string | Komma-getrennte Tags |
-| `startDate` | string | Von-Datum (YYYY-MM-DD) |
-| `endDate` | string | Bis-Datum (YYYY-MM-DD) |
-| `fileType` | string | pdf, docx, xlsx, etc. |
-| `limit` | number | Max. Ergebnisse (Default: 20) |
+| Parameter   | Typ     | Beschreibung                      |
+| ----------- | ------- | --------------------------------- |
+| `query`     | string  | Suchbegriff (erforderlich)        |
+| `category`  | string  | Filtere nach Kategorie            |
+| `tags`      | string  | Komma-getrennte Tags              |
+| `startDate` | string  | Von-Datum (YYYY-MM-DD)            |
+| `endDate`   | string  | Bis-Datum (YYYY-MM-DD)            |
+| `fileType`  | string  | pdf, docx, xlsx, etc.             |
+| `limit`     | number  | Max. Ergebnisse (Default: 20)     |
 | `highlight` | boolean | Text-Highlighting (Default: true) |
 
 **Response:**
@@ -638,10 +636,10 @@ curl -X POST -H "Authorization: Bearer <token>" \
 
 **Query Parameter:**
 
-| Parameter | Typ | Beschreibung |
-| --- | --- | --- |
+| Parameter  | Typ    | Beschreibung                    |
+| ---------- | ------ | ------------------------------- |
 | `language` | string | Dokumentsprache (deu, eng, fra) |
-| `quality` | string | low, medium, high |
+| `quality`  | string | low, medium, high               |
 
 **Response:**
 
@@ -735,10 +733,10 @@ curl -X POST -H "Authorization: Bearer <token>" \
 
 **Workflow-Typen:**
 
-| Typ | Beschreibung |
-| --- | --- |
-| `approval` | Genehmigungsworkflow |
-| `review` | Prüfungsworkflow |
+| Typ         | Beschreibung          |
+| ----------- | --------------------- |
+| `approval`  | Genehmigungsworkflow  |
+| `review`    | Prüfungsworkflow      |
 | `signature` | Unterschriftsworkflow |
 
 **Response:**

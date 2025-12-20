@@ -127,7 +127,9 @@ export type DocumentMetadataInput = z.infer<typeof DocumentMetadataSchema>;
  */
 export const WorkflowCreateSchema = z.object({
   type: z.enum(["approval", "review", "signature"]),
-  approvers: z.array(z.string()).min(1, "Mindestens ein Genehmiger erforderlich"),
+  approvers: z
+    .array(z.string())
+    .min(1, "Mindestens ein Genehmiger erforderlich"),
   deadline: z.string().datetime().optional(),
   description: z.string().optional(),
 });
@@ -184,7 +186,10 @@ export type SignatureRequestInput = z.infer<typeof SignatureRequestSchema>;
 export const SignatureStatusSchema = z.object({
   status: z.enum(["signed", "declined", "expired"]),
   signatureData: z.string().optional(),
-  timestamp: z.string().datetime().default(() => new Date().toISOString()),
+  timestamp: z
+    .string()
+    .datetime()
+    .default(() => new Date().toISOString()),
 });
 
 export type SignatureStatusInput = z.infer<typeof SignatureStatusSchema>;
@@ -214,7 +219,10 @@ export const RoleCreateSchema = z.object({
   id: z
     .string()
     .min(1)
-    .regex(/^[a-z_]+$/, "Rolle-ID muss Kleinbuchstaben und Unterstriche enthalten"),
+    .regex(
+      /^[a-z_]+$/,
+      "Rolle-ID muss Kleinbuchstaben und Unterstriche enthalten",
+    ),
   name: z.string().min(1),
   description: z.string().optional(),
   permissions: z.array(z.string()).optional(),
@@ -307,7 +315,9 @@ export type ValidationErrorDetail = z.infer<typeof ValidationErrorSchema>;
 export function safeParse<T>(
   schema: z.ZodSchema<T>,
   data: unknown,
-): { success: true; data: T } | { success: false; errors: Record<string, string> } {
+):
+  | { success: true; data: T }
+  | { success: false; errors: Record<string, string> } {
   try {
     const validatedData = schema.parse(data);
     return { success: true, data: validatedData };

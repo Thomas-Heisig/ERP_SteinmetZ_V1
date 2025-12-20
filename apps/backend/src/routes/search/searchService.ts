@@ -148,40 +148,40 @@ export class SearchService {
       // Filter nodes based on criteria
       const filteredNodes = this.filterNodes(nodes, query);
 
-    // Score and rank results
-    const scoredResults = this.scoreNodes(filteredNodes, query);
+      // Score and rank results
+      const scoredResults = this.scoreNodes(filteredNodes, query);
 
-    // Apply minimum score filter
-    const minScore = query.minScore || 0;
-    const relevantResults = scoredResults.filter((r) => r.score >= minScore);
+      // Apply minimum score filter
+      const minScore = query.minScore || 0;
+      const relevantResults = scoredResults.filter((r) => r.score >= minScore);
 
-    // Sort by relevance
-    relevantResults.sort((a, b) => b.score - a.score);
+      // Sort by relevance
+      relevantResults.sort((a, b) => b.score - a.score);
 
-    // Calculate facets before pagination
-    const facets = this.calculateFacets(relevantResults.map((r) => r.node));
+      // Calculate facets before pagination
+      const facets = this.calculateFacets(relevantResults.map((r) => r.node));
 
-    // Apply pagination
-    const offset = pagination?.offset || 0;
-    const limit = pagination?.limit || 50;
-    const paginatedResults = relevantResults.slice(offset, offset + limit);
+      // Apply pagination
+      const offset = pagination?.offset || 0;
+      const limit = pagination?.limit || 50;
+      const paginatedResults = relevantResults.slice(offset, offset + limit);
 
-    const duration = Date.now() - startTime;
-    logger.info(
-      {
-        query: query.q,
-        totalResults: relevantResults.length,
-        returnedResults: paginatedResults.length,
-        duration,
-      },
-      "Search completed",
-    );
+      const duration = Date.now() - startTime;
+      logger.info(
+        {
+          query: query.q,
+          totalResults: relevantResults.length,
+          returnedResults: paginatedResults.length,
+          duration,
+        },
+        "Search completed",
+      );
 
-    return {
-      results: paginatedResults,
-      total: relevantResults.length,
-      facets,
-    };
+      return {
+        results: paginatedResults,
+        total: relevantResults.length,
+        facets,
+      };
     } catch (error) {
       logger.error({ error, query }, "Search failed");
       // Return empty results on error instead of throwing

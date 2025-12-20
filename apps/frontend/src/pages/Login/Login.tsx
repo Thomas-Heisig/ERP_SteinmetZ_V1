@@ -66,8 +66,7 @@ export default function Login() {
         }, 1000);
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : String(err);
+      const errorMessage = err instanceof Error ? err.message : String(err);
       console.error("Auth error:", err);
       setError(errorMessage);
     } finally {
@@ -284,13 +283,13 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                autoComplete={
+                  mode === "login" ? "current-password" : "new-password"
+                }
                 disabled={isLoading}
                 className={styles.input}
                 placeholder={
-                  mode === "login"
-                    ? "Ihr Passwort"
-                    : "Mindestens 8 Zeichen"
+                  mode === "login" ? "Ihr Passwort" : "Mindestens 8 Zeichen"
                 }
                 aria-required="true"
               />
@@ -315,11 +314,7 @@ export default function Login() {
           </form>
 
           <div className={styles.toggleLink}>
-            <button
-              type="button"
-              onClick={toggleMode}
-              disabled={isLoading}
-            >
+            <button type="button" onClick={toggleMode} disabled={isLoading}>
               {mode === "login"
                 ? "Noch kein Konto? Jetzt registrieren"
                 : "Bereits ein Konto? Jetzt anmelden"}

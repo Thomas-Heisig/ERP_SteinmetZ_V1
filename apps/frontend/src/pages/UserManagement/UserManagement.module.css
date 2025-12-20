@@ -38,7 +38,9 @@
   align-items: center;
   gap: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .statCard:hover {
@@ -396,7 +398,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error h2 {
@@ -424,7 +428,7 @@
   .container {
     padding: 1.5rem;
   }
-  
+
   .statsGrid {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   }
@@ -434,38 +438,38 @@
   .container {
     padding: 1rem;
   }
-  
+
   .header h1 {
     font-size: 2rem;
   }
-  
+
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .statCard {
     padding: 1rem;
   }
-  
+
   .statIcon {
     width: 50px;
     height: 50px;
     font-size: 2rem;
   }
-  
+
   .statValue {
     font-size: 1.5rem;
   }
-  
+
   .table {
     font-size: 0.875rem;
   }
-  
+
   .table th,
   .table td {
     padding: 0.75rem 0.5rem;
   }
-  
+
   .userAvatar {
     width: 32px;
     height: 32px;
@@ -477,16 +481,16 @@
   .statsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .table {
     font-size: 0.75rem;
   }
-  
+
   .table th,
   .table td {
     padding: 0.5rem 0.25rem;
   }
-  
+
   .actionBtn {
     width: 32px;
     height: 32px;

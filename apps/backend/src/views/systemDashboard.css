@@ -652,7 +652,7 @@ th {
 }
 
 .route-path {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   color: #1f2937;
 }
 
@@ -688,7 +688,7 @@ th {
 
 /* Environment Display */
 .env-container {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   background: var(--light);
   padding: 1rem;
   border-radius: 8px;

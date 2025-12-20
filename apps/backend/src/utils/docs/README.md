@@ -47,16 +47,16 @@ sendValidationError(res, "Validation failed", { errors: [...] });
 
 **Verfügbare Error-Funktionen:**
 
-| Funktion | Status | ErrorCode |
-| --- | --- | --- |
-| `sendBadRequest` | 400 | BAD_REQUEST |
-| `sendUnauthorized` | 401 | UNAUTHORIZED |
-| `sendForbidden` | 403 | FORBIDDEN |
-| `sendNotFound` | 404 | NOT_FOUND |
-| `sendValidationError` | 422 | VALIDATION_ERROR |
-| `sendRateLimitError` | 429 | RATE_LIMIT_EXCEEDED |
-| `sendInternalError` | 500 | INTERNAL_ERROR |
-| `sendServiceUnavailable` | 503 | SERVICE_UNAVAILABLE |
+| Funktion                 | Status | ErrorCode           |
+| ------------------------ | ------ | ------------------- |
+| `sendBadRequest`         | 400    | BAD_REQUEST         |
+| `sendUnauthorized`       | 401    | UNAUTHORIZED        |
+| `sendForbidden`          | 403    | FORBIDDEN           |
+| `sendNotFound`           | 404    | NOT_FOUND           |
+| `sendValidationError`    | 422    | VALIDATION_ERROR    |
+| `sendRateLimitError`     | 429    | RATE_LIMIT_EXCEEDED |
+| `sendInternalError`      | 500    | INTERNAL_ERROR      |
+| `sendServiceUnavailable` | 503    | SERVICE_UNAVAILABLE |
 
 ### 2. logger.ts
 
@@ -73,20 +73,20 @@ Strukturiertes Logging-System basierend auf Pino mit Kontext und spezialisierten
 **Verwendung:**
 
 ```typescript
-import { createLogger } from './logger';
+import { createLogger } from "./logger";
 
-const logger = createLogger('my-module');
+const logger = createLogger("my-module");
 
 // Strukturiertes Logging
-logger.info({ userId: '123', action: 'login' }, 'User logged in');
-logger.error({ error, endpoint: '/api/users' }, 'Request failed');
+logger.info({ userId: "123", action: "login" }, "User logged in");
+logger.error({ error, endpoint: "/api/users" }, "Request failed");
 
 // Spezialisierte Logger
-import { dbLogger, authLogger, securityLogger } from './logger';
+import { dbLogger, authLogger, securityLogger } from "./logger";
 
-dbLogger.database('SELECT', 150, 5); // operation, duration, rowCount
+dbLogger.database("SELECT", 150, 5); // operation, duration, rowCount
 authLogger.request(req, res, 50); // req, res, duration
-securityLogger.security('login_attempt', { userId: '123' });
+securityLogger.security("login_attempt", { userId: "123" });
 ```
 
 **Vorkonfigurierte Logger:**
@@ -102,7 +102,7 @@ securityLogger.security('login_attempt', { userId: '123' });
 **Express Middleware:**
 
 ```typescript
-import { loggerMiddleware } from './logger';
+import { loggerMiddleware } from "./logger";
 
 app.use(loggerMiddleware);
 // Jetzt ist req.logger verfügbar
@@ -121,7 +121,7 @@ Globale Express-App-Instanz für Zugriff aus Services und Routern.
 **Verwendung:**
 
 ```typescript
-import { GlobalApp } from './globalApp';
+import { GlobalApp } from "./globalApp";
 
 // App registrieren (in index.ts)
 GlobalApp.set(app);
@@ -144,19 +144,19 @@ Generiert ICS (iCalendar) Format-Dateien aus Kalender-Events.
 **Verwendung:**
 
 ```typescript
-import { createICS } from './icsGenerator';
+import { createICS } from "./icsGenerator";
 
 const events = [
   {
-    id: 'event-1',
-    title: 'Team Meeting',
-    start: new Date('2025-01-15T10:00:00'),
-    end: new Date('2025-01-15T11:00:00'),
-    description: 'Weekly sync',
-    location: 'Conference Room A',
-    attendees: ['john@example.com', 'jane@example.com'],
+    id: "event-1",
+    title: "Team Meeting",
+    start: new Date("2025-01-15T10:00:00"),
+    end: new Date("2025-01-15T11:00:00"),
+    description: "Weekly sync",
+    location: "Conference Room A",
+    attendees: ["john@example.com", "jane@example.com"],
     reminders: [15, 30], // Minuten vor Event
-  }
+  },
 ];
 
 const icsContent = createICS(events);
@@ -213,7 +213,7 @@ Programmgesteuerte Migration Runner mit CLI-Support.
 **Verwendung:**
 
 ```typescript
-import { runAllMigrations } from './runMigrations';
+import { runAllMigrations } from "./runMigrations";
 
 const result = await runAllMigrations();
 console.log(`Executed: ${result.executed}, Failed: ${result.failed}`);
@@ -250,12 +250,12 @@ npm run test -- migrateSchema.test.ts
 ```typescript
 // ✅ RICHTIG: Strukturiertes Logging mit Kontext
 logger.info(
-  { userId: '123', action: 'login', timestamp: Date.now() },
-  'User logged in'
+  { userId: "123", action: "login", timestamp: Date.now() },
+  "User logged in",
 );
 
 // ❌ FALSCH: String-Konkatenation
-logger.info('User 123 logged in at ' + new Date());
+logger.info("User 123 logged in at " + new Date());
 ```
 
 ### Error Handling
@@ -269,7 +269,7 @@ try {
   }
   res.json({ success: true, data: user });
 } catch (error) {
-  logger.error({ error, userId: id }, 'Failed to get user');
+  logger.error({ error, userId: id }, "Failed to get user");
   return sendInternalError(res);
 }
 
@@ -304,20 +304,20 @@ import {
   sendBadRequest,
   sendUnauthorized,
   ErrorCode,
-} from '../utils/errorResponse.js';
+} from "../utils/errorResponse.js";
 
 // Logger
-import { createLogger, dbLogger, authLogger } from '../utils/logger.js';
-import { loggerMiddleware } from '../utils/logger.js';
+import { createLogger, dbLogger, authLogger } from "../utils/logger.js";
+import { loggerMiddleware } from "../utils/logger.js";
 
 // Global App
-import { GlobalApp } from '../utils/globalApp.js';
+import { GlobalApp } from "../utils/globalApp.js";
 
 // ICS Generator
-import { createICS } from '../utils/icsGenerator.js';
+import { createICS } from "../utils/icsGenerator.js";
 
 // Migrations
-import { runAllMigrations } from '../utils/runMigrations.js';
+import { runAllMigrations } from "../utils/runMigrations.js";
 ```
 
 ## 🚀 Performance Tips

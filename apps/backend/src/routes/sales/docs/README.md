@@ -492,7 +492,12 @@ interface Quote {
 ### Order Types
 
 ```typescript
-type OrderStatus = "confirmed" | "in_production" | "ready" | "delivered" | "cancelled";
+type OrderStatus =
+  | "confirmed"
+  | "in_production"
+  | "ready"
+  | "delivered"
+  | "cancelled";
 type PaymentStatus = "pending" | "partial" | "paid" | "overdue";
 
 interface Order {
@@ -535,7 +540,12 @@ interface Lead {
 ### Campaign Types
 
 ```typescript
-type CampaignStatus = "planned" | "active" | "paused" | "completed" | "cancelled";
+type CampaignStatus =
+  | "planned"
+  | "active"
+  | "paused"
+  | "completed"
+  | "cancelled";
 
 interface Campaign {
   id: string;
@@ -561,38 +571,38 @@ interface Campaign {
 ### SalesService API
 
 ```typescript
-import { salesService } from './salesService.js';
+import { salesService } from "./salesService.js";
 
 // Pipeline
 const pipeline = await salesService.getPipeline();
 
 // Quotes
-const quotes = await salesService.getQuotes('pending');
-const quote = await salesService.getQuoteById('qt_001');
+const quotes = await salesService.getQuotes("pending");
+const quote = await salesService.getQuoteById("qt_001");
 const newQuote = await salesService.createQuote({
-  customer_id: 'cust_001',
-  items: [{ description: 'Product', quantity: 1, unit_price: 100 }]
+  customer_id: "cust_001",
+  items: [{ description: "Product", quantity: 1, unit_price: 100 }],
 });
 
 // Orders
-const orders = await salesService.getOrders('confirmed');
+const orders = await salesService.getOrders("confirmed");
 const newOrder = await salesService.createOrder({
-  customer_id: 'cust_001',
-  delivery_date: '2026-01-20'
+  customer_id: "cust_001",
+  delivery_date: "2026-01-20",
 });
 
 // Leads
-const leads = await salesService.getLeads('new');
+const leads = await salesService.getLeads("new");
 const newLead = await salesService.createLead({
-  source: 'Website',
-  company: 'Corp',
-  contact: 'John Doe',
-  email: 'john@corp.com'
+  source: "Website",
+  company: "Corp",
+  contact: "John Doe",
+  email: "john@corp.com",
 });
-const qualified = await salesService.qualifyLead('lead_001', 85);
+const qualified = await salesService.qualifyLead("lead_001", 85);
 
 // Campaigns
-const campaigns = await salesService.getCampaigns('active');
+const campaigns = await salesService.getCampaigns("active");
 
 // Analytics
 const analytics = await salesService.getAnalytics();
@@ -606,14 +616,14 @@ const analytics = await salesService.getAnalytics();
 
 ```typescript
 // Für jede Position:
-net_amount = quantity * unit_price * (1 - discount_percent / 100)
-tax_amount = net_amount * (tax_rate / 100)
-gross_amount = net_amount + tax_amount
+net_amount = quantity * unit_price * (1 - discount_percent / 100);
+tax_amount = net_amount * (tax_rate / 100);
+gross_amount = net_amount + tax_amount;
 
 // Gesamt:
-subtotal = Summe(net_amount)
-total_tax = Summe(tax_amount)
-total = subtotal + total_tax
+subtotal = Summe(net_amount);
+total_tax = Summe(tax_amount);
+total = subtotal + total_tax;
 ```
 
 **Beispiel:**
@@ -706,15 +716,17 @@ const quoteSchema = z.object({
   customer_id: z.string(),
   contact_id: z.string().optional(),
   valid_days: z.number().default(30),
-  items: z.array(
-    z.object({
-      description: z.string().min(1, "Description is required"),
-      quantity: z.number().positive("Quantity must be positive"),
-      unit_price: z.number().positive("Unit price must be positive"),
-      discount_percent: z.number().min(0).max(100).default(0),
-      tax_rate: z.number().default(19),
-    })
-  ).min(1, "At least one item is required")
+  items: z
+    .array(
+      z.object({
+        description: z.string().min(1, "Description is required"),
+        quantity: z.number().positive("Quantity must be positive"),
+        unit_price: z.number().positive("Unit price must be positive"),
+        discount_percent: z.number().min(0).max(100).default(0),
+        tax_rate: z.number().default(19),
+      }),
+    )
+    .min(1, "At least one item is required"),
 });
 ```
 
@@ -723,7 +735,9 @@ const quoteSchema = z.object({
 ```typescript
 const orderSchema = z.object({
   customer_id: z.string(),
-  delivery_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)")
+  delivery_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)"),
 });
 ```
 
@@ -734,7 +748,7 @@ const leadSchema = z.object({
   source: z.string().min(1, "Source is required"),
   company: z.string().min(1, "Company name is required"),
   contact: z.string().min(1, "Contact name is required"),
-  email: z.string().email("Valid email is required")
+  email: z.string().email("Valid email is required"),
 });
 ```
 
@@ -910,7 +924,7 @@ CREATE TABLE IF NOT EXISTS sales_campaigns (
 // ✅ Korrekt - eindeutige Nummern
 const year = new Date().getFullYear();
 const number = await getNextQuoteNumber(year);
-const quote_number = `QT-${year}-${String(number).padStart(3, '0')}`;
+const quote_number = `QT-${year}-${String(number).padStart(3, "0")}`;
 
 // ❌ Falsch - Kollisionen möglich
 const quote_number = `QT-${Date.now()}`;
@@ -920,10 +934,11 @@ const quote_number = `QT-${Date.now()}`;
 
 ```typescript
 // ✅ Korrekt - präzise Berechnungen
-const net_amount = Math.round(quantity * unit_price * (1 - discount/100) * 100) / 100;
+const net_amount =
+  Math.round(quantity * unit_price * (1 - discount / 100) * 100) / 100;
 
 // ❌ Falsch - Rundungsfehler
-const net_amount = quantity * unit_price * (1 - discount/100);
+const net_amount = quantity * unit_price * (1 - discount / 100);
 ```
 
 ### 3. Lead Scoring
@@ -967,7 +982,7 @@ console.log({
   gross_amount,
   subtotal,
   total_tax,
-  total
+  total,
 });
 
 // Verwenden Sie Math.round für Cent-Genauigkeit

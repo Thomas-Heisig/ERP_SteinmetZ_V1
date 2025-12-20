@@ -15,9 +15,9 @@ Authorization: Bearer <your-token>
 Jede Route erfordert spezifische Berechtigungen im HR-Modul:
 
 | Berechtigung | Beschreibung |
-|--------------|--------------|
+| ------------ | ------------ |
 
-| `hr:read`   | Lesen/Exports von HR-Daten |
+| `hr:read` | Lesen/Exports von HR-Daten |
 | `hr:create` | Anlegen neuer Datensätze |
 | `hr:update` | Ändern bestehender Datensätze |
 | `hr:delete` | Löschen/Terminieren |
@@ -33,11 +33,13 @@ Jede Route erfordert spezifische Berechtigungen im HR-Modul:
   "error": {
     "code": "ERROR_CODE",
     "message": "Human-readable error message",
-    "details": { 
-      "issues": [{ 
-        "path": "field", 
-        "message": "..." 
-      }] 
+    "details": {
+      "issues": [
+        {
+          "path": "field",
+          "message": "..."
+        }
+      ]
     },
     "timestamp": "2024-12-06T15:30:00Z",
     "path": "/api/hr/employees"
@@ -69,11 +71,11 @@ Response-Format für paginierte Endpoints:
 {
   "success": true,
   "data": {
-    "data": [],           // Array der Ergebnisse
-    "total": 100,         // Gesamtanzahl der Datensätze
-    "page": 1,            // Aktuelle Seite
-    "limit": 50,          // Ergebnisse pro Seite
-    "total_pages": 2      // Gesamtanzahl Seiten
+    "data": [], // Array der Ergebnisse
+    "total": 100, // Gesamtanzahl der Datensätze
+    "page": 1, // Aktuelle Seite
+    "limit": 50, // Ergebnisse pro Seite
+    "total_pages": 2 // Gesamtanzahl Seiten
   }
 }
 ```

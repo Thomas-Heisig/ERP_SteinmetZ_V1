@@ -4,12 +4,12 @@ Willkommen zur konsolidierten Frontend-Dashboard-Dokumentation für ERP Steinmet
 
 ## 🎯 Schnellzugriff
 
-| Dokument | Zweck | Zielgruppe |
-|----------|-------|------------|
-| **[API_QUICK_REFERENCE.md](./API_QUICK_REFERENCE.md)** | Schnelle API-Referenz | Entwickler |
-| **[DASHBOARD_CONSOLIDATION.md](./DASHBOARD_CONSOLIDATION.md)** | Übersicht der Konsolidierung | Alle |
-| **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)** | Schritt-für-Schritt Migration | Entwickler |
-| **[src/config/README.md](./src/config/README.md)** | Konfigurationsdokumentation | Entwickler |
+| Dokument                                                       | Zweck                         | Zielgruppe |
+| -------------------------------------------------------------- | ----------------------------- | ---------- |
+| **[API_QUICK_REFERENCE.md](./API_QUICK_REFERENCE.md)**         | Schnelle API-Referenz         | Entwickler |
+| **[DASHBOARD_CONSOLIDATION.md](./DASHBOARD_CONSOLIDATION.md)** | Übersicht der Konsolidierung  | Alle       |
+| **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)**                 | Schritt-für-Schritt Migration | Entwickler |
+| **[src/config/README.md](./src/config/README.md)**             | Konfigurationsdokumentation   | Entwickler |
 
 ## 📖 Dokumentationsübersicht
 
@@ -18,6 +18,7 @@ Willkommen zur konsolidierten Frontend-Dashboard-Dokumentation für ERP Steinmet
 **Datei:** `API_QUICK_REFERENCE.md`
 
 **Inhalt:**
+
 - Häufig genutzte Endpoints
 - Widget-Konfiguration
 - Helper-Funktionen
@@ -33,6 +34,7 @@ Willkommen zur konsolidierten Frontend-Dashboard-Dokumentation für ERP Steinmet
 **Datei:** `DASHBOARD_CONSOLIDATION.md`
 
 **Inhalt:**
+
 - Architekturübersicht
 - Alle Backend-Module (20+)
 - Alle API-Routen (200+)
@@ -49,6 +51,7 @@ Willkommen zur konsolidierten Frontend-Dashboard-Dokumentation für ERP Steinmet
 **Datei:** `MIGRATION_GUIDE.md`
 
 **Inhalt:**
+
 - Schritt-für-Schritt Anleitung
 - Vorher/Nachher Code-Beispiele
 - Komponenten-spezifische Migrations
@@ -64,6 +67,7 @@ Willkommen zur konsolidierten Frontend-Dashboard-Dokumentation für ERP Steinmet
 **Datei:** `src/config/README.md` (zu erstellen)
 
 **Inhalt:**
+
 - API-Routen-Struktur
 - Widget-Definitionen
 - Theme-Konfiguration
@@ -238,17 +242,17 @@ apps/frontend/
 
 ## 📊 Status-Übersicht
 
-| Aufgabe | Status | Dokument |
-|---------|--------|----------|
-| API-Routen definiert | ✅ Fertig | `apiRoutes.ts` |
-| Widget-Config erstellt | ✅ Fertig | `dashboardConfig.ts` |
-| Quick Reference | ✅ Fertig | `API_QUICK_REFERENCE.md` |
-| Consolidation Doc | ✅ Fertig | `DASHBOARD_CONSOLIDATION.md` |
-| Migration Guide | ✅ Fertig | `MIGRATION_GUIDE.md` |
-| Config README | ⏳ Ausstehend | `src/config/README.md` |
-| Komponenten migriert | ⏳ Ausstehend | - |
-| Duplikate entfernt | ⏳ Ausstehend | - |
-| Tests aktualisiert | ⏳ Ausstehend | - |
+| Aufgabe                | Status        | Dokument                     |
+| ---------------------- | ------------- | ---------------------------- |
+| API-Routen definiert   | ✅ Fertig     | `apiRoutes.ts`               |
+| Widget-Config erstellt | ✅ Fertig     | `dashboardConfig.ts`         |
+| Quick Reference        | ✅ Fertig     | `API_QUICK_REFERENCE.md`     |
+| Consolidation Doc      | ✅ Fertig     | `DASHBOARD_CONSOLIDATION.md` |
+| Migration Guide        | ✅ Fertig     | `MIGRATION_GUIDE.md`         |
+| Config README          | ⏳ Ausstehend | `src/config/README.md`       |
+| Komponenten migriert   | ⏳ Ausstehend | -                            |
+| Duplikate entfernt     | ⏳ Ausstehend | -                            |
+| Tests aktualisiert     | ⏳ Ausstehend | -                            |
 
 ## 🔗 Externe Referenzen
 

@@ -9,6 +9,7 @@ Umstellung existierender Dashboard-Komponenten auf die zentrale API-Konfiguratio
 ### Schritt 1: Imports aktualisieren
 
 #### Vorher ❌
+
 ```typescript
 // Hardcoded API-Aufrufe in jeder Komponente
 const Dashboard = () => {
@@ -20,6 +21,7 @@ const Dashboard = () => {
 ```
 
 #### Nachher ✅
+
 ```typescript
 import { API_ROUTES, buildApiUrl } from "@/config";
 
@@ -34,44 +36,52 @@ const Dashboard = () => {
 ### Schritt 2: Widget-Konfiguration nutzen
 
 #### Vorher ❌
+
 ```typescript
 const ExecutiveOverview = () => {
   const [kpis, setKpis] = useState(null);
   const [revenue, setRevenue] = useState(null);
   const [sales, setSales] = useState(null);
-  
+
   useEffect(() => {
     // Mehrere separate API-Calls
-    fetch("/api/dashboard/kpis").then(r => r.json()).then(setKpis);
-    fetch("/api/finance/revenue").then(r => r.json()).then(setRevenue);
-    fetch("/api/sales/statistics").then(r => r.json()).then(setSales);
+    fetch("/api/dashboard/kpis")
+      .then((r) => r.json())
+      .then(setKpis);
+    fetch("/api/finance/revenue")
+      .then((r) => r.json())
+      .then(setRevenue);
+    fetch("/api/sales/statistics")
+      .then((r) => r.json())
+      .then(setSales);
   }, []);
 };
 ```
 
 #### Nachher ✅
+
 ```typescript
 import { DASHBOARD_WIDGETS, buildApiUrl } from "@/config";
 
 const ExecutiveOverview = () => {
   const widget = DASHBOARD_WIDGETS.EXECUTIVE_OVERVIEW;
   const [data, setData] = useState({});
-  
+
   useEffect(() => {
     // Alle Endpoints aus Config laden
     Promise.all(
-      widget.apiEndpoints.map(endpoint => 
-        fetch(buildApiUrl(endpoint)).then(r => r.json())
-      )
+      widget.apiEndpoints.map((endpoint) =>
+        fetch(buildApiUrl(endpoint)).then((r) => r.json()),
+      ),
     ).then(([kpis, revenue, sales, financial]) => {
       setData({ kpis, revenue, sales, financial });
     });
-    
+
     // Auto-Refresh mit konfiguriertem Intervall
     const interval = setInterval(() => {
       /* refresh */
     }, widget.refreshInterval * 1000);
-    
+
     return () => clearInterval(interval);
   }, [widget]);
 };
@@ -80,6 +90,7 @@ const ExecutiveOverview = () => {
 ### Schritt 3: Permissions integrieren
 
 #### Vorher ❌
+
 ```typescript
 const CRMWidget = () => {
   // Keine Permission-Prüfung
@@ -88,6 +99,7 @@ const CRMWidget = () => {
 ```
 
 #### Nachher ✅
+
 ```typescript
 import { DASHBOARD_WIDGETS } from "@/config";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -95,11 +107,11 @@ import { usePermissions } from "@/hooks/usePermissions";
 const CRMWidget = () => {
   const widget = DASHBOARD_WIDGETS.CRM_WIDGET;
   const { hasPermissions } = usePermissions();
-  
+
   if (!hasPermissions(widget.permissions)) {
     return <PermissionDenied />;
   }
-  
+
   return <div>CRM Data</div>;
 };
 ```
@@ -107,6 +119,7 @@ const CRMWidget = () => {
 ### Schritt 4: Grid-Layout anpassen
 
 #### Vorher ❌
+
 ```typescript
 <div style={{ gridColumn: "span 2" }}>
   <CRMWidget />
@@ -114,6 +127,7 @@ const CRMWidget = () => {
 ```
 
 #### Nachher ✅
+
 ```typescript
 import { DASHBOARD_WIDGETS } from "@/config";
 
@@ -127,6 +141,7 @@ const widget = DASHBOARD_WIDGETS.CRM_WIDGET;
 ### Schritt 5: Theme-System nutzen
 
 #### Vorher ❌
+
 ```typescript
 const styles = {
   background: "#ffffff",
@@ -136,6 +151,7 @@ const styles = {
 ```
 
 #### Nachher ✅
+
 ```typescript
 import { DASHBOARD_THEMES, STATUS_COLORS } from "@/config";
 import { useTheme } from "@/hooks/useTheme";
@@ -143,13 +159,13 @@ import { useTheme } from "@/hooks/useTheme";
 const MyComponent = () => {
   const { theme } = useTheme();
   const colors = DASHBOARD_THEMES[theme];
-  
+
   const styles = {
     background: colors.background,
     color: colors.text,
     borderColor: colors.border,
   };
-  
+
   return <div style={styles}>...</div>;
 };
 ```
@@ -165,7 +181,7 @@ import "./ExecutiveOverview.css";
 
 const ExecutiveOverview: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     Promise.all([
       fetch("/api/dashboard/kpis").then(r => r.json()),
@@ -176,7 +192,7 @@ const ExecutiveOverview: React.FC = () => {
       setLoading(false);
     });
   }, []);
-  
+
   if (loading) return <div className="loading-spinner" />;
   return <div className="executive-overview">...</div>;
 };
@@ -193,12 +209,12 @@ const ExecutiveOverview: React.FC = () => {
   const widget = DASHBOARD_WIDGETS.EXECUTIVE_OVERVIEW;
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<OverviewData | null>(null);
-  
+
   const loadData = async () => {
     setLoading(true);
     try {
       const results = await Promise.all(
-        widget.apiEndpoints.map(endpoint => 
+        widget.apiEndpoints.map(endpoint =>
           fetch(buildApiUrl(endpoint)).then(r => r.json())
         )
       );
@@ -214,14 +230,14 @@ const ExecutiveOverview: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     loadData();
   }, []);
-  
+
   // Auto-Refresh
   useRefreshInterval(loadData, widget.refreshInterval * 1000);
-  
+
   if (loading) return <div className="loading-spinner" />;
   return <div className="executive-overview">...</div>;
 };
@@ -245,26 +261,26 @@ const AllModuleWidgets: React.FC = () => {
 
 ```typescript
 // NACHHER
-import { 
-  DASHBOARD_WIDGETS, 
+import {
+  DASHBOARD_WIDGETS,
   getWidgetsByPermissions,
-  sortWidgetsByPriority 
+  sortWidgetsByPriority
 } from "@/config";
 import { usePermissions } from "@/hooks/usePermissions";
 
 const AllModuleWidgets: React.FC = () => {
   const { userPermissions } = usePermissions();
-  
+
   // Nur Widgets anzeigen, für die User Berechtigung hat
   const authorizedWidgets = getWidgetsByPermissions(userPermissions);
-  
+
   // Nach Priorität sortieren
   const sortedWidgets = sortWidgetsByPriority(authorizedWidgets);
-  
+
   return (
     <div className="widgets-grid">
       {sortedWidgets.map(widget => (
-        <div 
+        <div
           key={widget.id}
           className={`widget-span-${widget.gridSpan}`}
         >
@@ -293,13 +309,13 @@ const DynamicWidget: React.FC<{ config: DashboardWidget }> = ({ config }) => {
 // VORHER
 const SimpleDashboard: React.FC = () => {
   const [data, setData] = useState(null);
-  
+
   useEffect(() => {
     fetch("/api/dashboard/overview")
       .then(r => r.json())
       .then(setData);
   }, []);
-  
+
   return (
     <div className="simple-dashboard">
       <KPICard title="Revenue" value={data?.revenue} />
@@ -317,22 +333,22 @@ import { API_ROUTES, buildApiUrl, DASHBOARD_WIDGETS } from "@/config";
 const SimpleDashboard: React.FC = () => {
   const [data, setData] = useState(null);
   const widget = DASHBOARD_WIDGETS.EXECUTIVE_OVERVIEW;
-  
+
   useEffect(() => {
     fetch(buildApiUrl(API_ROUTES.DASHBOARD.OVERVIEW))
       .then(r => r.json())
       .then(setData);
-      
+
     // Auto-Refresh
     const interval = setInterval(() => {
       fetch(buildApiUrl(API_ROUTES.DASHBOARD.OVERVIEW))
         .then(r => r.json())
         .then(setData);
     }, widget.refreshInterval * 1000);
-    
+
     return () => clearInterval(interval);
   }, [widget]);
-  
+
   return (
     <div className="simple-dashboard">
       <KPICard title="Revenue" value={data?.revenue} />
@@ -393,12 +409,12 @@ describe("ExecutiveOverview", () => {
     // Mock API-Calls
     global.fetch = vi.fn();
   });
-  
+
   it("should use centralized config", async () => {
     const widget = DASHBOARD_WIDGETS.EXECUTIVE_OVERVIEW;
-    
+
     render(<ExecutiveOverview />);
-    
+
     await waitFor(() => {
       // Prüfen, dass alle Endpoints aus Config aufgerufen wurden
       expect(fetch).toHaveBeenCalledTimes(widget.apiEndpoints.length);
@@ -409,15 +425,15 @@ describe("ExecutiveOverview", () => {
       });
     });
   });
-  
+
   it("should refresh according to config interval", () => {
     const widget = DASHBOARD_WIDGETS.EXECUTIVE_OVERVIEW;
     vi.useFakeTimers();
-    
+
     render(<ExecutiveOverview />);
-    
+
     vi.advanceTimersByTime(widget.refreshInterval * 1000);
-    
+
     // Prüfen, dass Refresh erfolgt ist
     expect(fetch).toHaveBeenCalledTimes(widget.apiEndpoints.length * 2);
   });
@@ -448,13 +464,13 @@ import { API_ROUTES, buildApiUrl } from "@/config";
 
 const useDashboardData = () => {
   const [data, setData] = useState(null);
-  
+
   useEffect(() => {
     fetch(buildApiUrl(API_ROUTES.DASHBOARD.OVERVIEW))
-      .then(r => r.json())
+      .then((r) => r.json())
       .then(setData);
   }, []);
-  
+
   return data;
 };
 
@@ -467,18 +483,18 @@ const data = useDashboardData(); // Verwendet gecachte Daten
 
 ## 📊 Fortschritt Tracking
 
-| Komponente | Status | Notizen |
-|------------|--------|---------|
-| `config/apiRoutes.ts` | ✅ Fertig | Alle Routen definiert |
-| `config/dashboardConfig.ts` | ✅ Fertig | Widgets konfiguriert |
-| `Dashboard.tsx` | ⏳ Ausstehend | Haupt-Migration |
-| `SimpleDashboard.tsx` | ⏳ Ausstehend | Migration |
-| `ExecutiveOverview.tsx` | ⏳ Ausstehend | Migration |
-| `WarningsEscalations.tsx` | ⏳ Ausstehend | Migration |
-| `ModuleWidgets.tsx` | ⏳ Ausstehend | Migration |
-| `DashboardWidgets/` | ⏳ Ausstehend | Zu entfernen |
-| Tests | ⏳ Ausstehend | Anpassen |
-| Dokumentation | ✅ Fertig | Vollständig |
+| Komponente                  | Status        | Notizen               |
+| --------------------------- | ------------- | --------------------- |
+| `config/apiRoutes.ts`       | ✅ Fertig     | Alle Routen definiert |
+| `config/dashboardConfig.ts` | ✅ Fertig     | Widgets konfiguriert  |
+| `Dashboard.tsx`             | ⏳ Ausstehend | Haupt-Migration       |
+| `SimpleDashboard.tsx`       | ⏳ Ausstehend | Migration             |
+| `ExecutiveOverview.tsx`     | ⏳ Ausstehend | Migration             |
+| `WarningsEscalations.tsx`   | ⏳ Ausstehend | Migration             |
+| `ModuleWidgets.tsx`         | ⏳ Ausstehend | Migration             |
+| `DashboardWidgets/`         | ⏳ Ausstehend | Zu entfernen          |
+| Tests                       | ⏳ Ausstehend | Anpassen              |
+| Dokumentation               | ✅ Fertig     | Vollständig           |
 
 ## 💡 Tipps & Tricks
 

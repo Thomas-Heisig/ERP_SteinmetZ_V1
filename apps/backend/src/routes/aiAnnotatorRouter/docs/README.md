@@ -71,25 +71,25 @@ Client Request → Router (Validation) → Service Layer → AI Provider → Dat
 
 ### functions_nodes
 
-| Column | Type | Description |
-| ------ | ---- | ----------- |
-| `id` | TEXT (PK) | Node ID |
-| `title` | TEXT | Node name |
-| `kind` | TEXT | Node type |
-| `meta_json` | TEXT | AI metadata |
-| `annotation_status` | TEXT | Status |
-| `last_annotated` | TEXT | Last update |
+| Column              | Type      | Description |
+| ------------------- | --------- | ----------- |
+| `id`                | TEXT (PK) | Node ID     |
+| `title`             | TEXT      | Node name   |
+| `kind`              | TEXT      | Node type   |
+| `meta_json`         | TEXT      | AI metadata |
+| `annotation_status` | TEXT      | Status      |
+| `last_annotated`    | TEXT      | Last update |
 
 ### batch_operations
 
-| Column | Type | Description |
-| ------ | ---- | ----------- |
-| `id` | TEXT (PK) | Batch ID |
-| `operation` | TEXT | Operation type |
-| `status` | TEXT | Status |
-| `total_nodes` | INTEGER | Total count |
-| `processed_nodes` | INTEGER | Processed |
-| `success_count` | INTEGER | Successes |
+| Column            | Type      | Description    |
+| ----------------- | --------- | -------------- |
+| `id`              | TEXT (PK) | Batch ID       |
+| `operation`       | TEXT      | Operation type |
+| `status`          | TEXT      | Status         |
+| `total_nodes`     | INTEGER   | Total count    |
+| `processed_nodes` | INTEGER   | Processed      |
+| `success_count`   | INTEGER   | Successes      |
 
 ---
 
@@ -253,23 +253,20 @@ import axios from "axios";
 const API_BASE = "/api/ai-annotator";
 
 export const aiAnnotatorApi = {
-  getStatus: () => 
-    axios.get(`${API_BASE}/status`),
+  getStatus: () => axios.get(`${API_BASE}/status`),
 
-  listNodes: (params?) => 
-    axios.get(`${API_BASE}/nodes`, { params }),
+  listNodes: (params?) => axios.get(`${API_BASE}/nodes`, { params }),
 
-  generateMeta: (id: string) => 
+  generateMeta: (id: string) =>
     axios.post(`${API_BASE}/nodes/${id}/generate-meta`),
 
-  fullAnnotation: (id: string, options?) => 
+  fullAnnotation: (id: string, options?) =>
     axios.post(`${API_BASE}/nodes/${id}/full-annotation`, options),
 
-  batchAnnotate: (nodeIds: string[], options?) => 
+  batchAnnotate: (nodeIds: string[], options?) =>
     axios.post(`${API_BASE}/batch/annotate`, { nodeIds, ...options }),
 
-  getBatchStatus: (id: string) => 
-    axios.get(`${API_BASE}/batch/${id}`),
+  getBatchStatus: (id: string) => axios.get(`${API_BASE}/batch/${id}`),
 };
 ```
 
@@ -284,16 +281,17 @@ import { toast } from "react-hot-toast";
 export function useNodes(params?) {
   return useQuery({
     queryKey: ["aiAnnotator", "nodes", params],
-    queryFn: () => aiAnnotatorApi.listNodes(params).then(res => res.data.data.nodes),
+    queryFn: () =>
+      aiAnnotatorApi.listNodes(params).then((res) => res.data.data.nodes),
   });
 }
 
 export function useGenerateMeta() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (nodeId: string) => 
-      aiAnnotatorApi.generateMeta(nodeId).then(res => res.data.data),
+    mutationFn: (nodeId: string) =>
+      aiAnnotatorApi.generateMeta(nodeId).then((res) => res.data.data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["aiAnnotator"] });
       toast.success("Metadata generated");
@@ -303,8 +301,10 @@ export function useGenerateMeta() {
 
 export function useBatchAnnotate() {
   return useMutation({
-    mutationFn: ({ nodeIds, options }) => 
-      aiAnnotatorApi.batchAnnotate(nodeIds, options).then(res => res.data.data),
+    mutationFn: ({ nodeIds, options }) =>
+      aiAnnotatorApi
+        .batchAnnotate(nodeIds, options)
+        .then((res) => res.data.data),
     onSuccess: (data) => {
       toast.success(`Batch started: ${data.batchId}`);
     },
@@ -314,10 +314,10 @@ export function useBatchAnnotate() {
 export function useBatchStatus(batchId: string) {
   return useQuery({
     queryKey: ["aiAnnotator", "batch", batchId],
-    queryFn: () => aiAnnotatorApi.getBatchStatus(batchId).then(res => res.data.data),
+    queryFn: () =>
+      aiAnnotatorApi.getBatchStatus(batchId).then((res) => res.data.data),
     enabled: !!batchId,
-    refetchInterval: (data) => 
-      data?.status === "in_progress" ? 2000 : false,
+    refetchInterval: (data) => (data?.status === "in_progress" ? 2000 : false),
   });
 }
 ```
@@ -430,7 +430,7 @@ export const BatchMonitor: React.FC<{ batchId: string }> = ({ batchId }) => {
 ### Common Errors
 
 | Error | Cause | Solution |
-|-------|-------|----------|
+| ----- | ----- | -------- |
 
 | `NotFoundError: Knoten nicht gefunden` | Invalid node ID | Verify node exists |
 | `BadRequestError: Invalid operation` | Unknown batch operation | Check BATCH_OPERATION enum |
@@ -473,8 +473,9 @@ describe("AI Annotator", () => {
   });
 
   it("should generate metadata", async () => {
-    const res = await request(app)
-      .post("/api/ai-annotator/nodes/test-node/generate-meta");
+    const res = await request(app).post(
+      "/api/ai-annotator/nodes/test-node/generate-meta",
+    );
     expect(res.status).toBe(200);
     expect(res.body.data).toHaveProperty("meta");
   });

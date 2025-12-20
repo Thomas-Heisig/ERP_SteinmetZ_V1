@@ -43,7 +43,10 @@ class UserSettingsService {
         `CREATE INDEX IF NOT EXISTS idx_user_settings_key ON user_settings(key)`,
       );
 
-      logger.info({ action: "table_initialized" }, "User settings table initialized");
+      logger.info(
+        { action: "table_initialized" },
+        "User settings table initialized",
+      );
     } catch (error) {
       logger.error({ error }, "Failed to initialize user settings table");
       throw error;
@@ -155,10 +158,7 @@ class UserSettingsService {
 
       return { success: true, updated };
     } catch (error) {
-      logger.error(
-        { error, userId },
-        "Failed to set multiple user settings",
-      );
+      logger.error({ error, userId }, "Failed to set multiple user settings");
       return { success: false, updated: 0 };
     }
   }
@@ -171,10 +171,10 @@ class UserSettingsService {
     key: keyof UserSettings,
   ): Promise<boolean> {
     try {
-      await db.run(
-        "DELETE FROM user_settings WHERE user_id = ? AND key = ?",
-        [userId, key],
-      );
+      await db.run("DELETE FROM user_settings WHERE user_id = ? AND key = ?", [
+        userId,
+        key,
+      ]);
 
       logger.info({ userId, key }, "User setting reset");
       return true;
@@ -189,10 +189,7 @@ class UserSettingsService {
    */
   static async resetAll(userId: string): Promise<boolean> {
     try {
-      await db.run(
-        "DELETE FROM user_settings WHERE user_id = ?",
-        [userId],
-      );
+      await db.run("DELETE FROM user_settings WHERE user_id = ?", [userId]);
 
       logger.info({ userId }, "All user settings reset");
       return true;

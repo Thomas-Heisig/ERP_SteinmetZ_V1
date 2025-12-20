@@ -312,21 +312,21 @@ GET /api/batch/stats
 ### TypeScript Integration
 
 ```typescript
-import { batchProcessingService } from './batchProcessingService';
+import { batchProcessingService } from "./batchProcessingService";
 
 // Create annotation batch
 const batch = batchProcessingService.createBatch({
-  operation: 'annotate',
-  filters: { 
-    annotation_status: 'pending',
-    category: 'product' 
+  operation: "annotate",
+  filters: {
+    annotation_status: "pending",
+    category: "product",
   },
-  options: { 
-    model: 'gpt-4',
+  options: {
+    model: "gpt-4",
     batchSize: 50,
-    retryAttempts: 3 
+    retryAttempts: 3,
   },
-  name: 'Product annotation batch'
+  name: "Product annotation batch",
 });
 
 console.log(`Created batch: ${batch.id}`);
@@ -338,13 +338,13 @@ console.log(`Progress: ${currentBatch?.progress}%`);
 // Record individual results
 batchProcessingService.recordResult(
   batch.id,
-  'node_123',
+  "node_123",
   true,
-  { description: 'Product listing page', tags: ['ecommerce', 'product'] },
+  { description: "Product listing page", tags: ["ecommerce", "product"] },
   undefined,
   0,
   1250,
-  0.95
+  0.95,
 );
 
 // Get visualization data
@@ -355,7 +355,7 @@ if (viz) {
 }
 
 // Cancel if needed
-if (currentBatch?.status === 'running') {
+if (currentBatch?.status === "running") {
   batchProcessingService.cancelBatch(batch.id);
 }
 
@@ -367,18 +367,18 @@ console.log(`Cleaned up ${deleted} old batches`);
 ### WebSocket Integration
 
 ```typescript
-import { websocketService } from '../other/websocketService';
+import { websocketService } from "../other/websocketService";
 
 // Listen for batch events
-websocketService.on('batch:created', (batch) => {
-  console.log('New batch created:', batch.id);
+websocketService.on("batch:created", (batch) => {
+  console.log("New batch created:", batch.id);
 });
 
-websocketService.on('batch:progress', ({ batchId, progress, status }) => {
+websocketService.on("batch:progress", ({ batchId, progress, status }) => {
   console.log(`Batch ${batchId}: ${progress}% - ${status}`);
 });
 
-websocketService.on('batch:completed', ({ batchId }) => {
+websocketService.on("batch:completed", ({ batchId }) => {
   console.log(`Batch ${batchId} completed`);
   // Trigger notifications, update UI, etc.
 });
@@ -387,8 +387,8 @@ websocketService.on('batch:completed', ({ batchId }) => {
 ### Frontend Integration (React)
 
 ```tsx
-import { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
+import { useState, useEffect } from "react";
+import { io } from "socket.io-client";
 
 function BatchMonitor({ batchId }: { batchId: string }) {
   const [batch, setBatch] = useState(null);
@@ -397,14 +397,14 @@ function BatchMonitor({ batchId }: { batchId: string }) {
   useEffect(() => {
     // Initial fetch
     fetch(`/api/batch/${batchId}`)
-      .then(res => res.json())
-      .then(data => setBatch(data.batch));
+      .then((res) => res.json())
+      .then((data) => setBatch(data.batch));
 
     // WebSocket updates
     const socket = io();
-    socket.on('batch:progress', (update) => {
+    socket.on("batch:progress", (update) => {
       if (update.batchId === batchId) {
-        setBatch(prev => ({ ...prev, ...update }));
+        setBatch((prev) => ({ ...prev, ...update }));
       }
     });
 
@@ -413,10 +413,10 @@ function BatchMonitor({ batchId }: { batchId: string }) {
 
   useEffect(() => {
     // Fetch visualization data
-    if (batch?.status === 'completed') {
+    if (batch?.status === "completed") {
       fetch(`/api/batch/${batchId}/viz`)
-        .then(res => res.json())
-        .then(data => setViz(data.visualization));
+        .then((res) => res.json())
+        .then((data) => setViz(data.visualization));
     }
   }, [batch?.status]);
 
@@ -427,7 +427,9 @@ function BatchMonitor({ batchId }: { batchId: string }) {
       <div>Progress: {batch?.progress}%</div>
       {viz && (
         <div>
-          <div>Success Rate: {(viz.overview.successRate * 100).toFixed(2)}%</div>
+          <div>
+            Success Rate: {(viz.overview.successRate * 100).toFixed(2)}%
+          </div>
           <div>Avg Duration: {viz.performanceMetrics.averageDuration}ms</div>
         </div>
       )}
@@ -453,15 +455,15 @@ BATCH_RETENTION_DAYS=30
 ```typescript
 // Customize batch processing behavior
 const customBatch = batchProcessingService.createBatch({
-  operation: 'annotate',
-  filters: { status: 'pending' },
+  operation: "annotate",
+  filters: { status: "pending" },
   options: {
-    batchSize: 100,        // Process 100 items at a time
-    retryAttempts: 5,      // Retry failed items 5 times
-    timeout: 60000,        // 60 second timeout
-    priority: 'high',      // High priority processing
-    notifyOnComplete: true // Send notifications
-  }
+    batchSize: 100, // Process 100 items at a time
+    retryAttempts: 5, // Retry failed items 5 times
+    timeout: 60000, // 60 second timeout
+    priority: "high", // High priority processing
+    notifyOnComplete: true, // Send notifications
+  },
 });
 ```
 
@@ -471,7 +473,12 @@ const customBatch = batchProcessingService.createBatch({
 
 ```typescript
 type BatchStatus = "pending" | "running" | "completed" | "failed" | "cancelled";
-type BatchOperationType = "annotate" | "import" | "export" | "transform" | "report";
+type BatchOperationType =
+  | "annotate"
+  | "import"
+  | "export"
+  | "transform"
+  | "report";
 
 interface BatchOperation {
   id: string;

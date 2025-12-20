@@ -1,11 +1,11 @@
 /**
  * API Key Settings Component for QuickChat
- * 
+ *
  * Allows users to configure API keys for different AI providers
  */
 
-import React, { useState, useEffect } from 'react';
-import styles from './APIKeySettings.module.css';
+import React, { useState, useEffect } from "react";
+import styles from "./APIKeySettings.module.css";
 
 interface APIKeySettingsProps {
   apiBase?: string;
@@ -20,14 +20,14 @@ interface APIKeys {
 }
 
 export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
-  apiBase = '/api/ai',
+  apiBase = "/api/ai",
 }) => {
   const [keys, setKeys] = useState<APIKeys>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [editingProvider, setEditingProvider] = useState<string | null>(null);
-  const [tempValue, setTempValue] = useState<string>('');
+  const [tempValue, setTempValue] = useState<string>("");
 
   // Load sanitized keys on mount
   useEffect(() => {
@@ -42,13 +42,13 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
         setKeys(data.keys || {});
       }
     } catch (err) {
-      console.error('Failed to load API keys:', err);
+      console.error("Failed to load API keys:", err);
     }
   };
 
   const handleSave = async (provider: string) => {
     if (!tempValue.trim()) {
-      setError('API key cannot be empty');
+      setError("API key cannot be empty");
       return;
     }
 
@@ -58,8 +58,8 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
 
     try {
       const response = await fetch(`${apiBase}/api-keys/${provider}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ value: tempValue }),
       });
 
@@ -68,14 +68,14 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
       if (data.success) {
         setSuccess(`${provider} API key updated successfully`);
         setEditingProvider(null);
-        setTempValue('');
+        setTempValue("");
         await loadKeys();
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError(data.error || 'Failed to update API key');
+        setError(data.error || "Failed to update API key");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update API key');
+      setError(err instanceof Error ? err.message : "Failed to update API key");
     } finally {
       setLoading(false);
     }
@@ -91,7 +91,7 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
 
     try {
       const response = await fetch(`${apiBase}/api-keys/${provider}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       const data = await response.json();
@@ -101,10 +101,10 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
         await loadKeys();
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError(data.error || 'Failed to delete API key');
+        setError(data.error || "Failed to delete API key");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete API key');
+      setError(err instanceof Error ? err.message : "Failed to delete API key");
     } finally {
       setLoading(false);
     }
@@ -116,7 +116,7 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
 
     try {
       const response = await fetch(`${apiBase}/api-keys/${provider}/test`, {
-        method: 'POST',
+        method: "POST",
       });
 
       const data = await response.json();
@@ -125,32 +125,34 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
         setSuccess(`${provider} connection successful`);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError(data.message || 'Connection test failed');
+        setError(data.message || "Connection test failed");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to test connection');
+      setError(
+        err instanceof Error ? err.message : "Failed to test connection",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const providers = [
-    { key: 'openai', label: 'OpenAI', placeholder: 'sk-...' },
-    { key: 'anthropic', label: 'Anthropic', placeholder: 'sk-ant-...' },
-    { key: 'azure', label: 'Azure OpenAI', placeholder: 'API Key' },
-    { key: 'huggingface', label: 'HuggingFace', placeholder: 'hf_...' },
+    { key: "openai", label: "OpenAI", placeholder: "sk-..." },
+    { key: "anthropic", label: "Anthropic", placeholder: "sk-ant-..." },
+    { key: "azure", label: "Azure OpenAI", placeholder: "API Key" },
+    { key: "huggingface", label: "HuggingFace", placeholder: "hf_..." },
   ];
 
   return (
     <div className={styles.container}>
       <h4 className={styles.title}>API Keys</h4>
-      
+
       {error && (
         <div className={styles.errorBanner} role="alert">
           {error}
         </div>
       )}
-      
+
       {success && (
         <div className={styles.successBanner} role="status">
           {success}
@@ -183,12 +185,12 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
                     disabled={loading || !tempValue.trim()}
                     className={styles.saveButton}
                   >
-                    {loading ? 'Saving...' : 'Save'}
+                    {loading ? "Saving..." : "Save"}
                   </button>
                   <button
                     onClick={() => {
                       setEditingProvider(null);
-                      setTempValue('');
+                      setTempValue("");
                     }}
                     disabled={loading}
                     className={styles.cancelButton}
@@ -205,7 +207,7 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
                     <button
                       onClick={() => {
                         setEditingProvider(key);
-                        setTempValue('');
+                        setTempValue("");
                       }}
                       className={styles.editButton}
                       disabled={loading}
@@ -231,7 +233,7 @@ export const APIKeySettings: React.FC<APIKeySettingsProps> = ({
                   <button
                     onClick={() => {
                       setEditingProvider(key);
-                      setTempValue('');
+                      setTempValue("");
                     }}
                     className={styles.addButton}
                     disabled={loading}

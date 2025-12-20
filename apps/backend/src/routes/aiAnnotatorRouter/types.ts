@@ -3,7 +3,7 @@
 
 /**
  * TypeScript types and Zod validation schemas for AI Annotator Module
- * 
+ *
  * @module routes/aiAnnotator/types
  */
 
@@ -104,7 +104,7 @@ export interface NodeForAnnotation {
   name: string;
   description?: string;
   category?: string;
-  annotation_status?: typeof ANNOTATION_STATUS[keyof typeof ANNOTATION_STATUS];
+  annotation_status?: (typeof ANNOTATION_STATUS)[keyof typeof ANNOTATION_STATUS];
   ai_metadata?: string;
   ai_rule?: string;
   ai_form?: string;
@@ -179,7 +179,7 @@ export interface FormField {
  */
 export interface BatchOperation {
   id: string;
-  operation: typeof BATCH_OPERATION[keyof typeof BATCH_OPERATION];
+  operation: (typeof BATCH_OPERATION)[keyof typeof BATCH_OPERATION];
   filters: Record<string, unknown>;
   options?: BatchOperationOptions;
   status: "pending" | "running" | "completed" | "failed" | "cancelled";
@@ -201,7 +201,7 @@ export interface BatchOperationOptions {
   maxRetries?: number;
   chunkSize?: number;
   parallelRequests?: number;
-  modelPreference?: typeof MODEL_PREFERENCE[keyof typeof MODEL_PREFERENCE];
+  modelPreference?: (typeof MODEL_PREFERENCE)[keyof typeof MODEL_PREFERENCE];
   webhookUrl?: string;
   notifyOnComplete?: boolean;
 }
@@ -246,7 +246,7 @@ export interface QualityMetrics {
  * Model performance metrics
  */
 export interface ModelPerformance {
-  provider: typeof AI_PROVIDER[keyof typeof AI_PROVIDER];
+  provider: (typeof AI_PROVIDER)[keyof typeof AI_PROVIDER];
   model: string;
   totalRequests: number;
   successfulRequests: number;
@@ -262,7 +262,7 @@ export interface ModelPerformance {
  */
 export interface PiiClassification {
   nodeId: string;
-  piiLevel: typeof PII_LEVEL[keyof typeof PII_LEVEL];
+  piiLevel: (typeof PII_LEVEL)[keyof typeof PII_LEVEL];
   detectedTypes: string[];
   confidence: number;
   recommendations: string[];
@@ -334,7 +334,17 @@ export interface FilterDefinition {
  */
 export interface FilterCondition {
   field: string;
-  operator: "eq" | "ne" | "gt" | "gte" | "lt" | "lte" | "in" | "like" | "isNull" | "isNotNull";
+  operator:
+    | "eq"
+    | "ne"
+    | "gt"
+    | "gte"
+    | "lt"
+    | "lte"
+    | "in"
+    | "like"
+    | "isNull"
+    | "isNotNull";
   value?: unknown;
 }
 
@@ -503,13 +513,26 @@ export const rejectAnnotationSchema = z.object({
 export const createFilterSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
-  conditions: z.array(
-    z.object({
-      field: z.string().min(1),
-      operator: z.enum(["eq", "ne", "gt", "gte", "lt", "lte", "in", "like", "isNull", "isNotNull"]),
-      value: z.unknown().optional(),
-    })
-  ).min(1),
+  conditions: z
+    .array(
+      z.object({
+        field: z.string().min(1),
+        operator: z.enum([
+          "eq",
+          "ne",
+          "gt",
+          "gte",
+          "lt",
+          "lte",
+          "in",
+          "like",
+          "isNull",
+          "isNotNull",
+        ]),
+        value: z.unknown().optional(),
+      }),
+    )
+    .min(1),
 });
 
 /**
@@ -518,11 +541,23 @@ export const createFilterSchema = z.object({
 export const queryNodesSchema = z.object({
   limit: z.coerce.number().int().positive().max(1000).optional().default(100),
   offset: z.coerce.number().int().min(0).optional().default(0),
-  status: z.enum(["pending", "annotated", "reviewed", "approved", "rejected", "failed"]).optional(),
+  status: z
+    .enum([
+      "pending",
+      "annotated",
+      "reviewed",
+      "approved",
+      "rejected",
+      "failed",
+    ])
+    .optional(),
   category: z.string().optional(),
   search: z.string().optional(),
   minQualityScore: z.coerce.number().min(0).max(1).optional(),
-  sortBy: z.enum(["name", "status", "quality_score", "created_at", "updated_at"]).optional().default("created_at"),
+  sortBy: z
+    .enum(["name", "status", "quality_score", "created_at", "updated_at"])
+    .optional()
+    .default("created_at"),
   sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
 });
 
@@ -534,12 +569,12 @@ export const queryNodesSchema = z.object({
  * Type guard for annotation status
  */
 export function isValidAnnotationStatus(
-  status: unknown
-): status is typeof ANNOTATION_STATUS[keyof typeof ANNOTATION_STATUS] {
+  status: unknown,
+): status is (typeof ANNOTATION_STATUS)[keyof typeof ANNOTATION_STATUS] {
   return (
     typeof status === "string" &&
     Object.values(ANNOTATION_STATUS).includes(
-      status as typeof ANNOTATION_STATUS[keyof typeof ANNOTATION_STATUS]
+      status as (typeof ANNOTATION_STATUS)[keyof typeof ANNOTATION_STATUS],
     )
   );
 }
@@ -548,12 +583,12 @@ export function isValidAnnotationStatus(
  * Type guard for batch operation
  */
 export function isValidBatchOperation(
-  operation: unknown
-): operation is typeof BATCH_OPERATION[keyof typeof BATCH_OPERATION] {
+  operation: unknown,
+): operation is (typeof BATCH_OPERATION)[keyof typeof BATCH_OPERATION] {
   return (
     typeof operation === "string" &&
     Object.values(BATCH_OPERATION).includes(
-      operation as typeof BATCH_OPERATION[keyof typeof BATCH_OPERATION]
+      operation as (typeof BATCH_OPERATION)[keyof typeof BATCH_OPERATION],
     )
   );
 }
@@ -562,12 +597,12 @@ export function isValidBatchOperation(
  * Type guard for AI provider
  */
 export function isValidAiProvider(
-  provider: unknown
-): provider is typeof AI_PROVIDER[keyof typeof AI_PROVIDER] {
+  provider: unknown,
+): provider is (typeof AI_PROVIDER)[keyof typeof AI_PROVIDER] {
   return (
     typeof provider === "string" &&
     Object.values(AI_PROVIDER).includes(
-      provider as typeof AI_PROVIDER[keyof typeof AI_PROVIDER]
+      provider as (typeof AI_PROVIDER)[keyof typeof AI_PROVIDER],
     )
   );
 }
@@ -576,12 +611,12 @@ export function isValidAiProvider(
  * Type guard for PII level
  */
 export function isValidPiiLevel(
-  level: unknown
-): level is typeof PII_LEVEL[keyof typeof PII_LEVEL] {
+  level: unknown,
+): level is (typeof PII_LEVEL)[keyof typeof PII_LEVEL] {
   return (
     typeof level === "string" &&
     Object.values(PII_LEVEL).includes(
-      level as typeof PII_LEVEL[keyof typeof PII_LEVEL]
+      level as (typeof PII_LEVEL)[keyof typeof PII_LEVEL],
     )
   );
 }
@@ -641,13 +676,18 @@ export function calculateQualityScore(metadata: GeneratedMeta): number {
     relatedConcepts: 0.1,
   };
 
-  if (metadata.summary && metadata.summary.length > 20) score += weights.summary;
-  if (metadata.keywords && metadata.keywords.length >= 3) score += weights.keywords;
+  if (metadata.summary && metadata.summary.length > 20)
+    score += weights.summary;
+  if (metadata.keywords && metadata.keywords.length >= 3)
+    score += weights.keywords;
   if (metadata.category) score += weights.category;
   if (metadata.complexity) score += weights.complexity;
-  if (metadata.useCases && metadata.useCases.length > 0) score += weights.useCases;
-  if (metadata.prerequisites && metadata.prerequisites.length > 0) score += weights.prerequisites;
-  if (metadata.relatedConcepts && metadata.relatedConcepts.length > 0) score += weights.relatedConcepts;
+  if (metadata.useCases && metadata.useCases.length > 0)
+    score += weights.useCases;
+  if (metadata.prerequisites && metadata.prerequisites.length > 0)
+    score += weights.prerequisites;
+  if (metadata.relatedConcepts && metadata.relatedConcepts.length > 0)
+    score += weights.relatedConcepts;
 
   return Math.min(score, 1);
 }
@@ -675,7 +715,10 @@ export function formatCost(cost: number, currency = "USD"): string {
 /**
  * Calculate success rate percentage
  */
-export function calculateSuccessRate(successful: number, total: number): number {
+export function calculateSuccessRate(
+  successful: number,
+  total: number,
+): number {
   if (total === 0) return 0;
   return Math.round((successful / total) * 100 * 100) / 100;
 }

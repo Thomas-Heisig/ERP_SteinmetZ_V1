@@ -82,7 +82,18 @@ router.get("/", (_req: Request, res: Response) => {
     res.setHeader("Cache-Control", "no-store");
     return res
       .status(200)
-      .json(basePayload("degraded", { processUp: true, hasOpenAIKey: false, hasAnthropicKey: false, hasOllamaUrl: false }, false)); // liveness bleibt 200
+      .json(
+        basePayload(
+          "degraded",
+          {
+            processUp: true,
+            hasOpenAIKey: false,
+            hasAnthropicKey: false,
+            hasOllamaUrl: false,
+          },
+          false,
+        ),
+      ); // liveness bleibt 200
   }
 });
 
@@ -110,7 +121,18 @@ router.get("/readiness", async (_req: Request, res: Response) => {
     res.setHeader("Cache-Control", "no-store");
     return res
       .status(503)
-      .json(basePayload("unhealthy", { processUp: false, hasOpenAIKey: false, hasAnthropicKey: false, hasOllamaUrl: false }, false));
+      .json(
+        basePayload(
+          "unhealthy",
+          {
+            processUp: false,
+            hasOpenAIKey: false,
+            hasAnthropicKey: false,
+            hasOllamaUrl: false,
+          },
+          false,
+        ),
+      );
   }
 });
 

@@ -23,10 +23,34 @@ const logger = createLogger("sales-router");
 const router = Router();
 
 // Status types for query parameters
-type QuoteStatus = "draft" | "pending" | "accepted" | "rejected" | "expired" | undefined;
-type OrderStatus = "confirmed" | "in_production" | "ready" | "delivered" | "cancelled" | undefined;
-type LeadStatus = "new" | "contacted" | "qualified" | "converted" | "lost" | undefined;
-type CampaignStatus = "planned" | "active" | "paused" | "completed" | "cancelled" | undefined;
+type QuoteStatus =
+  | "draft"
+  | "pending"
+  | "accepted"
+  | "rejected"
+  | "expired"
+  | undefined;
+type OrderStatus =
+  | "confirmed"
+  | "in_production"
+  | "ready"
+  | "delivered"
+  | "cancelled"
+  | undefined;
+type LeadStatus =
+  | "new"
+  | "contacted"
+  | "qualified"
+  | "converted"
+  | "lost"
+  | undefined;
+type CampaignStatus =
+  | "planned"
+  | "active"
+  | "paused"
+  | "completed"
+  | "cancelled"
+  | undefined;
 
 /* ---------------------------------------------------------
    VERTRIEBSPIPELINE
@@ -49,7 +73,10 @@ router.get(
 
     const pipeline = await salesService.getPipeline();
 
-    logger.info({ total_value: pipeline.total_value }, "Pipeline summary retrieved");
+    logger.info(
+      { total_value: pipeline.total_value },
+      "Pipeline summary retrieved",
+    );
     res.json(pipeline);
   }),
 );
@@ -97,16 +124,18 @@ const quoteSchema = z.object({
   customer_id: z.string(),
   contact_id: z.string().optional(),
   valid_days: z.number().default(30),
-  items: z.array(
-    z.object({
-      product_id: z.string().optional(),
-      description: z.string().min(1, "Description is required"),
-      quantity: z.number().positive("Quantity must be positive"),
-      unit_price: z.number().positive("Unit price must be positive"),
-      discount_percent: z.number().min(0).max(100).default(0),
-      tax_rate: z.number().default(19),
-    }),
-  ).min(1, "At least one item is required"),
+  items: z
+    .array(
+      z.object({
+        product_id: z.string().optional(),
+        description: z.string().min(1, "Description is required"),
+        quantity: z.number().positive("Quantity must be positive"),
+        unit_price: z.number().positive("Unit price must be positive"),
+        discount_percent: z.number().min(0).max(100).default(0),
+        tax_rate: z.number().default(19),
+      }),
+    )
+    .min(1, "At least one item is required"),
   notes: z.string().optional(),
   terms: z.string().optional(),
 });
@@ -114,12 +143,22 @@ const quoteSchema = z.object({
 router.post(
   "/quotes",
   asyncHandler(async (req, res) => {
-    logger.debug({ customer_id: req.body.customer_id }, "POST /api/sales/quotes - Creating quote");
+    logger.debug(
+      { customer_id: req.body.customer_id },
+      "POST /api/sales/quotes - Creating quote",
+    );
 
     const validatedData = quoteSchema.parse(req.body);
     const quote = await salesService.createQuote(validatedData);
 
-    logger.info({ quote_id: quote.id, quote_number: quote.quote_number, total: quote.total }, "Quote created");
+    logger.info(
+      {
+        quote_id: quote.id,
+        quote_number: quote.quote_number,
+        total: quote.total,
+      },
+      "Quote created",
+    );
     res.status(201).json({
       message: "Angebot erstellt",
       data: quote,
@@ -142,11 +181,17 @@ router.get(
   "/quotes/:id",
   asyncHandler(async (req, res) => {
     const { id } = req.params;
-    logger.debug({ quote_id: id }, "GET /api/sales/quotes/:id - Fetching quote details");
+    logger.debug(
+      { quote_id: id },
+      "GET /api/sales/quotes/:id - Fetching quote details",
+    );
 
     const quote = await salesService.getQuoteById(id);
 
-    logger.info({ quote_id: id, quote_number: quote.quote_number }, "Quote details retrieved");
+    logger.info(
+      { quote_id: id, quote_number: quote.quote_number },
+      "Quote details retrieved",
+    );
     res.json(quote);
   }),
 );
@@ -193,7 +238,9 @@ router.get(
 const orderSchema = z.object({
   quote_id: z.string().optional(),
   customer_id: z.string(),
-  delivery_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)"),
+  delivery_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)"),
   payment_terms: z.string().optional(),
   special_instructions: z.string().optional(),
 });
@@ -201,12 +248,18 @@ const orderSchema = z.object({
 router.post(
   "/orders",
   asyncHandler(async (req, res) => {
-    logger.debug({ quote_id: req.body.quote_id, customer_id: req.body.customer_id }, "POST /api/sales/orders - Creating order");
+    logger.debug(
+      { quote_id: req.body.quote_id, customer_id: req.body.customer_id },
+      "POST /api/sales/orders - Creating order",
+    );
 
     const validatedData = orderSchema.parse(req.body);
     const order = await salesService.createOrder(validatedData);
 
-    logger.info({ order_id: order.id, order_number: order.order_number }, "Order created");
+    logger.info(
+      { order_id: order.id, order_number: order.order_number },
+      "Order created",
+    );
     res.status(201).json({
       message: "Auftrag erstellt",
       data: order,
@@ -265,12 +318,18 @@ const leadSchema = z.object({
 router.post(
   "/leads",
   asyncHandler(async (req, res) => {
-    logger.debug({ source: req.body.source, company: req.body.company }, "POST /api/sales/leads - Creating lead");
+    logger.debug(
+      { source: req.body.source, company: req.body.company },
+      "POST /api/sales/leads - Creating lead",
+    );
 
     const validatedData = leadSchema.parse(req.body);
     const lead = await salesService.createLead(validatedData);
 
-    logger.info({ lead_id: lead.id, company: lead.company, score: lead.score }, "Lead created");
+    logger.info(
+      { lead_id: lead.id, company: lead.company, score: lead.score },
+      "Lead created",
+    );
     res.status(201).json({
       message: "Lead erfasst",
       data: lead,
@@ -297,7 +356,10 @@ router.put(
     const { id } = req.params;
     const { score, notes } = req.body;
 
-    logger.debug({ lead_id: id, score }, "PUT /api/sales/leads/:id/qualify - Qualifying lead");
+    logger.debug(
+      { lead_id: id, score },
+      "PUT /api/sales/leads/:id/qualify - Qualifying lead",
+    );
 
     if (!score || typeof score !== "number" || score < 0 || score > 100) {
       throw new BadRequestError("Score must be a number between 0 and 100");
@@ -334,7 +396,13 @@ router.get(
 
     const analytics = await salesService.getAnalytics();
 
-    logger.info({ total_revenue: analytics.total_revenue, conversion_rate: analytics.conversion_rate }, "Analytics retrieved");
+    logger.info(
+      {
+        total_revenue: analytics.total_revenue,
+        conversion_rate: analytics.conversion_rate,
+      },
+      "Analytics retrieved",
+    );
     res.json(analytics);
   }),
 );

@@ -383,7 +383,9 @@ function extractArea(node: JsonLikeNode): string {
   return "general";
 }
 
-function determinePriority(node: JsonLikeNode): "low" | "medium" | "high" | "critical" {
+function determinePriority(
+  node: JsonLikeNode,
+): "low" | "medium" | "high" | "critical" {
   const title = node.title?.toLowerCase() ?? "";
 
   if (/(warnung|error|fehler|critical|kritisch|alert|notfall)/.test(title)) {
@@ -528,7 +530,9 @@ function jsonToCatalogNode(
   const rawStatus = metaRecord?.status;
   const status: NodeMeta["status"] =
     typeof rawStatus === "string" &&
-    (rawStatus === "active" || rawStatus === "draft" || rawStatus === "deprecated")
+    (rawStatus === "active" ||
+      rawStatus === "draft" ||
+      rawStatus === "deprecated")
       ? rawStatus
       : undefined;
 
@@ -1077,7 +1081,11 @@ export class FunctionsCatalogService {
   /** Menü‑Struktur, gefiltert nach Rollen/Features/Bereich */
   async getMenuForContext(
     ctx: MenuContext,
-  ): Promise<{ menu: MenuNode[]; loadedAt: string; stats: BuildResult["stats"] }> {
+  ): Promise<{
+    menu: MenuNode[];
+    loadedAt: string;
+    stats: BuildResult["stats"];
+  }> {
     const idx = await this.getFunctionsIndex();
     const menu = filterMenu(idx.nodes, idx.rules, ctx ?? {});
     return { menu, loadedAt: idx.loadedAt, stats: idx.stats };
@@ -1395,7 +1403,11 @@ export async function getFunctionsIndex(
 export async function getMenuForContext(
   ctx: MenuContext,
   opts?: BuildOptions,
-): Promise<{ menu: MenuNode[]; loadedAt: string; stats: BuildResult["stats"] }> {
+): Promise<{
+  menu: MenuNode[];
+  loadedAt: string;
+  stats: BuildResult["stats"];
+}> {
   const service = new FunctionsCatalogService(opts);
   return await service.getMenuForContext(ctx);
 }

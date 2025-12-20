@@ -36,7 +36,7 @@ async function createAdminUser(): Promise<void> {
 
     const existingAdmin = await db.get<UserRecord>(
       "SELECT * FROM users WHERE username = ?",
-      ["admin"]
+      ["admin"],
     );
 
     if (existingAdmin) {
@@ -62,7 +62,7 @@ async function createAdminUser(): Promise<void> {
     // Get super_admin role (not just "Admin")
     const superAdminRole = await db.get<RoleRecord>(
       "SELECT * FROM roles WHERE name = ?",
-      ["super_admin"]
+      ["super_admin"],
     );
 
     if (superAdminRole) {

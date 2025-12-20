@@ -21,25 +21,28 @@ database/
 ### Basic Usage (Async)
 
 ```typescript
-import db from './database/index.js';
+import db from "./database/index.js";
 
 // Initialize database
 await db.init();
 
 // Execute queries
-const users = await db.all('SELECT * FROM users WHERE active = ?', [true]);
-const user = await db.get('SELECT * FROM users WHERE id = ?', [userId]);
-const result = await db.run('INSERT INTO users (name, email) VALUES (?, ?)', ['John', 'john@example.com']);
+const users = await db.all("SELECT * FROM users WHERE active = ?", [true]);
+const user = await db.get("SELECT * FROM users WHERE id = ?", [userId]);
+const result = await db.run("INSERT INTO users (name, email) VALUES (?, ?)", [
+  "John",
+  "john@example.com",
+]);
 ```
 
 ### Advanced Usage (Raw Synchronous)
 
 ```typescript
-import { getDatabase, isDatabaseInitialized } from './database/index.js';
+import { getDatabase, isDatabaseInitialized } from "./database/index.js";
 
 if (isDatabaseInitialized()) {
   const rawDb = getDatabase();
-  const stmt = rawDb.prepare('SELECT * FROM users');
+  const stmt = rawDb.prepare("SELECT * FROM users");
   const users = stmt.all();
 }
 ```
@@ -47,7 +50,11 @@ if (isDatabaseInitialized()) {
 ### Type Safety
 
 ```typescript
-import type { BetterSqlite3Database, SqlValue, UnknownRow } from './database/index.js';
+import type {
+  BetterSqlite3Database,
+  SqlValue,
+  UnknownRow,
+} from "./database/index.js";
 
 interface User extends UnknownRow {
   id: string;
@@ -56,8 +63,8 @@ interface User extends UnknownRow {
   active: boolean;
 }
 
-const users = await db.all<User>('SELECT * FROM users');
-const user = await db.get<User>('SELECT * FROM users WHERE id = ?', [userId]);
+const users = await db.all<User>("SELECT * FROM users");
+const user = await db.get<User>("SELECT * FROM users WHERE id = ?", [userId]);
 ```
 
 ## 🔑 Key Features
@@ -108,10 +115,10 @@ const user = await db.get<User>('SELECT * FROM users WHERE id = ?', [userId]);
 Returns the raw better-sqlite3 instance for synchronous operations.
 
 ```typescript
-import { getDatabase } from './database/index.js';
+import { getDatabase } from "./database/index.js";
 
 const db = getDatabase();
-const users = db.prepare('SELECT * FROM users').all();
+const users = db.prepare("SELECT * FROM users").all();
 ```
 
 #### `isDatabaseInitialized(): boolean`
@@ -119,7 +126,7 @@ const users = db.prepare('SELECT * FROM users').all();
 Checks if database is ready for use.
 
 ```typescript
-import { isDatabaseInitialized, getDatabase } from './database/index.js';
+import { isDatabaseInitialized, getDatabase } from "./database/index.js";
 
 if (isDatabaseInitialized()) {
   const db = getDatabase();
@@ -147,18 +154,26 @@ db.getQueryStats(): QueryStats[]
 
 ```typescript
 // Database instances
-type BetterSqlite3Database = Database.Database
-type PostgresPool = Pool
+type BetterSqlite3Database = Database.Database;
+type PostgresPool = Pool;
 
 // Query parameters & results
-type SqlValue = string | number | bigint | boolean | null | Buffer | Record<string, unknown> | unknown[]
-type UnknownRow = Record<string, unknown>
-type QueryResult<T> = T[]
-type QuerySingleResult<T> = T | undefined
-type MutationResult = { changes?: number; lastID?: number }
+type SqlValue =
+  | string
+  | number
+  | bigint
+  | boolean
+  | null
+  | Buffer
+  | Record<string, unknown>
+  | unknown[];
+type UnknownRow = Record<string, unknown>;
+type QueryResult<T> = T[];
+type QuerySingleResult<T> = T | undefined;
+type MutationResult = { changes?: number; lastID?: number };
 
 // Configuration
-type DatabaseDriver = 'sqlite' | 'postgres'
+type DatabaseDriver = "sqlite" | "postgres";
 interface DatabaseConfig {
   driver?: DatabaseDriver;
   database?: string;
@@ -180,9 +195,9 @@ interface DatabaseErrorOriginal {
 
 ```typescript
 await db.init({
-  driver: 'sqlite',
-  database: 'data/dev.sqlite3',
-  migrations: true
+  driver: "sqlite",
+  database: "data/dev.sqlite3",
+  migrations: true,
 });
 ```
 
@@ -190,9 +205,9 @@ await db.init({
 
 ```typescript
 await db.init({
-  driver: 'postgres',
+  driver: "postgres",
   database: process.env.DATABASE_URL,
-  migrations: true
+  migrations: true,
 });
 ```
 
@@ -283,33 +298,33 @@ Database (SQLite/PostgreSQL)
 ### Old Imports (Still Work)
 
 ```typescript
-import db from './database/dbService.js';
-import { getDatabase } from './database/db.js';
-import type { BetterSqlite3Database } from './database/database.js';
+import db from "./database/dbService.js";
+import { getDatabase } from "./database/db.js";
+import type { BetterSqlite3Database } from "./database/database.js";
 ```
 
 ### New Imports (Recommended)
 
 ```typescript
-import db, { getDatabase, isDatabaseInitialized } from './database/index.js';
-import type { BetterSqlite3Database, UnknownRow } from './database/index.js';
+import db, { getDatabase, isDatabaseInitialized } from "./database/index.js";
+import type { BetterSqlite3Database, UnknownRow } from "./database/index.js";
 ```
 
 ## 🧪 Testing
 
 ```typescript
-import db, { isDatabaseInitialized } from './database/index.js';
+import db, { isDatabaseInitialized } from "./database/index.js";
 
 // Wait for initialization
-await db.init({ database: ':memory:' });
+await db.init({ database: ":memory:" });
 
 // Run tests
-const result = await db.run('INSERT INTO test VALUES (?, ?)', [1, 'test']);
+const result = await db.run("INSERT INTO test VALUES (?, ?)", [1, "test"]);
 expect(result.changes).toBe(1);
 
 // Check health
 const health = db.getHealthStatus();
-expect(health.status).toBe('healthy');
+expect(health.status).toBe("healthy");
 ```
 
 ## 📈 Performance
@@ -341,14 +356,14 @@ interface User {
   name: string;
 }
 
-const users = await db.all<User>('SELECT * FROM users');
+const users = await db.all<User>("SELECT * FROM users");
 ```
 
 ### Import errors
 
 ```typescript
 // Use central export point
-import db, { getDatabase } from './database/index.js';
+import db, { getDatabase } from "./database/index.js";
 ```
 
 ## 📝 Next Steps

@@ -25,8 +25,14 @@ interface DatabaseService {
   };
   init?: () => Promise<void>;
   all?: <T = unknown>(sql: string, params?: unknown[]) => Promise<T[]>;
-  get?: <T = unknown>(sql: string, params?: unknown[]) => Promise<T | undefined>;
-  run?: (sql: string, params?: unknown[]) => Promise<{ changes: number; lastID?: number }>;
+  get?: <T = unknown>(
+    sql: string,
+    params?: unknown[],
+  ) => Promise<T | undefined>;
+  run?: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ changes: number; lastID?: number }>;
 }
 
 /**
@@ -200,7 +206,10 @@ class DatabaseManager {
   /**
    * Get single row safely
    */
-  async queryOne<T = unknown>(sql: string, params?: unknown[]): Promise<T | undefined> {
+  async queryOne<T = unknown>(
+    sql: string,
+    params?: unknown[],
+  ): Promise<T | undefined> {
     return this.safeAccess(async () => {
       const service = this.getService();
       if (service?.get) {
@@ -213,7 +222,10 @@ class DatabaseManager {
   /**
    * Execute mutation safely
    */
-  async execute(sql: string, params?: unknown[]): Promise<{ changes: number; lastID?: number }> {
+  async execute(
+    sql: string,
+    params?: unknown[],
+  ): Promise<{ changes: number; lastID?: number }> {
     return this.safeAccess(async () => {
       const service = this.getService();
       if (service?.run) {

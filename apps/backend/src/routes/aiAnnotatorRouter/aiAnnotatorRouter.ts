@@ -234,7 +234,10 @@ router.get(
     const businessArea = toStringArray(req.query.businessArea);
     const complexity = toStringArray(req.query.complexity);
 
-    logger.debug({ kinds, status, limit, offset }, "Listing annotation candidate nodes");
+    logger.debug(
+      { kinds, status, limit, offset },
+      "Listing annotation candidate nodes",
+    );
 
     const nodes = await aiAnnotatorService.listCandidates({
       kinds,
@@ -250,10 +253,10 @@ router.get(
     res.json({
       success: true,
       data: { nodes },
-      pagination: { 
-        limit, 
-        offset, 
-        total: nodes.length 
+      pagination: {
+        limit,
+        offset,
+        total: nodes.length,
       },
       filters: {
         kinds,
@@ -398,7 +401,10 @@ router.post(
   asyncHandler(async (req, res) => {
     const validated = fullAnnotationRequestSchema.parse(req.body);
     const { includeValidation, parallel } = validated;
-    logger.info({ nodeId: req.params.id, includeValidation, parallel }, "Generating full annotation");
+    logger.info(
+      { nodeId: req.params.id, includeValidation, parallel },
+      "Generating full annotation",
+    );
     const node = await findNodeById(req.params.id);
 
     let meta: unknown,
@@ -620,22 +626,26 @@ router.get(
     let filteredNodes = nodesWithRules;
     if (type) {
       filteredNodes = filteredNodes.filter(
-        (node) => node.meta_json && typeof node.meta_json === 'object' && 
-                  'rule' in node.meta_json && 
-                  typeof node.meta_json.rule === 'object' && 
-                  node.meta_json.rule && 
-                  'type' in node.meta_json.rule && 
-                  node.meta_json.rule.type === type,
+        (node) =>
+          node.meta_json &&
+          typeof node.meta_json === "object" &&
+          "rule" in node.meta_json &&
+          typeof node.meta_json.rule === "object" &&
+          node.meta_json.rule &&
+          "type" in node.meta_json.rule &&
+          node.meta_json.rule.type === type,
       );
     }
     if (widget) {
       filteredNodes = filteredNodes.filter(
-        (node) => node.meta_json && typeof node.meta_json === 'object' && 
-                  'rule' in node.meta_json && 
-                  typeof node.meta_json.rule === 'object' && 
-                  node.meta_json.rule && 
-                  'widget' in node.meta_json.rule && 
-                  node.meta_json.rule.widget === widget,
+        (node) =>
+          node.meta_json &&
+          typeof node.meta_json === "object" &&
+          "rule" in node.meta_json &&
+          typeof node.meta_json.rule === "object" &&
+          node.meta_json.rule &&
+          "widget" in node.meta_json.rule &&
+          node.meta_json.rule.widget === widget,
       );
     }
 
@@ -644,13 +654,19 @@ router.get(
     const widgetsByType: Record<string, string[]> = {};
 
     filteredNodes.forEach((node) => {
-      if (!node.meta_json || typeof node.meta_json !== 'object' || !('rule' in node.meta_json) || typeof node.meta_json.rule !== 'object' || !node.meta_json.rule) {
+      if (
+        !node.meta_json ||
+        typeof node.meta_json !== "object" ||
+        !("rule" in node.meta_json) ||
+        typeof node.meta_json.rule !== "object" ||
+        !node.meta_json.rule
+      ) {
         return;
       }
 
       const rule = node.meta_json.rule as Record<string, unknown>;
-      const ruleType = typeof rule.type === 'string' ? rule.type : 'unknown';
-      const widget = typeof rule.widget === 'string' ? rule.widget : undefined;
+      const ruleType = typeof rule.type === "string" ? rule.type : "unknown";
+      const widget = typeof rule.widget === "string" ? rule.widget : undefined;
 
       if (!rulesByType[ruleType]) {
         rulesByType[ruleType] = [];

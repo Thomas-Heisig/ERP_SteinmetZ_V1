@@ -10,12 +10,24 @@
 /**
  * Batch operation status
  */
-export type BatchStatus = "pending" | "running" | "completed" | "failed" | "cancelled";
+export type BatchStatus =
+  | "pending"
+  | "running"
+  | "completed"
+  | "failed"
+  | "cancelled";
 
 /**
  * Batch operation type
  */
-export type BatchOperationType = "annotate" | "import" | "export" | "transform" | "report" | "validate" | "cleanup";
+export type BatchOperationType =
+  | "annotate"
+  | "import"
+  | "export"
+  | "transform"
+  | "report"
+  | "validate"
+  | "cleanup";
 
 /**
  * Batch filter criteria
@@ -225,7 +237,7 @@ export interface BatchProgressUpdate {
 /**
  * Batch WebSocket event types
  */
-export type BatchEventType = 
+export type BatchEventType =
   | "batch:created"
   | "batch:progress"
   | "batch:completed"
@@ -240,6 +252,10 @@ export type BatchEventType =
 export interface BatchEvent {
   type: BatchEventType;
   batchId: string;
-  data: BatchOperation | BatchProgressUpdate | BatchItemResult | { error: string };
+  data:
+    | BatchOperation
+    | BatchProgressUpdate
+    | BatchItemResult
+    | { error: string };
   timestamp: string;
 }

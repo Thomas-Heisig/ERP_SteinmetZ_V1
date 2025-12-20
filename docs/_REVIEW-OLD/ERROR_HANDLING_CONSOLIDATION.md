@@ -9,32 +9,35 @@ The error handling module has been fully consolidated and consolidated to implem
 ### 1. **errors.ts** - Standardized Error Classes
 
 **Type Safety Improvements**:
+
 - ✅ Replaced all `details?: any` with `details?: Record<string, unknown>`
 - ✅ Added comprehensive SPDX license header and module documentation
 - ✅ Unified all 12 error class constructors with proper typing
 
 **Error Classes** (All Now Type-Safe):
+
 ```typescript
 // 4xx Client Errors
-BadRequestError (400)        // Validation failures, bad parameters
-UnauthorizedError (401)      // Authentication required
-ForbiddenError (403)         // Access denied
-NotFoundError (404)          // Resource not found
-ConflictError (409)          // State/data conflict
-ValidationError (422)        // Validation failed
-RateLimitError (429)         // Rate limit exceeded
+BadRequestError(400); // Validation failures, bad parameters
+UnauthorizedError(401); // Authentication required
+ForbiddenError(403); // Access denied
+NotFoundError(404); // Resource not found
+ConflictError(409); // State/data conflict
+ValidationError(422); // Validation failed
+RateLimitError(429); // Rate limit exceeded
 
 // 5xx Server Errors
-InternalServerError (500)    // Unexpected server error
-DatabaseError (500)          // Database operation failure
-ServiceUnavailableError (503) // Service unavailable
+InternalServerError(500); // Unexpected server error
+DatabaseError(500); // Database operation failure
+ServiceUnavailableError(503); // Service unavailable
 
 // External Integration Errors
-AIProviderError (502)        // AI provider failure
-ExternalAPIError (502)       // External API failure
+AIProviderError(502); // AI provider failure
+ExternalAPIError(502); // External API failure
 ```
 
 **Error Code Enum**:
+
 ```typescript
 export enum ErrorCode {
   // 4xx Client Errors
@@ -45,7 +48,7 @@ export enum ErrorCode {
   CONFLICT = "CONFLICT",
   VALIDATION_ERROR = "VALIDATION_ERROR",
   RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED",
-  
+
   // 5xx Server Errors
   INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
   DATABASE_ERROR = "DATABASE_ERROR",
@@ -58,6 +61,7 @@ export enum ErrorCode {
 ### 2. **errorTrackingService.ts** - Sentry Integration
 
 **Type Safety Improvements** (9 fixes applied):
+
 - ✅ Added `import type { Express } from "express"` for proper typing
 - ✅ Fixed `initialize(app?: Express)` parameter type
 - ✅ Replaced all `Record<string, any>` with `Record<string, unknown>`
@@ -69,6 +73,7 @@ export enum ErrorCode {
 - ✅ Fixed return type assignments throughout
 
 **Core Methods**:
+
 ```typescript
 // Initialization
 initialize(app?: Express): void
@@ -101,6 +106,7 @@ close(): Promise<boolean>
 ```
 
 **Sensitive Data Protection** (11 patterns filtered):
+
 ```typescript
 const sensitiveKeys = [
   "password",
@@ -119,6 +125,7 @@ const sensitiveKeys = [
 ```
 
 **redactSensitiveData Function**:
+
 ```typescript
 function redactSensitiveData(
   data: Record<string, unknown>,
@@ -134,6 +141,7 @@ function redactSensitiveData(
 ✅ **No changes needed** - Already properly typed and comprehensive
 
 **Test Coverage**:
+
 - Initialization scenarios (enabled/disabled, with/without DSN)
 - Exception capturing with context
 - Message capturing at different severity levels
@@ -186,15 +194,15 @@ Files Checked:
 
 ## Key Improvements Summary
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| Type Safety | 18 compilation errors | ✅ 0 errors |
-| any types | 18 instances | ✅ 0 instances |
-| Record<string, any> | 6 instances | ✅ 0 instances |
-| Function signatures | Untyped parameters | ✅ Fully typed |
-| Express integration | No types | ✅ Express.Application type |
-| Documentation | Basic comments | ✅ Comprehensive JSDoc |
-| Sensitive data | Minimal handling | ✅ 11-pattern redaction |
+| Aspect              | Before                | After                       |
+| ------------------- | --------------------- | --------------------------- |
+| Type Safety         | 18 compilation errors | ✅ 0 errors                 |
+| any types           | 18 instances          | ✅ 0 instances              |
+| Record<string, any> | 6 instances           | ✅ 0 instances              |
+| Function signatures | Untyped parameters    | ✅ Fully typed              |
+| Express integration | No types              | ✅ Express.Application type |
+| Documentation       | Basic comments        | ✅ Comprehensive JSDoc      |
+| Sensitive data      | Minimal handling      | ✅ 11-pattern redaction     |
 
 ## Best Practices for Error Handling
 
@@ -202,26 +210,26 @@ Files Checked:
 
 ```typescript
 // ✅ Good - Specific error type
-throw new BadRequestError('Email must be valid', { 
-  field: 'email', 
-  received: req.body.email 
+throw new BadRequestError("Email must be valid", {
+  field: "email",
+  received: req.body.email,
 });
 
 // ❌ Bad - Generic error
-throw new Error('Invalid input');
+throw new Error("Invalid input");
 ```
 
 ### 2. Provide Context Details
 
 ```typescript
 // ✅ Good - Context helps debugging
-throw new NotFoundError('User not found', { 
+throw new NotFoundError("User not found", {
   userId: id,
-  searchMethod: 'email'
+  searchMethod: "email",
 });
 
 // ❌ Bad - No context
-throw new NotFoundError('Not found');
+throw new NotFoundError("Not found");
 ```
 
 ### 3. Track Errors in Sentry
@@ -233,10 +241,10 @@ try {
 } catch (error) {
   errorTrackingService.captureException(error, {
     user: { id: req.userId },
-    tags: { operation: 'payment', status: 'failed' },
-    extra: { amount, currency, orderId }
+    tags: { operation: "payment", status: "failed" },
+    extra: { amount, currency, orderId },
   });
-  throw new InternalServerError('Payment processing failed');
+  throw new InternalServerError("Payment processing failed");
 }
 ```
 
@@ -245,12 +253,12 @@ try {
 ```typescript
 // ✅ Good - Specific database error
 try {
-  await db.insert('users', userData);
+  await db.insert("users", userData);
 } catch (error) {
-  if (error.code === 'UNIQUE_CONSTRAINT') {
-    throw new ConflictError('User already exists', { email: userData.email });
+  if (error.code === "UNIQUE_CONSTRAINT") {
+    throw new ConflictError("User already exists", { email: userData.email });
   }
-  throw new DatabaseError('Failed to create user', { error: error.message });
+  throw new DatabaseError("Failed to create user", { error: error.message });
 }
 ```
 
@@ -260,12 +268,12 @@ try {
 // ✅ Sensitive fields are automatically redacted in Sentry
 const context = {
   userId: 123,
-  password: 'secret123',  // → Automatically redacted as "[REDACTED]"
-  token: 'jwt-token',      // → Automatically redacted as "[REDACTED]"
-  data: 'visible-data'     // → Kept as-is
+  password: "secret123", // → Automatically redacted as "[REDACTED]"
+  token: "jwt-token", // → Automatically redacted as "[REDACTED]"
+  data: "visible-data", // → Kept as-is
 };
 
-errorTrackingService.setContext('user-action', context);
+errorTrackingService.setContext("user-action", context);
 ```
 
 ## Environment Variables
@@ -297,6 +305,7 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 ## Conclusion
 
 The error handling module is now production-ready with:
+
 - Comprehensive type safety (zero TypeScript errors)
 - Proper Sentry integration for monitoring
 - Sensitive data protection

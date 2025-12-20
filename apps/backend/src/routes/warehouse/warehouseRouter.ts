@@ -6,10 +6,16 @@
  * @description Warehouse Management API - Stock, Picking, Shipments, Inventory
  */
 
-import { Router, Request, Response, NextFunction, RequestHandler } from 'express';
-import { WarehouseService } from '../../service/WarehouseService.js';
-import { DatabaseService } from '../../service/DatabaseService.js';
-import { BadRequestError, NotFoundError } from '../../types/errors.js';
+import {
+  Router,
+  Request,
+  Response,
+  NextFunction,
+  RequestHandler,
+} from "express";
+import { WarehouseService } from "../../service/WarehouseService.js";
+import { DatabaseService } from "../../service/DatabaseService.js";
+import { BadRequestError, NotFoundError } from "../../types/errors.js";
 import {
   CreateStockMovementSchema,
   CreateLocationSchema,
@@ -18,12 +24,12 @@ import {
   CreateShipmentSchema,
   CreateInventoryCountSchema,
   WarehouseFiltersSchema,
-} from '../../types/warehouse.js';
-import { createLogger } from '../../utils/logger.js';
-import { z } from 'zod';
+} from "../../types/warehouse.js";
+import { createLogger } from "../../utils/logger.js";
+import { z } from "zod";
 
 const router = Router();
-const logger = createLogger('WarehouseRouter');
+const logger = createLogger("WarehouseRouter");
 
 type WarehouseRequest = Request & {
   warehouseService: WarehouseService;
@@ -35,7 +41,11 @@ type WarehouseRequest = Request & {
  */
 const asyncHandler =
   (
-    fn: (req: WarehouseRequest, res: Response, next: NextFunction) => Promise<unknown>
+    fn: (
+      req: WarehouseRequest,
+      res: Response,
+      next: NextFunction,
+    ) => Promise<unknown>,
   ): RequestHandler =>
   (req, res, next) => {
     Promise.resolve(fn(req as WarehouseRequest, res, next)).catch(next);
@@ -50,8 +60,8 @@ const asyncHandler =
  */
 router.use((req, _res, next) => {
   const db = new DatabaseService({
-    driver: 'sqlite',
-    sqliteFile: './data/dev.sqlite3',
+    driver: "sqlite",
+    sqliteFile: "./data/dev.sqlite3",
   });
   (req as WarehouseRequest).warehouseService = new WarehouseService(db);
   next();
@@ -72,7 +82,7 @@ router.use((req, _res, next) => {
  * @returns Array of stock items
  */
 router.get(
-  '/stock',
+  "/stock",
   asyncHandler(async (req, res) => {
     const filters = WarehouseFiltersSchema.parse(req.query);
     const items = await req.warehouseService.getStockItems(filters);
@@ -82,7 +92,7 @@ router.get(
       data: items,
       count: items.length,
     });
-  })
+  }),
 );
 
 /**
@@ -92,10 +102,10 @@ router.get(
  * @returns Stock item object with movement history
  */
 router.get(
-  '/stock/:id',
+  "/stock/:id",
   asyncHandler(async (req, res) => {
     if (!req.params.id) {
-      throw new BadRequestError('Stock item ID is required');
+      throw new BadRequestError("Stock item ID is required");
     }
 
     const item = await req.warehouseService.getStockItemById(req.params.id);
@@ -104,7 +114,7 @@ router.get(
       success: true,
       data: item,
     });
-  })
+  }),
 );
 
 /**
@@ -114,26 +124,26 @@ router.get(
  * @returns Recorded movement
  */
 router.post(
-  '/stock/movement',
+  "/stock/movement",
   asyncHandler(async (req, res) => {
     const validatedData = CreateStockMovementSchema.parse(req.body);
-    const userId = req.user?.id || 'system'; // From auth middleware
+    const userId = req.user?.id || "system"; // From auth middleware
 
     const movement = await req.warehouseService.recordStockMovement(
       validatedData,
-      userId
+      userId,
     );
 
     logger.info(
       { movementId: movement.id, type: movement.type },
-      'Stock movement recorded via API'
+      "Stock movement recorded via API",
     );
 
     res.status(201).json({
       success: true,
       data: movement,
     });
-  })
+  }),
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -146,7 +156,7 @@ router.post(
  * @returns Array of warehouse locations
  */
 router.get(
-  '/locations',
+  "/locations",
   asyncHandler(async (req, res) => {
     const locations = await req.warehouseService.getWarehouseLocations();
 
@@ -155,7 +165,7 @@ router.get(
       data: locations,
       count: locations.length,
     });
-  })
+  }),
 );
 
 /**
@@ -165,21 +175,23 @@ router.get(
  * @returns Created location
  */
 router.post(
-  '/locations',
+  "/locations",
   asyncHandler(async (req, res) => {
     const validatedData = CreateLocationSchema.parse(req.body);
 
-    const location = await req.warehouseService.createWarehouseLocation(
-      validatedData
-    );
+    const location =
+      await req.warehouseService.createWarehouseLocation(validatedData);
 
-    logger.info({ locationId: location.id }, 'Warehouse location created via API');
+    logger.info(
+      { locationId: location.id },
+      "Warehouse location created via API",
+    );
 
     res.status(201).json({
       success: true,
       data: location,
     });
-  })
+  }),
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -193,7 +205,7 @@ router.post(
  * @returns Array of picking lists
  */
 router.get(
-  '/picking',
+  "/picking",
   asyncHandler(async (req, res) => {
     const status = req.query.status as string | undefined;
     const lists = await req.warehouseService.getPickingLists(status);
@@ -203,7 +215,7 @@ router.get(
       data: lists,
       count: lists.length,
     });
-  })
+  }),
 );
 
 /**
@@ -213,10 +225,10 @@ router.get(
  * @returns Picking list with items
  */
 router.get(
-  '/picking/:id',
+  "/picking/:id",
   asyncHandler(async (req, res) => {
     if (!req.params.id) {
-      throw new BadRequestError('Picking list ID is required');
+      throw new BadRequestError("Picking list ID is required");
     }
 
     const list = await req.warehouseService.getPickingListById(req.params.id);
@@ -225,7 +237,7 @@ router.get(
       success: true,
       data: list,
     });
-  })
+  }),
 );
 
 /**
@@ -235,26 +247,26 @@ router.get(
  * @returns Created picking list
  */
 router.post(
-  '/picking',
+  "/picking",
   asyncHandler(async (req, res) => {
     const validatedData = CreatePickingListSchema.parse(req.body);
-    const userId = req.user?.id || 'system';
+    const userId = req.user?.id || "system";
 
     const list = await req.warehouseService.createPickingList(
       validatedData,
-      userId
+      userId,
     );
 
     logger.info(
       { pickingListId: list.id, orderId: list.order_id },
-      'Picking list created via API'
+      "Picking list created via API",
     );
 
     res.status(201).json({
       success: true,
       data: list,
     });
-  })
+  }),
 );
 
 /**
@@ -264,28 +276,28 @@ router.post(
  * @body picker_id - Picker user ID
  */
 router.post(
-  '/picking/:id/assign',
+  "/picking/:id/assign",
   asyncHandler(async (req, res) => {
     if (!req.params.id) {
-      throw new BadRequestError('Picking list ID is required');
+      throw new BadRequestError("Picking list ID is required");
     }
 
     if (!req.body.picker_id) {
-      throw new BadRequestError('Picker ID is required');
+      throw new BadRequestError("Picker ID is required");
     }
 
     await req.warehouseService.assignPicker(req.params.id, req.body.picker_id);
 
     logger.info(
       { pickingListId: req.params.id, pickerId: req.body.picker_id },
-      'Picker assigned via API'
+      "Picker assigned via API",
     );
 
     res.json({
       success: true,
-      message: 'Picker assigned successfully',
+      message: "Picker assigned successfully",
     });
-  })
+  }),
 );
 
 /**
@@ -295,26 +307,23 @@ router.post(
  * @body items - Array of picked items
  */
 router.post(
-  '/picking/:id/complete',
+  "/picking/:id/complete",
   asyncHandler(async (req, res) => {
     if (!req.params.id) {
-      throw new BadRequestError('Picking list ID is required');
+      throw new BadRequestError("Picking list ID is required");
     }
 
     const validatedData = CompletePickingSchema.parse(req.body);
 
     await req.warehouseService.completePicking(req.params.id, validatedData);
 
-    logger.info(
-      { pickingListId: req.params.id },
-      'Picking completed via API'
-    );
+    logger.info({ pickingListId: req.params.id }, "Picking completed via API");
 
     res.json({
       success: true,
-      message: 'Picking completed successfully',
+      message: "Picking completed successfully",
     });
-  })
+  }),
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -328,7 +337,7 @@ router.post(
  * @returns Array of shipments
  */
 router.get(
-  '/shipments',
+  "/shipments",
   asyncHandler(async (req, res) => {
     const status = req.query.status as string | undefined;
     const shipments = await req.warehouseService.getShipments(status);
@@ -338,7 +347,7 @@ router.get(
       data: shipments,
       count: shipments.length,
     });
-  })
+  }),
 );
 
 /**
@@ -348,7 +357,7 @@ router.get(
  * @returns Created shipment
  */
 router.post(
-  '/shipments',
+  "/shipments",
   asyncHandler(async (req, res) => {
     const validatedData = CreateShipmentSchema.parse(req.body);
 
@@ -356,14 +365,14 @@ router.post(
 
     logger.info(
       { shipmentId: shipment.id, orderId: shipment.order_id },
-      'Shipment created via API'
+      "Shipment created via API",
     );
 
     res.status(201).json({
       success: true,
       data: shipment,
     });
-  })
+  }),
 );
 
 /**
@@ -373,21 +382,21 @@ router.post(
  * @returns Shipment with tracking events
  */
 router.get(
-  '/shipments/:id/tracking',
+  "/shipments/:id/tracking",
   asyncHandler(async (req, res) => {
     if (!req.params.id) {
-      throw new BadRequestError('Shipment ID is required');
+      throw new BadRequestError("Shipment ID is required");
     }
 
     const tracking = await req.warehouseService.getShipmentTracking(
-      req.params.id
+      req.params.id,
     );
 
     res.json({
       success: true,
       data: tracking,
     });
-  })
+  }),
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -401,26 +410,26 @@ router.get(
  * @returns Created inventory count
  */
 router.post(
-  '/inventory-count',
+  "/inventory-count",
   asyncHandler(async (req, res) => {
     const validatedData = CreateInventoryCountSchema.parse(req.body);
-    const userId = req.user?.id || 'system';
+    const userId = req.user?.id || "system";
 
     const count = await req.warehouseService.createInventoryCount(
       validatedData,
-      userId
+      userId,
     );
 
     logger.info(
       { countId: count.id, type: count.type },
-      'Inventory count created via API'
+      "Inventory count created via API",
     );
 
     res.status(201).json({
       success: true,
       data: count,
     });
-  })
+  }),
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -433,7 +442,7 @@ router.post(
  * @returns Warehouse analytics data
  */
 router.get(
-  '/analytics',
+  "/analytics",
   asyncHandler(async (req, res) => {
     const analytics = await req.warehouseService.getAnalytics();
 
@@ -441,7 +450,7 @@ router.get(
       success: true,
       data: analytics,
     });
-  })
+  }),
 );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -452,36 +461,31 @@ router.get(
  * Global error handler for validation errors
  */
 router.use(
-  (
-    err: unknown,
-    _req: Request,
-    res: Response,
-    _next: NextFunction
-  ) => {
+  (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof z.ZodError) {
       const details = err.issues.reduce<Record<string, string>>(
         (acc, issue) => {
-          const path = issue.path.join('.');
+          const path = issue.path.join(".");
           acc[path] = issue.message;
           return acc;
         },
-        {}
+        {},
       );
 
-      logger.warn({ errors: details }, 'Validation error');
+      logger.warn({ errors: details }, "Validation error");
 
       return res.status(400).json({
         success: false,
         error: {
-          code: 'VALIDATION_ERROR',
-          message: 'Validation failed',
+          code: "VALIDATION_ERROR",
+          message: "Validation failed",
           details,
         },
       });
     }
 
     if (err instanceof BadRequestError || err instanceof NotFoundError) {
-      logger.warn({ error: err.message }, 'Request error');
+      logger.warn({ error: err.message }, "Request error");
 
       return res.status(err.statusCode).json({
         success: false,
@@ -494,16 +498,16 @@ router.use(
     }
 
     // Unexpected error
-    logger.error({ error: err }, 'Unexpected error');
+    logger.error({ error: err }, "Unexpected error");
 
     res.status(500).json({
       success: false,
       error: {
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'An unexpected error occurred',
+        code: "INTERNAL_SERVER_ERROR",
+        message: "An unexpected error occurred",
       },
     });
-  }
+  },
 );
 
 export default router;

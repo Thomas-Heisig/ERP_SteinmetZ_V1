@@ -3,10 +3,10 @@
 
 /**
  * Main Dashboard Router
- * 
+ *
  * Provides system health, overview, KPIs, tasks, notifications,
  * and widget stats for the dashboard interface.
- * 
+ *
  * ✅ Uses DashboardService (Singleton with DatabaseManager)
  * ✅ Utility functions (pagination, filtering, error handling)
  * ✅ Zod validation
@@ -14,12 +14,12 @@
  * ✅ No CREATE TABLE statements (migrations only)
  *
  * @module routes/dashboard
- * 
+ *
  * @example
  * ```typescript
  * // Get paginated tasks
  * GET /api/dashboard/tasks?limit=20&offset=0&status=pending
- * 
+ *
  * // Create task
  * POST /api/dashboard/tasks
  * {
@@ -28,7 +28,7 @@
  *   "priority": "high",
  *   "dueDate": "2025-12-25"
  * }
- * 
+ *
  * // Mark notification as read
  * PUT /api/dashboard/notifications/:id
  * { "read": true }
@@ -70,7 +70,7 @@ router.use("/comprehensive", comprehensiveRouter);
 /**
  * GET /api/dashboard/health
  * Get system health status
- * 
+ *
  * @returns {SystemHealth} System health metrics
  */
 router.get(
@@ -78,13 +78,13 @@ router.get(
   asyncHandler(async (_req: Request, res: Response) => {
     const health = await dashboardService.getSystemHealth();
     res.json(health);
-  })
+  }),
 );
 
 /**
  * GET /api/dashboard/overview
  * Get comprehensive system, AI, and ERP overview
- * 
+ *
  * @returns {DashboardOverview} Complete dashboard overview
  */
 router.get(
@@ -92,13 +92,13 @@ router.get(
   asyncHandler(async (_req: Request, res: Response) => {
     const overview = await dashboardService.getDashboardOverview();
     res.json(overview);
-  })
+  }),
 );
 
 /**
  * GET /api/dashboard/context
  * Get last context log entries
- * 
+ *
  * @returns {object} Last 10 log entries
  */
 router.get("/context", (_req: Request, res: Response) => {
@@ -118,19 +118,17 @@ router.get("/context", (_req: Request, res: Response) => {
 /**
  * GET /api/dashboard/kpis
  * Get dashboard KPIs
- * 
+ *
  * @query {string} category - Filter by category (optional)
  * @query {number} days - Number of days (default: 7)
- * 
+ *
  * @returns {DashboardKPI[]} List of KPIs
  */
 router.get(
   "/kpis",
   asyncHandler(async (req: Request, res: Response) => {
     const category = req.query.category as string | undefined;
-    const days = req.query.days
-      ? parseInt(req.query.days as string, 10)
-      : 7;
+    const days = req.query.days ? parseInt(req.query.days as string, 10) : 7;
 
     const kpis = await dashboardService.getKPIs({ category, days });
 
@@ -139,15 +137,15 @@ router.get(
       data: kpis,
       count: kpis.length,
     });
-  })
+  }),
 );
 
 /**
  * POST /api/dashboard/kpis
  * Create new KPI entry
- * 
+ *
  * @body {object} KPI data
- * 
+ *
  * @returns {DashboardKPI} Created KPI
  */
 router.post(
@@ -156,7 +154,9 @@ router.post(
     const { category, name, value, unit, target, date } = req.body;
 
     if (!category || !name || value === undefined) {
-      throw new BadRequestError("Missing required fields: category, name, value");
+      throw new BadRequestError(
+        "Missing required fields: category, name, value",
+      );
     }
 
     const kpi = await dashboardService.createKPI({
@@ -172,7 +172,7 @@ router.post(
       success: true,
       data: kpi,
     });
-  })
+  }),
 );
 
 // ==========================================================================
@@ -182,7 +182,7 @@ router.post(
 /**
  * GET /api/dashboard/tasks
  * Get dashboard tasks with pagination and filtering
- * 
+ *
  * @query {string} userId - Filter by user ID
  * @query {string} status - Filter by status (pending, in_progress, completed, etc.)
  * @query {string} priority - Filter by priority (low, normal, high, urgent, critical)
@@ -194,7 +194,7 @@ router.post(
  * @query {number} offset - Pagination offset (default: 0)
  * @query {string} sortBy - Sort field
  * @query {string} sortOrder - Sort order (asc, desc)
- * 
+ *
  * @returns {PaginatedResult<DashboardTask>} Paginated tasks
  */
 router.get(
@@ -213,15 +213,15 @@ router.get(
     };
     const result = await dashboardService.getTasks(filters);
     res.json(result);
-  })
+  }),
 );
 
 /**
  * GET /api/dashboard/tasks/:id
  * Get task by ID
- * 
+ *
  * @param {string} id - Task ID
- * 
+ *
  * @returns {DashboardTask} Task details
  */
 router.get(
@@ -229,15 +229,15 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const task = await dashboardService.getTaskById(req.params.id);
     res.json({ success: true, data: task });
-  })
+  }),
 );
 
 /**
  * POST /api/dashboard/tasks
  * Create a new task
- * 
+ *
  * @body {CreateTaskInput} Task data
- * 
+ *
  * @returns {DashboardTask} Created task
  */
 router.post(
@@ -246,16 +246,16 @@ router.post(
     const validated = createTaskSchema.parse(req.body);
     const task = await dashboardService.createTask(validated);
     res.status(201).json({ success: true, data: task });
-  })
+  }),
 );
 
 /**
  * PUT /api/dashboard/tasks/:id
  * Update a task
- * 
+ *
  * @param {string} id - Task ID
  * @body {UpdateTaskInput} Update data
- * 
+ *
  * @returns {DashboardTask} Updated task
  */
 router.put(
@@ -264,15 +264,15 @@ router.put(
     const validated = updateTaskSchema.parse(req.body);
     const task = await dashboardService.updateTask(req.params.id, validated);
     res.json({ success: true, data: task });
-  })
+  }),
 );
 
 /**
  * DELETE /api/dashboard/tasks/:id
  * Delete a task
- * 
+ *
  * @param {string} id - Task ID
- * 
+ *
  * @returns {object} Success message
  */
 router.delete(
@@ -280,7 +280,7 @@ router.delete(
   asyncHandler(async (req: Request, res: Response) => {
     await dashboardService.deleteTask(req.params.id);
     res.json({ success: true, message: "Task deleted successfully" });
-  })
+  }),
 );
 
 // ==========================================================================
@@ -290,7 +290,7 @@ router.delete(
 /**
  * GET /api/dashboard/notifications
  * Get dashboard notifications with pagination and filtering
- * 
+ *
  * @query {string} userId - Filter by user ID
  * @query {boolean} read - Filter by read status
  * @query {string} type - Filter by type (info, warning, error, success, alert)
@@ -300,7 +300,7 @@ router.delete(
  * @query {number} offset - Pagination offset (default: 0)
  * @query {string} sortBy - Sort field
  * @query {string} sortOrder - Sort order (asc, desc)
- * 
+ *
  * @returns {PaginatedResult<DashboardNotification>} Paginated notifications
  */
 router.get(
@@ -319,33 +319,33 @@ router.get(
     };
     const result = await dashboardService.getNotifications(filters);
     res.json(result);
-  })
+  }),
 );
 
 /**
  * GET /api/dashboard/notifications/:id
  * Get notification by ID
- * 
+ *
  * @param {string} id - Notification ID
- * 
+ *
  * @returns {DashboardNotification} Notification details
  */
 router.get(
   "/notifications/:id",
   asyncHandler(async (req: Request, res: Response) => {
     const notification = await dashboardService.getNotificationById(
-      req.params.id
+      req.params.id,
     );
     res.json({ success: true, data: notification });
-  })
+  }),
 );
 
 /**
  * POST /api/dashboard/notifications
  * Create a new notification
- * 
+ *
  * @body {CreateNotificationInput} Notification data
- * 
+ *
  * @returns {DashboardNotification} Created notification
  */
 router.post(
@@ -354,16 +354,16 @@ router.post(
     const validated = createNotificationSchema.parse(req.body);
     const notification = await dashboardService.createNotification(validated);
     res.status(201).json({ success: true, data: notification });
-  })
+  }),
 );
 
 /**
  * PUT /api/dashboard/notifications/:id
  * Update a notification (mark as read/unread)
- * 
+ *
  * @param {string} id - Notification ID
  * @body {UpdateNotificationInput} Update data
- * 
+ *
  * @returns {DashboardNotification} Updated notification
  */
 router.put(
@@ -372,18 +372,18 @@ router.put(
     const validated = updateNotificationSchema.parse(req.body);
     const notification = await dashboardService.updateNotification(
       req.params.id,
-      validated
+      validated,
     );
     res.json({ success: true, data: notification });
-  })
+  }),
 );
 
 /**
  * DELETE /api/dashboard/notifications/:id
  * Delete a notification
- * 
+ *
  * @param {string} id - Notification ID
- * 
+ *
  * @returns {object} Success message
  */
 router.delete(
@@ -391,7 +391,7 @@ router.delete(
   asyncHandler(async (req: Request, res: Response) => {
     await dashboardService.deleteNotification(req.params.id);
     res.json({ success: true, message: "Notification deleted successfully" });
-  })
+  }),
 );
 
 // ==========================================================================
@@ -435,7 +435,7 @@ router.get(
     };
     const result = await dashboardService.getWidgets(filters);
     res.json(result);
-  })
+  }),
 );
 
 /**
@@ -448,7 +448,7 @@ router.post(
     const validated = createWidgetSchema.parse(req.body);
     const widget = await dashboardService.createWidget(validated);
     res.status(201).json({ success: true, data: widget });
-  })
+  }),
 );
 
 /**
@@ -459,9 +459,12 @@ router.put(
   "/widgets/:id",
   asyncHandler(async (req: Request, res: Response) => {
     const validated = updateWidgetSchema.parse(req.body);
-    const widget = await dashboardService.updateWidget(req.params.id, validated);
+    const widget = await dashboardService.updateWidget(
+      req.params.id,
+      validated,
+    );
     res.json({ success: true, data: widget });
-  })
+  }),
 );
 
 /**
@@ -473,7 +476,7 @@ router.delete(
   asyncHandler(async (req: Request, res: Response) => {
     await dashboardService.deleteWidget(req.params.id);
     res.json({ success: true, message: "Widget deleted successfully" });
-  })
+  }),
 );
 
 // ==========================================================================
@@ -492,7 +495,7 @@ router.get(
     if (!userId) throw new BadRequestError("Missing required query: userId");
     const layouts = await dashboardService.getLayouts(userId);
     res.json({ success: true, data: layouts, count: layouts.length });
-  })
+  }),
 );
 
 /**
@@ -505,7 +508,7 @@ router.post(
     const validated = createLayoutSchema.parse(req.body);
     const layout = await dashboardService.createLayout(validated);
     res.status(201).json({ success: true, data: layout });
-  })
+  }),
 );
 
 /**
@@ -516,9 +519,12 @@ router.put(
   "/layouts/:id",
   asyncHandler(async (req: Request, res: Response) => {
     const validated = updateLayoutSchema.parse(req.body);
-    const layout = await dashboardService.updateLayout(req.params.id, validated);
+    const layout = await dashboardService.updateLayout(
+      req.params.id,
+      validated,
+    );
     res.json({ success: true, data: layout });
-  })
+  }),
 );
 
 /**
@@ -530,7 +536,7 @@ router.delete(
   asyncHandler(async (req: Request, res: Response) => {
     await dashboardService.deleteLayout(req.params.id);
     res.json({ success: true, message: "Layout deleted successfully" });
-  })
+  }),
 );
 
 // ==========================================================================
@@ -549,7 +555,7 @@ router.get(
     if (!userId) throw new BadRequestError("Missing required query: userId");
     const favorites = await dashboardService.getFavorites(userId);
     res.json({ success: true, data: favorites, count: favorites.length });
-  })
+  }),
 );
 
 /**
@@ -562,7 +568,7 @@ router.post(
     const validated = createFavoriteSchema.parse(req.body);
     const favorite = await dashboardService.addFavorite(validated);
     res.status(201).json({ success: true, data: favorite });
-  })
+  }),
 );
 
 /**
@@ -574,7 +580,7 @@ router.delete(
   asyncHandler(async (req: Request, res: Response) => {
     await dashboardService.deleteFavorite(req.params.id);
     res.json({ success: true, message: "Favorite deleted successfully" });
-  })
+  }),
 );
 
 // ==========================================================================
@@ -584,7 +590,7 @@ router.delete(
 /**
  * GET /api/dashboard/widgets/stats
  * Get comprehensive stats for dashboard widgets
- * 
+ *
  * @returns {DashboardStats} Widget statistics
  */
 router.get("/widgets/stats", (_req: Request, res: Response) => {
@@ -613,9 +619,9 @@ router.get("/widgets/stats", (_req: Request, res: Response) => {
 /**
  * GET /api/dashboard/activities
  * Get recent activities for dashboard
- * 
+ *
  * @query {number} limit - Max number of activities (default: 10)
- * 
+ *
  * @returns {ActivityItem[]} Recent activities
  */
 router.get(
@@ -662,13 +668,13 @@ router.get(
       data: activities,
       count: activities.length,
     });
-  })
+  }),
 );
 
 /**
  * GET /api/dashboard/quick-links
  * Get quick links for dashboard navigation
- * 
+ *
  * @returns {object[]} Quick links
  */
 router.get("/quick-links", (_req: Request, res: Response) => {

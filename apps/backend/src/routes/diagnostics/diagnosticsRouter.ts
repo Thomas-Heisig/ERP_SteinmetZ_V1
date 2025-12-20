@@ -78,11 +78,7 @@ import type {
   DiagnosticsData,
   AuditLog,
 } from "./types.js";
-import {
-  queryLogsSchema,
-  formatBytes,
-  formatUptime,
-} from "./types.js";
+import { queryLogsSchema, formatBytes, formatUptime } from "./types.js";
 
 const logger = createLogger("diagnostics-router");
 const router = Router();
@@ -159,7 +155,10 @@ router.get(
     const healthResultRaw = await healthMonitor.runHealthChecks();
     const healthResult: HealthResult = {
       ...healthResultRaw,
-      timestamp: healthResultRaw.timestamp instanceof Date ? healthResultRaw.timestamp.toISOString() : String(healthResultRaw.timestamp),
+      timestamp:
+        healthResultRaw.timestamp instanceof Date
+          ? healthResultRaw.timestamp.toISOString()
+          : String(healthResultRaw.timestamp),
     };
     const dbStats = await db.getStats();
     const schedulerStatus = scheduler.getStatus();
@@ -172,12 +171,12 @@ router.get(
       dbStats,
       schedulerStatus,
       reportStats,
-      systemInfo
+      systemInfo,
     );
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(html);
-  })
+  }),
 );
 
 /**
@@ -193,7 +192,10 @@ router.get(
     const healthResultRaw = await healthMonitor.runHealthChecks();
     const healthResult: HealthResult = {
       ...healthResultRaw,
-      timestamp: healthResultRaw.timestamp instanceof Date ? healthResultRaw.timestamp.toISOString() : String(healthResultRaw.timestamp),
+      timestamp:
+        healthResultRaw.timestamp instanceof Date
+          ? healthResultRaw.timestamp.toISOString()
+          : String(healthResultRaw.timestamp),
     };
     const dbStats = await db.getStats();
     const schedulerStatus = scheduler.getStatus();
@@ -214,7 +216,7 @@ router.get(
       data: diagnostics,
       timestamp: new Date().toISOString(),
     });
-  })
+  }),
 );
 
 /**
@@ -232,7 +234,7 @@ router.get(
       success: true,
       data: healthResult,
     });
-  })
+  }),
 );
 
 /**
@@ -250,7 +252,7 @@ router.get(
       success: true,
       data: systemInfo,
     });
-  })
+  }),
 );
 
 /**
@@ -268,7 +270,7 @@ router.get(
       success: true,
       data: dbStats,
     });
-  })
+  }),
 );
 
 /**
@@ -286,7 +288,7 @@ router.get(
       success: true,
       data: schedulerStatus,
     });
-  })
+  }),
 );
 
 /**
@@ -304,7 +306,7 @@ router.get(
       success: true,
       data: reportStats,
     });
-  })
+  }),
 );
 
 /**
@@ -322,7 +324,7 @@ router.get(
       success: true,
       data: versionInfo,
     });
-  })
+  }),
 );
 
 /**
@@ -340,7 +342,7 @@ router.post(
       success: true,
       data: result,
     });
-  })
+  }),
 );
 
 /**
@@ -418,7 +420,9 @@ router.get(
     params.push(limit, offset);
 
     const rows = await db.all(sql, params);
-    const logs = rows.map((row) => rowToAuditLog(row as Record<string, SqlValue>));
+    const logs = rows.map((row) =>
+      rowToAuditLog(row as Record<string, SqlValue>),
+    );
 
     // Get total count for pagination
     let countSql = "SELECT COUNT(*) as count FROM audit_log WHERE 1=1";
@@ -467,7 +471,7 @@ router.get(
         hasMore: offset + limit < total,
       },
     });
-  })
+  }),
 );
 
 /* ========================================================================== */
@@ -483,7 +487,7 @@ function generateDiagnosticsHTML(
   dbStats: DbStats,
   schedulerStatus: SchedulerStatus,
   reportStats: ReportStats,
-  systemInfo: SystemInfo
+  systemInfo: SystemInfo,
 ): string {
   const statusColors: Record<string, string> = {
     healthy: "#22c55e",
@@ -757,7 +761,7 @@ function generateDiagnosticsHTML(
                 ${check.status}
               </span>
             </li>
-          `
+          `,
             )
             .join("")}
         </ul>

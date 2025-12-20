@@ -13,7 +13,10 @@ async function main() {
     for (const t of tryTools) {
       if (toolRegistry.has(t)) {
         const res = await toolRegistry.call(t, {});
-        console.log(`Tool '${t}' responded:`, typeof res === "object" ? res : String(res));
+        console.log(
+          `Tool '${t}' responded:`,
+          typeof res === "object" ? res : String(res),
+        );
       }
     }
     console.log("✅ Tools loaded successfully.");

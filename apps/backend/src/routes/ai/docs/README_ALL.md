@@ -374,13 +374,13 @@
 
 ## 4. Fehler‑ und Authentifizierungs‑Verhalten (global)
 
-| Situation                                          | HTTP‑Status                                             | JSON‑Body (Beispiel)                                                                                        |
-| -------------------------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Ungültige Parameter**                            | `400 Bad Request`                                       | `{ "error": { "code": "ERR_VALIDATION", "message": "Missing field`text`", "status": 400 } }` |
-| **Ressource nicht gefunden** (z. B. Session, Tool) | `404 Not Found`                                         | `{ "error": { "code": "ERR_NOT_FOUND", "message": "Session 1234 not found", "status": 404 } }`              |
-| **Provider‑Fehler / Timeout**                      | `502 Bad Gateway` (Provider) oder `504 Gateway Timeout` | `{ "error": { "code": "ERR_PROVIDER", "message": "OpenAI request timed out", "status": 504 } }`             |
-| **Interner Server‑Fehler**                         | `500 Internal Server Error`                             | `{ "error": { "code": "ERR_INTERNAL", "message": "Unexpected error in tool`calculate`", "status": 500 } }`|
-| **Kein API‑Key** (OpenAI, Vertex, etc.)            | `401 Unauthorized`                                      | `{ "error": { "code": "ERR_AUTH", "message": "Missing OPENAI_API_KEY", "status": 401 } }`                   |
+| Situation                                          | HTTP‑Status                                             | JSON‑Body (Beispiel)                                                                                       |
+| -------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Ungültige Parameter**                            | `400 Bad Request`                                       | `{ "error": { "code": "ERR_VALIDATION", "message": "Missing field`text`", "status": 400 } }`               |
+| **Ressource nicht gefunden** (z. B. Session, Tool) | `404 Not Found`                                         | `{ "error": { "code": "ERR_NOT_FOUND", "message": "Session 1234 not found", "status": 404 } }`             |
+| **Provider‑Fehler / Timeout**                      | `502 Bad Gateway` (Provider) oder `504 Gateway Timeout` | `{ "error": { "code": "ERR_PROVIDER", "message": "OpenAI request timed out", "status": 504 } }`            |
+| **Interner Server‑Fehler**                         | `500 Internal Server Error`                             | `{ "error": { "code": "ERR_INTERNAL", "message": "Unexpected error in tool`calculate`", "status": 500 } }` |
+| **Kein API‑Key** (OpenAI, Vertex, etc.)            | `401 Unauthorized`                                      | `{ "error": { "code": "ERR_AUTH", "message": "Missing OPENAI_API_KEY", "status": 401 } }`                  |
 
 > **Logging** – Alle Fehler werden über das zentrale `logger`‑Modul (JSON‑Lines) protokolliert; Front‑End kann das `error`‑Objekt direkt anzeigen.
 

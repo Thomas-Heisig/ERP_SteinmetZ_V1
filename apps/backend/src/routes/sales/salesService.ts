@@ -21,12 +21,22 @@ const logger = createLogger("sales-service");
 /**
  * Quote status values
  */
-export type QuoteStatus = "draft" | "pending" | "accepted" | "rejected" | "expired";
+export type QuoteStatus =
+  | "draft"
+  | "pending"
+  | "accepted"
+  | "rejected"
+  | "expired";
 
 /**
  * Order status values
  */
-export type OrderStatus = "confirmed" | "in_production" | "ready" | "delivered" | "cancelled";
+export type OrderStatus =
+  | "confirmed"
+  | "in_production"
+  | "ready"
+  | "delivered"
+  | "cancelled";
 
 /**
  * Payment status values
@@ -36,12 +46,22 @@ export type PaymentStatus = "pending" | "partial" | "paid" | "overdue";
 /**
  * Lead status values
  */
-export type LeadStatus = "new" | "contacted" | "qualified" | "converted" | "lost";
+export type LeadStatus =
+  | "new"
+  | "contacted"
+  | "qualified"
+  | "converted"
+  | "lost";
 
 /**
  * Campaign status values
  */
-export type CampaignStatus = "planned" | "active" | "paused" | "completed" | "cancelled";
+export type CampaignStatus =
+  | "planned"
+  | "active"
+  | "paused"
+  | "completed"
+  | "cancelled";
 
 /**
  * Quote item
@@ -237,9 +257,19 @@ export class SalesService {
         total_value: 2450000,
         stages: [
           { name: "Lead", count: 45, value: 450000, conversion_rate: 25 },
-          { name: "Qualifiziert", count: 32, value: 640000, conversion_rate: 45 },
+          {
+            name: "Qualifiziert",
+            count: 32,
+            value: 640000,
+            conversion_rate: 45,
+          },
           { name: "Angebot", count: 18, value: 720000, conversion_rate: 60 },
-          { name: "Verhandlung", count: 12, value: 480000, conversion_rate: 75 },
+          {
+            name: "Verhandlung",
+            count: 12,
+            value: 480000,
+            conversion_rate: 75,
+          },
           { name: "Gewonnen", count: 5, value: 160000, conversion_rate: 100 },
         ],
         forecast: {
@@ -249,7 +279,13 @@ export class SalesService {
         },
       };
 
-      logger.info({ total_value: summary.total_value, stage_count: summary.stages.length }, "Pipeline summary retrieved");
+      logger.info(
+        {
+          total_value: summary.total_value,
+          stage_count: summary.stages.length,
+        },
+        "Pipeline summary retrieved",
+      );
       return summary;
     } catch (error) {
       logger.error({ error }, "Failed to get pipeline summary");
@@ -291,7 +327,9 @@ export class SalesService {
         },
       ];
 
-      const filtered = status ? quotes.filter((q) => q.status === status) : quotes;
+      const filtered = status
+        ? quotes.filter((q) => q.status === status)
+        : quotes;
       logger.info({ count: filtered.length, status }, "Quotes retrieved");
       return filtered;
     } catch (error) {
@@ -347,7 +385,10 @@ export class SalesService {
         created_at: new Date().toISOString(),
       };
 
-      logger.info({ quoteId: id, quote_number: quote.quote_number }, "Quote retrieved");
+      logger.info(
+        { quoteId: id, quote_number: quote.quote_number },
+        "Quote retrieved",
+      );
       return quote;
     } catch (error) {
       logger.error({ error, quoteId: id }, "Failed to get quote");
@@ -377,7 +418,10 @@ export class SalesService {
    * ```
    */
   async createQuote(data: CreateQuoteInput): Promise<Quote> {
-    logger.debug({ customer_id: data.customer_id, item_count: data.items.length }, "Creating new quote");
+    logger.debug(
+      { customer_id: data.customer_id, item_count: data.items.length },
+      "Creating new quote",
+    );
 
     try {
       // Generate quote number
@@ -449,12 +493,15 @@ export class SalesService {
           customer_id: data.customer_id,
           total,
         },
-        "Quote created"
+        "Quote created",
       );
 
       return quote;
     } catch (error) {
-      logger.error({ error, customer_id: data.customer_id }, "Failed to create quote");
+      logger.error(
+        { error, customer_id: data.customer_id },
+        "Failed to create quote",
+      );
       throw error;
     }
   }
@@ -490,7 +537,9 @@ export class SalesService {
         },
       ];
 
-      const filtered = status ? orders.filter((o) => o.status === status) : orders;
+      const filtered = status
+        ? orders.filter((o) => o.status === status)
+        : orders;
       logger.info({ count: filtered.length, status }, "Orders retrieved");
       return filtered;
     } catch (error) {
@@ -516,7 +565,10 @@ export class SalesService {
    * ```
    */
   async createOrder(data: CreateOrderInput): Promise<Order> {
-    logger.debug({ quote_id: data.quote_id, customer_id: data.customer_id }, "Creating new order");
+    logger.debug(
+      { quote_id: data.quote_id, customer_id: data.customer_id },
+      "Creating new order",
+    );
 
     try {
       const year = new Date().getFullYear();
@@ -547,12 +599,15 @@ export class SalesService {
           quote_id: data.quote_id,
           customer_id: data.customer_id,
         },
-        "Order created"
+        "Order created",
       );
 
       return order;
     } catch (error) {
-      logger.error({ error, quote_id: data.quote_id }, "Failed to create order");
+      logger.error(
+        { error, quote_id: data.quote_id },
+        "Failed to create order",
+      );
       throw error;
     }
   }
@@ -588,7 +643,9 @@ export class SalesService {
         },
       ];
 
-      const filtered = status ? leads.filter((l) => l.status === status) : leads;
+      const filtered = status
+        ? leads.filter((l) => l.status === status)
+        : leads;
       logger.info({ count: filtered.length, status }, "Leads retrieved");
       return filtered;
     } catch (error) {
@@ -615,7 +672,10 @@ export class SalesService {
    * ```
    */
   async createLead(data: CreateLeadInput): Promise<Lead> {
-    logger.debug({ source: data.source, company: data.company }, "Creating new lead");
+    logger.debug(
+      { source: data.source, company: data.company },
+      "Creating new lead",
+    );
 
     try {
       const lead: Lead = {
@@ -639,7 +699,7 @@ export class SalesService {
           company: data.company,
           source: data.source,
         },
-        "Lead created"
+        "Lead created",
       );
 
       return lead;
@@ -681,7 +741,10 @@ export class SalesService {
         updated_at: new Date().toISOString(),
       };
 
-      logger.info({ lead_id: id, score, status: lead.status }, "Lead qualified");
+      logger.info(
+        { lead_id: id, score, status: lead.status },
+        "Lead qualified",
+      );
       return lead;
     } catch (error) {
       logger.error({ error, lead_id: id }, "Failed to qualify lead");
@@ -723,7 +786,9 @@ export class SalesService {
         },
       ];
 
-      const filtered = status ? campaigns.filter((c) => c.status === status) : campaigns;
+      const filtered = status
+        ? campaigns.filter((c) => c.status === status)
+        : campaigns;
       logger.info({ count: filtered.length, status }, "Campaigns retrieved");
       return filtered;
     } catch (error) {
@@ -773,7 +838,7 @@ export class SalesService {
           total_revenue: analytics.total_revenue,
           conversion_rate: analytics.conversion_rate,
         },
-        "Analytics retrieved"
+        "Analytics retrieved",
       );
 
       return analytics;

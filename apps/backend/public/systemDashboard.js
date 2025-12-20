@@ -87,8 +87,12 @@ function initDashboard() {
   console.log("Dashboard initialized");
 
   // Button Events
-  document.getElementById("refresh-btn").addEventListener("click", () => loadAllData());
-  document.getElementById("auto-refresh-toggle").addEventListener("click", toggleAutoRefresh);
+  document
+    .getElementById("refresh-btn")
+    .addEventListener("click", () => loadAllData());
+  document
+    .getElementById("auto-refresh-toggle")
+    .addEventListener("click", toggleAutoRefresh);
 
   // Tab Navigation
   document.querySelectorAll(".tab-button").forEach((btn) => {
@@ -105,7 +109,8 @@ function initDashboard() {
   const protocol = window.location.protocol;
   const hostname = window.location.hostname;
   const port = window.location.port ? `:${window.location.port}` : "";
-  document.getElementById("backend-url").textContent = `${protocol}//${hostname}${port}`;
+  document.getElementById("backend-url").textContent =
+    `${protocol}//${hostname}${port}`;
 }
 
 // ============================================================================
@@ -152,20 +157,31 @@ async function loadAllData() {
   console.log("🔄 Loading dashboard data...");
 
   // Load all data in parallel with correct endpoints
-  const [health, services, system, database, performance, features, routes, resources, environment, dependencies, functions] =
-    await Promise.allSettled([
-      fetchAPI(`${API_BASE}/health`),
-      fetchAPI(`${API_BASE}/status`),
-      fetchAPI(`${API_BASE}/system`),
-      fetchAPI(`${API_BASE}/database`),
-      fetchAPI(`${API_BASE}/resources`),
-      fetchAPI(`${API_BASE}/features`),
-      fetchAPI(`${API_BASE}/routes`),
-      fetchAPI(`${API_BASE}/resources`),
-      fetchAPI(`${API_BASE}/environment`),
-      fetchAPI(`${API_BASE}/dependencies`),
-      fetchAPI(`${API_BASE}/functions`),
-    ]);
+  const [
+    health,
+    services,
+    system,
+    database,
+    performance,
+    features,
+    routes,
+    resources,
+    environment,
+    dependencies,
+    functions,
+  ] = await Promise.allSettled([
+    fetchAPI(`${API_BASE}/health`),
+    fetchAPI(`${API_BASE}/status`),
+    fetchAPI(`${API_BASE}/system`),
+    fetchAPI(`${API_BASE}/database`),
+    fetchAPI(`${API_BASE}/resources`),
+    fetchAPI(`${API_BASE}/features`),
+    fetchAPI(`${API_BASE}/routes`),
+    fetchAPI(`${API_BASE}/resources`),
+    fetchAPI(`${API_BASE}/environment`),
+    fetchAPI(`${API_BASE}/dependencies`),
+    fetchAPI(`${API_BASE}/functions`),
+  ]);
 
   // Display data
   displayHealth(extractData(health));
@@ -219,7 +235,8 @@ function extractData(result) {
 function displayHealth(data) {
   const content = document.getElementById("health-content");
   if (!data) {
-    content.innerHTML = '<div class="error">❌ Health data unavailable - Check backend connection</div>';
+    content.innerHTML =
+      '<div class="error">❌ Health data unavailable - Check backend connection</div>';
     return;
   }
 
@@ -241,15 +258,17 @@ function displayHealth(data) {
           ${check.status === "pass" || check.status === "healthy" ? "✅ OK" : check.status === "warn" ? "⚠️ Warning" : "❌ Error"}
         </span>
       </div>
-    `
+    `,
       )
       .join("");
   } else if (data.database || data.ai || data.functions) {
     // Handle service status object format
     const services = [];
-    if (data.database) services.push({ name: "Database", status: data.database });
+    if (data.database)
+      services.push({ name: "Database", status: data.database });
     if (data.ai) services.push({ name: "AI Service", status: data.ai });
-    if (data.functions) services.push({ name: "Functions", status: data.functions });
+    if (data.functions)
+      services.push({ name: "Functions", status: data.functions });
 
     checksHTML = services
       .map(
@@ -260,7 +279,7 @@ function displayHealth(data) {
           ${svc.status === "connected" || svc.status === "ready" || svc.status === "operational" ? "✅ OK" : "⚠️ " + svc.status}
         </span>
       </div>
-    `
+    `,
       )
       .join("");
   }
@@ -281,7 +300,8 @@ function displayHealth(data) {
 function displayServiceStatus(data) {
   const content = document.getElementById("service-status-content");
   if (!data) {
-    content.innerHTML = '<div class="error">❌ Service status unavailable</div>';
+    content.innerHTML =
+      '<div class="error">❌ Service status unavailable</div>';
     return;
   }
 
@@ -392,12 +412,16 @@ function displayDatabaseInfo(data) {
             </tr>
           </thead>
           <tbody>
-            ${data.tables.map((table) => `
+            ${data.tables
+              .map(
+                (table) => `
               <tr>
                 <td>${table.name}</td>
                 <td>${table.count || 0}</td>
               </tr>
-            `).join("")}
+            `,
+              )
+              .join("")}
           </tbody>
         </table>
       </div>
@@ -427,7 +451,8 @@ function displayPerformance(data) {
 
   const heapUsed = data.heap?.used || 0;
   const heapTotal = data.heap?.total || 0;
-  const heapPercent = heapTotal > 0 ? ((heapUsed / heapTotal) * 100).toFixed(1) : "0.0";
+  const heapPercent =
+    heapTotal > 0 ? ((heapUsed / heapTotal) * 100).toFixed(1) : "0.0";
   const externalMemory = data.external || 0;
 
   content.innerHTML = `
@@ -462,10 +487,13 @@ function displayFeatures(data) {
   let featuresHTML = "";
   if (data && typeof data === "object") {
     Object.entries(data).forEach(([key, value]) => {
-      const displayValue = typeof value === "boolean" 
-        ? (value ? "✅ Enabled" : "❌ Disabled")
-        : value;
-      
+      const displayValue =
+        typeof value === "boolean"
+          ? value
+            ? "✅ Enabled"
+            : "❌ Disabled"
+          : value;
+
       featuresHTML += `
         <div class="service-status-item">
           <span class="service-label">${key}:</span>
@@ -477,13 +505,15 @@ function displayFeatures(data) {
     });
   }
 
-  content.innerHTML = featuresHTML || '<div class="error">No features available</div>';
+  content.innerHTML =
+    featuresHTML || '<div class="error">No features available</div>';
 }
 
 function displayRoutes(data) {
   const content = document.getElementById("routes-content");
   if (!data) {
-    content.innerHTML = '<div class="error">❌ Routes data unavailable - Check backend connection</div>';
+    content.innerHTML =
+      '<div class="error">❌ Routes data unavailable - Check backend connection</div>';
     return;
   }
 
@@ -531,13 +561,18 @@ function displayRoutes(data) {
               </tr>
             </thead>
             <tbody>
-              ${methodRoutes.slice(0, 50).map((route) => `
+              ${methodRoutes
+                .slice(0, 50)
+                .map(
+                  (route) => `
                 <tr>
                   <td><span class="method-badge ${methodColors[method]}">${method}</span></td>
                   <td class="route-path">${route.path || route.route || "/"}</td>
                   <td><span class="status-badge status-healthy health-check-badge">✅ Active</span></td>
                 </tr>
-              `).join("")}
+              `,
+                )
+                .join("")}
             </tbody>
           </table>
         </div>
@@ -569,7 +604,11 @@ function displayResources(data) {
 
   const memPercent = data.memoryUsagePercent || 0;
   const memStatus =
-    memPercent > 80 ? "status-danger" : memPercent > 60 ? "status-warning" : "status-healthy";
+    memPercent > 80
+      ? "status-danger"
+      : memPercent > 60
+        ? "status-warning"
+        : "status-healthy";
 
   content.innerHTML = `
     <div class="metric-grid">
@@ -618,7 +657,8 @@ function displayEnvironment(data) {
 function displayDependencies(data) {
   const content = document.getElementById("dependencies-content");
   if (!data) {
-    content.innerHTML = '<div class="error">Dependencies data unavailable</div>';
+    content.innerHTML =
+      '<div class="error">Dependencies data unavailable</div>';
     return;
   }
 
@@ -635,12 +675,17 @@ function displayDependencies(data) {
   `;
 
   if (data.packages && Array.isArray(data.packages)) {
-    depsHTML += data.packages.slice(0, 30).map((pkg) => `
+    depsHTML += data.packages
+      .slice(0, 30)
+      .map(
+        (pkg) => `
       <tr>
         <td>${pkg.name}</td>
         <td>${pkg.version}</td>
       </tr>
-    `).join("");
+    `,
+      )
+      .join("");
   }
 
   depsHTML += `
@@ -712,7 +757,7 @@ function displayFunctions(data) {
           <div class="metric-label">Total Functions</div>
         </div>
         <div class="metric">
-          <div class="metric-value">${functions.filter(f => f.depth === 0).length}</div>
+          <div class="metric-value">${functions.filter((f) => f.depth === 0).length}</div>
           <div class="metric-label">Root Nodes</div>
         </div>
       </div>
@@ -728,8 +773,10 @@ function displayFunctions(data) {
           </tr>
         </thead>
         <tbody>
-          ${functions.slice(0, 20).map((func) => {
-            return `
+          ${functions
+            .slice(0, 20)
+            .map((func) => {
+              return `
               <tr>
                 <td>${func.id || "N/A"}</td>
                 <td>${func.title || "Unknown"}</td>
@@ -737,7 +784,8 @@ function displayFunctions(data) {
                 <td>${func.parent_id || "<root>"}</td>
               </tr>
             `;
-          }).join("")}
+            })
+            .join("")}
         </tbody>
       </table>
     </div>
@@ -811,11 +859,12 @@ function displayMaintenanceCalendar() {
         </div>
         <span class="priority-badge priority-${event.priority}">${event.priority.toUpperCase()}</span>
       </div>
-    `
+    `,
       )
       .join("");
 
-    maintenanceList.innerHTML = html || '<div class="no-data">Keine Wartungstermine geplant</div>';
+    maintenanceList.innerHTML =
+      html || '<div class="no-data">Keine Wartungstermine geplant</div>';
   }
 
   // Display backup schedule
@@ -831,11 +880,12 @@ function displayMaintenanceCalendar() {
         </div>
         <span class="frequency-badge">${event.frequency}</span>
       </div>
-    `
+    `,
       )
       .join("");
 
-    backupSchedule.innerHTML = html || '<div class="no-data">Keine Backups geplant</div>';
+    backupSchedule.innerHTML =
+      html || '<div class="no-data">Keine Backups geplant</div>';
   }
 }
 
@@ -845,8 +895,10 @@ function displayMaintenanceCalendar() {
 
 function updateTimestamp() {
   const now = new Date();
-  document.getElementById("timestamp").textContent = now.toLocaleTimeString("de-DE");
-  document.getElementById("last-update").textContent = now.toLocaleString("de-DE");
+  document.getElementById("timestamp").textContent =
+    now.toLocaleTimeString("de-DE");
+  document.getElementById("last-update").textContent =
+    now.toLocaleString("de-DE");
 }
 
 function formatSeconds(seconds) {

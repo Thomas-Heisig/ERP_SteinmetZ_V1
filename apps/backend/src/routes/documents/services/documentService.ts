@@ -118,7 +118,7 @@ export class DocumentService {
       storagePath: string;
       buffer: Buffer;
     },
-    userId: string
+    userId: string,
   ): Promise<Document> {
     const checksum = this.calculateChecksum(fileInfo.buffer);
     const retentionYears = data.retentionYears || 10;
@@ -142,7 +142,7 @@ export class DocumentService {
       checksum,
       userId,
       retentionYears,
-      retentionExpiry
+      retentionExpiry,
     );
 
     const documentId = this.getLastInsertId();
@@ -181,7 +181,7 @@ export class DocumentService {
       buffer: Buffer;
     },
     changes: string,
-    userId: string
+    userId: string,
   ): Promise<DocumentVersion> {
     const document = await this.getDocumentById(documentId);
     const checksum = this.calculateChecksum(fileInfo.buffer);
@@ -204,7 +204,7 @@ export class DocumentService {
       fileInfo.fileSize,
       checksum,
       userId,
-      changes
+      changes,
     );
 
     const versionId = this.getLastInsertId();
@@ -229,7 +229,7 @@ export class DocumentService {
       fileInfo.fileSize,
       fileInfo.storagePath,
       checksum,
-      documentId
+      documentId,
     );
 
     // Audit-Log
@@ -243,7 +243,7 @@ export class DocumentService {
     logger.info({ documentId, version: newVersion }, "Version uploaded");
 
     const versionStmt = this.db.prepare(
-      "SELECT * FROM document_versions WHERE id = ?"
+      "SELECT * FROM document_versions WHERE id = ?",
     );
     return versionStmt.get(versionId) as DocumentVersion;
   }
@@ -261,13 +261,13 @@ export class DocumentService {
 
       if (now < expiryDate) {
         throw new ForbiddenError(
-          `Document cannot be deleted before ${document.retention_expires_at}`
+          `Document cannot be deleted before ${document.retention_expires_at}`,
         );
       }
     }
 
     const stmt = this.db.prepare(
-      "UPDATE documents SET status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = ?"
+      "UPDATE documents SET status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
     );
     stmt.run(id);
 
@@ -286,7 +286,7 @@ export class DocumentService {
    */
   async getDocumentVersions(documentId: string): Promise<DocumentVersion[]> {
     const stmt = this.db.prepare(
-      "SELECT * FROM document_versions WHERE document_id = ? ORDER BY version DESC"
+      "SELECT * FROM document_versions WHERE document_id = ? ORDER BY version DESC",
     );
     return stmt.all(documentId) as DocumentVersion[];
   }
@@ -307,7 +307,7 @@ export class DocumentService {
    */
   getMetadata(documentId: string): Record<string, any> | null {
     const stmt = this.db.prepare(
-      "SELECT metadata FROM document_metadata WHERE document_id = ?"
+      "SELECT metadata FROM document_metadata WHERE document_id = ?",
     );
     const result = stmt.get(documentId) as { metadata: string } | undefined;
 
@@ -323,7 +323,7 @@ export class DocumentService {
     documentId: string,
     tags: string[],
     source: "manual" | "ai_generated" | "ocr_extracted",
-    confidence?: number
+    confidence?: number,
   ): void {
     const stmt = this.db.prepare(`
       INSERT OR IGNORE INTO document_tags (document_id, tag, source, confidence)
@@ -344,7 +344,7 @@ export class DocumentService {
     confidence: number | null;
   }> {
     const stmt = this.db.prepare(
-      "SELECT tag, source, confidence FROM document_tags WHERE document_id = ? ORDER BY created_at"
+      "SELECT tag, source, confidence FROM document_tags WHERE document_id = ? ORDER BY created_at",
     );
     return stmt.all(documentId) as Array<{
       tag: string;
@@ -362,12 +362,12 @@ export class DocumentService {
     byCategory: Record<string, number>;
   } {
     const totalStmt = this.db.prepare(
-      "SELECT COUNT(*) as count, SUM(file_size) as totalSize FROM documents WHERE status = 'active'"
+      "SELECT COUNT(*) as count, SUM(file_size) as totalSize FROM documents WHERE status = 'active'",
     );
     const totals = totalStmt.get() as { count: number; totalSize: number };
 
     const categoryStmt = this.db.prepare(
-      "SELECT category, COUNT(*) as count FROM documents WHERE status = 'active' GROUP BY category"
+      "SELECT category, COUNT(*) as count FROM documents WHERE status = 'active' GROUP BY category",
     );
     const categories = categoryStmt.all() as Array<{
       category: string;
@@ -438,7 +438,7 @@ export class DocumentService {
       data.document_id || null,
       data.action,
       data.user_id || null,
-      data.changes || null
+      data.changes || null,
     );
   }
 }

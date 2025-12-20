@@ -5,6 +5,7 @@
 ### 1. **Alle Inline-CSS entfernt**
 
 #### Vorher (❌):
+
 ```html
 <!-- HTML mit Inline-Styles -->
 <div style="display: none"></div>
@@ -22,6 +23,7 @@ content.innerHTML = `
 ```
 
 #### Nachher (✅):
+
 ```html
 <!-- HTML nur mit CSS-Klassen -->
 <div class="hidden"></div>
@@ -45,16 +47,31 @@ content.innerHTML = `
 Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 
 #### **Utility Classes**:
+
 ```css
-.hidden { display: none; }
-.text-center { text-align: center; }
-.text-muted { color: #6b7280; font-size: 0.9rem; }
-.credential-hint { /* Login-Hinweis */ }
-.button-group { /* Button-Container */ }
-.no-data { /* Keine-Daten Anzeige */ }
+.hidden {
+  display: none;
+}
+.text-center {
+  text-align: center;
+}
+.text-muted {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+.credential-hint {
+  /* Login-Hinweis */
+}
+.button-group {
+  /* Button-Container */
+}
+.no-data {
+  /* Keine-Daten Anzeige */
+}
 ```
 
 #### **Health Display**:
+
 ```css
 .health-overall
 .health-status-row
@@ -66,6 +83,7 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 ```
 
 #### **Service Status**:
+
 ```css
 .service-status-list
 .service-status-item
@@ -73,6 +91,7 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 ```
 
 #### **System Info**:
+
 ```css
 .system-info-details
 .system-info-details > div
@@ -80,6 +99,7 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 ```
 
 #### **Routes Display**:
+
 ```css
 .routes-section
 .routes-header
@@ -91,11 +111,13 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 ```
 
 #### **Resources Display**:
+
 ```css
 .resource-status-row
 ```
 
 #### **Environment Display**:
+
 ```css
 .env-container
 .env-item
@@ -103,6 +125,7 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 ```
 
 #### **Diagnostics Display**:
+
 ```css
 .diagnostics-section
 .diagnostics-section h4
@@ -112,6 +135,7 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 ```
 
 #### **Functions Display**:
+
 ```css
 .functions-header
 .function-status-enabled
@@ -119,6 +143,7 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 ```
 
 #### **Calendar**:
+
 ```css
 .calendar-padding
 .calendar-section
@@ -131,6 +156,7 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 ```
 
 #### **Button Variants**:
+
 ```css
 .refresh-btn-success  /* Grüner Button */
 .refresh-btn-danger   /* Roter Button */
@@ -142,6 +168,7 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 ### 3. **JavaScript komplett überarbeitet**
 
 #### Änderungen:
+
 - ✅ **Alle Inline-Styles entfernt** - nur CSS-Klassen verwendet
 - ✅ **Code konsolidiert** - Doppelter Code entfernt
 - ✅ **Fehlerbehandlung verbessert** - Bessere null-checks
@@ -150,6 +177,7 @@ Alle dynamisch generierten Elemente haben jetzt eigene CSS-Klassen:
 - ✅ **JSDoc-Kommentare** - Bessere Dokumentation
 
 #### Beispiel:
+
 ```javascript
 // VORHER ❌
 content.innerHTML = `
@@ -177,23 +205,27 @@ content.innerHTML = `
 ### 4. **HTML bereinigt**
 
 #### Entfernte Inline-Styles:
+
 ```html
 <!-- VORHER ❌ -->
 <div id="dashboard" style="display: none">
-<button style="background: var(--success)">Auto-Refresh</button>
-<button style="background: var(--danger)">Logout</button>
-<div style="padding: 1.5rem;">Calendar</div>
-<h3 style="font-size: 0.9rem; color: #6b7280;">Header</h3>
+  <button style="background: var(--success)">Auto-Refresh</button>
+  <button style="background: var(--danger)">Logout</button>
+  <div style="padding: 1.5rem;">Calendar</div>
+  <h3 style="font-size: 0.9rem; color: #6b7280;">Header</h3>
 
-<!-- NACHHER ✅ -->
-<div id="dashboard" class="hidden">
-<button class="refresh-btn refresh-btn-success">Auto-Refresh</button>
-<button class="refresh-btn refresh-btn-danger">Logout</button>
-<div class="calendar-padding">Calendar</div>
-<h3 class="calendar-section-header">Header</h3>
+  <!-- NACHHER ✅ -->
+  <div id="dashboard" class="hidden">
+    <button class="refresh-btn refresh-btn-success">Auto-Refresh</button>
+    <button class="refresh-btn refresh-btn-danger">Logout</button>
+    <div class="calendar-padding">Calendar</div>
+    <h3 class="calendar-section-header">Header</h3>
+  </div>
+</div>
 ```
 
 #### Entferntes `<style>`-Tag:
+
 - ❌ **Vorher**: 70 Zeilen CSS im HTML `<style>`-Tag
 - ✅ **Nachher**: Alles in separater CSS-Datei
 
@@ -204,6 +236,7 @@ content.innerHTML = `
 Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 
 #### Neue Sektionen:
+
 ```css
 /* Utility Classes (Zeile 510-530) */
 /* Health Display (Zeile 535-600) */
@@ -223,11 +256,13 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 ## 📊 Statistik der Änderungen
 
 ### Dateien geändert:
+
 1. ✅ `systemDashboard.html` - **70 Zeilen Inline-CSS entfernt**
 2. ✅ `systemDashboard.js` - **Komplett neu geschrieben** (896 → 822 Zeilen, sauberer)
 3. ✅ `systemDashboard.css` - **+313 Zeilen** neue CSS-Klassen (488 → 801 Zeilen)
 
 ### Code-Qualität:
+
 - ✅ **0 Inline-Styles** in HTML (vorher: ~10)
 - ✅ **0 Inline-Styles** in JavaScript (vorher: ~150+)
 - ✅ **50+ neue CSS-Klassen** für alle Elemente
@@ -236,6 +271,7 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 - ✅ **Einfachere Änderungen** (nur CSS bearbeiten statt JS)
 
 ### Performance:
+
 - ✅ **Besseres Caching** (CSS wird gecacht, nicht JS-Strings)
 - ✅ **Kleinere JavaScript-Datei** (weniger String-Concatenation)
 - ✅ **Schnelleres Rendering** (Browser nutzt CSS-Engine optimal)
@@ -245,6 +281,7 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 ## 🎨 CSS-Klassen Übersicht
 
 ### **Layout & Structure**:
+
 ```css
 .container                  - Haupt-Container (max-width: 1400px)
 .grid                       - Grid-Layout für Karten
@@ -256,6 +293,7 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 ```
 
 ### **Status & Badges**:
+
 ```css
 .status-badge               - Allgemeines Status-Badge
 .status-healthy             - Grün (Healthy)
@@ -275,6 +313,7 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 ```
 
 ### **Buttons**:
+
 ```css
 .refresh-btn                - Basis Button-Style
 .refresh-btn-success        - Grüner Button
@@ -286,6 +325,7 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 ```
 
 ### **Metrics & Display**:
+
 ```css
 .metric-grid                - Grid für Metriken
 .metric                     - Einzelne Metrik
@@ -294,6 +334,7 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 ```
 
 ### **Tables**:
+
 ```css
 .scrollable-table           - Scrollbare Tabelle
 .routes-table               - Routen-Tabelle
@@ -301,6 +342,7 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 ```
 
 ### **Utility Classes**:
+
 ```css
 .hidden                     - Display: none
 .text-center                - Text zentriert
@@ -311,6 +353,7 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 ```
 
 ### **Component-Specific**:
+
 ```css
 /* Health */
 .health-overall
@@ -360,13 +403,16 @@ Die CSS-Datei wurde erweitert von **488 Zeilen** auf **801 Zeilen**:
 ## 🔧 Wartung & Anpassungen
 
 ### Style ändern:
+
 **Vorher (❌)**:
+
 ```javascript
 // JavaScript-Datei durchsuchen und Inline-Style ändern
 content.innerHTML = `<div style="padding: 1.5rem;">...</div>`;
 ```
 
 **Nachher (✅)**:
+
 ```css
 /* Nur CSS-Datei bearbeiten */
 .calendar-padding {
@@ -375,12 +421,15 @@ content.innerHTML = `<div style="padding: 1.5rem;">...</div>`;
 ```
 
 ### Neues Element stylen:
+
 **Vorher (❌)**:
+
 ```javascript
 html += `<div style="display: flex; gap: 1rem; color: #333;">New Element</div>`;
 ```
 
 **Nachher (✅)**:
+
 ```css
 /* 1. CSS-Klasse erstellen */
 .new-element {
@@ -389,6 +438,7 @@ html += `<div style="display: flex; gap: 1rem; color: #333;">New Element</div>`;
   color: #333;
 }
 ```
+
 ```javascript
 // 2. Klasse verwenden
 html += `<div class="new-element">New Element</div>`;
@@ -399,22 +449,26 @@ html += `<div class="new-element">New Element</div>`;
 ## ✅ Vorteile der Konsolidierung
 
 ### **1. Bessere Wartbarkeit**:
+
 - ✅ Ein zentraler Ort für alle Styles (CSS-Datei)
 - ✅ Keine Style-Suche in JavaScript-Dateien
 - ✅ Einfachere Änderungen und Updates
 
 ### **2. Bessere Performance**:
+
 - ✅ CSS wird vom Browser gecacht
 - ✅ Kleinere JavaScript-Bundles
 - ✅ Schnelleres Rendering (CSS-Engine Optimierung)
 
 ### **3. Bessere Code-Qualität**:
+
 - ✅ Separation of Concerns (HTML/CSS/JS getrennt)
 - ✅ Wiederverwendbare CSS-Klassen
 - ✅ Konsistente Benennung
 - ✅ Einfacheres Testing
 
 ### **4. Bessere Entwickler-Erfahrung**:
+
 - ✅ IDE Auto-Complete für CSS-Klassen
 - ✅ CSS-Linting funktioniert
 - ✅ Einfachere Fehlersuche

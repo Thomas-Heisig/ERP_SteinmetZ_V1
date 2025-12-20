@@ -176,10 +176,9 @@ router.post(
     const validation = createCampaignSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError(
-        "Invalid campaign data",
-        { issues: validation.error.issues },
-      );
+      throw new ValidationError("Invalid campaign data", {
+        issues: validation.error.issues,
+      });
     }
 
     const id = `camp-${randomUUID()}`;
@@ -238,10 +237,9 @@ router.put(
     const validation = updateCampaignSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError(
-        "Invalid campaign data",
-        { issues: validation.error.issues },
-      );
+      throw new ValidationError("Invalid campaign data", {
+        issues: validation.error.issues,
+      });
     }
 
     const now = new Date().toISOString();
@@ -388,7 +386,9 @@ router.post(
     const validation = createFormSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid form data", { issues: validation.error.issues });
+      throw new ValidationError("Invalid form data", {
+        issues: validation.error.issues,
+      });
     }
 
     const id = `form-${randomUUID()}`;
@@ -542,10 +542,9 @@ router.post(
     const validation = createLandingPageSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError(
-        "Invalid landing page data",
-        { issues: validation.error.issues },
-      );
+      throw new ValidationError("Invalid landing page data", {
+        issues: validation.error.issues,
+      });
     }
 
     const id = `lp-${randomUUID()}`;
@@ -626,7 +625,9 @@ router.post(
     const validation = createEventSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid event data", { issues: validation.error.issues });
+      throw new ValidationError("Invalid event data", {
+        issues: validation.error.issues,
+      });
     }
 
     const id = `evt-${randomUUID()}`;
@@ -746,10 +747,9 @@ router.post(
     const validation = createSegmentSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError(
-        "Invalid segment data",
-        { issues: validation.error.issues },
-      );
+      throw new ValidationError("Invalid segment data", {
+        issues: validation.error.issues,
+      });
     }
 
     const id = `seg-${randomUUID()}`;

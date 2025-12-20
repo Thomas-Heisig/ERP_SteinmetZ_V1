@@ -11,7 +11,10 @@ const router = Router();
    Utility: Express-App zuverlässig bestimmen
 ----------------------------------------------------------- */
 function resolveApp(req: Request): Application {
-  return (req.app as Application) ?? ((globalThis as { expressApp?: Application }).expressApp as Application);
+  return (
+    (req.app as Application) ??
+    ((globalThis as { expressApp?: Application }).expressApp as Application)
+  );
 }
 
 /* -----------------------------------------------------------

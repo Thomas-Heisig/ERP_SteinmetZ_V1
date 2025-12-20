@@ -4,18 +4,18 @@
 
 /**
  * RBAC Configuration Module
- * 
+ *
  * Defines default roles, permissions, and role hierarchies for the ERP system.
  * This configuration provides the foundation for access control and can be
  * overridden with database values at runtime.
- * 
+ *
  * Role Hierarchy:
  * - super_admin: Full system access (unrestricted)
  * - admin: Administrative access to most modules (can manage users, roles, system settings)
  * - manager: Departmental management (can manage team members and their work)
  * - user: Standard user access (can access assigned modules)
  * - guest: Read-only access to public resources
- * 
+ *
  * @module config/rbac
  * @see docs/RBAC_CONFIGURATION.md for complete role definitions
  * @see types/rbac.ts for type definitions
@@ -35,9 +35,9 @@ const _logger = createLogger("config:rbac"); // Logger for future use in role op
 
 /**
  * Permission builder helper
- * 
+ *
  * Creates a properly formatted permission string from module and action.
- * 
+ *
  * @param {ModuleNames | string} module - Module name
  * @param {PermissionActions | string} action - Permission action
  * @returns {Permission} Formatted permission string (module:action)
@@ -51,7 +51,7 @@ function buildPermission(
 
 /**
  * Module permission builders
- * 
+ *
  * Pre-configured permission groups for each module, organized by action type.
  * These builders make it easy to assign consistent permissions to roles.
  */
@@ -200,7 +200,7 @@ const ModulePermissions = {
 
 /**
  * Default RBAC Role Definitions
- * 
+ *
  * System roles that are created by default. Each role includes:
  * - Unique ID for database reference
  * - Display name for UI presentation
@@ -208,7 +208,7 @@ const ModulePermissions = {
  * - System flag (cannot be deleted if true)
  * - Complete permission list
  * - Creation and hierarchy metadata
- * 
+ *
  * @constant
  * @type {RoleDefinition[]}
  */

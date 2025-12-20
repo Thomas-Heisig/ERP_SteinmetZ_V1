@@ -544,7 +544,7 @@ export interface Customer {
   city?: string;
   postalCode?: string;
   country?: string;
-  status: 'active' | 'inactive' | 'prospect' | 'archived';
+  status: "active" | "inactive" | "prospect" | "archived";
   category?: string;
   industry?: string;
   website?: string;
@@ -580,8 +580,8 @@ export interface Opportunity {
   description?: string;
   value: number;
   probability: number;
-  status: 'open' | 'won' | 'lost' | 'cancelled';
-  stage: 'lead' | 'qualified' | 'proposal' | 'negotiation' | 'closed';
+  status: "open" | "won" | "lost" | "cancelled";
+  stage: "lead" | "qualified" | "proposal" | "negotiation" | "closed";
   expectedCloseDate?: string;
   actualCloseDate?: string;
   assignedTo?: string;
@@ -599,15 +599,15 @@ export interface Activity {
   customerId?: string;
   contactId?: string;
   opportunityId?: string;
-  type: 'call' | 'meeting' | 'email' | 'task' | 'note' | 'demo';
+  type: "call" | "meeting" | "email" | "task" | "note" | "demo";
   subject: string;
   description?: string;
-  status: 'planned' | 'in_progress' | 'completed' | 'cancelled';
+  status: "planned" | "in_progress" | "completed" | "cancelled";
   scheduledAt?: string;
   completedAt?: string;
   durationMinutes?: number;
   assignedTo?: string;
-  outcome?: 'positive' | 'neutral' | 'negative' | 'no_response';
+  outcome?: "positive" | "neutral" | "negative" | "no_response";
   location?: string;
   attendees?: string;
   notes?: string;
@@ -621,24 +621,24 @@ export interface Activity {
 
 ```typescript
 // services/crmApi.ts
-import axios from 'axios';
-import type { Customer, Contact, Opportunity, Activity } from '@/types/crm';
+import axios from "axios";
+import type { Customer, Contact, Opportunity, Activity } from "@/types/crm";
 
-const API_BASE = '/api/crm';
+const API_BASE = "/api/crm";
 
 export const crmApi = {
   // Customers
   async getCustomers(params?: Record<string, unknown>) {
     const { data } = await axios.get<{ success: boolean; data: Customer[] }>(
       `${API_BASE}/customers`,
-      { params }
+      { params },
     );
     return data;
   },
 
   async getCustomerById(id: string) {
     const { data } = await axios.get<{ success: boolean; data: Customer }>(
-      `${API_BASE}/customers/${id}`
+      `${API_BASE}/customers/${id}`,
     );
     return data;
   },
@@ -646,7 +646,7 @@ export const crmApi = {
   async createCustomer(customer: Partial<Customer>) {
     const { data } = await axios.post<{ success: boolean; data: Customer }>(
       `${API_BASE}/customers`,
-      customer
+      customer,
     );
     return data;
   },
@@ -654,7 +654,7 @@ export const crmApi = {
   async updateCustomer(id: string, updates: Partial<Customer>) {
     const { data } = await axios.put<{ success: boolean; data: Customer }>(
       `${API_BASE}/customers/${id}`,
-      updates
+      updates,
     );
     return data;
   },
@@ -668,14 +668,14 @@ export const crmApi = {
   async getContacts(params?: Record<string, unknown>) {
     const { data } = await axios.get<{ success: boolean; data: Contact[] }>(
       `${API_BASE}/contacts`,
-      { params }
+      { params },
     );
     return data;
   },
 
   async getContactById(id: string) {
     const { data } = await axios.get<{ success: boolean; data: Contact }>(
-      `${API_BASE}/contacts/${id}`
+      `${API_BASE}/contacts/${id}`,
     );
     return data;
   },
@@ -683,7 +683,7 @@ export const crmApi = {
   async createContact(contact: Partial<Contact>) {
     const { data } = await axios.post<{ success: boolean; data: Contact }>(
       `${API_BASE}/contacts`,
-      contact
+      contact,
     );
     return data;
   },
@@ -691,7 +691,7 @@ export const crmApi = {
   async updateContact(id: string, updates: Partial<Contact>) {
     const { data } = await axios.put<{ success: boolean; data: Contact }>(
       `${API_BASE}/contacts/${id}`,
-      updates
+      updates,
     );
     return data;
   },
@@ -705,14 +705,14 @@ export const crmApi = {
   async getOpportunities(params?: Record<string, unknown>) {
     const { data } = await axios.get<{ success: boolean; data: Opportunity[] }>(
       `${API_BASE}/opportunities`,
-      { params }
+      { params },
     );
     return data;
   },
 
   async getOpportunityById(id: string) {
     const { data } = await axios.get<{ success: boolean; data: Opportunity }>(
-      `${API_BASE}/opportunities/${id}`
+      `${API_BASE}/opportunities/${id}`,
     );
     return data;
   },
@@ -720,7 +720,7 @@ export const crmApi = {
   async createOpportunity(opportunity: Partial<Opportunity>) {
     const { data } = await axios.post<{ success: boolean; data: Opportunity }>(
       `${API_BASE}/opportunities`,
-      opportunity
+      opportunity,
     );
     return data;
   },
@@ -728,7 +728,7 @@ export const crmApi = {
   async updateOpportunity(id: string, updates: Partial<Opportunity>) {
     const { data } = await axios.put<{ success: boolean; data: Opportunity }>(
       `${API_BASE}/opportunities/${id}`,
-      updates
+      updates,
     );
     return data;
   },
@@ -742,14 +742,14 @@ export const crmApi = {
   async getActivities(params?: Record<string, unknown>) {
     const { data } = await axios.get<{ success: boolean; data: Activity[] }>(
       `${API_BASE}/activities`,
-      { params }
+      { params },
     );
     return data;
   },
 
   async getActivityById(id: string) {
     const { data } = await axios.get<{ success: boolean; data: Activity }>(
-      `${API_BASE}/activities/${id}`
+      `${API_BASE}/activities/${id}`,
     );
     return data;
   },
@@ -757,7 +757,7 @@ export const crmApi = {
   async createActivity(activity: Partial<Activity>) {
     const { data } = await axios.post<{ success: boolean; data: Activity }>(
       `${API_BASE}/activities`,
-      activity
+      activity,
     );
     return data;
   },
@@ -765,7 +765,7 @@ export const crmApi = {
   async updateActivity(id: string, updates: Partial<Activity>) {
     const { data } = await axios.put<{ success: boolean; data: Activity }>(
       `${API_BASE}/activities/${id}`,
-      updates
+      updates,
     );
     return data;
   },
@@ -787,21 +787,21 @@ export const crmApi = {
 
 ```typescript
 // hooks/useCRM.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { crmApi } from '@/services/crmApi';
-import type { Customer, Contact, Opportunity, Activity } from '@/types/crm';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { crmApi } from "@/services/crmApi";
+import type { Customer, Contact, Opportunity, Activity } from "@/types/crm";
 
 // Customers
 export function useCustomers(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['customers', params],
+    queryKey: ["customers", params],
     queryFn: () => crmApi.getCustomers(params),
   });
 }
 
 export function useCustomer(id: string) {
   return useQuery({
-    queryKey: ['customers', id],
+    queryKey: ["customers", id],
     queryFn: () => crmApi.getCustomerById(id),
     enabled: !!id,
   });
@@ -810,10 +810,11 @@ export function useCustomer(id: string) {
 export function useCreateCustomer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (customer: Partial<Customer>) => crmApi.createCustomer(customer),
+    mutationFn: (customer: Partial<Customer>) =>
+      crmApi.createCustomer(customer),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
-      queryClient.invalidateQueries({ queryKey: ['crm-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+      queryClient.invalidateQueries({ queryKey: ["crm-stats"] });
     },
   });
 }
@@ -824,8 +825,8 @@ export function useUpdateCustomer() {
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Customer> }) =>
       crmApi.updateCustomer(id, updates),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['customers', id] });
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      queryClient.invalidateQueries({ queryKey: ["customers", id] });
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
     },
   });
 }
@@ -835,8 +836,8 @@ export function useDeleteCustomer() {
   return useMutation({
     mutationFn: (id: string) => crmApi.deleteCustomer(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] });
-      queryClient.invalidateQueries({ queryKey: ['crm-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+      queryClient.invalidateQueries({ queryKey: ["crm-stats"] });
     },
   });
 }
@@ -844,7 +845,7 @@ export function useDeleteCustomer() {
 // Contacts
 export function useContacts(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['contacts', params],
+    queryKey: ["contacts", params],
     queryFn: () => crmApi.getContacts(params),
   });
 }
@@ -854,8 +855,8 @@ export function useCreateContact() {
   return useMutation({
     mutationFn: (contact: Partial<Contact>) => crmApi.createContact(contact),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      queryClient.invalidateQueries({ queryKey: ['crm-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["contacts"] });
+      queryClient.invalidateQueries({ queryKey: ["crm-stats"] });
     },
   });
 }
@@ -863,14 +864,14 @@ export function useCreateContact() {
 // Opportunities
 export function useOpportunities(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['opportunities', params],
+    queryKey: ["opportunities", params],
     queryFn: () => crmApi.getOpportunities(params),
   });
 }
 
 export function useOpportunity(id: string) {
   return useQuery({
-    queryKey: ['opportunities', id],
+    queryKey: ["opportunities", id],
     queryFn: () => crmApi.getOpportunityById(id),
     enabled: !!id,
   });
@@ -879,11 +880,11 @@ export function useOpportunity(id: string) {
 export function useCreateOpportunity() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (opportunity: Partial<Opportunity>) => 
+    mutationFn: (opportunity: Partial<Opportunity>) =>
       crmApi.createOpportunity(opportunity),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
-      queryClient.invalidateQueries({ queryKey: ['crm-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["opportunities"] });
+      queryClient.invalidateQueries({ queryKey: ["crm-stats"] });
     },
   });
 }
@@ -891,12 +892,17 @@ export function useCreateOpportunity() {
 export function useUpdateOpportunity() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<Opportunity> }) =>
-      crmApi.updateOpportunity(id, updates),
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: Partial<Opportunity>;
+    }) => crmApi.updateOpportunity(id, updates),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['opportunities', id] });
-      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
-      queryClient.invalidateQueries({ queryKey: ['crm-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["opportunities", id] });
+      queryClient.invalidateQueries({ queryKey: ["opportunities"] });
+      queryClient.invalidateQueries({ queryKey: ["crm-stats"] });
     },
   });
 }
@@ -904,7 +910,7 @@ export function useUpdateOpportunity() {
 // Activities
 export function useActivities(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['activities', params],
+    queryKey: ["activities", params],
     queryFn: () => crmApi.getActivities(params),
   });
 }
@@ -912,10 +918,11 @@ export function useActivities(params?: Record<string, unknown>) {
 export function useCreateActivity() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (activity: Partial<Activity>) => crmApi.createActivity(activity),
+    mutationFn: (activity: Partial<Activity>) =>
+      crmApi.createActivity(activity),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['activities'] });
-      queryClient.invalidateQueries({ queryKey: ['crm-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
+      queryClient.invalidateQueries({ queryKey: ["crm-stats"] });
     },
   });
 }
@@ -926,8 +933,8 @@ export function useUpdateActivity() {
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Activity> }) =>
       crmApi.updateActivity(id, updates),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['activities', id] });
-      queryClient.invalidateQueries({ queryKey: ['activities'] });
+      queryClient.invalidateQueries({ queryKey: ["activities", id] });
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
     },
   });
 }
@@ -935,7 +942,7 @@ export function useUpdateActivity() {
 // Statistics
 export function useCRMStats() {
   return useQuery({
-    queryKey: ['crm-stats'],
+    queryKey: ["crm-stats"],
     queryFn: () => crmApi.getStats(),
     staleTime: 60000, // Cache for 1 minute
   });
@@ -948,13 +955,13 @@ export function useCRMStats() {
 
 ```tsx
 // components/CustomerList.tsx
-import { useCustomers, useUpdateCustomer } from '@/hooks/useCRM';
+import { useCustomers, useUpdateCustomer } from "@/hooks/useCRM";
 
 export function CustomerList() {
-  const { data: customersData, isLoading } = useCustomers({ status: 'active' });
+  const { data: customersData, isLoading } = useCustomers({ status: "active" });
   const updateCustomer = useUpdateCustomer();
 
-  const handleStatusChange = async (id: string, status: Customer['status']) => {
+  const handleStatusChange = async (id: string, status: Customer["status"]) => {
     await updateCustomer.mutateAsync({ id, updates: { status } });
   };
 
@@ -971,16 +978,24 @@ export function CustomerList() {
             </span>
           </div>
           <div className="customer-info">
-            <p><strong>Company:</strong> {customer.company}</p>
-            <p><strong>Email:</strong> {customer.email}</p>
-            <p><strong>Phone:</strong> {customer.phone}</p>
-            <p><strong>Industry:</strong> {customer.industry}</p>
+            <p>
+              <strong>Company:</strong> {customer.company}
+            </p>
+            <p>
+              <strong>Email:</strong> {customer.email}
+            </p>
+            <p>
+              <strong>Phone:</strong> {customer.phone}
+            </p>
+            <p>
+              <strong>Industry:</strong> {customer.industry}
+            </p>
           </div>
           <div className="customer-actions">
-            <button onClick={() => handleStatusChange(customer.id, 'active')}>
+            <button onClick={() => handleStatusChange(customer.id, "active")}>
               Activate
             </button>
-            <button onClick={() => handleStatusChange(customer.id, 'archived')}>
+            <button onClick={() => handleStatusChange(customer.id, "archived")}>
               Archive
             </button>
           </div>
@@ -995,28 +1010,35 @@ export function CustomerList() {
 
 ```tsx
 // components/OpportunityPipeline.tsx
-import { useOpportunities } from '@/hooks/useCRM';
+import { useOpportunities } from "@/hooks/useCRM";
 
-const STAGES = ['lead', 'qualified', 'proposal', 'negotiation', 'closed'];
+const STAGES = ["lead", "qualified", "proposal", "negotiation", "closed"];
 
 export function OpportunityPipeline() {
-  const { data: opportunitiesData } = useOpportunities({ status: 'open' });
+  const { data: opportunitiesData } = useOpportunities({ status: "open" });
 
-  const opportunitiesByStage = STAGES.reduce((acc, stage) => {
-    acc[stage] = opportunitiesData?.data.filter(opp => opp.stage === stage) || [];
-    return acc;
-  }, {} as Record<string, Opportunity[]>);
+  const opportunitiesByStage = STAGES.reduce(
+    (acc, stage) => {
+      acc[stage] =
+        opportunitiesData?.data.filter((opp) => opp.stage === stage) || [];
+      return acc;
+    },
+    {} as Record<string, Opportunity[]>,
+  );
 
   return (
     <div className="pipeline">
-      {STAGES.map(stage => (
+      {STAGES.map((stage) => (
         <div key={stage} className="pipeline-stage">
           <h3>{stage.toUpperCase()}</h3>
           <div className="stage-value">
-            ${opportunitiesByStage[stage].reduce((sum, opp) => sum + opp.value, 0).toLocaleString()}
+            $
+            {opportunitiesByStage[stage]
+              .reduce((sum, opp) => sum + opp.value, 0)
+              .toLocaleString()}
           </div>
           <div className="opportunities">
-            {opportunitiesByStage[stage].map(opp => (
+            {opportunitiesByStage[stage].map((opp) => (
               <div key={opp.id} className="opportunity-card">
                 <div className="opp-title">{opp.title}</div>
                 <div className="opp-value">${opp.value.toLocaleString()}</div>
@@ -1035,13 +1057,13 @@ export function OpportunityPipeline() {
 
 ```tsx
 // components/ActivityTimeline.tsx
-import { useActivities } from '@/hooks/useCRM';
-import { format } from 'date-fns';
+import { useActivities } from "@/hooks/useCRM";
+import { format } from "date-fns";
 
 export function ActivityTimeline({ customerId }: { customerId?: string }) {
-  const { data: activitiesData } = useActivities({ 
+  const { data: activitiesData } = useActivities({
     customerId,
-    limit: 20 
+    limit: 20,
   });
 
   return (
@@ -1049,16 +1071,19 @@ export function ActivityTimeline({ customerId }: { customerId?: string }) {
       {activitiesData?.data.map((activity) => (
         <div key={activity.id} className="timeline-item">
           <div className={`activity-icon ${activity.type}`}>
-            {activity.type === 'call' && '📞'}
-            {activity.type === 'meeting' && '👥'}
-            {activity.type === 'email' && '📧'}
-            {activity.type === 'task' && '✓'}
+            {activity.type === "call" && "📞"}
+            {activity.type === "meeting" && "👥"}
+            {activity.type === "email" && "📧"}
+            {activity.type === "task" && "✓"}
           </div>
           <div className="activity-content">
             <div className="activity-header">
               <span className="activity-subject">{activity.subject}</span>
               <span className="activity-time">
-                {format(new Date(activity.scheduledAt || activity.createdAt), 'PPp')}
+                {format(
+                  new Date(activity.scheduledAt || activity.createdAt),
+                  "PPp",
+                )}
               </span>
             </div>
             <div className="activity-description">{activity.description}</div>
@@ -1079,7 +1104,7 @@ export function ActivityTimeline({ customerId }: { customerId?: string }) {
 
 ```tsx
 // components/CRMStatsDashboard.tsx
-import { useCRMStats } from '@/hooks/useCRM';
+import { useCRMStats } from "@/hooks/useCRM";
 
 export function CRMStatsDashboard() {
   const { data: stats } = useCRMStats();

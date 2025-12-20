@@ -97,7 +97,10 @@ export class SearchService {
     const stmt = this.db.prepare(query);
     const results = stmt.all(...queryParams) as SearchResult[];
 
-    logger.info({ query: params.query, resultsCount: results.length }, "Search completed");
+    logger.info(
+      { query: params.query, resultsCount: results.length },
+      "Search completed",
+    );
 
     return results;
   }
@@ -113,7 +116,7 @@ export class SearchService {
       confidence: number;
       provider: string;
       processingTimeMs: number;
-    }
+    },
   ): Promise<void> {
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO document_ocr (
@@ -129,7 +132,7 @@ export class SearchService {
       data.language,
       data.confidence,
       data.provider,
-      data.processingTimeMs
+      data.processingTimeMs,
     );
 
     logger.info({ documentId, provider: data.provider }, "OCR data saved");

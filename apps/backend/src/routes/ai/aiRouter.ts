@@ -211,12 +211,12 @@ router.post(
     session.messages.push(inbound);
 
     const cleanMessages = sanitizeMessages(session.messages);
-    
+
     // Use provider manager for intelligent provider selection and fallback
     const aiResponse = await providerManager.sendMessage(
       cleanMessages,
       session.provider, // Use session's preferred provider
-      session.model
+      session.model,
     );
 
     const responseText =
@@ -233,10 +233,10 @@ router.post(
     session.messages.push(outbound);
     session.updatedAt = nowISO();
 
-    log("info", "KI-Antwort generiert", { 
-      sessionId: session.id, 
+    log("info", "KI-Antwort generiert", {
+      sessionId: session.id,
       provider: aiResponse.meta?.provider,
-      model: aiResponse.meta?.model
+      model: aiResponse.meta?.model,
     });
     res.json({ success: true, response: outbound });
   }),
@@ -259,7 +259,10 @@ router.post(
   aiRateLimiter,
   asyncHandler(async (req, res) => {
     const { model, provider } = req.body;
-    const session = await createSession(model || "qwen2.5:3b", provider || "ollama");
+    const session = await createSession(
+      model || "qwen2.5:3b",
+      provider || "ollama",
+    );
     res.json({ success: true, session });
   }),
 );
@@ -293,12 +296,12 @@ router.post(
     session.messages.push(inbound);
 
     const cleanMessages = sanitizeMessages(session.messages);
-    
+
     // Use provider manager for intelligent provider selection and fallback
     const aiResponse = await providerManager.sendMessage(
       cleanMessages,
       session.provider,
-      session.model
+      session.model,
     );
 
     const responseText =
@@ -315,18 +318,18 @@ router.post(
     session.messages.push(outbound);
     session.updatedAt = nowISO();
 
-    log("info", "KI-Antwort generiert", { 
-      sessionId: session.id, 
+    log("info", "KI-Antwort generiert", {
+      sessionId: session.id,
       provider: aiResponse.meta?.provider,
-      model: aiResponse.meta?.model
+      model: aiResponse.meta?.model,
     });
-    
+
     // Return response in format expected by frontend
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: responseText,
       provider: aiResponse.meta?.provider,
-      model: aiResponse.meta?.model
+      model: aiResponse.meta?.model,
     });
   }),
 );
@@ -459,12 +462,12 @@ router.post(
   "/api-keys/:provider/test",
   asyncHandler(async (req, res) => {
     const { provider } = req.params;
-    
+
     // For now, just validate the format
     // In production, this would actually test the connection
     const keys = await loadAPIKeys();
     let isValid = false;
-    
+
     switch (provider) {
       case "openai":
         isValid = !!keys.openai && validateAPIKey(provider, keys.openai);
@@ -473,20 +476,24 @@ router.post(
         isValid = !!keys.anthropic && validateAPIKey(provider, keys.anthropic);
         break;
       case "azure":
-        isValid = !!keys.azure?.apiKey && validateAPIKey(provider, keys.azure.apiKey);
+        isValid =
+          !!keys.azure?.apiKey && validateAPIKey(provider, keys.azure.apiKey);
         break;
       case "huggingface":
-        isValid = !!keys.huggingface && validateAPIKey(provider, keys.huggingface);
+        isValid =
+          !!keys.huggingface && validateAPIKey(provider, keys.huggingface);
         break;
       default:
         isValid = !!keys.custom?.[provider];
     }
-    
+
     res.json({
       success: true,
       provider,
       valid: isValid,
-      message: isValid ? "API key is valid" : "API key not configured or invalid",
+      message: isValid
+        ? "API key is valid"
+        : "API key not configured or invalid",
     });
   }),
 );
@@ -559,17 +566,17 @@ router.get(
     } catch (error) {
       console.error("Error loading providers:", error);
       // Return empty list with offline status on error
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         providers: [
-          { 
-            provider: "ollama", 
-            available: false, 
-            status: "offline", 
+          {
+            provider: "ollama",
+            available: false,
+            status: "offline",
             message: "Failed to check provider status",
-            lastChecked: new Date().toISOString() 
-          }
-        ] 
+            lastChecked: new Date().toISOString(),
+          },
+        ],
       });
     }
   }),
@@ -580,14 +587,15 @@ router.get(
   "/system/status",
   asyncHandler(async (_req, res) => {
     const providers = await providerManager.getProviderStatus();
-    const activeProvider = providers.find(p => p.available)?.provider || "none";
-    
+    const activeProvider =
+      providers.find((p) => p.available)?.provider || "none";
+
     res.json({
       success: true,
       timestamp: nowISO(),
       modelCount: getModelOverview().length,
       toolCount: toolRegistry.count(),
-      systemStatus: providers.some(p => p.available) ? "healthy" : "degraded",
+      systemStatus: providers.some((p) => p.available) ? "healthy" : "degraded",
       activeProvider,
       fallbackEnabled: true,
     });

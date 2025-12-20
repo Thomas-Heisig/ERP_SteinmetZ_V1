@@ -75,7 +75,7 @@ export interface Customer {
   city?: string;
   postalCode?: string;
   country?: string;
-  status: typeof CUSTOMER_STATUS[keyof typeof CUSTOMER_STATUS];
+  status: (typeof CUSTOMER_STATUS)[keyof typeof CUSTOMER_STATUS];
   category?: string;
   industry?: string;
   website?: string;
@@ -111,8 +111,8 @@ export interface Opportunity {
   description?: string;
   value: number;
   probability: number;
-  status: typeof OPPORTUNITY_STATUS[keyof typeof OPPORTUNITY_STATUS];
-  stage: typeof OPPORTUNITY_STAGE[keyof typeof OPPORTUNITY_STAGE];
+  status: (typeof OPPORTUNITY_STATUS)[keyof typeof OPPORTUNITY_STATUS];
+  stage: (typeof OPPORTUNITY_STAGE)[keyof typeof OPPORTUNITY_STAGE];
   expectedCloseDate?: string;
   actualCloseDate?: string;
   assignedTo?: string;
@@ -130,15 +130,15 @@ export interface Activity {
   customerId?: string;
   contactId?: string;
   opportunityId?: string;
-  type: typeof ACTIVITY_TYPE[keyof typeof ACTIVITY_TYPE];
+  type: (typeof ACTIVITY_TYPE)[keyof typeof ACTIVITY_TYPE];
   subject: string;
   description?: string;
-  status: typeof ACTIVITY_STATUS[keyof typeof ACTIVITY_STATUS];
+  status: (typeof ACTIVITY_STATUS)[keyof typeof ACTIVITY_STATUS];
   scheduledAt?: string;
   completedAt?: string;
   durationMinutes?: number;
   assignedTo?: string;
-  outcome?: typeof ACTIVITY_OUTCOME[keyof typeof ACTIVITY_OUTCOME];
+  outcome?: (typeof ACTIVITY_OUTCOME)[keyof typeof ACTIVITY_OUTCOME];
   location?: string;
   attendees?: string;
   notes?: string;
@@ -189,7 +189,9 @@ export const createCustomerSchema = z.object({
   city: z.string().max(100).optional(),
   postalCode: z.string().max(20).optional(),
   country: z.string().max(100).optional(),
-  status: z.enum(["active", "inactive", "prospect", "archived"]).default("prospect"),
+  status: z
+    .enum(["active", "inactive", "prospect", "archived"])
+    .default("prospect"),
   category: z.string().max(100).optional(),
   industry: z.string().max(100).optional(),
   website: z.string().url().optional(),
@@ -250,7 +252,9 @@ export const createOpportunitySchema = z.object({
   value: z.number().nonnegative().default(0),
   probability: z.number().int().min(0).max(100).default(50),
   status: z.enum(["open", "won", "lost", "cancelled"]).default("open"),
-  stage: z.enum(["lead", "qualified", "proposal", "negotiation", "closed"]).default("lead"),
+  stage: z
+    .enum(["lead", "qualified", "proposal", "negotiation", "closed"])
+    .default("lead"),
   expectedCloseDate: z.string().datetime().optional(),
   actualCloseDate: z.string().datetime().optional(),
   assignedTo: z.string().optional(),
@@ -266,7 +270,9 @@ export const updateOpportunitySchema = createOpportunitySchema.partial();
 export const opportunityQuerySchema = z.object({
   customerId: z.string().optional(),
   status: z.enum(["open", "won", "lost", "cancelled"]).optional(),
-  stage: z.enum(["lead", "qualified", "proposal", "negotiation", "closed"]).optional(),
+  stage: z
+    .enum(["lead", "qualified", "proposal", "negotiation", "closed"])
+    .optional(),
   assignedTo: z.string().optional(),
   minValue: z.coerce.number().nonnegative().optional(),
   maxValue: z.coerce.number().nonnegative().optional(),
@@ -285,12 +291,16 @@ export const createActivitySchema = z.object({
   type: z.enum(["call", "meeting", "email", "task", "note", "demo"]),
   subject: z.string().min(1).max(200),
   description: z.string().optional(),
-  status: z.enum(["planned", "in_progress", "completed", "cancelled"]).default("planned"),
+  status: z
+    .enum(["planned", "in_progress", "completed", "cancelled"])
+    .default("planned"),
   scheduledAt: z.string().datetime().optional(),
   completedAt: z.string().datetime().optional(),
   durationMinutes: z.number().int().positive().optional(),
   assignedTo: z.string().optional(),
-  outcome: z.enum(["positive", "neutral", "negative", "no_response"]).optional(),
+  outcome: z
+    .enum(["positive", "neutral", "negative", "no_response"])
+    .optional(),
   location: z.string().max(200).optional(),
   attendees: z.string().optional(),
   notes: z.string().optional(),
@@ -304,7 +314,9 @@ export const activityQuerySchema = z.object({
   contactId: z.string().optional(),
   opportunityId: z.string().optional(),
   type: z.enum(["call", "meeting", "email", "task", "note", "demo"]).optional(),
-  status: z.enum(["planned", "in_progress", "completed", "cancelled"]).optional(),
+  status: z
+    .enum(["planned", "in_progress", "completed", "cancelled"])
+    .optional(),
   assignedTo: z.string().optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
@@ -316,26 +328,50 @@ export const activityQuerySchema = z.object({
 // TYPE GUARDS
 // ============================================================================
 
-export function isValidCustomerStatus(status: string): status is typeof CUSTOMER_STATUS[keyof typeof CUSTOMER_STATUS] {
-  return Object.values(CUSTOMER_STATUS).includes(status as typeof CUSTOMER_STATUS[keyof typeof CUSTOMER_STATUS]);
+export function isValidCustomerStatus(
+  status: string,
+): status is (typeof CUSTOMER_STATUS)[keyof typeof CUSTOMER_STATUS] {
+  return Object.values(CUSTOMER_STATUS).includes(
+    status as (typeof CUSTOMER_STATUS)[keyof typeof CUSTOMER_STATUS],
+  );
 }
 
-export function isValidOpportunityStatus(status: string): status is typeof OPPORTUNITY_STATUS[keyof typeof OPPORTUNITY_STATUS] {
-  return Object.values(OPPORTUNITY_STATUS).includes(status as typeof OPPORTUNITY_STATUS[keyof typeof OPPORTUNITY_STATUS]);
+export function isValidOpportunityStatus(
+  status: string,
+): status is (typeof OPPORTUNITY_STATUS)[keyof typeof OPPORTUNITY_STATUS] {
+  return Object.values(OPPORTUNITY_STATUS).includes(
+    status as (typeof OPPORTUNITY_STATUS)[keyof typeof OPPORTUNITY_STATUS],
+  );
 }
 
-export function isValidOpportunityStage(stage: string): stage is typeof OPPORTUNITY_STAGE[keyof typeof OPPORTUNITY_STAGE] {
-  return Object.values(OPPORTUNITY_STAGE).includes(stage as typeof OPPORTUNITY_STAGE[keyof typeof OPPORTUNITY_STAGE]);
+export function isValidOpportunityStage(
+  stage: string,
+): stage is (typeof OPPORTUNITY_STAGE)[keyof typeof OPPORTUNITY_STAGE] {
+  return Object.values(OPPORTUNITY_STAGE).includes(
+    stage as (typeof OPPORTUNITY_STAGE)[keyof typeof OPPORTUNITY_STAGE],
+  );
 }
 
-export function isValidActivityType(type: string): type is typeof ACTIVITY_TYPE[keyof typeof ACTIVITY_TYPE] {
-  return Object.values(ACTIVITY_TYPE).includes(type as typeof ACTIVITY_TYPE[keyof typeof ACTIVITY_TYPE]);
+export function isValidActivityType(
+  type: string,
+): type is (typeof ACTIVITY_TYPE)[keyof typeof ACTIVITY_TYPE] {
+  return Object.values(ACTIVITY_TYPE).includes(
+    type as (typeof ACTIVITY_TYPE)[keyof typeof ACTIVITY_TYPE],
+  );
 }
 
-export function isValidActivityStatus(status: string): status is typeof ACTIVITY_STATUS[keyof typeof ACTIVITY_STATUS] {
-  return Object.values(ACTIVITY_STATUS).includes(status as typeof ACTIVITY_STATUS[keyof typeof ACTIVITY_STATUS]);
+export function isValidActivityStatus(
+  status: string,
+): status is (typeof ACTIVITY_STATUS)[keyof typeof ACTIVITY_STATUS] {
+  return Object.values(ACTIVITY_STATUS).includes(
+    status as (typeof ACTIVITY_STATUS)[keyof typeof ACTIVITY_STATUS],
+  );
 }
 
-export function isValidActivityOutcome(outcome: string): outcome is typeof ACTIVITY_OUTCOME[keyof typeof ACTIVITY_OUTCOME] {
-  return Object.values(ACTIVITY_OUTCOME).includes(outcome as typeof ACTIVITY_OUTCOME[keyof typeof ACTIVITY_OUTCOME]);
+export function isValidActivityOutcome(
+  outcome: string,
+): outcome is (typeof ACTIVITY_OUTCOME)[keyof typeof ACTIVITY_OUTCOME] {
+  return Object.values(ACTIVITY_OUTCOME).includes(
+    outcome as (typeof ACTIVITY_OUTCOME)[keyof typeof ACTIVITY_OUTCOME],
+  );
 }

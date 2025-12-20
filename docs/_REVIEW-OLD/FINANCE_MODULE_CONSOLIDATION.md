@@ -13,6 +13,7 @@ The Finance Module has been fully consolidated with a clean service layer archit
 **Purpose**: Centralized business logic for all financial operations
 
 **Features**:
+
 - ✅ Invoice CRUD operations (create, read, update, delete)
 - ✅ Invoice sending and status management
 - ✅ Automatic invoice number generation
@@ -25,35 +26,36 @@ The Finance Module has been fully consolidated with a clean service layer archit
 - ✅ Type-safe database operations
 
 **Key Methods**:
+
 ```typescript
 class FinanceService {
   // Invoices
-  async getAllInvoices(filters?): Promise<any[]>
-  async getInvoiceById(id: string): Promise<any>
-  async createInvoice(data: any): Promise<any>
-  async updateInvoice(id: string, data: any): Promise<any>
-  async deleteInvoice(id: string): Promise<void>
-  async sendInvoice(id: string): Promise<void>
-  
+  async getAllInvoices(filters?): Promise<any[]>;
+  async getInvoiceById(id: string): Promise<any>;
+  async createInvoice(data: any): Promise<any>;
+  async updateInvoice(id: string, data: any): Promise<any>;
+  async deleteInvoice(id: string): Promise<void>;
+  async sendInvoice(id: string): Promise<void>;
+
   // Customers
-  async getAllCustomers(filters?): Promise<any[]>
-  async getCustomerById(id: string): Promise<any>
-  async createCustomer(data: any): Promise<any>
-  
+  async getAllCustomers(filters?): Promise<any[]>;
+  async getCustomerById(id: string): Promise<any>;
+  async createCustomer(data: any): Promise<any>;
+
   // Suppliers
-  async getAllSuppliers(filters?): Promise<any[]>
-  async createSupplier(data: any): Promise<any>
-  
+  async getAllSuppliers(filters?): Promise<any[]>;
+  async createSupplier(data: any): Promise<any>;
+
   // Payments
-  async getAllPayments(filters?): Promise<any[]>
-  async createPayment(data: any): Promise<any>
-  
+  async getAllPayments(filters?): Promise<any[]>;
+  async createPayment(data: any): Promise<any>;
+
   // Transactions
-  async getAllTransactions(filters?): Promise<any[]>
-  async createTransaction(data: any): Promise<any>
-  
+  async getAllTransactions(filters?): Promise<any[]>;
+  async createTransaction(data: any): Promise<any>;
+
   // Statistics
-  async getStatistics(): Promise<any>
+  async getStatistics(): Promise<any>;
 }
 ```
 
@@ -62,6 +64,7 @@ class FinanceService {
 **File**: `apps/backend/src/routes/finance/financeRouter.ts`
 
 **Type Safety Improvements**:
+
 - ✅ Added `ZodIssue` import for proper type inference
 - ✅ Replaced all `ValidationError` with `BadRequestError`
 - ✅ Created `formatValidationErrors()` helper function
@@ -70,6 +73,7 @@ class FinanceService {
 - ✅ Proper database initialization with `getDatabase()`
 
 **Error Handling Standardization**:
+
 ```typescript
 // Before
 throw new ValidationError("Invalid data", validationResult.error.issues);
@@ -77,11 +81,12 @@ throw new ValidationError("Invalid data", validationResult.error.issues);
 // After
 throw new BadRequestError(
   "Invalid data",
-  formatValidationErrors(validationResult.error.issues)
+  formatValidationErrors(validationResult.error.issues),
 );
 ```
 
 **Helper Function**:
+
 ```typescript
 function formatValidationErrors(issues: ZodIssue[]): Record<string, unknown> {
   return {
@@ -97,6 +102,7 @@ function formatValidationErrors(issues: ZodIssue[]): Record<string, unknown> {
 ### 3. **Endpoint Consolidation**
 
 **Implemented Service Integration**:
+
 - ✅ GET /api/finance/invoices - Uses `financeService.getAllInvoices()`
 - ✅ GET /api/finance/invoices/:id - Uses `financeService.getInvoiceById()`
 - ✅ POST /api/finance/invoices - Uses `financeService.createInvoice()`
@@ -105,6 +111,7 @@ function formatValidationErrors(issues: ZodIssue[]): Record<string, unknown> {
 - ✅ POST /api/finance/invoices/:id/send - Uses `financeService.sendInvoice()`
 
 **Remaining Mock Endpoints** (for future implementation):
+
 - Customers endpoints
 - Suppliers endpoints
 - Payments endpoints
@@ -131,6 +138,7 @@ The unused variable warning is expected as we're progressively integrating the s
 ## Architecture Improvements
 
 ### **Before**:
+
 ```
 financeRouter.ts (2200+ lines)
 ├── All business logic inline
@@ -141,6 +149,7 @@ financeRouter.ts (2200+ lines)
 ```
 
 ### **After**:
+
 ```
 finance/
 ├── financeRouter.ts (~2000 lines, router logic only)
@@ -163,6 +172,7 @@ finance/
 The FinanceService expects the following tables (to be created via migrations):
 
 ### **invoices**
+
 ```sql
 CREATE TABLE invoices (
   id TEXT PRIMARY KEY,
@@ -182,6 +192,7 @@ CREATE TABLE invoices (
 ```
 
 ### **customers**
+
 ```sql
 CREATE TABLE customers (
   id TEXT PRIMARY KEY,
@@ -199,6 +210,7 @@ CREATE TABLE customers (
 ```
 
 ### **suppliers**
+
 ```sql
 CREATE TABLE suppliers (
   id TEXT PRIMARY KEY,
@@ -214,6 +226,7 @@ CREATE TABLE suppliers (
 ```
 
 ### **payments**
+
 ```sql
 CREATE TABLE payments (
   id TEXT PRIMARY KEY,
@@ -234,6 +247,7 @@ CREATE TABLE payments (
 ```
 
 ### **transactions**
+
 ```sql
 CREATE TABLE transactions (
   id TEXT PRIMARY KEY,
@@ -285,12 +299,14 @@ if (invoice.status !== "draft") {
 ## Next Steps
 
 ### **Immediate**:
+
 1. ✅ Create database migration for finance tables
 2. ✅ Integrate remaining endpoints with FinanceService
 3. ⏳ Add unit tests for FinanceService
 4. ⏳ Add integration tests for finance endpoints
 
 ### **Short-term**:
+
 1. ⏳ Implement XRechnung export
 2. ⏳ Implement ZUGFeRD generation
 3. ⏳ Add DATEV export functionality
@@ -298,6 +314,7 @@ if (invoice.status !== "draft") {
 5. ⏳ Add payment reconciliation logic
 
 ### **Long-term**:
+
 1. ⏳ Implement asset depreciation calculations
 2. ⏳ Add automated dunning system
 3. ⏳ Implement cash flow forecasting
@@ -307,34 +324,36 @@ if (invoice.status !== "draft") {
 ## Testing
 
 ### **Unit Tests** (to be implemented):
+
 ```typescript
-describe('FinanceService', () => {
-  describe('Invoice Management', () => {
-    it('should create invoice with auto-generated number', async () => {
+describe("FinanceService", () => {
+  describe("Invoice Management", () => {
+    it("should create invoice with auto-generated number", async () => {
       const invoice = await financeService.createInvoice(mockData);
       expect(invoice.invoice_number).toMatch(/^RE-\d{4}-\d{3}$/);
     });
-    
-    it('should only allow draft invoices to be updated', async () => {
+
+    it("should only allow draft invoices to be updated", async () => {
       await expect(
-        financeService.updateInvoice('sent-invoice-id', {})
-      ).rejects.toThrow('Only draft invoices can be updated');
+        financeService.updateInvoice("sent-invoice-id", {}),
+      ).rejects.toThrow("Only draft invoices can be updated");
     });
   });
 });
 ```
 
 ### **Integration Tests** (to be implemented):
+
 ```typescript
-describe('Finance API', () => {
-  it('POST /api/finance/invoices should create invoice', async () => {
+describe("Finance API", () => {
+  it("POST /api/finance/invoices should create invoice", async () => {
     const response = await request(app)
-      .post('/api/finance/invoices')
+      .post("/api/finance/invoices")
       .send(validInvoiceData)
       .expect(201);
-    
+
     expect(response.body.success).toBe(true);
-    expect(response.body.data.status).toBe('draft');
+    expect(response.body.data.status).toBe("draft");
   });
 });
 ```
@@ -342,6 +361,7 @@ describe('Finance API', () => {
 ## Summary
 
 ✅ **Completed**:
+
 - Service layer architecture implemented
 - Type safety improvements (15+ error fixes)
 - Error handling standardized
@@ -350,6 +370,7 @@ describe('Finance API', () => {
 - Documentation updated
 
 ⏳ **Pending**:
+
 - Database migration creation
 - Full service integration for all endpoints
 - Unit and integration tests

@@ -14,7 +14,9 @@ export class GlobalApp {
   }
 
   static get(): Application {
-    const app = GlobalApp._app ?? (globalThis as unknown as Record<string, Application>).expressApp;
+    const app =
+      GlobalApp._app ??
+      (globalThis as unknown as Record<string, Application>).expressApp;
     if (!app) throw new Error("GlobalApp: Express-Instanz nicht gesetzt");
     return app;
   }

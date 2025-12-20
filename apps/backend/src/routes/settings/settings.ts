@@ -236,7 +236,11 @@ router.post(
     for (const update of updates) {
       const definition = SETTING_DEFINITIONS.find((d) => d.key === update.key);
       if (!definition) {
-        results.push({ key: update.key, success: false, error: "Setting not found" });
+        results.push({
+          key: update.key,
+          success: false,
+          error: "Setting not found",
+        });
         continue;
       }
       try {

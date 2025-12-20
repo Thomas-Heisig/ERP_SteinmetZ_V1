@@ -52,7 +52,10 @@ export async function transcribeAudio(filePath: string): Promise<AIResponse> {
 
   const startedAt = performance.now();
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), audioConfig.timeout_ms);
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    audioConfig.timeout_ms,
+  );
 
   try {
     const formData = new FormData();
@@ -142,7 +145,10 @@ export async function textToSpeech(
 
   const startedAt = performance.now();
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), audioConfig.timeout_ms);
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    audioConfig.timeout_ms,
+  );
 
   try {
     const res = await fetch("https://api.openai.com/v1/audio/speech", {
@@ -202,7 +208,10 @@ export async function testAudioEndpoints(): Promise<Record<string, boolean>> {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), audioConfig.timeout_ms);
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    audioConfig.timeout_ms,
+  );
 
   try {
     const res = await fetch("https://api.openai.com/v1/models", {

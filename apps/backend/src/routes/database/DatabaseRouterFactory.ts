@@ -36,8 +36,14 @@ export interface DatabaseContext {
   /** Database service for async operations */
   db: {
     query: <T = unknown>(sql: string, params?: unknown[]) => Promise<T[]>;
-    queryOne: <T = unknown>(sql: string, params?: unknown[]) => Promise<T | undefined>;
-    execute: (sql: string, params?: unknown[]) => Promise<{ changes: number; lastID?: number }>;
+    queryOne: <T = unknown>(
+      sql: string,
+      params?: unknown[],
+    ) => Promise<T | undefined>;
+    execute: (
+      sql: string,
+      params?: unknown[],
+    ) => Promise<{ changes: number; lastID?: number }>;
   };
   /** Raw database instance (for special cases) */
   rawDb: Database.Database;
@@ -96,7 +102,10 @@ export class DatabaseRouterFactory {
         await this.dbManager.initialize();
         next();
       } catch (error) {
-        logger.error({ error, prefix: this.prefix }, "Database initialization failed");
+        logger.error(
+          { error, prefix: this.prefix },
+          "Database initialization failed",
+        );
         res.status(503).json({
           success: false,
           error: "Database service unavailable",
@@ -133,7 +142,8 @@ export class DatabaseRouterFactory {
         if (!res.headersSent) {
           res.status(500).json({
             success: false,
-            error: error instanceof Error ? error.message : "Internal server error",
+            error:
+              error instanceof Error ? error.message : "Internal server error",
             prefix: this.prefix,
           });
         }
@@ -146,7 +156,10 @@ export class DatabaseRouterFactory {
    */
   get(path: string, handler: DatabaseRouteHandler): this {
     this.router.get(path, this.wrapHandler(handler));
-    logger.debug({ prefix: this.prefix, method: "GET", path }, "Registered route");
+    logger.debug(
+      { prefix: this.prefix, method: "GET", path },
+      "Registered route",
+    );
     return this;
   }
 
@@ -155,7 +168,10 @@ export class DatabaseRouterFactory {
    */
   post(path: string, handler: DatabaseRouteHandler): this {
     this.router.post(path, this.wrapHandler(handler));
-    logger.debug({ prefix: this.prefix, method: "POST", path }, "Registered route");
+    logger.debug(
+      { prefix: this.prefix, method: "POST", path },
+      "Registered route",
+    );
     return this;
   }
 
@@ -164,7 +180,10 @@ export class DatabaseRouterFactory {
    */
   put(path: string, handler: DatabaseRouteHandler): this {
     this.router.put(path, this.wrapHandler(handler));
-    logger.debug({ prefix: this.prefix, method: "PUT", path }, "Registered route");
+    logger.debug(
+      { prefix: this.prefix, method: "PUT", path },
+      "Registered route",
+    );
     return this;
   }
 
@@ -173,7 +192,10 @@ export class DatabaseRouterFactory {
    */
   patch(path: string, handler: DatabaseRouteHandler): this {
     this.router.patch(path, this.wrapHandler(handler));
-    logger.debug({ prefix: this.prefix, method: "PATCH", path }, "Registered route");
+    logger.debug(
+      { prefix: this.prefix, method: "PATCH", path },
+      "Registered route",
+    );
     return this;
   }
 
@@ -182,7 +204,10 @@ export class DatabaseRouterFactory {
    */
   delete(path: string, handler: DatabaseRouteHandler): this {
     this.router.delete(path, this.wrapHandler(handler));
-    logger.debug({ prefix: this.prefix, method: "DELETE", path }, "Registered route");
+    logger.debug(
+      { prefix: this.prefix, method: "DELETE", path },
+      "Registered route",
+    );
     return this;
   }
 

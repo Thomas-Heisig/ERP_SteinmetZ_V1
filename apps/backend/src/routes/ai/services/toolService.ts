@@ -30,7 +30,14 @@ export const toolServiceConfig: AIModuleConfig = {
 /* ========================================================================== */
 
 export function loadAvailableTools(): string[] {
-  const toolDir = path.resolve("apps", "backend", "src", "routes", "ai", "tools");
+  const toolDir = path.resolve(
+    "apps",
+    "backend",
+    "src",
+    "routes",
+    "ai",
+    "tools",
+  );
   if (!fs.existsSync(toolDir)) return [];
 
   const files = fs
@@ -66,7 +73,8 @@ export async function runTool(
 
     if (typeof result === "string") return result;
 
-    const payload = isRecord(result) || Array.isArray(result) ? result : { value: result };
+    const payload =
+      isRecord(result) || Array.isArray(result) ? result : { value: result };
     return JSON.stringify({
       success: true,
       tool: toolName,

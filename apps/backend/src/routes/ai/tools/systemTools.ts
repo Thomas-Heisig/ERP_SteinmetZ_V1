@@ -14,7 +14,9 @@ import { toolRegistry, type ToolFunction } from "./registry.js";
 /* ─────────────────────────────────────────────
  * 🧠 Systeminformationen (Allgemein)
  * ───────────────────────────────────────────── */
-const systemInfoTool: ToolFunction = async (params?: Record<string, unknown>) => {
+const systemInfoTool: ToolFunction = async (
+  params?: Record<string, unknown>,
+) => {
   const section = params?.section as string | undefined;
 
   const info = {
@@ -77,9 +79,10 @@ const systemInfoTool: ToolFunction = async (params?: Record<string, unknown>) =>
           arch: info.arch,
           release: os.release(),
           type: os.type(),
-          version: typeof (os as { version?: () => string }).version === "function" 
-            ? (os as { version: () => string }).version() 
-            : "n/a",
+          version:
+            typeof (os as { version?: () => string }).version === "function"
+              ? (os as { version: () => string }).version()
+              : "n/a",
         };
       default:
         return { note: `Sektion '${section}' nicht erkannt`, full: info };

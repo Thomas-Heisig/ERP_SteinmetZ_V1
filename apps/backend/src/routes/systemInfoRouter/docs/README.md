@@ -31,7 +31,7 @@ Mountpoints (typisch):
 Alle Routen nutzen `asyncHandler`; App-Auflösung erfolgt über `req.app` oder `global expressApp`.
 
 **Endpoints**
- (Prefix: `/api/system`):
+(Prefix: `/api/system`):
 
 - `/` – Gesamtübersicht (`getCompleteSystemOverview`).
 - `/routes` – registrierte Express-Routen (`getRegisteredRoutes`).

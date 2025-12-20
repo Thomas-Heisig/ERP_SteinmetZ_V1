@@ -193,10 +193,9 @@ router.post(
     // Validate input
     const validationResult = uploadDocumentSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError(
-        "Invalid document data",
-        { errors: validationResult.error.issues.map((e: ZodIssue) => e.message) },
-      );
+      throw new BadRequestError("Invalid document data", {
+        errors: validationResult.error.issues.map((e: ZodIssue) => e.message),
+      });
     }
 
     const documentData = validationResult.data;
@@ -222,7 +221,7 @@ router.post(
     const newDocument = await documentService.createDocument(
       documentData,
       mockFileInfo,
-      userId
+      userId,
     );
 
     res.status(201).json({
@@ -256,7 +255,7 @@ router.post(
       id,
       mockFileInfo,
       changes || "Updated document",
-      userId
+      userId,
     );
 
     res.json({
@@ -300,10 +299,9 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const validationResult = searchDocumentsSchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new BadRequestError(
-        "Invalid search parameters",
-        { errors: validationResult.error.issues.map((e: ZodIssue) => e.message) },
-      );
+      throw new BadRequestError("Invalid search parameters", {
+        errors: validationResult.error.issues.map((e: ZodIssue) => e.message),
+      });
     }
 
     const searchParams = validationResult.data;
@@ -370,7 +368,7 @@ router.post(
     // TODO: Integrate with OpenAI/Anthropic API
     // For now, generate mock AI tags
     const generatedTags = ["rechnung", "kunde", "2024", "zahlung"];
-    
+
     // Save AI-generated tags
     documentService.saveTags(id, generatedTags, "ai_generated", 0.92);
 
@@ -402,10 +400,9 @@ router.post(
 
     const validationResult = createWorkflowSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError(
-        "Invalid workflow data",
-        { errors: validationResult.error.issues.map((e: ZodIssue) => e.message) },
-      );
+      throw new BadRequestError("Invalid workflow data", {
+        errors: validationResult.error.issues.map((e: ZodIssue) => e.message),
+      });
     }
 
     const workflowData = validationResult.data;
@@ -644,10 +641,9 @@ router.put(
 
     const validationResult = updateRetentionPolicySchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError(
-        "Invalid retention policy data",
-        { errors: validationResult.error.issues.map((e: ZodIssue) => e.message) },
-      );
+      throw new BadRequestError("Invalid retention policy data", {
+        errors: validationResult.error.issues.map((e: ZodIssue) => e.message),
+      });
     }
 
     const { retentionYears, reason } = validationResult.data;

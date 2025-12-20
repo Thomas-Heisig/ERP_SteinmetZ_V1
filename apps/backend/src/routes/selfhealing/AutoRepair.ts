@@ -318,8 +318,11 @@ export class AutoRepair {
     if (result.issue.type === "orphan_edge" && data) {
       const parentId = data.parent_id as string | undefined;
       const childId = data.child_id as string | undefined;
-      const weight = (data.weight as number | undefined) ?? AutoRepair.EDGE_DEFAULT_WEIGHT;
-      const relationship = (data.relationship_type as string | undefined) ?? AutoRepair.EDGE_DEFAULT_RELATION;
+      const weight =
+        (data.weight as number | undefined) ?? AutoRepair.EDGE_DEFAULT_WEIGHT;
+      const relationship =
+        (data.relationship_type as string | undefined) ??
+        AutoRepair.EDGE_DEFAULT_RELATION;
 
       if (!parentId || !childId) {
         logger.warn({ data }, "Missing identifiers for edge rollback");

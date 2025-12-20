@@ -66,7 +66,10 @@ async function importToolModule(filePath: string) {
     } else {
       const after = toolRegistry.count();
       if (after > before) {
-        logger.info({ fileName, added: after - before }, "Module registered tools via side-effect import");
+        logger.info(
+          { fileName, added: after - before },
+          "Module registered tools via side-effect import",
+        );
       } else {
         logger.warn(
           { fileName },

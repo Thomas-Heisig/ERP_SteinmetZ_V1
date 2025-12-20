@@ -20,7 +20,12 @@ const logger = createLogger("projects-service");
    TYPES
 --------------------------------------------------------- */
 
-export type ProjectStatus = "planning" | "active" | "on_hold" | "completed" | "cancelled";
+export type ProjectStatus =
+  | "planning"
+  | "active"
+  | "on_hold"
+  | "completed"
+  | "cancelled";
 export type TaskStatus = "todo" | "in_progress" | "review" | "done";
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
 
@@ -130,11 +135,13 @@ export class ProjectsService {
    * @param projectId - Project ID
    * @returns Project with tasks or null if not found
    */
-  async getProject(projectId: string): Promise<(Project & { tasks: ProjectTask[] }) | null> {
+  async getProject(
+    projectId: string,
+  ): Promise<(Project & { tasks: ProjectTask[] }) | null> {
     try {
       const project = await db.get<Project>(
         "SELECT * FROM projects WHERE id = ?",
-        [projectId]
+        [projectId],
       );
 
       if (!project) {
@@ -143,7 +150,7 @@ export class ProjectsService {
 
       const tasks = await db.all<ProjectTask>(
         "SELECT * FROM project_tasks WHERE project_id = ? ORDER BY created_at",
-        [projectId]
+        [projectId],
       );
 
       return { ...project, tasks };
@@ -188,10 +195,13 @@ export class ProjectsService {
           data.manager || null,
           now,
           now,
-        ]
+        ],
       );
 
-      const project = await db.get<Project>("SELECT * FROM projects WHERE id = ?", [id]);
+      const project = await db.get<Project>(
+        "SELECT * FROM projects WHERE id = ?",
+        [id],
+      );
 
       logger.info({ projectId: id, name: data.name }, "Project created");
       if (!project) {
@@ -213,12 +223,12 @@ export class ProjectsService {
    */
   async updateProject(
     projectId: string,
-    data: Partial<Omit<Project, "id" | "created_at" | "updated_at">>
+    data: Partial<Omit<Project, "id" | "created_at" | "updated_at">>,
   ): Promise<Project> {
     try {
       const existing = await db.get<Project>(
         "SELECT * FROM projects WHERE id = ?",
-        [projectId]
+        [projectId],
       );
 
       if (!existing) {
@@ -239,12 +249,12 @@ export class ProjectsService {
       const setClause = fields.map((f) => `${f} = ?`).join(", ");
       await db.run(
         `UPDATE projects SET ${setClause}, updated_at = ? WHERE id = ?`,
-        [...values, now, projectId] as (string | number | null)[]
+        [...values, now, projectId] as (string | number | null)[],
       );
 
       const updated = await db.get<Project>(
         "SELECT * FROM projects WHERE id = ?",
-        [projectId]
+        [projectId],
       );
 
       if (!updated) {
@@ -268,7 +278,7 @@ export class ProjectsService {
     try {
       const existing = await db.get<Project>(
         "SELECT * FROM projects WHERE id = ?",
-        [projectId]
+        [projectId],
       );
 
       if (!existing) {
@@ -276,8 +286,12 @@ export class ProjectsService {
       }
 
       // Delete cascading data
-      await db.run("DELETE FROM project_time_entries WHERE project_id = ?", [projectId]);
-      await db.run("DELETE FROM project_tasks WHERE project_id = ?", [projectId]);
+      await db.run("DELETE FROM project_time_entries WHERE project_id = ?", [
+        projectId,
+      ]);
+      await db.run("DELETE FROM project_tasks WHERE project_id = ?", [
+        projectId,
+      ]);
       await db.run("DELETE FROM projects WHERE id = ?", [projectId]);
 
       logger.info({ projectId }, "Project deleted");
@@ -302,7 +316,7 @@ export class ProjectsService {
     try {
       const tasks = await db.all<ProjectTask>(
         "SELECT * FROM project_tasks WHERE project_id = ? ORDER BY created_at",
-        [projectId]
+        [projectId],
       );
 
       return tasks;
@@ -356,10 +370,13 @@ export class ProjectsService {
           data.estimatedHours || null,
           now,
           now,
-        ]
+        ],
       );
 
-      const task = await db.get<ProjectTask>("SELECT * FROM project_tasks WHERE id = ?", [id]);
+      const task = await db.get<ProjectTask>(
+        "SELECT * FROM project_tasks WHERE id = ?",
+        [id],
+      );
 
       if (!task) {
         throw new Error("Failed to retrieve created task");
@@ -379,11 +396,14 @@ export class ProjectsService {
    * @param data - Updated task data
    * @returns Updated task
    */
-  async updateTask(taskId: string, data: Partial<ProjectTask>): Promise<ProjectTask> {
+  async updateTask(
+    taskId: string,
+    data: Partial<ProjectTask>,
+  ): Promise<ProjectTask> {
     try {
       const existing = await db.get<ProjectTask>(
         "SELECT * FROM project_tasks WHERE id = ?",
-        [taskId]
+        [taskId],
       );
 
       if (!existing) {
@@ -404,12 +424,12 @@ export class ProjectsService {
       const setClause = fields.map((f) => `${f} = ?`).join(", ");
       await db.run(
         `UPDATE project_tasks SET ${setClause}, updated_at = ? WHERE id = ?`,
-        [...values, now, taskId] as (string | number | null)[]
+        [...values, now, taskId] as (string | number | null)[],
       );
 
       const updated = await db.get<ProjectTask>(
         "SELECT * FROM project_tasks WHERE id = ?",
-        [taskId]
+        [taskId],
       );
 
       if (!updated) {
@@ -431,13 +451,18 @@ export class ProjectsService {
    */
   async deleteTask(taskId: string): Promise<boolean> {
     try {
-      const existing = await db.get("SELECT id FROM project_tasks WHERE id = ?", [taskId]);
+      const existing = await db.get(
+        "SELECT id FROM project_tasks WHERE id = ?",
+        [taskId],
+      );
 
       if (!existing) {
         return false;
       }
 
-      await db.run("DELETE FROM project_time_entries WHERE task_id = ?", [taskId]);
+      await db.run("DELETE FROM project_time_entries WHERE task_id = ?", [
+        taskId,
+      ]);
       await db.run("DELETE FROM project_tasks WHERE id = ?", [taskId]);
 
       logger.info({ taskId }, "Task deleted");
@@ -482,18 +507,21 @@ export class ProjectsService {
           data.date,
           data.description || null,
           now,
-        ]
+        ],
       );
 
       const entry = await db.get<TimeEntry>(
         "SELECT * FROM project_time_entries WHERE id = ?",
-        [id]
+        [id],
       );
 
       if (!entry) {
         throw new Error("Failed to retrieve logged time entry");
       }
-      logger.info({ entryId: id, projectId: data.projectId }, "Time entry logged");
+      logger.info(
+        { entryId: id, projectId: data.projectId },
+        "Time entry logged",
+      );
       return entry;
     } catch (error) {
       logger.error({ error, data }, "Failed to log time entry");
@@ -511,7 +539,7 @@ export class ProjectsService {
     try {
       const entries = await db.all<TimeEntry>(
         "SELECT * FROM project_time_entries WHERE project_id = ? ORDER BY date DESC",
-        [projectId]
+        [projectId],
       );
 
       return entries;
@@ -535,7 +563,7 @@ export class ProjectsService {
     try {
       const project = await db.get<Project>(
         "SELECT * FROM projects WHERE id = ?",
-        [projectId]
+        [projectId],
       );
 
       if (!project) {
@@ -544,17 +572,20 @@ export class ProjectsService {
 
       const tasks = await db.all<ProjectTask>(
         "SELECT * FROM project_tasks WHERE project_id = ?",
-        [projectId]
+        [projectId],
       );
 
       const timeEntries = await db.all<TimeEntry>(
         "SELECT * FROM project_time_entries WHERE project_id = ?",
-        [projectId]
+        [projectId],
       );
 
       const completedTasks = tasks.filter((t) => t.status === "done").length;
       const remainingTasks = tasks.length - completedTasks;
-      const totalEstimatedHours = tasks.reduce((sum, t) => sum + (t.estimated_hours || 0), 0);
+      const totalEstimatedHours = tasks.reduce(
+        (sum, t) => sum + (t.estimated_hours || 0),
+        0,
+      );
       const totalLoggedHours = timeEntries.reduce((sum, e) => sum + e.hours, 0);
 
       const completion =
@@ -593,34 +624,46 @@ export class ProjectsService {
   async getStatistics(): Promise<ProjectStats> {
     try {
       const totalProjects =
-        (await db.get<{ count: number }>(
-          "SELECT COUNT(*) as count FROM projects"
-        ))?.count || 0;
+        (
+          await db.get<{ count: number }>(
+            "SELECT COUNT(*) as count FROM projects",
+          )
+        )?.count || 0;
 
       const activeProjects =
-        (await db.get<{ count: number }>(
-          "SELECT COUNT(*) as count FROM projects WHERE status = 'active'"
-        ))?.count || 0;
+        (
+          await db.get<{ count: number }>(
+            "SELECT COUNT(*) as count FROM projects WHERE status = 'active'",
+          )
+        )?.count || 0;
 
       const completedProjects =
-        (await db.get<{ count: number }>(
-          "SELECT COUNT(*) as count FROM projects WHERE status = 'completed'"
-        ))?.count || 0;
+        (
+          await db.get<{ count: number }>(
+            "SELECT COUNT(*) as count FROM projects WHERE status = 'completed'",
+          )
+        )?.count || 0;
 
       const totalTasks =
-        (await db.get<{ count: number }>(
-          "SELECT COUNT(*) as count FROM project_tasks"
-        ))?.count || 0;
+        (
+          await db.get<{ count: number }>(
+            "SELECT COUNT(*) as count FROM project_tasks",
+          )
+        )?.count || 0;
 
       const completedTasks =
-        (await db.get<{ count: number }>(
-          "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'done'"
-        ))?.count || 0;
+        (
+          await db.get<{ count: number }>(
+            "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'done'",
+          )
+        )?.count || 0;
 
       const inProgressTasks =
-        (await db.get<{ count: number }>(
-          "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'in_progress'"
-        ))?.count || 0;
+        (
+          await db.get<{ count: number }>(
+            "SELECT COUNT(*) as count FROM project_tasks WHERE status = 'in_progress'",
+          )
+        )?.count || 0;
 
       logger.debug("Project statistics calculated");
 

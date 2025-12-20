@@ -42,16 +42,16 @@ npm install
 **Datei:** `apps/frontend/src/api/client.ts`
 
 ```typescript
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from "axios";
 
 /**
  * API Client für Backend-Kommunikation
  */
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3000/api',
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3000/api",
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -59,7 +59,7 @@ export const apiClient: AxiosInstance = axios.create({
  * Axios Interceptor für Token-Handling
  */
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -74,11 +74,11 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token abgelaufen oder ungültig
-      localStorage.removeItem('authToken');
-      window.location.href = '/login';
+      localStorage.removeItem("authToken");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;
@@ -121,14 +121,14 @@ src/api/
 **Datei:** `apps/frontend/src/api/auth.ts`
 
 ```typescript
-import apiClient from './client';
-import { LoginRequest, LoginResponse, User } from '../types/auth';
+import apiClient from "./client";
+import { LoginRequest, LoginResponse, User } from "../types/auth";
 
 /**
  * Benutzer anmelden
  */
 export const login = async (data: LoginRequest): Promise<LoginResponse> => {
-  const response = await apiClient.post<LoginResponse>('/auth/login', data);
+  const response = await apiClient.post<LoginResponse>("/auth/login", data);
   return response.data;
 };
 
@@ -136,14 +136,14 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
  * Benutzer abmelden
  */
 export const logout = async (): Promise<void> => {
-  await apiClient.post('/auth/logout');
+  await apiClient.post("/auth/logout");
 };
 
 /**
  * Aktiven Benutzer abrufen
  */
 export const getCurrentUser = async (): Promise<User> => {
-  const response = await apiClient.get<User>('/auth/me');
+  const response = await apiClient.get<User>("/auth/me");
   return response.data;
 };
 
@@ -152,9 +152,9 @@ export const getCurrentUser = async (): Promise<User> => {
  */
 export const changePassword = async (
   currentPassword: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<void> => {
-  await apiClient.post('/auth/change-password', {
+  await apiClient.post("/auth/change-password", {
     currentPassword,
     newPassword,
   });
@@ -164,7 +164,7 @@ export const changePassword = async (
  * Token refresh
  */
 export const refreshToken = async (): Promise<LoginResponse> => {
-  const response = await apiClient.post<LoginResponse>('/auth/refresh');
+  const response = await apiClient.post<LoginResponse>("/auth/refresh");
   return response.data;
 };
 ```
@@ -174,20 +174,24 @@ export const refreshToken = async (): Promise<LoginResponse> => {
 **Datei:** `apps/frontend/src/api/documents.ts`
 
 ```typescript
-import apiClient from './client';
-import { Document, CreateDocumentInput, DocumentFilters } from '../types/documents';
+import apiClient from "./client";
+import {
+  Document,
+  CreateDocumentInput,
+  DocumentFilters,
+} from "../types/documents";
 
 /**
  * Alle Dokumente abrufen
  */
 export const getDocuments = async (filters?: DocumentFilters) => {
   const params = new URLSearchParams();
-  if (filters?.category) params.append('category', filters.category);
-  if (filters?.status) params.append('status', filters.status);
-  if (filters?.search) params.append('search', filters.search);
+  if (filters?.category) params.append("category", filters.category);
+  if (filters?.status) params.append("status", filters.status);
+  if (filters?.search) params.append("search", filters.search);
 
   const response = await apiClient.get<{ data: Document[] }>(
-    `/documents?${params.toString()}`
+    `/documents?${params.toString()}`,
   );
   return response.data.data;
 };
@@ -205,20 +209,20 @@ export const getDocument = async (id: string): Promise<Document> => {
  */
 export const uploadDocument = async (
   file: File,
-  metadata: CreateDocumentInput
+  metadata: CreateDocumentInput,
 ): Promise<Document> => {
   const formData = new FormData();
-  formData.append('file', file);
-  formData.append('title', metadata.title);
-  formData.append('category', metadata.category);
-  formData.append('tags', JSON.stringify(metadata.tags || []));
+  formData.append("file", file);
+  formData.append("title", metadata.title);
+  formData.append("category", metadata.category);
+  formData.append("tags", JSON.stringify(metadata.tags || []));
 
   const response = await apiClient.post<{ data: Document }>(
-    '/documents/upload',
+    "/documents/upload",
     formData,
     {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }
+      headers: { "Content-Type": "multipart/form-data" },
+    },
   );
   return response.data.data;
 };
@@ -235,7 +239,7 @@ export const deleteDocument = async (id: string): Promise<void> => {
  */
 export const processOCR = async (id: string): Promise<string> => {
   const response = await apiClient.post<{ data: { text: string } }>(
-    `/documents/${id}/ocr`
+    `/documents/${id}/ocr`,
   );
   return response.data.data.text;
 };
@@ -251,10 +255,10 @@ export const processOCR = async (id: string): Promise<string> => {
 
 ```typescript
 // Re-export aller Typen
-export * from './auth';
-export * from './documents';
-export * from './users';
-export * from './common';
+export * from "./auth";
+export * from "./documents";
+export * from "./users";
+export * from "./common";
 ```
 
 ### Auth Types
@@ -269,7 +273,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'user' | 'viewer';
+  role: "admin" | "user" | "viewer";
   avatar?: string;
   lastLogin?: string;
   isActive: boolean;
@@ -317,8 +321,8 @@ export interface AuthState {
 export interface Document {
   id: string;
   title: string;
-  category: 'invoice' | 'contract' | 'report' | 'other';
-  status: 'active' | 'archived' | 'deleted';
+  category: "invoice" | "contract" | "report" | "other";
+  status: "active" | "archived" | "deleted";
   fileSize: number;
   fileType: string;
   createdAt: string;
@@ -350,7 +354,7 @@ export interface DocumentFilters {
  */
 export interface CreateDocumentInput {
   title: string;
-  category: Document['category'];
+  category: Document["category"];
   tags?: string[];
   metadata?: Record<string, any>;
 }
@@ -360,8 +364,8 @@ export interface CreateDocumentInput {
  */
 export interface UpdateDocumentInput {
   title?: string;
-  category?: Document['category'];
-  status?: Document['status'];
+  category?: Document["category"];
+  status?: Document["status"];
   tags?: string[];
 }
 ```
@@ -414,7 +418,7 @@ export interface ApiError {
 ### Error Interceptor
 
 ```typescript
-import { ApiError } from '../types/common';
+import { ApiError } from "../types/common";
 
 /**
  * Fehlerbehandlung für API-Calls
@@ -430,8 +434,8 @@ export const handleApiError = (error: any): ApiError => {
   }
 
   return {
-    code: 'UNKNOWN_ERROR',
-    message: error.message || 'Ein unerwarteter Fehler ist aufgetreten',
+    code: "UNKNOWN_ERROR",
+    message: error.message || "Ein unerwarteter Fehler ist aufgetreten",
     statusCode: error.response?.status || 500,
   };
 };
@@ -441,17 +445,17 @@ export const handleApiError = (error: any): ApiError => {
  */
 export const getUserFriendlyMessage = (error: ApiError): string => {
   const messages: Record<string, string> = {
-    BAD_REQUEST: 'Die eingegebenen Daten sind ungültig',
-    UNAUTHORIZED: 'Bitte melden Sie sich an',
-    FORBIDDEN: 'Sie haben keine Berechtigung für diese Aktion',
-    NOT_FOUND: 'Die Ressource wurde nicht gefunden',
-    CONFLICT: 'Die Ressource existiert bereits',
-    DATABASE_ERROR: 'Datenbankfehler - bitte versuchen Sie es später',
-    VALIDATION_ERROR: 'Validierungsfehler - bitte überprüfen Sie die Eingaben',
-    RATE_LIMIT_ERROR: 'Zu viele Anfragen - bitte warten Sie',
+    BAD_REQUEST: "Die eingegebenen Daten sind ungültig",
+    UNAUTHORIZED: "Bitte melden Sie sich an",
+    FORBIDDEN: "Sie haben keine Berechtigung für diese Aktion",
+    NOT_FOUND: "Die Ressource wurde nicht gefunden",
+    CONFLICT: "Die Ressource existiert bereits",
+    DATABASE_ERROR: "Datenbankfehler - bitte versuchen Sie es später",
+    VALIDATION_ERROR: "Validierungsfehler - bitte überprüfen Sie die Eingaben",
+    RATE_LIMIT_ERROR: "Zu viele Anfragen - bitte warten Sie",
   };
 
-  return messages[error.code] || error.message || 'Ein Fehler ist aufgetreten';
+  return messages[error.code] || error.message || "Ein Fehler ist aufgetreten";
 };
 ```
 
@@ -462,10 +466,10 @@ export const getUserFriendlyMessage = (error: ApiError): string => {
 ### Login Hook
 
 ```typescript
-import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { login, logout, getCurrentUser } from '../api/auth';
-import { User } from '../types/auth';
+import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { login, logout, getCurrentUser } from "../api/auth";
+import { User } from "../types/auth";
 
 /**
  * Custom Hook für Authentication
@@ -476,30 +480,33 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleLogin = useCallback(async (email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
+  const handleLogin = useCallback(
+    async (email: string, password: string) => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const response = await login({ email, password });
-      localStorage.setItem('authToken', response.token);
-      setUser(response.user);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login fehlgeschlagen');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [navigate]);
+      try {
+        const response = await login({ email, password });
+        localStorage.setItem("authToken", response.token);
+        setUser(response.user);
+        navigate("/dashboard");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Login fehlgeschlagen");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [navigate],
+  );
 
   const handleLogout = useCallback(async () => {
     try {
       await logout();
-      localStorage.removeItem('authToken');
+      localStorage.removeItem("authToken");
       setUser(null);
-      navigate('/login');
+      navigate("/login");
     } catch (err) {
-      console.error('Logout error:', err);
+      console.error("Logout error:", err);
     }
   }, [navigate]);
 
@@ -509,7 +516,7 @@ export function useAuth() {
       setUser(user);
     } catch (err) {
       setUser(null);
-      localStorage.removeItem('authToken');
+      localStorage.removeItem("authToken");
     }
   }, []);
 
@@ -532,17 +539,14 @@ export function useAuth() {
 ### useApi Hook
 
 ```typescript
-import { useState, useEffect, useCallback } from 'react';
-import { ApiError } from '../types/common';
-import { handleApiError } from '../api/error';
+import { useState, useEffect, useCallback } from "react";
+import { ApiError } from "../types/common";
+import { handleApiError } from "../api/error";
 
 /**
  * Hook für API-Calls
  */
-export function useApi<T>(
-  asyncFunction: () => Promise<T>,
-  immediate = true
-) {
+export function useApi<T>(asyncFunction: () => Promise<T>, immediate = true) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);

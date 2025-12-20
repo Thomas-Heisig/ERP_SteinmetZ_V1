@@ -7,6 +7,9 @@
  * @module routes/batch
  */
 
-export { batchProcessingService, BatchProcessingService } from "./batchProcessingService.js";
+export {
+  batchProcessingService,
+  BatchProcessingService,
+} from "./batchProcessingService.js";
 export { default as batchRouter } from "./batchRouter.js";
 export type * from "./types.js";

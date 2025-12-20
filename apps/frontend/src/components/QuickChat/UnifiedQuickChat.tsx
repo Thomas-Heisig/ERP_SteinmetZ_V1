@@ -488,9 +488,9 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
               {activeTab === "info" && (
                 <div className={styles.infoTab}>
                   <h3>System Information</h3>
-                  
+
                   <ProviderStatusIndicator providers={providers} />
-                  
+
                   <div className={styles.infoCard}>
                     <h4>Provider Konfiguration</h4>
                     <p>

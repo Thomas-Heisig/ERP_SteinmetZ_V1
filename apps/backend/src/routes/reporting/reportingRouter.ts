@@ -40,13 +40,21 @@ router.get(
   "/financial",
   asyncHandler(async (req, res) => {
     const period = req.query.period as string | undefined;
-    const year = req.query.year ? parseInt(req.query.year as string) : undefined;
-    
-    logger.debug({ period, year }, "GET /api/reporting/financial - Fetching financial reports");
+    const year = req.query.year
+      ? parseInt(req.query.year as string)
+      : undefined;
+
+    logger.debug(
+      { period, year },
+      "GET /api/reporting/financial - Fetching financial reports",
+    );
 
     const reports = await reportingService.getFinancialReports(period, year);
 
-    logger.info({ period, year, count: reports.reports.length }, "Financial reports retrieved");
+    logger.info(
+      { period, year, count: reports.reports.length },
+      "Financial reports retrieved",
+    );
     res.json(reports);
   }),
 );
@@ -69,13 +77,21 @@ router.get(
   asyncHandler(async (req, res) => {
     const { type } = req.params;
     const year = parseInt(req.query.year as string);
-    const month = req.query.month ? parseInt(req.query.month as string) : undefined;
+    const month = req.query.month
+      ? parseInt(req.query.month as string)
+      : undefined;
 
-    logger.debug({ type, year, month }, "GET /api/reporting/financial/:type - Fetching specific report");
+    logger.debug(
+      { type, year, month },
+      "GET /api/reporting/financial/:type - Fetching specific report",
+    );
 
     if (type === "pnl") {
       const report = await reportingService.getPnLReport(year, month);
-      logger.info({ type, year, month, net_income: report.data.net_income }, "P&L report retrieved");
+      logger.info(
+        { type, year, month, net_income: report.data.net_income },
+        "P&L report retrieved",
+      );
       return res.json(report);
     }
 
@@ -101,7 +117,10 @@ router.get(
 
     const report = await reportingService.getSalesReport();
 
-    logger.info({ revenue: report.revenue.total, orders: report.orders.count }, "Sales report retrieved");
+    logger.info(
+      { revenue: report.revenue.total, orders: report.orders.count },
+      "Sales report retrieved",
+    );
     res.json(report);
   }),
 );
@@ -123,7 +142,10 @@ router.get(
 
     const report = await reportingService.getProductionReport();
 
-    logger.info({ oee: report.efficiency.oee, units: report.output.units_produced }, "Production report retrieved");
+    logger.info(
+      { oee: report.efficiency.oee, units: report.output.units_produced },
+      "Production report retrieved",
+    );
     res.json(report);
   }),
 );
@@ -145,7 +167,13 @@ router.get(
 
     const report = await reportingService.getHRReport();
 
-    logger.info({ headcount: report.headcount.total, presence_rate: report.attendance.presence_rate }, "HR report retrieved");
+    logger.info(
+      {
+        headcount: report.headcount.total,
+        presence_rate: report.attendance.presence_rate,
+      },
+      "HR report retrieved",
+    );
     res.json(report);
   }),
 );
@@ -167,7 +195,10 @@ router.get(
 
     const report = await reportingService.getInventoryReport();
 
-    logger.info({ total_value: report.value.total, turnover_rate: report.turnover.rate }, "Inventory report retrieved");
+    logger.info(
+      { total_value: report.value.total, turnover_rate: report.turnover.rate },
+      "Inventory report retrieved",
+    );
     res.json(report);
   }),
 );
@@ -216,7 +247,10 @@ const adhocSchema = z.object({
 router.post(
   "/adhoc",
   asyncHandler(async (req, res) => {
-    logger.debug({ name: req.body.name, datasource: req.body.datasource }, "POST /api/reporting/adhoc - Executing ad-hoc analysis");
+    logger.debug(
+      { name: req.body.name, datasource: req.body.datasource },
+      "POST /api/reporting/adhoc - Executing ad-hoc analysis",
+    );
 
     const validatedData = adhocSchema.parse(req.body);
     const result = await reportingService.executeAdhocAnalysis(validatedData);
@@ -227,7 +261,7 @@ router.post(
         rows: result.results.total_rows,
         execution_time: result.results.execution_time_ms,
       },
-      "Ad-hoc analysis completed"
+      "Ad-hoc analysis completed",
     );
 
     res.json({
@@ -264,7 +298,10 @@ const saveAnalysisSchema = z.object({
 router.post(
   "/adhoc/save",
   asyncHandler(async (req, res) => {
-    logger.debug({ name: req.body.name }, "POST /api/reporting/adhoc/save - Saving analysis");
+    logger.debug(
+      { name: req.body.name },
+      "POST /api/reporting/adhoc/save - Saving analysis",
+    );
 
     const validatedData = saveAnalysisSchema.parse(req.body);
 
@@ -306,10 +343,11 @@ router.get(
 
     logger.info(
       {
-        next_month_forecast: predictions.sales_forecast.next_month.predicted_revenue,
+        next_month_forecast:
+          predictions.sales_forecast.next_month.predicted_revenue,
         at_risk_customers: predictions.churn_risk.at_risk_customers,
       },
-      "AI predictions retrieved"
+      "AI predictions retrieved",
     );
 
     res.json(predictions);
@@ -333,7 +371,13 @@ router.get(
 
     const insights = await reportingService.getAIInsights();
 
-    logger.info({ count: insights.length, high_priority: insights.filter((i) => i.priority === "high").length }, "AI insights retrieved");
+    logger.info(
+      {
+        count: insights.length,
+        high_priority: insights.filter((i) => i.priority === "high").length,
+      },
+      "AI insights retrieved",
+    );
 
     res.json({ insights });
   }),
@@ -356,7 +400,10 @@ router.get(
 
     const trends = await reportingService.getAITrends();
 
-    logger.info({ count: trends.length, alerts: trends.filter((t) => t.alert).length }, "AI trends retrieved");
+    logger.info(
+      { count: trends.length, alerts: trends.filter((t) => t.alert).length },
+      "AI trends retrieved",
+    );
 
     res.json({ trends });
   }),
@@ -383,7 +430,10 @@ router.get(
 
     const kpis = await reportingService.getDashboardKPIs();
 
-    logger.info({ revenue: kpis.revenue.value, profit_margin: kpis.profit_margin.value }, "Dashboard KPIs retrieved");
+    logger.info(
+      { revenue: kpis.revenue.value, profit_margin: kpis.profit_margin.value },
+      "Dashboard KPIs retrieved",
+    );
 
     res.json({
       kpis: [

@@ -2,7 +2,7 @@
 // apps/frontend/src/config/dashboardConfig.ts
 /**
  * Dashboard Configuration
- * 
+ *
  * Consolidated dashboard configuration matching backend API structure.
  * Replaces duplicate configurations in Dashboard and DashboardWidgets components.
  */
@@ -15,7 +15,14 @@ import { API_ROUTES, WIDGET_API_MAP, MODULE_CATEGORIES } from "./apiRoutes";
 export interface DashboardWidget {
   id: string;
   title: string;
-  type: "kpi" | "chart" | "table" | "list" | "calendar" | "executive" | "warnings";
+  type:
+    | "kpi"
+    | "chart"
+    | "table"
+    | "list"
+    | "calendar"
+    | "executive"
+    | "warnings";
   module: string;
   apiEndpoints: string[];
   refreshInterval?: number; // in seconds
@@ -65,10 +72,7 @@ export const DASHBOARD_WIDGETS: Record<string, DashboardWidget> = {
     title: "CRM Overview",
     type: "kpi",
     module: "crm",
-    apiEndpoints: [
-      API_ROUTES.CRM.STATISTICS,
-      API_ROUTES.CRM.OPPORTUNITIES,
-    ],
+    apiEndpoints: [API_ROUTES.CRM.STATISTICS, API_ROUTES.CRM.OPPORTUNITIES],
     refreshInterval: 180,
     gridSpan: 2,
     priority: 10,
@@ -96,10 +100,7 @@ export const DASHBOARD_WIDGETS: Record<string, DashboardWidget> = {
     title: "Sales Pipeline",
     type: "chart",
     module: "sales",
-    apiEndpoints: [
-      API_ROUTES.SALES.PIPELINE,
-      API_ROUTES.SALES.FORECAST,
-    ],
+    apiEndpoints: [API_ROUTES.SALES.PIPELINE, API_ROUTES.SALES.FORECAST],
     refreshInterval: 180,
     gridSpan: 2,
     priority: 12,
@@ -127,10 +128,7 @@ export const DASHBOARD_WIDGETS: Record<string, DashboardWidget> = {
     title: "Active Projects",
     type: "list",
     module: "projects",
-    apiEndpoints: [
-      API_ROUTES.PROJECTS.LIST,
-      API_ROUTES.PROJECTS.ANALYTICS,
-    ],
+    apiEndpoints: [API_ROUTES.PROJECTS.LIST, API_ROUTES.PROJECTS.ANALYTICS],
     refreshInterval: 180,
     gridSpan: 2,
     priority: 14,
@@ -142,10 +140,7 @@ export const DASHBOARD_WIDGETS: Record<string, DashboardWidget> = {
     title: "Warehouse Operations",
     type: "kpi",
     module: "warehouse",
-    apiEndpoints: [
-      API_ROUTES.WAREHOUSE.STATISTICS,
-      API_ROUTES.WAREHOUSE.STOCK,
-    ],
+    apiEndpoints: [API_ROUTES.WAREHOUSE.STATISTICS, API_ROUTES.WAREHOUSE.STOCK],
     refreshInterval: 120,
     gridSpan: 2,
     priority: 15,
@@ -368,13 +363,17 @@ export function getWidgetsByModule(module: string): DashboardWidget[] {
   return Object.values(DASHBOARD_WIDGETS).filter((w) => w.module === module);
 }
 
-export function getWidgetsByPermissions(permissions: string[]): DashboardWidget[] {
+export function getWidgetsByPermissions(
+  permissions: string[],
+): DashboardWidget[] {
   return Object.values(DASHBOARD_WIDGETS).filter((widget) => {
     if (!widget.permissions || widget.permissions.length === 0) return true;
     return widget.permissions.some((perm) => permissions.includes(perm));
   });
 }
 
-export function sortWidgetsByPriority(widgets: DashboardWidget[]): DashboardWidget[] {
+export function sortWidgetsByPriority(
+  widgets: DashboardWidget[],
+): DashboardWidget[] {
   return [...widgets].sort((a, b) => (a.priority || 999) - (b.priority || 999));
 }

@@ -18,7 +18,9 @@ const logger = createLogger("tool-registry");
  * ToolFunction:
  * Asynchrone Funktion mit optionalen Metadaten, die von der ToolRegistry verwaltet wird.
  */
-export type ToolFunction = ((params?: Record<string, unknown>) => Promise<unknown>) & {
+export type ToolFunction = ((
+  params?: Record<string, unknown>,
+) => Promise<unknown>) & {
   description?: string;
   parameters?: Record<string, unknown>;
   category?: string;
@@ -231,7 +233,10 @@ export class ToolRegistry {
       try {
         cb(data);
       } catch (error: unknown) {
-        log("warn", `Listener-Fehler für Event '${event}': ${getErrorMessage(error)}`);
+        log(
+          "warn",
+          `Listener-Fehler für Event '${event}': ${getErrorMessage(error)}`,
+        );
       }
     });
   }
@@ -253,14 +258,20 @@ export class ToolRegistry {
   }
 
   importRegistry(data: unknown): void {
-    if (!isRecord(data) || !Array.isArray((data as Record<string, unknown>).tools)) {
+    if (
+      !isRecord(data) ||
+      !Array.isArray((data as Record<string, unknown>).tools)
+    ) {
       throw new Error("Ungültiges Registry-Importformat.");
     }
     this.clear();
-    const tools = (data as Record<string, unknown>).tools as Array<Record<string, unknown>>;
+    const tools = (data as Record<string, unknown>).tools as Array<
+      Record<string, unknown>
+    >;
     for (const t of tools) {
       const fn = (async () => ({})) as ToolFunction;
-      const name = typeof t.name === "string" ? t.name : `imported_${Date.now()}`;
+      const name =
+        typeof t.name === "string" ? t.name : `imported_${Date.now()}`;
       fn.description = (t.description as string) ?? `Importiertes Tool ${name}`;
       fn.parameters = (t.parameters as Record<string, unknown>) ?? {};
       fn.category = (t.category as string) ?? "general";

@@ -97,7 +97,7 @@ Das Dashboard nutzt folgende Backend-Endpunkte:
 6 Tab-Reiter mit detaillierten Informationen:
 
 | Tab | Inhalt |
-|-----|--------|
+| --- | ------ |
 
 | Routes | API-Endpunkte gruppiert nach HTTP-Methode |
 | Resources | Speicher, CPU, Auslastungsprozentsätze |
@@ -112,7 +112,7 @@ Das Dashboard lädt Daten parallel mit `Promise.allSettled()`:
 
 ```javascript
 // Parallel laden aller Endpoints
-const [health, services, system, database, ...] = 
+const [health, services, system, database, ...] =
   await Promise.allSettled([
     fetchAPI(`${DIAGNOSTICS_BASE}/health`),
     fetchAPI(`${API_BASE}/status`),
@@ -286,8 +286,10 @@ Das Dashboard wird von denselben Backend Server geladen, daher sollte es keine C
     <span class="card-icon">📈</span>
     <h2 class="card-title">New Metric</h2>
   </div>
-  <div id="new-metric-content" class="loading">Loading...</div>
-</div>
+  <div id="new-metric-content" class="loading">
+    Loading...
+  </div>
+</div>;
 
 // In JavaScript - Display Function
 function displayNewMetric(data) {
@@ -296,7 +298,7 @@ function displayNewMetric(data) {
     content.innerHTML = '<div class="error">Metric unavailable</div>';
     return;
   }
-  
+
   content.innerHTML = `
     <div class="metric-grid">
       <div class="metric">
@@ -308,9 +310,7 @@ function displayNewMetric(data) {
 }
 
 // In loadAllData()
-const newMetric = await Promise.allSettled([
-  fetchAPI(`/api/metric/endpoint`)
-]);
+const newMetric = await Promise.allSettled([fetchAPI(`/api/metric/endpoint`)]);
 displayNewMetric(extractData(newMetric));
 ```
 

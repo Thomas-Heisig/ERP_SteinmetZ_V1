@@ -28,7 +28,8 @@ export const listRoutesTool = {
   }> {
     const app: Application = GlobalApp.get();
 
-    const routerStack = (app._router as { stack?: RouterLayer[] } | undefined)?.stack as RouterLayer[] | undefined;
+    const routerStack = (app._router as { stack?: RouterLayer[] } | undefined)
+      ?.stack as RouterLayer[] | undefined;
 
     if (!app || !routerStack) {
       return {

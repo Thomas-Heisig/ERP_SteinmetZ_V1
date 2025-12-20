@@ -46,7 +46,7 @@ function setupCors(app: Application, corsOrigin: string): void {
     cors({
       origin: corsOrigin,
       credentials: true,
-    })
+    }),
   );
 }
 
@@ -83,7 +83,7 @@ function setupMetrics(app: Application): void {
  */
 function setupAdminAuth(
   app: Application,
-  adminToken: string | undefined
+  adminToken: string | undefined,
 ): void {
   if (!adminToken) {
     logger.debug("Admin token authentication disabled");
@@ -130,7 +130,7 @@ function setupErrorHandler(app: Application): void {
  */
 export function setupMiddleware(
   app: Application,
-  config: MiddlewareConfig
+  config: MiddlewareConfig,
 ): void {
   logger.info("Setting up middleware pipeline...");
 

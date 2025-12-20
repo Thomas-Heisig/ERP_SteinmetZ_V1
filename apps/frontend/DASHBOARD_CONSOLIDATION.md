@@ -17,6 +17,7 @@ Die Dashboard-Komponenten wurden konsolidiert, um Duplikate zu eliminieren und d
 - **Modul-Kategorisierung** für organisierte Darstellung
 
 **Backend-Module abgedeckt:**
+
 - ✅ Core: auth, health, system, dashboard
 - ✅ Analytics: reporting, metrics, search
 - ✅ AI: ai, ai-annotator, quickchat
@@ -32,6 +33,7 @@ Die Dashboard-Komponenten wurden konsolidiert, um Duplikate zu eliminieren und d
 **Datei:** `apps/frontend/src/config/dashboardConfig.ts`
 
 **Features:**
+
 - Widget-Definitionen für alle Module
 - Standard-Dashboard-Layout
 - Theme-Konfigurationen (light/dark/lcars)
@@ -42,6 +44,7 @@ Die Dashboard-Komponenten wurden konsolidiert, um Duplikate zu eliminieren und d
 - Helper-Funktionen
 
 **Definierte Widgets:**
+
 1. Executive Overview (Priorität 1)
 2. Warnings & Escalations (Priorität 2)
 3. CRM Widget
@@ -61,6 +64,7 @@ Die Dashboard-Komponenten wurden konsolidiert, um Duplikate zu eliminieren und d
 **Backend-Routen sind FEST** - Frontend passt sich an:
 
 #### Dashboard Routes (`/api/dashboard`)
+
 ```typescript
 /health               // Dashboard health metrics
 /overview            // Complete system overview
@@ -75,6 +79,7 @@ Die Dashboard-Komponenten wurden konsolidiert, um Duplikate zu eliminieren und d
 ```
 
 #### System Routes (`/api/system`)
+
 ```typescript
 /                    // Complete system overview
 /routes              // All registered routes
@@ -90,6 +95,7 @@ Die Dashboard-Komponenten wurden konsolidiert, um Duplikate zu eliminieren und d
 ```
 
 #### Health Routes (`/api/health`)
+
 ```typescript
 /                    // Liveness probe
 /readiness           // Readiness probe
@@ -103,16 +109,16 @@ Die Dashboard-Komponenten wurden konsolidiert, um Duplikate zu eliminieren und d
 ```typescript
 // ❌ In jeder Komponente eigene API-Calls
 const Dashboard = () => {
-  fetch("/api/dashboard/overview")
-  fetch("/api/system/health")
+  fetch("/api/dashboard/overview");
+  fetch("/api/system/health");
   // ...
-}
+};
 
 const DashboardWidgets = () => {
-  fetch("/api/dashboard/overview") // Duplikat!
-  fetch("/api/system/health")      // Duplikat!
+  fetch("/api/dashboard/overview"); // Duplikat!
+  fetch("/api/system/health"); // Duplikat!
   // ...
-}
+};
 ```
 
 ### Nachher (Konsolidiert)
@@ -123,17 +129,17 @@ import { API_ROUTES, DASHBOARD_WIDGETS } from "@/config";
 
 const Dashboard = () => {
   // Typsicher und wiederverwendbar
-  fetch(API_ROUTES.DASHBOARD.OVERVIEW)
-  fetch(API_ROUTES.SYSTEM.HEALTH)
-}
+  fetch(API_ROUTES.DASHBOARD.OVERVIEW);
+  fetch(API_ROUTES.SYSTEM.HEALTH);
+};
 
 const Widgets = () => {
   // Widget-Konfiguration nutzen
-  const widgets = Object.values(DASHBOARD_WIDGETS)
-  widgets.forEach(widget => {
-    widget.apiEndpoints.forEach(endpoint => fetch(endpoint))
-  })
-}
+  const widgets = Object.values(DASHBOARD_WIDGETS);
+  widgets.forEach((widget) => {
+    widget.apiEndpoints.forEach((endpoint) => fetch(endpoint));
+  });
+};
 ```
 
 ## 📦 Verwendete Komponenten
@@ -141,6 +147,7 @@ const Widgets = () => {
 ### Zu BEHALTEN (Hauptkomponenten)
 
 #### `apps/frontend/src/components/Dashboard/`
+
 - ✅ `Dashboard.tsx` - Hauptdashboard mit vollständiger Funktionalität
 - ✅ `SimpleDashboard.tsx` - Vereinfachte Variante (optional)
 - ✅ `types.ts` - TypeScript Typen
@@ -155,20 +162,24 @@ const Widgets = () => {
   - `ModuleWidgets.tsx`
 
 #### `apps/frontend/src/components/Navigation/`
+
 - ✅ `MainNavigation.tsx` - Hauptnavigation
 - ✅ `navigationConfig.ts` - Navigation Structure
 
 #### `apps/frontend/src/components/Sidebar/`
+
 - ✅ `Sidebar.tsx` - Sidebar-Navigation
 
 ### Zu ENTFERNEN (Duplikate)
 
 #### `apps/frontend/src/components/DashboardWidgets/`
+
 - ❌ **ENTFERNEN:** Duplikat von `Dashboard/widgets/`
 - ❌ `DashboardWidgets.tsx` - Funktionalität bereits in Dashboard.tsx
 - ❌ `DashboardWidgets.css` - Styles bereits in Dashboard/
 
 **Begründung:**
+
 - Gleiche API-Calls wie in `Dashboard/widgets/ModuleWidgets.tsx`
 - Keine zusätzliche Funktionalität
 - Verursacht Konflikte bei Updates
@@ -177,6 +188,7 @@ const Widgets = () => {
 ## 🎯 Implementierungs-Checkliste
 
 ### Phase 1: Konfiguration (✅ Erledigt)
+
 - [x] API-Routen zentral definieren
 - [x] Dashboard-Konfiguration erstellen
 - [x] Widget-Mapping dokumentieren
@@ -184,6 +196,7 @@ const Widgets = () => {
 - [x] Helper-Funktionen
 
 ### Phase 2: Komponenten-Update (⏳ Ausstehend)
+
 - [ ] Dashboard.tsx auf zentrale Config umstellen
 - [ ] SimpleDashboard.tsx aktualisieren
 - [ ] ModuleWidgets.tsx aktualisieren
@@ -192,12 +205,14 @@ const Widgets = () => {
 - [ ] Navigation-Komponenten aktualisieren
 
 ### Phase 3: Duplikate entfernen (⏳ Ausstehend)
+
 - [ ] DashboardWidgets/ Ordner löschen
 - [ ] Imports in App.tsx bereinigen
 - [ ] Ungenutzte CSS-Dateien entfernen
 - [ ] Tests aktualisieren
 
 ### Phase 4: Validierung (⏳ Ausstehend)
+
 - [ ] Alle API-Calls testen
 - [ ] Widget-Rendering prüfen
 - [ ] Performance-Tests
@@ -247,12 +262,14 @@ apps/frontend/src/
 ### Executive Overview Widget
 
 **Benötigte Daten:**
+
 - KPIs → `/api/dashboard/kpis`
 - Umsatz → `/api/finance/revenue`
 - Verkäufe → `/api/sales/statistics`
 - Finanzberichte → `/api/reporting/financial`
 
 **Implementation:**
+
 ```typescript
 import { DASHBOARD_WIDGETS } from "@/config";
 
@@ -263,12 +280,14 @@ const widget = DASHBOARD_WIDGETS.EXECUTIVE_OVERVIEW;
 ### Warnings & Escalations Widget
 
 **Benötigte Daten:**
+
 - Produktion → `/api/production/statistics`
 - Lager → `/api/warehouse/statistics`
 - Qualität → `/api/production/quality`
 - Bestand → `/api/inventory/low-stock`
 
 **Implementation:**
+
 ```typescript
 const widget = DASHBOARD_WIDGETS.WARNINGS_ESCALATIONS;
 // widget.apiEndpoints enthält alle 4 URLs
@@ -277,6 +296,7 @@ const widget = DASHBOARD_WIDGETS.WARNINGS_ESCALATIONS;
 ### Module Widgets (alle 11 Widgets)
 
 **Jedes Modul-Widget** hat:
+
 - Eigene API-Endpoints
 - Refresh-Intervall
 - Grid-Span
@@ -286,6 +306,7 @@ const widget = DASHBOARD_WIDGETS.WARNINGS_ESCALATIONS;
 ## 🚀 Performance-Vorteile
 
 ### Vorher
+
 - ❌ 2-3 identische API-Calls pro Widget
 - ❌ Redundanter Code in mehreren Komponenten
 - ❌ Inkonsistente Refresh-Intervalle
@@ -293,6 +314,7 @@ const widget = DASHBOARD_WIDGETS.WARNINGS_ESCALATIONS;
 - ❌ Konfligierende Styles
 
 ### Nachher
+
 - ✅ 1 API-Call pro Datenquelle (dedupliziert)
 - ✅ Wiederverwendbare Konfiguration
 - ✅ Konsistente Refresh-Zeiten
@@ -302,11 +324,13 @@ const widget = DASHBOARD_WIDGETS.WARNINGS_ESCALATIONS;
 ## 📚 Dokumentation
 
 ### Backend-Dokumentation
+
 - `apps/backend/src/routes/systemInfoRouter/docs/README.md`
 - `apps/backend/src/routes/dashboard/docs/README.md`
 - `apps/backend/src/routes/*/docs/README.md` (je Modul)
 
 ### Frontend-Dokumentation
+
 - `apps/frontend/src/components/Dashboard/README.md`
 - `apps/frontend/src/components/Dashboard/README_DEV.md`
 - Dieses Dokument (`DASHBOARD_CONSOLIDATION.md`)
@@ -314,6 +338,7 @@ const widget = DASHBOARD_WIDGETS.WARNINGS_ESCALATIONS;
 ## ⚠️ Breaking Changes
 
 **Keine Breaking Changes** - Die Konsolidierung ist rückwärtskompatibel:
+
 1. Alte Komponenten funktionieren weiter
 2. Neue Config ist optional
 3. Migration kann schrittweise erfolgen
@@ -322,6 +347,7 @@ const widget = DASHBOARD_WIDGETS.WARNINGS_ESCALATIONS;
 ## 🎓 Best Practices
 
 ### API-Calls
+
 ```typescript
 // ✅ DO: Zentrale Config verwenden
 import { API_ROUTES } from "@/config";
@@ -332,6 +358,7 @@ fetch("/api/dashboard/overview");
 ```
 
 ### Widget-Konfiguration
+
 ```typescript
 // ✅ DO: Widget-Config nutzen
 import { DASHBOARD_WIDGETS, getWidgetConfig } from "@/config";
@@ -342,6 +369,7 @@ const widget = { id: "...", apiEndpoints: [...], ... };
 ```
 
 ### Permissions
+
 ```typescript
 // ✅ DO: Permission-Helper verwenden
 import { getWidgetsByPermissions } from "@/config";

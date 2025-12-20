@@ -122,7 +122,7 @@ Get procurement analytics.
   const dateSchema = z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Ungültiges Datumsformat",
   });
-  
+
   const orderIdSchema = z.string().regex(/^PO-\d{4}-\d{3}$/);
   ```
 

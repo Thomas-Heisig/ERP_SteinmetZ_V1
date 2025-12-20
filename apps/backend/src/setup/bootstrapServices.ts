@@ -52,12 +52,12 @@ async function initializeDatabase(): Promise<void> {
     if (migrationResult.success) {
       logger.info(
         { executed: migrationResult.executed },
-        "Database migrations completed successfully"
+        "Database migrations completed successfully",
       );
     } else {
       logger.warn(
         { executed: migrationResult.executed, failed: migrationResult.failed },
-        "Some database migrations failed"
+        "Some database migrations failed",
       );
     }
   } catch (error) {
@@ -92,7 +92,7 @@ async function initializeAuth(environment?: string): Promise<void> {
             full_name: "Development Admin",
           });
           logger.info(
-            "Development user created: username=admin, password=Admin123"
+            "Development user created: username=admin, password=Admin123",
           );
         } else {
           logger.info("Development user already exists");
@@ -106,14 +106,17 @@ async function initializeAuth(environment?: string): Promise<void> {
             full_name: "Development Admin",
           });
           logger.info(
-            "Development user created: username=admin, password=Admin123"
+            "Development user created: username=admin, password=Admin123",
           );
         } catch (registerError: unknown) {
-          const err = registerError instanceof Error ? registerError : new Error(String(registerError));
+          const err =
+            registerError instanceof Error
+              ? registerError
+              : new Error(String(registerError));
           if (!err.message?.includes("already exists")) {
             logger.warn(
               { error: err.message },
-              "Failed to create development user"
+              "Failed to create development user",
             );
           }
         }
@@ -164,7 +167,9 @@ async function initializeTracing(): Promise<void> {
 /**
  * Initialize error tracking (Sentry)
  */
-async function initializeErrorTracking(app: Express | Application): Promise<void> {
+async function initializeErrorTracking(
+  app: Express | Application,
+): Promise<void> {
   logger.info("Initializing error tracking service...");
 
   try {
@@ -183,7 +188,7 @@ async function initializeErrorTracking(app: Express | Application): Promise<void
  * Initialize functions catalog
  */
 async function initializeFunctionsCatalog(
-  config: BootstrapConfig
+  config: BootstrapConfig,
 ): Promise<void> {
   logger.info("Initializing Functions Catalog...");
 
@@ -194,14 +199,14 @@ async function initializeFunctionsCatalog(
       const result = await service.refreshFunctionsIndex();
       logger.info(
         { loadedAt: result.loadedAt, rootNodes: result.nodes.length },
-        "Functions catalog initially loaded"
+        "Functions catalog initially loaded",
       );
 
       if (config.persistFunctions === true) {
         const summary = await db.upsertFunctionsCatalog(result);
         logger.info(
           { nodes: summary.nodes, edges: summary.edges },
-          "Functions catalog persisted to database"
+          "Functions catalog persisted to database",
         );
       }
     } else {
@@ -221,7 +226,7 @@ async function initializeFunctionsCatalog(
  */
 function startFunctionsWatcher(
   service: FunctionsCatalogService,
-  dir: string
+  dir: string,
 ): void {
   logger.info({ directory: dir }, "Functions watcher activated");
   let timer: NodeJS.Timeout | null = null;
@@ -235,7 +240,7 @@ function startFunctionsWatcher(
         const summary = await db.upsertFunctionsCatalog(result);
         logger.info(
           { nodes: summary.nodes, edges: summary.edges },
-          "Functions catalog persisted to database"
+          "Functions catalog persisted to database",
         );
       }
     } catch (error) {
@@ -263,7 +268,7 @@ function startFunctionsWatcher(
  */
 export async function bootstrapServices(
   app: Express | Application,
-  config: BootstrapConfig
+  config: BootstrapConfig,
 ): Promise<void> {
   logger.info("========== Service Bootstrap Start ==========");
 

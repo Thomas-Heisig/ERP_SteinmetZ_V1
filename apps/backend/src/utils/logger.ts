@@ -11,10 +11,19 @@ import pino, { type LoggerOptions } from "pino";
 export type LogLevel = "fatal" | "error" | "warn" | "info" | "debug" | "trace";
 
 export interface Logger {
-  request(req: Record<string, unknown>, res: Record<string, unknown>, duration: number): void;
+  request(
+    req: Record<string, unknown>,
+    res: Record<string, unknown>,
+    duration: number,
+  ): void;
   response(statusCode: number, duration: number): void;
   database(operation: string, duration: number, rowCount?: number): void;
-  externalAPI(service: string, endpoint: string, duration: number, statusCode?: number): void;
+  externalAPI(
+    service: string,
+    endpoint: string,
+    duration: number,
+    statusCode?: number,
+  ): void;
   performanceWarning(metric: string, value: number, threshold: number): void;
   security(event: string, details: Record<string, unknown>): void;
   child(bindings: Record<string, unknown>): Logger;
@@ -41,7 +50,10 @@ const DEFAULT_CONFIG = {
 /**
  * Erstellt einen Logger mit Kontext
  */
-export function createLogger(moduleName: string, config: Record<string, unknown> = {}): Logger {
+export function createLogger(
+  moduleName: string,
+  config: Record<string, unknown> = {},
+): Logger {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
 
   const baseOptions: LoggerOptions = {
@@ -53,12 +65,15 @@ export function createLogger(moduleName: string, config: Record<string, unknown>
     },
     formatters: {
       level: (label: string) => ({ level: label }),
-      bindings: (bindings: Record<string, unknown>) => ({ ...bindings, module: moduleName }),
+      bindings: (bindings: Record<string, unknown>) => ({
+        ...bindings,
+        module: moduleName,
+      }),
     },
   };
 
   const pinoLogger = pino(baseOptions);
-  
+
   // Typen für die flexiblen Log-Funktionen
   type LogFunction = {
     (message: string): void;
@@ -69,66 +84,117 @@ export function createLogger(moduleName: string, config: Record<string, unknown>
 
   // Wrapper für info - unterstützt beide Signaturen
   const originalInfo = pinoLogger.info.bind(pinoLogger);
-  (logger.info as LogFunction) = ((arg1: string | Record<string, unknown>, arg2?: string) => {
+  (logger.info as LogFunction) = (
+    arg1: string | Record<string, unknown>,
+    arg2?: string,
+  ) => {
     if (typeof arg1 === "string") {
       originalInfo(arg1);
     } else if (typeof arg1 === "object" && typeof arg2 === "string") {
       originalInfo(arg1, arg2);
     }
-  });
+  };
 
   // Wrapper für error - unterstützt beide Signaturen
   const originalError = pinoLogger.error.bind(pinoLogger);
-  (logger.error as LogFunction) = ((arg1: string | Record<string, unknown>, arg2?: string) => {
+  (logger.error as LogFunction) = (
+    arg1: string | Record<string, unknown>,
+    arg2?: string,
+  ) => {
     if (typeof arg1 === "string") {
       originalError(arg1);
     } else if (typeof arg1 === "object" && typeof arg2 === "string") {
       originalError(arg1, arg2);
     }
-  });
+  };
 
   // Wrapper für debug - unterstützt beide Signaturen
   const originalDebug = pinoLogger.debug.bind(pinoLogger);
-  (logger.debug as LogFunction) = ((arg1: string | Record<string, unknown>, arg2?: string) => {
+  (logger.debug as LogFunction) = (
+    arg1: string | Record<string, unknown>,
+    arg2?: string,
+  ) => {
     if (typeof arg1 === "string") {
       originalDebug(arg1);
     } else if (typeof arg1 === "object" && typeof arg2 === "string") {
       originalDebug(arg1, arg2);
     }
-  });
+  };
 
   // Wrapper für warn - unterstützt beide Signaturen
   const originalWarn = pinoLogger.warn.bind(pinoLogger);
-  (logger.warn as LogFunction) = ((arg1: string | Record<string, unknown>, arg2?: string) => {
+  (logger.warn as LogFunction) = (
+    arg1: string | Record<string, unknown>,
+    arg2?: string,
+  ) => {
     if (typeof arg1 === "string") {
       originalWarn(arg1);
     } else if (typeof arg1 === "object" && typeof arg2 === "string") {
       originalWarn(arg1, arg2);
     }
-  });
+  };
 
-  logger.request = function (req: Record<string, unknown>, res: Record<string, unknown>, duration: number) {
-    originalInfo({ method: req.method, path: req.path, statusCode: res.statusCode, duration }, "API Request");
+  logger.request = function (
+    req: Record<string, unknown>,
+    res: Record<string, unknown>,
+    duration: number,
+  ) {
+    originalInfo(
+      {
+        method: req.method,
+        path: req.path,
+        statusCode: res.statusCode,
+        duration,
+      },
+      "API Request",
+    );
   };
 
   logger.response = function (statusCode: number, duration: number) {
     originalDebug({ statusCode, duration }, "API Response");
   };
 
-  logger.database = function (operation: string, duration: number, rowCount?: number) {
+  logger.database = function (
+    operation: string,
+    duration: number,
+    rowCount?: number,
+  ) {
     const level = duration > 100 ? "warn" : "debug";
     const logFunc = level === "warn" ? originalWarn : originalDebug;
-    logFunc({ operation, duration, rowCount }, duration > 100 ? "Slow query" : "DB operation");
+    logFunc(
+      { operation, duration, rowCount },
+      duration > 100 ? "Slow query" : "DB operation",
+    );
   };
 
-  logger.externalAPI = function (service: string, endpoint: string, duration: number, statusCode?: number) {
+  logger.externalAPI = function (
+    service: string,
+    endpoint: string,
+    duration: number,
+    statusCode?: number,
+  ) {
     const level = statusCode && statusCode >= 400 ? "warn" : "debug";
     const logFunc = level === "warn" ? originalWarn : originalDebug;
-    logFunc({ service, endpoint, statusCode, duration }, statusCode && statusCode >= 400 ? "External API error" : "External API");
+    logFunc(
+      { service, endpoint, statusCode, duration },
+      statusCode && statusCode >= 400 ? "External API error" : "External API",
+    );
   };
 
-  logger.performanceWarning = function (metric: string, value: number, threshold: number) {
-    originalWarn({ metric, value, threshold, percentage: ((value / threshold) * 100).toFixed(1) }, "Performance threshold exceeded");
+  logger.performanceWarning = function (
+    metric: string,
+    value: number,
+    threshold: number,
+  ) {
+    originalWarn(
+      {
+        metric,
+        value,
+        threshold,
+        percentage: ((value / threshold) * 100).toFixed(1),
+      },
+      "Performance threshold exceeded",
+    );
   };
 
   logger.security = function (event: string, details: Record<string, unknown>) {
@@ -170,15 +236,34 @@ export const securityLogger = createLogger("security");
 /**
  * Express-Middleware für Request-Logging
  */
-export function loggerMiddleware(req: Record<string, unknown>, res: Record<string, unknown>, next: () => void) {
+export function loggerMiddleware(
+  req: Record<string, unknown>,
+  res: Record<string, unknown>,
+  next: () => void,
+) {
   const startTime = Date.now();
-  const requestId = (req.headers as Record<string, string>)["x-request-id"] || `req-${Date.now()}`;
-  const requestLogger = createLogger("http").child({ requestId, method: req.method, path: req.path });
+  const requestId =
+    (req.headers as Record<string, string>)["x-request-id"] ||
+    `req-${Date.now()}`;
+  const requestLogger = createLogger("http").child({
+    requestId,
+    method: req.method,
+    path: req.path,
+  });
   (req as Record<string, unknown>).logger = requestLogger;
-  const originalJson = (res as Record<string, unknown>).json as (data: unknown) => void;
+  const originalJson = (res as Record<string, unknown>).json as (
+    data: unknown,
+  ) => void;
   (res as Record<string, unknown>).json = function (data: unknown) {
     const duration = Date.now() - startTime;
-    requestLogger.info({ statusCode: res.statusCode, duration, responseSize: JSON.stringify(data).length }, "Request completed");
+    requestLogger.info(
+      {
+        statusCode: res.statusCode,
+        duration,
+        responseSize: JSON.stringify(data).length,
+      },
+      "Request completed",
+    );
     return originalJson.call(this, data);
   };
   next();

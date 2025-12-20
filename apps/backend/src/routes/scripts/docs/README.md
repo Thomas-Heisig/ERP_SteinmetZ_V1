@@ -42,7 +42,7 @@ ADMIN_PASSWORD=IhrSicheresPasswort123!
 
 **Ausgabe:**
 
-``` text
+```text
 Initializing database...
 Initializing authentication tables...
 Creating admin user...
@@ -86,7 +86,7 @@ npx tsx src/scripts/assignAdminRole.ts
 
 **Ausgabe (wenn Rolle bereits zugewiesen):**
 
-``` text
+```text
 🔍 Checking admin user...
 ✅ Found admin user: admin@dev.local
 ✅ Found role: Super Administrator
@@ -98,7 +98,7 @@ npx tsx src/scripts/assignAdminRole.ts
 
 **Ausgabe (bei Neuzuweisung):**
 
-``` text
+```text
 🔍 Checking admin user...
 ✅ Found admin user: admin@dev.local
 ✅ Found role: Super Administrator
@@ -173,10 +173,10 @@ npm run script:create-admin
 npm run script:assign-admin-role
 
 # Verifizieren in der Datenbank:
-SELECT u.username, r.display_name 
-FROM users u 
-JOIN user_roles ur ON u.id = ur.user_id 
-JOIN roles r ON ur.role_id = r.id 
+SELECT u.username, r.display_name
+FROM users u
+JOIN user_roles ur ON u.id = ur.user_id
+JOIN roles r ON ur.role_id = r.id
 WHERE u.username = 'admin';
 ```
 

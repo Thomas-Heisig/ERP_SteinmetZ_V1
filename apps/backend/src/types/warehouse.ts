@@ -1,66 +1,66 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/types/warehouse.ts
 
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Warehouse Item Status
  */
 export enum StockStatus {
-  LOW = 'low',
-  OK = 'ok',
-  OVERSTOCK = 'overstock',
-  RESERVED = 'reserved',
+  LOW = "low",
+  OK = "ok",
+  OVERSTOCK = "overstock",
+  RESERVED = "reserved",
 }
 
 /**
  * Movement Type for Stock Adjustments
  */
 export enum MovementType {
-  INCOMING = 'incoming',
-  OUTGOING = 'outgoing',
-  TRANSFER = 'transfer',
-  ADJUSTMENT = 'adjustment',
+  INCOMING = "incoming",
+  OUTGOING = "outgoing",
+  TRANSFER = "transfer",
+  ADJUSTMENT = "adjustment",
 }
 
 /**
  * Picking Status
  */
 export enum PickingStatus {
-  OPEN = 'open',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
+  OPEN = "open",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
 }
 
 /**
  * Shipment Status
  */
 export enum ShipmentStatus {
-  PREPARED = 'prepared',
-  READY_FOR_SHIPMENT = 'ready_for_shipment',
-  IN_TRANSIT = 'in_transit',
-  DELIVERED = 'delivered',
-  CANCELLED = 'cancelled',
+  PREPARED = "prepared",
+  READY_FOR_SHIPMENT = "ready_for_shipment",
+  IN_TRANSIT = "in_transit",
+  DELIVERED = "delivered",
+  CANCELLED = "cancelled",
 }
 
 /**
  * Inventory Count Type
  */
 export enum InventoryCountType {
-  FULL = 'full',
-  SPOT_CHECK = 'spot_check',
-  CYCLE = 'cycle',
+  FULL = "full",
+  SPOT_CHECK = "spot_check",
+  CYCLE = "cycle",
 }
 
 /**
  * Inventory Count Status
  */
 export enum InventoryCountStatus {
-  PLANNED = 'planned',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
+  PLANNED = "planned",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
 }
 
 /**
@@ -129,7 +129,7 @@ export const PickingListSchema = z.object({
   picking_number: z.string(),
   order_id: z.string(),
   status: z.nativeEnum(PickingStatus),
-  priority: z.enum(['low', 'normal', 'high']),
+  priority: z.enum(["low", "normal", "high"]),
   picker_id: z.string().optional(),
   items_count: z.number().min(1),
   created_at: z.string().datetime(),
@@ -203,23 +203,25 @@ export type InventoryCount = z.infer<typeof InventoryCountSchema>;
 /**
  * Input Schema: Stock Movement Request
  */
-export const CreateStockMovementSchema = z.object({
-  material_id: z.string().min(1, 'Material-ID erforderlich'),
-  type: z.nativeEnum(MovementType),
-  quantity: z.number().positive('Menge muss positiv sein'),
-  from_location_id: z.string().optional(),
-  to_location_id: z.string().optional(),
-  reference: z.string().optional(),
-  notes: z.string().optional(),
-}).refine(
-  (data) => {
-    if (data.type === MovementType.TRANSFER) {
-      return data.from_location_id && data.to_location_id;
-    }
-    return true;
-  },
-  { message: 'Für Transfers sind Quell- und Zielort erforderlich' }
-);
+export const CreateStockMovementSchema = z
+  .object({
+    material_id: z.string().min(1, "Material-ID erforderlich"),
+    type: z.nativeEnum(MovementType),
+    quantity: z.number().positive("Menge muss positiv sein"),
+    from_location_id: z.string().optional(),
+    to_location_id: z.string().optional(),
+    reference: z.string().optional(),
+    notes: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.type === MovementType.TRANSFER) {
+        return data.from_location_id && data.to_location_id;
+      }
+      return true;
+    },
+    { message: "Für Transfers sind Quell- und Zielort erforderlich" },
+  );
 
 export type CreateStockMovement = z.infer<typeof CreateStockMovementSchema>;
 
@@ -242,14 +244,16 @@ export type CreateLocation = z.infer<typeof CreateLocationSchema>;
  */
 export const CreatePickingListSchema = z.object({
   order_id: z.string().min(1),
-  priority: z.enum(['low', 'normal', 'high']).default('normal'),
-  items: z.array(
-    z.object({
-      material_id: z.string(),
-      quantity: z.number().positive(),
-      location_id: z.string(),
-    })
-  ).min(1),
+  priority: z.enum(["low", "normal", "high"]).default("normal"),
+  items: z
+    .array(
+      z.object({
+        material_id: z.string(),
+        quantity: z.number().positive(),
+        location_id: z.string(),
+      }),
+    )
+    .min(1),
 });
 
 export type CreatePickingList = z.infer<typeof CreatePickingListSchema>;
@@ -258,13 +262,15 @@ export type CreatePickingList = z.infer<typeof CreatePickingListSchema>;
  * Input Schema: Complete Picking
  */
 export const CompletePickingSchema = z.object({
-  items: z.array(
-    z.object({
-      picking_item_id: z.string(),
-      quantity_picked: z.number().min(0),
-      notes: z.string().optional(),
-    })
-  ).min(1),
+  items: z
+    .array(
+      z.object({
+        picking_item_id: z.string(),
+        quantity_picked: z.number().min(0),
+        notes: z.string().optional(),
+      }),
+    )
+    .min(1),
 });
 
 export type CompletePicking = z.infer<typeof CompletePickingSchema>;
@@ -276,21 +282,23 @@ export const CreateShipmentSchema = z.object({
   order_id: z.string().min(1),
   carrier: z.string().min(1),
   service_level: z.string().optional(),
-  packages: z.array(
-    z.object({
-      weight_kg: z.number().positive(),
-      length_cm: z.number().positive(),
-      width_cm: z.number().positive(),
-      height_cm: z.number().positive(),
-      description: z.string().optional(),
-    })
-  ).min(1),
+  packages: z
+    .array(
+      z.object({
+        weight_kg: z.number().positive(),
+        length_cm: z.number().positive(),
+        width_cm: z.number().positive(),
+        height_cm: z.number().positive(),
+        description: z.string().optional(),
+      }),
+    )
+    .min(1),
   shipping_address: z.object({
     name: z.string().min(1),
     street: z.string().min(1),
     zip: z.string().min(1),
     city: z.string().min(1),
-    country: z.string().default('DE'),
+    country: z.string().default("DE"),
   }),
   notes: z.string().optional(),
 });

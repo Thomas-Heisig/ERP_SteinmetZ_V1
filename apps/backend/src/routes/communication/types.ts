@@ -3,9 +3,9 @@
 
 /**
  * Communication Module Type Definitions
- * 
+ *
  * Comprehensive type system for messaging, notifications, emails, and templates.
- * 
+ *
  * @module routes/communication/types
  */
 
@@ -53,21 +53,21 @@ export interface Message {
   html?: string;
   priority: MessagePriority;
   status: MessageStatus;
-  
+
   // Metadata
   sentAt?: string;
   deliveredAt?: string;
   readAt?: string;
   failedReason?: string;
-  
+
   // Attachments
   attachments?: string; // JSON array
-  
+
   // References
   replyTo?: string;
   inReplyTo?: string;
   threadId?: string;
-  
+
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -96,22 +96,22 @@ export interface Notification {
   title: string;
   message: string;
   icon?: string;
-  
+
   // Actions
   link?: string;
   actionLabel?: string;
   actionUrl?: string;
-  
+
   // State
   read: boolean;
   readAt?: string;
   dismissed: boolean;
   dismissedAt?: string;
-  
+
   // Priority
   priority: MessagePriority;
   expiresAt?: string;
-  
+
   createdAt: string;
   updatedAt: string;
 }
@@ -129,19 +129,19 @@ export interface Template {
   name: string;
   type: TemplateType;
   category?: string;
-  
+
   // Content
   subject?: string;
   body: string;
   html?: string;
-  
+
   // Variables
   variables: string; // JSON array of variable names
-  
+
   // Metadata
   isActive: boolean;
   usageCount: number;
-  
+
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -172,16 +172,16 @@ export interface Call {
   from: string;
   to: string;
   status: CallStatus;
-  
+
   // Details
   duration?: number; // seconds
   recording?: string;
   notes?: string;
-  
+
   // Timestamps
   startedAt: string;
   endedAt?: string;
-  
+
   createdBy: string;
   createdAt: string;
 }
@@ -356,17 +356,28 @@ export const callQuerySchema = z.object({
 // ============================================================================
 
 export function isValidMessageType(value: unknown): value is MessageType {
-  return typeof value === "string" && MESSAGE_TYPES.includes(value as MessageType);
+  return (
+    typeof value === "string" && MESSAGE_TYPES.includes(value as MessageType)
+  );
 }
 
 export function isValidMessageStatus(value: unknown): value is MessageStatus {
-  return typeof value === "string" && MESSAGE_STATUS.includes(value as MessageStatus);
+  return (
+    typeof value === "string" && MESSAGE_STATUS.includes(value as MessageStatus)
+  );
 }
 
-export function isValidNotificationType(value: unknown): value is NotificationType {
-  return typeof value === "string" && NOTIFICATION_TYPES.includes(value as NotificationType);
+export function isValidNotificationType(
+  value: unknown,
+): value is NotificationType {
+  return (
+    typeof value === "string" &&
+    NOTIFICATION_TYPES.includes(value as NotificationType)
+  );
 }
 
 export function isValidTemplateType(value: unknown): value is TemplateType {
-  return typeof value === "string" && TEMPLATE_TYPES.includes(value as TemplateType);
+  return (
+    typeof value === "string" && TEMPLATE_TYPES.includes(value as TemplateType)
+  );
 }

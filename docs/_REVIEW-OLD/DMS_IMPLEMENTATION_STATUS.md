@@ -53,6 +53,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 **Datei:** `apps/backend/src/routes/documents/services/documentService.ts`
 
 **Implementierte Methoden:**
+
 - ✅ `getAllDocuments(filters)` - Liste mit Filter (category, status, user)
 - ✅ `getDocumentById(id)` - Einzeldokument mit Fehlerbehandlung
 - ✅ `createDocument(data, fileInfo, userId)` - Upload mit:
@@ -72,6 +73,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 - ✅ `getExpiringDocuments(days)` - Ablaufende Dokumente
 
 **Features:**
+
 - Transaktionale Integrität via SQLite
 - Automatische Checksum-Generierung
 - Retention-Policy-Enforcement
@@ -82,6 +84,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 **Datei:** `apps/backend/src/routes/documents/services/workflowService.ts`
 
 **Implementierte Methoden:**
+
 - ✅ `startWorkflow(documentId, data, userId)` - Workflow erstellen mit Steps
 - ✅ `getWorkflowById(id)` - Einzelner Workflow
 - ✅ `getDocumentWorkflows(documentId)` - Alle Workflows für Dokument
@@ -91,6 +94,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 - ✅ `getPendingWorkflowsCount()` - Statistiken
 
 **Features:**
+
 - Multi-Step Approval mit sequenzieller Reihenfolge
 - Autorisierungsprüfung (nur zugewiesener Approver kann handeln)
 - Automatische Workflow-Completion bei letztem Schritt
@@ -102,12 +106,14 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 **Datei:** `apps/backend/src/routes/documents/services/signatureService.ts`
 
 **Implementierte Methoden:**
+
 - ✅ `createSignatureRequest(documentId, data)` - Signatur-Requests für mehrere Unterzeichner
 - ✅ `getDocumentSignatures(documentId)` - Alle Signaturen
 - ✅ `updateSignatureStatus(id, status, ipAddress)` - Status-Update
 - ✅ `getPendingSignaturesCount()` - Statistiken
 
 **Features:**
+
 - Multi-Signer-Support
 - 30-Tage-Ablauf automatisch
 - Provider-Integration (DocuSign, Adobe Sign, etc.)
@@ -119,11 +125,13 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 **Datei:** `apps/backend/src/routes/documents/services/searchService.ts`
 
 **Implementierte Methoden:**
+
 - ✅ `searchDocuments(params)` - Full-Text-Suche mit Filtern
 - ✅ `saveOCRData(documentId, data)` - OCR-Ergebnisse speichern
 - ✅ `getOCRData(documentId)` - OCR-Daten abrufen
 
 **Features:**
+
 - Multi-Field-Suche: title, filename, OCR-Text
 - Filter: category, tags, date range, file type
 - LIKE-Queries für Partial Matching
@@ -135,11 +143,13 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 **Datei:** `apps/backend/src/routes/documents/services/retentionService.ts`
 
 **Implementierte Methoden:**
+
 - ✅ `getAllPolicies()` - Alle Richtlinien
 - ✅ `getPolicyByCategory(category)` - Policy für Kategorie
 - ✅ `updateDocumentRetention(documentId, years, reason, userId)` - Update mit Audit
 
 **Features:**
+
 - Retention-Expiry-Berechnung
 - Audit-Logging für Policy-Änderungen
 - Rechtliche Basis-Tracking (HGB, BGB, DSGVO)
@@ -151,6 +161,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 **Implementierte Endpoints:**
 
 #### Document Management
+
 - ✅ `GET /api/documents` - Alle Dokumente mit Filtern
 - ✅ `GET /api/documents/:id` - Einzelnes Dokument mit Details
 - ✅ `POST /api/documents/upload` - Neues Dokument hochladen
@@ -158,30 +169,36 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 - ✅ `DELETE /api/documents/:id` - Soft Delete
 
 #### Search & OCR
+
 - ✅ `GET /api/documents/search` - Full-Text-Suche
 - ✅ `POST /api/documents/:id/ocr` - OCR-Verarbeitung triggern
 - ✅ `POST /api/documents/:id/ai-tags` - AI-Tags generieren
 
 #### Workflows
+
 - ✅ `POST /api/documents/:id/workflows` - Workflow starten
 - ✅ `GET /api/documents/:id/workflows` - Workflows abrufen
 - ✅ `POST /api/documents/:id/workflows/:workflowId/approve` - Schritt genehmigen
 - ✅ `POST /api/documents/:id/workflows/:workflowId/reject` - Schritt ablehnen
 
 #### E-Signatures
+
 - ✅ `POST /api/documents/:id/sign` - Signatur-Request erstellen
 - ✅ `GET /api/documents/:id/signatures` - Signaturen abrufen
 - ✅ `PUT /api/documents/signatures/:signatureId` - Signatur-Status updaten
 
 #### Retention Policies
+
 - ✅ `GET /api/documents/retention-policies` - Alle Policies
 - ✅ `PUT /api/documents/:id/retention-policy` - Policy für Dokument ändern
 - ✅ `GET /api/documents/expiring` - Ablaufende Dokumente
 
 #### Statistics
+
 - ✅ `GET /api/documents/statistics` - Statistiken (Dokumente, Workflows, Signaturen)
 
 **Features:**
+
 - Zod-Validierung für alle Input-Daten
 - Async Error Handling mit asyncHandler
 - Structured Logging mit Pino
@@ -197,30 +214,33 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 #### Priorität: HOCH
 
 **Aufgaben:**
+
 1. ✅ Multer-Middleware konfigurieren
+
    ```typescript
-   import multer from 'multer';
-   
+   import multer from "multer";
+
    const upload = multer({
-     dest: 'uploads/',
+     dest: "uploads/",
      limits: { fileSize: 500 * 1024 * 1024 }, // 500MB
      fileFilter: (req, file, cb) => {
-       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+       const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
        if (allowedTypes.includes(file.mimetype)) {
          cb(null, true);
        } else {
-         cb(new Error('Invalid file type'));
+         cb(new Error("Invalid file type"));
        }
      },
    });
    ```
 
 2. ✅ StorageService implementieren
+
    ```typescript
    export class StorageService {
-     async saveFile(buffer: Buffer, filename: string): Promise<string>
-     async getFile(path: string): Promise<Buffer>
-     async deleteFile(path: string): Promise<void>
+     async saveFile(buffer: Buffer, filename: string): Promise<string>;
+     async getFile(path: string): Promise<Buffer>;
+     async deleteFile(path: string): Promise<void>;
    }
    ```
 
@@ -235,28 +255,35 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 #### Priorität: MITTEL
 
 **Aufgaben:**
+
 1. ✅ Tesseract.js integrieren
+
    ```bash
    npm install tesseract.js
    ```
 
 2. ✅ OCR-Worker implementieren
+
    ```typescript
-   import Tesseract from 'tesseract.js';
-   
+   import Tesseract from "tesseract.js";
+
    export class OCRService {
-     async processDocument(buffer: Buffer, language = 'deu'): Promise<OCRResult>
+     async processDocument(
+       buffer: Buffer,
+       language = "deu",
+     ): Promise<OCRResult>;
    }
    ```
 
 3. ✅ Background-Job-Queue mit BullMQ
+
    ```typescript
-   import { Queue, Worker } from 'bullmq';
-   
-   const ocrQueue = new Queue('ocr-processing');
-   
-   router.post('/:id/ocr', async (req, res) => {
-     await ocrQueue.add('process', { documentId: req.params.id });
+   import { Queue, Worker } from "bullmq";
+
+   const ocrQueue = new Queue("ocr-processing");
+
+   router.post("/:id/ocr", async (req, res) => {
+     await ocrQueue.add("process", { documentId: req.params.id });
    });
    ```
 
@@ -265,25 +292,27 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 #### Priorität: MITTEL
 
 **Aufgaben:**
+
 1. ✅ OpenAI/Anthropic API integrieren
+
    ```typescript
-   import Anthropic from '@anthropic-ai/sdk';
-   
+   import Anthropic from "@anthropic-ai/sdk";
+
    export class AITaggingService {
-     async generateTags(text: string, metadata: any): Promise<string[]>
-     async classifyDocument(content: string): Promise<string>
-     async extractEntities(text: string): Promise<Entity[]>
+     async generateTags(text: string, metadata: any): Promise<string[]>;
+     async classifyDocument(content: string): Promise<string>;
+     async extractEntities(text: string): Promise<Entity[]>;
    }
    ```
 
 2. ✅ AI-Endpoint implementieren
    ```typescript
-   router.post('/:id/ai-tags', async (req, res) => {
+   router.post("/:id/ai-tags", async (req, res) => {
      const document = await documentService.getDocumentById(id);
      const ocrData = await searchService.getOCRData(id);
-     
+
      const tags = await aiService.generateTags(ocrData.extractedText);
-     documentService.saveTags(id, tags, 'ai_generated', 0.92);
+     documentService.saveTags(id, tags, "ai_generated", 0.92);
    });
    ```
 
@@ -292,7 +321,9 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 #### Priorität: HOCH (vor Production)
 
 **Aufgaben:**
+
 1. ✅ Unit Tests für Services (Vitest)
+
    ```typescript
    describe('DocumentService', () => {
      it('should create document with checksum', async () => {
@@ -303,10 +334,11 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
    ```
 
 2. ✅ Integration Tests
+
    ```typescript
-   describe('DMS API', () => {
-     it('should upload and retrieve document', async () => {
-       const uploadRes = await request(app).post('/api/documents/upload');
+   describe("DMS API", () => {
+     it("should upload and retrieve document", async () => {
+       const uploadRes = await request(app).post("/api/documents/upload");
        expect(uploadRes.status).toBe(201);
      });
    });
@@ -314,8 +346,8 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 
 3. ✅ E2E Tests
    ```typescript
-   describe('Workflow', () => {
-     it('should complete multi-step approval', async () => {
+   describe("Workflow", () => {
+     it("should complete multi-step approval", async () => {
        // Start workflow → Approve step 1 → Approve step 2 → Check document status
      });
    });
@@ -326,6 +358,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 #### Priorität: MITTEL
 
 **Aufgaben:**
+
 1. ✅ React-Komponenten erstellen
    - DocumentList
    - DocumentUpload
@@ -334,17 +367,18 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
    - SearchInterface
 
 2. ✅ React Query Hooks
+
    ```typescript
    export const useDocuments = (filters) => {
-     return useQuery(['documents', filters], () => 
-       api.get('/api/documents', { params: filters })
+     return useQuery(["documents", filters], () =>
+       api.get("/api/documents", { params: filters }),
      );
    };
    ```
 
 3. ✅ File Upload Component
    ```typescript
-   <Dropzone 
+   <Dropzone
      onDrop={files => handleUpload(files)}
      maxSize={500 * 1024 * 1024}
    />
@@ -357,6 +391,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 ### Technologie-Stack
 
 **Backend:**
+
 - Express.js - API Router
 - SQLite - Datenbank
 - better-sqlite3 - Synchroner SQLite-Treiber
@@ -365,6 +400,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 - TypeScript - Type-Safety
 
 **Geplant:**
+
 - Multer - File Upload
 - Tesseract.js - OCR
 - BullMQ - Job Queue
@@ -372,6 +408,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
 - MinIO/S3 - Cloud Storage (optional)
 
 **Frontend (geplant):**
+
 - React - UI Components
 - React Query - Server State
 - Zustand - Client State
@@ -388,9 +425,9 @@ erDiagram
     documents ||--o{ workflows : has
     documents ||--o{ document_signatures : has
     documents ||--o{ document_audit_log : has
-    
+
     workflows ||--o{ workflow_steps : contains
-    
+
     retention_policies ||--o{ documents : applies_to
 ```
 
@@ -445,12 +482,14 @@ documentsRouter.ts
 ### Geplant ⏳
 
 1. **Caching-Layer**
+
    ```typescript
-   import NodeCache from 'node-cache';
+   import NodeCache from "node-cache";
    const cache = new NodeCache({ stdTTL: 600 });
    ```
 
 2. **Pagination**
+
    ```typescript
    GET /api/documents?page=1&limit=50
    ```
@@ -486,18 +525,21 @@ documentsRouter.ts
 ### Geplant ⏳
 
 1. **File Type Validation**
+
    ```typescript
-   const allowedMimeTypes = ['application/pdf', 'image/jpeg'];
+   const allowedMimeTypes = ["application/pdf", "image/jpeg"];
    ```
 
 2. **Virus Scanning**
+
    ```typescript
-   import ClamAV from 'clamav.js';
+   import ClamAV from "clamav.js";
    ```
 
 3. **Rate Limiting**
+
    ```typescript
-   import rateLimit from 'express-rate-limit';
+   import rateLimit from "express-rate-limit";
    ```
 
 4. **RBAC-Integration**
@@ -512,9 +554,10 @@ documentsRouter.ts
 ### Implementiert ✅
 
 1. **Structured Logging**
+
    ```typescript
-   logger.info({ documentId, userId }, 'Document uploaded');
-   logger.error({ error, documentId }, 'OCR processing failed');
+   logger.info({ documentId, userId }, "Document uploaded");
+   logger.error({ error, documentId }, "OCR processing failed");
    ```
 
 2. **Audit Trail**
@@ -525,9 +568,10 @@ documentsRouter.ts
 ### Geplant ⏳
 
 1. **Prometheus Metrics**
+
    ```typescript
-   const documentUploads = new Counter('document_uploads_total');
-   const ocrProcessingDuration = new Histogram('ocr_processing_seconds');
+   const documentUploads = new Counter("document_uploads_total");
+   const ocrProcessingDuration = new Histogram("ocr_processing_seconds");
    ```
 
 2. **Error Tracking (Sentry)**
@@ -559,8 +603,8 @@ curl http://localhost:3000/api/documents/statistics
 
 ```typescript
 // In app.ts
-import documentsRouter from './routes/documents/documentsRouter.js';
-app.use('/api/documents', documentsRouter);
+import documentsRouter from "./routes/documents/documentsRouter.js";
+app.use("/api/documents", documentsRouter);
 ```
 
 ### Schritt 4: File Upload hinzufügen ⏳
@@ -633,16 +677,19 @@ npm install tesseract.js @anthropic-ai/sdk
 ### 2025-12-20 - Phase 1 Abgeschlossen
 
 **Hinzugefügt:**
+
 - SQLite-Migrationen (11 Tabellen)
 - 5 Service-Klassen (1,000+ Zeilen Code)
 - Router-Integration (785 Zeilen)
 - Seed-Daten für Retention-Policies
 
 **Geändert:**
+
 - Mock-Daten durch echte Datenbankabfragen ersetzt
 - PostgreSQL-Syntax zu SQLite konvertiert
 
 **Bekannte Probleme:**
+
 - File Upload noch Mock-Implementierung (kein echtes Multer)
 - OCR-Verarbeitung nur Dummy-Code
 - AI-Tagging nur Mock-Tags

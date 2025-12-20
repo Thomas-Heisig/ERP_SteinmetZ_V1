@@ -224,8 +224,8 @@ class SystemInfoService {
       }
     };
 
-    const stack = (app as unknown as Record<string, RouterLayer | undefined>)?._router
-      ?.stack;
+    const stack = (app as unknown as Record<string, RouterLayer | undefined>)
+      ?._router?.stack;
     if (Array.isArray(stack)) walkStack(stack, "");
 
     // sortieren
@@ -309,7 +309,9 @@ class SystemInfoService {
             const ixRecord = ix as Record<string, unknown>;
             return {
               name: String(ixRecord.name),
-              columns: this.extractPostgresIndexColumns(String(ixRecord.indexdef)),
+              columns: this.extractPostgresIndexColumns(
+                String(ixRecord.indexdef),
+              ),
               unique: String(ixRecord.indexdef).includes("UNIQUE"),
             };
           });
@@ -334,7 +336,9 @@ class SystemInfoService {
           `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name`,
         );
         for (const { name } of tables) {
-          const columns = await db.all<Record<string, unknown>>(`PRAGMA table_info("${name}")`);
+          const columns = await db.all<Record<string, unknown>>(
+            `PRAGMA table_info("${name}")`,
+          );
           const indexes = await db.all<Record<string, string | number>>(
             `PRAGMA index_list("${name}")`,
           );
@@ -347,7 +351,9 @@ class SystemInfoService {
             );
             indexInfos.push({
               name: String(idxRecord.name),
-              columns: cols.map((c) => String((c as Record<string, unknown>).name)),
+              columns: cols.map((c) =>
+                String((c as Record<string, unknown>).name),
+              ),
               unique: idxRecord.unique === 1,
             });
           }
@@ -617,8 +623,7 @@ class SystemInfoService {
   async getCompleteSystemOverview(app?: Application) {
     // robuste App-Ermittlung
     const expressApp: Application | undefined =
-      app ?? (globalThis as unknown as Record<string, Application>)
-        .expressApp;
+      app ?? (globalThis as unknown as Record<string, Application>).expressApp;
 
     if (!expressApp) {
       throw new Error("Express-App nicht registriert (global)");
@@ -661,7 +666,9 @@ class SystemInfoService {
         title: string;
         parent_id: string | null;
         depth?: number;
-      }>(`SELECT id, title, parent_id, depth FROM functions_nodes ORDER BY title`);
+      }>(
+        `SELECT id, title, parent_id, depth FROM functions_nodes ORDER BY title`,
+      );
       return { success: true, count: rows.length, nodes: rows };
     } catch (err) {
       return { success: false, count: 0, nodes: [], error: String(err) };
@@ -699,7 +706,10 @@ class SystemInfoService {
   }
 
   async runSystemDiagnostics(): Promise<Record<string, unknown>> {
-    const res: Record<string, unknown> = { timestamp: new Date().toISOString(), status: "ok" };
+    const res: Record<string, unknown> = {
+      timestamp: new Date().toISOString(),
+      status: "ok",
+    };
     try {
       res.databaseConnected = await db
         .get("SELECT 1 AS ok")

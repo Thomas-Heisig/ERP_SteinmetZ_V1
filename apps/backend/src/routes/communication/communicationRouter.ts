@@ -79,11 +79,21 @@ async function ensureTables(): Promise<void> {
       )
     `);
 
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_messages_type ON communication_messages(type)`);
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_messages_status ON communication_messages(status)`);
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_messages_from ON communication_messages("from")`);
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_messages_to ON communication_messages("to")`);
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_messages_thread ON communication_messages(thread_id)`);
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_messages_type ON communication_messages(type)`,
+    );
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_messages_status ON communication_messages(status)`,
+    );
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_messages_from ON communication_messages("from")`,
+    );
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_messages_to ON communication_messages("to")`,
+    );
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_messages_thread ON communication_messages(thread_id)`,
+    );
 
     // Notifications table
     await db.exec(`
@@ -112,8 +122,12 @@ async function ensureTables(): Promise<void> {
       )
     `);
 
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_notifications_user ON communication_notifications(user_id)`);
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_notifications_read ON communication_notifications(read)`);
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_notifications_user ON communication_notifications(user_id)`,
+    );
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_notifications_read ON communication_notifications(read)`,
+    );
 
     // Templates table
     await db.exec(`
@@ -138,7 +152,9 @@ async function ensureTables(): Promise<void> {
       )
     `);
 
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_templates_type ON communication_templates(type)`);
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_templates_type ON communication_templates(type)`,
+    );
 
     // Calls table
     await db.exec(`
@@ -161,7 +177,9 @@ async function ensureTables(): Promise<void> {
       )
     `);
 
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_calls_type ON communication_calls(type)`);
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_calls_type ON communication_calls(type)`,
+    );
 
     logger.info("Communication tables initialized");
   } catch (error) {
@@ -497,7 +515,8 @@ router.get(
   "/notifications",
   asyncHandler(async (req: Request, res: Response) => {
     const validated = notificationQuerySchema.parse(req.query);
-    const { userId, type, read, dismissed, priority, limit, offset } = validated;
+    const { userId, type, read, dismissed, priority, limit, offset } =
+      validated;
 
     let sql = "SELECT * FROM communication_notifications WHERE 1=1";
     const params: SqlValue[] = [];
@@ -578,7 +597,10 @@ router.post(
       updatedAt: now,
     };
 
-    logger.info({ notificationId: id, userId: validated.userId }, "Notification created");
+    logger.info(
+      { notificationId: id, userId: validated.userId },
+      "Notification created",
+    );
     res.status(201).json({ success: true, data: notification });
   }),
 );
@@ -611,7 +633,10 @@ router.put(
     }
     if (validated.dismissed !== undefined) {
       updates.push("dismissed = ?", "dismissed_at = ?");
-      params.push(validated.dismissed ? 1 : 0, validated.dismissed ? now : null);
+      params.push(
+        validated.dismissed ? 1 : 0,
+        validated.dismissed ? now : null,
+      );
     }
 
     updates.push("updated_at = ?");
@@ -863,7 +888,8 @@ router.get(
   "/calls",
   asyncHandler(async (req: Request, res: Response) => {
     const validated = callQuerySchema.parse(req.query);
-    const { type, status, from, to, startDate, endDate, limit, offset } = validated;
+    const { type, status, from, to, startDate, endDate, limit, offset } =
+      validated;
 
     let sql = "SELECT * FROM communication_calls WHERE 1=1";
     const params: SqlValue[] = [];

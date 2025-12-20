@@ -3,9 +3,9 @@
 
 /**
  * Dashboard Module Exports
- * 
+ *
  * Central export point for all dashboard functionality.
- * 
+ *
  * @module routes/dashboard
  */
 

@@ -14,22 +14,23 @@ const widget = DASHBOARD_WIDGETS.EXECUTIVE_OVERVIEW;
 
 ## 📋 Häufig genutzte Endpoints
 
-| Modul | Endpoint | Verwendung |
-|-------|----------|------------|
-| **Dashboard** | `/api/dashboard/overview` | Komplette Dashboard-Übersicht |
-| **System** | `/api/system` | System-Informationen |
-| **Health** | `/api/health` | Gesundheitsstatus |
-| **CRM** | `/api/crm/statistics` | CRM-Statistiken |
-| **Finance** | `/api/finance/revenue` | Umsatz-Daten |
-| **Sales** | `/api/sales/pipeline` | Verkaufspipeline |
-| **HR** | `/api/hr/employees` | Mitarbeiter-Liste |
-| **Production** | `/api/production/statistics` | Produktions-KPIs |
-| **Warehouse** | `/api/warehouse/stock` | Lagerbestand |
-| **Inventory** | `/api/inventory/low-stock` | Niedrige Bestände |
+| Modul          | Endpoint                     | Verwendung                    |
+| -------------- | ---------------------------- | ----------------------------- |
+| **Dashboard**  | `/api/dashboard/overview`    | Komplette Dashboard-Übersicht |
+| **System**     | `/api/system`                | System-Informationen          |
+| **Health**     | `/api/health`                | Gesundheitsstatus             |
+| **CRM**        | `/api/crm/statistics`        | CRM-Statistiken               |
+| **Finance**    | `/api/finance/revenue`       | Umsatz-Daten                  |
+| **Sales**      | `/api/sales/pipeline`        | Verkaufspipeline              |
+| **HR**         | `/api/hr/employees`          | Mitarbeiter-Liste             |
+| **Production** | `/api/production/statistics` | Produktions-KPIs              |
+| **Warehouse**  | `/api/warehouse/stock`       | Lagerbestand                  |
+| **Inventory**  | `/api/inventory/low-stock`   | Niedrige Bestände             |
 
 ## 🔗 Backend-Route-Muster
 
 ### GET Requests
+
 ```typescript
 // Liste mit Filterung
 GET /api/{module}/{resource}?filter=value&limit=10&offset=0
@@ -42,6 +43,7 @@ GET /api/{module}/statistics
 ```
 
 ### POST Requests
+
 ```typescript
 // Erstellen
 POST /api/{module}/{resource}
@@ -52,6 +54,7 @@ POST /api/{module}/{resource}/{id}/{action}
 ```
 
 ### PUT/PATCH Requests
+
 ```typescript
 // Vollständiges Update
 PUT /api/{module}/{resource}/{id}
@@ -63,9 +66,10 @@ Body: { field: "value" }
 ```
 
 ### DELETE Requests
+
 ```typescript
 // Löschen
-DELETE /api/{module}/{resource}/{id}
+DELETE / api / { module } / { resource } / { id };
 ```
 
 ## 📊 Widget-Konfiguration
@@ -77,20 +81,17 @@ const DASHBOARD_WIDGETS = {
       "/api/dashboard/kpis",
       "/api/finance/revenue",
       "/api/sales/statistics",
-      "/api/reporting/financial"
+      "/api/reporting/financial",
     ],
     refreshInterval: 300, // 5 min
   },
   CRM_WIDGET: {
-    apiEndpoints: [
-      "/api/crm/statistics",
-      "/api/crm/opportunities"
-    ],
+    apiEndpoints: ["/api/crm/statistics", "/api/crm/opportunities"],
     refreshInterval: 180, // 3 min
     permissions: ["crm:read"],
   },
   // ... weitere Widgets
-}
+};
 ```
 
 ## 🎯 Helper-Funktionen
@@ -114,30 +115,30 @@ const url = buildApiUrl(API_ROUTES.DASHBOARD.OVERVIEW);
 
 ## 📦 Module-zu-API Mapping
 
-| Frontend-Modul | Backend-Route | Status |
-|----------------|---------------|--------|
-| Dashboard | `/api/dashboard` | ✅ |
-| CRM | `/api/crm` | ✅ |
-| Finance | `/api/finance` | ✅ |
-| Sales | `/api/sales` | ✅ |
-| HR | `/api/hr` | ✅ |
-| Projects | `/api/projects` | ✅ |
-| Warehouse | `/api/warehouse` | ✅ |
-| Production | `/api/production` | ✅ |
-| Inventory | `/api/inventory` | ✅ |
-| Marketing | `/api/marketing` | ✅ |
-| Procurement | `/api/procurement` | ✅ |
-| Reporting | `/api/reporting` | ✅ |
+| Frontend-Modul | Backend-Route      | Status |
+| -------------- | ------------------ | ------ |
+| Dashboard      | `/api/dashboard`   | ✅     |
+| CRM            | `/api/crm`         | ✅     |
+| Finance        | `/api/finance`     | ✅     |
+| Sales          | `/api/sales`       | ✅     |
+| HR             | `/api/hr`          | ✅     |
+| Projects       | `/api/projects`    | ✅     |
+| Warehouse      | `/api/warehouse`   | ✅     |
+| Production     | `/api/production`  | ✅     |
+| Inventory      | `/api/inventory`   | ✅     |
+| Marketing      | `/api/marketing`   | ✅     |
+| Procurement    | `/api/procurement` | ✅     |
+| Reporting      | `/api/reporting`   | ✅     |
 
 ## 🔄 Refresh-Intervalle
 
 ```typescript
 const REFRESH_INTERVALS = {
-  REALTIME: 10,      // Echtzeit (z.B. Alarme)
-  FAST: 30,          // Schnell (z.B. Lager)
-  NORMAL: 60,        // Normal (z.B. CRM)
-  SLOW: 180,         // Langsam (z.B. Berichte)
-  VERY_SLOW: 300,    // Sehr langsam (z.B. Analytics)
+  REALTIME: 10, // Echtzeit (z.B. Alarme)
+  FAST: 30, // Schnell (z.B. Lager)
+  NORMAL: 60, // Normal (z.B. CRM)
+  SLOW: 180, // Langsam (z.B. Berichte)
+  VERY_SLOW: 300, // Sehr langsam (z.B. Analytics)
 };
 ```
 
@@ -145,19 +146,19 @@ const REFRESH_INTERVALS = {
 
 ```typescript
 // Light Theme
-background: "#f5f5f5"
-surface: "#ffffff"
-primary: "#1976d2"
+background: "#f5f5f5";
+surface: "#ffffff";
+primary: "#1976d2";
 
 // Dark Theme
-background: "#121212"
-surface: "#1e1e1e"
-primary: "#90caf9"
+background: "#121212";
+surface: "#1e1e1e";
+primary: "#90caf9";
 
 // LCARS Theme
-background: "#000000"
-surface: "#111111"
-primary: "#ff9900"
+background: "#000000";
+surface: "#111111";
+primary: "#ff9900";
 ```
 
 ## 📱 Responsive Grid
@@ -165,35 +166,40 @@ primary: "#ff9900"
 ```typescript
 const GRID_CONFIG = {
   BREAKPOINTS: {
-    xs: 320,   // Mobile
-    sm: 640,   // Tablet portrait
-    md: 768,   // Tablet landscape
-    lg: 1024,  // Desktop
-    xl: 1280,  // Large desktop
-    "2xl": 1536 // Extra large
+    xs: 320, // Mobile
+    sm: 640, // Tablet portrait
+    md: 768, // Tablet landscape
+    lg: 1024, // Desktop
+    xl: 1280, // Large desktop
+    "2xl": 1536, // Extra large
   },
   COLUMNS: {
-    xs: 1, sm: 2, md: 2, lg: 3, xl: 4, "2xl": 4
-  }
+    xs: 1,
+    sm: 2,
+    md: 2,
+    lg: 3,
+    xl: 4,
+    "2xl": 4,
+  },
 };
 ```
 
 ## ✅ Beispiel: Executive Overview
 
 ```typescript
-import { 
-  API_ROUTES, 
+import {
+  API_ROUTES,
   DASHBOARD_WIDGETS,
-  buildApiUrl 
+  buildApiUrl
 } from "@/config";
 
 const ExecutiveOverview = () => {
   const widget = DASHBOARD_WIDGETS.EXECUTIVE_OVERVIEW;
-  
+
   useEffect(() => {
     // Alle Endpoints des Widgets laden
     Promise.all(
-      widget.apiEndpoints.map(endpoint => 
+      widget.apiEndpoints.map(endpoint =>
         fetch(buildApiUrl(endpoint)).then(r => r.json())
       )
     ).then(([kpis, revenue, sales, financial]) => {

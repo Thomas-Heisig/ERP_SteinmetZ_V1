@@ -38,7 +38,7 @@ The Projects Module provides a complete project management solution integrated i
 ### Key Capabilities
 
 | Feature | Capability | Status |
-|---------|----------- |--------|
+| ------- | ---------- | ------ |
 
 | CRUD Operations | Create, read, update, delete projects and tasks | ✅ Implemented |
 | Time Tracking | Log hours against projects/tasks with dates | ✅ Implemented |
@@ -567,7 +567,7 @@ CREATE INDEX idx_projects_manager ON projects(manager);
 **Fields:**
 
 | Field | Type | Required | Notes |
-|-------|------|----------|-------|
+| ----- | ---- | -------- | ----- |
 
 | id | TEXT | ✓ | UUID formatted |
 | name | TEXT | ✓ | Max 200 characters |
@@ -607,7 +607,7 @@ CREATE INDEX idx_project_tasks_assignee ON project_tasks(assignee);
 **Fields:**
 
 | Field | Type | Required | Notes |
-|-------|------|----------|-------|
+| ----- | ---- | -------- | ----- |
 
 | id | TEXT | ✓ | UUID formatted |
 | project_id | TEXT | ✓ | Foreign key to projects |
@@ -646,7 +646,7 @@ CREATE INDEX idx_time_entries_date ON project_time_entries(date);
 **Fields:**
 
 | Field | Type | Required | Notes |
-|-------|------|----------|-------|
+| ----- | ---- | -------- | ----- |
 
 | id | TEXT | ✓ | UUID formatted |
 | project_id | TEXT | ✓ | Foreign key to projects |
@@ -714,11 +714,11 @@ Retrieves all projects with optional filtering and search.
 
 ```typescript
 const activeProjects = await projectsService.getProjects({
-  status: 'active'
+  status: "active",
 });
 
 const searchResults = await projectsService.getProjects({
-  search: 'website'
+  search: "website",
 });
 ```
 
@@ -733,7 +733,7 @@ Calculates comprehensive project metrics including:
 - Timeline tracking (on schedule boolean)
 
 ```typescript
-const analytics = await projectsService.getProjectAnalytics('proj-123abc');
+const analytics = await projectsService.getProjectAnalytics("proj-123abc");
 // Returns: ProjectAnalytics with completion %, tasks, hours, budget, timeline
 ```
 
@@ -757,7 +757,7 @@ interface Project {
   id: string;
   name: string;
   description?: string;
-  status: 'planning' | 'active' | 'on_hold' | 'completed' | 'cancelled';
+  status: "planning" | "active" | "on_hold" | "completed" | "cancelled";
   start_date?: string;
   end_date?: string;
   budget?: number;
@@ -772,8 +772,8 @@ interface ProjectTask {
   project_id: string;
   title: string;
   description?: string;
-  status: 'todo' | 'in_progress' | 'review' | 'done';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: "todo" | "in_progress" | "review" | "done";
+  priority: "low" | "medium" | "high" | "urgent";
   assignee?: string;
   due_date?: string;
   estimated_hours?: number;
@@ -850,55 +850,57 @@ interface ProjectStats {
 #### Create and Track a Project
 
 ```typescript
-import { projectsService } from '@/routes/projects/projectsService';
+import { projectsService } from "@/routes/projects/projectsService";
 
 // 1. Create project
 const project = await projectsService.createProject({
-  name: 'Mobile App Development',
-  description: 'Develop iOS and Android app',
-  status: 'planning',
-  startDate: '2025-01-01',
-  endDate: '2025-06-30',
+  name: "Mobile App Development",
+  description: "Develop iOS and Android app",
+  status: "planning",
+  startDate: "2025-01-01",
+  endDate: "2025-06-30",
   budget: 75000,
-  client: 'StartupXYZ',
-  manager: 'john.smith'
+  client: "StartupXYZ",
+  manager: "john.smith",
 });
 
 // 2. Create tasks
 const task1 = await projectsService.createTask({
   projectId: project.id,
-  title: 'Design UI/UX',
-  priority: 'high',
+  title: "Design UI/UX",
+  priority: "high",
   estimatedHours: 120,
-  assignee: 'alice.designer'
+  assignee: "alice.designer",
 });
 
 const task2 = await projectsService.createTask({
   projectId: project.id,
-  title: 'Backend API Development',
-  priority: 'high',
+  title: "Backend API Development",
+  priority: "high",
   estimatedHours: 200,
-  assignee: 'bob.developer'
+  assignee: "bob.developer",
 });
 
 // 3. Log time
 await projectsService.logTimeEntry({
   projectId: project.id,
   taskId: task1.id,
-  userId: 'alice.designer',
+  userId: "alice.designer",
   hours: 8.5,
-  date: '2025-12-20',
-  description: 'Completed wireframes and style guide'
+  date: "2025-12-20",
+  description: "Completed wireframes and style guide",
 });
 
 // 4. Get analytics
 const analytics = await projectsService.getProjectAnalytics(project.id);
 console.log(`Completion: ${analytics.completion_percentage}%`);
-console.log(`Hours logged: ${analytics.hours.logged}/${analytics.hours.estimated}`);
+console.log(
+  `Hours logged: ${analytics.hours.logged}/${analytics.hours.estimated}`,
+);
 
 // 5. Update task status
 await projectsService.updateTask(task1.id, {
-  status: 'done'
+  status: "done",
 });
 
 // 6. Get statistics
@@ -913,14 +915,14 @@ console.log(`Active projects: ${stats.projects.active}`);
 
 ```typescript
 // Display project overview
-const projects = await projectsService.getProjects({ status: 'active' });
+const projects = await projectsService.getProjects({ status: "active" });
 const stats = await projectsService.getStatistics();
 
 // Render dashboard widgets
 renderProjectWidget({
   activeProjects: stats.projects.active,
   completedProjects: stats.projects.completed,
-  taskCompletion: stats.completion_rate
+  taskCompletion: stats.completion_rate,
 });
 ```
 
@@ -930,10 +932,10 @@ renderProjectWidget({
 // Generate project status report
 const allProjects = await projectsService.getProjects();
 
-const report = allProjects.map(project => ({
+const report = allProjects.map((project) => ({
   name: project.name,
   status: project.status,
-  analytics: await projectsService.getProjectAnalytics(project.id)
+  analytics: await projectsService.getProjectAnalytics(project.id),
 }));
 
 // Export report
@@ -946,10 +948,13 @@ exportPDF(report);
 // Track employee utilization
 const timeEntries = await projectsService.getTimeEntries(projectId);
 
-const utilization = timeEntries.reduce((acc, entry) => {
-  acc[entry.user_id] = (acc[entry.user_id] || 0) + entry.hours;
-  return acc;
-}, {} as Record<string, number>);
+const utilization = timeEntries.reduce(
+  (acc, entry) => {
+    acc[entry.user_id] = (acc[entry.user_id] || 0) + entry.hours;
+    return acc;
+  },
+  {} as Record<string, number>,
+);
 
 // Display in HR dashboard
 ```
@@ -963,60 +968,60 @@ const utilization = timeEntries.reduce((acc, entry) => {
 ```typescript
 // 1. Plan: Create project
 const website = await projectsService.createProject({
-  name: 'Company Website Redesign',
-  description: 'Modernize company website',
-  status: 'planning',
-  startDate: '2025-01-15',
-  endDate: '2025-03-31',
+  name: "Company Website Redesign",
+  description: "Modernize company website",
+  status: "planning",
+  startDate: "2025-01-15",
+  endDate: "2025-03-31",
   budget: 25000,
-  client: 'Internal',
-  manager: 'sarah.manager'
+  client: "Internal",
+  manager: "sarah.manager",
 });
 
 // 2. Plan: Create tasks
 const designTask = await projectsService.createTask({
   projectId: website.id,
-  title: 'Design New Layout',
-  priority: 'high',
+  title: "Design New Layout",
+  priority: "high",
   estimatedHours: 40,
-  assignee: 'designer@company.com',
-  dueDate: '2025-02-15'
+  assignee: "designer@company.com",
+  dueDate: "2025-02-15",
 });
 
 const devTask = await projectsService.createTask({
   projectId: website.id,
-  title: 'Implement Frontend',
-  priority: 'high',
+  title: "Implement Frontend",
+  priority: "high",
   estimatedHours: 80,
-  assignee: 'dev@company.com',
-  dueDate: '2025-03-15'
+  assignee: "dev@company.com",
+  dueDate: "2025-03-15",
 });
 
 // 3. Execute: Update project to active
 await projectsService.updateProject(website.id, {
-  status: 'active'
+  status: "active",
 });
 
 // 4. Execute: Log work
 await projectsService.logTimeEntry({
   projectId: website.id,
   taskId: designTask.id,
-  userId: 'designer@company.com',
+  userId: "designer@company.com",
   hours: 8,
-  date: '2025-01-20'
+  date: "2025-01-20",
 });
 
 // 5. Monitor: Update task status
 await projectsService.updateTask(designTask.id, {
-  status: 'done'
+  status: "done",
 });
 
 // 6. Monitor: Check progress
 const analytics = await projectsService.getProjectAnalytics(website.id);
-console.log('Project Status:', {
+console.log("Project Status:", {
   completion: `${analytics.completion_percentage}%`,
   hoursLogged: analytics.hours.logged,
-  budgetSpent: analytics.budget.spent
+  budgetSpent: analytics.budget.spent,
 });
 ```
 
@@ -1025,18 +1030,18 @@ console.log('Project Status:', {
 ```typescript
 // Import multiple projects from CSV
 const projectsData = [
-  { name: 'Project A', budget: 10000, client: 'Client A' },
-  { name: 'Project B', budget: 15000, client: 'Client B' },
-  { name: 'Project C', budget: 20000, client: 'Client C' }
+  { name: "Project A", budget: 10000, client: "Client A" },
+  { name: "Project B", budget: 15000, client: "Client B" },
+  { name: "Project C", budget: 20000, client: "Client C" },
 ];
 
 const createdProjects = await Promise.all(
-  projectsData.map(data =>
+  projectsData.map((data) =>
     projectsService.createProject({
       ...data,
-      status: 'planning'
-    })
-  )
+      status: "planning",
+    }),
+  ),
 );
 
 console.log(`Created ${createdProjects.length} projects`);
@@ -1047,20 +1052,21 @@ console.log(`Created ${createdProjects.length} projects`);
 ```typescript
 // Get all active projects with analytics
 const activeProjects = await projectsService.getProjects({
-  status: 'active'
+  status: "active",
 });
 
 const projectMetrics = await Promise.all(
-  activeProjects.map(async project => ({
+  activeProjects.map(async (project) => ({
     id: project.id,
     name: project.name,
-    analytics: await projectsService.getProjectAnalytics(project.id)
-  }))
+    analytics: await projectsService.getProjectAnalytics(project.id),
+  })),
 );
 
 // Sort by completion percentage
-projectMetrics.sort((a, b) =>
-  b.analytics.completion_percentage - a.analytics.completion_percentage
+projectMetrics.sort(
+  (a, b) =>
+    b.analytics.completion_percentage - a.analytics.completion_percentage,
 );
 
 // Render dashboard
@@ -1074,20 +1080,23 @@ renderProjectDashboard(projectMetrics);
 const timeEntries = await projectsService.getTimeEntries(projectId);
 
 // Group by user
-const entriesByUser = timeEntries.reduce((acc, entry) => {
-  if (!acc[entry.user_id]) acc[entry.user_id] = [];
-  acc[entry.user_id].push(entry);
-  return acc;
-}, {} as Record<string, TimeEntry[]>);
+const entriesByUser = timeEntries.reduce(
+  (acc, entry) => {
+    if (!acc[entry.user_id]) acc[entry.user_id] = [];
+    acc[entry.user_id].push(entry);
+    return acc;
+  },
+  {} as Record<string, TimeEntry[]>,
+);
 
 // Calculate hours per user
 const hoursByUser = Object.entries(entriesByUser).map(([userId, entries]) => ({
   userId,
   totalHours: entries.reduce((sum, e) => sum + e.hours, 0),
-  entries: entries.length
+  entries: entries.length,
 }));
 
-console.log('Time Report:', hoursByUser);
+console.log("Time Report:", hoursByUser);
 ```
 
 ---
@@ -1099,21 +1108,21 @@ console.log('Time Report:', hoursByUser);
 The module uses custom error classes for specific scenarios:
 
 ```typescript
-import { NotFoundError, ValidationError } from '../error/errors';
+import { NotFoundError, ValidationError } from "../error/errors";
 ```
 
 ### Handling Errors
 
 ```typescript
 try {
-  const project = await projectsService.getProject('invalid-id');
+  const project = await projectsService.getProject("invalid-id");
 } catch (error) {
   if (error instanceof NotFoundError) {
-    console.error('Project not found:', error.message);
+    console.error("Project not found:", error.message);
   } else if (error instanceof ValidationError) {
-    console.error('Invalid data:', error.fields);
+    console.error("Invalid data:", error.fields);
   } else {
-    console.error('Unexpected error:', error);
+    console.error("Unexpected error:", error);
   }
 }
 ```
@@ -1121,7 +1130,7 @@ try {
 ### Common Errors
 
 | Error | Cause | Solution |
-|-------|-------|----------|
+| ----- | ----- | -------- |
 
 | `NotFoundError` | Project/task doesn't exist | Verify ID, check if deleted |
 | `ValidationError` | Invalid input data | Check data types and constraints |
@@ -1138,16 +1147,16 @@ try {
 ```typescript
 // ✅ Correct: ISO 8601 format
 await projectsService.createProject({
-  name: 'Project',
-  startDate: '2025-01-01',  // Correct
-  endDate: '2025-12-31'     // Correct
+  name: "Project",
+  startDate: "2025-01-01", // Correct
+  endDate: "2025-12-31", // Correct
 });
 
 // ❌ Incorrect
 await projectsService.createProject({
-  name: 'Project',
-  startDate: '01/01/2025',   // Wrong format
-  endDate: '12/31/2025'      // Wrong format
+  name: "Project",
+  startDate: "01/01/2025", // Wrong format
+  endDate: "12/31/2025", // Wrong format
 });
 ```
 
@@ -1157,8 +1166,8 @@ await projectsService.createProject({
 // ✅ Realistic estimates help with analytics
 const task = await projectsService.createTask({
   projectId: projectId,
-  title: 'Backend Development',
-  estimatedHours: 160  // 4 weeks @ 40hrs
+  title: "Backend Development",
+  estimatedHours: 160, // 4 weeks @ 40hrs
 });
 
 // Log actual hours
@@ -1166,9 +1175,9 @@ for (let day = 0; day < 10; day++) {
   await projectsService.logTimeEntry({
     projectId: projectId,
     taskId: task.id,
-    userId: 'developer',
+    userId: "developer",
     hours: 8,
-    date: getTodayMinusDays(day)
+    date: getTodayMinusDays(day),
   });
 }
 ```
@@ -1197,7 +1206,7 @@ const currentCost = analytics.hours.logged * costPerHour;
 const costOverrun = currentCost > analytics.budget.spent;
 
 if (costOverrun) {
-  console.warn('Project budget exceeded!');
+  console.warn("Project budget exceeded!");
 }
 ```
 
@@ -1206,14 +1215,14 @@ if (costOverrun) {
 ```typescript
 // Don't delete old projects, mark as completed
 const oldProjects = await projectsService.getProjects({
-  status: 'on_hold'
+  status: "on_hold",
 });
 
 for (const project of oldProjects) {
   if (isOldEnough(project.updated_at)) {
     // Either set to completed or delete
     await projectsService.updateProject(project.id, {
-      status: 'completed'
+      status: "completed",
     });
   }
 }
@@ -1224,7 +1233,7 @@ for (const project of oldProjects) {
 ```typescript
 // Weekly check of all active projects
 const activeProjects = await projectsService.getProjects({
-  status: 'active'
+  status: "active",
 });
 
 for (const project of activeProjects) {
@@ -1273,7 +1282,7 @@ const total = entries.reduce((sum, e) => {
   console.log(`${e.user_id}: ${e.hours} hours`);
   return sum + e.hours;
 }, 0);
-console.log('Total:', total.toFixed(2));  // Round to 2 decimals
+console.log("Total:", total.toFixed(2)); // Round to 2 decimals
 ```
 
 ### Issue: Analytics completion percentage seems incorrect
@@ -1285,12 +1294,12 @@ console.log('Total:', total.toFixed(2));  // Round to 2 decimals
 ```typescript
 // Verify task statuses
 const tasks = await projectsService.getProjectTasks(projectId);
-tasks.forEach(task => {
+tasks.forEach((task) => {
   console.log(`${task.title}: ${task.status}`);
 });
 
 // Ensure 'done' tasks are marked correctly
-const incompleteTasks = tasks.filter(t => t.status !== 'done');
+const incompleteTasks = tasks.filter((t) => t.status !== "done");
 console.log(`Incomplete tasks: ${incompleteTasks.length}`);
 ```
 
@@ -1304,12 +1313,12 @@ console.log(`Incomplete tasks: ${incompleteTasks.length}`);
 // Always use ISO 8601 date format (YYYY-MM-DD)
 // The service handles timezone-aware timestamps internally
 
-const today = new Date().toISOString().split('T')[0];  // Gets YYYY-MM-DD
+const today = new Date().toISOString().split("T")[0]; // Gets YYYY-MM-DD
 await projectsService.logTimeEntry({
   projectId,
   userId,
   hours: 8,
-  date: today  // ISO date format
+  date: today, // ISO date format
 });
 ```
 

@@ -65,7 +65,10 @@ export class FaxProcessor {
     if (this.pendingQueue.length < this.maxQueueSize) {
       this.pendingQueue.push(fax);
     } else {
-      logger.warn({ faxId: fax.id }, "Pending queue full; fax enqueued without backpressure handling");
+      logger.warn(
+        { faxId: fax.id },
+        "Pending queue full; fax enqueued without backpressure handling",
+      );
     }
 
     logger.info(

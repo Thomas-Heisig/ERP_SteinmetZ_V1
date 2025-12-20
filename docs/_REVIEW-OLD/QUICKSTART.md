@@ -268,41 +268,49 @@ tail -f logs/app.log
 
 ## 🔗 Wichtige Links
 
-| Ressource | Link |
-|-----------|------|
-| **Backend-Architektur** | `docs/BACKEND_ARCHITECTURE.md` |
-| **Frontend-Integration** | `docs/FRONTEND_INTEGRATION.md` |
-| **Database Standards** | `docs/DATABASE_MIGRATION_STANDARDS.md` |
-| **Error Codes** | `apps/backend/src/types/errors.ts` |
-| **Services** | `apps/backend/src/service/` |
-| **Types** | `apps/backend/src/types/` |
+| Ressource                | Link                                   |
+| ------------------------ | -------------------------------------- |
+| **Backend-Architektur**  | `docs/BACKEND_ARCHITECTURE.md`         |
+| **Frontend-Integration** | `docs/FRONTEND_INTEGRATION.md`         |
+| **Database Standards**   | `docs/DATABASE_MIGRATION_STANDARDS.md` |
+| **Error Codes**          | `apps/backend/src/types/errors.ts`     |
+| **Services**             | `apps/backend/src/service/`            |
+| **Types**                | `apps/backend/src/types/`              |
 
 ---
 
 ## ❓ FAQs
 
 ### F: Wie starte ich den Server?
+
 **A:** `npm run dev` im `apps/backend` Verzeichnis.
 
 ### F: Wie resette ich die Datenbank?
+
 **A:** `npm run db:reset` führt die Migration auf einer neuen Datenbank durch.
 
 ### F: Welchen Editor soll ich verwenden?
+
 **A:** VSCode wird empfohlen mit Extensions für TypeScript, Prettier und ESLint.
 
 ### F: Wie kann ich die API testen?
+
 **A:** Verwenden Sie REST Client Extension oder curl für Terminal-Tests.
 
 ### F: Wo sind die Migrations?
+
 **A:** `apps/backend/src/migrations/` - Alle SQL-Dateien müssen SQLite-kompatibel sein.
 
 ### F: Wie füge ich neue Types hinzu?
+
 **A:** In `apps/backend/src/types/` neue Datei erstellen und in `index.ts` exportieren.
 
 ### F: Wie erstelle ich einen neuen Service?
+
 **A:** `apps/backend/src/service/MyService.ts` erstellen, in `index.ts` exportieren.
 
 ### F: Wie handelt man Errors?
+
 **A:** Custom Error Classes aus `types/errors.ts` verwenden (z.B. `throw new NotFoundError(...)`).
 
 ---

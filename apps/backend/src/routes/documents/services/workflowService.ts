@@ -55,7 +55,7 @@ export class WorkflowService {
   async startWorkflow(
     documentId: string,
     workflowData: CreateWorkflowDto,
-    userId: string
+    userId: string,
   ): Promise<Workflow> {
     // Workflow erstellen
     const stmt = this.db.prepare(`
@@ -68,7 +68,7 @@ export class WorkflowService {
       workflowData.type,
       userId,
       workflowData.deadline || null,
-      workflowData.description || null
+      workflowData.description || null,
     );
 
     const workflowId = this.getLastInsertId();
@@ -85,7 +85,7 @@ export class WorkflowService {
 
     // Workflow-Status aktualisieren
     const updateStmt = this.db.prepare(
-      "UPDATE workflows SET status = 'in_progress' WHERE id = ?"
+      "UPDATE workflows SET status = 'in_progress' WHERE id = ?",
     );
     updateStmt.run(workflowId);
 
@@ -113,7 +113,7 @@ export class WorkflowService {
    */
   async getDocumentWorkflows(documentId: string): Promise<Workflow[]> {
     const stmt = this.db.prepare(
-      "SELECT * FROM workflows WHERE document_id = ? ORDER BY created_at DESC"
+      "SELECT * FROM workflows WHERE document_id = ? ORDER BY created_at DESC",
     );
     return stmt.all(documentId) as Workflow[];
   }
@@ -123,7 +123,7 @@ export class WorkflowService {
    */
   async getWorkflowSteps(workflowId: string): Promise<WorkflowStep[]> {
     const stmt = this.db.prepare(
-      "SELECT * FROM workflow_steps WHERE workflow_id = ? ORDER BY step_number"
+      "SELECT * FROM workflow_steps WHERE workflow_id = ? ORDER BY step_number",
     );
     return stmt.all(workflowId) as WorkflowStep[];
   }
@@ -135,7 +135,7 @@ export class WorkflowService {
     workflowId: string,
     stepNumber: number,
     userId: string,
-    comment?: string
+    comment?: string,
   ): Promise<void> {
     const workflow = await this.getWorkflowById(workflowId);
 
@@ -188,7 +188,7 @@ export class WorkflowService {
 
       // Dokument-Status aktualisieren
       const docStmt = this.db.prepare(
-        "UPDATE documents SET status = 'approved' WHERE id = ?"
+        "UPDATE documents SET status = 'approved' WHERE id = ?",
       );
       docStmt.run(workflow.document_id);
     }
@@ -203,7 +203,7 @@ export class WorkflowService {
     workflowId: string,
     stepNumber: number,
     userId: string,
-    reason: string
+    reason: string,
   ): Promise<void> {
     const workflow = await this.getWorkflowById(workflowId);
 
@@ -246,7 +246,7 @@ export class WorkflowService {
 
     // Dokument-Status aktualisieren
     const docStmt = this.db.prepare(
-      "UPDATE documents SET status = 'in_review' WHERE id = ?"
+      "UPDATE documents SET status = 'in_review' WHERE id = ?",
     );
     docStmt.run(workflow.document_id);
 
@@ -258,7 +258,7 @@ export class WorkflowService {
    */
   getPendingWorkflowsCount(): number {
     const stmt = this.db.prepare(
-      "SELECT COUNT(*) as count FROM workflows WHERE status IN ('pending', 'in_progress')"
+      "SELECT COUNT(*) as count FROM workflows WHERE status IN ('pending', 'in_progress')",
     );
     const result = stmt.get() as { count: number };
     return result.count;

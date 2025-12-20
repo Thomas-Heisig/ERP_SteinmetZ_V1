@@ -1,9 +1,9 @@
 /**
  * API Key Settings Service
- * 
+ *
  * Manages API keys for various AI providers in the QuickChat system.
  * Keys are stored securely and validated before use.
- * 
+ *
  * @module services/apiKeyService
  */
 
@@ -50,15 +50,15 @@ export interface APIKeySettings {
  */
 function encrypt(text: string): string {
   if (!text) return "";
-  
+
   try {
     const iv = crypto.randomBytes(16);
     const key = crypto.scryptSync(ENCRYPTION_KEY, "salt", 32);
     const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
-    
+
     let encrypted = cipher.update(text, "utf8", "hex");
     encrypted += cipher.final("hex");
-    
+
     return `${iv.toString("hex")}:${encrypted}`;
   } catch (error) {
     logger.error({ error }, "Failed to encrypt value");
@@ -71,18 +71,18 @@ function encrypt(text: string): string {
  */
 function decrypt(encryptedText: string): string {
   if (!encryptedText) return "";
-  
+
   try {
     const [ivHex, encrypted] = encryptedText.split(":");
     if (!ivHex || !encrypted) return encryptedText; // Not encrypted
-    
+
     const iv = Buffer.from(ivHex, "hex");
     const key = crypto.scryptSync(ENCRYPTION_KEY, "salt", 32);
     const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
-    
+
     let decrypted = decipher.update(encrypted, "hex", "utf8");
     decrypted += decipher.final("utf8");
-    
+
     return decrypted;
   } catch (error) {
     logger.error({ error }, "Failed to decrypt value");
@@ -99,12 +99,12 @@ export async function loadAPIKeys(): Promise<APIKeySettings> {
     warnIfDefaultKey();
     const data = await fs.readFile(SETTINGS_FILE, "utf8");
     const encrypted = JSON.parse(data) as APIKeySettings;
-    
+
     // Decrypt all keys
     const decrypted: APIKeySettings = {
       lastUpdated: encrypted.lastUpdated,
     };
-    
+
     if (encrypted.openai) {
       decrypted.openai = decrypt(encrypted.openai);
     }
@@ -127,7 +127,7 @@ export async function loadAPIKeys(): Promise<APIKeySettings> {
         decrypted.custom[key] = decrypt(value);
       }
     }
-    
+
     return decrypted;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
@@ -137,7 +137,7 @@ export async function loadAPIKeys(): Promise<APIKeySettings> {
       await fs.writeFile(SETTINGS_FILE, JSON.stringify(empty, null, 2), "utf8");
       return empty;
     }
-    
+
     logger.error({ error }, "Failed to load API keys");
     return {};
   }
@@ -151,12 +151,12 @@ export async function saveAPIKeys(settings: APIKeySettings): Promise<void> {
     // Ensure config directory exists
     await ensureConfigDir();
     warnIfDefaultKey();
-    
+
     // Encrypt all keys
     const encrypted: APIKeySettings = {
       lastUpdated: new Date().toISOString(),
     };
-    
+
     if (settings.openai) {
       encrypted.openai = encrypt(settings.openai);
     }
@@ -179,13 +179,13 @@ export async function saveAPIKeys(settings: APIKeySettings): Promise<void> {
         encrypted.custom[key] = encrypt(value);
       }
     }
-    
+
     await fs.writeFile(
       SETTINGS_FILE,
       JSON.stringify(encrypted, null, 2),
-      "utf8"
+      "utf8",
     );
-    
+
     logger.info("API keys saved successfully");
   } catch (error) {
     logger.error({ error }, "Failed to save API keys");
@@ -198,10 +198,10 @@ export async function saveAPIKeys(settings: APIKeySettings): Promise<void> {
  */
 export async function updateAPIKey(
   provider: string,
-  value: string | { apiKey: string; endpoint: string; deployment?: string }
+  value: string | { apiKey: string; endpoint: string; deployment?: string },
 ): Promise<void> {
   const settings = await loadAPIKeys();
-  
+
   switch (provider) {
     case "openai":
       settings.openai = value as string;
@@ -210,7 +210,11 @@ export async function updateAPIKey(
       settings.anthropic = value as string;
       break;
     case "azure":
-      settings.azure = value as { apiKey: string; endpoint: string; deployment?: string };
+      settings.azure = value as {
+        apiKey: string;
+        endpoint: string;
+        deployment?: string;
+      };
       break;
     case "huggingface":
       settings.huggingface = value as string;
@@ -219,7 +223,7 @@ export async function updateAPIKey(
       if (!settings.custom) settings.custom = {};
       settings.custom[provider] = value as string;
   }
-  
+
   await saveAPIKeys(settings);
 }
 
@@ -228,7 +232,7 @@ export async function updateAPIKey(
  */
 export async function deleteAPIKey(provider: string): Promise<void> {
   const settings = await loadAPIKeys();
-  
+
   switch (provider) {
     case "openai":
       delete settings.openai;
@@ -247,7 +251,7 @@ export async function deleteAPIKey(provider: string): Promise<void> {
         delete settings.custom[provider];
       }
   }
-  
+
   await saveAPIKeys(settings);
 }
 
@@ -256,7 +260,7 @@ export async function deleteAPIKey(provider: string): Promise<void> {
  */
 export function validateAPIKey(provider: string, key: string): boolean {
   if (!key || key.trim().length === 0) return false;
-  
+
   switch (provider) {
     case "openai":
       // OpenAI keys start with "sk-"
@@ -282,7 +286,7 @@ export function validateAPIKey(provider: string, key: string): boolean {
 export async function getSanitizedAPIKeys(): Promise<Record<string, string>> {
   const settings = await loadAPIKeys();
   const sanitized: Record<string, string> = {};
-  
+
   if (settings.openai) {
     sanitized.openai = `sk-...${settings.openai.slice(-4)}`;
   }
@@ -300,6 +304,6 @@ export async function getSanitizedAPIKeys(): Promise<Record<string, string>> {
       sanitized[key] = `***...${value.slice(-4)}`;
     }
   }
-  
+
   return sanitized;
 }

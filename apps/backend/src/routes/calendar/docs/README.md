@@ -37,7 +37,7 @@ interface CalendarEvent {
   recurrenceEndDate?: string; // When recurrence ends
   reminders: number[]; // Minutes before event
   attendees: string[]; // Attendee IDs/emails
-  
+
   // ✅ NEW: Extended properties (v0.2.0)
   status: "confirmed" | "tentative" | "cancelled"; // Event status
   priority: "low" | "normal" | "high" | "urgent"; // Priority level
@@ -45,7 +45,7 @@ interface CalendarEvent {
   isPrivate: boolean; // Privacy flag
   url?: string; // Meeting URL (Zoom, Teams, etc.)
   organizer?: string; // Organizer email/ID
-  
+
   createdBy: string; // Creator ID
   createdAt: string; // Creation timestamp
   updatedAt: string; // Last update timestamp
@@ -250,7 +250,7 @@ Perform batch operations on multiple events.
 {
   success: true;
   data: {
-    changes: number;  // Number of affected events
+    changes: number; // Number of affected events
   }
 }
 ```
@@ -298,16 +298,16 @@ Get calendar statistics.
   success: true;
   data: {
     summary: {
-      total: number;           // Total events
-      upcoming: number;        // Future events
-      allDay: number;          // All-day events
-      recurring: number;       // Recurring events
-      withAttendees: number;   // Events with attendees
-      confirmed: number;       // Confirmed events
-      tentative: number;       // Tentative events
-      cancelled: number;       // Cancelled events
-      highPriority: number;    // High/urgent priority
-    };
+      total: number; // Total events
+      upcoming: number; // Future events
+      allDay: number; // All-day events
+      recurring: number; // Recurring events
+      withAttendees: number; // Events with attendees
+      confirmed: number; // Confirmed events
+      tentative: number; // Tentative events
+      cancelled: number; // Cancelled events
+      highPriority: number; // High/urgent priority
+    }
     byCategory: Array<{ category: string; count: number }>;
     byStatus: Array<{ status: string; count: number }>;
   }
@@ -375,7 +375,7 @@ CREATE TABLE calendar_events (
   recurrence_end_date TEXT,
   reminders_json TEXT DEFAULT '[]',
   attendees_json TEXT DEFAULT '[]',
-  
+
   -- ✅ NEW: Extended fields (v0.2.0)
   status TEXT DEFAULT 'confirmed',      -- confirmed | tentative | cancelled
   priority TEXT DEFAULT 'normal',       -- low | normal | high | urgent
@@ -383,7 +383,7 @@ CREATE TABLE calendar_events (
   is_private INTEGER DEFAULT 0,         -- Boolean: 0=public, 1=private
   url TEXT,                             -- Meeting URL
   organizer TEXT,                       -- Organizer email/ID
-  
+
   created_by TEXT,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
@@ -550,8 +550,8 @@ export interface CalendarEvent {
   title: string;
   description: string;
   location?: string;
-  start: string;  // ISO datetime
-  end: string;    // ISO datetime
+  start: string; // ISO datetime
+  end: string; // ISO datetime
   allDay: boolean;
   color?: string;
   category?: string;
@@ -570,17 +570,23 @@ export interface CalendarEvent {
   updatedAt: string;
 }
 
-export type RecurrenceType = "none" | "daily" | "weekly" | "biweekly" | "monthly" | "yearly";
+export type RecurrenceType =
+  | "none"
+  | "daily"
+  | "weekly"
+  | "biweekly"
+  | "monthly"
+  | "yearly";
 ```
 
 ### API Client
 
 ```typescript
 // frontend/src/api/calendar.ts
-import axios from 'axios';
-import type { CalendarEvent } from '../types/calendar';
+import axios from "axios";
+import type { CalendarEvent } from "../types/calendar";
 
-const API_BASE = '/api/calendar';
+const API_BASE = "/api/calendar";
 
 export const calendarAPI = {
   // Get events
@@ -592,27 +598,27 @@ export const calendarAPI = {
     status?: string;
     priority?: string;
   }) => {
-    const { data } = await axios.get<{ success: boolean; data: CalendarEvent[] }>(
-      `${API_BASE}/events`,
-      { params }
-    );
+    const { data } = await axios.get<{
+      success: boolean;
+      data: CalendarEvent[];
+    }>(`${API_BASE}/events`, { params });
     return data.data;
   },
 
   // Get single event
   getEvent: async (id: string) => {
     const { data } = await axios.get<{ success: boolean; data: CalendarEvent }>(
-      `${API_BASE}/events/${id}`
+      `${API_BASE}/events/${id}`,
     );
     return data.data;
   },
 
   // Create event
   createEvent: async (event: Partial<CalendarEvent>) => {
-    const { data } = await axios.post<{ success: boolean; data: CalendarEvent }>(
-      `${API_BASE}/events`,
-      event
-    );
+    const { data } = await axios.post<{
+      success: boolean;
+      data: CalendarEvent;
+    }>(`${API_BASE}/events`, event);
     return data.data;
   },
 
@@ -620,7 +626,7 @@ export const calendarAPI = {
   updateEvent: async (id: string, updates: Partial<CalendarEvent>) => {
     const { data } = await axios.put<{ success: boolean; data: CalendarEvent }>(
       `${API_BASE}/events/${id}`,
-      updates
+      updates,
     );
     return data.data;
   },
@@ -637,37 +643,41 @@ export const calendarAPI = {
       data: CalendarEvent[];
       conflicts: boolean;
     }>(`${API_BASE}/conflicts`, {
-      params: { start, end, excludeId }
+      params: { start, end, excludeId },
     });
     return data;
   },
 
   // Batch operations
   batchOperation: async (
-    action: 'delete' | 'duplicate' | 'updateStatus' | 'updatePriority',
+    action: "delete" | "duplicate" | "updateStatus" | "updatePriority",
     eventIds: string[],
-    data?: { status?: string; priority?: string }
+    data?: { status?: string; priority?: string },
   ) => {
-    const response = await axios.post<{ success: boolean; data: { changes: number } }>(
-      `${API_BASE}/events/batch`,
-      { action, eventIds, data }
-    );
+    const response = await axios.post<{
+      success: boolean;
+      data: { changes: number };
+    }>(`${API_BASE}/events/batch`, { action, eventIds, data });
     return response.data.data.changes;
   },
 
   // Get statistics
   getStats: async (start?: string, end?: string) => {
     const { data } = await axios.get(`${API_BASE}/stats`, {
-      params: { start, end }
+      params: { start, end },
     });
     return data.data;
   },
 
   // Export
-  exportEvents: async (format: 'ics' | 'csv' | 'json', start?: string, end?: string) => {
+  exportEvents: async (
+    format: "ics" | "csv" | "json",
+    start?: string,
+    end?: string,
+  ) => {
     const response = await axios.get(`${API_BASE}/export`, {
       params: { format, start, end },
-      responseType: 'blob'
+      responseType: "blob",
     });
     return response.data;
   },
@@ -675,10 +685,10 @@ export const calendarAPI = {
   // Import
   importEvents: async (icsContent: string) => {
     const { data } = await axios.post(`${API_BASE}/import`, {
-      ics: icsContent
+      ics: icsContent,
     });
     return data.data;
-  }
+  },
 };
 ```
 
@@ -686,9 +696,9 @@ export const calendarAPI = {
 
 ```typescript
 // frontend/src/hooks/useCalendar.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { calendarAPI } from '../api/calendar';
-import type { CalendarEvent } from '../types/calendar';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { calendarAPI } from "../api/calendar";
+import type { CalendarEvent } from "../types/calendar";
 
 export function useCalendarEvents(params?: {
   start?: string;
@@ -698,48 +708,58 @@ export function useCalendarEvents(params?: {
   priority?: string;
 }) {
   return useQuery({
-    queryKey: ['calendar-events', params],
+    queryKey: ["calendar-events", params],
     queryFn: () => calendarAPI.getEvents(params),
   });
 }
 
 export function useCreateEvent() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (event: Partial<CalendarEvent>) => calendarAPI.createEvent(event),
+    mutationFn: (event: Partial<CalendarEvent>) =>
+      calendarAPI.createEvent(event),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-events'] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-events"] });
     },
   });
 }
 
 export function useUpdateEvent() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<CalendarEvent> }) =>
-      calendarAPI.updateEvent(id, updates),
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: Partial<CalendarEvent>;
+    }) => calendarAPI.updateEvent(id, updates),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-events'] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-events"] });
     },
   });
 }
 
 export function useDeleteEvent() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => calendarAPI.deleteEvent(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-events'] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-events"] });
     },
   });
 }
 
 export function useCheckConflicts() {
   return useMutation({
-    mutationFn: ({ start, end, excludeId }: {
+    mutationFn: ({
+      start,
+      end,
+      excludeId,
+    }: {
       start: string;
       end: string;
       excludeId?: string;
@@ -749,22 +769,26 @@ export function useCheckConflicts() {
 
 export function useBatchOperation() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ action, eventIds, data }: {
-      action: 'delete' | 'duplicate' | 'updateStatus' | 'updatePriority';
+    mutationFn: ({
+      action,
+      eventIds,
+      data,
+    }: {
+      action: "delete" | "duplicate" | "updateStatus" | "updatePriority";
       eventIds: string[];
       data?: { status?: string; priority?: string };
     }) => calendarAPI.batchOperation(action, eventIds, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-events'] });
+      queryClient.invalidateQueries({ queryKey: ["calendar-events"] });
     },
   });
 }
 
 export function useCalendarStats(start?: string, end?: string) {
   return useQuery({
-    queryKey: ['calendar-stats', start, end],
+    queryKey: ["calendar-stats", start, end],
     queryFn: () => calendarAPI.getStats(start, end),
   });
 }
@@ -776,8 +800,8 @@ export function useCalendarStats(start?: string, end?: string) {
 
 ```tsx
 // frontend/src/components/Calendar/EventList.tsx
-import { useCalendarEvents } from '../../hooks/useCalendar';
-import { EventCard } from './EventCard';
+import { useCalendarEvents } from "../../hooks/useCalendar";
+import { EventCard } from "./EventCard";
 
 export function EventList() {
   const { data: events, isLoading } = useCalendarEvents({
@@ -790,7 +814,7 @@ export function EventList() {
 
   return (
     <div className="space-y-4">
-      {events?.map(event => (
+      {events?.map((event) => (
         <EventCard key={event.id} event={event} />
       ))}
     </div>
@@ -802,9 +826,9 @@ export function EventList() {
 
 ```tsx
 // frontend/src/components/Calendar/CreateEventForm.tsx
-import { useForm } from 'react-hook-form';
-import { useCreateEvent } from '../../hooks/useCalendar';
-import type { CalendarEvent } from '../../types/calendar';
+import { useForm } from "react-hook-form";
+import { useCreateEvent } from "../../hooks/useCalendar";
+import type { CalendarEvent } from "../../types/calendar";
 
 export function CreateEventForm() {
   const { register, handleSubmit } = useForm<Partial<CalendarEvent>>();
@@ -813,39 +837,39 @@ export function CreateEventForm() {
   const onSubmit = (data: Partial<CalendarEvent>) => {
     createEvent.mutate({
       ...data,
-      createdBy: 'current-user-id',
+      createdBy: "current-user-id",
     });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('title', { required: true })} placeholder="Title" />
-      <textarea {...register('description')} placeholder="Description" />
-      <input {...register('location')} placeholder="Location" />
-      
-      <input type="datetime-local" {...register('start', { required: true })} />
-      <input type="datetime-local" {...register('end', { required: true })} />
-      
-      <select {...register('status')}>
+      <input {...register("title", { required: true })} placeholder="Title" />
+      <textarea {...register("description")} placeholder="Description" />
+      <input {...register("location")} placeholder="Location" />
+
+      <input type="datetime-local" {...register("start", { required: true })} />
+      <input type="datetime-local" {...register("end", { required: true })} />
+
+      <select {...register("status")}>
         <option value="confirmed">Confirmed</option>
         <option value="tentative">Tentative</option>
         <option value="cancelled">Cancelled</option>
       </select>
-      
-      <select {...register('priority')}>
+
+      <select {...register("priority")}>
         <option value="low">Low</option>
         <option value="normal">Normal</option>
         <option value="high">High</option>
         <option value="urgent">Urgent</option>
       </select>
-      
-      <input {...register('url')} placeholder="Meeting URL" />
-      
+
+      <input {...register("url")} placeholder="Meeting URL" />
+
       <label>
-        <input type="checkbox" {...register('isPrivate')} />
+        <input type="checkbox" {...register("isPrivate")} />
         Private Event
       </label>
-      
+
       <button type="submit" disabled={createEvent.isPending}>
         Create Event
       </button>
@@ -858,24 +882,28 @@ export function CreateEventForm() {
 
 ```tsx
 // frontend/src/components/Calendar/ConflictChecker.tsx
-import { useCheckConflicts } from '../../hooks/useCalendar';
-import { AlertCircle } from 'lucide-react';
+import { useCheckConflicts } from "../../hooks/useCalendar";
+import { AlertCircle } from "lucide-react";
 
-export function ConflictChecker({ start, end, excludeId }: {
+export function ConflictChecker({
+  start,
+  end,
+  excludeId,
+}: {
   start: string;
   end: string;
   excludeId?: string;
 }) {
   const checkConflicts = useCheckConflicts();
-  
+
   useEffect(() => {
     if (start && end) {
       checkConflicts.mutate({ start, end, excludeId });
     }
   }, [start, end]);
-  
+
   if (!checkConflicts.data?.conflicts) return null;
-  
+
   return (
     <div className="bg-yellow-50 border border-yellow-200 p-4 rounded">
       <div className="flex items-center gap-2">
@@ -894,22 +922,26 @@ export function ConflictChecker({ start, end, excludeId }: {
 
 ```tsx
 // frontend/src/components/Calendar/StatsWidget.tsx
-import { useCalendarStats } from '../../hooks/useCalendar';
+import { useCalendarStats } from "../../hooks/useCalendar";
 
 export function StatsWidget() {
   const { data: stats } = useCalendarStats();
-  
+
   if (!stats) return null;
-  
+
   return (
     <div className="grid grid-cols-4 gap-4">
       <StatCard title="Total Events" value={stats.summary.total} />
       <StatCard title="Upcoming" value={stats.summary.upcoming} />
-      <StatCard title="High Priority" value={stats.summary.highPriority} color="red" />
-      <StatCard 
-        title="Confirmed" 
-        value={stats.summary.confirmed} 
-        color="green" 
+      <StatCard
+        title="High Priority"
+        value={stats.summary.highPriority}
+        color="red"
+      />
+      <StatCard
+        title="Confirmed"
+        value={stats.summary.confirmed}
+        color="green"
       />
     </div>
   );

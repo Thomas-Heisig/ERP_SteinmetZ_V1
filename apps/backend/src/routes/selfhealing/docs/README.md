@@ -26,7 +26,7 @@ Das Self-Healing System überwacht kontinuierlich die Datenbankintegrität, erke
 Der Health Monitor führt folgende Checks durch:
 
 | Check | Beschreibung | Status |
-|-------|--------------|--------|
+| ----- | ------------ | ------ |
 
 | **Connection** | Datenbankverbindung | pass/fail |
 | **Schema Integrity** | Prüft, ob alle erforderlichen Tabellen existieren | pass/fail |
@@ -38,7 +38,7 @@ Der Health Monitor führt folgende Checks durch:
 ### API
 
 ```typescript
-import healthMonitor from './DatabaseHealthMonitor.js';
+import healthMonitor from "./DatabaseHealthMonitor.js";
 
 // Health Check durchführen
 const result = await healthMonitor.runHealthChecks();
@@ -75,7 +75,12 @@ interface HealthCheck {
 }
 
 interface IntegrityIssue {
-  type: "orphan_edge" | "missing_reference" | "duplicate" | "invalid_data" | "constraint_violation";
+  type:
+    | "orphan_edge"
+    | "missing_reference"
+    | "duplicate"
+    | "invalid_data"
+    | "constraint_violation";
   table: string;
   recordId?: string;
   description: string;
@@ -139,8 +144,8 @@ Automatische Reparatur von erkannten Problemen mit vollständiger Rollback-Fähi
 ### API-
 
 ```typescript
-import { AutoRepair } from './AutoRepair.js';
-import healthMonitor from './DatabaseHealthMonitor.js';
+import { AutoRepair } from "./AutoRepair.js";
+import healthMonitor from "./DatabaseHealthMonitor.js";
 
 const autoRepair = new AutoRepair(healthMonitor);
 
@@ -196,7 +201,7 @@ Protokolliert alle Health-Checks und Reparaturen in der Datenbank.
 ### Report-Typen
 
 | Typ | Beschreibung | Ausführung |
-|-----|--------------|------------|
+| --- | ------------ | ---------- |
 
 | `nightly` | Nächtlicher Health-Check | 03:00 Uhr |
 | `weekly` | Wöchentliche Tiefenanalyse | Sonntag 03:00 Uhr |
@@ -205,17 +210,17 @@ Protokolliert alle Health-Checks und Reparaturen in der Datenbank.
 ### APIs
 
 ```typescript
-import { HealingReport } from './HealingReport.js';
+import { HealingReport } from "./HealingReport.js";
 
 const report = new HealingReport();
 
 // Report erstellen
-await report.createReport('nightly', healthResult);
+await report.createReport("nightly", healthResult);
 
 // Report mit zusätzlichen Daten
-await report.createReport('weekly', healthResult, {
+await report.createReport("weekly", healthResult, {
   issues: integrityIssues,
-  repairSession: session
+  repairSession: session,
 });
 
 // Reports abrufen
@@ -235,8 +240,8 @@ const deleted = await report.deleteOldReports(90);
 interface HealingReportEntry {
   id: string;
   timestamp: Date;
-  type: 'nightly' | 'weekly' | 'manual';
-  healthStatus: 'healthy' | 'degraded' | 'unhealthy';
+  type: "nightly" | "weekly" | "manual";
+  healthStatus: "healthy" | "degraded" | "unhealthy";
   summary: string;
   checks: HealthCheck[];
   issues?: IntegrityIssue[];
@@ -271,7 +276,7 @@ Zeitgesteuerte Ausführung von Health-Checks und Auto-Repair.
 ### APIs-
 
 ```typescript
-import { SelfHealingScheduler } from './SelfHealingScheduler.js';
+import { SelfHealingScheduler } from "./SelfHealingScheduler.js";
 
 const scheduler = new SelfHealingScheduler(healthMonitor, autoRepair, report);
 
@@ -280,8 +285,8 @@ scheduler.start();
 
 // Konfiguration aktualisieren
 scheduler.updateConfig({
-  nightlyCheckHour: 2,              // Auf 02:00 Uhr ändern
-  autoRepairEnabled: false          // Auto-Repair deaktivieren
+  nightlyCheckHour: 2, // Auf 02:00 Uhr ändern
+  autoRepairEnabled: false, // Auto-Repair deaktivieren
 });
 
 // Manuelle Checks
@@ -321,43 +326,43 @@ interface ScheduledTask {
 ### 1. Einfacher Health-Check
 
 ```typescript
-import healthMonitor from './DatabaseHealthMonitor.js';
+import healthMonitor from "./DatabaseHealthMonitor.js";
 
 const result = await healthMonitor.runHealthChecks();
 
-if (result.status === 'unhealthy') {
-  console.error('Datenbank hat kritische Probleme!');
-  console.log(result.checks.filter(c => c.status === 'fail'));
+if (result.status === "unhealthy") {
+  console.error("Datenbank hat kritische Probleme!");
+  console.log(result.checks.filter((c) => c.status === "fail"));
 }
 ```
 
 ### 2. Auto-Repair mit Rollback
 
 ```typescript
-import { AutoRepair } from './AutoRepair.js';
-import healthMonitor from './DatabaseHealthMonitor.js';
+import { AutoRepair } from "./AutoRepair.js";
+import healthMonitor from "./DatabaseHealthMonitor.js";
 
 const autoRepair = new AutoRepair(healthMonitor);
 
 // Reparatur durchführen
 const session = await autoRepair.startRepairSession(false);
 
-if (session.results.some(r => !r.success)) {
-  console.error('Einige Reparaturen fehlgeschlagen!');
-  
+if (session.results.some((r) => !r.success)) {
+  console.error("Einige Reparaturen fehlgeschlagen!");
+
   // Rollback durchführen
   await autoRepair.rollbackSession(session.id);
-  console.log('Rollback erfolgreich');
+  console.log("Rollback erfolgreich");
 }
 ```
 
 ### 3. Kompletter Self-Healing Flow
 
 ```typescript
-import healthMonitor from './DatabaseHealthMonitor.js';
-import { AutoRepair } from './AutoRepair.js';
-import { HealingReport } from './HealingReport.js';
-import { SelfHealingScheduler } from './SelfHealingScheduler.js';
+import healthMonitor from "./DatabaseHealthMonitor.js";
+import { AutoRepair } from "./AutoRepair.js";
+import { HealingReport } from "./HealingReport.js";
+import { SelfHealingScheduler } from "./SelfHealingScheduler.js";
 
 // Komponenten initialisieren
 const autoRepair = new AutoRepair(healthMonitor);
@@ -375,16 +380,16 @@ scheduler.start();
 ### 4. Dry-Run (Test-Modus)
 
 ```typescript
-import { AutoRepair } from './AutoRepair.js';
-import healthMonitor from './DatabaseHealthMonitor.js';
+import { AutoRepair } from "./AutoRepair.js";
+import healthMonitor from "./DatabaseHealthMonitor.js";
 
 const autoRepair = new AutoRepair(healthMonitor);
 
 // Dry-Run: Keine echten Änderungen
 const session = await autoRepair.startRepairSession(true);
 
-console.log('Würde folgende Änderungen durchführen:');
-session.results.forEach(r => {
+console.log("Würde folgende Änderungen durchführen:");
+session.results.forEach((r) => {
   console.log(`- ${r.action}`);
 });
 ```
@@ -568,19 +573,19 @@ try {
 ```typescript
 try {
   const session = await autoRepair.startRepairSession(false);
-  
-  if (session.status === 'failed') {
-    console.error('Repair session failed');
+
+  if (session.status === "failed") {
+    console.error("Repair session failed");
   }
-  
+
   // Einzelne Reparaturen prüfen
-  session.results.forEach(r => {
+  session.results.forEach((r) => {
     if (!r.success) {
       console.error(`Repair failed: ${r.error}`);
     }
   });
 } catch (error) {
-  console.error('Critical error during repair:', error);
+  console.error("Critical error during repair:", error);
 }
 ```
 
@@ -591,7 +596,7 @@ try {
 ### Health Check Performance
 
 | Check | Durchschnitt | Maximal |
-|-------|------------- |---------|
+| ----- | ------------ | ------- |
 
 | Connection | 5ms | 15ms |
 | Schema Integrity | 10ms | 30ms |
@@ -626,13 +631,11 @@ Alle Queries verwenden Prepared Statements:
 // ✅ Sicher
 await db.run(
   "DELETE FROM functions_edges WHERE parent_id = ? AND child_id = ?",
-  [parentId, childId]
+  [parentId, childId],
 );
 
 // ❌ Unsicher (wird nicht verwendet)
-await db.run(
-  `DELETE FROM functions_edges WHERE parent_id = '${parentId}'`
-);
+await db.run(`DELETE FROM functions_edges WHERE parent_id = '${parentId}'`);
 ```
 
 ---
@@ -668,7 +671,7 @@ await db.run(
 // Check ob bereits läuft
 const isRunning = healthMonitor.getIsRunning();
 if (isRunning) {
-  console.log('Health check already running, wait...');
+  console.log("Health check already running, wait...");
 }
 ```
 
@@ -678,11 +681,11 @@ if (isRunning) {
 
 ```typescript
 // Rollback-Daten prüfen
-session.results.forEach(r => {
+session.results.forEach((r) => {
   if (r.rollbackAvailable) {
-    console.log('Rollback data:', r.rollbackData);
+    console.log("Rollback data:", r.rollbackData);
   } else {
-    console.warn('No rollback data available');
+    console.warn("No rollback data available");
   }
 });
 ```
@@ -694,12 +697,12 @@ session.results.forEach(r => {
 ```typescript
 // Status prüfen
 const status = scheduler.getStatus();
-console.log('Scheduler running:', status.isRunning);
-console.log('Config:', status.config);
+console.log("Scheduler running:", status.isRunning);
+console.log("Config:", status.config);
 
 // Manuellen Check durchführen
 const task = await scheduler.runManualCheck();
-console.log('Manual check result:', task.result);
+console.log("Manual check result:", task.result);
 ```
 
 ---
@@ -718,7 +721,10 @@ scheduler.start();
 ```typescript
 // Immer erst Dry-Run testen
 const dryRun = await autoRepair.startRepairSession(true);
-console.log('Would perform:', dryRun.results.map(r => r.action));
+console.log(
+  "Would perform:",
+  dryRun.results.map((r) => r.action),
+);
 
 // Dann echte Reparatur
 const realRun = await autoRepair.startRepairSession(false);
@@ -739,10 +745,10 @@ if (problemDetected) {
 
 ```typescript
 const reports = await healingReport.getReports(10);
-const unhealthy = reports.filter(r => r.healthStatus === 'unhealthy');
+const unhealthy = reports.filter((r) => r.healthStatus === "unhealthy");
 
 if (unhealthy.length > 3) {
-  console.error('Viele unhealthy Reports - System prüfen!');
+  console.error("Viele unhealthy Reports - System prüfen!");
 }
 ```
 

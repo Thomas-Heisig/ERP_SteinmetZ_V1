@@ -312,7 +312,19 @@ class MetricsService {
   getMetricsJSON(): {
     counters: Record<string, number>;
     gauges: Record<string, number>;
-    histograms: Record<string, { count: number; sum: number; min: number; max: number; avg: number; p50: number; p95: number; p99: number } | null>;
+    histograms: Record<
+      string,
+      {
+        count: number;
+        sum: number;
+        min: number;
+        max: number;
+        avg: number;
+        p50: number;
+        p95: number;
+        p99: number;
+      } | null
+    >;
   } {
     const counters: Record<string, number> = {};
     for (const [name, data] of this.counters.entries()) {
@@ -324,7 +336,19 @@ class MetricsService {
       gauges[name] = value;
     }
 
-    const histograms: Record<string, { count: number; sum: number; min: number; max: number; avg: number; p50: number; p95: number; p99: number } | null> = {};
+    const histograms: Record<
+      string,
+      {
+        count: number;
+        sum: number;
+        min: number;
+        max: number;
+        avg: number;
+        p50: number;
+        p95: number;
+        p99: number;
+      } | null
+    > = {};
     for (const [name] of this.histograms.entries()) {
       histograms[name] = this.getHistogramStats(name);
     }

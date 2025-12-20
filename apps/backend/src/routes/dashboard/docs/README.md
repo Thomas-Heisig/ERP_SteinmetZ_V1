@@ -257,11 +257,7 @@ Get last context log entries.
 
 ```json
 {
-  "context": [
-    "User: Request 1",
-    "AI: Response 1",
-    "System: Event 1"
-  ]
+  "context": ["User: Request 1", "AI: Response 1", "System: Event 1"]
 }
 ```
 
@@ -582,7 +578,7 @@ Get revenue metrics and top performers.
       "totalRevenue": 125340,
       "projectedRevenue": 150000,
       "revenueGrowth": 12.5,
-      "averageOrderValue": 450.50,
+      "averageOrderValue": 450.5,
       "orderCount": 278,
       "activeCustomers": 245,
       "newCustomers": 12,
@@ -834,13 +830,27 @@ Get all dashboard data in one request (optimized for initial dashboard load).
 {
   "success": true,
   "data": {
-    "revenue": { /* RevenueMetrics */ },
-    "margins": { /* ProfitMargin */ },
-    "liquidity": { /* LiquidityStatus */ },
-    "orderIntake": [ /* OrderIntake[] */ ],
-    "productivity": { /* ProductivityMetrics */ },
-    "pipeline": [ /* PipelineStage[] */ ],
-    "warnings": [ /* DashboardWarning[] */ ]
+    "revenue": {
+      /* RevenueMetrics */
+    },
+    "margins": {
+      /* ProfitMargin */
+    },
+    "liquidity": {
+      /* LiquidityStatus */
+    },
+    "orderIntake": [
+      /* OrderIntake[] */
+    ],
+    "productivity": {
+      /* ProductivityMetrics */
+    },
+    "pipeline": [
+      /* PipelineStage[] */
+    ],
+    "warnings": [
+      /* DashboardWarning[] */
+    ]
   }
 }
 ```
@@ -856,8 +866,8 @@ export interface DashboardTask {
   userId: string;
   title: string;
   description?: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'on_hold';
-  priority: 'low' | 'normal' | 'high' | 'urgent' | 'critical';
+  status: "pending" | "in_progress" | "completed" | "cancelled" | "on_hold";
+  priority: "low" | "normal" | "high" | "urgent" | "critical";
   dueDate?: string;
   completedAt?: string;
   assignedTo?: string;
@@ -871,7 +881,7 @@ export interface DashboardTask {
 export interface DashboardNotification {
   id: string;
   userId: string;
-  type: 'info' | 'warning' | 'error' | 'success' | 'alert';
+  type: "info" | "warning" | "error" | "success" | "alert";
   title: string;
   message: string;
   read: boolean;
@@ -888,7 +898,7 @@ export interface DashboardKPI {
   category: string;
   value: number;
   unit?: string;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
   trendValue?: number;
   target?: number;
   description?: string;
@@ -899,8 +909,26 @@ export interface DashboardKPI {
 export interface DashboardWidget {
   id: string;
   userId: string;
-  widgetType: 'chart' | 'stat' | 'table' | 'list' | 'gauge' | 'map' | 'timeline' | 'custom';
-  dataSource: 'revenue' | 'orders' | 'customers' | 'inventory' | 'production' | 'finance' | 'hr' | 'tasks' | 'notifications' | 'custom';
+  widgetType:
+    | "chart"
+    | "stat"
+    | "table"
+    | "list"
+    | "gauge"
+    | "map"
+    | "timeline"
+    | "custom";
+  dataSource:
+    | "revenue"
+    | "orders"
+    | "customers"
+    | "inventory"
+    | "production"
+    | "finance"
+    | "hr"
+    | "tasks"
+    | "notifications"
+    | "custom";
   title: string;
   description?: string;
   position: number;
@@ -927,8 +955,16 @@ export interface DashboardLayout {
 
 export interface DashboardWarning {
   id: string;
-  type: 'liquidity' | 'receivables' | 'inventory' | 'production' | 'quality' | 'deadline' | 'budget' | 'compliance';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type:
+    | "liquidity"
+    | "receivables"
+    | "inventory"
+    | "production"
+    | "quality"
+    | "deadline"
+    | "budget"
+    | "compliance";
+  severity: "low" | "medium" | "high" | "critical";
   title: string;
   message: string;
   value?: number;
@@ -977,7 +1013,7 @@ export interface SystemHealth {
 
 ```typescript
 // services/dashboardApi.ts
-import axios from 'axios';
+import axios from "axios";
 import type {
   DashboardTask,
   DashboardNotification,
@@ -987,27 +1023,31 @@ import type {
   DashboardWarning,
   RevenueMetrics,
   SystemHealth,
-} from '@/types/dashboard';
+} from "@/types/dashboard";
 
-const API_BASE = '/api/dashboard';
+const API_BASE = "/api/dashboard";
 
 export const dashboardApi = {
   // System Health & Overview
   getHealth: () =>
-    axios.get<SystemHealth>(`${API_BASE}/health`).then(res => res.data),
+    axios.get<SystemHealth>(`${API_BASE}/health`).then((res) => res.data),
 
-  getOverview: () =>
-    axios.get(`${API_BASE}/overview`).then(res => res.data),
+  getOverview: () => axios.get(`${API_BASE}/overview`).then((res) => res.data),
 
   getContext: () =>
-    axios.get<{ context: string[] }>(`${API_BASE}/context`).then(res => res.data),
+    axios
+      .get<{ context: string[] }>(`${API_BASE}/context`)
+      .then((res) => res.data),
 
   // KPIs
   getKPIs: (params?: { category?: string; days?: number }) =>
-    axios.get<{ success: boolean; data: DashboardKPI[]; count: number }>(
-      `${API_BASE}/kpis`,
-      { params }
-    ).then(res => res.data),
+    axios
+      .get<{
+        success: boolean;
+        data: DashboardKPI[];
+        count: number;
+      }>(`${API_BASE}/kpis`, { params })
+      .then((res) => res.data),
 
   // Tasks
   getTasks: (params?: {
@@ -1020,30 +1060,37 @@ export const dashboardApi = {
     limit?: number;
     offset?: number;
   }) =>
-    axios.get<{ success: boolean; data: DashboardTask[]; count: number }>(
-      `${API_BASE}/tasks`,
-      { params }
-    ).then(res => res.data),
+    axios
+      .get<{
+        success: boolean;
+        data: DashboardTask[];
+        count: number;
+      }>(`${API_BASE}/tasks`, { params })
+      .then((res) => res.data),
 
   getTask: (id: string) =>
-    axios.get<{ success: boolean; data: DashboardTask }>(
-      `${API_BASE}/tasks/${id}`
-    ).then(res => res.data.data),
+    axios
+      .get<{ success: boolean; data: DashboardTask }>(`${API_BASE}/tasks/${id}`)
+      .then((res) => res.data.data),
 
   createTask: (task: Partial<DashboardTask>) =>
-    axios.post<{ success: boolean; data: DashboardTask }>(
-      `${API_BASE}/tasks`,
-      task
-    ).then(res => res.data.data),
+    axios
+      .post<{
+        success: boolean;
+        data: DashboardTask;
+      }>(`${API_BASE}/tasks`, task)
+      .then((res) => res.data.data),
 
   updateTask: (id: string, updates: Partial<DashboardTask>) =>
-    axios.put<{ success: boolean; data: DashboardTask }>(
-      `${API_BASE}/tasks/${id}`,
-      updates
-    ).then(res => res.data.data),
+    axios
+      .put<{
+        success: boolean;
+        data: DashboardTask;
+      }>(`${API_BASE}/tasks/${id}`, updates)
+      .then((res) => res.data.data),
 
   deleteTask: (id: string) =>
-    axios.delete(`${API_BASE}/tasks/${id}`).then(res => res.data),
+    axios.delete(`${API_BASE}/tasks/${id}`).then((res) => res.data),
 
   // Notifications
   getNotifications: (params?: {
@@ -1053,74 +1100,104 @@ export const dashboardApi = {
     limit?: number;
     offset?: number;
   }) =>
-    axios.get<{ success: boolean; data: DashboardNotification[]; count: number }>(
-      `${API_BASE}/notifications`,
-      { params }
-    ).then(res => res.data),
+    axios
+      .get<{
+        success: boolean;
+        data: DashboardNotification[];
+        count: number;
+      }>(`${API_BASE}/notifications`, { params })
+      .then((res) => res.data),
 
   getNotification: (id: string) =>
-    axios.get<{ success: boolean; data: DashboardNotification }>(
-      `${API_BASE}/notifications/${id}`
-    ).then(res => res.data.data),
+    axios
+      .get<{
+        success: boolean;
+        data: DashboardNotification;
+      }>(`${API_BASE}/notifications/${id}`)
+      .then((res) => res.data.data),
 
   createNotification: (notification: Partial<DashboardNotification>) =>
-    axios.post<{ success: boolean; data: DashboardNotification }>(
-      `${API_BASE}/notifications`,
-      notification
-    ).then(res => res.data.data),
+    axios
+      .post<{
+        success: boolean;
+        data: DashboardNotification;
+      }>(`${API_BASE}/notifications`, notification)
+      .then((res) => res.data.data),
 
   markNotificationAsRead: (id: string, read: boolean) =>
-    axios.put<{ success: boolean; data: DashboardNotification }>(
-      `${API_BASE}/notifications/${id}`,
-      { read }
-    ).then(res => res.data.data),
+    axios
+      .put<{
+        success: boolean;
+        data: DashboardNotification;
+      }>(`${API_BASE}/notifications/${id}`, { read })
+      .then((res) => res.data.data),
 
   deleteNotification: (id: string) =>
-    axios.delete(`${API_BASE}/notifications/${id}`).then(res => res.data),
+    axios.delete(`${API_BASE}/notifications/${id}`).then((res) => res.data),
 
   // Widgets & Stats
   getWidgetStats: () =>
-    axios.get(`${API_BASE}/widgets/stats`).then(res => res.data),
+    axios.get(`${API_BASE}/widgets/stats`).then((res) => res.data),
 
   getActivities: () =>
-    axios.get(`${API_BASE}/activities`).then(res => res.data),
+    axios.get(`${API_BASE}/activities`).then((res) => res.data),
 
   getQuickLinks: () =>
-    axios.get(`${API_BASE}/quick-links`).then(res => res.data),
+    axios.get(`${API_BASE}/quick-links`).then((res) => res.data),
 
   // Comprehensive Dashboard
   comprehensive: {
     // Executive Overview
     getRevenue: (params?: { period?: string }) =>
-      axios.get(`${API_BASE}/comprehensive/executive/revenue`, { params }).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/executive/revenue`, { params })
+        .then((res) => res.data),
 
     getMargins: (params?: { days?: number }) =>
-      axios.get(`${API_BASE}/comprehensive/executive/margins`, { params }).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/executive/margins`, { params })
+        .then((res) => res.data),
 
     getLiquidity: () =>
-      axios.get(`${API_BASE}/comprehensive/executive/liquidity`).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/executive/liquidity`)
+        .then((res) => res.data),
 
     getOrderIntake: (params?: { periods?: number }) =>
-      axios.get(`${API_BASE}/comprehensive/executive/order-intake`, { params }).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/executive/order-intake`, { params })
+        .then((res) => res.data),
 
     getProductivity: () =>
-      axios.get(`${API_BASE}/comprehensive/executive/productivity`).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/executive/productivity`)
+        .then((res) => res.data),
 
     // Process Monitoring
     getPipeline: () =>
-      axios.get(`${API_BASE}/comprehensive/process/pipeline`).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/process/pipeline`)
+        .then((res) => res.data),
 
     getProcurement: (params?: { days?: number }) =>
-      axios.get(`${API_BASE}/comprehensive/process/procurement`, { params }).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/process/procurement`, { params })
+        .then((res) => res.data),
 
     getProduction: (params?: { days?: number }) =>
-      axios.get(`${API_BASE}/comprehensive/process/production`, { params }).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/process/production`, { params })
+        .then((res) => res.data),
 
     getSLA: (params?: { days?: number }) =>
-      axios.get(`${API_BASE}/comprehensive/process/sla`, { params }).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/process/sla`, { params })
+        .then((res) => res.data),
 
     getProjects: (params?: { status?: string }) =>
-      axios.get(`${API_BASE}/comprehensive/process/projects`, { params }).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/process/projects`, { params })
+        .then((res) => res.data),
 
     // Warnings
     getWarnings: (params?: {
@@ -1129,66 +1206,97 @@ export const dashboardApi = {
       acknowledged?: boolean;
       resolved?: boolean;
     }) =>
-      axios.get<{ success: boolean; data: DashboardWarning[]; count: number }>(
-        `${API_BASE}/comprehensive/warnings/all`,
-        { params }
-      ).then(res => res.data),
+      axios
+        .get<{
+          success: boolean;
+          data: DashboardWarning[];
+          count: number;
+        }>(`${API_BASE}/comprehensive/warnings/all`, { params })
+        .then((res) => res.data),
 
     // Widget Configuration
     getWidgets: (userId: string) =>
-      axios.get<{ success: boolean; data: DashboardWidget[]; count: number }>(
-        `${API_BASE}/comprehensive/widgets/config/${userId}`
-      ).then(res => res.data),
+      axios
+        .get<{
+          success: boolean;
+          data: DashboardWidget[];
+          count: number;
+        }>(`${API_BASE}/comprehensive/widgets/config/${userId}`)
+        .then((res) => res.data),
 
     createWidget: (widget: Partial<DashboardWidget>) =>
-      axios.post<{ success: boolean; data: DashboardWidget }>(
-        `${API_BASE}/comprehensive/widgets/config`,
-        widget
-      ).then(res => res.data.data),
+      axios
+        .post<{
+          success: boolean;
+          data: DashboardWidget;
+        }>(`${API_BASE}/comprehensive/widgets/config`, widget)
+        .then((res) => res.data.data),
 
     updateWidget: (id: string, updates: Partial<DashboardWidget>) =>
-      axios.put<{ success: boolean; data: DashboardWidget }>(
-        `${API_BASE}/comprehensive/widgets/config/${id}`,
-        updates
-      ).then(res => res.data.data),
+      axios
+        .put<{
+          success: boolean;
+          data: DashboardWidget;
+        }>(`${API_BASE}/comprehensive/widgets/config/${id}`, updates)
+        .then((res) => res.data.data),
 
     deleteWidget: (id: string) =>
-      axios.delete(`${API_BASE}/comprehensive/widgets/config/${id}`).then(res => res.data),
+      axios
+        .delete(`${API_BASE}/comprehensive/widgets/config/${id}`)
+        .then((res) => res.data),
 
     // Layouts
     getLayouts: (userId: string) =>
-      axios.get<{ success: boolean; data: DashboardLayout[]; count: number }>(
-        `${API_BASE}/comprehensive/layouts/${userId}`
-      ).then(res => res.data),
+      axios
+        .get<{
+          success: boolean;
+          data: DashboardLayout[];
+          count: number;
+        }>(`${API_BASE}/comprehensive/layouts/${userId}`)
+        .then((res) => res.data),
 
     createLayout: (layout: Partial<DashboardLayout>) =>
-      axios.post<{ success: boolean; data: DashboardLayout }>(
-        `${API_BASE}/comprehensive/layouts`,
-        layout
-      ).then(res => res.data.data),
+      axios
+        .post<{
+          success: boolean;
+          data: DashboardLayout;
+        }>(`${API_BASE}/comprehensive/layouts`, layout)
+        .then((res) => res.data.data),
 
     updateLayout: (id: string, updates: Partial<DashboardLayout>) =>
-      axios.put<{ success: boolean; data: DashboardLayout }>(
-        `${API_BASE}/comprehensive/layouts/${id}`,
-        updates
-      ).then(res => res.data.data),
+      axios
+        .put<{
+          success: boolean;
+          data: DashboardLayout;
+        }>(`${API_BASE}/comprehensive/layouts/${id}`, updates)
+        .then((res) => res.data.data),
 
     deleteLayout: (id: string) =>
-      axios.delete(`${API_BASE}/comprehensive/layouts/${id}`).then(res => res.data),
+      axios
+        .delete(`${API_BASE}/comprehensive/layouts/${id}`)
+        .then((res) => res.data),
 
     // Favorites
     getFavorites: (userId: string) =>
-      axios.get(`${API_BASE}/comprehensive/favorites/${userId}`).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/favorites/${userId}`)
+        .then((res) => res.data),
 
     createFavorite: (favorite: any) =>
-      axios.post(`${API_BASE}/comprehensive/favorites`, favorite).then(res => res.data),
+      axios
+        .post(`${API_BASE}/comprehensive/favorites`, favorite)
+        .then((res) => res.data),
 
     deleteFavorite: (id: string) =>
-      axios.delete(`${API_BASE}/comprehensive/favorites/${id}`).then(res => res.data),
+      axios
+        .delete(`${API_BASE}/comprehensive/favorites/${id}`)
+        .then((res) => res.data),
 
     // Comprehensive Overview
     getComprehensiveOverview: () =>
-      axios.get(`${API_BASE}/comprehensive/comprehensive-overview`).then(res => res.data),
+      axios
+        .get(`${API_BASE}/comprehensive/comprehensive-overview`)
+        .then((res) => res.data),
   },
 };
 ```
@@ -1197,14 +1305,18 @@ export const dashboardApi = {
 
 ```typescript
 // hooks/useDashboard.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { dashboardApi } from '@/services/dashboardApi';
-import type { DashboardTask, DashboardNotification, DashboardWidget } from '@/types/dashboard';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { dashboardApi } from "@/services/dashboardApi";
+import type {
+  DashboardTask,
+  DashboardNotification,
+  DashboardWidget,
+} from "@/types/dashboard";
 
 // System Health & Overview
 export function useSystemHealth() {
   return useQuery({
-    queryKey: ['dashboard', 'health'],
+    queryKey: ["dashboard", "health"],
     queryFn: dashboardApi.getHealth,
     refetchInterval: 30000, // Refresh every 30 seconds
   });
@@ -1212,16 +1324,19 @@ export function useSystemHealth() {
 
 export function useDashboardOverview() {
   return useQuery({
-    queryKey: ['dashboard', 'overview'],
+    queryKey: ["dashboard", "overview"],
     queryFn: dashboardApi.getOverview,
     refetchInterval: 60000, // Refresh every minute
   });
 }
 
 // KPIs
-export function useDashboardKPIs(params?: { category?: string; days?: number }) {
+export function useDashboardKPIs(params?: {
+  category?: string;
+  days?: number;
+}) {
   return useQuery({
-    queryKey: ['dashboard', 'kpis', params],
+    queryKey: ["dashboard", "kpis", params],
     queryFn: () => dashboardApi.getKPIs(params),
   });
 }
@@ -1229,14 +1344,14 @@ export function useDashboardKPIs(params?: { category?: string; days?: number }) 
 // Tasks
 export function useDashboardTasks(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['dashboard', 'tasks', params],
+    queryKey: ["dashboard", "tasks", params],
     queryFn: () => dashboardApi.getTasks(params),
   });
 }
 
 export function useDashboardTask(id: string) {
   return useQuery({
-    queryKey: ['dashboard', 'tasks', id],
+    queryKey: ["dashboard", "tasks", id],
     queryFn: () => dashboardApi.getTask(id),
     enabled: !!id,
   });
@@ -1247,7 +1362,7 @@ export function useCreateTask() {
   return useMutation({
     mutationFn: (task: Partial<DashboardTask>) => dashboardApi.createTask(task),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dashboard', 'tasks'] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "tasks"] });
     },
   });
 }
@@ -1255,11 +1370,18 @@ export function useCreateTask() {
 export function useUpdateTask() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<DashboardTask> }) =>
-      dashboardApi.updateTask(id, updates),
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: Partial<DashboardTask>;
+    }) => dashboardApi.updateTask(id, updates),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['dashboard', 'tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard', 'tasks', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "tasks"] });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", "tasks", variables.id],
+      });
     },
   });
 }
@@ -1269,7 +1391,7 @@ export function useDeleteTask() {
   return useMutation({
     mutationFn: (id: string) => dashboardApi.deleteTask(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dashboard', 'tasks'] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard", "tasks"] });
     },
   });
 }
@@ -1277,7 +1399,7 @@ export function useDeleteTask() {
 // Notifications
 export function useDashboardNotifications(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['dashboard', 'notifications', params],
+    queryKey: ["dashboard", "notifications", params],
     queryFn: () => dashboardApi.getNotifications(params),
   });
 }
@@ -1288,7 +1410,9 @@ export function useMarkNotificationAsRead() {
     mutationFn: ({ id, read }: { id: string; read: boolean }) =>
       dashboardApi.markNotificationAsRead(id, read),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dashboard', 'notifications'] });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", "notifications"],
+      });
     },
   });
 }
@@ -1296,7 +1420,7 @@ export function useMarkNotificationAsRead() {
 // Widgets & Stats
 export function useWidgetStats() {
   return useQuery({
-    queryKey: ['dashboard', 'widget-stats'],
+    queryKey: ["dashboard", "widget-stats"],
     queryFn: dashboardApi.getWidgetStats,
     refetchInterval: 60000, // Refresh every minute
   });
@@ -1304,7 +1428,7 @@ export function useWidgetStats() {
 
 export function useActivities() {
   return useQuery({
-    queryKey: ['dashboard', 'activities'],
+    queryKey: ["dashboard", "activities"],
     queryFn: dashboardApi.getActivities,
     refetchInterval: 30000, // Refresh every 30 seconds
   });
@@ -1313,21 +1437,21 @@ export function useActivities() {
 // Comprehensive Dashboard
 export function useRevenueMetrics(params?: { period?: string }) {
   return useQuery({
-    queryKey: ['dashboard', 'comprehensive', 'revenue', params],
+    queryKey: ["dashboard", "comprehensive", "revenue", params],
     queryFn: () => dashboardApi.comprehensive.getRevenue(params),
   });
 }
 
 export function useWarnings(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['dashboard', 'comprehensive', 'warnings', params],
+    queryKey: ["dashboard", "comprehensive", "warnings", params],
     queryFn: () => dashboardApi.comprehensive.getWarnings(params),
   });
 }
 
 export function useUserWidgets(userId: string) {
   return useQuery({
-    queryKey: ['dashboard', 'comprehensive', 'widgets', userId],
+    queryKey: ["dashboard", "comprehensive", "widgets", userId],
     queryFn: () => dashboardApi.comprehensive.getWidgets(userId),
     enabled: !!userId,
   });
@@ -1339,8 +1463,8 @@ export function useCreateWidget() {
     mutationFn: (widget: Partial<DashboardWidget>) =>
       dashboardApi.comprehensive.createWidget(widget),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ['dashboard', 'comprehensive', 'widgets', data.userId] 
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard", "comprehensive", "widgets", data.userId],
       });
     },
   });
@@ -1348,7 +1472,7 @@ export function useCreateWidget() {
 
 export function useComprehensiveOverview() {
   return useQuery({
-    queryKey: ['dashboard', 'comprehensive', 'overview'],
+    queryKey: ["dashboard", "comprehensive", "overview"],
     queryFn: dashboardApi.comprehensive.getComprehensiveOverview,
     refetchInterval: 120000, // Refresh every 2 minutes
   });
@@ -1361,9 +1485,13 @@ export function useComprehensiveOverview() {
 
 ```tsx
 // components/TaskList.tsx
-import React from 'react';
-import { useDashboardTasks, useUpdateTask, useDeleteTask } from '@/hooks/useDashboard';
-import type { DashboardTask } from '@/types/dashboard';
+import React from "react";
+import {
+  useDashboardTasks,
+  useUpdateTask,
+  useDeleteTask,
+} from "@/hooks/useDashboard";
+import type { DashboardTask } from "@/types/dashboard";
 
 export const TaskList: React.FC<{ userId: string }> = ({ userId }) => {
   const { data, isLoading } = useDashboardTasks({ userId, limit: 10 });
@@ -1371,13 +1499,17 @@ export const TaskList: React.FC<{ userId: string }> = ({ userId }) => {
   const deleteTask = useDeleteTask();
 
   const handleToggleStatus = (task: DashboardTask) => {
-    const newStatus = task.status === 'completed' ? 'pending' : 'completed';
-    const completedAt = newStatus === 'completed' ? new Date().toISOString() : undefined;
-    updateTask.mutate({ id: task.id, updates: { status: newStatus, completedAt } });
+    const newStatus = task.status === "completed" ? "pending" : "completed";
+    const completedAt =
+      newStatus === "completed" ? new Date().toISOString() : undefined;
+    updateTask.mutate({
+      id: task.id,
+      updates: { status: newStatus, completedAt },
+    });
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this task?')) {
+    if (confirm("Are you sure you want to delete this task?")) {
       deleteTask.mutate(id);
     }
   };
@@ -1392,12 +1524,14 @@ export const TaskList: React.FC<{ userId: string }> = ({ userId }) => {
           <div className="task-header">
             <input
               type="checkbox"
-              checked={task.status === 'completed'}
+              checked={task.status === "completed"}
               onChange={() => handleToggleStatus(task)}
             />
             <h3>{task.title}</h3>
             <span className={`status-badge ${task.status}`}>{task.status}</span>
-            <span className={`priority-badge ${task.priority}`}>{task.priority}</span>
+            <span className={`priority-badge ${task.priority}`}>
+              {task.priority}
+            </span>
           </div>
           {task.description && <p>{task.description}</p>}
           {task.dueDate && (
@@ -1417,10 +1551,15 @@ export const TaskList: React.FC<{ userId: string }> = ({ userId }) => {
 
 ```tsx
 // components/NotificationCenter.tsx
-import React from 'react';
-import { useDashboardNotifications, useMarkNotificationAsRead } from '@/hooks/useDashboard';
+import React from "react";
+import {
+  useDashboardNotifications,
+  useMarkNotificationAsRead,
+} from "@/hooks/useDashboard";
 
-export const NotificationCenter: React.FC<{ userId: string }> = ({ userId }) => {
+export const NotificationCenter: React.FC<{ userId: string }> = ({
+  userId,
+}) => {
   const { data, isLoading } = useDashboardNotifications({ userId, limit: 20 });
   const markAsRead = useMarkNotificationAsRead();
 
@@ -1428,7 +1567,7 @@ export const NotificationCenter: React.FC<{ userId: string }> = ({ userId }) => 
     markAsRead.mutate({ id, read });
   };
 
-  const unreadCount = data?.data.filter(n => !n.read).length || 0;
+  const unreadCount = data?.data.filter((n) => !n.read).length || 0;
 
   if (isLoading) return <div>Loading notifications...</div>;
 
@@ -1442,18 +1581,22 @@ export const NotificationCenter: React.FC<{ userId: string }> = ({ userId }) => 
         {data?.data.map((notification) => (
           <div
             key={notification.id}
-            className={`notification ${notification.type} ${notification.read ? 'read' : 'unread'}`}
-            onClick={() => !notification.read && handleMarkAsRead(notification.id, true)}
+            className={`notification ${notification.type} ${notification.read ? "read" : "unread"}`}
+            onClick={() =>
+              !notification.read && handleMarkAsRead(notification.id, true)
+            }
           >
             <div className="notification-header">
               <span className={`icon ${notification.type}`} />
               <h4>{notification.title}</h4>
-              <span className="time">{new Date(notification.createdAt).toLocaleTimeString()}</span>
+              <span className="time">
+                {new Date(notification.createdAt).toLocaleTimeString()}
+              </span>
             </div>
             <p>{notification.message}</p>
             {notification.actionUrl && (
               <a href={notification.actionUrl} className="action-link">
-                {notification.actionLabel || 'View'}
+                {notification.actionLabel || "View"}
               </a>
             )}
           </div>
@@ -1468,8 +1611,12 @@ export const NotificationCenter: React.FC<{ userId: string }> = ({ userId }) => 
 
 ```tsx
 // components/DashboardOverview.tsx
-import React from 'react';
-import { useWidgetStats, useActivities, useSystemHealth } from '@/hooks/useDashboard';
+import React from "react";
+import {
+  useWidgetStats,
+  useActivities,
+  useSystemHealth,
+} from "@/hooks/useDashboard";
 
 export const DashboardOverview: React.FC = () => {
   const { data: stats } = useWidgetStats();
@@ -1481,7 +1628,9 @@ export const DashboardOverview: React.FC = () => {
       <div className="stats-grid">
         <div className="stat-card sales">
           <h3>Sales Today</h3>
-          <div className="value">€{stats?.data.sales.today.toLocaleString()}</div>
+          <div className="value">
+            €{stats?.data.sales.today.toLocaleString()}
+          </div>
           <div className="trend">{stats?.data.sales.trend}</div>
         </div>
         <div className="stat-card orders">
@@ -1496,7 +1645,9 @@ export const DashboardOverview: React.FC = () => {
         </div>
         <div className="stat-card finance">
           <h3>Profit</h3>
-          <div className="value">€{stats?.data.finance.profit.toLocaleString()}</div>
+          <div className="value">
+            €{stats?.data.finance.profit.toLocaleString()}
+          </div>
           <div className="margin">Margin: {stats?.data.finance.margin}</div>
         </div>
       </div>
@@ -1522,7 +1673,9 @@ export const DashboardOverview: React.FC = () => {
         <div className="health-status">
           <span className={`status ${health?.status}`}>{health?.status}</span>
           <div>Uptime: {Math.floor((health?.uptime || 0) / 3600)}h</div>
-          <div>Memory: {health?.memory.free} / {health?.memory.total}</div>
+          <div>
+            Memory: {health?.memory.free} / {health?.memory.total}
+          </div>
         </div>
       </div>
     </div>
@@ -1534,18 +1687,18 @@ export const DashboardOverview: React.FC = () => {
 
 ```tsx
 // components/WarningDashboard.tsx
-import React, { useState } from 'react';
-import { useWarnings } from '@/hooks/useDashboard';
+import React, { useState } from "react";
+import { useWarnings } from "@/hooks/useDashboard";
 
 export const WarningDashboard: React.FC = () => {
-  const [filter, setFilter] = useState({ severity: '', resolved: false });
+  const [filter, setFilter] = useState({ severity: "", resolved: false });
   const { data, isLoading } = useWarnings(filter);
 
   const severityColors = {
-    low: 'blue',
-    medium: 'yellow',
-    high: 'orange',
-    critical: 'red',
+    low: "blue",
+    medium: "yellow",
+    high: "orange",
+    critical: "red",
   };
 
   if (isLoading) return <div>Loading warnings...</div>;
@@ -1553,7 +1706,10 @@ export const WarningDashboard: React.FC = () => {
   return (
     <div className="warning-dashboard">
       <div className="filters">
-        <select value={filter.severity} onChange={(e) => setFilter({ ...filter, severity: e.target.value })}>
+        <select
+          value={filter.severity}
+          onChange={(e) => setFilter({ ...filter, severity: e.target.value })}
+        >
           <option value="">All Severities</option>
           <option value="critical">Critical</option>
           <option value="high">High</option>
@@ -1564,7 +1720,9 @@ export const WarningDashboard: React.FC = () => {
           <input
             type="checkbox"
             checked={filter.resolved}
-            onChange={(e) => setFilter({ ...filter, resolved: e.target.checked })}
+            onChange={(e) =>
+              setFilter({ ...filter, resolved: e.target.checked })
+            }
           />
           Show Resolved
         </label>
@@ -1577,15 +1735,21 @@ export const WarningDashboard: React.FC = () => {
             className={`warning-card ${severityColors[warning.severity]}`}
           >
             <div className="warning-header">
-              <span className={`severity-badge ${warning.severity}`}>{warning.severity}</span>
+              <span className={`severity-badge ${warning.severity}`}>
+                {warning.severity}
+              </span>
               <span className="type-badge">{warning.type}</span>
             </div>
             <h3>{warning.title}</h3>
             <p>{warning.message}</p>
             {warning.value !== undefined && warning.threshold !== undefined && (
               <div className="warning-metrics">
-                <span>Value: {warning.value} {warning.unit}</span>
-                <span>Threshold: {warning.threshold} {warning.unit}</span>
+                <span>
+                  Value: {warning.value} {warning.unit}
+                </span>
+                <span>
+                  Threshold: {warning.threshold} {warning.unit}
+                </span>
               </div>
             )}
             {warning.actionRequired && (

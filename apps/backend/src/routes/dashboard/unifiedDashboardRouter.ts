@@ -225,9 +225,7 @@ async function mergeFunctionData(
       annotated: !!annotationData,
       validated: !!annotationData?.meta_json,
       coverage,
-      last_updated: annotationData
-        ? new Date().toISOString()
-        : undefined,
+      last_updated: annotationData ? new Date().toISOString() : undefined,
     },
   };
 }
@@ -321,8 +319,7 @@ router.get(
     }
     if (area && typeof area === "string") {
       filtered = filtered.filter(
-        (n: { meta_json?: { area?: string } }) =>
-          n.meta_json?.area === area,
+        (n: { meta_json?: { area?: string } }) => n.meta_json?.area === area,
       );
     }
 
@@ -428,27 +425,23 @@ router.post(
       types.forEach((type, index) => {
         if (type === "meta") results.meta = generated[index] as GeneratedMeta;
         if (type === "form") results.form = generated[index] as FormSpec;
-        if (type === "rule")
-          results.rule = generated[index] as DashboardRule;
+        if (type === "rule") results.rule = generated[index] as DashboardRule;
         if (type === "widget") results.widget = generated[index];
       });
     } else {
       // Sequential generation
       for (const type of types) {
         if (type === "meta") {
-          results.meta = await aiAnnotatorService.generateMeta(
-            nodeForAnnotation,
-          );
+          results.meta =
+            await aiAnnotatorService.generateMeta(nodeForAnnotation);
         }
         if (type === "form") {
-          results.form = await aiAnnotatorService.generateFormSpec(
-            nodeForAnnotation,
-          );
+          results.form =
+            await aiAnnotatorService.generateFormSpec(nodeForAnnotation);
         }
         if (type === "rule") {
-          results.rule = await aiAnnotatorService.generateRule(
-            nodeForAnnotation,
-          );
+          results.rule =
+            await aiAnnotatorService.generateRule(nodeForAnnotation);
         }
         if (type === "widget") {
           results.widget = { type: "kpi-card", placeholder: true };
@@ -511,9 +504,7 @@ router.post(
       breadcrumbs: node.breadcrumbs,
     };
 
-    const validation = await aiAnnotatorService.validateNode(
-      nodeForAnnotation,
-    );
+    const validation = await aiAnnotatorService.validateNode(nodeForAnnotation);
 
     res.json({
       success: true,
@@ -556,9 +547,7 @@ router.post(
       );
     }
     if (filters.missingOnly) {
-      nodes = nodes.filter(
-        (n: { meta_json?: unknown }) => !n.meta_json,
-      );
+      nodes = nodes.filter((n: { meta_json?: unknown }) => !n.meta_json);
     }
 
     // Execute batch operation through aiAnnotatorService
@@ -620,8 +609,7 @@ router.get(
     // Filter nodes with widget rules
     const widgetNodes = nodes.filter(
       (n: { meta_json?: { rule?: { type?: string; widget?: string } } }) =>
-        n.meta_json?.rule?.type === "widget" ||
-        n.meta_json?.rule?.widget,
+        n.meta_json?.rule?.type === "widget" || n.meta_json?.rule?.widget,
     );
 
     // TODO: Apply RBAC filtering based on context.roles

@@ -535,8 +535,8 @@ Die `mergeFunctionData()` Funktion kombiniert Daten aus beiden Quellen:
 
 ```typescript
 // 2 separate Calls
-const catalogData = await fetch('/api/functions/:id');
-const annotations = await fetch('/api/ai-annotator/nodes/:id');
+const catalogData = await fetch("/api/functions/:id");
+const annotations = await fetch("/api/ai-annotator/nodes/:id");
 
 // Manuelles Merging im Frontend
 const merged = mergeFunctionData(catalogData, annotations);

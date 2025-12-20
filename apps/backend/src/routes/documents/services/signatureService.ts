@@ -42,7 +42,7 @@ export class SignatureService {
    */
   async createSignatureRequest(
     documentId: string,
-    data: CreateSignatureDto
+    data: CreateSignatureDto,
   ): Promise<Signature[]> {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30); // 30 Tage Gültigkeit
@@ -61,20 +61,23 @@ export class SignatureService {
         documentId,
         signer,
         data.provider || "docusign",
-        expiresAt.toISOString()
+        expiresAt.toISOString(),
       );
 
       const signatureId = this.getLastInsertId();
 
       const getStmt = this.db.prepare(
-        "SELECT * FROM document_signatures WHERE id = ?"
+        "SELECT * FROM document_signatures WHERE id = ?",
       );
       const signature = getStmt.get(signatureId) as Signature;
 
       signatures.push(signature);
     }
 
-    logger.info({ documentId, signers: data.signers.length }, "Signature request created");
+    logger.info(
+      { documentId, signers: data.signers.length },
+      "Signature request created",
+    );
 
     return signatures;
   }
@@ -84,7 +87,7 @@ export class SignatureService {
    */
   async getDocumentSignatures(documentId: string): Promise<Signature[]> {
     const stmt = this.db.prepare(
-      "SELECT * FROM document_signatures WHERE document_id = ? ORDER BY created_at DESC"
+      "SELECT * FROM document_signatures WHERE document_id = ? ORDER BY created_at DESC",
     );
     return stmt.all(documentId) as Signature[];
   }
@@ -95,7 +98,7 @@ export class SignatureService {
   async updateSignatureStatus(
     id: string,
     status: "signed" | "declined" | "expired",
-    ipAddress?: string
+    ipAddress?: string,
   ): Promise<void> {
     const stmt = this.db.prepare(`
       UPDATE document_signatures
@@ -115,7 +118,7 @@ export class SignatureService {
    */
   getPendingSignaturesCount(): number {
     const stmt = this.db.prepare(
-      "SELECT COUNT(*) as count FROM document_signatures WHERE status = 'pending'"
+      "SELECT COUNT(*) as count FROM document_signatures WHERE status = 'pending'",
     );
     const result = stmt.get() as { count: number };
     return result.count;

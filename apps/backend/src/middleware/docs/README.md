@@ -6,18 +6,18 @@ Express Middleware Komponente für das ERP SteinmetZ Backend mit umfassender Fun
 
 ## Übersicht der Module
 
-| Modul | Zweck | Hauptfunktionen |
-| --- | --- | --- |
-| **authMiddleware.ts** | Authentication & RBAC | JWT Validierung, Permission Checks |
-| **errorHandler.ts** | Error Handling | Globale Fehlerbehandlung, standardisierte Responses |
-| **asyncHandler.ts** | Promise Error Catching | Automatisches Error Handling für async Handler |
-| **rateLimiters.ts** | Rate Limiting | DDoS/Brute-Force Schutz, konfigurierbar |
-| **metricsMiddleware.ts** | Monitoring | HTTP Request Metriken, Performance Tracking |
-| **queryMonitor.ts** | Query Performance | Database Query Monitoring, Slow Queries |
-| **sessionMiddleware.ts** | Session Management | Redis/SQLite Sessions, 24h TTL |
-| **cacheMiddleware.ts** | Response Caching | HTTP Caching mit TTL & Invalidation |
-| **rbacMiddleware.ts** | RBAC Erweitert | Rollen-Hierarchien, Permissions |
-| **errorTrackingMiddleware.ts** | Error Tracking | Sentry Integration |
+| Modul                          | Zweck                  | Hauptfunktionen                                     |
+| ------------------------------ | ---------------------- | --------------------------------------------------- |
+| **authMiddleware.ts**          | Authentication & RBAC  | JWT Validierung, Permission Checks                  |
+| **errorHandler.ts**            | Error Handling         | Globale Fehlerbehandlung, standardisierte Responses |
+| **asyncHandler.ts**            | Promise Error Catching | Automatisches Error Handling für async Handler      |
+| **rateLimiters.ts**            | Rate Limiting          | DDoS/Brute-Force Schutz, konfigurierbar             |
+| **metricsMiddleware.ts**       | Monitoring             | HTTP Request Metriken, Performance Tracking         |
+| **queryMonitor.ts**            | Query Performance      | Database Query Monitoring, Slow Queries             |
+| **sessionMiddleware.ts**       | Session Management     | Redis/SQLite Sessions, 24h TTL                      |
+| **cacheMiddleware.ts**         | Response Caching       | HTTP Caching mit TTL & Invalidation                 |
+| **rbacMiddleware.ts**          | RBAC Erweitert         | Rollen-Hierarchien, Permissions                     |
+| **errorTrackingMiddleware.ts** | Error Tracking         | Sentry Integration                                  |
 
 ## Schneller Start
 
@@ -35,7 +35,7 @@ app.use(metricsMiddleware);           // Monitoring (früh)
 app.use(authenticate);                // Auth (vor Routes)
 
 // Routes
-app.get('/api/protected', 
+app.get('/api/protected',
   asyncHandler(async (req, res) => {
     const data = await db.query(...);
     res.json(data);
@@ -53,32 +53,36 @@ app.listen(3000);
 **Authentication:**
 
 ```typescript
-import { authenticate, requirePermission } from '@/middleware';
+import { authenticate, requirePermission } from "@/middleware";
 
-router.post('/users', 
-  authenticate, 
-  requirePermission('admin:create'),
-  createUserHandler
+router.post(
+  "/users",
+  authenticate,
+  requirePermission("admin:create"),
+  createUserHandler,
 );
 ```
 
 **Error Handling:**
 
 ```typescript
-import { asyncHandler } from '@/middleware';
+import { asyncHandler } from "@/middleware";
 
-router.get('/data', asyncHandler(async (req, res) => {
-  const data = await fetchData();
-  res.json(data);
-}));
+router.get(
+  "/data",
+  asyncHandler(async (req, res) => {
+    const data = await fetchData();
+    res.json(data);
+  }),
+);
 ```
 
 **Rate Limiting:**
 
 ```typescript
-import { aiRateLimiter } from '@/middleware';
+import { aiRateLimiter } from "@/middleware";
 
-router.post('/ai/chat', aiRateLimiter, handler);
+router.post("/ai/chat", aiRateLimiter, handler);
 ```
 
 ## Best Practices
@@ -87,7 +91,7 @@ router.post('/ai/chat', aiRateLimiter, handler);
 ✅ Rate Limiting für teure Operationen  
 ✅ Error Handler immer als letztes Middleware  
 ✅ Authentifizierung vor autorisierten Routes  
-✅ Nutze strukturierte Logging in Middleware  
+✅ Nutze strukturierte Logging in Middleware
 
 ## Vollständige Dokumentation
 

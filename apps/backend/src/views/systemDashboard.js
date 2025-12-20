@@ -45,11 +45,9 @@ function initLogin() {
   document.getElementById("password").value = "admin123";
 
   loginBtn.addEventListener("click", handleLogin);
-  document
-    .getElementById("password")
-    .addEventListener("keypress", (e) => {
-      if (e.key === "Enter") handleLogin();
-    });
+  document.getElementById("password").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") handleLogin();
+  });
 
   function handleLogin() {
     const username = document.getElementById("username").value;
@@ -112,7 +110,8 @@ function initDashboard() {
   const protocol = window.location.protocol;
   const hostname = window.location.hostname;
   const port = window.location.port ? `:${window.location.port}` : "";
-  document.getElementById("backend-url").textContent = `${protocol}//${hostname}${port}`;
+  document.getElementById("backend-url").textContent =
+    `${protocol}//${hostname}${port}`;
 }
 
 // ============================================================================
@@ -154,24 +153,36 @@ async function loadAllData() {
   appState.lastRefresh = new Date();
   updateTimestamp();
 
-  console.log('🔄 Loading dashboard data...');
+  console.log("🔄 Loading dashboard data...");
 
   // Load all data in parallel with correct endpoints
-  const [health, services, system, database, performance, features, routes, resources, environment, dependencies, diagnostics, functions] =
-    await Promise.allSettled([
-      fetchAPI(`${API_BASE}/health`),
-      fetchAPI(`${API_BASE}/status`),
-      fetchAPI(`${API_BASE}/system`),
-      fetchAPI(`${API_BASE}/database`),
-      fetchAPI(`${API_BASE}/resources`),
-      fetchAPI(`${API_BASE}/features`),
-      fetchAPI(`${API_BASE}/routes`),
-      fetchAPI(`${API_BASE}/resources`),
-      fetchAPI(`${API_BASE}/environment`),
-      fetchAPI(`${API_BASE}/dependencies`),
-      fetchAPI(`${DIAGNOSTICS_BASE}/health`),
-      fetchAPI(`${API_BASE}/functions`),
-    ]);
+  const [
+    health,
+    services,
+    system,
+    database,
+    performance,
+    features,
+    routes,
+    resources,
+    environment,
+    dependencies,
+    diagnostics,
+    functions,
+  ] = await Promise.allSettled([
+    fetchAPI(`${API_BASE}/health`),
+    fetchAPI(`${API_BASE}/status`),
+    fetchAPI(`${API_BASE}/system`),
+    fetchAPI(`${API_BASE}/database`),
+    fetchAPI(`${API_BASE}/resources`),
+    fetchAPI(`${API_BASE}/features`),
+    fetchAPI(`${API_BASE}/routes`),
+    fetchAPI(`${API_BASE}/resources`),
+    fetchAPI(`${API_BASE}/environment`),
+    fetchAPI(`${API_BASE}/dependencies`),
+    fetchAPI(`${DIAGNOSTICS_BASE}/health`),
+    fetchAPI(`${API_BASE}/functions`),
+  ]);
 
   // Display data
   displayHealth(extractData(health));
@@ -214,17 +225,18 @@ function extractData(result) {
 function displayHealth(data) {
   const content = document.getElementById("health-content");
   if (!data) {
-    content.innerHTML = '<div class="error" style="color: #ef4444; padding: 1rem;">❌ Health data unavailable - Check backend connection</div>';
+    content.innerHTML =
+      '<div class="error" style="color: #ef4444; padding: 1rem;">❌ Health data unavailable - Check backend connection</div>';
     return;
   }
 
-  console.log('💚 Health data:', data);
-  const status = data.status || data.health || 'unknown';
-  const isHealthy = status === 'healthy' || status === 'ok';
+  console.log("💚 Health data:", data);
+  const status = data.status || data.health || "unknown";
+  const isHealthy = status === "healthy" || status === "ok";
   const statusClass = isHealthy ? "status-healthy" : "status-danger";
 
   let checksHTML = "";
-  
+
   // Handle checks array
   if (data.checks && Array.isArray(data.checks)) {
     checksHTML = data.checks
@@ -236,21 +248,25 @@ function displayHealth(data) {
           ${check.status === "pass" || check.status === "healthy" ? "✅ OK" : check.status === "warn" ? "⚠️ Warning" : "❌ Error"}
         </span>
       </div>
-    `
+    `,
       )
       .join("");
   } else if (data.database || data.ai || data.functions) {
     // Handle object with service statuses
     checksHTML = Object.entries(data)
-      .filter(([key]) => !['status', 'timestamp'].includes(key))
+      .filter(([key]) => !["status", "timestamp"].includes(key))
       .map(([key, value]) => {
-        const statusValue = typeof value === 'object' ? value.status : value;
-        const isOk = statusValue === 'connected' || statusValue === 'ready' || statusValue === 'operational' || statusValue === 'healthy';
+        const statusValue = typeof value === "object" ? value.status : value;
+        const isOk =
+          statusValue === "connected" ||
+          statusValue === "ready" ||
+          statusValue === "operational" ||
+          statusValue === "healthy";
         return `
         <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; padding: 0.5rem; background: #f8fafc; border-radius: 4px;">
           <span style="font-weight: 500;">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
-          <span class="status-badge ${isOk ? 'status-healthy' : 'status-danger'}">
-            ${isOk ? '✅ ' + statusValue : '❌ ' + statusValue}
+          <span class="status-badge ${isOk ? "status-healthy" : "status-danger"}">
+            ${isOk ? "✅ " + statusValue : "❌ " + statusValue}
           </span>
         </div>
       `;
@@ -274,12 +290,13 @@ function displayHealth(data) {
 function displayServiceStatus(data) {
   const content = document.getElementById("service-status-content");
   if (!data) {
-    content.innerHTML = '<div class="error" style="color: #ef4444; padding: 1rem;">❌ Service status unavailable</div>';
+    content.innerHTML =
+      '<div class="error" style="color: #ef4444; padding: 1rem;">❌ Service status unavailable</div>';
     return;
   }
 
-  console.log('⚙️ Service status:', data);
-  
+  console.log("⚙️ Service status:", data);
+
   const db = data.database || {};
   const ai = data.ai || {};
   const functions = data.functions || {};
@@ -306,20 +323,20 @@ function displayServiceStatus(data) {
     <div style="margin-top: 1rem;">
       <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem; background: #f8fafc; border-radius: 4px;">
         <span style="font-weight: 500;">💾 Database:</span>
-        <span class="status-badge ${db.connected || db.status === 'connected' ? "status-healthy" : "status-danger"}">
-          ${db.connected || db.status === 'connected' ? "✅ Connected" : "❌ Disconnected"}
+        <span class="status-badge ${db.connected || db.status === "connected" ? "status-healthy" : "status-danger"}">
+          ${db.connected || db.status === "connected" ? "✅ Connected" : "❌ Disconnected"}
         </span>
       </div>
       <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem; background: #f8fafc; border-radius: 4px;">
         <span style="font-weight: 500;">🤖 AI Service:</span>
-        <span class="status-badge ${ai.available || ai.status === 'ready' ? "status-healthy" : "status-warning"}">
-          ${ai.available || ai.status === 'ready' ? "✅ Available" : "⚠️ Unavailable"}
+        <span class="status-badge ${ai.available || ai.status === "ready" ? "status-healthy" : "status-warning"}">
+          ${ai.available || ai.status === "ready" ? "✅ Available" : "⚠️ Unavailable"}
         </span>
       </div>
       <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: #f8fafc; border-radius: 4px;">
         <span style="font-weight: 500;">⚙️ Functions:</span>
-        <span class="status-badge ${functions.loaded || functions.status === 'operational' ? "status-healthy" : "status-warning"}">
-          ${functions.loaded || functions.status === 'operational' ? "✅ Loaded" : "⚠️ Not Loaded"}
+        <span class="status-badge ${functions.loaded || functions.status === "operational" ? "status-healthy" : "status-warning"}">
+          ${functions.loaded || functions.status === "operational" ? "✅ Loaded" : "⚠️ Not Loaded"}
         </span>
       </div>
     </div>
@@ -447,8 +464,7 @@ function displayFeatures(data) {
           : value === false
             ? "status-danger"
             : "status-warning";
-      const icon =
-        value === true ? "✅" : value === false ? "❌" : "⚠️";
+      const icon = value === true ? "✅" : value === false ? "❌" : "⚠️";
       featuresHTML += `
         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
           <span>${key}:</span>
@@ -458,23 +474,26 @@ function displayFeatures(data) {
     });
   }
 
-  content.innerHTML = featuresHTML || '<div class="error">No features available</div>';
+  content.innerHTML =
+    featuresHTML || '<div class="error">No features available</div>';
 }
 
 function displayRoutes(data) {
   const content = document.getElementById("routes-content");
   if (!data) {
-    content.innerHTML = '<div class="error" style="color: #ef4444; padding: 1rem;">❌ Routes data unavailable - Check backend connection</div>';
+    content.innerHTML =
+      '<div class="error" style="color: #ef4444; padding: 1rem;">❌ Routes data unavailable - Check backend connection</div>';
     return;
   }
 
-  console.log('🛣️ Routes data:', data);
-  
+  console.log("🛣️ Routes data:", data);
+
   // Extract routes from different possible formats
   const routes = data.endpoints || data.routes || data || [];
-  
+
   if (!Array.isArray(routes) || routes.length === 0) {
-    content.innerHTML = '<div style="color: #6b7280; padding: 1rem; font-style: italic;">⚠️ No routes found</div>';
+    content.innerHTML =
+      '<div style="color: #6b7280; padding: 1rem; font-style: italic;">⚠️ No routes found</div>';
     return;
   }
 
@@ -521,7 +540,7 @@ function displayRoutes(data) {
                 <td style="font-family: monospace; color: #1f2937;">${route.path || route.route || "/"}</td>
                 <td><span class="status-badge status-healthy" style="font-size: 0.75rem;">✅ Active</span></td>
               </tr>
-            `
+            `,
                 )
                 .join("")}
             </tbody>
@@ -532,7 +551,7 @@ function displayRoutes(data) {
     `;
   });
 
-  html += '</div>';
+  html += "</div>";
   html += `<div style="margin-top: 1rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
     <strong style="color: #1e40af;">📊 Gesamt: ${routes.length} Routen</strong> | 
     <span style="color: #6b7280;">GET: ${grouped.GET?.length || 0}</span> | 
@@ -555,7 +574,11 @@ function displayResources(data) {
 
   const memPercent = data.memoryUsagePercent || 0;
   const memStatus =
-    memPercent > 80 ? "status-danger" : memPercent > 60 ? "status-warning" : "status-healthy";
+    memPercent > 80
+      ? "status-danger"
+      : memPercent > 60
+        ? "status-warning"
+        : "status-healthy";
 
   content.innerHTML = `
     <div class="metric-grid">
@@ -594,7 +617,8 @@ function displayEnvironment(data) {
     return;
   }
 
-  let envHTML = '<div style="font-family: monospace; background: var(--light); padding: 1rem; border-radius: 8px; max-height: 400px; overflow-y: auto;">';
+  let envHTML =
+    '<div style="font-family: monospace; background: var(--light); padding: 1rem; border-radius: 8px; max-height: 400px; overflow-y: auto;">';
   Object.entries(data).forEach(([key, value]) => {
     envHTML += `<div style="margin-bottom: 0.5rem;"><strong>${key}:</strong> ${String(value).substring(0, 100)}</div>`;
   });
@@ -606,11 +630,13 @@ function displayEnvironment(data) {
 function displayDependencies(data) {
   const content = document.getElementById("dependencies-content");
   if (!data) {
-    content.innerHTML = '<div class="error">Dependencies data unavailable</div>';
+    content.innerHTML =
+      '<div class="error">Dependencies data unavailable</div>';
     return;
   }
 
-  let depsHTML = "<div class='scrollable-table'><table><thead><tr><th>Package</th><th>Version</th></tr></thead><tbody>";
+  let depsHTML =
+    "<div class='scrollable-table'><table><thead><tr><th>Package</th><th>Version</th></tr></thead><tbody>";
 
   if (data.packages && Array.isArray(data.packages)) {
     data.packages.slice(0, 30).forEach((pkg) => {
@@ -784,20 +810,20 @@ function displayMaintenanceCalendar() {
       date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
       title: "Datenbank-Wartung",
       type: "maintenance",
-      priority: "medium"
+      priority: "medium",
     },
     {
       date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       title: "System-Update",
       type: "maintenance",
-      priority: "high"
+      priority: "high",
     },
     {
       date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
       title: "Security Audit",
       type: "maintenance",
-      priority: "high"
-    }
+      priority: "high",
+    },
   ];
 
   const backupEvents = [
@@ -805,38 +831,46 @@ function displayMaintenanceCalendar() {
       date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
       title: "Tägliches Backup",
       type: "backup",
-      frequency: "täglich"
+      frequency: "täglich",
     },
     {
       date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       title: "Wöchentliches Vollbackup",
       type: "backup",
-      frequency: "wöchentlich"
+      frequency: "wöchentlich",
     },
     {
       date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       title: "Monatliches Archiv",
       type: "backup",
-      frequency: "monatlich"
-    }
+      frequency: "monatlich",
+    },
   ];
 
   // Display maintenance events
   const maintenanceList = document.getElementById("maintenance-list");
   if (maintenanceList) {
-    const html = maintenanceEvents.map(event => {
-      const dateStr = event.date.toLocaleDateString('de-DE', { 
-        day: '2-digit', 
-        month: 'short', 
-        year: 'numeric' 
-      });
-      const priorityClass = event.priority === 'high' ? 'status-danger' : 
-                           event.priority === 'medium' ? 'status-warning' : 
-                           'status-healthy';
-      const priorityIcon = event.priority === 'high' ? '🔴' : 
-                          event.priority === 'medium' ? '🟡' : '🟢';
-      
-      return `
+    const html = maintenanceEvents
+      .map((event) => {
+        const dateStr = event.date.toLocaleDateString("de-DE", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+        const priorityClass =
+          event.priority === "high"
+            ? "status-danger"
+            : event.priority === "medium"
+              ? "status-warning"
+              : "status-healthy";
+        const priorityIcon =
+          event.priority === "high"
+            ? "🔴"
+            : event.priority === "medium"
+              ? "🟡"
+              : "🟢";
+
+        return `
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8fafc; border-radius: 6px; margin-bottom: 0.5rem;">
           <div>
             <div style="font-weight: 600; color: #1f2937;">${event.title}</div>
@@ -847,24 +881,28 @@ function displayMaintenanceCalendar() {
           </span>
         </div>
       `;
-    }).join('');
-    
-    maintenanceList.innerHTML = html || '<div style="color: #6b7280; font-style: italic;">Keine Wartungstermine geplant</div>';
+      })
+      .join("");
+
+    maintenanceList.innerHTML =
+      html ||
+      '<div style="color: #6b7280; font-style: italic;">Keine Wartungstermine geplant</div>';
   }
 
   // Display backup schedule
   const backupSchedule = document.getElementById("backup-schedule");
   if (backupSchedule) {
-    const html = backupEvents.map(event => {
-      const dateStr = event.date.toLocaleDateString('de-DE', { 
-        day: '2-digit', 
-        month: 'short', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-      
-      return `
+    const html = backupEvents
+      .map((event) => {
+        const dateStr = event.date.toLocaleDateString("de-DE", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        return `
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f0f9ff; border-radius: 6px; margin-bottom: 0.5rem; border-left: 3px solid #3b82f6;">
           <div>
             <div style="font-weight: 600; color: #1f2937;">💾 ${event.title}</div>
@@ -875,9 +913,12 @@ function displayMaintenanceCalendar() {
           </span>
         </div>
       `;
-    }).join('');
-    
-    backupSchedule.innerHTML = html || '<div style="color: #6b7280; font-style: italic;">Keine Backups geplant</div>';
+      })
+      .join("");
+
+    backupSchedule.innerHTML =
+      html ||
+      '<div style="color: #6b7280; font-style: italic;">Keine Backups geplant</div>';
   }
 }
 
