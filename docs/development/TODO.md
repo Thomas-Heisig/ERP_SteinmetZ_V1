@@ -21,7 +21,7 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
 ### Code Quality & Type Safety 🆕
 
 - [ ] **TypeScript `any` Types eliminieren** 🔄 (20. Dez 2025 - In Bearbeitung)
-  - **Aktueller Stand**: ~394 `any` Types identifiziert → **~47 eliminiert** (11% abgeschlossen)
+  - **Aktueller Stand**: ~379 `any` Types identifiziert → **~62 eliminiert** (14% abgeschlossen)
   - **Top Dateien mit any Types**:
     - [x] ✅ **dbService.ts (63 Instanzen → 0)** - Datenbankabfragen und Ergebnisse
       - Neue Typen erstellt: `database.ts`, `postgres.ts` (135 Zeilen)
@@ -31,27 +31,36 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
     - [x] 🔄 **aiAnnotatorService.ts (33 Instanzen → 24)** - AI Service Responses (teilweise behoben)
       - Neue Typen erstellt: `ai-annotator.ts` (180 Zeilen)
       - Type definitions: FormFieldValue, ConditionalValue, JsonMetadata, NodeFilters
-      - 13 any types ersetzt in Interfaces/Types (FormSection, FormField, ValidationRule, etc.)
-      - Verbleibend: ~9 any types in Implementierung (Methoden-Bodies, -27% Reduktion)
-    - [ ] workflowEngine.ts (28 Instanzen) - Workflow-States und Payloads
-    - [ ] ai/types/types.ts (24 Instanzen) - AI Message und Tool Definitionen
+      - 13 any types ersetzt in Interfaces/Types
+      - Verbleibend: ~9 any types in Implementierung (-27% Reduktion)
+    - [x] 🔄 **workflowEngine.ts (28 Instanzen → 17)** - Workflow-States und Payloads (teilweise behoben)
+      - Neue Typen: WorkflowInput, WorkflowResult, WorkflowContext in types.ts
+      - Legacy action field proper typisiert (deprecated marker)
+      - Error handling von any → unknown konvertiert
+      - Function signatures mit proper workflow types
+      - Verbleibend: ~17 any types (-39% Reduktion)
+    - [x] 🔄 **ai/types/types.ts (24 Instanzen → 23)** - AI Message und Tool Definitionen
+      - metadata: Record<string, any> → Record<string, unknown>
+      - triggers config: any → unknown
+      - input_schema/output_schema: any → unknown
+      - Verbleibend: ~23 any types (-4% Reduktion)
     - [ ] customProvider.ts (22 Instanzen) - Provider-Responses
     - [ ] systemInfoService.ts (19 Instanzen) - System-Metriken
     - [ ] helpers.ts (16 Instanzen) - Utility-Funktionen
     - [ ] src/types/errors.ts (15 Instanzen) - Error-Handling
     - [ ] Weitere ~48 Dateien mit kleineren Mengen
-  - **Aufwand**: 5-7 Tage für vollständige Migration (0.5 Tage verbraucht, 4.5-6.5 Tage verbleibend)
+  - **Aufwand**: 5-7 Tage für vollständige Migration (0.7 Tage verbraucht, 4.3-6.3 Tage verbleibend)
   - **Priorität**: Hoch - Type Safety ist wichtig für Wartbarkeit
-  - **Status**: 11% abgeschlossen - dbService.ts vollständig, aiAnnotatorService.ts teilweise
+  - **Status**: 14% abgeschlossen - dbService.ts vollständig, workflowEngine.ts/aiAnnotatorService.ts/types.ts teilweise
   - **Details**: Siehe ISSUE-017 in ISSUES.md
   - **Neue Dateien**:
     - ✅ `src/types/database.ts` - Umfassende Datenbank-Typdefinitionen (108 Zeilen)
     - ✅ `src/types/postgres.ts` - PostgreSQL-spezifische Typen (27 Zeilen)
     - ✅ `src/types/ai-annotator.ts` - AI Annotator Typdefinitionen (180 Zeilen)
   - **Nächste Schritte**:
-    - workflowEngine.ts typisieren (28 any types) - höchste Priorität
-    - ai/types/types.ts typisieren (24 any types)
+    - workflowEngine.ts vollständig typisieren (17 any types verbleibend)
     - customProvider.ts typisieren (22 any types)
+    - systemInfoService.ts typisieren (19 any types)
 
 - [x] **Deprecated Dependencies evaluieren** ✅ ÜBERPRÜFT (18. Dez 2025)
   - [x] fluent-ffmpeg - NICHT MEHR VORHANDEN (bereits entfernt)

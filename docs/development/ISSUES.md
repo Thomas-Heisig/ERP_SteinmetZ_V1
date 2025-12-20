@@ -17,16 +17,16 @@ Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical D
 **Status**: 🟡 In Bearbeitung - Teilweise behoben | **Priorität**: Mittel | **Erstellt**: 2025-12-18 | **Aktualisiert**: 2025-12-20
 
 **Beschreibung**:
-Das Backend enthält **~394 ESLint-Warnungen** für `@typescript-eslint/no-explicit-any` (ursprünglich 441, Fortschritt: ~11% reduziert). Die Verwendung von `any` untergräbt die Typsicherheit von TypeScript und kann zu Laufzeitfehlern führen.
+Das Backend enthält **~379 ESLint-Warnungen** für `@typescript-eslint/no-explicit-any` (ursprünglich 441, Fortschritt: ~14% reduziert). Die Verwendung von `any` untergräbt die Typsicherheit von TypeScript und kann zu Laufzeitfehlern führen.
 
 **Detaillierte Analyse (20. Dez 2025)**:
 
-**Top 20 betroffene Dateien** (Stand: 20. Dez 2025):
+**Top 20 betroffene Dateien** (Stand: 20. Dez 2025 - Nachmittag):
 
 1. ~~`src/services/dbService.ts`~~ - ✅ **BEHOBEN** (war 63 `any` Types → jetzt 0)
-2. `ai/workflows/workflowEngine.ts` - 28 `any` Types (Workflow States, Payloads)
+2. ~~`ai/workflows/workflowEngine.ts`~~ - 17 `any` Types 🔄 **IN BEARBEITUNG** (war 28 → jetzt 17, -39%)
 3. ~~`src/services/aiAnnotatorService.ts`~~ - 24 `any` Types (✅ **TEILWEISE BEHOBEN**: war 33 → jetzt 24, -27%)
-4. `ai/types/types.ts` - 24 `any` Types (AI Message Types, Tool Definitions)
+4. `ai/types/types.ts` - 23 `any` Types (war 24 → jetzt 23, -4%)
 5. `ai/providers/customProvider.ts` - 22 `any` Types (Provider API Responses)
 6. `src/services/systemInfoService.ts` - 19 `any` Types (System Metriken)
 7. `ai/utils/helpers.ts` - 16 `any` Types (Utility-Funktionen)
@@ -50,7 +50,9 @@ Das Backend enthält **~394 ESLint-Warnungen** für `@typescript-eslint/no-expli
 
 - ✅ **dbService.ts** vollständig behoben (63 → 0, -100%)
 - ✅ **aiAnnotatorService.ts** teilweise behoben (33 → 24, -27%)
-- 📊 **Gesamt**: 441 → ~394 Warnungen (-47, -11% Reduktion)
+- 🔄 **workflowEngine.ts** teilweise behoben (28 → 17, -39%)
+- ✅ **types.ts** teilweise behoben (24 → 23, -4%)
+- 📊 **Gesamt**: 441 → ~379 Warnungen (-62, -14% Reduktion)
 
 **Lösungsansatz** (aktualisiert 20. Dez 2025):
 
