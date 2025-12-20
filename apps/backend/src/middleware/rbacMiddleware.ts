@@ -37,10 +37,10 @@
  * @module middleware/rbacMiddleware
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { getRbacService } from '../services/rbacService.js';
-import { sendForbidden } from '../utils/errorResponse.js';
-import type { Permission } from '../types/rbac.js';
+import { Request, Response, NextFunction } from "express";
+import { getRbacService } from "../services/rbacService.js";
+import { sendForbidden } from "../utils/errorResponse.js";
+import type { Permission } from "../types/rbac.js";
 
 /**
  * Require specific role
@@ -54,10 +54,14 @@ import type { Permission } from '../types/rbac.js';
  * ```
  */
 export function requireRole(roleName: string) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.auth) {
-        sendForbidden(res, 'Authentication required');
+        sendForbidden(res, "Authentication required");
         return;
       }
 
@@ -71,8 +75,8 @@ export function requireRole(roleName: string) {
 
       next();
     } catch (error) {
-      console.error('Error in requireRole middleware:', error);
-      sendForbidden(res, 'Authorization check failed');
+      console.error("Error in requireRole middleware:", error);
+      sendForbidden(res, "Authorization check failed");
     }
   };
 }
@@ -89,10 +93,14 @@ export function requireRole(roleName: string) {
  * ```
  */
 export function requireAnyRole(roleNames: string[]) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.auth) {
-        sendForbidden(res, 'Authentication required');
+        sendForbidden(res, "Authentication required");
         return;
       }
 
@@ -100,14 +108,17 @@ export function requireAnyRole(roleNames: string[]) {
       const hasRole = await rbacService.hasAnyRole(req.auth.user.id, roleNames);
 
       if (!hasRole) {
-        sendForbidden(res, `One of the following roles required: ${roleNames.join(', ')}`);
+        sendForbidden(
+          res,
+          `One of the following roles required: ${roleNames.join(", ")}`,
+        );
         return;
       }
 
       next();
     } catch (error) {
-      console.error('Error in requireAnyRole middleware:', error);
-      sendForbidden(res, 'Authorization check failed');
+      console.error("Error in requireAnyRole middleware:", error);
+      sendForbidden(res, "Authorization check failed");
     }
   };
 }
@@ -124,25 +135,35 @@ export function requireAnyRole(roleNames: string[]) {
  * ```
  */
 export function requireAllRoles(roleNames: string[]) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.auth) {
-        sendForbidden(res, 'Authentication required');
+        sendForbidden(res, "Authentication required");
         return;
       }
 
       const rbacService = getRbacService();
-      const hasAllRoles = await rbacService.hasAllRoles(req.auth.user.id, roleNames);
+      const hasAllRoles = await rbacService.hasAllRoles(
+        req.auth.user.id,
+        roleNames,
+      );
 
       if (!hasAllRoles) {
-        sendForbidden(res, `All of the following roles required: ${roleNames.join(', ')}`);
+        sendForbidden(
+          res,
+          `All of the following roles required: ${roleNames.join(", ")}`,
+        );
         return;
       }
 
       next();
     } catch (error) {
-      console.error('Error in requireAllRoles middleware:', error);
-      sendForbidden(res, 'Authorization check failed');
+      console.error("Error in requireAllRoles middleware:", error);
+      sendForbidden(res, "Authorization check failed");
     }
   };
 }
@@ -159,15 +180,22 @@ export function requireAllRoles(roleNames: string[]) {
  * ```
  */
 export function requirePermission(permission: Permission) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.auth) {
-        sendForbidden(res, 'Authentication required');
+        sendForbidden(res, "Authentication required");
         return;
       }
 
       const rbacService = getRbacService();
-      const hasPermission = await rbacService.hasPermission(req.auth.user.id, permission);
+      const hasPermission = await rbacService.hasPermission(
+        req.auth.user.id,
+        permission,
+      );
 
       if (!hasPermission) {
         sendForbidden(res, `Permission '${permission}' required`);
@@ -176,8 +204,8 @@ export function requirePermission(permission: Permission) {
 
       next();
     } catch (error) {
-      console.error('Error in requirePermission middleware:', error);
-      sendForbidden(res, 'Authorization check failed');
+      console.error("Error in requirePermission middleware:", error);
+      sendForbidden(res, "Authorization check failed");
     }
   };
 }
@@ -190,31 +218,41 @@ export function requirePermission(permission: Permission) {
  *
  * @example
  * ```typescript
- * router.post('/data/import', authenticate, 
- *   requireAnyPermission(['finance:import', 'hr:import']), 
+ * router.post('/data/import', authenticate,
+ *   requireAnyPermission(['finance:import', 'hr:import']),
  *   importData);
  * ```
  */
 export function requireAnyPermission(permissions: Permission[]) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.auth) {
-        sendForbidden(res, 'Authentication required');
+        sendForbidden(res, "Authentication required");
         return;
       }
 
       const rbacService = getRbacService();
-      const hasPermission = await rbacService.hasAnyPermission(req.auth.user.id, permissions);
+      const hasPermission = await rbacService.hasAnyPermission(
+        req.auth.user.id,
+        permissions,
+      );
 
       if (!hasPermission) {
-        sendForbidden(res, `One of the following permissions required: ${permissions.join(', ')}`);
+        sendForbidden(
+          res,
+          `One of the following permissions required: ${permissions.join(", ")}`,
+        );
         return;
       }
 
       next();
     } catch (error) {
-      console.error('Error in requireAnyPermission middleware:', error);
-      sendForbidden(res, 'Authorization check failed');
+      console.error("Error in requireAnyPermission middleware:", error);
+      sendForbidden(res, "Authorization check failed");
     }
   };
 }
@@ -227,31 +265,41 @@ export function requireAnyPermission(permissions: Permission[]) {
  *
  * @example
  * ```typescript
- * router.post('/reconciliation', authenticate, 
- *   requireAllPermissions(['finance:read', 'finance:update']), 
+ * router.post('/reconciliation', authenticate,
+ *   requireAllPermissions(['finance:read', 'finance:update']),
  *   reconcileAccounts);
  * ```
  */
 export function requireAllPermissions(permissions: Permission[]) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.auth) {
-        sendForbidden(res, 'Authentication required');
+        sendForbidden(res, "Authentication required");
         return;
       }
 
       const rbacService = getRbacService();
-      const hasAllPermissions = await rbacService.hasAllPermissions(req.auth.user.id, permissions);
+      const hasAllPermissions = await rbacService.hasAllPermissions(
+        req.auth.user.id,
+        permissions,
+      );
 
       if (!hasAllPermissions) {
-        sendForbidden(res, `All of the following permissions required: ${permissions.join(', ')}`);
+        sendForbidden(
+          res,
+          `All of the following permissions required: ${permissions.join(", ")}`,
+        );
         return;
       }
 
       next();
     } catch (error) {
-      console.error('Error in requireAllPermissions middleware:', error);
-      sendForbidden(res, 'Authorization check failed');
+      console.error("Error in requireAllPermissions middleware:", error);
+      sendForbidden(res, "Authorization check failed");
     }
   };
 }
@@ -268,15 +316,22 @@ export function requireAllPermissions(permissions: Permission[]) {
  * ```
  */
 export function requireModuleAccess(moduleName: string) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.auth) {
-        sendForbidden(res, 'Authentication required');
+        sendForbidden(res, "Authentication required");
         return;
       }
 
       const rbacService = getRbacService();
-      const canAccess = await rbacService.canAccessModule(req.auth.user.id, moduleName);
+      const canAccess = await rbacService.canAccessModule(
+        req.auth.user.id,
+        moduleName,
+      );
 
       if (!canAccess) {
         sendForbidden(res, `Access to '${moduleName}' module denied`);
@@ -285,8 +340,8 @@ export function requireModuleAccess(moduleName: string) {
 
       next();
     } catch (error) {
-      console.error('Error in requireModuleAccess middleware:', error);
-      sendForbidden(res, 'Authorization check failed');
+      console.error("Error in requireModuleAccess middleware:", error);
+      sendForbidden(res, "Authorization check failed");
     }
   };
 }
@@ -299,36 +354,43 @@ export function requireModuleAccess(moduleName: string) {
  *
  * @example
  * ```typescript
- * router.put('/users/:id/profile', authenticate, 
+ * router.put('/users/:id/profile', authenticate,
  *   requirePermissionCheck(async (req) => {
  *     // Allow admins or the user themselves
- *     return req.auth.user.id === req.params.id || 
+ *     return req.auth.user.id === req.params.id ||
  *            await rbacService.hasRole(req.auth.user.id, 'admin');
- *   }), 
+ *   }),
  *   updateUserProfile);
  * ```
  */
 export function requirePermissionCheck(
   checker: (req: Request) => Promise<boolean>,
 ) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.auth) {
-        sendForbidden(res, 'Authentication required');
+        sendForbidden(res, "Authentication required");
         return;
       }
 
       const allowed = await checker(req);
 
       if (!allowed) {
-        sendForbidden(res, 'You do not have permission to access this resource');
+        sendForbidden(
+          res,
+          "You do not have permission to access this resource",
+        );
         return;
       }
 
       next();
     } catch (error) {
-      console.error('Error in requirePermissionCheck middleware:', error);
-      sendForbidden(res, 'Authorization check failed');
+      console.error("Error in requirePermissionCheck middleware:", error);
+      sendForbidden(res, "Authorization check failed");
     }
   };
 }
@@ -345,7 +407,7 @@ export function requirePermissionCheck(
  * @example
  * ```typescript
  * router.get('/data', authenticate, optionalPermissionCheck('data:export'), getData);
- * 
+ *
  * // In route handler:
  * if (req.isAuthorized) {
  *   // Include export options
@@ -353,7 +415,11 @@ export function requirePermissionCheck(
  * ```
  */
 export function optionalPermissionCheck(permission: Permission) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       if (!req.auth) {
         req.isAuthorized = false;
@@ -362,11 +428,14 @@ export function optionalPermissionCheck(permission: Permission) {
       }
 
       const rbacService = getRbacService();
-      req.isAuthorized = await rbacService.hasPermission(req.auth.user.id, permission);
+      req.isAuthorized = await rbacService.hasPermission(
+        req.auth.user.id,
+        permission,
+      );
 
       next();
     } catch (error) {
-      console.error('Error in optionalPermissionCheck middleware:', error);
+      console.error("Error in optionalPermissionCheck middleware:", error);
       req.isAuthorized = false;
       next();
     }

@@ -127,9 +127,7 @@ export const FaxInbox: React.FC = () => {
     };
 
     return (
-      <span
-        className={styles.classificationBadge}
-      >
+      <span className={styles.classificationBadge}>
         {typeLabels[classification.type] || classification.type} (
         {Math.round(classification.confidence * 100)}%)
       </span>
@@ -193,12 +191,8 @@ export const FaxInbox: React.FC = () => {
 
   return (
     <div>
-      <div
-        className={styles.header}
-      >
-        <span className={styles.headerText}>
-          {faxes.length} Faxe
-        </span>
+      <div className={styles.header}>
+        <span className={styles.headerText}>{faxes.length} Faxe</span>
         <Button variant="outline" size="sm">
           🔄 Aktualisieren
         </Button>
@@ -222,9 +216,7 @@ export const FaxInbox: React.FC = () => {
       >
         {selectedFax && (
           <div className={styles.modalContent}>
-            <div
-              className={styles.infoGrid}
-            >
+            <div className={styles.infoGrid}>
               <div>
                 <strong>Von:</strong>
                 <p className={styles.infoRow}>{selectedFax.from}</p>
@@ -264,15 +256,11 @@ export const FaxInbox: React.FC = () => {
             {selectedFax.ocrText && (
               <div className={styles.textContent}>
                 <strong>OCR-Text:</strong>
-                <pre className={styles.ocrText}>
-                  {selectedFax.ocrText}
-                </pre>
+                <pre className={styles.ocrText}>{selectedFax.ocrText}</pre>
               </div>
             )}
 
-            <div
-              className={styles.actions}
-            >
+            <div className={styles.actions}>
               <Button variant="outline">📥 Herunterladen</Button>
               <Button variant="primary">✅ Verarbeiten</Button>
             </div>

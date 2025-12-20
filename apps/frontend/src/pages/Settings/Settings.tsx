@@ -95,7 +95,9 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [changes, setChanges] = useState<Map<string, string | number | boolean>>(new Map());
+  const [changes, setChanges] = useState<
+    Map<string, string | number | boolean>
+  >(new Map());
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<SettingsHistory[]>([]);
   const [selectedSetting, setSelectedSetting] = useState<string | null>(null);
@@ -158,7 +160,11 @@ export default function Settings() {
     setFilteredSettings(filtered);
   };
 
-  const handleChange = (key: string, value: string | number | boolean, setting: SettingRecord) => {
+  const handleChange = (
+    key: string,
+    value: string | number | boolean,
+    setting: SettingRecord,
+  ) => {
     // Validate
     const error = validateSetting(setting, value);
     if (error) {
@@ -448,7 +454,7 @@ export default function Settings() {
           <div className={styles.inputWrapper}>
             <input
               type="number"
-              value={typeof currentValue === 'number' ? currentValue : ''}
+              value={typeof currentValue === "number" ? currentValue : ""}
               min={setting.minValue}
               max={setting.maxValue}
               onChange={(e) =>
@@ -467,7 +473,7 @@ export default function Settings() {
       case "select":
         return (
           <select
-            value={String(currentValue ?? '')}
+            value={String(currentValue ?? "")}
             onChange={(e) => handleChange(setting.key, e.target.value, setting)}
             className={styles.select}
             aria-label={setting.description || setting.key}
@@ -491,12 +497,16 @@ export default function Settings() {
           <div className={styles.inputWrapper}>
             <input
               type={setting.sensitive ? "password" : "text"}
-              value={typeof currentValue === 'string' ? currentValue : String(currentValue ?? '')}
+              value={
+                typeof currentValue === "string"
+                  ? currentValue
+                  : String(currentValue ?? "")
+              }
               onChange={(e) =>
                 handleChange(setting.key, e.target.value, setting)
               }
               className={`${styles.input} ${hasError ? styles.inputError : ""}`}
-              placeholder={String(setting.defaultValue ?? '')}
+              placeholder={String(setting.defaultValue ?? "")}
             />
             {hasError && (
               <span className={styles.errorText}>{errorMessage}</span>
@@ -554,9 +564,7 @@ export default function Settings() {
       </header>
 
       {error && (
-        <div
-          className={`${styles.alert} ${styles.alertError}`}
-        >
+        <div className={`${styles.alert} ${styles.alertError}`}>
           <strong>❌ Fehler:</strong> {error}
           <button onClick={() => setError(null)} className={styles.alertClose}>
             ×
@@ -565,9 +573,7 @@ export default function Settings() {
       )}
 
       {successMessage && (
-        <div
-          className={`${styles.alert} ${styles.alertSuccess}`}
-        >
+        <div className={`${styles.alert} ${styles.alertSuccess}`}>
           <strong>✅ Erfolg:</strong> {successMessage}
           <button
             onClick={() => setSuccessMessage(null)}

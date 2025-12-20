@@ -15,13 +15,13 @@
  * @enum
  */
 export enum RoleNames {
-  SUPER_ADMIN = 'super_admin',
-  ADMIN = 'admin',
-  MANAGER = 'manager',
-  SUPERVISOR = 'supervisor',
-  USER = 'user',
-  VIEWER = 'viewer',
-  GUEST = 'guest',
+  SUPER_ADMIN = "super_admin",
+  ADMIN = "admin",
+  MANAGER = "manager",
+  SUPERVISOR = "supervisor",
+  USER = "user",
+  VIEWER = "viewer",
+  GUEST = "guest",
 }
 
 /**
@@ -29,27 +29,27 @@ export enum RoleNames {
  * @enum
  */
 export enum ModuleNames {
-  DASHBOARD = 'dashboard',
-  USER_MANAGEMENT = 'user_management',
-  ROLE_MANAGEMENT = 'role_management',
-  FINANCE = 'finance',
-  HR = 'hr',
-  CRM = 'crm',
-  SALES = 'sales',
-  PROCUREMENT = 'procurement',
-  INVENTORY = 'inventory',
-  PRODUCTION = 'production',
-  WAREHOUSE = 'warehouse',
-  BUSINESS = 'business',
-  MARKETING = 'marketing',
-  REPORTING = 'reporting',
-  SETTINGS = 'settings',
-  MONITORING = 'monitoring',
-  AUDIT_LOGS = 'audit_logs',
-  AI_ANNOTATOR = 'ai_annotator',
-  COMMUNICATION = 'communication',
-  PROJECTS = 'projects',
-  DOCUMENTS = 'documents',
+  DASHBOARD = "dashboard",
+  USER_MANAGEMENT = "user_management",
+  ROLE_MANAGEMENT = "role_management",
+  FINANCE = "finance",
+  HR = "hr",
+  CRM = "crm",
+  SALES = "sales",
+  PROCUREMENT = "procurement",
+  INVENTORY = "inventory",
+  PRODUCTION = "production",
+  WAREHOUSE = "warehouse",
+  BUSINESS = "business",
+  MARKETING = "marketing",
+  REPORTING = "reporting",
+  SETTINGS = "settings",
+  MONITORING = "monitoring",
+  AUDIT_LOGS = "audit_logs",
+  AI_ANNOTATOR = "ai_annotator",
+  COMMUNICATION = "communication",
+  PROJECTS = "projects",
+  DOCUMENTS = "documents",
 }
 
 /**
@@ -57,22 +57,22 @@ export enum ModuleNames {
  * @enum
  */
 export enum PermissionActions {
-  CREATE = 'create',
-  READ = 'read',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  EXPORT = 'export',
-  IMPORT = 'import',
-  APPROVE = 'approve',
-  REJECT = 'reject',
-  PUBLISH = 'publish',
-  UNPUBLISH = 'unpublish',
-  ARCHIVE = 'archive',
-  RESTORE = 'restore',
-  SHARE = 'share',
-  UNSHARE = 'unshare',
-  CONFIGURE = 'configure',
-  MANAGE = 'manage',
+  CREATE = "create",
+  READ = "read",
+  UPDATE = "update",
+  DELETE = "delete",
+  EXPORT = "export",
+  IMPORT = "import",
+  APPROVE = "approve",
+  REJECT = "reject",
+  PUBLISH = "publish",
+  UNPUBLISH = "unpublish",
+  ARCHIVE = "archive",
+  RESTORE = "restore",
+  SHARE = "share",
+  UNSHARE = "unshare",
+  CONFIGURE = "configure",
+  MANAGE = "manage",
 }
 
 /**
@@ -149,7 +149,14 @@ export interface ModulePermissionSet {
  */
 export interface RbacAuditLog {
   id: string;
-  action: 'role_created' | 'role_updated' | 'role_deleted' | 'permission_granted' | 'permission_revoked' | 'role_assigned' | 'role_revoked';
+  action:
+    | "role_created"
+    | "role_updated"
+    | "role_deleted"
+    | "permission_granted"
+    | "permission_revoked"
+    | "role_assigned"
+    | "role_revoked";
   actor_id: string;
   target_user_id?: string;
   target_role_id?: string;

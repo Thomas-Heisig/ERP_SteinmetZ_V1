@@ -7,29 +7,35 @@ The Payroll module in ERP SteinmetZ provides comprehensive salary management and
 ## Features
 
 ### 1. Automatic Payroll Calculation
+
 - **Tax Calculation**: Automatic calculation of German income tax, church tax, and solidarity surcharge
 - **Social Insurance**: Automatic pension, health, and unemployment insurance calculations
 - **Configurable Parameters**: Support for country-specific tax rates (currently DE)
 - **Tax Snapshots**: Historical tracking of tax rates used for each payroll record
 
 ### 2. SEPA Payment Support
+
 - **pain.001.001.03 Export**: Export payroll data in SEPA XML format for bank transfers
 - **IBAN/BIC Management**: Store employee banking information
 - **Creditor Name**: Support for payment reference information
 - **Payment Status Tracking**: Monitor pending, processed, failed, and reversed payments
 
 ### 3. Data Exports
+
 - **CSV Export**: Export payroll data as CSV for spreadsheet applications
 - **Lohnjournal (Payroll Journal)**: Detailed records with all deductions and calculations
 - **Filtering**: Filter by month, year, and payment status
 
 ### 4. RBAC Integration
+
 All endpoints require `hr:read`, `hr:create`, or `hr:update` permissions
 
 ## Database Schema
 
 ### hr_payroll_tax_params
+
 Stores tax parameters for different years and countries:
+
 ```sql
 CREATE TABLE hr_payroll_tax_params (
   id TEXT PRIMARY KEY,
@@ -51,7 +57,9 @@ CREATE TABLE hr_payroll_tax_params (
 ```
 
 ### hr_payroll
+
 Enhanced payroll records with SEPA support:
+
 ```sql
 CREATE TABLE hr_payroll (
   id TEXT PRIMARY KEY,
@@ -88,22 +96,26 @@ CREATE TABLE hr_payroll (
 ## API Endpoints
 
 ### Tax Parameters
+
 - `GET /api/hr/payroll/tax-params/:year` - Get tax parameters for year
 - `POST /api/hr/payroll/tax-params` - Create/update tax parameters
 
 ### Payroll Records
+
 - `GET /api/hr/payroll` - List payroll records (paginated)
 - `GET /api/hr/payroll/:id` - Get specific payroll record
 - `GET /api/hr/employees/:employeeId/payroll` - Get employee payroll history
 - `POST /api/hr/payroll` - Create payroll record (auto-calculates taxes)
 
 ### Exports
+
 - `GET /api/hr/payroll/export/csv` - Export as CSV
 - `POST /api/hr/payroll/export/sepa` - Export as SEPA XML (pain.001.001.03)
 
 ### Request/Response Examples
 
 #### Create Payroll Record
+
 ```bash
 POST /api/hr/payroll
 Content-Type: application/json
@@ -123,6 +135,7 @@ Content-Type: application/json
 ```
 
 #### Response
+
 ```json
 {
   "success": true,
@@ -131,15 +144,15 @@ Content-Type: application/json
     "employee_id": "uuid",
     "month": "01",
     "year": 2024,
-    "gross_salary": 3500.00,
-    "net_salary": 2365.50,
+    "gross_salary": 3500.0,
+    "net_salary": 2365.5,
     "bonuses": 0,
-    "income_tax": 735.00,
-    "pension_insurance": 325.50,
-    "health_insurance": 255.50,
-    "unemployment_insurance": 42.00,
-    "church_tax": 58.80,
-    "solidarity_surcharge": 40.40,
+    "income_tax": 735.0,
+    "pension_insurance": 325.5,
+    "health_insurance": 255.5,
+    "unemployment_insurance": 42.0,
+    "church_tax": 58.8,
+    "solidarity_surcharge": 40.4,
     "other_deductions": 0,
     "payment_status": "pending",
     "sepa_status": "draft",
@@ -152,6 +165,7 @@ Content-Type: application/json
 ```
 
 #### Export SEPA
+
 ```bash
 POST /api/hr/payroll/export/sepa
 Content-Type: application/json
@@ -168,7 +182,9 @@ Content-Type: application/json
 ## Frontend Components
 
 ### PayrollList
+
 Main list component showing payroll records with:
+
 - Employee information
 - Gross/net salary display
 - Tax and insurance breakdowns
@@ -176,13 +192,17 @@ Main list component showing payroll records with:
 - CSV export functionality
 
 ### SEPAExport
+
 Form component for exporting SEPA XML:
+
 - Company details input
 - IBAN/BIC entry
 - XML file generation and download
 
 ### Payroll Page
+
 Main page combining:
+
 - Year/month filters
 - Tabs for Overview and SEPA Export
 - Integration of PayrollList and SEPAExport components
@@ -191,20 +211,21 @@ Main page combining:
 
 Default values seed in `seed_payroll_tax_params.sql`:
 
-| Rate | 2024 | 2025 |
-|------|------|------|
-| Income Tax | 42% | 42% |
-| Pension Insurance | 9.3% | 9.3% |
-| Health Insurance | 7.3% | 7.3% |
-| Unemployment Insurance | 1.2% | 1.2% |
-| Church Tax | 8% | 8% |
-| Solidarity Surcharge | 0.55% | 0.55% |
-| Minimum Wage | €12.41 | €12.82 |
-| Tax-Free Allowance | €520 | €520 |
+| Rate                   | 2024   | 2025   |
+| ---------------------- | ------ | ------ |
+| Income Tax             | 42%    | 42%    |
+| Pension Insurance      | 9.3%   | 9.3%   |
+| Health Insurance       | 7.3%   | 7.3%   |
+| Unemployment Insurance | 1.2%   | 1.2%   |
+| Church Tax             | 8%     | 8%     |
+| Solidarity Surcharge   | 0.55%  | 0.55%  |
+| Minimum Wage           | €12.41 | €12.82 |
+| Tax-Free Allowance     | €520   | €520   |
 
 ## Internationalization
 
 Translation keys available:
+
 - `sidebar.payroll` - "Gehaltsabrechnung" (DE) / "Payroll" (EN)
 - `sidebar.navItems.payroll` - "Gehaltsabrechnung" (DE) / "Payroll" (EN)
 
@@ -218,17 +239,20 @@ Translation keys available:
 ## Development Notes
 
 ### Services (Backend)
+
 - `HRService.calculatePayroll()` - Calculates taxes and deductions
 - `HRService.createPayrollRecord()` - Creates record with auto-calculation
 - `HRService.exportPayrollAsCSV()` - Generates CSV export
 - `HRService.exportPayrollAsSEPA()` - Generates SEPA XML export
 
 ### Routes
+
 - All payroll routes use RBAC middleware
 - Async handlers for safe error handling
 - Zod validation for all inputs
 
 ### Frontend Components
+
 - React hooks for data fetching
 - CSS modules for styling
 - Responsive design for mobile/tablet

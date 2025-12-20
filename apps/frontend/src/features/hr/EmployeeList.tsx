@@ -78,10 +78,7 @@ export const EmployeeList: React.FC = () => {
     };
     const c = config[status];
     return (
-      <span
-        className={styles.statusText}
-        style={{ color: c.color }}
-      >
+      <span className={styles.statusText} style={{ color: c.color }}>
         <span
           className={styles.directionIcon}
           style={{ background: c.color }}
@@ -97,9 +94,7 @@ export const EmployeeList: React.FC = () => {
       header: "Name",
       render: (_: unknown, row: Employee) => (
         <div className={styles.contactInfo}>
-          <div
-            className={styles.directionIcon}
-          >
+          <div className={styles.directionIcon}>
             {row.firstName[0]}
             {row.lastName[0]}
           </div>
@@ -107,9 +102,7 @@ export const EmployeeList: React.FC = () => {
             <div className={styles.contactName}>
               {row.firstName} {row.lastName}
             </div>
-            <div className={styles.phoneNumber}>
-              {row.email}
-            </div>
+            <div className={styles.phoneNumber}>{row.email}</div>
           </div>
         </div>
       ),
@@ -148,9 +141,7 @@ export const EmployeeList: React.FC = () => {
   return (
     <Card variant="elevated" padding="none">
       <div className={styles.header}>
-        <h2 className={styles.headerText}>
-          👥 Mitarbeiter
-        </h2>
+        <h2 className={styles.headerText}>👥 Mitarbeiter</h2>
         <div className={styles.filterGroup}>
           <Input
             placeholder="Suchen..."
@@ -181,35 +172,21 @@ export const EmployeeList: React.FC = () => {
       >
         {selectedEmployee && (
           <div className={styles.modalContent}>
-            <div
-              className={styles.infoGrid}
-            >
+            <div className={styles.infoGrid}>
               <div>
-                <label className={styles.label}>
-                  E-Mail
-                </label>
+                <label className={styles.label}>E-Mail</label>
                 <p className={styles.value}>{selectedEmployee.email}</p>
               </div>
               <div>
-                <label className={styles.label}>
-                  Abteilung
-                </label>
-                <p className={styles.value}>
-                  {selectedEmployee.department}
-                </p>
+                <label className={styles.label}>Abteilung</label>
+                <p className={styles.value}>{selectedEmployee.department}</p>
               </div>
               <div>
-                <label className={styles.label}>
-                  Position
-                </label>
-                <p className={styles.value}>
-                  {selectedEmployee.position}
-                </p>
+                <label className={styles.label}>Position</label>
+                <p className={styles.value}>{selectedEmployee.position}</p>
               </div>
               <div>
-                <label className={styles.label}>
-                  Eintritt
-                </label>
+                <label className={styles.label}>Eintritt</label>
                 <p className={styles.value}>
                   {new Date(selectedEmployee.startDate).toLocaleDateString(
                     "de-DE",
@@ -217,9 +194,7 @@ export const EmployeeList: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div
-              className={styles.actions}
-            >
+            <div className={styles.actions}>
               <Button variant="outline">✏️ Bearbeiten</Button>
               <Button variant="primary">📅 Zeiterfassung</Button>
             </div>

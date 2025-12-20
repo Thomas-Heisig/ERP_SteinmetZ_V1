@@ -30,10 +30,10 @@ export interface ResponsiveBreakpoints {
 /**
  * Possible form field values
  */
-export type FormFieldValue = 
-  | string 
-  | number 
-  | boolean 
+export type FormFieldValue =
+  | string
+  | number
+  | boolean
   | Date
   | string[]
   | number[]
@@ -215,7 +215,8 @@ export function isFormFieldValue(value: unknown): value is FormFieldValue {
     typeof value === "boolean" ||
     value instanceof Date ||
     value === null ||
-    (Array.isArray(value) && value.every(v => typeof v === "string" || typeof v === "number"))
+    (Array.isArray(value) &&
+      value.every((v) => typeof v === "string" || typeof v === "number"))
   );
 }
 
@@ -234,9 +235,5 @@ export function isJsonMetadata(value: unknown): value is JsonMetadata {
  * Type guard to check if object is AIProviderResponse
  */
 export function isAIProviderResponse(obj: unknown): obj is AIProviderResponse {
-  return (
-    typeof obj === "object" &&
-    obj !== null &&
-    !Array.isArray(obj)
-  );
+  return typeof obj === "object" && obj !== null && !Array.isArray(obj);
 }

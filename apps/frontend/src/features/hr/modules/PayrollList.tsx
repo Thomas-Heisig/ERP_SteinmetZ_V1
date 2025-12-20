@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/features/hr/modules/PayrollList.tsx
 
-import React, { useState, useEffect } from 'react';
-import { formatCurrency } from '../../../utils/formatting';
-import styles from './PayrollList.module.css';
+import React, { useState, useEffect } from "react";
+import { formatCurrency } from "../../../utils/formatting";
+import styles from "./PayrollList.module.css";
 
 interface PayrollRecord {
   id: string;
@@ -20,7 +20,7 @@ interface PayrollRecord {
   church_tax: number;
   solidarity_surcharge: number;
   other_deductions: number;
-  payment_status: 'pending' | 'processed' | 'failed' | 'reversed';
+  payment_status: "pending" | "processed" | "failed" | "reversed";
   payment_date?: string;
   created_at: string;
 }
@@ -30,7 +30,10 @@ interface PayrollListProps {
   month?: string;
 }
 
-export const PayrollList: React.FC<PayrollListProps> = ({ year = new Date().getFullYear(), month }) => {
+export const PayrollList: React.FC<PayrollListProps> = ({
+  year = new Date().getFullYear(),
+  month,
+}) => {
   const [payroll, setPayroll] = useState<PayrollRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -51,7 +54,7 @@ export const PayrollList: React.FC<PayrollListProps> = ({ year = new Date().getF
       });
 
       if (month) {
-        params.append('month', month);
+        params.append("month", month);
       }
 
       const response = await fetch(`/api/hr/payroll?${params}`);
@@ -62,7 +65,7 @@ export const PayrollList: React.FC<PayrollListProps> = ({ year = new Date().getF
         setTotal(data.data.total);
       }
     } catch (error) {
-      console.error('Failed to fetch payroll:', error);
+      console.error("Failed to fetch payroll:", error);
     } finally {
       setLoading(false);
     }
@@ -71,19 +74,19 @@ export const PayrollList: React.FC<PayrollListProps> = ({ year = new Date().getF
   const handleExportCSV = async () => {
     try {
       const params = new URLSearchParams({ year: year.toString() });
-      if (month) params.append('month', month);
+      if (month) params.append("month", month);
 
       const response = await fetch(`/api/hr/payroll/export/csv?${params}`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `payroll-${year}-${month || 'all'}.csv`;
+      link.download = `payroll-${year}-${month || "all"}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Failed to export CSV:', error);
+      console.error("Failed to export CSV:", error);
     }
   };
 
@@ -120,17 +123,37 @@ export const PayrollList: React.FC<PayrollListProps> = ({ year = new Date().getF
                 {payroll.map((record) => (
                   <tr key={record.id}>
                     <td>{record.employee_id.substring(0, 8)}</td>
-                    <td>{record.month}/{record.year}</td>
-                    <td className={styles.number}>{formatCurrency(record.gross_salary)}</td>
-                    <td className={styles.number}>{formatCurrency((record.income_tax || 0) + (record.church_tax || 0) + (record.solidarity_surcharge || 0))}</td>
-                    <td className={styles.number}>{formatCurrency((record.pension_insurance || 0) + (record.health_insurance || 0) + (record.unemployment_insurance || 0))}</td>
-                    <td className={styles.number + ' ' + styles.bold}>{formatCurrency(record.net_salary)}</td>
                     <td>
-                      <span className={`${styles.status} ${styles[record.payment_status]}`}>
+                      {record.month}/{record.year}
+                    </td>
+                    <td className={styles.number}>
+                      {formatCurrency(record.gross_salary)}
+                    </td>
+                    <td className={styles.number}>
+                      {formatCurrency(
+                        (record.income_tax || 0) +
+                          (record.church_tax || 0) +
+                          (record.solidarity_surcharge || 0),
+                      )}
+                    </td>
+                    <td className={styles.number}>
+                      {formatCurrency(
+                        (record.pension_insurance || 0) +
+                          (record.health_insurance || 0) +
+                          (record.unemployment_insurance || 0),
+                      )}
+                    </td>
+                    <td className={styles.number + " " + styles.bold}>
+                      {formatCurrency(record.net_salary)}
+                    </td>
+                    <td>
+                      <span
+                        className={`${styles.status} ${styles[record.payment_status]}`}
+                      >
                         {record.payment_status}
                       </span>
                     </td>
-                    <td>{record.payment_date || '—'}</td>
+                    <td>{record.payment_date || "—"}</td>
                   </tr>
                 ))}
               </tbody>

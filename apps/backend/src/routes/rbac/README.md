@@ -9,8 +9,8 @@
 
 ```typescript
 // In your main app.ts or index.ts
-import { initializeRbacService } from '../services/rbacService.js';
-import db from '../config/database.js';
+import { initializeRbacService } from "../services/rbacService.js";
+import db from "../config/database.js";
 
 // Initialize RBAC service after database connection
 const rbacService = initializeRbacService(db);
@@ -19,10 +19,10 @@ const rbacService = initializeRbacService(db);
 ### 2. Mount RBAC Router
 
 ```typescript
-import rbacRouter from '../routes/rbacRouter.js';
+import rbacRouter from "../routes/rbacRouter.js";
 
 // Mount the router
-app.use('/api/rbac', rbacRouter);
+app.use("/api/rbac", rbacRouter);
 ```
 
 ### 3. Run Database Migration
@@ -38,38 +38,38 @@ npm run migrate:rbac
 ### 4. Use RBAC Middleware in Your Routes
 
 ```typescript
-import { Router } from 'express';
-import { authenticate } from '../middleware/authMiddleware.js';
-import { 
-  requireRole, 
+import { Router } from "express";
+import { authenticate } from "../middleware/authMiddleware.js";
+import {
+  requireRole,
   requirePermission,
-  requireModuleAccess 
-} from '../middleware/rbacMiddleware.js';
+  requireModuleAccess,
+} from "../middleware/rbacMiddleware.js";
 
 const router = Router();
 
 // Require admin role
 router.delete(
-  '/settings',
+  "/settings",
   authenticate,
-  requireRole('admin'),
-  deleteSettingsHandler
+  requireRole("admin"),
+  deleteSettingsHandler,
 );
 
 // Require specific permission
 router.post(
-  '/invoices',
+  "/invoices",
   authenticate,
-  requirePermission('finance:create'),
-  createInvoiceHandler
+  requirePermission("finance:create"),
+  createInvoiceHandler,
 );
 
 // Require module access
 router.get(
-  '/finance/reports',
+  "/finance/reports",
   authenticate,
-  requireModuleAccess('finance'),
-  getFinanceReportsHandler
+  requireModuleAccess("finance"),
+  getFinanceReportsHandler,
 );
 
 export default router;
@@ -78,11 +78,13 @@ export default router;
 ## API Endpoints
 
 ### Get All Roles (Admin)
+
 ```
 GET /api/rbac/roles
 ```
 
 ### Assign Role to User (Admin)
+
 ```
 POST /api/rbac/users/:userId/roles/:roleId
 {
@@ -91,31 +93,37 @@ POST /api/rbac/users/:userId/roles/:roleId
 ```
 
 ### Revoke Role (Admin)
+
 ```
 DELETE /api/rbac/users/:userId/roles/:roleId
 ```
 
 ### Get User Roles
+
 ```
 GET /api/rbac/users/:userId/roles
 ```
 
 ### Get User Permissions
+
 ```
 GET /api/rbac/users/:userId/permissions
 ```
 
 ### Check Current User Permissions
+
 ```
 GET /api/rbac/me/permissions
 ```
 
 ### Check Current User Roles
+
 ```
 GET /api/rbac/me/roles
 ```
 
 ### Check Permission
+
 ```
 POST /api/rbac/check-permission
 {
@@ -124,6 +132,7 @@ POST /api/rbac/check-permission
 ```
 
 ### Check Role
+
 ```
 POST /api/rbac/check-role
 {
@@ -156,62 +165,66 @@ POST /api/rbac/check-role
 ## Examples
 
 ### Protect Admin Routes
+
 ```typescript
 router.delete(
-  '/users/:id',
+  "/users/:id",
   authenticate,
-  requireRole('admin'),
-  deleteUserHandler
+  requireRole("admin"),
+  deleteUserHandler,
 );
 ```
 
 ### Multi-Level Approval
+
 ```typescript
 router.post(
-  '/approval',
+  "/approval",
   authenticate,
-  requireAnyRole(['admin', 'manager']),
-  approveHandler
+  requireAnyRole(["admin", "manager"]),
+  approveHandler,
 );
 ```
 
 ### Finance Operations
+
 ```typescript
 router.post(
-  '/invoices',
+  "/invoices",
   authenticate,
-  requirePermission('finance:create'),
-  createInvoiceHandler
+  requirePermission("finance:create"),
+  createInvoiceHandler,
 );
 
 router.post(
-  '/invoices/:id/approve',
+  "/invoices/:id/approve",
   authenticate,
-  requirePermission('finance:approve'),
-  approveInvoiceHandler
+  requirePermission("finance:approve"),
+  approveInvoiceHandler,
 );
 ```
 
 ### Module Access
+
 ```typescript
 router.get(
-  '/sales/dashboard',
+  "/sales/dashboard",
   authenticate,
-  requireModuleAccess('sales'),
-  getSalesDashboardHandler
+  requireModuleAccess("sales"),
+  getSalesDashboardHandler,
 );
 ```
 
 ## Service Methods
 
 ```typescript
-import { getRbacService } from '../services/rbacService.js';
+import { getRbacService } from "../services/rbacService.js";
 
 const rbacService = getRbacService();
 
 // Check permissions
-const hasPermission = await rbacService.hasPermission(userId, 'finance:create');
-const hasRole = await rbacService.hasRole(userId, 'admin');
+const hasPermission = await rbacService.hasPermission(userId, "finance:create");
+const hasRole = await rbacService.hasRole(userId, "admin");
 
 // Get user info
 const roles = await rbacService.getUserRoles(userId);
@@ -222,8 +235,8 @@ await rbacService.assignRoleToUser(userId, roleId, adminId);
 await rbacService.revokeRoleFromUser(userId, roleId, adminId);
 
 // Check module access
-const canAccess = await rbacService.canAccessModule(userId, 'finance');
-const actions = await rbacService.getModuleActions(userId, 'finance');
+const canAccess = await rbacService.canAccessModule(userId, "finance");
+const actions = await rbacService.getModuleActions(userId, "finance");
 ```
 
 ## Database Tables
@@ -251,16 +264,19 @@ RBAC_AUDIT_LOG_ENABLED=true
 ## Troubleshooting
 
 ### Permission Denied Error
+
 - Check if user has the required role/permission
 - Verify role is active
 - Clear cache if recently changed
 
 ### Slow Permission Checks
+
 - Ensure caching is enabled
 - Check database indices are created
 - Consider reducing audit log retention
 
 ### Role Assignment Not Working
+
 - Verify user exists
 - Check role exists and is active
 - Ensure user doesn't already have the role

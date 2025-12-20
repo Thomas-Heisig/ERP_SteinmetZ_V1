@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/features/hr/modules/SEPAExport.tsx
 
-import React, { useState } from 'react';
-import styles from './SEPAExport.module.css';
+import React, { useState } from "react";
+import styles from "./SEPAExport.module.css";
 
 interface SEPAExportProps {
   year: number;
@@ -10,27 +10,27 @@ interface SEPAExportProps {
 }
 
 export const SEPAExport: React.FC<SEPAExportProps> = ({ year, month }) => {
-  const [companyName, setCompanyName] = useState('');
-  const [companyIBAN, setCompanyIBAN] = useState('');
-  const [companyBIC, setCompanyBIC] = useState('');
+  const [companyName, setCompanyName] = useState("");
+  const [companyIBAN, setCompanyIBAN] = useState("");
+  const [companyBIC, setCompanyBIC] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const handleExport = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyName || !companyIBAN || !companyBIC) {
-      setMessage('Bitte füllen Sie alle Felder aus');
+      setMessage("Bitte füllen Sie alle Felder aus");
       return;
     }
 
     try {
       setLoading(true);
-      setMessage('');
+      setMessage("");
 
-      const response = await fetch('/api/hr/payroll/export/sepa', {
-        method: 'POST',
+      const response = await fetch("/api/hr/payroll/export/sepa", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           year,
@@ -42,24 +42,26 @@ export const SEPAExport: React.FC<SEPAExportProps> = ({ year, month }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Export fehlgeschlagen');
+        throw new Error("Export fehlgeschlagen");
       }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = `sepa-payroll-${year}-${month}.xml`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      setMessage('SEPA-Export erfolgreich');
-      setCompanyName('');
-      setCompanyIBAN('');
-      setCompanyBIC('');
+      setMessage("SEPA-Export erfolgreich");
+      setCompanyName("");
+      setCompanyIBAN("");
+      setCompanyBIC("");
     } catch (error) {
-      setMessage(`Fehler: ${error instanceof Error ? error.message : 'Unbekannter Fehler'}`);
+      setMessage(
+        `Fehler: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`,
+      );
     } finally {
       setLoading(false);
     }
@@ -69,7 +71,8 @@ export const SEPAExport: React.FC<SEPAExportProps> = ({ year, month }) => {
     <div className={styles.container}>
       <h3>SEPA pain.001.001.03 Export</h3>
       <p className={styles.description}>
-        Exportieren Sie Lohnabrechnungen als SEPA-Datei (pain.001.001.03) für Bankübertragungen
+        Exportieren Sie Lohnabrechnungen als SEPA-Datei (pain.001.001.03) für
+        Bankübertragungen
       </p>
 
       <form onSubmit={handleExport} className={styles.form}>
@@ -115,17 +118,15 @@ export const SEPAExport: React.FC<SEPAExportProps> = ({ year, month }) => {
         </div>
 
         {message && (
-          <div className={`${styles.message} ${message.includes('Fehler') ? styles.error : styles.success}`}>
+          <div
+            className={`${styles.message} ${message.includes("Fehler") ? styles.error : styles.success}`}
+          >
             {message}
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className={styles.submitBtn}
-        >
-          {loading ? 'Wird exportiert...' : 'SEPA-Datei exportieren'}
+        <button type="submit" disabled={loading} className={styles.submitBtn}>
+          {loading ? "Wird exportiert..." : "SEPA-Datei exportieren"}
         </button>
       </form>
     </div>

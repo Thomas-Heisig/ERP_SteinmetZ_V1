@@ -132,9 +132,7 @@ export const CustomerList: React.FC = () => {
       render: (value: unknown, row: Customer) => (
         <div>
           <div className={styles.customerName}>{value as string}</div>
-          <div className={styles.customerEmail}>
-            {row.contactPerson}
-          </div>
+          <div className={styles.customerEmail}>{row.contactPerson}</div>
         </div>
       ),
     },
@@ -179,9 +177,7 @@ export const CustomerList: React.FC = () => {
   return (
     <Card variant="elevated" padding="none">
       <div className={styles.header}>
-        <h2 className={styles.headerText}>
-          🏢 Kunden
-        </h2>
+        <h2 className={styles.headerText}>🏢 Kunden</h2>
         <div className={styles.filterGroup}>
           <Input
             placeholder="Suchen..."
@@ -212,41 +208,27 @@ export const CustomerList: React.FC = () => {
       >
         {selectedCustomer && (
           <div className={styles.modalContent}>
-            <div
-              className={styles.infoGrid}
-            >
+            <div className={styles.infoGrid}>
               <div>
-                <label className={styles.label}>
-                  Ansprechpartner
-                </label>
-                <p className={styles.value}>
-                  {selectedCustomer.contactPerson}
-                </p>
+                <label className={styles.label}>Ansprechpartner</label>
+                <p className={styles.value}>{selectedCustomer.contactPerson}</p>
               </div>
               <div>
-                <label className={styles.label}>
-                  E-Mail
-                </label>
+                <label className={styles.label}>E-Mail</label>
                 <p className={styles.value}>{selectedCustomer.email}</p>
               </div>
               <div>
-                <label className={styles.label}>
-                  Telefon
-                </label>
+                <label className={styles.label}>Telefon</label>
                 <p className={styles.value}>{selectedCustomer.phone}</p>
               </div>
               <div>
-                <label className={styles.label}>
-                  Umsatz
-                </label>
+                <label className={styles.label}>Umsatz</label>
                 <p className={styles.value}>
                   {formatCurrency(selectedCustomer.revenue)}
                 </p>
               </div>
             </div>
-            <div
-              className={styles.actions}
-            >
+            <div className={styles.actions}>
               <Button variant="outline">✏️ Bearbeiten</Button>
               <Button variant="primary">📞 Kontaktieren</Button>
             </div>

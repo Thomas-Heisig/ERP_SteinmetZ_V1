@@ -7,6 +7,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 ## Features
 
 ### 1. Employee Management
+
 - Complete employee lifecycle management
 - Employee profiles with personal and contact information
 - Emergency contact information
@@ -15,6 +16,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 - Unique employee numbering system
 
 ### 2. Contract Management
+
 - Multiple contract types (permanent, temporary, freelance, internship)
 - Contract lifecycle tracking (active, expired, terminated)
 - Salary and working hours tracking
@@ -23,6 +25,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 - Contract history per employee
 
 ### 3. Time Tracking
+
 - Daily time entry recording
 - Start/end time with break calculation
 - Automatic total hours calculation
@@ -31,6 +34,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 - Date range queries
 
 ### 4. Leave Management
+
 - Leave request creation and tracking
 - Multiple leave types (vacation, sick, unpaid, parental, compensatory)
 - Leave request status tracking (pending, approved, rejected, cancelled)
@@ -39,6 +43,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 - Leave history per employee
 
 ### 5. Department Management
+
 - Department creation and tracking
 - Department manager assignment
 - Budget tracking per department
@@ -46,6 +51,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 - Department-based employee filtering
 
 ### 6. Onboarding Workflow
+
 - Structured onboarding processes
 - Task-based onboarding checklist
 - Mentor assignment
@@ -55,6 +61,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 - Automatic status updates based on task completion
 
 ### 7. Document Management
+
 - Employee document upload and storage
 - Document type categorization
 - Document expiration tracking
@@ -62,6 +69,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 - Document access control
 
 ### 8. Overtime Tracking
+
 - Overtime hour recording
 - Reason tracking
 - Approval workflow
@@ -69,6 +77,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 - Overtime history
 
 ### 9. Payroll Records
+
 - Monthly payroll tracking
 - Gross and net salary calculation
 - Bonus tracking
@@ -77,6 +86,7 @@ The HR (Human Resources) Module provides comprehensive employee management capab
 - Payroll history per employee
 
 ### 10. Statistics & Reporting
+
 - Real-time HR statistics
 - Employee count by status
 - Leave request statistics
@@ -372,27 +382,27 @@ Authorization: Bearer <token>
 ### API Client Example
 
 ```typescript
-import axios from 'axios';
-import type { 
-  EmployeeFormData, 
+import axios from "axios";
+import type {
+  EmployeeFormData,
   EmployeeListResponse,
-  EmployeeDetailResponse 
-} from '@/types/hr';
+  EmployeeDetailResponse,
+} from "@/types/hr";
 
 class HRApiClient {
-  private baseUrl = '/api/hr';
+  private baseUrl = "/api/hr";
 
   async getEmployees(filters?: EmployeeFilters, pagination?: PaginationParams) {
     const response = await axios.get<EmployeeListResponse>(
       `${this.baseUrl}/employees`,
-      { params: { ...filters, ...pagination } }
+      { params: { ...filters, ...pagination } },
     );
     return response.data;
   }
 
   async getEmployee(id: string) {
     const response = await axios.get<EmployeeDetailResponse>(
-      `${this.baseUrl}/employees/${id}`
+      `${this.baseUrl}/employees/${id}`,
     );
     return response.data;
   }
@@ -400,7 +410,7 @@ class HRApiClient {
   async createEmployee(data: EmployeeFormData) {
     const response = await axios.post<EmployeeCreateResponse>(
       `${this.baseUrl}/employees`,
-      data
+      data,
     );
     return response.data;
   }
@@ -408,7 +418,7 @@ class HRApiClient {
   async updateEmployee(id: string, data: Partial<EmployeeFormData>) {
     const response = await axios.put<EmployeeDetailResponse>(
       `${this.baseUrl}/employees/${id}`,
-      data
+      data,
     );
     return response.data;
   }
@@ -513,31 +523,31 @@ The HR module uses strict TypeScript types throughout:
 ### Unit Test Example
 
 ```typescript
-import { HRService } from '../services/hrService';
-import type { EmployeeCreateInput } from '../types/hr';
+import { HRService } from "../services/hrService";
+import type { EmployeeCreateInput } from "../types/hr";
 
-describe('HRService', () => {
+describe("HRService", () => {
   let service: HRService;
 
   beforeEach(() => {
     service = HRService.getInstance();
   });
 
-  it('should create an employee', () => {
+  it("should create an employee", () => {
     const input: EmployeeCreateInput = {
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'john.doe@test.com',
-      position: 'Developer',
-      start_date: '2024-01-15',
-      country: 'Germany',
+      first_name: "John",
+      last_name: "Doe",
+      email: "john.doe@test.com",
+      position: "Developer",
+      start_date: "2024-01-15",
+      country: "Germany",
     };
 
     const employee = service.createEmployee(input);
 
     expect(employee.id).toBeDefined();
-    expect(employee.first_name).toBe('John');
-    expect(employee.status).toBe('active');
+    expect(employee.first_name).toBe("John");
+    expect(employee.status).toBe("active");
   });
 });
 ```
@@ -573,6 +583,7 @@ sqlite3 data/dev.sqlite3 < apps/backend/src/migrations/create_hr_tables.sql
 ## Support
 
 For issues or questions:
+
 - Check the API documentation
 - Review type definitions in `types/hr.ts`
 - Check RBAC permissions

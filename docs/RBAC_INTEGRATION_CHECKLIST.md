@@ -7,11 +7,13 @@ This checklist helps you integrate the newly implemented RBAC system into your a
 ## Phase 1: Database Setup (5 minutes)
 
 - [ ] Run the migration script
+
   ```bash
   sqlite3 data/dev.sqlite3 < apps/backend/src/migrations/003_rbac_system.sql
   ```
 
 - [ ] Verify tables were created
+
   ```bash
   sqlite3 data/dev.sqlite3 ".tables" | grep -E "roles|user_roles|permissions"
   ```
@@ -25,11 +27,13 @@ This checklist helps you integrate the newly implemented RBAC system into your a
 ## Phase 2: Service Initialization (5 minutes)
 
 - [ ] Add import in `apps/backend/src/index.ts`
+
   ```typescript
-  import { initializeRbacService } from './services/rbacService.js';
+  import { initializeRbacService } from "./services/rbacService.js";
   ```
 
 - [ ] Initialize after database connection
+
   ```typescript
   const rbacService = initializeRbacService(db);
   ```
@@ -39,13 +43,15 @@ This checklist helps you integrate the newly implemented RBAC system into your a
 ## Phase 3: Router Setup (5 minutes)
 
 - [ ] Add import in main app file
+
   ```typescript
-  import rbacRouter from './routes/rbacRouter.js';
+  import rbacRouter from "./routes/rbacRouter.js";
   ```
 
 - [ ] Mount router
+
   ```typescript
-  app.use('/api/rbac', rbacRouter);
+  app.use("/api/rbac", rbacRouter);
   ```
 
 - [ ] Test endpoint
@@ -63,23 +69,15 @@ const rbacService = getRbacService();
 // Admin user
 await rbacService.assignRoleToUser(
   adminUserId,
-  'role_admin',
-  'system',  // assignedBy
+  "role_admin",
+  "system", // assignedBy
 );
 
 // Manager user
-await rbacService.assignRoleToUser(
-  managerUserId,
-  'role_manager',
-  'system',
-);
+await rbacService.assignRoleToUser(managerUserId, "role_manager", "system");
 
 // Regular user
-await rbacService.assignRoleToUser(
-  userId,
-  'role_user',
-  'system',
-);
+await rbacService.assignRoleToUser(userId, "role_user", "system");
 ```
 
 ## Phase 5: Protect Routes (Varies)
@@ -87,64 +85,74 @@ await rbacService.assignRoleToUser(
 Protect existing routes by adding RBAC middleware:
 
 ### Example 1: Admin-Only Routes
+
 ```typescript
-import { authenticate } from '../middleware/authMiddleware.js';
-import { requireRole } from '../middleware/rbacMiddleware.js';
+import { authenticate } from "../middleware/authMiddleware.js";
+import { requireRole } from "../middleware/rbacMiddleware.js";
 
 router.delete(
-  '/admin/settings',
+  "/admin/settings",
   authenticate,
-  requireRole('admin'),
-  deleteSettingsHandler
+  requireRole("admin"),
+  deleteSettingsHandler,
 );
 ```
 
 ### Example 2: Module-Based Access
+
 ```typescript
 router.get(
-  '/finance/reports',
+  "/finance/reports",
   authenticate,
-  requireModuleAccess('finance'),
-  getReportsHandler
+  requireModuleAccess("finance"),
+  getReportsHandler,
 );
 ```
 
 ### Example 3: Permission-Based
+
 ```typescript
 router.post(
-  '/invoices',
+  "/invoices",
   authenticate,
-  requirePermission('finance:create'),
-  createInvoiceHandler
+  requirePermission("finance:create"),
+  createInvoiceHandler,
 );
 ```
 
 ## Phase 6: Testing (15 minutes)
 
 ### Test 1: Check Roles API
+
 ```bash
 curl -H "Authorization: Bearer {admin-token}" \
   http://localhost:3000/api/rbac/roles
 ```
+
 Expected: List of 7 default roles
 
 ### Test 2: Get User Permissions
+
 ```bash
 curl -H "Authorization: Bearer {token}" \
   http://localhost:3000/api/rbac/me/permissions
 ```
+
 Expected: List of user's permissions
 
 ### Test 3: Check Permission
+
 ```bash
 curl -X POST -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{"permission": "finance:create"}' \
   http://localhost:3000/api/rbac/check-permission
 ```
+
 Expected: `{"allowed": true/false}`
 
 ### Test 4: Access Control
+
 ```bash
 # Should work (user has permission)
 curl http://localhost:3000/api/protected-route -H "Authorization: Bearer {token}"
@@ -156,6 +164,7 @@ curl http://localhost:3000/api/admin-route -H "Authorization: Bearer {user-token
 ## Phase 7: Monitoring & Validation (Ongoing)
 
 - [ ] Check audit logs for role changes
+
   ```sql
   SELECT * FROM rbac_audit_log ORDER BY timestamp DESC LIMIT 10;
   ```
@@ -244,18 +253,23 @@ RBAC_MAX_ROLE_ASSIGNMENTS_PER_USER=10
 ## Troubleshooting
 
 ### Issue: "RBAC Service not initialized"
+
 **Solution**: Call `initializeRbacService(db)` after database connection
 
 ### Issue: "Permission Denied" despite assigned role
-**Solution**: 
+
+**Solution**:
+
 - Verify role is assigned: `SELECT * FROM user_roles WHERE user_id = 'xxx';`
 - Check role is active: `SELECT is_active FROM roles WHERE name = 'admin';`
 - Clear cache: `rbacService.clearCache();`
 
 ### Issue: Slow permission checks
+
 **Solution**: Ensure caching is enabled (default) and check database indices
 
 ### Issue: New permissions not recognized
+
 **Solution**: Clear cache with `rbacService.clearCache()`
 
 ## Performance Tips
@@ -300,22 +314,23 @@ RBAC_MAX_ROLE_ASSIGNMENTS_PER_USER=10
 
 ## Integration Timeline
 
-| Phase | Task | Time | Effort |
-|-------|------|------|--------|
-| 1 | Database Setup | 5 min | Low |
-| 2 | Service Init | 5 min | Low |
-| 3 | Router Setup | 5 min | Low |
-| 4 | Assign Roles | 10 min | Medium |
-| 5 | Protect Routes | Varies | Medium-High |
-| 6 | Testing | 15 min | Low |
-| 7 | Monitoring | Ongoing | Low |
-| **Total** | **Complete Setup** | **55 min** | **Medium** |
+| Phase     | Task               | Time       | Effort      |
+| --------- | ------------------ | ---------- | ----------- |
+| 1         | Database Setup     | 5 min      | Low         |
+| 2         | Service Init       | 5 min      | Low         |
+| 3         | Router Setup       | 5 min      | Low         |
+| 4         | Assign Roles       | 10 min     | Medium      |
+| 5         | Protect Routes     | Varies     | Medium-High |
+| 6         | Testing            | 15 min     | Low         |
+| 7         | Monitoring         | Ongoing    | Low         |
+| **Total** | **Complete Setup** | **55 min** | **Medium**  |
 
 ## Rollback Plan
 
 If you need to rollback:
 
 1. **Remove Router**
+
    ```typescript
    // Remove this line
    // app.use('/api/rbac', rbacRouter);
@@ -326,6 +341,7 @@ If you need to rollback:
    - Routes become unprotected
 
 3. **Drop Tables** (if needed)
+
    ```sql
    DROP TABLE IF EXISTS rbac_audit_log;
    DROP TABLE IF EXISTS module_permissions;
@@ -362,6 +378,7 @@ You've successfully integrated RBAC when:
 ## Support
 
 For questions or issues:
+
 - Check `docs/RBAC_IMPLEMENTATION.md#troubleshooting`
 - Review middleware examples
 - Check service method documentation
@@ -372,4 +389,3 @@ For questions or issues:
 **Setup Status**: Ready for Integration  
 **Estimated Total Time**: ~1 hour (including testing and user assignments)  
 **Complexity**: Low to Medium (straightforward setup with examples)
-

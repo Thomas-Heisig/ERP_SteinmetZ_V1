@@ -122,9 +122,7 @@ describe("Production Router", () => {
 
   describe("GET /api/production/quality-checks", () => {
     it("should return list of quality checks", async () => {
-      const response = await request(app).get(
-        "/api/production/quality-checks",
-      );
+      const response = await request(app).get("/api/production/quality-checks");
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);

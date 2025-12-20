@@ -17,50 +17,63 @@ The Monitoring module provides system health monitoring, application performance
 ### Health Checks
 
 #### `GET /api/monitoring/health`
+
 Overall system health status.
 
 #### `GET /api/monitoring/health/detailed`
+
 Detailed health check for all services.
 
 #### `GET /api/monitoring/health/:service`
+
 Health check for specific service.
 
 ### Performance
 
 #### `GET /api/monitoring/performance`
+
 Performance metrics summary.
 
 #### `GET /api/monitoring/performance/endpoints`
+
 Endpoint response time metrics.
 
 #### `GET /api/monitoring/performance/database`
+
 Database query performance.
 
 ### Errors
 
 #### `GET /api/monitoring/errors`
+
 List recent errors.
 
 #### `GET /api/monitoring/errors/:id`
+
 Get error details.
 
 #### `POST /api/monitoring/errors/:id/resolve`
+
 Mark error as resolved.
 
 ### Logs
 
 #### `GET /api/monitoring/logs`
+
 Query application logs.
 
 #### `GET /api/monitoring/logs/:level`
+
 Get logs by severity level.
 
 ### Alerts
 
 #### `GET /api/monitoring/alerts`
+
 List active alerts.
 
 #### `POST /api/monitoring/alerts`
+
 Configure an alert rule.
 
 ## Integration Points

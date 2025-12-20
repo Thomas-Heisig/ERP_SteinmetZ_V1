@@ -10,12 +10,12 @@
  * @module services/hrService
  */
 
-import Database from 'better-sqlite3';
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import fs from 'fs';
+import Database from "better-sqlite3";
+import { v4 as uuidv4 } from "uuid";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import fs from "fs";
 import {
   Employee,
   EmployeeCreateInput,
@@ -54,7 +54,7 @@ import {
   TaskStatus,
   PaymentStatus,
   SEPAStatus,
-} from '../types/hr';
+} from "../types/hr";
 
 // ES module compatibility
 const __filename = fileURLToPath(import.meta.url);
@@ -70,16 +70,18 @@ export class HRService {
   private db: Database.Database;
 
   private constructor() {
-    const dbPath = process.env.DATABASE_PATH || path.join(__dirname, '../../../data/dev.sqlite3');
-    
+    const dbPath =
+      process.env.DATABASE_PATH ||
+      path.join(__dirname, "../../../data/dev.sqlite3");
+
     // Ensure directory exists
     const dbDir = path.dirname(dbPath);
     if (!fs.existsSync(dbDir)) {
       fs.mkdirSync(dbDir, { recursive: true });
     }
-    
+
     this.db = new Database(dbPath);
-    this.db.pragma('foreign_keys = ON');
+    this.db.pragma("foreign_keys = ON");
   }
 
   /**
@@ -125,12 +127,12 @@ export class HRService {
       input.address || null,
       input.city || null,
       input.postal_code || null,
-      input.country || 'Germany',
+      input.country || "Germany",
       input.emergency_contact || null,
       input.emergency_phone || null,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     const employee = this.getEmployeeById(id);
@@ -144,7 +146,7 @@ export class HRService {
    * Get employee by ID
    */
   public getEmployeeById(id: string): Employee | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_employees WHERE id = ?');
+    const stmt = this.db.prepare("SELECT * FROM hr_employees WHERE id = ?");
     return stmt.get(id) as Employee | undefined;
   }
 
@@ -152,7 +154,7 @@ export class HRService {
    * Get employee by email
    */
   public getEmployeeByEmail(email: string): Employee | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_employees WHERE email = ?');
+    const stmt = this.db.prepare("SELECT * FROM hr_employees WHERE email = ?");
     return stmt.get(email) as Employee | undefined;
   }
 
@@ -161,47 +163,54 @@ export class HRService {
    */
   public getEmployees(
     filters: EmployeeFilters = {},
-    pagination: PaginationParams = {}
+    pagination: PaginationParams = {},
   ): PaginatedResponse<Employee> {
-    const { page = 1, limit = 50, sort_by = 'last_name', sort_order = 'asc' } = pagination;
+    const {
+      page = 1,
+      limit = 50,
+      sort_by = "last_name",
+      sort_order = "asc",
+    } = pagination;
     const offset = (page - 1) * limit;
 
-    let query = 'SELECT * FROM hr_employees WHERE 1=1';
+    let query = "SELECT * FROM hr_employees WHERE 1=1";
     const params: unknown[] = [];
 
     if (filters.department) {
-      query += ' AND department = ?';
+      query += " AND department = ?";
       params.push(filters.department);
     }
 
     if (filters.status) {
-      query += ' AND status = ?';
+      query += " AND status = ?";
       params.push(filters.status);
     }
 
     if (filters.position) {
-      query += ' AND position LIKE ?';
+      query += " AND position LIKE ?";
       params.push(`%${filters.position}%`);
     }
 
     if (filters.search) {
-      query += ' AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ?)';
+      query += " AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ?)";
       const searchTerm = `%${filters.search}%`;
       params.push(searchTerm, searchTerm, searchTerm);
     }
 
     if (filters.start_date_from) {
-      query += ' AND start_date >= ?';
+      query += " AND start_date >= ?";
       params.push(filters.start_date_from);
     }
 
     if (filters.start_date_to) {
-      query += ' AND start_date <= ?';
+      query += " AND start_date <= ?";
       params.push(filters.start_date_to);
     }
 
     // Count total
-    const countStmt = this.db.prepare(query.replace('SELECT *', 'SELECT COUNT(*) as count'));
+    const countStmt = this.db.prepare(
+      query.replace("SELECT *", "SELECT COUNT(*) as count"),
+    );
     const { count } = countStmt.get(...params) as { count: number };
 
     // Get paginated data
@@ -223,7 +232,10 @@ export class HRService {
   /**
    * Update employee
    */
-  public updateEmployee(id: string, input: EmployeeUpdateInput): Employee | undefined {
+  public updateEmployee(
+    id: string,
+    input: EmployeeUpdateInput,
+  ): Employee | undefined {
     const fields: string[] = [];
     const values: unknown[] = [];
 
@@ -238,12 +250,12 @@ export class HRService {
       return this.getEmployeeById(id);
     }
 
-    fields.push('updated_at = ?');
+    fields.push("updated_at = ?");
     values.push(new Date().toISOString());
     values.push(id);
 
     const stmt = this.db.prepare(`
-      UPDATE hr_employees SET ${fields.join(', ')} WHERE id = ?
+      UPDATE hr_employees SET ${fields.join(", ")} WHERE id = ?
     `);
 
     stmt.run(...values);
@@ -262,9 +274,9 @@ export class HRService {
 
     const result = stmt.run(
       EmployeeStatus.TERMINATED,
-      new Date().toISOString().split('T')[0],
+      new Date().toISOString().split("T")[0],
       new Date().toISOString(),
-      id
+      id,
     );
 
     return result.changes > 0;
@@ -273,7 +285,9 @@ export class HRService {
   /**
    * Get employee with all related data
    */
-  public getEmployeeWithRelations(id: string): EmployeeWithRelations | undefined {
+  public getEmployeeWithRelations(
+    id: string,
+  ): EmployeeWithRelations | undefined {
     const employee = this.getEmployeeById(id);
     if (!employee) return undefined;
 
@@ -285,7 +299,9 @@ export class HRService {
     const payroll_records = this.getEmployeePayroll(id);
     const onboarding = this.getEmployeeOnboarding(id);
 
-    const current_contract = contracts.find(c => c.status === ContractStatus.ACTIVE);
+    const current_contract = contracts.find(
+      (c) => c.status === ContractStatus.ACTIVE,
+    );
 
     return {
       ...employee,
@@ -331,7 +347,7 @@ export class HRService {
       input.status || ContractStatus.ACTIVE,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     const contract = this.getContractById(id);
@@ -345,7 +361,7 @@ export class HRService {
    * Get contract by ID
    */
   public getContractById(id: string): Contract | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_contracts WHERE id = ?');
+    const stmt = this.db.prepare("SELECT * FROM hr_contracts WHERE id = ?");
     return stmt.get(id) as Contract | undefined;
   }
 
@@ -364,7 +380,10 @@ export class HRService {
   /**
    * Update contract
    */
-  public updateContract(id: string, input: ContractUpdateInput): Contract | undefined {
+  public updateContract(
+    id: string,
+    input: ContractUpdateInput,
+  ): Contract | undefined {
     const fields: string[] = [];
     const values: unknown[] = [];
 
@@ -379,12 +398,12 @@ export class HRService {
       return this.getContractById(id);
     }
 
-    fields.push('updated_at = ?');
+    fields.push("updated_at = ?");
     values.push(new Date().toISOString());
     values.push(id);
 
     const stmt = this.db.prepare(`
-      UPDATE hr_contracts SET ${fields.join(', ')} WHERE id = ?
+      UPDATE hr_contracts SET ${fields.join(", ")} WHERE id = ?
     `);
 
     stmt.run(...values);
@@ -404,7 +423,8 @@ export class HRService {
     const start = new Date(`${input.date}T${input.start_time}`);
     const end = new Date(`${input.date}T${input.end_time}`);
     const diffMs = end.getTime() - start.getTime();
-    const totalHours = (diffMs / (1000 * 60 * 60)) - ((input.break_minutes || 0) / 60);
+    const totalHours =
+      diffMs / (1000 * 60 * 60) - (input.break_minutes || 0) / 60;
 
     const stmt = this.db.prepare(`
       INSERT INTO hr_time_entries (
@@ -421,11 +441,11 @@ export class HRService {
       input.end_time,
       input.break_minutes || 0,
       totalHours,
-      input.type || 'regular',
+      input.type || "regular",
       input.notes || null,
       false,
       now,
-      now
+      now,
     );
 
     const timeEntry = this.getTimeEntryById(id);
@@ -439,28 +459,32 @@ export class HRService {
    * Get time entry by ID
    */
   public getTimeEntryById(id: string): TimeEntry | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_time_entries WHERE id = ?');
+    const stmt = this.db.prepare("SELECT * FROM hr_time_entries WHERE id = ?");
     return stmt.get(id) as TimeEntry | undefined;
   }
 
   /**
    * Get employee time entries
    */
-  public getEmployeeTimeEntries(employeeId: string, startDate?: string, endDate?: string): TimeEntry[] {
-    let query = 'SELECT * FROM hr_time_entries WHERE employee_id = ?';
+  public getEmployeeTimeEntries(
+    employeeId: string,
+    startDate?: string,
+    endDate?: string,
+  ): TimeEntry[] {
+    let query = "SELECT * FROM hr_time_entries WHERE employee_id = ?";
     const params: unknown[] = [employeeId];
 
     if (startDate) {
-      query += ' AND date >= ?';
+      query += " AND date >= ?";
       params.push(startDate);
     }
 
     if (endDate) {
-      query += ' AND date <= ?';
+      query += " AND date <= ?";
       params.push(endDate);
     }
 
-    query += ' ORDER BY date DESC, start_time DESC';
+    query += " ORDER BY date DESC, start_time DESC";
 
     const stmt = this.db.prepare(query);
     return stmt.all(...params) as TimeEntry[];
@@ -469,7 +493,10 @@ export class HRService {
   /**
    * Approve time entry
    */
-  public approveTimeEntry(id: string, approvedBy: string): TimeEntry | undefined {
+  public approveTimeEntry(
+    id: string,
+    approvedBy: string,
+  ): TimeEntry | undefined {
     const stmt = this.db.prepare(`
       UPDATE hr_time_entries 
       SET approved = ?, approved_by = ?, approved_at = ?, updated_at = ?
@@ -509,7 +536,7 @@ export class HRService {
       LeaveRequestStatus.PENDING,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     const leaveRequest = this.getLeaveRequestById(id);
@@ -523,23 +550,28 @@ export class HRService {
    * Get leave request by ID
    */
   public getLeaveRequestById(id: string): LeaveRequest | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_leave_requests WHERE id = ?');
+    const stmt = this.db.prepare(
+      "SELECT * FROM hr_leave_requests WHERE id = ?",
+    );
     return stmt.get(id) as LeaveRequest | undefined;
   }
 
   /**
    * Get employee leave requests
    */
-  public getEmployeeLeaveRequests(employeeId: string, status?: LeaveRequestStatus): LeaveRequest[] {
-    let query = 'SELECT * FROM hr_leave_requests WHERE employee_id = ?';
+  public getEmployeeLeaveRequests(
+    employeeId: string,
+    status?: LeaveRequestStatus,
+  ): LeaveRequest[] {
+    let query = "SELECT * FROM hr_leave_requests WHERE employee_id = ?";
     const params: unknown[] = [employeeId];
 
     if (status) {
-      query += ' AND status = ?';
+      query += " AND status = ?";
       params.push(status);
     }
 
-    query += ' ORDER BY start_date DESC';
+    query += " ORDER BY start_date DESC";
 
     const stmt = this.db.prepare(query);
     return stmt.all(...params) as LeaveRequest[];
@@ -548,7 +580,10 @@ export class HRService {
   /**
    * Approve leave request
    */
-  public approveLeaveRequest(id: string, approvedBy: string): LeaveRequest | undefined {
+  public approveLeaveRequest(
+    id: string,
+    approvedBy: string,
+  ): LeaveRequest | undefined {
     const stmt = this.db.prepare(`
       UPDATE hr_leave_requests 
       SET status = ?, approved_by = ?, approved_at = ?, updated_at = ?
@@ -564,7 +599,11 @@ export class HRService {
   /**
    * Reject leave request
    */
-  public rejectLeaveRequest(id: string, approvedBy: string, reason: string): LeaveRequest | undefined {
+  public rejectLeaveRequest(
+    id: string,
+    approvedBy: string,
+    reason: string,
+  ): LeaveRequest | undefined {
     const stmt = this.db.prepare(`
       UPDATE hr_leave_requests 
       SET status = ?, approved_by = ?, approved_at = ?, rejection_reason = ?, updated_at = ?
@@ -600,7 +639,7 @@ export class HRService {
       input.budget || null,
       input.is_active !== false,
       now,
-      now
+      now,
     );
 
     const department = this.getDepartmentById(id);
@@ -614,7 +653,7 @@ export class HRService {
    * Get department by ID
    */
   public getDepartmentById(id: string): Department | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_departments WHERE id = ?');
+    const stmt = this.db.prepare("SELECT * FROM hr_departments WHERE id = ?");
     return stmt.get(id) as Department | undefined;
   }
 
@@ -622,11 +661,11 @@ export class HRService {
    * Get all departments
    */
   public getDepartments(activeOnly: boolean = true): Department[] {
-    let query = 'SELECT * FROM hr_departments';
+    let query = "SELECT * FROM hr_departments";
     if (activeOnly) {
-      query += ' WHERE is_active = true';
+      query += " WHERE is_active = true";
     }
-    query += ' ORDER BY name';
+    query += " ORDER BY name";
 
     const stmt = this.db.prepare(query);
     return stmt.all() as Department[];
@@ -637,7 +676,9 @@ export class HRService {
   /**
    * Create onboarding process
    */
-  public createOnboarding(input: OnboardingProcessCreateInput): OnboardingProcess {
+  public createOnboarding(
+    input: OnboardingProcessCreateInput,
+  ): OnboardingProcess {
     const id = uuidv4();
     const now = new Date().toISOString();
 
@@ -658,7 +699,7 @@ export class HRService {
       0,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     const onboarding = this.getOnboardingById(id);
@@ -672,28 +713,36 @@ export class HRService {
    * Get onboarding by ID
    */
   public getOnboardingById(id: string): OnboardingProcess | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_onboarding WHERE id = ?');
+    const stmt = this.db.prepare("SELECT * FROM hr_onboarding WHERE id = ?");
     return stmt.get(id) as OnboardingProcess | undefined;
   }
 
   /**
    * Get employee onboarding
    */
-  public getEmployeeOnboarding(employeeId: string): OnboardingProcess | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_onboarding WHERE employee_id = ? ORDER BY created_at DESC LIMIT 1');
+  public getEmployeeOnboarding(
+    employeeId: string,
+  ): OnboardingProcess | undefined {
+    const stmt = this.db.prepare(
+      "SELECT * FROM hr_onboarding WHERE employee_id = ? ORDER BY created_at DESC LIMIT 1",
+    );
     return stmt.get(employeeId) as OnboardingProcess | undefined;
   }
 
   /**
    * Get onboarding with tasks
    */
-  public getOnboardingWithTasks(id: string): OnboardingProcessWithTasks | undefined {
+  public getOnboardingWithTasks(
+    id: string,
+  ): OnboardingProcessWithTasks | undefined {
     const onboarding = this.getOnboardingById(id);
     if (!onboarding) return undefined;
 
     const tasks = this.getOnboardingTasks(id);
     const employee = this.getEmployeeById(onboarding.employee_id);
-    const mentor = onboarding.mentor_id ? this.getEmployeeById(onboarding.mentor_id) : undefined;
+    const mentor = onboarding.mentor_id
+      ? this.getEmployeeById(onboarding.mentor_id)
+      : undefined;
 
     return {
       ...onboarding,
@@ -706,7 +755,9 @@ export class HRService {
   /**
    * Create onboarding task
    */
-  public createOnboardingTask(input: OnboardingTaskCreateInput): OnboardingTask {
+  public createOnboardingTask(
+    input: OnboardingTaskCreateInput,
+  ): OnboardingTask {
     const id = uuidv4();
     const now = new Date().toISOString();
 
@@ -728,7 +779,7 @@ export class HRService {
       input.sort_order || 0,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     // Update total tasks count
@@ -745,7 +796,9 @@ export class HRService {
    * Get onboarding task by ID
    */
   public getOnboardingTaskById(id: string): OnboardingTask | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_onboarding_tasks WHERE id = ?');
+    const stmt = this.db.prepare(
+      "SELECT * FROM hr_onboarding_tasks WHERE id = ?",
+    );
     return stmt.get(id) as OnboardingTask | undefined;
   }
 
@@ -764,7 +817,10 @@ export class HRService {
   /**
    * Complete onboarding task
    */
-  public completeOnboardingTask(id: string, completedBy: string): OnboardingTask | undefined {
+  public completeOnboardingTask(
+    id: string,
+    completedBy: string,
+  ): OnboardingTask | undefined {
     const task = this.getOnboardingTaskById(id);
     if (!task) return undefined;
 
@@ -788,7 +844,9 @@ export class HRService {
    */
   private updateOnboardingTaskCounts(onboardingId: string): void {
     const tasks = this.getOnboardingTasks(onboardingId);
-    const completed = tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
+    const completed = tasks.filter(
+      (t) => t.status === TaskStatus.COMPLETED,
+    ).length;
 
     const stmt = this.db.prepare(`
       UPDATE hr_onboarding 
@@ -803,7 +861,13 @@ export class HRService {
       status = OnboardingStatus.COMPLETED;
     }
 
-    stmt.run(completed, tasks.length, status, new Date().toISOString(), onboardingId);
+    stmt.run(
+      completed,
+      tasks.length,
+      status,
+      new Date().toISOString(),
+      onboardingId,
+    );
   }
 
   // ==================== PAYROLL TAX PARAMETERS ====================
@@ -811,15 +875,22 @@ export class HRService {
   /**
    * Get payroll tax parameters by year and country
    */
-  public getPayrollTaxParams(year: number, countryCode: string = 'DE'): PayrollTaxParams | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_payroll_tax_params WHERE year = ? AND country_code = ?');
+  public getPayrollTaxParams(
+    year: number,
+    countryCode: string = "DE",
+  ): PayrollTaxParams | undefined {
+    const stmt = this.db.prepare(
+      "SELECT * FROM hr_payroll_tax_params WHERE year = ? AND country_code = ?",
+    );
     return stmt.get(year, countryCode) as PayrollTaxParams | undefined;
   }
 
   /**
    * Create payroll tax parameters
    */
-  public createPayrollTaxParams(input: PayrollTaxParamsCreateInput): PayrollTaxParams {
+  public createPayrollTaxParams(
+    input: PayrollTaxParamsCreateInput,
+  ): PayrollTaxParams {
     const id = uuidv4();
     const now = new Date().toISOString();
 
@@ -845,12 +916,14 @@ export class HRService {
       input.country_code,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     const params = this.getPayrollTaxParams(input.year, input.country_code);
     if (!params) {
-      throw new Error(`Failed to create payroll tax parameters for ${input.year}`);
+      throw new Error(
+        `Failed to create payroll tax parameters for ${input.year}`,
+      );
     }
     return params;
   }
@@ -858,8 +931,10 @@ export class HRService {
   /**
    * Calculate payroll with automatic tax deductions
    */
-  public calculatePayroll(input: PayrollRecordCreateInput): PayrollRecordCreateInput {
-    const params = this.getPayrollTaxParams(input.year, 'DE');
+  public calculatePayroll(
+    input: PayrollRecordCreateInput,
+  ): PayrollRecordCreateInput {
+    const params = this.getPayrollTaxParams(input.year, "DE");
     if (!params) {
       throw new Error(`No tax parameters found for year ${input.year}`);
     }
@@ -867,12 +942,18 @@ export class HRService {
     const grossSalary = input.gross_salary + (input.bonuses || 0);
 
     // Calculate progressive deductions
-    const incomeTax = input.income_tax || (grossSalary * params.income_tax_rate);
-    const pensionInsurance = input.pension_insurance || (grossSalary * params.pension_insurance_rate);
-    const healthInsurance = input.health_insurance || (grossSalary * params.health_insurance_rate);
-    const unemploymentInsurance = input.unemployment_insurance || (grossSalary * params.unemployment_insurance_rate);
-    const churchTax = input.church_tax || (incomeTax * params.church_tax_rate);
-    const solidaritySurcharge = input.solidarity_surcharge || (incomeTax * params.solidarity_surcharge_rate);
+    const incomeTax = input.income_tax || grossSalary * params.income_tax_rate;
+    const pensionInsurance =
+      input.pension_insurance || grossSalary * params.pension_insurance_rate;
+    const healthInsurance =
+      input.health_insurance || grossSalary * params.health_insurance_rate;
+    const unemploymentInsurance =
+      input.unemployment_insurance ||
+      grossSalary * params.unemployment_insurance_rate;
+    const churchTax = input.church_tax || incomeTax * params.church_tax_rate;
+    const solidaritySurcharge =
+      input.solidarity_surcharge ||
+      incomeTax * params.solidarity_surcharge_rate;
 
     return {
       ...input,
@@ -907,10 +988,11 @@ export class HRService {
       (calculated.solidarity_surcharge || 0) +
       (calculated.other_deductions || 0);
 
-    const netSalary = input.gross_salary + (input.bonuses || 0) - totalDeductions;
+    const netSalary =
+      input.gross_salary + (input.bonuses || 0) - totalDeductions;
 
     // Store tax params snapshot for audit trail
-    const params = this.getPayrollTaxParams(input.year, 'DE');
+    const params = this.getPayrollTaxParams(input.year, "DE");
     const paramsSnapshot = params ? JSON.stringify(params) : null;
 
     const stmt = this.db.prepare(`
@@ -938,7 +1020,7 @@ export class HRService {
       calculated.church_tax || 0,
       calculated.solidarity_surcharge || 0,
       input.other_deductions || 0,
-      input.payment_method || 'bank_transfer',
+      input.payment_method || "bank_transfer",
       input.iban || null,
       input.bic || null,
       input.creditor_name || null,
@@ -947,7 +1029,7 @@ export class HRService {
       SEPAStatus.DRAFT,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     const payroll = this.getPayrollRecordById(id);
@@ -961,23 +1043,27 @@ export class HRService {
    * Get payroll record by ID
    */
   public getPayrollRecordById(id: string): PayrollRecord | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_payroll WHERE id = ?');
+    const stmt = this.db.prepare("SELECT * FROM hr_payroll WHERE id = ?");
     return stmt.get(id) as PayrollRecord | undefined;
   }
 
   /**
    * Get employee payroll records with filtering
    */
-  public getEmployeePayroll(employeeId: string, year?: number, month?: string): PayrollRecord[] {
-    let query = 'SELECT * FROM hr_payroll WHERE employee_id = ?';
+  public getEmployeePayroll(
+    employeeId: string,
+    year?: number,
+    month?: string,
+  ): PayrollRecord[] {
+    let query = "SELECT * FROM hr_payroll WHERE employee_id = ?";
     const params: unknown[] = [employeeId];
 
     if (year) {
-      query += ' AND year = ?';
+      query += " AND year = ?";
       params.push(year);
     }
 
-    query += ' ORDER BY year DESC, month DESC';
+    query += " ORDER BY year DESC, month DESC";
 
     const stmt = this.db.prepare(query);
     return stmt.all(...params) as PayrollRecord[];
@@ -988,15 +1074,22 @@ export class HRService {
   /**
    * Get payroll tax parameters by year and country
    */
-  public getPayrollTaxParams(year: number, countryCode: string = 'DE'): PayrollTaxParams | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_payroll_tax_params WHERE year = ? AND country_code = ?');
+  public getPayrollTaxParams(
+    year: number,
+    countryCode: string = "DE",
+  ): PayrollTaxParams | undefined {
+    const stmt = this.db.prepare(
+      "SELECT * FROM hr_payroll_tax_params WHERE year = ? AND country_code = ?",
+    );
     return stmt.get(year, countryCode) as PayrollTaxParams | undefined;
   }
 
   /**
    * Create payroll tax parameters
    */
-  public createPayrollTaxParams(input: PayrollTaxParamsCreateInput): PayrollTaxParams {
+  public createPayrollTaxParams(
+    input: PayrollTaxParamsCreateInput,
+  ): PayrollTaxParams {
     const id = uuidv4();
     const now = new Date().toISOString();
 
@@ -1022,12 +1115,14 @@ export class HRService {
       input.country_code,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     const params = this.getPayrollTaxParams(input.year, input.country_code);
     if (!params) {
-      throw new Error(`Failed to create payroll tax parameters for ${input.year}`);
+      throw new Error(
+        `Failed to create payroll tax parameters for ${input.year}`,
+      );
     }
     return params;
   }
@@ -1035,8 +1130,10 @@ export class HRService {
   /**
    * Calculate payroll with automatic tax deductions
    */
-  public calculatePayroll(input: PayrollRecordCreateInput): PayrollRecordCreateInput {
-    const params = this.getPayrollTaxParams(input.year, 'DE');
+  public calculatePayroll(
+    input: PayrollRecordCreateInput,
+  ): PayrollRecordCreateInput {
+    const params = this.getPayrollTaxParams(input.year, "DE");
     if (!params) {
       throw new Error(`No tax parameters found for year ${input.year}`);
     }
@@ -1044,12 +1141,18 @@ export class HRService {
     const grossSalary = input.gross_salary + (input.bonuses || 0);
 
     // Calculate progressive deductions
-    const incomeTax = input.income_tax || (grossSalary * params.income_tax_rate);
-    const pensionInsurance = input.pension_insurance || (grossSalary * params.pension_insurance_rate);
-    const healthInsurance = input.health_insurance || (grossSalary * params.health_insurance_rate);
-    const unemploymentInsurance = input.unemployment_insurance || (grossSalary * params.unemployment_insurance_rate);
-    const churchTax = input.church_tax || (incomeTax * params.church_tax_rate);
-    const solidaritySurcharge = input.solidarity_surcharge || (incomeTax * params.solidarity_surcharge_rate);
+    const incomeTax = input.income_tax || grossSalary * params.income_tax_rate;
+    const pensionInsurance =
+      input.pension_insurance || grossSalary * params.pension_insurance_rate;
+    const healthInsurance =
+      input.health_insurance || grossSalary * params.health_insurance_rate;
+    const unemploymentInsurance =
+      input.unemployment_insurance ||
+      grossSalary * params.unemployment_insurance_rate;
+    const churchTax = input.church_tax || incomeTax * params.church_tax_rate;
+    const solidaritySurcharge =
+      input.solidarity_surcharge ||
+      incomeTax * params.solidarity_surcharge_rate;
 
     return {
       ...input,
@@ -1082,10 +1185,11 @@ export class HRService {
       (calculated.solidarity_surcharge || 0) +
       (calculated.other_deductions || 0);
 
-    const netSalary = input.gross_salary + (input.bonuses || 0) - totalDeductions;
+    const netSalary =
+      input.gross_salary + (input.bonuses || 0) - totalDeductions;
 
     // Store tax params snapshot for audit trail
-    const params = this.getPayrollTaxParams(input.year, 'DE');
+    const params = this.getPayrollTaxParams(input.year, "DE");
     const paramsSnapshot = params ? JSON.stringify(params) : null;
 
     const stmt = this.db.prepare(`
@@ -1113,7 +1217,7 @@ export class HRService {
       calculated.church_tax || 0,
       calculated.solidarity_surcharge || 0,
       input.other_deductions || 0,
-      input.payment_method || 'bank_transfer',
+      input.payment_method || "bank_transfer",
       input.iban || null,
       input.bic || null,
       input.creditor_name || null,
@@ -1122,7 +1226,7 @@ export class HRService {
       SEPAStatus.DRAFT,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     const payroll = this.getPayrollRecordById(id);
@@ -1136,28 +1240,32 @@ export class HRService {
    * Get payroll record by ID
    */
   public getPayrollRecordById(id: string): PayrollRecord | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_payroll WHERE id = ?');
+    const stmt = this.db.prepare("SELECT * FROM hr_payroll WHERE id = ?");
     return stmt.get(id) as PayrollRecord | undefined;
   }
 
   /**
    * Get employee payroll records with filtering
    */
-  public getEmployeePayroll(employeeId: string, year?: number, month?: string): PayrollRecord[] {
-    let query = 'SELECT * FROM hr_payroll WHERE employee_id = ?';
+  public getEmployeePayroll(
+    employeeId: string,
+    year?: number,
+    month?: string,
+  ): PayrollRecord[] {
+    let query = "SELECT * FROM hr_payroll WHERE employee_id = ?";
     const params: unknown[] = [employeeId];
 
     if (year) {
-      query += ' AND year = ?';
+      query += " AND year = ?";
       params.push(year);
     }
 
     if (month) {
-      query += ' AND month = ?';
+      query += " AND month = ?";
       params.push(month);
     }
 
-    query += ' ORDER BY year DESC, month DESC';
+    query += " ORDER BY year DESC, month DESC";
 
     const stmt = this.db.prepare(query);
     return stmt.all(...params) as PayrollRecord[];
@@ -1166,12 +1274,16 @@ export class HRService {
   /**
    * Get all payroll records for period with pagination
    */
-  public getPayrollRecords(year: number, month?: string, pagination?: PaginationParams): PaginatedResponse<PayrollRecord> {
-    let query = 'SELECT * FROM hr_payroll WHERE year = ?';
+  public getPayrollRecords(
+    year: number,
+    month?: string,
+    pagination?: PaginationParams,
+  ): PaginatedResponse<PayrollRecord> {
+    let query = "SELECT * FROM hr_payroll WHERE year = ?";
     const params: unknown[] = [year];
 
     if (month) {
-      query += ' AND month = ?';
+      query += " AND month = ?";
       params.push(month);
     }
 
@@ -1182,7 +1294,7 @@ export class HRService {
     const limit = pagination?.limit || 50;
     const offset = (page - 1) * limit;
 
-    query += ' ORDER BY month DESC, employee_id ASC LIMIT ? OFFSET ?';
+    query += " ORDER BY month DESC, employee_id ASC LIMIT ? OFFSET ?";
     const stmt = this.db.prepare(query);
     const data = stmt.all(...params, limit, offset) as PayrollRecord[];
 
@@ -1199,43 +1311,51 @@ export class HRService {
    * Export payroll as CSV
    */
   public exportPayrollAsCSV(year: number, month?: string): string {
-    const records = this.getEmployeePayroll('', year, month);
-    
+    const records = this.getEmployeePayroll("", year, month);
+
     // Get all payroll records for the period
-    const allRecords = this.db.prepare(`
+    const allRecords = this.db
+      .prepare(
+        `
       SELECT p.*, e.first_name, e.last_name, e.employee_number
       FROM hr_payroll p
       JOIN hr_employees e ON p.employee_id = e.id
       WHERE p.year = ?
-      ${month ? 'AND p.month = ?' : ''}
+      ${month ? "AND p.month = ?" : ""}
       ORDER BY p.month DESC, e.employee_number ASC
-    `).all(...(month ? [year, month] : [year])) as (PayrollRecord & { first_name: string; last_name: string; employee_number: string })[];
+    `,
+      )
+      .all(...(month ? [year, month] : [year])) as (PayrollRecord & {
+      first_name: string;
+      last_name: string;
+      employee_number: string;
+    })[];
 
     // CSV Header
     const header = [
-      'Employee Number',
-      'First Name',
-      'Last Name',
-      'Month',
-      'Year',
-      'Gross Salary',
-      'Bonuses',
-      'Income Tax',
-      'Pension Insurance',
-      'Health Insurance',
-      'Unemployment Insurance',
-      'Church Tax',
-      'Solidarity Surcharge',
-      'Other Deductions',
-      'Net Salary',
-      'Payment Status',
-      'Payment Date',
-    ].join(',');
+      "Employee Number",
+      "First Name",
+      "Last Name",
+      "Month",
+      "Year",
+      "Gross Salary",
+      "Bonuses",
+      "Income Tax",
+      "Pension Insurance",
+      "Health Insurance",
+      "Unemployment Insurance",
+      "Church Tax",
+      "Solidarity Surcharge",
+      "Other Deductions",
+      "Net Salary",
+      "Payment Status",
+      "Payment Date",
+    ].join(",");
 
     // CSV Rows
-    const rows = allRecords.map(r =>
+    const rows = allRecords.map((r) =>
       [
-        `"${r.employee_number || ''}"`,
+        `"${r.employee_number || ""}"`,
         `"${r.first_name}"`,
         `"${r.last_name}"`,
         r.month,
@@ -1251,18 +1371,26 @@ export class HRService {
         (r.other_deductions || 0).toFixed(2),
         r.net_salary.toFixed(2),
         r.payment_status,
-        r.payment_date || '',
-      ].join(',')
+        r.payment_date || "",
+      ].join(","),
     );
 
-    return [header, ...rows].join('\n');
+    return [header, ...rows].join("\n");
   }
 
   /**
    * Export payroll as SEPA pain.001.001.03 XML
    */
-  public exportPayrollAsSEPA(year: number, month: string, companyName: string, companyIBAN: string, companyBIC: string): string {
-    const records = this.db.prepare(`
+  public exportPayrollAsSEPA(
+    year: number,
+    month: string,
+    companyName: string,
+    companyIBAN: string,
+    companyBIC: string,
+  ): string {
+    const records = this.db
+      .prepare(
+        `
       SELECT p.*, e.first_name, e.last_name, e.employee_number
       FROM hr_payroll p
       JOIN hr_employees e ON p.employee_id = e.id
@@ -1270,12 +1398,20 @@ export class HRService {
       AND p.iban IS NOT NULL
       AND p.creditor_name IS NOT NULL
       ORDER BY e.employee_number ASC
-    `).all(year, month) as (PayrollRecord & { first_name: string; last_name: string; employee_number: string })[];
+    `,
+      )
+      .all(year, month) as (PayrollRecord & {
+      first_name: string;
+      last_name: string;
+      employee_number: string;
+    })[];
 
     const messageId = uuidv4();
     const creationDateTime = new Date().toISOString();
-    const totalAmount = records.reduce((sum, r) => sum + r.net_salary, 0).toFixed(2);
-    const paymentDate = `${year}-${month.padStart(2, '0')}-01`;
+    const totalAmount = records
+      .reduce((sum, r) => sum + r.net_salary, 0)
+      .toFixed(2);
+    const paymentDate = `${year}-${month.padStart(2, "0")}-01`;
 
     // Generate SEPA XML (pain.001.001.03)
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -1316,7 +1452,9 @@ export class HRService {
         </FinInstnId>
       </DbtrAgt>
       <CdtTrfTxInf>
-${records.map((r, idx) => `        <CdtTrfTxInf>
+${records
+  .map(
+    (r, idx) => `        <CdtTrfTxInf>
           <PmtId>
             <InstrId>${messageId}-${idx + 1}</InstrId>
             <EndToEndId>${r.employee_number || r.id}</EndToEndId>
@@ -1326,7 +1464,7 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
           </Amt>
           <CdtrAgt>
             <FinInstnId>
-              <BIC>${r.bic || 'NOTPROVIDED'}</BIC>
+              <BIC>${r.bic || "NOTPROVIDED"}</BIC>
             </FinInstnId>
           </CdtrAgt>
           <Cdtr>
@@ -1340,7 +1478,9 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
           <RmtInf>
             <Ustrd>Lohnabrechnung ${month}/${year}</Ustrd>
           </RmtInf>
-        </CdtTrfTxInf>`).join('\n')}
+        </CdtTrfTxInf>`,
+  )
+  .join("\n")}
       </CdtTrfTxInf>
     </PmtInf>
   </CstmrCdtTrfInitn>
@@ -1354,11 +1494,11 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
    */
   private escapeXML(str: string): string {
     return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
   }
 
   // ==================== DOCUMENT OPERATIONS ====================
@@ -1366,7 +1506,14 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
   /**
    * Create employee document
    */
-  public createEmployeeDocument(input: EmployeeDocumentUploadInput, filePath?: string, fileName?: string, fileSize?: number, mimeType?: string, uploadedBy?: string): EmployeeDocument {
+  public createEmployeeDocument(
+    input: EmployeeDocumentUploadInput,
+    filePath?: string,
+    fileName?: string,
+    fileSize?: number,
+    mimeType?: string,
+    uploadedBy?: string,
+  ): EmployeeDocument {
     const id = uuidv4();
     const now = new Date().toISOString();
 
@@ -1389,7 +1536,7 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
       uploadedBy || null,
       now,
       input.expires_at || null,
-      input.notes || null
+      input.notes || null,
     );
 
     const document = this.getEmployeeDocumentById(id);
@@ -1403,7 +1550,9 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
    * Get employee document by ID
    */
   public getEmployeeDocumentById(id: string): EmployeeDocument | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_employee_documents WHERE id = ?');
+    const stmt = this.db.prepare(
+      "SELECT * FROM hr_employee_documents WHERE id = ?",
+    );
     return stmt.get(id) as EmployeeDocument | undefined;
   }
 
@@ -1424,7 +1573,9 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
   /**
    * Create overtime record
    */
-  public createOvertimeRecord(input: OvertimeRecordCreateInput): OvertimeRecord {
+  public createOvertimeRecord(
+    input: OvertimeRecordCreateInput,
+  ): OvertimeRecord {
     const id = uuidv4();
     const now = new Date().toISOString();
 
@@ -1445,7 +1596,7 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
       false,
       input.notes || null,
       now,
-      now
+      now,
     );
 
     const overtime = this.getOvertimeRecordById(id);
@@ -1459,23 +1610,26 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
    * Get overtime record by ID
    */
   public getOvertimeRecordById(id: string): OvertimeRecord | undefined {
-    const stmt = this.db.prepare('SELECT * FROM hr_overtime WHERE id = ?');
+    const stmt = this.db.prepare("SELECT * FROM hr_overtime WHERE id = ?");
     return stmt.get(id) as OvertimeRecord | undefined;
   }
 
   /**
    * Get employee overtime records
    */
-  public getEmployeeOvertime(employeeId: string, approved?: boolean): OvertimeRecord[] {
-    let query = 'SELECT * FROM hr_overtime WHERE employee_id = ?';
+  public getEmployeeOvertime(
+    employeeId: string,
+    approved?: boolean,
+  ): OvertimeRecord[] {
+    let query = "SELECT * FROM hr_overtime WHERE employee_id = ?";
     const params: unknown[] = [employeeId];
 
     if (approved !== undefined) {
-      query += ' AND approved = ?';
+      query += " AND approved = ?";
       params.push(approved);
     }
 
-    query += ' ORDER BY date DESC';
+    query += " ORDER BY date DESC";
 
     const stmt = this.db.prepare(query);
     return stmt.all(...params) as OvertimeRecord[];
@@ -1484,7 +1638,10 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
   /**
    * Approve overtime
    */
-  public approveOvertime(id: string, approvedBy: string): OvertimeRecord | undefined {
+  public approveOvertime(
+    id: string,
+    approvedBy: string,
+  ): OvertimeRecord | undefined {
     const stmt = this.db.prepare(`
       UPDATE hr_overtime 
       SET approved = ?, approved_by = ?, approved_at = ?, updated_at = ?
@@ -1503,15 +1660,39 @@ ${records.map((r, idx) => `        <CdtTrfTxInf>
    * Get HR statistics
    */
   public getStatistics(): HRStatistics {
-    const totalEmployees = this.db.prepare('SELECT COUNT(*) as count FROM hr_employees').get() as { count: number };
-    const activeEmployees = this.db.prepare('SELECT COUNT(*) as count FROM hr_employees WHERE status = ?').get(EmployeeStatus.ACTIVE) as { count: number };
-    const onLeaveEmployees = this.db.prepare('SELECT COUNT(*) as count FROM hr_employees WHERE status = ?').get(EmployeeStatus.ON_LEAVE) as { count: number };
-    const terminatedEmployees = this.db.prepare('SELECT COUNT(*) as count FROM hr_employees WHERE status = ?').get(EmployeeStatus.TERMINATED) as { count: number };
-    const pendingLeaveRequests = this.db.prepare('SELECT COUNT(*) as count FROM hr_leave_requests WHERE status = ?').get(LeaveRequestStatus.PENDING) as { count: number };
-    const approvedLeaveRequests = this.db.prepare('SELECT COUNT(*) as count FROM hr_leave_requests WHERE status = ?').get(LeaveRequestStatus.APPROVED) as { count: number };
-    const totalDepartments = this.db.prepare('SELECT COUNT(*) as count FROM hr_departments WHERE is_active = true').get() as { count: number };
-    const pendingOnboarding = this.db.prepare('SELECT COUNT(*) as count FROM hr_onboarding WHERE status = ?').get(OnboardingStatus.PENDING) as { count: number };
-    const completedOnboarding = this.db.prepare('SELECT COUNT(*) as count FROM hr_onboarding WHERE status = ?').get(OnboardingStatus.COMPLETED) as { count: number };
+    const totalEmployees = this.db
+      .prepare("SELECT COUNT(*) as count FROM hr_employees")
+      .get() as { count: number };
+    const activeEmployees = this.db
+      .prepare("SELECT COUNT(*) as count FROM hr_employees WHERE status = ?")
+      .get(EmployeeStatus.ACTIVE) as { count: number };
+    const onLeaveEmployees = this.db
+      .prepare("SELECT COUNT(*) as count FROM hr_employees WHERE status = ?")
+      .get(EmployeeStatus.ON_LEAVE) as { count: number };
+    const terminatedEmployees = this.db
+      .prepare("SELECT COUNT(*) as count FROM hr_employees WHERE status = ?")
+      .get(EmployeeStatus.TERMINATED) as { count: number };
+    const pendingLeaveRequests = this.db
+      .prepare(
+        "SELECT COUNT(*) as count FROM hr_leave_requests WHERE status = ?",
+      )
+      .get(LeaveRequestStatus.PENDING) as { count: number };
+    const approvedLeaveRequests = this.db
+      .prepare(
+        "SELECT COUNT(*) as count FROM hr_leave_requests WHERE status = ?",
+      )
+      .get(LeaveRequestStatus.APPROVED) as { count: number };
+    const totalDepartments = this.db
+      .prepare(
+        "SELECT COUNT(*) as count FROM hr_departments WHERE is_active = true",
+      )
+      .get() as { count: number };
+    const pendingOnboarding = this.db
+      .prepare("SELECT COUNT(*) as count FROM hr_onboarding WHERE status = ?")
+      .get(OnboardingStatus.PENDING) as { count: number };
+    const completedOnboarding = this.db
+      .prepare("SELECT COUNT(*) as count FROM hr_onboarding WHERE status = ?")
+      .get(OnboardingStatus.COMPLETED) as { count: number };
 
     return {
       total_employees: totalEmployees.count,

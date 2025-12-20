@@ -17,36 +17,45 @@ The Metrics module provides system-wide metrics collection, KPI tracking, and pe
 ### KPIs
 
 #### `GET /api/metrics/kpis`
+
 List all KPIs with current values.
 
 #### `POST /api/metrics/kpis`
+
 Define a new KPI.
 
 #### `GET /api/metrics/kpis/:id`
+
 Get KPI details and history.
 
 ### System Metrics
 
 #### `GET /api/metrics/system`
+
 Get system performance metrics.
 
 #### `GET /api/metrics/system/history`
+
 Get historical system metrics.
 
 ### Custom Metrics
 
 #### `POST /api/metrics/custom`
+
 Record a custom metric value.
 
 #### `GET /api/metrics/custom/:name`
+
 Get custom metric data.
 
 ### Dashboards
 
 #### `GET /api/metrics/dashboards`
+
 List metric dashboards.
 
 #### `GET /api/metrics/dashboards/:id`
+
 Get dashboard configuration and data.
 
 ## Integration Points

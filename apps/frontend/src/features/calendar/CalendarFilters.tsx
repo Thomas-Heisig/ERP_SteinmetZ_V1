@@ -3,21 +3,21 @@
 
 /**
  * CalendarFilters Component
- * 
+ *
  * Provides filtering and search functionality for calendar events:
  * - Category-based filtering
  * - Text search
  * - Date range selection
  * - Event type toggles (all-day, recurring)
- * 
+ *
  * @remarks
  * - Fetches available categories from the backend
  * - Maintains filter state and notifies parent component of changes
  * - Displays active filters with clear functionality
- * 
+ *
  * @example
  * ```tsx
- * <CalendarFilters 
+ * <CalendarFilters
  *   onFilterChange={(filters) => console.log(filters)}
  * />
  * ```
@@ -59,7 +59,10 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
       try {
         const response = await fetch("/api/calendar/categories");
         if (response.ok) {
-          const data = await response.json() as { success: boolean; data: Array<{ category: string }> };
+          const data = (await response.json()) as {
+            success: boolean;
+            data: Array<{ category: string }>;
+          };
           if (data.success) {
             setCategories(data.data.map((item) => item.category));
           }
@@ -68,7 +71,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
         console.error("Failed to fetch categories:", error);
       }
     };
-    
+
     loadCategories();
   }, []);
 
@@ -119,10 +122,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
           className={styles.searchInput}
         />
 
-        <Button
-          variant="outline"
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        <Button variant="outline" onClick={() => setIsOpen(!isOpen)}>
           Filter {activeFilterCount > 0 && `(${activeFilterCount})`}
         </Button>
       </div>
@@ -133,10 +133,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
             <h4>Kategorien</h4>
             <div className={styles.filterOptions}>
               {categories.map((cat) => (
-                <label
-                  key={cat}
-                  className={styles.filterOption}
-                >
+                <label key={cat} className={styles.filterOption}>
                   <input
                     type="checkbox"
                     checked={filters.category.includes(cat)}

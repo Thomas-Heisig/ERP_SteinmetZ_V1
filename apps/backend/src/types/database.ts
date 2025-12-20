@@ -21,7 +21,9 @@ export type BetterSqlite3Database = Database.Database;
 /**
  * better-sqlite3 Statement type
  */
-export type BetterSqlite3Statement<T extends Record<string, unknown> | unknown[] = Record<string, unknown>> = Database.Statement<T>;
+export type BetterSqlite3Statement<
+  T extends Record<string, unknown> | unknown[] = Record<string, unknown>,
+> = Database.Statement<T>;
 
 /**
  * better-sqlite3 RunResult type
@@ -58,15 +60,15 @@ export interface BetterSqlite3Module {
  * Valid SQL parameter types
  * Includes support for JSON objects and arrays (PostgreSQL JSONB, SQLite JSON)
  */
-export type SqlValue = 
-  | string 
-  | number 
-  | bigint 
-  | boolean 
-  | null 
+export type SqlValue =
+  | string
+  | number
+  | bigint
+  | boolean
+  | null
   | Buffer
-  | Record<string, unknown>  // JSON objects
-  | unknown[];               // JSON arrays
+  | Record<string, unknown> // JSON objects
+  | unknown[]; // JSON arrays
 
 /**
  * SQL parameter array
@@ -174,7 +176,9 @@ export function isSqlValue(value: unknown): value is SqlValue {
 /**
  * Type guard to check if error is DatabaseErrorOriginal
  */
-export function isDatabaseError(error: unknown): error is DatabaseErrorOriginal {
+export function isDatabaseError(
+  error: unknown,
+): error is DatabaseErrorOriginal {
   return (
     typeof error === "object" &&
     error !== null &&

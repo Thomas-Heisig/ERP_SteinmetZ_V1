@@ -18,21 +18,27 @@ The Reporting module provides comprehensive reporting and business intelligence 
 ### Reports
 
 #### `GET /api/reporting/reports`
+
 List all available reports.
 
 #### `POST /api/reporting/reports`
+
 Create a new report definition.
 
 #### `GET /api/reporting/reports/:id`
+
 Get report definition.
 
 #### `PUT /api/reporting/reports/:id`
+
 Update report definition.
 
 #### `POST /api/reporting/reports/:id/run`
+
 Execute a report with parameters.
 
 **Request Body:**
+
 ```json
 {
   "parameters": {
@@ -47,29 +53,35 @@ Execute a report with parameters.
 ### Report Categories
 
 #### `GET /api/reporting/categories`
+
 List report categories.
 
 ### Scheduled Reports
 
 #### `GET /api/reporting/scheduled`
+
 List scheduled reports.
 
 #### `POST /api/reporting/scheduled`
+
 Schedule a report.
 
 ### Data Sources
 
 #### `GET /api/reporting/data-sources`
+
 List available data sources.
 
 ### Export
 
 #### `POST /api/reporting/export`
+
 Export data in various formats.
 
 ## Standard Reports
 
 ### Financial Reports
+
 - Balance Sheet
 - Profit & Loss Statement
 - Cash Flow Statement
@@ -77,24 +89,28 @@ Export data in various formats.
 - Accounts Payable Aging
 
 ### Sales Reports
+
 - Sales by Period
 - Sales by Product
 - Sales by Customer
 - Sales Pipeline
 
 ### HR Reports
+
 - Headcount Report
 - Attendance Report
 - Leave Balance Report
 - Payroll Summary
 
 ### Inventory Reports
+
 - Stock Level Report
 - Stock Movements
 - Low Stock Alert
 - Inventory Valuation
 
 ### Project Reports
+
 - Project Status
 - Time & Materials
 - Resource Utilization

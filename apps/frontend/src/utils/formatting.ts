@@ -4,9 +4,13 @@
 /**
  * Format number as currency (EUR)
  */
-export function formatCurrency(value: number, locale: string = 'de-DE', currency: string = 'EUR'): string {
+export function formatCurrency(
+  value: number,
+  locale: string = "de-DE",
+  currency: string = "EUR",
+): string {
   return new Intl.NumberFormat(locale, {
-    style: 'currency',
+    style: "currency",
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -23,23 +27,33 @@ export function formatPercent(value: number, decimals: number = 2): string {
 /**
  * Format date to locale string
  */
-export function formatDate(date: string | Date, locale: string = 'de-DE'): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+export function formatDate(
+  date: string | Date,
+  locale: string = "de-DE",
+): string {
+  const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString(locale);
 }
 
 /**
  * Format datetime to locale string
  */
-export function formatDateTime(date: string | Date, locale: string = 'de-DE'): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+export function formatDateTime(
+  date: string | Date,
+  locale: string = "de-DE",
+): string {
+  const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleString(locale);
 }
 
 /**
  * Format number with thousands separator
  */
-export function formatNumber(value: number, decimals: number = 0, locale: string = 'de-DE'): string {
+export function formatNumber(
+  value: number,
+  decimals: number = 0,
+  locale: string = "de-DE",
+): string {
   return new Intl.NumberFormat(locale, {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,

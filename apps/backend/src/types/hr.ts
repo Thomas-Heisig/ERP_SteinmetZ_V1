@@ -14,103 +14,103 @@
  * Employee Status
  */
 export enum EmployeeStatus {
-  ACTIVE = 'active',
-  ON_LEAVE = 'on_leave',
-  TERMINATED = 'terminated',
+  ACTIVE = "active",
+  ON_LEAVE = "on_leave",
+  TERMINATED = "terminated",
 }
 
 /**
  * Contract Type
  */
 export enum ContractType {
-  PERMANENT = 'permanent',
-  TEMPORARY = 'temporary',
-  FREELANCE = 'freelance',
-  INTERNSHIP = 'internship',
+  PERMANENT = "permanent",
+  TEMPORARY = "temporary",
+  FREELANCE = "freelance",
+  INTERNSHIP = "internship",
 }
 
 /**
  * Contract Status
  */
 export enum ContractStatus {
-  ACTIVE = 'active',
-  EXPIRED = 'expired',
-  TERMINATED = 'terminated',
+  ACTIVE = "active",
+  EXPIRED = "expired",
+  TERMINATED = "terminated",
 }
 
 /**
  * Leave Request Type
  */
 export enum LeaveRequestType {
-  VACATION = 'vacation',
-  SICK = 'sick',
-  UNPAID = 'unpaid',
-  PARENTAL = 'parental',
-  COMPENSATORY = 'compensatory',
+  VACATION = "vacation",
+  SICK = "sick",
+  UNPAID = "unpaid",
+  PARENTAL = "parental",
+  COMPENSATORY = "compensatory",
 }
 
 /**
  * Leave Request Status
  */
 export enum LeaveRequestStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
-  CANCELLED = 'cancelled',
+  PENDING = "pending",
+  APPROVED = "approved",
+  REJECTED = "rejected",
+  CANCELLED = "cancelled",
 }
 
 /**
  * Time Entry Type
  */
 export enum TimeEntryType {
-  REGULAR = 'regular',
-  OVERTIME = 'overtime',
-  SICK = 'sick',
-  VACATION = 'vacation',
-  HOLIDAY = 'holiday',
+  REGULAR = "regular",
+  OVERTIME = "overtime",
+  SICK = "sick",
+  VACATION = "vacation",
+  HOLIDAY = "holiday",
 }
 
 /**
  * Onboarding Status
  */
 export enum OnboardingStatus {
-  PENDING = 'pending',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
+  PENDING = "pending",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
 }
 
 /**
  * Task Status
  */
 export enum TaskStatus {
-  PENDING = 'pending',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  SKIPPED = 'skipped',
+  PENDING = "pending",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
+  SKIPPED = "skipped",
 }
 
 /**
  * Document Type
  */
 export enum DocumentType {
-  CONTRACT = 'contract',
-  CERTIFICATE = 'certificate',
-  ID = 'id',
-  PASSPORT = 'passport',
-  DIPLOMA = 'diploma',
-  REFERENCE = 'reference',
-  OTHER = 'other',
+  CONTRACT = "contract",
+  CERTIFICATE = "certificate",
+  ID = "id",
+  PASSPORT = "passport",
+  DIPLOMA = "diploma",
+  REFERENCE = "reference",
+  OTHER = "other",
 }
 
 /**
  * Payment Method
  */
 export enum PaymentMethod {
-  BANK_TRANSFER = 'bank_transfer',
-  CASH = 'cash',
-  CHECK = 'check',
-  PAYPAL = 'paypal',
+  BANK_TRANSFER = "bank_transfer",
+  CASH = "cash",
+  CHECK = "check",
+  PAYPAL = "paypal",
 }
 
 /**
@@ -486,21 +486,21 @@ export interface PayrollTaxParamsCreateInput {
  * Payment Status
  */
 export enum PaymentStatus {
-  PENDING = 'pending',
-  PROCESSED = 'processed',
-  FAILED = 'failed',
-  REVERSED = 'reversed',
+  PENDING = "pending",
+  PROCESSED = "processed",
+  FAILED = "failed",
+  REVERSED = "reversed",
 }
 
 /**
  * SEPA Status
  */
 export enum SEPAStatus {
-  DRAFT = 'draft',
-  SUBMITTED = 'submitted',
-  ACCEPTED = 'accepted',
-  REJECTED = 'rejected',
-  REVOKED = 'revoked',
+  DRAFT = "draft",
+  SUBMITTED = "submitted",
+  ACCEPTED = "accepted",
+  REJECTED = "rejected",
+  REVOKED = "revoked",
 }
 
 /**
@@ -615,7 +615,7 @@ export interface PaginationParams {
   page?: number;
   limit?: number;
   sort_by?: string;
-  sort_order?: 'asc' | 'desc';
+  sort_order?: "asc" | "desc";
 }
 
 /**

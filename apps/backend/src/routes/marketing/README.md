@@ -22,12 +22,14 @@ The Marketing module provides comprehensive marketing automation and campaign ma
 List all marketing campaigns with optional filtering.
 
 **Query Parameters:**
+
 - `type` (optional): Filter by campaign type (email, social, sem, seo, offline, event, telephone)
 - `status` (optional): Filter by status (draft, planned, active, paused, completed, cancelled)
 - `dateFrom` (optional): Filter campaigns starting from date
 - `dateTo` (optional): Filter campaigns ending before date
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -40,10 +42,10 @@ List all marketing campaigns with optional filtering.
       "description": "Summer promotional campaign",
       "start_date": "2025-06-01",
       "end_date": "2025-08-31",
-      "budget": 10000.00,
-      "spent": 3500.00,
+      "budget": 10000.0,
+      "spent": 3500.0,
       "target_audience": "enterprise_customers",
-      "goals": {"leads": 500, "conversions": 50},
+      "goals": { "leads": 500, "conversions": 50 },
       "created_at": "2025-05-01T10:00:00Z"
     }
   ]
@@ -55,6 +57,7 @@ List all marketing campaigns with optional filtering.
 Create a new marketing campaign.
 
 **Request Body:**
+
 ```json
 {
   "name": "Summer Sale 2025",
@@ -63,9 +66,9 @@ Create a new marketing campaign.
   "description": "Summer promotional campaign",
   "start_date": "2025-06-01",
   "end_date": "2025-08-31",
-  "budget": 10000.00,
+  "budget": 10000.0,
   "target_audience": "enterprise_customers",
-  "goals": {"leads": 500, "conversions": 50}
+  "goals": { "leads": 500, "conversions": 50 }
 }
 ```
 
@@ -96,10 +99,12 @@ Pause an active campaign.
 List all marketing forms.
 
 **Query Parameters:**
+
 - `type` (optional): Filter by form type (contact, newsletter, download, registration, survey, custom)
 - `status` (optional): Filter by status (draft, published, archived)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -122,16 +127,17 @@ List all marketing forms.
 Create a new marketing form.
 
 **Request Body:**
+
 ```json
 {
   "name": "Product Demo Request",
   "form_type": "contact",
   "form_config": {
     "fields": [
-      {"name": "name", "type": "text", "required": true},
-      {"name": "email", "type": "email", "required": true},
-      {"name": "company", "type": "text", "required": false},
-      {"name": "message", "type": "textarea", "required": true}
+      { "name": "name", "type": "text", "required": true },
+      { "name": "email", "type": "email", "required": true },
+      { "name": "company", "type": "text", "required": false },
+      { "name": "message", "type": "textarea", "required": true }
     ]
   },
   "success_message": "Thank you! We'll contact you soon.",
@@ -167,9 +173,11 @@ Submit a form (public endpoint for website integration).
 List all landing pages.
 
 **Query Parameters:**
+
 - `status` (optional): Filter by status (draft, published, archived)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -193,6 +201,7 @@ List all landing pages.
 Create a new landing page.
 
 **Request Body:**
+
 ```json
 {
   "name": "Product Launch Page",
@@ -238,12 +247,14 @@ Publish a landing page.
 List all marketing leads.
 
 **Query Parameters:**
+
 - `status` (optional): Filter by lead status (new, contacted, qualified, converted, lost)
 - `source` (optional): Filter by lead source (form, campaign, referral, etc.)
 - `dateFrom` (optional): Filter from date
 - `dateTo` (optional): Filter to date
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -291,6 +302,7 @@ List all email campaigns.
 Create a new email campaign.
 
 **Request Body:**
+
 ```json
 {
   "campaign_id": "campaign-uuid",
@@ -319,6 +331,7 @@ Get email campaign statistics (opens, clicks, bounces, unsubscribes).
 Get overall marketing analytics.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -328,8 +341,8 @@ Get overall marketing analytics.
     "total_leads": 1250,
     "qualified_leads": 320,
     "conversion_rate": 4.8,
-    "total_budget": 50000.00,
-    "total_spent": 32500.00,
+    "total_budget": 50000.0,
+    "total_spent": 32500.0,
     "roi": 215.5,
     "email_open_rate": 24.5,
     "email_click_rate": 3.2
@@ -352,6 +365,7 @@ Get analytics for a specific landing page.
 ## Database Schema
 
 ### `marketing_campaigns`
+
 - `id` (TEXT PRIMARY KEY)
 - `name` (TEXT NOT NULL)
 - `type` (TEXT CHECK: email, social, sem, seo, offline, event, telephone)
@@ -367,6 +381,7 @@ Get analytics for a specific landing page.
 - `updated_at` (TEXT)
 
 ### `marketing_forms`
+
 - `id` (TEXT PRIMARY KEY)
 - `name` (TEXT NOT NULL)
 - `form_type` (TEXT CHECK: contact, newsletter, download, registration, survey, custom)
@@ -378,6 +393,7 @@ Get analytics for a specific landing page.
 - `updated_at` (TEXT)
 
 ### `marketing_form_submissions`
+
 - `id` (TEXT PRIMARY KEY)
 - `form_id` (TEXT FOREIGN KEY)
 - `data` (TEXT) -- JSON
@@ -386,6 +402,7 @@ Get analytics for a specific landing page.
 - `created_at` (TEXT)
 
 ### `marketing_landing_pages`
+
 - `id` (TEXT PRIMARY KEY)
 - `name` (TEXT NOT NULL)
 - `slug` (TEXT UNIQUE NOT NULL)
@@ -400,6 +417,7 @@ Get analytics for a specific landing page.
 - `updated_at` (TEXT)
 
 ### `marketing_leads`
+
 - `id` (TEXT PRIMARY KEY)
 - `name` (TEXT NOT NULL)
 - `email` (TEXT NOT NULL)
@@ -424,6 +442,7 @@ Get analytics for a specific landing page.
 ## Error Handling
 
 The module uses standardized error handling:
+
 - `ValidationError`: Invalid input data (400)
 - `NotFoundError`: Resource not found (404)
 - `BadRequestError`: Invalid operation (400)

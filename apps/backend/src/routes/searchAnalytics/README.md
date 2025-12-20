@@ -17,23 +17,29 @@ The Search Analytics module provides search functionality analytics, tracking us
 ### Search Analytics
 
 #### `GET /api/search-analytics/queries`
+
 List recent search queries with filters.
 
 #### `POST /api/search-analytics/track`
+
 Record a search query (called by search functions).
 
 #### `GET /api/search-analytics/popular`
+
 Get most popular search terms.
 
 #### `GET /api/search-analytics/failed`
+
 Get searches with no results.
 
 ### Statistics
 
 #### `GET /api/search-analytics/statistics`
+
 Get search statistics.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -43,8 +49,8 @@ Get search statistics.
     "averageResponseTime": 125,
     "failureRate": 8.5,
     "popularTerms": [
-      {"term": "customer", "count": 234},
-      {"term": "invoice", "count": 198}
+      { "term": "customer", "count": 234 },
+      { "term": "invoice", "count": 198 }
     ]
   }
 }
@@ -53,6 +59,7 @@ Get search statistics.
 ### Suggestions
 
 #### `GET /api/search-analytics/suggestions`
+
 Get search suggestions based on analytics.
 
 ## Integration Points

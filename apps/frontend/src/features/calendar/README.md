@@ -14,6 +14,7 @@ Das Calendar-Feature bietet eine vollständige Kalender- und Terminverwaltung mi
 Hauptkomponente, die alle Calendar-Funktionen orchestriert.
 
 **Features:**
+
 - View-Mode-Wechsel (Monat, Woche, Tag, Agenda)
 - Filter-Integration
 - Import/Export-Funktionalität
@@ -21,10 +22,11 @@ Hauptkomponente, die alle Calendar-Funktionen orchestriert.
 - Druck-Unterstützung
 
 **Verwendung:**
-```tsx
-import { CalendarPage } from '@features/calendar';
 
-<CalendarPage />
+```tsx
+import { CalendarPage } from "@features/calendar";
+
+<CalendarPage />;
 ```
 
 ### Calendar
@@ -32,6 +34,7 @@ import { CalendarPage } from '@features/calendar';
 Kern-Kalenderkomponente mit verschiedenen Ansichtsmodi.
 
 **Features:**
+
 - Monatansicht mit Tagesübersicht
 - Wochenansicht
 - Tagesansicht
@@ -40,6 +43,7 @@ Kern-Kalenderkomponente mit verschiedenen Ansichtsmodi.
 - Event-Detail-Modal
 
 **Props:**
+
 ```tsx
 interface CalendarProps {
   onEventClick?: (event: CalendarEvent) => void;
@@ -52,12 +56,13 @@ interface CalendarProps {
 ```
 
 **Beispiel:**
+
 ```tsx
 <Calendar
   viewMode="month"
   onEventClick={(event) => console.log(event)}
   onDateClick={(date) => console.log(date)}
-  filters={{ category: ['meeting'], search: 'budget' }}
+  filters={{ category: ["meeting"], search: "budget" }}
 />
 ```
 
@@ -66,6 +71,7 @@ interface CalendarProps {
 Chronologische Listen-Ansicht der Events, gruppiert nach Tagen.
 
 **Features:**
+
 - Tagesweise Gruppierung
 - Erweiterbare/Zusammenklappbare Abschnitte
 - Zeit- und Daueranzeige
@@ -74,6 +80,7 @@ Chronologische Listen-Ansicht der Events, gruppiert nach Tagen.
 - Farbcodierte Event-Indikatoren
 
 **Props:**
+
 ```tsx
 interface CalendarAgendaViewProps {
   events: CalendarEvent[];
@@ -84,6 +91,7 @@ interface CalendarAgendaViewProps {
 ```
 
 **Beispiel:**
+
 ```tsx
 <CalendarAgendaView
   events={myEvents}
@@ -98,6 +106,7 @@ interface CalendarAgendaViewProps {
 Modal-Formular zum Erstellen und Bearbeiten von Terminen.
 
 **Features:**
+
 - Ganztägige Termine
 - Wiederkehrende Termine (täglich, wöchentlich, monatlich, jährlich)
 - Mehrere Erinnerungsoptionen
@@ -107,6 +116,7 @@ Modal-Formular zum Erstellen und Bearbeiten von Terminen.
 - Formularvalidierung
 
 **Props:**
+
 ```tsx
 interface EventFormProps {
   isOpen: boolean;
@@ -118,6 +128,7 @@ interface EventFormProps {
 ```
 
 **Beispiel:**
+
 ```tsx
 <EventForm
   isOpen={showForm}
@@ -132,6 +143,7 @@ interface EventFormProps {
 Filter- und Such-Komponente für Kalender-Events.
 
 **Features:**
+
 - Kategoriebasierte Filterung
 - Textsuche
 - Datumsbereich-Auswahl
@@ -139,6 +151,7 @@ Filter- und Such-Komponente für Kalender-Events.
 - Aktive Filter-Anzeige
 
 **Props:**
+
 ```tsx
 interface CalendarFiltersProps {
   onFilterChange: (filters: FilterOptions) => void;
@@ -146,6 +159,7 @@ interface CalendarFiltersProps {
 ```
 
 **Beispiel:**
+
 ```tsx
 <CalendarFilters onFilterChange={handleFilterChange} />
 ```
@@ -155,6 +169,7 @@ interface CalendarFiltersProps {
 Toolbar mit View-Wechsel und Aktionen.
 
 **Features:**
+
 - View-Mode-Buttons
 - Import-Funktionalität (ICS)
 - Export-Funktionalität (ICS, CSV, JSON)
@@ -162,6 +177,7 @@ Toolbar mit View-Wechsel und Aktionen.
 - Neuer Termin-Button
 
 **Props:**
+
 ```tsx
 interface CalendarToolbarProps {
   onViewChange: (view: ViewMode) => void;
@@ -176,12 +192,14 @@ interface CalendarToolbarProps {
 Statistik-Komponente für Kalender-Events.
 
 **Features:**
+
 - Gesamt-, Anstehende-, Wöchentliche- und Tägliche Event-Zählung
 - Kategorieverteilung mit visuellen Fortschrittsbalken
 - Geschäftigster Wochentag
 - Durchschnittliche Event-Dauer
 
 **Props:**
+
 ```tsx
 interface CalendarStatsProps {
   events: CalendarEvent[];
@@ -199,7 +217,7 @@ interface CalendarEvent {
   description: string;
   location?: string;
   start: string; // ISO 8601 format
-  end: string;   // ISO 8601 format
+  end: string; // ISO 8601 format
   allDay: boolean;
   color?: string;
   category?: string;
@@ -252,16 +270,16 @@ interface FilterOptions {
 
 ```typescript
 const response = await fetch(`/api/calendar/events?${params.toString()}`);
-const data = await response.json() as ApiResponse<CalendarEvent[]>;
+const data = (await response.json()) as ApiResponse<CalendarEvent[]>;
 ```
 
 ### Event erstellen
 
 ```typescript
-const response = await fetch('/api/calendar/events', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(eventData)
+const response = await fetch("/api/calendar/events", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(eventData),
 });
 ```
 
@@ -269,9 +287,9 @@ const response = await fetch('/api/calendar/events', {
 
 ```typescript
 const response = await fetch(`/api/calendar/events/${eventId}`, {
-  method: 'PUT',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(eventData)
+  method: "PUT",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(eventData),
 });
 ```
 
@@ -279,24 +297,24 @@ const response = await fetch(`/api/calendar/events/${eventId}`, {
 
 ```typescript
 const response = await fetch(`/api/calendar/events/${eventId}`, {
-  method: 'DELETE'
+  method: "DELETE",
 });
 ```
 
 ### Kategorien abrufen
 
 ```typescript
-const response = await fetch('/api/calendar/categories');
-const data = await response.json() as ApiResponse<CategoryData[]>;
+const response = await fetch("/api/calendar/categories");
+const data = (await response.json()) as ApiResponse<CategoryData[]>;
 ```
 
 ### Import (ICS)
 
 ```typescript
-const response = await fetch('/api/calendar/import', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ ics: fileContent, overwrite: false })
+const response = await fetch("/api/calendar/import", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ ics: fileContent, overwrite: false }),
 });
 ```
 
@@ -343,11 +361,11 @@ Alle Komponenten sind TypeScript Strict Mode konform:
 ```tsx
 // ✅ Verwende useCallback für Event-Handler
 const handleEventClick = useCallback((event: CalendarEvent) => {
-  console.log('Event clicked:', event);
+  console.log("Event clicked:", event);
 }, []);
 
 // ✅ Type-Safe API Responses
-const data = await response.json() as ApiResponse<CalendarEvent[]>;
+const data = (await response.json()) as ApiResponse<CalendarEvent[]>;
 ```
 
 ### State Management
@@ -368,9 +386,12 @@ useEffect(() => {
 // ✅ Verwende try-catch mit Notifications
 try {
   await submitEvent(eventData);
-  Notification.success({ title: 'Erfolg', message: 'Event erstellt' });
+  Notification.success({ title: "Erfolg", message: "Event erstellt" });
 } catch (error) {
-  Notification.error({ title: 'Fehler', message: 'Event konnte nicht erstellt werden' });
+  Notification.error({
+    title: "Fehler",
+    message: "Event konnte nicht erstellt werden",
+  });
 }
 ```
 
@@ -403,10 +424,10 @@ Falls Sie alte Calendar-Komponenten haben:
 
 ```tsx
 // Alt
-import { Calendar } from './old-calendar';
+import { Calendar } from "./old-calendar";
 
 // Neu
-import { Calendar } from '@features/calendar';
+import { Calendar } from "@features/calendar";
 ```
 
 ## Testing

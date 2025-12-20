@@ -21,11 +21,13 @@ The CRM module provides comprehensive customer relationship management functiona
 List all customers with optional filtering.
 
 **Query Parameters:**
+
 - `status` (optional): Filter by customer status (active, inactive, prospect)
 - `search` (optional): Search customers by name, email, or company
 - `category` (optional): Filter by customer category
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -50,6 +52,7 @@ List all customers with optional filtering.
 Create a new customer.
 
 **Request Body:**
+
 ```json
 {
   "name": "Customer Name",
@@ -82,6 +85,7 @@ Delete a customer (soft delete recommended).
 List all contacts with optional filtering.
 
 **Query Parameters:**
+
 - `customerId` (optional): Filter contacts by customer
 - `search` (optional): Search contacts by name or email
 
@@ -90,6 +94,7 @@ List all contacts with optional filtering.
 Create a new contact.
 
 **Request Body:**
+
 ```json
 {
   "customerId": "customer-uuid",
@@ -122,6 +127,7 @@ Delete a contact.
 List all sales opportunities.
 
 **Query Parameters:**
+
 - `status` (optional): Filter by opportunity status
 - `stage` (optional): Filter by sales funnel stage
 - `customerId` (optional): Filter by customer
@@ -131,12 +137,13 @@ List all sales opportunities.
 Create a new opportunity.
 
 **Request Body:**
+
 ```json
 {
   "customerId": "customer-uuid",
   "title": "Software Implementation",
   "description": "ERP system implementation project",
-  "value": 50000.00,
+  "value": 50000.0,
   "probability": 75,
   "stage": "proposal",
   "expectedCloseDate": "2025-12-31",
@@ -163,6 +170,7 @@ Delete an opportunity.
 List all activities and interactions.
 
 **Query Parameters:**
+
 - `customerId` (optional): Filter by customer
 - `type` (optional): Filter by activity type (call, meeting, email, task)
 - `dateFrom` (optional): Filter from date
@@ -173,6 +181,7 @@ List all activities and interactions.
 Log a new activity.
 
 **Request Body:**
+
 ```json
 {
   "customerId": "customer-uuid",
@@ -205,6 +214,7 @@ Delete an activity.
 Get CRM statistics and metrics.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -213,9 +223,9 @@ Get CRM statistics and metrics.
     "activeCustomers": 120,
     "prospects": 30,
     "totalOpportunities": 45,
-    "totalOpportunityValue": 500000.00,
+    "totalOpportunityValue": 500000.0,
     "conversionRate": 32.5,
-    "averageDealSize": 15000.00,
+    "averageDealSize": 15000.0,
     "activitiesThisMonth": 234
   }
 }
@@ -224,6 +234,7 @@ Get CRM statistics and metrics.
 ## Database Schema
 
 ### `crm_customers`
+
 - `id` (TEXT PRIMARY KEY)
 - `name` (TEXT NOT NULL)
 - `email` (TEXT)
@@ -237,6 +248,7 @@ Get CRM statistics and metrics.
 - `updated_at` (TEXT)
 
 ### `crm_contacts`
+
 - `id` (TEXT PRIMARY KEY)
 - `customer_id` (TEXT FOREIGN KEY)
 - `first_name` (TEXT NOT NULL)
@@ -250,6 +262,7 @@ Get CRM statistics and metrics.
 - `updated_at` (TEXT)
 
 ### `crm_opportunities`
+
 - `id` (TEXT PRIMARY KEY)
 - `customer_id` (TEXT FOREIGN KEY)
 - `title` (TEXT NOT NULL)
@@ -264,6 +277,7 @@ Get CRM statistics and metrics.
 - `updated_at` (TEXT)
 
 ### `crm_activities`
+
 - `id` (TEXT PRIMARY KEY)
 - `customer_id` (TEXT FOREIGN KEY)
 - `contact_id` (TEXT FOREIGN KEY)
@@ -279,12 +293,14 @@ Get CRM statistics and metrics.
 ## Error Handling
 
 The module uses standardized error handling with the following error types:
+
 - `ValidationError`: Invalid input data (400)
 - `NotFoundError`: Resource not found (404)
 - `BadRequestError`: Invalid request (400)
 - `InternalServerError`: Server errors (500)
 
 All responses follow the standard format:
+
 ```json
 {
   "success": false,

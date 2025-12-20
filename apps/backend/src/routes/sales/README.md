@@ -17,45 +17,57 @@ The Sales module provides comprehensive sales management functionality including
 ### Quotes
 
 #### `GET /api/sales/quotes`
+
 List all quotes with filtering.
 
 #### `POST /api/sales/quotes`
+
 Create a new quote.
 
 #### `GET /api/sales/quotes/:id`
+
 Get quote details.
 
 #### `PUT /api/sales/quotes/:id`
+
 Update quote.
 
 #### `POST /api/sales/quotes/:id/convert`
+
 Convert quote to order.
 
 ### Orders
 
 #### `GET /api/sales/orders`
+
 List all sales orders.
 
 #### `POST /api/sales/orders`
+
 Create a new order.
 
 #### `GET /api/sales/orders/:id`
+
 Get order details.
 
 #### `PUT /api/sales/orders/:id`
+
 Update order.
 
 ### Products
 
 #### `GET /api/sales/products`
+
 List products in sales catalog.
 
 #### `GET /api/sales/products/:id`
+
 Get product details and pricing.
 
 ### Analytics
 
 #### `GET /api/sales/analytics`
+
 Get sales analytics and metrics.
 
 ## Integration Points
