@@ -593,7 +593,8 @@ router.get(
       allDay: number;
       recurring: number;
       withAttendees: number;
-    }>(`
+    }>(
+      `
       SELECT
         COUNT(*) as total,
         SUM(CASE WHEN start_time > datetime('now') THEN 1 ELSE 0 END) as upcoming,
@@ -602,7 +603,9 @@ router.get(
         SUM(CASE WHEN json_array_length(attendees_json) > 0 THEN 1 ELSE 0 END) as withAttendees
       FROM calendar_events
       ${statsWhere}
-    `, statsParams);
+    `,
+      statsParams,
+    );
 
     // Get events per category
     const catConditions: string[] = ["category IS NOT NULL"];
@@ -617,19 +620,21 @@ router.get(
        WHERE ${catConditions.join(" AND ")}
        GROUP BY category
        ORDER BY count DESC`,
-      catParams
+      catParams,
     );
 
     // Get events per day of week
     const dowWhere = hasRange ? "WHERE start_time BETWEEN ? AND ?" : "";
-    const dowParams: SqlValue[] = hasRange ? [start as string, end as string] : [];
+    const dowParams: SqlValue[] = hasRange
+      ? [start as string, end as string]
+      : [];
     const daysOfWeek = await db.all<{ day: number; count: number }>(
       `SELECT CAST(strftime('%w', start_time) AS INTEGER) as day, COUNT(*) as count
        FROM calendar_events
        ${dowWhere}
        GROUP BY day
        ORDER BY day`,
-      dowParams
+      dowParams,
     );
 
     res.json({
@@ -637,13 +642,13 @@ router.get(
       data: {
         ...stats,
         categories,
-        daysOfWeek: daysOfWeek.map(row => ({
-          day: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][row.day],
+        daysOfWeek: daysOfWeek.map((row) => ({
+          day: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"][row.day],
           count: row.count,
         })),
       },
     });
-  })
+  }),
 );
 
 /**
@@ -693,7 +698,7 @@ router.post(
           `UPDATE calendar_events 
            SET ${updateFields.join(", ")}
            WHERE id IN (${placeholders})`,
-          updateParams
+          updateParams,
         );
         changes = result.changes || 0;
         break;
@@ -703,7 +708,7 @@ router.post(
         const placeholders2 = eventIds.map(() => "?").join(",");
         const result2 = await db.run(
           `DELETE FROM calendar_events WHERE id IN (${placeholders2})`,
-          eventIds
+          eventIds,
         );
         changes = result2.changes || 0;
         break;
@@ -714,7 +719,7 @@ router.post(
         for (const eventId of eventIds) {
           const original = await db.get<Record<string, unknown>>(
             "SELECT * FROM calendar_events WHERE id = ?",
-            [eventId]
+            [eventId],
           );
 
           if (original) {
@@ -728,7 +733,7 @@ router.post(
                 all_day, color, category, recurrence, recurrence_end_date,
                 reminders_json, attendees_json, created_by, ?, ?
               FROM calendar_events WHERE id = ?`,
-              [newId, now, now, eventId]
+              [newId, now, now, eventId],
             );
             changes++;
           }
@@ -744,7 +749,7 @@ router.post(
       success: true,
       data: { changes },
     });
-  })
+  }),
 );
 
 /**
@@ -772,7 +777,10 @@ router.get(
       params.push(excludeId as string);
     }
 
-    const conflictingEvents = await db.all<Record<string, unknown>>(sql, params);
+    const conflictingEvents = await db.all<Record<string, unknown>>(
+      sql,
+      params,
+    );
     const events = conflictingEvents.map(rowToEvent);
 
     res.json({
@@ -780,7 +788,7 @@ router.get(
       data: events,
       conflicts: events.length > 0,
     });
-  })
+  }),
 );
 
 export default router;

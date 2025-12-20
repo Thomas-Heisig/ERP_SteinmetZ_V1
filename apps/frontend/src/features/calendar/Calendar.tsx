@@ -3,10 +3,10 @@
 
 /**
  * Calendar Component
- * 
+ *
  * A comprehensive calendar component with multiple view modes (month, week, day).
  * Displays events, allows date navigation, and provides event interaction.
- * 
+ *
  * @remarks
  * Features:
  * - Month/Week/Day view modes
@@ -16,7 +16,7 @@
  * - Responsive design
  * - Filter support (category, search)
  * - Real-time event fetching from backend
- * 
+ *
  * @example
  * ```tsx
  * <Calendar
@@ -143,9 +143,14 @@ export const Calendar: React.FC<CalendarProps> = ({
         if (filters?.category && filters.category.length === 1) {
           params.set("category", filters.category[0]);
         }
-        const response = await fetch(`/api/calendar/events?${params.toString()}`);
+        const response = await fetch(
+          `/api/calendar/events?${params.toString()}`,
+        );
         if (response.ok) {
-          const data = await response.json() as { success: boolean; data: CalendarEvent[] };
+          const data = (await response.json()) as {
+            success: boolean;
+            data: CalendarEvent[];
+          };
           if (data.success) {
             setEvents(data.data);
           }

@@ -3,10 +3,10 @@
 
 /**
  * CalendarAgendaView Component
- * 
+ *
  * Displays calendar events in a chronological agenda/list view.
  * Events are grouped by day with expandable sections.
- * 
+ *
  * @remarks
  * Features:
  * - Events grouped by day
@@ -16,7 +16,7 @@
  * - Edit and delete actions
  * - Color-coded event indicators
  * - Smart date labels (Today, Tomorrow, Yesterday)
- * 
+ *
  * @example
  * ```tsx
  * <CalendarAgendaView
@@ -49,33 +49,39 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
 
   const groupedEvents = useMemo(() => {
-    const grouped = events.reduce((acc, event) => {
-      const date = new Date(event.start).toDateString();
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(event);
-      return acc;
-    }, {} as Record<string, CalendarEvent[]>);
+    const grouped = events.reduce(
+      (acc, event) => {
+        const date = new Date(event.start).toDateString();
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+        acc[date].push(event);
+        return acc;
+      },
+      {} as Record<string, CalendarEvent[]>,
+    );
 
     // Sort events within each day
-    Object.keys(grouped).forEach(date => {
-      grouped[date].sort((a, b) => 
-        new Date(a.start).getTime() - new Date(b.start).getTime()
+    Object.keys(grouped).forEach((date) => {
+      grouped[date].sort(
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
       );
     });
 
     // Sort days
     return Object.keys(grouped)
       .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-      .reduce((acc, key) => {
-        acc[key] = grouped[key];
-        return acc;
-      }, {} as Record<string, CalendarEvent[]>);
+      .reduce(
+        (acc, key) => {
+          acc[key] = grouped[key];
+          return acc;
+        },
+        {} as Record<string, CalendarEvent[]>,
+      );
   }, [events]);
 
   const toggleDay = (date: string) => {
-    setExpandedDays(prev => {
+    setExpandedDays((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(date)) {
         newSet.delete(date);
@@ -111,7 +117,7 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({
 
   const formatTime = (dateString: string, allDay: boolean) => {
     if (allDay) return "Ganztägig";
-    
+
     const date = new Date(dateString);
     return date.toLocaleTimeString("de-DE", {
       hour: "2-digit",
@@ -121,13 +127,13 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({
 
   const getDuration = (start: string, end: string, allDay: boolean) => {
     if (allDay) return "";
-    
+
     const startDate = new Date(start);
     const endDate = new Date(end);
     const durationMs = endDate.getTime() - startDate.getTime();
     const hours = Math.floor(durationMs / (1000 * 60 * 60));
     const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours === 0) return `${minutes}min`;
     if (minutes === 0) return `${hours}h`;
     return `${hours}h ${minutes}min`;
@@ -137,13 +143,15 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({
     <div className={styles.agendaView}>
       {Object.entries(groupedEvents).map(([date, dayEvents]) => (
         <Card key={date} variant="outlined" className={styles.agendaDay}>
-          <div 
+          <div
             className={styles.agendaDayHeader}
             onClick={() => toggleDay(date)}
           >
             <div className={styles.agendaDayTitle}>
               <h3>{formatDate(date)}</h3>
-              <span className={styles.eventCount}>{dayEvents.length} Termine</span>
+              <span className={styles.eventCount}>
+                {dayEvents.length} Termine
+              </span>
             </div>
             <span className={styles.expandIcon}>
               {expandedDays.has(date) ? "▲" : "▼"}
@@ -153,16 +161,16 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({
           {expandedDays.has(date) && (
             <div className={styles.agendaDayContent}>
               {dayEvents.map((event) => (
-                <div 
-                  key={event.id} 
+                <div
+                  key={event.id}
                   className={styles.agendaEvent}
                   onClick={() => onEventClick(event)}
                 >
-                  <div 
+                  <div
                     className={styles.eventColorIndicator}
                     data-color={event.color || "#4f46e5"}
                   />
-                  
+
                   <div className={styles.eventContent}>
                     <div className={styles.eventHeader}>
                       <h4 className={styles.eventTitle}>{event.title}</h4>
@@ -191,28 +199,32 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({
                         </Button>
                       </div>
                     </div>
-                    
+
                     <div className={styles.eventDetails}>
                       <div className={styles.eventTime}>
                         <span className={styles.eventIcon}>🕐</span>
                         <span>
                           {formatTime(event.start, event.allDay)}
-                          {!event.allDay && ` - ${formatTime(event.end, false)}`}
-                          {!event.allDay && ` (${getDuration(event.start, event.end, false)})`}
+                          {!event.allDay &&
+                            ` - ${formatTime(event.end, false)}`}
+                          {!event.allDay &&
+                            ` (${getDuration(event.start, event.end, false)})`}
                         </span>
                       </div>
-                      
+
                       {event.location && (
                         <div className={styles.eventLocation}>
                           <span className={styles.eventIcon}>📍</span>
                           <span>{event.location}</span>
                         </div>
                       )}
-                      
+
                       {event.category && (
-                        <span className={styles.categoryBadge}>{event.category}</span>
+                        <span className={styles.categoryBadge}>
+                          {event.category}
+                        </span>
                       )}
-                      
+
                       {event.attendees && event.attendees.length > 0 && (
                         <div className={styles.eventAttendees}>
                           <span className={styles.eventIcon}>👥</span>
@@ -220,7 +232,7 @@ export const CalendarAgendaView: React.FC<CalendarAgendaViewProps> = ({
                         </div>
                       )}
                     </div>
-                    
+
                     {event.description && (
                       <p className={styles.eventDescription}>
                         {event.description}

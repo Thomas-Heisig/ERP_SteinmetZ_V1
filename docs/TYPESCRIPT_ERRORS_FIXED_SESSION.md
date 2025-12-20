@@ -9,6 +9,7 @@
 ### 🎯 Problem
 
 TypeScript konnte nicht kompilieren wegen:
+
 1. **Fehlende supertest Types** - 6 Test-Dateien konnten 'supertest' nicht finden
 2. **Type Incompatibilities** in aiAnnotatorService.ts - 5 TypeScript Fehler
 3. **Unused Imports** - 8 ESLint Warnings für ungenutzte Importe
@@ -20,16 +21,19 @@ TypeScript konnte nicht kompilieren wegen:
 #### 1. Supertest Types Installation
 
 **Problem:**
+
 ```
 Cannot find module 'supertest' or its corresponding type declarations.
 ```
 
 **Lösung:**
+
 ```bash
 npm install --save-dev supertest @types/supertest
 ```
 
 **Betroffene Dateien:**
+
 - ✅ businessRouter.test.ts
 - ✅ procurementRouter.test.ts
 - ✅ productionRouter.test.ts
@@ -42,6 +46,7 @@ npm install --save-dev supertest @types/supertest
 #### 2. NodeFilters Type Compatibility
 
 **Problem:**
+
 ```typescript
 // ai-annotator.ts (Alt)
 export interface NodeFilters {
@@ -55,6 +60,7 @@ async listCandidates(opts: {
 ```
 
 **Fehler:**
+
 ```
 Argument of type 'NodeFilters' is not assignable to parameter of type '{ ... }'.
 Types of property 'businessArea' are incompatible.
@@ -62,6 +68,7 @@ Type 'string | string[] | undefined' is not assignable to type 'string[] | undef
 ```
 
 **Lösung:**
+
 ```typescript
 // ai-annotator.ts (Neu)
 export interface NodeFilters {
@@ -71,7 +78,7 @@ export interface NodeFilters {
   offset?: number;
   search?: string;
   status?: string[];
-  businessArea?: string[];  // ✅ Jetzt kompatibel
+  businessArea?: string[]; // ✅ Jetzt kompatibel
   complexity?: string[];
   [key: string]: unknown;
 }
@@ -82,24 +89,26 @@ export interface NodeFilters {
 #### 3. BatchResultMetadata Property Access
 
 **Problem:**
+
 ```typescript
 // Vorher
 result.results.forEach((r) => {
   if (r.success && r.result) {
-    const conf = r.result?.quality?.confidence;  // ❌ Property 'confidence' does not exist
-    const area = r.result?.businessArea;         // ❌ Property 'businessArea' does not exist
-    const pii = r.result?.piiClass;              // ❌ Property 'piiClass' does not exist
+    const conf = r.result?.quality?.confidence; // ❌ Property 'confidence' does not exist
+    const area = r.result?.businessArea; // ❌ Property 'businessArea' does not exist
+    const pii = r.result?.piiClass; // ❌ Property 'piiClass' does not exist
   }
 });
 ```
 
 **Lösung:**
+
 ```typescript
 // Nachher
 result.results.forEach((r) => {
   if (r.success && r.result) {
     // Type assertion for result metadata
-    const metadata = r.result as Record<string, any>;  // ✅ Flexibler Zugriff
+    const metadata = r.result as Record<string, any>; // ✅ Flexibler Zugriff
     const conf = metadata?.quality?.confidence;
     const area = metadata?.businessArea || metadata?.meta?.businessArea;
     const pii = metadata?.piiClass || metadata?.meta?.piiClass || "none";
@@ -112,12 +121,14 @@ result.results.forEach((r) => {
 #### 4. NodeMetaJson zu GeneratedMeta Compatibility
 
 **Problem:**
+
 ```typescript
 // Vorher
-const metaVal = this.validateMeta(node.meta_json);  // ❌ NodeMetaJson nicht assignable zu GeneratedMeta
+const metaVal = this.validateMeta(node.meta_json); // ❌ NodeMetaJson nicht assignable zu GeneratedMeta
 ```
 
 **Fehler:**
+
 ```
 Argument of type 'NodeMetaJson' is not assignable to parameter of type 'GeneratedMeta'.
 Types of property 'description' are incompatible.
@@ -125,9 +136,10 @@ Type 'string | undefined' is not assignable to type 'string'.
 ```
 
 **Lösung:**
+
 ```typescript
 // Nachher
-const metaVal = this.validateMeta(node.meta_json as GeneratedMeta);  // ✅ Explizite Type Assertion
+const metaVal = this.validateMeta(node.meta_json as GeneratedMeta); // ✅ Explizite Type Assertion
 ```
 
 ---
@@ -136,6 +148,7 @@ const metaVal = this.validateMeta(node.meta_json as GeneratedMeta);  // ✅ Expl
 
 **Problem:**
 8 ESLint Warnings für ungenutzte Type Imports:
+
 - AIModelInfo
 - AIProviderResponse
 - AITagsResponse
@@ -146,39 +159,40 @@ const metaVal = this.validateMeta(node.meta_json as GeneratedMeta);  // ✅ Expl
 - QueryParams
 
 **Lösung:**
+
 ```typescript
 // Vorher (18 Imports)
 import type {
-  AIModelInfo,           // ❌ Unused
-  AIProviderResponse,    // ❌ Unused
-  AITagsResponse,        // ❌ Unused
+  AIModelInfo, // ❌ Unused
+  AIProviderResponse, // ❌ Unused
+  AITagsResponse, // ❌ Unused
   BatchResultMetadata,
   ConditionalValue,
-  DatabaseRow,           // ❌ Unused
+  DatabaseRow, // ❌ Unused
   FormFieldValue,
-  JsonMetadata,          // ❌ Unused
+  JsonMetadata, // ❌ Unused
   NodeAnnotationJson,
   NodeFilters,
   NodeMetaJson,
   NodeSchemaJson,
-  PartialNodeRow,        // ❌ Unused
-  PerformanceMetrics,    // ❌ Unused
-  QueryParams,           // ❌ Unused
+  PartialNodeRow, // ❌ Unused
+  PerformanceMetrics, // ❌ Unused
+  QueryParams, // ❌ Unused
   ResponsiveBreakpoints,
   ValidationValue,
 } from "../types/ai-annotator.js";
 
 // Nachher (10 Imports)
 import type {
-  BatchResultMetadata,    // ✅ Used
-  ConditionalValue,       // ✅ Used
-  FormFieldValue,         // ✅ Used
-  NodeAnnotationJson,     // ✅ Used
-  NodeFilters,            // ✅ Used
-  NodeMetaJson,           // ✅ Used
-  NodeSchemaJson,         // ✅ Used
-  ResponsiveBreakpoints,  // ✅ Used
-  ValidationValue,        // ✅ Used
+  BatchResultMetadata, // ✅ Used
+  ConditionalValue, // ✅ Used
+  FormFieldValue, // ✅ Used
+  NodeAnnotationJson, // ✅ Used
+  NodeFilters, // ✅ Used
+  NodeMetaJson, // ✅ Used
+  NodeSchemaJson, // ✅ Used
+  ResponsiveBreakpoints, // ✅ Used
+  ValidationValue, // ✅ Used
 } from "../types/ai-annotator.js";
 ```
 
@@ -187,6 +201,7 @@ import type {
 ### 📊 Statistiken
 
 **Fehler behoben:**
+
 - ✅ 6 "Cannot find module 'supertest'" Errors
 - ✅ 5 TypeScript Type Errors in aiAnnotatorService.ts
 - ✅ 8 ESLint Unused Import Warnings
@@ -194,6 +209,7 @@ import type {
 **Gesamt:** 19 Errors/Warnings behoben
 
 **Dateien geändert:**
+
 - package.json (supertest dependencies)
 - aiAnnotatorService.ts (3 fixes)
 - ai-annotator.ts (NodeFilters definition)

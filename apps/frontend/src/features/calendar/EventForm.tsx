@@ -3,10 +3,10 @@
 
 /**
  * EventForm Component
- * 
+ *
  * Simplified modal form for creating and editing calendar events.
  * Uses only available UI components (Button, Modal, Input, Select).
- * 
+ *
  * @remarks
  * Features:
  * - Create new events or edit existing ones
@@ -16,7 +16,7 @@
  * - Category selection
  * - Location field
  * - Form validation
- * 
+ *
  * @example
  * ```tsx
  * <EventForm
@@ -53,7 +53,7 @@ export interface EventFormProps {
 
 /**
  * EventForm - Simplified form for creating and editing calendar events
- * 
+ *
  * This component provides a modal form with all essential fields for event management.
  * It handles validation, state management, and data submission.
  */
@@ -79,12 +79,15 @@ export const EventForm: React.FC<EventFormProps> = ({
     if (event && mode === "edit") {
       return {
         ...event,
-        start: typeof event.start === "string" ? event.start.slice(0, 16) : event.start,
+        start:
+          typeof event.start === "string"
+            ? event.start.slice(0, 16)
+            : event.start,
         end: typeof event.end === "string" ? event.end.slice(0, 16) : event.end,
         attendees: event.attendees || [],
       };
     }
-    
+
     const initialDates = getInitialDates();
     return {
       title: "",
@@ -111,7 +114,10 @@ export const EventForm: React.FC<EventFormProps> = ({
       try {
         const response = await fetch("/api/calendar/categories");
         if (response.ok) {
-          const data = await response.json() as { success: boolean; data: Array<{ category: string }> };
+          const data = (await response.json()) as {
+            success: boolean;
+            data: Array<{ category: string }>;
+          };
           if (data.success) {
             setCategories(data.data.map((item) => item.category));
           }
@@ -126,18 +132,21 @@ export const EventForm: React.FC<EventFormProps> = ({
   /**
    * Handle input field changes
    */
-  const handleInputChange = useCallback((field: keyof EventFormData, value: string | boolean | string[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-    // Clear error for this field
-    setErrors((prev) => {
-      const newErrors = { ...prev };
-      delete newErrors[field];
-      return newErrors;
-    });
-  }, []);
+  const handleInputChange = useCallback(
+    (field: keyof EventFormData, value: string | boolean | string[]) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+      // Clear error for this field
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    },
+    [],
+  );
 
   /**
    * Validate form data
@@ -172,16 +181,19 @@ export const EventForm: React.FC<EventFormProps> = ({
   /**
    * Handle form submission
    */
-  const handleSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
 
-    onSubmit(formData);
-    onClose();
-  }, [formData, validateForm, onSubmit, onClose]);
+      if (!validateForm()) {
+        return;
+      }
+
+      onSubmit(formData);
+      onClose();
+    },
+    [formData, validateForm, onSubmit, onClose],
+  );
 
   /**
    * Handle modal close with reset
@@ -342,12 +354,22 @@ export const EventForm: React.FC<EventFormProps> = ({
 
         {/* Attendees */}
         <div className={styles.formGroup}>
-          <label htmlFor="attendees">Teilnehmer (E-Mails, durch Komma getrennt)</label>
+          <label htmlFor="attendees">
+            Teilnehmer (E-Mails, durch Komma getrennt)
+          </label>
           <Input
             id="attendees"
             type="text"
             value={formData.attendees?.join(", ") || ""}
-            onChange={(e) => handleInputChange("attendees", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))}
+            onChange={(e) =>
+              handleInputChange(
+                "attendees",
+                e.target.value
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean),
+              )
+            }
             placeholder="email1@example.com, email2@example.com"
           />
         </div>

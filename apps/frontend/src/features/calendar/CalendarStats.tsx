@@ -3,17 +3,17 @@
 
 /**
  * CalendarStats Component
- * 
+ *
  * Displays statistical information about calendar events including:
  * - Total, upcoming, weekly, and daily event counts
  * - Category distribution with visual progress bars
  * - Busiest day of the week
  * - Average event duration
- * 
+ *
  * @remarks
  * Automatically calculates statistics based on provided events array.
  * Updates in real-time when events change.
- * 
+ *
  * @example
  * ```tsx
  * <CalendarStats events={myEvents} />
@@ -67,17 +67,17 @@ export const CalendarStats: React.FC<CalendarStatsProps> = ({ events }) => {
     const categoryCount: Record<string, number> = {};
     const dayCount: Record<string, number> = {};
 
-    const upcoming = events.filter(event => {
+    const upcoming = events.filter((event) => {
       const eventStart = new Date(event.start);
       return eventStart > now;
     });
 
-    const thisWeek = events.filter(event => {
+    const thisWeek = events.filter((event) => {
       const eventStart = new Date(event.start);
       return eventStart >= weekStart && eventStart <= weekEnd;
     });
 
-    const todayEvents = events.filter(event => {
+    const todayEvents = events.filter((event) => {
       const eventStart = new Date(event.start);
       return (
         eventStart.getDate() === today.getDate() &&
@@ -86,19 +86,23 @@ export const CalendarStats: React.FC<CalendarStatsProps> = ({ events }) => {
       );
     });
 
-    events.forEach(event => {
+    events.forEach((event) => {
       // Category stats
       if (event.category) {
-        categoryCount[event.category] = (categoryCount[event.category] || 0) + 1;
+        categoryCount[event.category] =
+          (categoryCount[event.category] || 0) + 1;
       }
 
       // Day of week stats
-      const day = new Date(event.start).toLocaleDateString('de-DE', { weekday: 'long' });
+      const day = new Date(event.start).toLocaleDateString("de-DE", {
+        weekday: "long",
+      });
       dayCount[day] = (dayCount[day] || 0) + 1;
 
       // Duration stats
       if (!event.allDay) {
-        const duration = new Date(event.end).getTime() - new Date(event.start).getTime();
+        const duration =
+          new Date(event.end).getTime() - new Date(event.start).getTime();
         totalDuration += duration;
       }
     });
@@ -127,7 +131,7 @@ export const CalendarStats: React.FC<CalendarStatsProps> = ({ events }) => {
   const formatDuration = (ms: number) => {
     const hours = Math.floor(ms / (1000 * 60 * 60));
     const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours === 0) return `${minutes}min`;
     if (minutes === 0) return `${hours}h`;
     return `${hours}h ${minutes}min`;
@@ -137,53 +141,49 @@ export const CalendarStats: React.FC<CalendarStatsProps> = ({ events }) => {
     <div className={styles.statsContainer}>
       <Card variant="elevated" className={styles.statsCard}>
         <h3 className={styles.statsTitle}>Kalender-Statistiken</h3>
-        
+
         <div className={styles.statsGrid}>
           <div className={styles.statItem}>
             <span className={styles.statIcon}>📅</span>
             <div className={styles.statValue}>{stats.totalEvents}</div>
             <div className={styles.statLabel}>Gesamt</div>
           </div>
-          
+
           <div className={styles.statItem}>
             <span className={styles.statIcon}>🕒</span>
             <div className={styles.statValue}>{stats.upcomingEvents}</div>
             <div className={styles.statLabel}>Bevorstehend</div>
           </div>
-          
+
           <div className={styles.statItem}>
             <span className={styles.statIcon}>📆</span>
             <div className={styles.statValue}>{stats.eventsThisWeek}</div>
             <div className={styles.statLabel}>Diese Woche</div>
           </div>
-          
+
           <div className={styles.statItem}>
             <span className={styles.statIcon}>☀️</span>
             <div className={styles.statValue}>{stats.eventsToday}</div>
             <div className={styles.statLabel}>Heute</div>
           </div>
         </div>
-        
+
         <div className={styles.statsSection}>
           <h4>Verteilung nach Kategorien</h4>
           <div className={styles.categoryStats}>
             {Object.entries(stats.byCategory).map(([category, count]) => (
               <div key={category} className={styles.categoryItem}>
                 <div className={styles.categoryHeader}>
-                  <div 
-                    className={styles.categoryColor}
-                  />
+                  <div className={styles.categoryColor} />
                   <span className={styles.categoryName}>{category}</span>
                   <span className={styles.categoryCount}>{count}</span>
                 </div>
-                <div 
-                  className={styles.progressBar}
-                />
+                <div className={styles.progressBar} />
               </div>
             ))}
           </div>
         </div>
-        
+
         <div className={styles.statsSection}>
           <h4>Weitere Statistiken</h4>
           <div className={styles.additionalStats}>
@@ -193,7 +193,9 @@ export const CalendarStats: React.FC<CalendarStatsProps> = ({ events }) => {
             </div>
             <div className={styles.additionalStat}>
               <span>⏳</span>
-              <span>Durchschnittliche Dauer: {formatDuration(stats.averageDuration)}</span>
+              <span>
+                Durchschnittliche Dauer: {formatDuration(stats.averageDuration)}
+              </span>
             </div>
           </div>
         </div>

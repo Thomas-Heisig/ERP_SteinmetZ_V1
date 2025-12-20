@@ -3,10 +3,10 @@
 
 /**
  * Calendar Types Module
- * 
+ *
  * Centralized type definitions for the calendar feature.
  * All components should import from this file to ensure type consistency.
- * 
+ *
  * @module features/calendar/types
  */
 
@@ -18,12 +18,12 @@ export type ViewMode = "month" | "week" | "day" | "agenda";
 /**
  * Recurrence types for recurring events
  */
-export type RecurrenceType = 
-  | "none" 
-  | "daily" 
-  | "weekly" 
-  | "biweekly" 
-  | "monthly" 
+export type RecurrenceType =
+  | "none"
+  | "daily"
+  | "weekly"
+  | "biweekly"
+  | "monthly"
   | "yearly";
 
 /**

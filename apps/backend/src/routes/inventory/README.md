@@ -22,11 +22,13 @@ The Inventory Management module provides comprehensive functionality for trackin
 List all inventory items with optional filtering.
 
 **Query Parameters:**
+
 - `category` (optional): Filter by product category
 - `status` (optional): Filter by stock status (in_stock, low_stock, out_of_stock)
 - `search` (optional): Search items by name or SKU
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -56,6 +58,7 @@ List all inventory items with optional filtering.
 Create a new inventory item.
 
 **Request Body:**
+
 ```json
 {
   "name": "Product Name",
@@ -90,12 +93,14 @@ Delete an inventory item (if no stock movements exist).
 List all stock movements with filtering.
 
 **Query Parameters:**
+
 - `itemId` (optional): Filter by item
 - `type` (optional): Filter by movement type (in, out, adjustment)
 - `dateFrom` (optional): Filter from date
 - `dateTo` (optional): Filter to date
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -121,6 +126,7 @@ List all stock movements with filtering.
 Record a stock movement (in, out, or adjustment).
 
 **Request Body:**
+
 ```json
 {
   "itemId": "item-uuid",
@@ -132,6 +138,7 @@ Record a stock movement (in, out, or adjustment).
 ```
 
 **Movement Types:**
+
 - `in`: Stock incoming (positive quantity)
 - `out`: Stock outgoing (positive quantity, reduces stock)
 - `adjustment`: Stock correction (can be positive or negative)
@@ -147,6 +154,7 @@ Get movement details.
 Get items below minimum stock level.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -175,6 +183,7 @@ Get items that are completely out of stock.
 List all inventory categories with item counts.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -195,17 +204,18 @@ List all inventory categories with item counts.
 Get inventory statistics and metrics.
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
     "totalItems": 250,
     "totalQuantity": 15000,
-    "totalValue": 450000.00,
+    "totalValue": 450000.0,
     "lowStockItems": 12,
     "outOfStockItems": 3,
     "categories": 15,
-    "averageStockValue": 1800.00,
+    "averageStockValue": 1800.0,
     "movementsToday": 45,
     "movementsThisMonth": 1234
   }
@@ -215,6 +225,7 @@ Get inventory statistics and metrics.
 ## Database Schema
 
 ### `inventory_items`
+
 - `id` (TEXT PRIMARY KEY)
 - `name` (TEXT NOT NULL)
 - `sku` (TEXT UNIQUE NOT NULL)
@@ -231,6 +242,7 @@ Get inventory statistics and metrics.
 - `updated_at` (TEXT)
 
 ### `inventory_movements`
+
 - `id` (TEXT PRIMARY KEY)
 - `item_id` (TEXT FOREIGN KEY)
 - `quantity` (INTEGER NOT NULL)
@@ -245,6 +257,7 @@ Get inventory statistics and metrics.
 ## Stock Status Calculation
 
 Items automatically receive a status based on current quantity:
+
 - **out_of_stock**: quantity = 0
 - **low_stock**: quantity > 0 AND quantity < minStock
 - **in_stock**: quantity >= minStock
@@ -276,12 +289,14 @@ Items automatically receive a status based on current quantity:
 ## Error Handling
 
 The module uses standardized error handling:
+
 - `ValidationError`: Invalid input data (400)
 - `NotFoundError`: Item not found (404)
 - `BadRequestError`: Invalid operation (e.g., insufficient stock) (400)
 - `ConflictError`: SKU already exists (409)
 
 All responses follow the standard format:
+
 ```json
 {
   "success": false,

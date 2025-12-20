@@ -58,6 +58,7 @@ Das ERP SteinmetZ System ist **vollständig lauffähig** und **production-ready*
 #### API-Endpunkte (29 Router aktiv)
 
 **Core & System:**
+
 1. ✅ **Health** (`/api/health`) - System Health Checks
 2. ✅ **Dashboard** (`/api/dashboard`) - Dashboard-Daten
 3. ✅ **Functions** (`/api/functions`) - Funktionskatalog
@@ -66,33 +67,11 @@ Das ERP SteinmetZ System ist **vollständig lauffähig** und **production-ready*
 6. ✅ **System Info** (`/api/system-info`) - System-Informationen
 7. ✅ **Help** (`/api/help`) - Help Desk System
 
-**AI & Automation:**
-8. ✅ **AI** (`/api/ai`) - AI-Integration
-9. ✅ **AI Annotator** (`/api/ai-annotator`) - AI-Annotator
-10. ✅ **QuickChat** (`/api/quickchat`) - Chat-Assistent
+**AI & Automation:** 8. ✅ **AI** (`/api/ai`) - AI-Integration 9. ✅ **AI Annotator** (`/api/ai-annotator`) - AI-Annotator 10. ✅ **QuickChat** (`/api/quickchat`) - Chat-Assistent
 
-**Business Operations:**
-11. ✅ **HR** (`/api/hr`) - Personalwesen
-12. ✅ **Finance** (`/api/finance`) - Finanzen & Controlling
-13. ✅ **Documents** (`/api/documents`) - Dokumentenmanagement
-14. ✅ **CRM** (`/api/crm`) - Customer Relationship Management
-15. ✅ **Sales** (`/api/sales`) - Vertrieb
-16. ✅ **Marketing** (`/api/marketing`) - Marketing & Kampagnen
-17. ✅ **Inventory** (`/api/inventory`) - Lagerverwaltung
-18. ✅ **Procurement** (`/api/procurement`) - Beschaffung
-19. ✅ **Production** (`/api/production`) - Produktion
-20. ✅ **Warehouse** (`/api/warehouse`) - Lagerhaltung
-21. ✅ **Projects** (`/api/projects`) - Projektverwaltung
-22. ✅ **Business** (`/api/business`) - Geschäftsverwaltung
-23. ✅ **Innovation** (`/api/innovation`) - Innovationsmanagement
+**Business Operations:** 11. ✅ **HR** (`/api/hr`) - Personalwesen 12. ✅ **Finance** (`/api/finance`) - Finanzen & Controlling 13. ✅ **Documents** (`/api/documents`) - Dokumentenmanagement 14. ✅ **CRM** (`/api/crm`) - Customer Relationship Management 15. ✅ **Sales** (`/api/sales`) - Vertrieb 16. ✅ **Marketing** (`/api/marketing`) - Marketing & Kampagnen 17. ✅ **Inventory** (`/api/inventory`) - Lagerverwaltung 18. ✅ **Procurement** (`/api/procurement`) - Beschaffung 19. ✅ **Production** (`/api/production`) - Produktion 20. ✅ **Warehouse** (`/api/warehouse`) - Lagerhaltung 21. ✅ **Projects** (`/api/projects`) - Projektverwaltung 22. ✅ **Business** (`/api/business`) - Geschäftsverwaltung 23. ✅ **Innovation** (`/api/innovation`) - Innovationsmanagement
 
-**Infrastructure & Support:**
-24. ✅ **Calendar** (`/api/calendar`) - Kalenderverwaltung
-25. ✅ **Communication** (`/api/communication`) - Kommunikation
-26. ✅ **Monitoring** (`/api/monitoring`) - System-Überwachung
-27. ✅ **Metrics** (`/api/metrics`) - KPI & Metriken
-28. ✅ **Reporting** (`/api/reporting`) - Berichtswesen
-29. ✅ **Search Analytics** (`/api/search-analytics`) - Suchanalyse
+**Infrastructure & Support:** 24. ✅ **Calendar** (`/api/calendar`) - Kalenderverwaltung 25. ✅ **Communication** (`/api/communication`) - Kommunikation 26. ✅ **Monitoring** (`/api/monitoring`) - System-Überwachung 27. ✅ **Metrics** (`/api/metrics`) - KPI & Metriken 28. ✅ **Reporting** (`/api/reporting`) - Berichtswesen 29. ✅ **Search Analytics** (`/api/search-analytics`) - Suchanalyse
 
 #### Monitoring & Fehlertoleranz
 

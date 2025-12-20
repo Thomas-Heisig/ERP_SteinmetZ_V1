@@ -3,10 +3,10 @@
 
 /**
  * CalendarPage Component
- * 
+ *
  * Main page component for the calendar feature that orchestrates all calendar
  * functionality including view switching, filtering, import/export, and statistics.
- * 
+ *
  * @remarks
  * Features:
  * - Multiple view modes (month, week, day, agenda)
@@ -15,7 +15,7 @@
  * - Event statistics
  * - Real-time event synchronization
  * - Print support
- * 
+ *
  * @example
  * ```tsx
  * <CalendarPage />
@@ -84,10 +84,14 @@ export const CalendarPage: React.FC = () => {
           end: range.end.toISOString(),
         });
         if (filters.search) params.set("search", filters.search);
-        if (filters.category.length === 1) params.set("category", filters.category[0]);
+        if (filters.category.length === 1)
+          params.set("category", filters.category[0]);
         const resp = await fetch(`/api/calendar/events?${params.toString()}`);
         if (resp.ok) {
-          const data = await resp.json() as { success: boolean; data: CalendarEvent[] };
+          const data = (await resp.json()) as {
+            success: boolean;
+            data: CalendarEvent[];
+          };
           if (data.success) setAgendaEvents(data.data);
         }
       } catch (e) {

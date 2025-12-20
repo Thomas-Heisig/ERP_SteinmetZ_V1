@@ -13,14 +13,14 @@
  * @module services/rbacService
  */
 
-import { Database } from 'better-sqlite3';
-import { 
-  ModuleNames, 
-  type RoleDefinition, 
-  type Permission, 
+import { Database } from "better-sqlite3";
+import {
+  ModuleNames,
+  type RoleDefinition,
+  type Permission,
   type RbacAuditLog,
-} from '../types/rbac.js';
-import { DEFAULT_ROLES, ROLE_HIERARCHY } from '../config/rbac.js';
+} from "../types/rbac.js";
+import { DEFAULT_ROLES, ROLE_HIERARCHY } from "../config/rbac.js";
 
 // Database row interfaces
 interface RoleRow {
@@ -130,7 +130,7 @@ export class RbacService {
       // Initialize default roles if not already present
       this.initializeDefaultRoles();
     } catch (error) {
-      console.error('Error initializing RBAC tables:', error);
+      console.error("Error initializing RBAC tables:", error);
     }
   }
 
@@ -139,8 +139,10 @@ export class RbacService {
    */
   private initializeDefaultRoles(): void {
     try {
-      const roleCount = this.db.prepare('SELECT COUNT(*) as count FROM roles').get() as { count: number };
-      
+      const roleCount = this.db
+        .prepare("SELECT COUNT(*) as count FROM roles")
+        .get() as { count: number };
+
       if (roleCount.count === 0) {
         const insertRole = this.db.prepare(`
           INSERT INTO roles (id, name, display_name, description, permissions, is_system, is_active, module_permissions, created_at, updated_at)
@@ -163,7 +165,7 @@ export class RbacService {
         }
       }
     } catch (error) {
-      console.error('Error initializing default roles:', error);
+      console.error("Error initializing default roles:", error);
     }
   }
 
@@ -177,8 +179,10 @@ export class RbacService {
         return this.roleCache.get(roleId) || null;
       }
 
-      const result = this.db.prepare('SELECT * FROM roles WHERE id = ?').get(roleId) as RoleRow | undefined;
-      
+      const result = this.db
+        .prepare("SELECT * FROM roles WHERE id = ?")
+        .get(roleId) as RoleRow | undefined;
+
       if (!result) {
         return null;
       }
@@ -186,7 +190,9 @@ export class RbacService {
       const role: RoleDefinition = {
         ...result,
         permissions: JSON.parse(result.permissions),
-        module_permissions: result.module_permissions ? JSON.parse(result.module_permissions) : {},
+        module_permissions: result.module_permissions
+          ? JSON.parse(result.module_permissions)
+          : {},
         is_system: Boolean(result.is_system),
         is_active: Boolean(result.is_active),
       };
@@ -198,7 +204,7 @@ export class RbacService {
 
       return role;
     } catch (error) {
-      console.error('Error getting role:', error);
+      console.error("Error getting role:", error);
       return null;
     }
   }
@@ -208,8 +214,10 @@ export class RbacService {
    */
   async getRoleByName(roleName: string): Promise<RoleDefinition | null> {
     try {
-      const result = this.db.prepare('SELECT * FROM roles WHERE name = ?').get(roleName) as RoleRow | undefined;
-      
+      const result = this.db
+        .prepare("SELECT * FROM roles WHERE name = ?")
+        .get(roleName) as RoleRow | undefined;
+
       if (!result) {
         return null;
       }
@@ -217,12 +225,14 @@ export class RbacService {
       return {
         ...result,
         permissions: JSON.parse(result.permissions),
-        module_permissions: result.module_permissions ? JSON.parse(result.module_permissions) : {},
+        module_permissions: result.module_permissions
+          ? JSON.parse(result.module_permissions)
+          : {},
         is_system: Boolean(result.is_system),
         is_active: Boolean(result.is_active),
       };
     } catch (error) {
-      console.error('Error getting role by name:', error);
+      console.error("Error getting role by name:", error);
       return null;
     }
   }
@@ -232,17 +242,21 @@ export class RbacService {
    */
   async getAllRoles(): Promise<RoleDefinition[]> {
     try {
-      const results = this.db.prepare('SELECT * FROM roles WHERE is_active = 1 ORDER BY name').all() as RoleRow[];
-      
-      return results.map(result => ({
+      const results = this.db
+        .prepare("SELECT * FROM roles WHERE is_active = 1 ORDER BY name")
+        .all() as RoleRow[];
+
+      return results.map((result) => ({
         ...result,
         permissions: JSON.parse(result.permissions),
-        module_permissions: result.module_permissions ? JSON.parse(result.module_permissions) : {},
+        module_permissions: result.module_permissions
+          ? JSON.parse(result.module_permissions)
+          : {},
         is_system: Boolean(result.is_system),
         is_active: Boolean(result.is_active),
       }));
     } catch (error) {
-      console.error('Error getting all roles:', error);
+      console.error("Error getting all roles:", error);
       return [];
     }
   }
@@ -252,22 +266,28 @@ export class RbacService {
    */
   async getUserRoles(userId: string): Promise<RoleDefinition[]> {
     try {
-      const results = this.db.prepare(`
+      const results = this.db
+        .prepare(
+          `
         SELECT r.* FROM roles r
         INNER JOIN user_roles ur ON r.id = ur.role_id
         WHERE ur.user_id = ? AND r.is_active = 1
         AND (ur.expires_at IS NULL OR ur.expires_at > datetime('now'))
-      `).all(userId) as RoleRow[];
+      `,
+        )
+        .all(userId) as RoleRow[];
 
-      return results.map(result => ({
+      return results.map((result) => ({
         ...result,
         permissions: JSON.parse(result.permissions),
-        module_permissions: result.module_permissions ? JSON.parse(result.module_permissions) : {},
+        module_permissions: result.module_permissions
+          ? JSON.parse(result.module_permissions)
+          : {},
         is_system: Boolean(result.is_system),
         is_active: Boolean(result.is_active),
       }));
     } catch (error) {
-      console.error('Error getting user roles:', error);
+      console.error("Error getting user roles:", error);
       return [];
     }
   }
@@ -287,20 +307,30 @@ export class RbacService {
         throw new Error(`Role ${roleId} not found`);
       }
 
-      this.db.prepare(`
+      this.db
+        .prepare(
+          `
         INSERT OR REPLACE INTO user_roles (user_id, role_id, assigned_at, assigned_by, expires_at)
         VALUES (?, ?, ?, ?, ?)
-      `).run(userId, roleId, new Date().toISOString(), assignedBy, expiresAt || null);
+      `,
+        )
+        .run(
+          userId,
+          roleId,
+          new Date().toISOString(),
+          assignedBy,
+          expiresAt || null,
+        );
 
       // Log the action
-      await this.logRbacAudit('role_assigned', assignedBy, userId, roleId, {
+      await this.logRbacAudit("role_assigned", assignedBy, userId, roleId, {
         role_name: role.name,
         expires_at: expiresAt,
       });
 
       return true;
     } catch (error) {
-      console.error('Error assigning role:', error);
+      console.error("Error assigning role:", error);
       return false;
     }
   }
@@ -308,23 +338,29 @@ export class RbacService {
   /**
    * Revoke role from user
    */
-  async revokeRoleFromUser(userId: string, roleId: string, revokedBy: string): Promise<boolean> {
+  async revokeRoleFromUser(
+    userId: string,
+    roleId: string,
+    revokedBy: string,
+  ): Promise<boolean> {
     try {
       const role = await this.getRoleById(roleId);
       if (!role) {
         throw new Error(`Role ${roleId} not found`);
       }
 
-      this.db.prepare('DELETE FROM user_roles WHERE user_id = ? AND role_id = ?').run(userId, roleId);
+      this.db
+        .prepare("DELETE FROM user_roles WHERE user_id = ? AND role_id = ?")
+        .run(userId, roleId);
 
       // Log the action
-      await this.logRbacAudit('role_revoked', revokedBy, userId, roleId, {
+      await this.logRbacAudit("role_revoked", revokedBy, userId, roleId, {
         role_name: role.name,
       });
 
       return true;
     } catch (error) {
-      console.error('Error revoking role:', error);
+      console.error("Error revoking role:", error);
       return false;
     }
   }
@@ -357,7 +393,7 @@ export class RbacService {
 
       return permissionArray;
     } catch (error) {
-      console.error('Error getting user permissions:', error);
+      console.error("Error getting user permissions:", error);
       return [];
     }
   }
@@ -365,12 +401,15 @@ export class RbacService {
   /**
    * Check if user has permission
    */
-  async hasPermission(userId: string, permission: Permission): Promise<boolean> {
+  async hasPermission(
+    userId: string,
+    permission: Permission,
+  ): Promise<boolean> {
     try {
       const permissions = await this.getUserPermissions(userId);
       return permissions.includes(permission);
     } catch (error) {
-      console.error('Error checking permission:', error);
+      console.error("Error checking permission:", error);
       return false;
     }
   }
@@ -378,12 +417,15 @@ export class RbacService {
   /**
    * Check if user has all permissions
    */
-  async hasAllPermissions(userId: string, permissions: Permission[]): Promise<boolean> {
+  async hasAllPermissions(
+    userId: string,
+    permissions: Permission[],
+  ): Promise<boolean> {
     try {
       const userPermissions = await this.getUserPermissions(userId);
-      return permissions.every(p => userPermissions.includes(p));
+      return permissions.every((p) => userPermissions.includes(p));
     } catch (error) {
-      console.error('Error checking all permissions:', error);
+      console.error("Error checking all permissions:", error);
       return false;
     }
   }
@@ -391,12 +433,15 @@ export class RbacService {
   /**
    * Check if user has any permission
    */
-  async hasAnyPermission(userId: string, permissions: Permission[]): Promise<boolean> {
+  async hasAnyPermission(
+    userId: string,
+    permissions: Permission[],
+  ): Promise<boolean> {
     try {
       const userPermissions = await this.getUserPermissions(userId);
-      return permissions.some(p => userPermissions.includes(p));
+      return permissions.some((p) => userPermissions.includes(p));
     } catch (error) {
-      console.error('Error checking any permission:', error);
+      console.error("Error checking any permission:", error);
       return false;
     }
   }
@@ -407,9 +452,9 @@ export class RbacService {
   async hasRole(userId: string, roleName: string): Promise<boolean> {
     try {
       const roles = await this.getUserRoles(userId);
-      return roles.some(r => r.name === roleName);
+      return roles.some((r) => r.name === roleName);
     } catch (error) {
-      console.error('Error checking role:', error);
+      console.error("Error checking role:", error);
       return false;
     }
   }
@@ -420,9 +465,9 @@ export class RbacService {
   async hasAnyRole(userId: string, roleNames: string[]): Promise<boolean> {
     try {
       const roles = await this.getUserRoles(userId);
-      return roles.some(r => roleNames.includes(r.name));
+      return roles.some((r) => roleNames.includes(r.name));
     } catch (error) {
-      console.error('Error checking any role:', error);
+      console.error("Error checking any role:", error);
       return false;
     }
   }
@@ -433,10 +478,10 @@ export class RbacService {
   async hasAllRoles(userId: string, roleNames: string[]): Promise<boolean> {
     try {
       const roles = await this.getUserRoles(userId);
-      const userRoleNames = roles.map(r => r.name);
-      return roleNames.every(r => userRoleNames.includes(r));
+      const userRoleNames = roles.map((r) => r.name);
+      return roleNames.every((r) => userRoleNames.includes(r));
     } catch (error) {
-      console.error('Error checking all roles:', error);
+      console.error("Error checking all roles:", error);
       return false;
     }
   }
@@ -445,14 +490,16 @@ export class RbacService {
    * Get role hierarchy level
    */
   getRoleHierarchyLevel(roleName: string): number {
-    const hierarchy = ROLE_HIERARCHY.find(h => h.role === roleName);
+    const hierarchy = ROLE_HIERARCHY.find((h) => h.role === roleName);
     return hierarchy ? hierarchy.level : 999; // Unknown roles get lowest priority
   }
 
   /**
    * Get highest privilege role (lowest level)
    */
-  async getUserHighestPrivilegeRole(userId: string): Promise<RoleDefinition | null> {
+  async getUserHighestPrivilegeRole(
+    userId: string,
+  ): Promise<RoleDefinition | null> {
     try {
       const roles = await this.getUserRoles(userId);
       if (roles.length === 0) {
@@ -465,7 +512,7 @@ export class RbacService {
         return currentLevel < highestLevel ? current : highest;
       });
     } catch (error) {
-      console.error('Error getting highest privilege role:', error);
+      console.error("Error getting highest privilege role:", error);
       return null;
     }
   }
@@ -473,12 +520,15 @@ export class RbacService {
   /**
    * Check if user can access module
    */
-  async canAccessModule(userId: string, moduleName: ModuleNames | string): Promise<boolean> {
+  async canAccessModule(
+    userId: string,
+    moduleName: ModuleNames | string,
+  ): Promise<boolean> {
     try {
       const permissions = await this.getUserPermissions(userId);
-      return permissions.some(p => p.startsWith(`${moduleName}:`));
+      return permissions.some((p) => p.startsWith(`${moduleName}:`));
     } catch (error) {
-      console.error('Error checking module access:', error);
+      console.error("Error checking module access:", error);
       return false;
     }
   }
@@ -486,14 +536,17 @@ export class RbacService {
   /**
    * Get module actions available to user
    */
-  async getModuleActions(userId: string, moduleName: ModuleNames | string): Promise<string[]> {
+  async getModuleActions(
+    userId: string,
+    moduleName: ModuleNames | string,
+  ): Promise<string[]> {
     try {
       const permissions = await this.getUserPermissions(userId);
       return permissions
-        .filter(p => p.startsWith(`${moduleName}:`))
-        .map(p => p.split(':')[1]);
+        .filter((p) => p.startsWith(`${moduleName}:`))
+        .map((p) => p.split(":")[1]);
     } catch (error) {
-      console.error('Error getting module actions:', error);
+      console.error("Error getting module actions:", error);
       return [];
     }
   }
@@ -502,7 +555,7 @@ export class RbacService {
    * Log RBAC action
    */
   private async logRbacAudit(
-    action: RbacAuditLog['action'],
+    action: RbacAuditLog["action"],
     actorId: string,
     targetUserId?: string,
     targetRoleId?: string,
@@ -510,20 +563,24 @@ export class RbacService {
   ): Promise<void> {
     try {
       const id = `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      this.db.prepare(`
+      this.db
+        .prepare(
+          `
         INSERT INTO rbac_audit_log (id, action, actor_id, target_user_id, target_role_id, details, timestamp)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-      `).run(
-        id,
-        action,
-        actorId,
-        targetUserId || null,
-        targetRoleId || null,
-        details ? JSON.stringify(details) : null,
-        new Date().toISOString(),
-      );
+      `,
+        )
+        .run(
+          id,
+          action,
+          actorId,
+          targetUserId || null,
+          targetRoleId || null,
+          details ? JSON.stringify(details) : null,
+          new Date().toISOString(),
+        );
     } catch (error) {
-      console.error('Error logging RBAC audit:', error);
+      console.error("Error logging RBAC audit:", error);
     }
   }
 
@@ -558,7 +615,9 @@ export function initializeRbacService(db: Database): RbacService {
 
 export function getRbacService(): RbacService {
   if (!rbacServiceInstance) {
-    throw new Error('RBAC Service not initialized. Call initializeRbacService first.');
+    throw new Error(
+      "RBAC Service not initialized. Call initializeRbacService first.",
+    );
   }
   return rbacServiceInstance;
 }

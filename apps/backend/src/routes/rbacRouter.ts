@@ -20,22 +20,27 @@
  * @module routes/rbacRouter
  */
 
-import { Router, Request, Response } from 'express';
-import { asyncHandler } from '../middleware/asyncHandler.js';
-import { authenticate } from '../middleware/authMiddleware.js';
+import { Router, Request, Response } from "express";
+import { asyncHandler } from "../middleware/asyncHandler.js";
+import { authenticate } from "../middleware/authMiddleware.js";
 import {
   requirePermission,
   requireRole,
-} from '../middleware/rbacMiddleware.js';
-import { getRbacService } from '../services/rbacService.js';
-import type { Permission } from '../types/rbac.js';
+} from "../middleware/rbacMiddleware.js";
+import { getRbacService } from "../services/rbacService.js";
+import type { Permission } from "../types/rbac.js";
 
 // Helper functions for sending responses
 const sendSuccess = (res: Response, message: string, data?: unknown) => {
   res.status(200).json({ success: true, message, data });
 };
 
-const sendError = (res: Response, statusCode: number, message: string, error?: unknown) => {
+const sendError = (
+  res: Response,
+  statusCode: number,
+  message: string,
+  error?: unknown,
+) => {
   const errorMessage = error instanceof Error ? error.message : String(error);
   res.status(statusCode).json({ success: false, message, error: errorMessage });
 };
@@ -43,7 +48,7 @@ const sendError = (res: Response, statusCode: number, message: string, error?: u
 // Helper function to get authenticated user ID
 function getUserId(req: Request): string {
   if (!req.auth || !req.auth.user || !req.auth.user.id) {
-    throw new Error('User not authenticated');
+    throw new Error("User not authenticated");
   }
   return req.auth.user.id;
 }
@@ -58,20 +63,25 @@ const rbacService = getRbacService();
  * @requiresRole admin
  */
 router.post(
-  '/roles',
+  "/roles",
   authenticate,
-  requireRole('admin'),
+  requireRole("admin"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { name, display_name, description, permissions, module_permissions } = req.body;
+    const { name, display_name, description, permissions, module_permissions } =
+      req.body;
 
     if (!name || !display_name || !permissions) {
-      sendError(res, 400, 'Missing required fields: name, display_name, permissions');
+      sendError(
+        res,
+        400,
+        "Missing required fields: name, display_name, permissions",
+      );
       return;
     }
 
     try {
       // TODO: Implement database insertion
-      sendSuccess(res, 'Role created successfully', {
+      sendSuccess(res, "Role created successfully", {
         role: {
           id: `role_${Date.now()}`,
           name,
@@ -86,7 +96,7 @@ router.post(
         },
       });
     } catch (error) {
-      sendError(res, 500, 'Failed to create role', error);
+      sendError(res, 500, "Failed to create role", error);
     }
   }),
 );
@@ -98,15 +108,15 @@ router.post(
  * @requiresRole admin
  */
 router.get(
-  '/roles',
+  "/roles",
   authenticate,
-  requireRole('admin'),
+  requireRole("admin"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const roles = await rbacService.getAllRoles();
-      sendSuccess(res, 'Roles retrieved successfully', { roles });
+      sendSuccess(res, "Roles retrieved successfully", { roles });
     } catch (error) {
-      sendError(res, 500, 'Failed to retrieve roles', error);
+      sendError(res, 500, "Failed to retrieve roles", error);
     }
   }),
 );
@@ -118,19 +128,19 @@ router.get(
  * @requiresRole admin
  */
 router.get(
-  '/roles/:roleId',
+  "/roles/:roleId",
   authenticate,
-  requireRole('admin'),
+  requireRole("admin"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const role = await rbacService.getRoleById(req.params.roleId);
       if (!role) {
-        sendError(res, 404, 'Role not found');
+        sendError(res, 404, "Role not found");
         return;
       }
-      sendSuccess(res, 'Role retrieved successfully', { role });
+      sendSuccess(res, "Role retrieved successfully", { role });
     } catch (error) {
-      sendError(res, 500, 'Failed to retrieve role', error);
+      sendError(res, 500, "Failed to retrieve role", error);
     }
   }),
 );
@@ -142,26 +152,32 @@ router.get(
  * @requiresRole admin
  */
 router.put(
-  '/roles/:roleId',
+  "/roles/:roleId",
   authenticate,
-  requireRole('admin'),
+  requireRole("admin"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const { display_name, description, permissions, module_permissions, is_active } = req.body;
+    const {
+      display_name,
+      description,
+      permissions,
+      module_permissions,
+      is_active,
+    } = req.body;
 
     try {
       const role = await rbacService.getRoleById(req.params.roleId);
       if (!role) {
-        sendError(res, 404, 'Role not found');
+        sendError(res, 404, "Role not found");
         return;
       }
 
       if (role.is_system) {
-        sendError(res, 403, 'System roles cannot be modified');
+        sendError(res, 403, "System roles cannot be modified");
         return;
       }
 
       // TODO: Implement database update
-      sendSuccess(res, 'Role updated successfully', {
+      sendSuccess(res, "Role updated successfully", {
         role: {
           ...role,
           display_name: display_name || role.display_name,
@@ -173,7 +189,7 @@ router.put(
         },
       });
     } catch (error) {
-      sendError(res, 500, 'Failed to update role', error);
+      sendError(res, 500, "Failed to update role", error);
     }
   }),
 );
@@ -185,26 +201,26 @@ router.put(
  * @requiresRole super_admin
  */
 router.delete(
-  '/roles/:roleId',
+  "/roles/:roleId",
   authenticate,
-  requireRole('super_admin'),
+  requireRole("super_admin"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const role = await rbacService.getRoleById(req.params.roleId);
       if (!role) {
-        sendError(res, 404, 'Role not found');
+        sendError(res, 404, "Role not found");
         return;
       }
 
       if (role.is_system) {
-        sendError(res, 403, 'System roles cannot be deleted');
+        sendError(res, 403, "System roles cannot be deleted");
         return;
       }
 
       // TODO: Implement database deletion
-      sendSuccess(res, 'Role deleted successfully');
+      sendSuccess(res, "Role deleted successfully");
     } catch (error) {
-      sendError(res, 500, 'Failed to delete role', error);
+      sendError(res, 500, "Failed to delete role", error);
     }
   }),
 );
@@ -216,9 +232,9 @@ router.delete(
  * @requiresPermission role_management:assign
  */
 router.post(
-  '/users/:userId/roles/:roleId',
+  "/users/:userId/roles/:roleId",
   authenticate,
-  requirePermission('role_management:assign' as Permission),
+  requirePermission("role_management:assign" as Permission),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { expiresAt } = req.body;
 
@@ -231,13 +247,13 @@ router.post(
       );
 
       if (!success) {
-        sendError(res, 400, 'Failed to assign role');
+        sendError(res, 400, "Failed to assign role");
         return;
       }
 
-      sendSuccess(res, 'Role assigned successfully');
+      sendSuccess(res, "Role assigned successfully");
     } catch (error) {
-      sendError(res, 500, 'Failed to assign role', error);
+      sendError(res, 500, "Failed to assign role", error);
     }
   }),
 );
@@ -249,9 +265,9 @@ router.post(
  * @requiresPermission role_management:revoke
  */
 router.delete(
-  '/users/:userId/roles/:roleId',
+  "/users/:userId/roles/:roleId",
   authenticate,
-  requirePermission('role_management:revoke' as Permission),
+  requirePermission("role_management:revoke" as Permission),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const success = await rbacService.revokeRoleFromUser(
@@ -261,13 +277,13 @@ router.delete(
       );
 
       if (!success) {
-        sendError(res, 400, 'Failed to revoke role');
+        sendError(res, 400, "Failed to revoke role");
         return;
       }
 
-      sendSuccess(res, 'Role revoked successfully');
+      sendSuccess(res, "Role revoked successfully");
     } catch (error) {
-      sendError(res, 500, 'Failed to revoke role', error);
+      sendError(res, 500, "Failed to revoke role", error);
     }
   }),
 );
@@ -279,15 +295,15 @@ router.delete(
  * @requiresPermission user_management:read
  */
 router.get(
-  '/users/:userId/roles',
+  "/users/:userId/roles",
   authenticate,
-  requirePermission('user_management:read' as Permission),
+  requirePermission("user_management:read" as Permission),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const roles = await rbacService.getUserRoles(req.params.userId);
-      sendSuccess(res, 'User roles retrieved successfully', { roles });
+      sendSuccess(res, "User roles retrieved successfully", { roles });
     } catch (error) {
-      sendError(res, 500, 'Failed to retrieve user roles', error);
+      sendError(res, 500, "Failed to retrieve user roles", error);
     }
   }),
 );
@@ -299,15 +315,19 @@ router.get(
  * @requiresPermission user_management:read
  */
 router.get(
-  '/users/:userId/permissions',
+  "/users/:userId/permissions",
   authenticate,
-  requirePermission('user_management:read' as Permission),
+  requirePermission("user_management:read" as Permission),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const permissions = await rbacService.getUserPermissions(req.params.userId);
-      sendSuccess(res, 'User permissions retrieved successfully', { permissions });
+      const permissions = await rbacService.getUserPermissions(
+        req.params.userId,
+      );
+      sendSuccess(res, "User permissions retrieved successfully", {
+        permissions,
+      });
     } catch (error) {
-      sendError(res, 500, 'Failed to retrieve user permissions', error);
+      sendError(res, 500, "Failed to retrieve user permissions", error);
     }
   }),
 );
@@ -319,14 +339,14 @@ router.get(
  * @requiresAuth
  */
 router.get(
-  '/me/permissions',
+  "/me/permissions",
   authenticate,
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const permissions = await rbacService.getUserPermissions(getUserId(req));
-      sendSuccess(res, 'Permissions retrieved successfully', { permissions });
+      sendSuccess(res, "Permissions retrieved successfully", { permissions });
     } catch (error) {
-      sendError(res, 500, 'Failed to retrieve permissions', error);
+      sendError(res, 500, "Failed to retrieve permissions", error);
     }
   }),
 );
@@ -338,14 +358,14 @@ router.get(
  * @requiresAuth
  */
 router.get(
-  '/me/roles',
+  "/me/roles",
   authenticate,
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const roles = await rbacService.getUserRoles(getUserId(req));
-      sendSuccess(res, 'Roles retrieved successfully', { roles });
+      sendSuccess(res, "Roles retrieved successfully", { roles });
     } catch (error) {
-      sendError(res, 500, 'Failed to retrieve roles', error);
+      sendError(res, 500, "Failed to retrieve roles", error);
     }
   }),
 );
@@ -357,13 +377,13 @@ router.get(
  * @requiresAuth
  */
 router.post(
-  '/check-permission',
+  "/check-permission",
   authenticate,
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { permission } = req.body;
 
     if (!permission) {
-      sendError(res, 400, 'Missing required field: permission');
+      sendError(res, 400, "Missing required field: permission");
       return;
     }
 
@@ -372,12 +392,12 @@ router.post(
         getUserId(req),
         permission as Permission,
       );
-      sendSuccess(res, 'Permission check completed', {
+      sendSuccess(res, "Permission check completed", {
         permission,
         allowed: hasPermission,
       });
     } catch (error) {
-      sendError(res, 500, 'Failed to check permission', error);
+      sendError(res, 500, "Failed to check permission", error);
     }
   }),
 );
@@ -389,24 +409,24 @@ router.post(
  * @requiresAuth
  */
 router.post(
-  '/check-role',
+  "/check-role",
   authenticate,
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { role } = req.body;
 
     if (!role) {
-      sendError(res, 400, 'Missing required field: role');
+      sendError(res, 400, "Missing required field: role");
       return;
     }
 
     try {
       const hasRole = await rbacService.hasRole(getUserId(req), role);
-      sendSuccess(res, 'Role check completed', {
+      sendSuccess(res, "Role check completed", {
         role,
         allowed: hasRole,
       });
     } catch (error) {
-      sendError(res, 500, 'Failed to check role', error);
+      sendError(res, 500, "Failed to check role", error);
     }
   }),
 );
@@ -418,15 +438,15 @@ router.post(
  * @requiresRole admin
  */
 router.get(
-  '/roles/:roleId/users',
+  "/roles/:roleId/users",
   authenticate,
-  requireRole('admin'),
+  requireRole("admin"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       // TODO: Implement database query
-      sendSuccess(res, 'Users retrieved successfully', { users: [] });
+      sendSuccess(res, "Users retrieved successfully", { users: [] });
     } catch (error) {
-      sendError(res, 500, 'Failed to retrieve users', error);
+      sendError(res, 500, "Failed to retrieve users", error);
     }
   }),
 );

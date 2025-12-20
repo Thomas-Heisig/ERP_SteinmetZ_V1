@@ -3,7 +3,7 @@
 
 /**
  * Simple EventForm Component (Temporary)
- * 
+ *
  * Simplified form without advanced UI components.
  * TODO: Replace with full EventForm once all UI components are available.
  */
@@ -34,7 +34,8 @@ export const EventFormSimple: React.FC<EventFormSimpleProps> = ({
     description: initialData?.description || "",
     location: initialData?.location || "",
     start: initialData?.start || new Date().toISOString(),
-    end: initialData?.end || new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    end:
+      initialData?.end || new Date(Date.now() + 60 * 60 * 1000).toISOString(),
     allDay: initialData?.allDay || false,
     color: initialData?.color || "#4f46e5",
     category: initialData?.category || "",
@@ -82,7 +83,9 @@ export const EventFormSimple: React.FC<EventFormSimpleProps> = ({
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, title: e.target.value }))
+              }
               placeholder="Termintitel"
               required
             />
@@ -93,7 +96,9 @@ export const EventFormSimple: React.FC<EventFormSimpleProps> = ({
             <Input
               id="location"
               value={formData.location}
-              onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, location: e.target.value }))
+              }
               placeholder="Ort"
             />
           </div>
@@ -104,7 +109,12 @@ export const EventFormSimple: React.FC<EventFormSimpleProps> = ({
               id="start"
               type="datetime-local"
               value={formData.start.substring(0, 16)}
-              onChange={(e) => setFormData((prev) => ({ ...prev, start: new Date(e.target.value).toISOString() }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  start: new Date(e.target.value).toISOString(),
+                }))
+              }
               required
             />
           </div>
@@ -115,7 +125,12 @@ export const EventFormSimple: React.FC<EventFormSimpleProps> = ({
               id="end"
               type="datetime-local"
               value={formData.end.substring(0, 16)}
-              onChange={(e) => setFormData((prev) => ({ ...prev, end: new Date(e.target.value).toISOString() }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  end: new Date(e.target.value).toISOString(),
+                }))
+              }
               required
             />
           </div>
@@ -125,7 +140,12 @@ export const EventFormSimple: React.FC<EventFormSimpleProps> = ({
             <textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
               placeholder="Beschreibung des Termins"
               rows={3}
               className={styles.textarea}
@@ -137,7 +157,9 @@ export const EventFormSimple: React.FC<EventFormSimpleProps> = ({
               <input
                 type="checkbox"
                 checked={formData.allDay}
-                onChange={(e) => setFormData((prev) => ({ ...prev, allDay: e.target.checked }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, allDay: e.target.checked }))
+                }
               />
               <span> Ganztägig</span>
             </label>
@@ -149,7 +171,11 @@ export const EventFormSimple: React.FC<EventFormSimpleProps> = ({
             Abbrechen
           </Button>
           <Button type="submit" variant="primary" disabled={loading}>
-            {loading ? "Wird gespeichert..." : mode === "create" ? "Erstellen" : "Speichern"}
+            {loading
+              ? "Wird gespeichert..."
+              : mode === "create"
+                ? "Erstellen"
+                : "Speichern"}
           </Button>
         </div>
       </form>

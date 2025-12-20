@@ -111,9 +111,7 @@ export const CallLog: React.FC = () => {
             {row.contactName || (value as string)}
           </div>
           {row.contactName && (
-            <div className={styles.phoneNumber}>
-              {value as string}
-            </div>
+            <div className={styles.phoneNumber}>{value as string}</div>
           )}
         </div>
       ),

@@ -7,19 +7,23 @@ The HR module is fully implemented and ready to use. This guide will help you ge
 ## 📦 What's Included
 
 ### Backend (`apps/backend/src/`)
+
 - ✅ **types/hr.ts** - Strict TypeScript types (600 lines)
 - ✅ **services/hrService.ts** - Business logic (1,000 lines)
 - ✅ **routes/hr/hrRouter.ts** - API endpoints (700 lines)
 - ✅ **migrations/create_hr_tables.sql** - Database schema
 
 ### Frontend (`apps/frontend/src/`)
+
 - ✅ **types/hr.ts** - Frontend types (500 lines)
 
 ### Documentation (`docs/`)
+
 - ✅ **HR_MODULE_IMPLEMENTATION.md** - Full documentation
 - ✅ **HR_MODULE_SUMMARY.md** - Implementation summary
 
 ### Testing (`scripts/`)
+
 - ✅ **test-hr-api.sh** - API test script
 
 ## 🚀 Getting Started
@@ -57,17 +61,17 @@ bash scripts/test-hr-api.sh
 ### 1. Employee Management
 
 ```typescript
-import hrService from '../services/hrService';
-import type { EmployeeCreateInput } from '../types/hr';
+import hrService from "../services/hrService";
+import type { EmployeeCreateInput } from "../types/hr";
 
 // Create an employee
 const employee = hrService.createEmployee({
-  first_name: 'Max',
-  last_name: 'Mustermann',
-  email: 'max@example.com',
-  position: 'Developer',
-  start_date: '2024-01-15',
-  country: 'Germany',
+  first_name: "Max",
+  last_name: "Mustermann",
+  email: "max@example.com",
+  position: "Developer",
+  start_date: "2024-01-15",
+  country: "Germany",
 });
 
 // Get employee with all relations
@@ -76,8 +80,8 @@ const fullEmployee = hrService.getEmployeeWithRelations(employee.id);
 
 // List employees with filters
 const result = hrService.getEmployees(
-  { status: 'active', department: 'Engineering' },
-  { page: 1, limit: 50 }
+  { status: "active", department: "Engineering" },
+  { page: 1, limit: 50 },
 );
 ```
 
@@ -87,12 +91,12 @@ const result = hrService.getEmployees(
 // Create a contract
 const contract = hrService.createContract({
   employee_id: employeeId,
-  type: 'permanent',
-  start_date: '2024-01-15',
+  type: "permanent",
+  start_date: "2024-01-15",
   salary: 65000,
   working_hours: 40,
   vacation_days: 30,
-  status: 'active',
+  status: "active",
 });
 
 // Get all contracts for an employee
@@ -105,11 +109,11 @@ const contracts = hrService.getEmployeeContracts(employeeId);
 // Record time entry
 const timeEntry = hrService.createTimeEntry({
   employee_id: employeeId,
-  date: '2024-12-19',
-  start_time: '09:00',
-  end_time: '17:30',
+  date: "2024-12-19",
+  start_time: "09:00",
+  end_time: "17:30",
   break_minutes: 30,
-  type: 'regular',
+  type: "regular",
 });
 // Total hours are calculated automatically: 8.0 hours
 
@@ -119,8 +123,8 @@ const approved = hrService.approveTimeEntry(timeEntry.id, userId);
 // Get time entries for date range
 const entries = hrService.getEmployeeTimeEntries(
   employeeId,
-  '2024-12-01',
-  '2024-12-31'
+  "2024-12-01",
+  "2024-12-31",
 );
 ```
 
@@ -130,11 +134,11 @@ const entries = hrService.getEmployeeTimeEntries(
 // Create leave request
 const leaveRequest = hrService.createLeaveRequest({
   employee_id: employeeId,
-  type: 'vacation',
-  start_date: '2024-12-23',
-  end_date: '2024-12-27',
+  type: "vacation",
+  start_date: "2024-12-23",
+  end_date: "2024-12-27",
   days: 5,
-  reason: 'Christmas vacation',
+  reason: "Christmas vacation",
 });
 
 // Approve leave request
@@ -144,11 +148,11 @@ const approved = hrService.approveLeaveRequest(leaveRequest.id, managerId);
 const rejected = hrService.rejectLeaveRequest(
   leaveRequest.id,
   managerId,
-  'Insufficient vacation days'
+  "Insufficient vacation days",
 );
 
 // Get employee leave requests
-const leaves = hrService.getEmployeeLeaveRequests(employeeId, 'pending');
+const leaves = hrService.getEmployeeLeaveRequests(employeeId, "pending");
 ```
 
 ### 5. Onboarding Workflow
@@ -157,17 +161,17 @@ const leaves = hrService.getEmployeeLeaveRequests(employeeId, 'pending');
 // Create onboarding process
 const onboarding = hrService.createOnboarding({
   employee_id: employeeId,
-  start_date: '2024-01-15',
+  start_date: "2024-01-15",
   mentor_id: mentorId,
-  notes: 'Standard developer onboarding',
+  notes: "Standard developer onboarding",
 });
 
 // Add onboarding tasks
 const task1 = hrService.createOnboardingTask({
   onboarding_id: onboarding.id,
-  title: 'Setup development environment',
-  description: 'Install IDE, Git, configure access',
-  due_date: '2024-01-16',
+  title: "Setup development environment",
+  description: "Install IDE, Git, configure access",
+  due_date: "2024-01-16",
   sort_order: 1,
 });
 
@@ -183,33 +187,33 @@ const fullOnboarding = hrService.getOnboardingWithTasks(onboarding.id);
 
 ### Quick Reference Table
 
-| Method | Endpoint | Permission | Description |
-|--------|----------|------------|-------------|
-| GET | `/api/hr/employees` | `hr:read` | List employees |
-| GET | `/api/hr/employees/:id` | `hr:read` | Get employee details |
-| POST | `/api/hr/employees` | `hr:create` | Create employee |
-| PUT | `/api/hr/employees/:id` | `hr:update` | Update employee |
-| DELETE | `/api/hr/employees/:id` | `hr:delete` | Terminate employee |
-| GET | `/api/hr/contracts/:id` | `hr:read` | Get contract |
-| POST | `/api/hr/contracts` | `hr:create` | Create contract |
-| PUT | `/api/hr/contracts/:id` | `hr:update` | Update contract |
-| GET | `/api/hr/time-entries` | `hr:read` | Get time entries |
-| POST | `/api/hr/time-entries` | `hr:create` | Create time entry |
-| POST | `/api/hr/time-entries/:id/approve` | `hr:approve` | Approve time entry |
-| GET | `/api/hr/leave-requests` | `hr:read` | Get leave requests |
-| POST | `/api/hr/leave-requests` | `hr:create` | Create leave request |
-| POST | `/api/hr/leave-requests/:id/approve` | `hr:approve` | Approve leave |
-| POST | `/api/hr/leave-requests/:id/reject` | `hr:approve` | Reject leave |
-| GET | `/api/hr/departments` | `hr:read` | List departments |
-| POST | `/api/hr/departments` | `hr:create` | Create department |
-| GET | `/api/hr/onboarding/:id` | `hr:read` | Get onboarding |
-| POST | `/api/hr/onboarding` | `hr:create` | Create onboarding |
-| POST | `/api/hr/onboarding/tasks` | `hr:create` | Create task |
-| POST | `/api/hr/onboarding/tasks/:id/complete` | `hr:update` | Complete task |
-| GET | `/api/hr/overtime` | `hr:read` | Get overtime |
-| POST | `/api/hr/overtime` | `hr:create` | Create overtime |
-| POST | `/api/hr/overtime/:id/approve` | `hr:approve` | Approve overtime |
-| GET | `/api/hr/statistics` | `hr:read` | Get statistics |
+| Method | Endpoint                                | Permission   | Description          |
+| ------ | --------------------------------------- | ------------ | -------------------- |
+| GET    | `/api/hr/employees`                     | `hr:read`    | List employees       |
+| GET    | `/api/hr/employees/:id`                 | `hr:read`    | Get employee details |
+| POST   | `/api/hr/employees`                     | `hr:create`  | Create employee      |
+| PUT    | `/api/hr/employees/:id`                 | `hr:update`  | Update employee      |
+| DELETE | `/api/hr/employees/:id`                 | `hr:delete`  | Terminate employee   |
+| GET    | `/api/hr/contracts/:id`                 | `hr:read`    | Get contract         |
+| POST   | `/api/hr/contracts`                     | `hr:create`  | Create contract      |
+| PUT    | `/api/hr/contracts/:id`                 | `hr:update`  | Update contract      |
+| GET    | `/api/hr/time-entries`                  | `hr:read`    | Get time entries     |
+| POST   | `/api/hr/time-entries`                  | `hr:create`  | Create time entry    |
+| POST   | `/api/hr/time-entries/:id/approve`      | `hr:approve` | Approve time entry   |
+| GET    | `/api/hr/leave-requests`                | `hr:read`    | Get leave requests   |
+| POST   | `/api/hr/leave-requests`                | `hr:create`  | Create leave request |
+| POST   | `/api/hr/leave-requests/:id/approve`    | `hr:approve` | Approve leave        |
+| POST   | `/api/hr/leave-requests/:id/reject`     | `hr:approve` | Reject leave         |
+| GET    | `/api/hr/departments`                   | `hr:read`    | List departments     |
+| POST   | `/api/hr/departments`                   | `hr:create`  | Create department    |
+| GET    | `/api/hr/onboarding/:id`                | `hr:read`    | Get onboarding       |
+| POST   | `/api/hr/onboarding`                    | `hr:create`  | Create onboarding    |
+| POST   | `/api/hr/onboarding/tasks`              | `hr:create`  | Create task          |
+| POST   | `/api/hr/onboarding/tasks/:id/complete` | `hr:update`  | Complete task        |
+| GET    | `/api/hr/overtime`                      | `hr:read`    | Get overtime         |
+| POST   | `/api/hr/overtime`                      | `hr:create`  | Create overtime      |
+| POST   | `/api/hr/overtime/:id/approve`          | `hr:approve` | Approve overtime     |
+| GET    | `/api/hr/statistics`                    | `hr:read`    | Get statistics       |
 
 ## 🎨 Frontend Integration
 
@@ -217,30 +221,30 @@ const fullOnboarding = hrService.getOnboardingWithTasks(onboarding.id);
 
 ```typescript
 // apps/frontend/src/api/hrApi.ts
-import axios from 'axios';
-import type { 
+import axios from "axios";
+import type {
   EmployeeFormData,
   EmployeeListResponse,
   EmployeeDetailResponse,
   EmployeeFilters,
-  PaginationParams 
-} from '../types/hr';
+  PaginationParams,
+} from "../types/hr";
 
-const BASE_URL = '/api/hr';
+const BASE_URL = "/api/hr";
 
 export const hrApi = {
   // Employees
   async getEmployees(filters?: EmployeeFilters, pagination?: PaginationParams) {
     const { data } = await axios.get<EmployeeListResponse>(
       `${BASE_URL}/employees`,
-      { params: { ...filters, ...pagination } }
+      { params: { ...filters, ...pagination } },
     );
     return data;
   },
 
   async getEmployee(id: string) {
     const { data } = await axios.get<EmployeeDetailResponse>(
-      `${BASE_URL}/employees/${id}`
+      `${BASE_URL}/employees/${id}`,
     );
     return data;
   },
@@ -256,9 +260,17 @@ export const hrApi = {
   },
 
   // Time Entries
-  async getTimeEntries(employeeId: string, startDate?: string, endDate?: string) {
+  async getTimeEntries(
+    employeeId: string,
+    startDate?: string,
+    endDate?: string,
+  ) {
     const { data } = await axios.get(`${BASE_URL}/time-entries`, {
-      params: { employee_id: employeeId, start_date: startDate, end_date: endDate }
+      params: {
+        employee_id: employeeId,
+        start_date: startDate,
+        end_date: endDate,
+      },
     });
     return data;
   },
@@ -271,7 +283,7 @@ export const hrApi = {
   // Leave Requests
   async getLeaveRequests(employeeId: string) {
     const { data } = await axios.get(`${BASE_URL}/leave-requests`, {
-      params: { employee_id: employeeId }
+      params: { employee_id: employeeId },
     });
     return data;
   },
@@ -282,7 +294,9 @@ export const hrApi = {
   },
 
   async approveLeaveRequest(id: string) {
-    const { data } = await axios.post(`${BASE_URL}/leave-requests/${id}/approve`);
+    const { data } = await axios.post(
+      `${BASE_URL}/leave-requests/${id}/approve`,
+    );
     return data;
   },
 
@@ -436,11 +450,11 @@ All HR endpoints require authentication and appropriate permissions:
 ```typescript
 // Required permissions
 const permissions = {
-  'hr:read':    ['admin', 'manager', 'hr_manager', 'user'],
-  'hr:create':  ['admin', 'manager', 'hr_manager'],
-  'hr:update':  ['admin', 'manager', 'hr_manager'],
-  'hr:delete':  ['admin', 'hr_manager'],
-  'hr:approve': ['admin', 'manager', 'hr_manager'],
+  "hr:read": ["admin", "manager", "hr_manager", "user"],
+  "hr:create": ["admin", "manager", "hr_manager"],
+  "hr:update": ["admin", "manager", "hr_manager"],
+  "hr:delete": ["admin", "hr_manager"],
+  "hr:approve": ["admin", "manager", "hr_manager"],
 };
 ```
 
@@ -493,10 +507,10 @@ describe('HRService - Employee Operations', () => {
   it('should get employee with relations', () => {
     // Create employee first
     const employee = service.createEmployee({...});
-    
+
     // Get with relations
     const fullEmployee = service.getEmployeeWithRelations(employee.id);
-    
+
     expect(fullEmployee).toBeDefined();
     expect(fullEmployee?.contracts).toBeDefined();
     expect(fullEmployee?.time_entries).toBeDefined();
@@ -510,8 +524,8 @@ describe('HRService - Employee Operations', () => {
 
 ```typescript
 const employees = hrService.getEmployees(
-  { department: 'Engineering', status: 'active' },
-  { page: 1, limit: 100, sort_by: 'last_name', sort_order: 'asc' }
+  { department: "Engineering", status: "active" },
+  { page: 1, limit: 100, sort_by: "last_name", sort_order: "asc" },
 );
 ```
 
@@ -526,37 +540,45 @@ const currentContract = employee?.current_contract;
 
 ```typescript
 const now = new Date();
-const startDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
-const endDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-31`;
+const startDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+const endDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-31`;
 
-const timeEntries = hrService.getEmployeeTimeEntries(employeeId, startDate, endDate);
+const timeEntries = hrService.getEmployeeTimeEntries(
+  employeeId,
+  startDate,
+  endDate,
+);
 ```
 
 ### Get Pending Leave Requests
 
 ```typescript
-const pendingLeaves = hrService.getEmployeeLeaveRequests(employeeId, 'pending');
+const pendingLeaves = hrService.getEmployeeLeaveRequests(employeeId, "pending");
 ```
 
 ## 🐛 Troubleshooting
 
 ### Issue: "Employee not found"
+
 - Check that employee ID is valid UUID
 - Verify employee exists in database
 - Check authentication token has proper permissions
 
 ### Issue: "Permission denied"
+
 - Verify user has required RBAC permissions
 - Check module access is granted (`hr` module)
 - Review role assignments
 
 ### Issue: "Validation error"
+
 - Review request body matches schema
 - Check date formats (YYYY-MM-DD)
 - Verify required fields are provided
 - Check email format is valid
 
 ### Issue: "Database error"
+
 - Verify migrations have been run
 - Check foreign key relationships
 - Review database constraints

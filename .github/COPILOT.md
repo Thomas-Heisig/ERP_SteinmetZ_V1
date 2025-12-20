@@ -247,42 +247,68 @@ export const UserCard: React.FC<UserCardProps> = ({ user, onEdit }) => {
 
 ### Test-Anforderungen
 
-- Neue Features benötigen Tests (Coverage > 80%)
-- Bugfixes benötigen Regression-Tests
-- Kritische Funktionen: Coverage > 90%
+- **Neue Features**: Mindestens **EIN** repräsentativer Test pro Feature
+- **Kritische Funktionen**: 2-3 Tests (Happy Path, Error Case, Edge Case)
+- **Bugfixes**: Ein Regression-Test
+- **Coverage-Ziel**: 60% (Fokus auf kritische Pfade statt vollständige Coverage)
+- **Regel**: Tests nur für **implementierte** Features schreiben
+
+### Test-Philosophie
+
+**Qualität über Quantität**:
+
+- Ein gut geschriebener Test ist besser als fünf schlechte
+- Fokus auf Geschäftslogik und kritische Pfade
+- Acceptance-Tests für Router/API-Endpoints
+- Unit-Tests nur für komplexe Business-Logic
 
 ### Test-Pattern (Vitest)
+
+**Minimal-Test für Feature** (Ein Test):
+
+```typescript
+import { describe, it, expect } from "vitest";
+
+describe("UserService - getById", () => {
+  it("should return user when found", async () => {
+    // Arrange
+    const userService = new UserService();
+    const userId = "123";
+
+    // Act
+    const user = await userService.getById(userId);
+
+    // Assert
+    expect(user).toBeDefined();
+    expect(user.id).toBe(userId);
+  });
+});
+```
+
+**Kritische Funktion** (3 Tests):
 
 ```typescript
 import { describe, it, expect, beforeEach } from "vitest";
 
-describe("UserService", () => {
+describe("UserService - getById", () => {
   let userService: UserService;
 
   beforeEach(() => {
     userService = new UserService();
   });
 
-  describe("getById", () => {
-    it("should return user when found", async () => {
-      // Arrange
-      const userId = "123";
+  it("should return user when found (happy path)", async () => {
+    const user = await userService.getById("123");
+    expect(user).toBeDefined();
+  });
 
-      // Act
-      const user = await userService.getById(userId);
+  it("should return null when user not found (error case)", async () => {
+    const user = await userService.getById("nonexistent");
+    expect(user).toBeNull();
+  });
 
-      // Assert
-      expect(user).toBeDefined();
-      expect(user.id).toBe(userId);
-    });
-
-    it("should return null when user not found", async () => {
-      // Act
-      const user = await userService.getById("nonexistent");
-
-      // Assert
-      expect(user).toBeNull();
-    });
+  it("should handle invalid ID format (edge case)", async () => {
+    await expect(userService.getById("")).rejects.toThrow();
   });
 });
 ```

@@ -3,10 +3,10 @@
 
 /**
  * CalendarToolbar Component
- * 
+ *
  * Provides toolbar functionality for the calendar including view switching,
  * import/export, and print capabilities.
- * 
+ *
  * @remarks
  * Features:
  * - View mode buttons (month, week, day, agenda)
@@ -14,7 +14,7 @@
  * - Export calendar data (ICS, CSV, JSON)
  * - Print functionality
  * - Create new event button
- * 
+ *
  * @example
  * ```tsx
  * <CalendarToolbar
@@ -45,13 +45,13 @@ export const CalendarToolbar: React.FC<CalendarToolbarProps> = ({
 }) => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportFormat, setExportFormat] = useState<"ics" | "csv" | "json">(
-    "ics"
+    "ics",
   );
 
   const handleExport = async () => {
     try {
       const response = await fetch(
-        `/api/calendar/export?format=${exportFormat}`
+        `/api/calendar/export?format=${exportFormat}`,
       );
       if (response.ok) {
         const blob = await response.blob();
@@ -98,7 +98,9 @@ export const CalendarToolbar: React.FC<CalendarToolbarProps> = ({
             key={view.id}
             variant={currentView === view.id ? "primary" : "ghost"}
             size="sm"
-            onClick={() => onViewChange(view.id as "month" | "week" | "day" | "agenda")}
+            onClick={() =>
+              onViewChange(view.id as "month" | "week" | "day" | "agenda")
+            }
           >
             {view.icon} {view.label}
           </Button>
@@ -139,18 +141,10 @@ export const CalendarToolbar: React.FC<CalendarToolbarProps> = ({
                   className={styles.fileInput}
                 />
               </label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExport}
-              >
+              <Button variant="outline" size="sm" onClick={handleExport}>
                 📥 Export ({exportFormat.toUpperCase()})
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onPrint}
-              >
+              <Button variant="outline" size="sm" onClick={onPrint}>
                 🖨️ Drucken
               </Button>
             </div>
@@ -159,7 +153,9 @@ export const CalendarToolbar: React.FC<CalendarToolbarProps> = ({
                 Format:
                 <select
                   value={exportFormat}
-                  onChange={(e) => setExportFormat(e.target.value as "ics" | "csv" | "json")}
+                  onChange={(e) =>
+                    setExportFormat(e.target.value as "ics" | "csv" | "json")
+                  }
                 >
                   <option value="ics">ICS</option>
                   <option value="csv">CSV</option>

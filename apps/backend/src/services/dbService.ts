@@ -273,7 +273,7 @@ function attemptAdvancedCorrection(
       children: [],
       weight: 1,
       icon: "",
-      ...rawData
+      ...rawData,
     } as CorrectedNodeData;
   }
 }
@@ -294,7 +294,12 @@ class DatabaseError extends Error {
   public readonly original: unknown;
   public readonly code?: string;
 
-  constructor(message: string, sql: string, params: SqlParams, original: unknown) {
+  constructor(
+    message: string,
+    sql: string,
+    params: SqlParams,
+    original: unknown,
+  ) {
     super(message);
     this.name = "DatabaseError";
     this.sql = sql;
@@ -665,10 +670,7 @@ interface SqlApi {
   init(): Promise<void>;
   exec(sql: string, params?: SqlParams): Promise<void>;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  run<T = UnknownRow>(
-    sql: string,
-    params?: SqlParams,
-  ): Promise<MutationResult>;
+  run<T = UnknownRow>(sql: string, params?: SqlParams): Promise<MutationResult>;
   all<T = UnknownRow>(sql: string, params?: SqlParams): Promise<T[]>;
   get<T = UnknownRow>(sql: string, params?: SqlParams): Promise<T | undefined>;
   transaction<T>(fn: () => Promise<T>): Promise<T>;
@@ -692,7 +694,8 @@ class SqliteApi implements SqlApi {
   async init(): Promise<void> {
     if (this.initialized) return;
 
-    const mod = (await import("better-sqlite3")) as unknown as BetterSqlite3Module;
+    const mod =
+      (await import("better-sqlite3")) as unknown as BetterSqlite3Module;
     const sqliteFile = this.config.sqliteFile || SQLITE_FILE;
 
     // Datenbankverzeichnis erstellen
@@ -743,10 +746,7 @@ class SqliteApi implements SqlApi {
         logger.debug({ table: name }, "Table ensured");
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err);
-        logger.warn(
-          { table: name, error: message },
-          "Could not create table",
-        );
+        logger.warn({ table: name, error: message }, "Could not create table");
       }
     }
 
@@ -760,7 +760,9 @@ class SqliteApi implements SqlApi {
   }
 
   private async addMissingColumns(): Promise<void> {
-    const colInfo = this.db.prepare("PRAGMA table_info(functions_nodes)").all() as ColumnInfo[];
+    const colInfo = this.db
+      .prepare("PRAGMA table_info(functions_nodes)")
+      .all() as ColumnInfo[];
     const existingColumns = new Set(colInfo.map((c) => c.name));
 
     const missingColumns = {
@@ -791,10 +793,7 @@ class SqliteApi implements SqlApi {
           this.db.exec(`ALTER TABLE functions_nodes ADD COLUMN ${col} ${def}`);
         } catch (err: unknown) {
           const message = err instanceof Error ? err.message : String(err);
-          logger.warn(
-            { column: col, error: message },
-            "Could not add column",
-          );
+          logger.warn({ column: col, error: message }, "Could not add column");
         }
       }
     }
@@ -857,12 +856,18 @@ class SqliteApi implements SqlApi {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async run<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<MutationResult> {
+  async run<T = UnknownRow>(
+    sql: string,
+    params: SqlParams = [],
+  ): Promise<MutationResult> {
     const info = this.db.prepare(sql).run(params);
     return {
       changes: info.changes,
-      lastID: typeof info.lastInsertRowid === 'number' ? info.lastInsertRowid : Number(info.lastInsertRowid),
-      lastInsertRowid: info.lastInsertRowid
+      lastID:
+        typeof info.lastInsertRowid === "number"
+          ? info.lastInsertRowid
+          : Number(info.lastInsertRowid),
+      lastInsertRowid: info.lastInsertRowid,
     };
   }
 
@@ -870,8 +875,11 @@ class SqliteApi implements SqlApi {
     return this.db.prepare(sql).all(params) as T[];
   }
 
-  async get<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<T | undefined> {
-    return this.db.prepare(sql).get(params) as T | undefined ?? undefined;
+  async get<T = UnknownRow>(
+    sql: string,
+    params: SqlParams = [],
+  ): Promise<T | undefined> {
+    return (this.db.prepare(sql).get(params) as T | undefined) ?? undefined;
   }
 
   async transaction<T>(fn: () => Promise<T>): Promise<T> {
@@ -1120,7 +1128,10 @@ class PostgresApi implements SqlApi {
     }
   }
 
-  async get<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<T | undefined> {
+  async get<T = UnknownRow>(
+    sql: string,
+    params: SqlParams = [],
+  ): Promise<T | undefined> {
     const startTime = Date.now();
     const client = await this.useClient();
     try {
@@ -1421,7 +1432,10 @@ class DatabaseService {
    * }
    * ```
    */
-  async get<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<T | undefined> {
+  async get<T = UnknownRow>(
+    sql: string,
+    params: SqlParams = [],
+  ): Promise<T | undefined> {
     await this.ensureInitialized();
     const startTime = Date.now();
 

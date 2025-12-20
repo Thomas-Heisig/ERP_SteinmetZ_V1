@@ -3,7 +3,7 @@
 
 /**
  * Simple Notification Utility
- * 
+ *
  * Provides basic notification functionality for calendar feature
  * until proper notification system is integrated.
  */

@@ -70,6 +70,7 @@ The RBAC system provides comprehensive role-based and permission-based access co
 A **role** is a collection of permissions that can be assigned to users. Roles provide a convenient way to group related permissions.
 
 **Characteristics**:
+
 - System roles cannot be deleted
 - Roles can be activated/deactivated
 - Roles support module-level permission grouping
@@ -82,6 +83,7 @@ A **permission** is a specific action allowed on a specific module, following th
 **Format**: `{module}:{action}`
 
 **Examples**:
+
 - `finance:create` - Can create finance records
 - `user_management:delete` - Can delete users
 - `sales:approve` - Can approve sales transactions
@@ -161,6 +163,7 @@ The system includes 7 default roles organized in a hierarchy:
 **Description**: Full system access. Can manage all users, roles, and configurations.
 
 **Key Permissions**:
+
 - All user management operations
 - All role management operations including system roles
 - Full access to all modules
@@ -168,6 +171,7 @@ The system includes 7 default roles organized in a hierarchy:
 - Audit log access
 
 **Use Cases**:
+
 - System owners
 - IT administrators with full control
 
@@ -177,6 +181,7 @@ The system includes 7 default roles organized in a hierarchy:
 **Description**: Administrative access. Can manage users and configurations but cannot manage system roles.
 
 **Key Permissions**:
+
 - User CRUD operations (cannot manage super_admin users)
 - Full access to finance, HR, sales, procurement, production, warehouse
 - Cannot create/modify system roles
@@ -185,6 +190,7 @@ The system includes 7 default roles organized in a hierarchy:
 - Audit log access
 
 **Use Cases**:
+
 - Department heads
 - IT staff managing non-critical systems
 
@@ -194,6 +200,7 @@ The system includes 7 default roles organized in a hierarchy:
 **Description**: Can manage team members and approve workflow items.
 
 **Key Permissions**:
+
 - User read-only (view team members)
 - Finance: read, update, approve, export
 - HR: read, update, approve, export
@@ -202,6 +209,7 @@ The system includes 7 default roles organized in a hierarchy:
 - Can approve transactions in their domain
 
 **Use Cases**:
+
 - Department managers
 - Team leaders
 - Project managers
@@ -212,12 +220,14 @@ The system includes 7 default roles organized in a hierarchy:
 **Description**: Can supervise team work and oversee operations.
 
 **Key Permissions**:
+
 - Can read and update team data
 - Cannot approve transactions
 - Can view and create limited records
 - Export capability
 
 **Use Cases**:
+
 - Team supervisors
 - Lead technicians
 
@@ -227,11 +237,13 @@ The system includes 7 default roles organized in a hierarchy:
 **Description**: Standard user access. Can read and create data in assigned modules.
 
 **Key Permissions**:
+
 - Dashboard read
 - Can create records in: CRM, Sales
 - Read-only in: Procurement, Inventory, Production, Warehouse
 
 **Use Cases**:
+
 - Regular employees
 - Department staff members
 
@@ -241,11 +253,13 @@ The system includes 7 default roles organized in a hierarchy:
 **Description**: Read-only access to all modules.
 
 **Key Permissions**:
+
 - Read-only access to most modules
 - Cannot create or modify anything
 - Can export some data
 
 **Use Cases**:
+
 - External stakeholders
 - Auditors
 - Compliance officers
@@ -256,10 +270,12 @@ The system includes 7 default roles organized in a hierarchy:
 **Description**: Limited guest access.
 
 **Key Permissions**:
+
 - Dashboard read
 - Reporting read
 
 **Use Cases**:
+
 - Anonymous users
 - Public dashboard viewers
 - Temporary access
@@ -271,10 +287,12 @@ The system includes 7 default roles organized in a hierarchy:
 All permissions follow the `module:action` format.
 
 **Dashboard**:
+
 - `dashboard:read` - View dashboard
 - `dashboard:export` - Export dashboard data
 
 **User Management**:
+
 - `user_management:create` - Create new users
 - `user_management:read` - View user information
 - `user_management:update` - Update user information
@@ -282,6 +300,7 @@ All permissions follow the `module:action` format.
 - `user_management:manage` - Full user management
 
 **Role Management**:
+
 - `role_management:create` - Create new roles
 - `role_management:read` - View roles
 - `role_management:update` - Update roles
@@ -289,6 +308,7 @@ All permissions follow the `module:action` format.
 - `role_management:manage` - Full role management
 
 **Finance**:
+
 - `finance:create` - Create finance records
 - `finance:read` - View finance records
 - `finance:update` - Modify finance records
@@ -297,6 +317,7 @@ All permissions follow the `module:action` format.
 - `finance:export` - Export finance data
 
 **HR**:
+
 - `hr:create` - Create HR records
 - `hr:read` - View HR records
 - `hr:update` - Modify HR records
@@ -305,6 +326,7 @@ All permissions follow the `module:action` format.
 - `hr:export` - Export HR data
 
 **Sales**:
+
 - `sales:create` - Create sales records
 - `sales:read` - View sales records
 - `sales:update` - Modify sales records
@@ -313,6 +335,7 @@ All permissions follow the `module:action` format.
 - `sales:export` - Export sales data
 
 **Other Modules** (Similar patterns):
+
 - `crm:*`
 - `procurement:*`
 - `inventory:*`
@@ -329,6 +352,7 @@ All permissions follow the `module:action` format.
 ### Role Management (Admin only)
 
 #### Get All Roles
+
 ```
 GET /api/rbac/roles
 Authorization: Bearer {token}
@@ -354,6 +378,7 @@ Response:
 ```
 
 #### Get Role by ID
+
 ```
 GET /api/rbac/roles/:roleId
 Authorization: Bearer {token}
@@ -368,6 +393,7 @@ Response:
 ```
 
 #### Create Role
+
 ```
 POST /api/rbac/roles
 Authorization: Bearer {token}
@@ -393,6 +419,7 @@ Response:
 ```
 
 #### Update Role
+
 ```
 PUT /api/rbac/roles/:roleId
 Authorization: Bearer {token}
@@ -406,6 +433,7 @@ Request Body:
 ```
 
 #### Delete Role
+
 ```
 DELETE /api/rbac/roles/:roleId
 Authorization: Bearer {token}
@@ -415,6 +443,7 @@ Requires: super_admin role
 ### User Role Assignment
 
 #### Assign Role to User
+
 ```
 POST /api/rbac/users/:userId/roles/:roleId
 Authorization: Bearer {token}
@@ -432,6 +461,7 @@ Response:
 ```
 
 #### Revoke Role from User
+
 ```
 DELETE /api/rbac/users/:userId/roles/:roleId
 Authorization: Bearer {token}
@@ -444,6 +474,7 @@ Response:
 ```
 
 #### Get User Roles
+
 ```
 GET /api/rbac/users/:userId/roles
 Authorization: Bearer {token}
@@ -458,6 +489,7 @@ Response:
 ```
 
 #### Get User Permissions
+
 ```
 GET /api/rbac/users/:userId/permissions
 Authorization: Bearer {token}
@@ -474,6 +506,7 @@ Response:
 ### Permission Checking (Authenticated Users)
 
 #### Get Current User Roles
+
 ```
 GET /api/rbac/me/roles
 Authorization: Bearer {token}
@@ -488,6 +521,7 @@ Response:
 ```
 
 #### Get Current User Permissions
+
 ```
 GET /api/rbac/me/permissions
 Authorization: Bearer {token}
@@ -502,6 +536,7 @@ Response:
 ```
 
 #### Check Permission
+
 ```
 POST /api/rbac/check-permission
 Authorization: Bearer {token}
@@ -523,6 +558,7 @@ Response:
 ```
 
 #### Check Role
+
 ```
 POST /api/rbac/check-role
 Authorization: Bearer {token}
@@ -550,17 +586,17 @@ Response:
 Restrict access to users with a specific role:
 
 ```typescript
-import { authenticate } from '../middleware/authMiddleware';
-import { requireRole } from '../middleware/rbacMiddleware';
+import { authenticate } from "../middleware/authMiddleware";
+import { requireRole } from "../middleware/rbacMiddleware";
 
 router.delete(
-  '/admin/settings',
+  "/admin/settings",
   authenticate,
-  requireRole('admin'),
+  requireRole("admin"),
   (req, res) => {
     // Only admins can access
-    res.json({ message: 'Settings deleted' });
-  }
+    res.json({ message: "Settings deleted" });
+  },
 );
 ```
 
@@ -570,10 +606,10 @@ Allow access if user has any of the specified roles:
 
 ```typescript
 router.post(
-  '/approval',
+  "/approval",
   authenticate,
-  requireAnyRole(['admin', 'manager']),
-  approveHandler
+  requireAnyRole(["admin", "manager"]),
+  approveHandler,
 );
 ```
 
@@ -583,10 +619,10 @@ User must have all specified roles:
 
 ```typescript
 router.put(
-  '/critical-config',
+  "/critical-config",
   authenticate,
-  requireAllRoles(['admin', 'security-officer']),
-  configureHandler
+  requireAllRoles(["admin", "security-officer"]),
+  configureHandler,
 );
 ```
 
@@ -596,10 +632,10 @@ Restrict based on fine-grained permission:
 
 ```typescript
 router.post(
-  '/invoices',
+  "/invoices",
   authenticate,
-  requirePermission('finance:create'),
-  createInvoiceHandler
+  requirePermission("finance:create"),
+  createInvoiceHandler,
 );
 ```
 
@@ -609,10 +645,10 @@ Allow if user has any of the specified permissions:
 
 ```typescript
 router.post(
-  '/export',
+  "/export",
   authenticate,
-  requireAnyPermission(['finance:export', 'sales:export', 'hr:export']),
-  exportHandler
+  requireAnyPermission(["finance:export", "sales:export", "hr:export"]),
+  exportHandler,
 );
 ```
 
@@ -622,10 +658,10 @@ Simplify permission checking by module:
 
 ```typescript
 router.get(
-  '/finance/reports',
+  "/finance/reports",
   authenticate,
-  requireModuleAccess('finance'),
-  getReportsHandler
+  requireModuleAccess("finance"),
+  getReportsHandler,
 );
 ```
 
@@ -635,14 +671,16 @@ Implement complex authorization logic:
 
 ```typescript
 router.put(
-  '/users/:id/profile',
+  "/users/:id/profile",
   authenticate,
   requirePermissionCheck(async (req) => {
     // Allow admins or the user themselves
-    return req.auth!.user.id === req.params.id || 
-           await rbacService.hasRole(req.auth!.user.id, 'admin');
+    return (
+      req.auth!.user.id === req.params.id ||
+      (await rbacService.hasRole(req.auth!.user.id, "admin"))
+    );
   }),
-  updateProfileHandler
+  updateProfileHandler,
 );
 ```
 
@@ -652,19 +690,19 @@ Enhance functionality for authorized users without denying access:
 
 ```typescript
 router.get(
-  '/data',
+  "/data",
   authenticate,
-  optionalPermissionCheck('data:export'),
+  optionalPermissionCheck("data:export"),
   (req, res) => {
     const data = getBaseData();
-    
+
     // Add export options if authorized
     if (req.isAuthorized) {
       data.exportOptions = getExportFormats();
     }
-    
+
     res.json(data);
-  }
+  },
 );
 ```
 
@@ -687,30 +725,30 @@ RBAC_MAX_ROLE_ASSIGNMENTS_PER_USER=10
 Create a new role programmatically:
 
 ```typescript
-import { getRbacService } from '../services/rbacService';
+import { getRbacService } from "../services/rbacService";
 
 const rbacService = getRbacService();
 
 // Create analyst role
 const analytRole = {
-  id: 'role_analyst',
-  name: 'analyst',
-  display_name: 'Data Analyst',
-  description: 'Can analyze data and create reports',
+  id: "role_analyst",
+  name: "analyst",
+  display_name: "Data Analyst",
+  description: "Can analyze data and create reports",
   permissions: [
-    'dashboard:read',
-    'reporting:read',
-    'reporting:create',
-    'reporting:export'
+    "dashboard:read",
+    "reporting:read",
+    "reporting:create",
+    "reporting:export",
   ],
   is_system: false,
   is_active: true,
   module_permissions: {
-    dashboard: ['read'],
-    reporting: ['read', 'create', 'export']
+    dashboard: ["read"],
+    reporting: ["read", "create", "export"],
   },
   created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
+  updated_at: new Date().toISOString(),
 };
 
 // Save to database...
@@ -721,54 +759,54 @@ const analytRole = {
 ### Example 1: Protect Finance Routes
 
 ```typescript
-import { Router } from 'express';
-import { authenticate } from '../middleware/authMiddleware';
-import { 
+import { Router } from "express";
+import { authenticate } from "../middleware/authMiddleware";
+import {
   requirePermission,
   requireAnyPermission,
-  requireModuleAccess 
-} from '../middleware/rbacMiddleware';
+  requireModuleAccess,
+} from "../middleware/rbacMiddleware";
 
 const router = Router();
 
 // View finance records
 router.get(
-  '/invoices',
+  "/invoices",
   authenticate,
-  requirePermission('finance:read'),
-  getInvoices
+  requirePermission("finance:read"),
+  getInvoices,
 );
 
 // Create invoice (finance:create)
 router.post(
-  '/invoices',
+  "/invoices",
   authenticate,
-  requirePermission('finance:create'),
-  createInvoice
+  requirePermission("finance:create"),
+  createInvoice,
 );
 
 // Approve invoice (finance:approve)
 router.post(
-  '/invoices/:id/approve',
+  "/invoices/:id/approve",
   authenticate,
-  requirePermission('finance:approve'),
-  approveInvoice
+  requirePermission("finance:approve"),
+  approveInvoice,
 );
 
 // Delete invoice (finance:delete + super_admin)
 router.delete(
-  '/invoices/:id',
+  "/invoices/:id",
   authenticate,
-  requirePermission('finance:delete'),
-  deleteInvoice
+  requirePermission("finance:delete"),
+  deleteInvoice,
 );
 
 // Export all finance data
 router.get(
-  '/export',
+  "/export",
   authenticate,
-  requirePermission('finance:export'),
-  exportFinanceData
+  requirePermission("finance:export"),
+  exportFinanceData,
 );
 
 export default router;
@@ -779,26 +817,26 @@ export default router;
 ```typescript
 // Only managers and above can approve
 router.post(
-  '/requests/:id/approve',
+  "/requests/:id/approve",
   authenticate,
-  requireAnyRole(['admin', 'manager']),
+  requireAnyRole(["admin", "manager"]),
   async (req, res) => {
     const rbacService = getRbacService();
-    
+
     // Get user's highest privilege role
     const highestRole = await rbacService.getUserHighestPrivilegeRole(
-      req.auth.user.id
+      req.auth.user.id,
     );
-    
+
     const approvalLevel = getRoleLevel(highestRole.name);
-    
+
     if (approvalLevel >= requiredLevel) {
       // Approve request
       res.json({ approved: true });
     } else {
-      res.status(403).json({ error: 'Insufficient privilege level' });
+      res.status(403).json({ error: "Insufficient privilege level" });
     }
-  }
+  },
 );
 ```
 
@@ -807,16 +845,16 @@ router.post(
 ```typescript
 // Allow user to update their own profile or admin to update anyone
 router.put(
-  '/users/:userId/profile',
+  "/users/:userId/profile",
   authenticate,
   requirePermissionCheck(async (req) => {
     const rbacService = getRbacService();
-    const isAdmin = await rbacService.hasRole(req.auth.user.id, 'admin');
+    const isAdmin = await rbacService.hasRole(req.auth.user.id, "admin");
     const isOwner = req.auth.user.id === req.params.userId;
-    
+
     return isAdmin || isOwner;
   }),
-  updateUserProfile
+  updateUserProfile,
 );
 ```
 
@@ -824,19 +862,15 @@ router.put(
 
 ```typescript
 // Check available actions in a module
-router.get(
-  '/:module/available-actions',
-  authenticate,
-  async (req, res) => {
-    const rbacService = getRbacService();
-    const actions = await rbacService.getModuleActions(
-      req.auth.user.id,
-      req.params.module
-    );
-    
-    res.json({ actions });
-  }
-);
+router.get("/:module/available-actions", authenticate, async (req, res) => {
+  const rbacService = getRbacService();
+  const actions = await rbacService.getModuleActions(
+    req.auth.user.id,
+    req.params.module,
+  );
+
+  res.json({ actions });
+});
 ```
 
 ## Database Schema
@@ -948,18 +982,18 @@ Prefer module-level checks before permission-level checks:
 ```typescript
 // ✅ Good: Check module first
 router.get(
-  '/finance/reports',
+  "/finance/reports",
   authenticate,
-  requireModuleAccess('finance'),  // Simple check
-  getReportsHandler
+  requireModuleAccess("finance"), // Simple check
+  getReportsHandler,
 );
 
 // ✅ Also good: Use permission for fine-grained control
 router.post(
-  '/finance/reports',
+  "/finance/reports",
   authenticate,
-  requirePermission('finance:export'),  // Specific action
-  exportReportsHandler
+  requirePermission("finance:export"), // Specific action
+  exportReportsHandler,
 );
 ```
 
@@ -970,7 +1004,7 @@ Use caching for performance in high-traffic endpoints:
 ```typescript
 // Permission checks are cached by default
 // Cache is invalidated when roles are assigned/revoked
-const hasPermission = await rbacService.hasPermission(userId, 'finance:read');
+const hasPermission = await rbacService.hasPermission(userId, "finance:read");
 ```
 
 ### 3. Log All RBAC Changes
@@ -988,13 +1022,15 @@ await rbacService.assignRoleToUser(userId, roleId, adminId);
 Assign roles temporarily when needed:
 
 ```typescript
-const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+const oneWeekFromNow = new Date(
+  Date.now() + 7 * 24 * 60 * 60 * 1000,
+).toISOString();
 
 await rbacService.assignRoleToUser(
   userId,
   roleId,
   adminId,
-  oneWeekFromNow  // Role expires after one week
+  oneWeekFromNow, // Role expires after one week
 );
 ```
 
@@ -1005,11 +1041,11 @@ Use both for layered security:
 ```typescript
 // Require admin role AND specific permission
 router.delete(
-  '/users/:id',
+  "/users/:id",
   authenticate,
-  requireRole('admin'),           // Role-based access
-  requirePermission('user_management:delete'),  // Permission check
-  deleteUserHandler
+  requireRole("admin"), // Role-based access
+  requirePermission("user_management:delete"), // Permission check
+  deleteUserHandler,
 );
 ```
 
@@ -1040,29 +1076,33 @@ If adding RBAC to an existing system:
 ### Issue: Permission Denied despite assigned role
 
 **Causes**:
+
 - Role not active (`is_active = false`)
 - Permission not in role definition
 - User role assignment expired
 
 **Solution**:
+
 ```typescript
 // Check role details
 const role = await rbacService.getRoleById(roleId);
-console.log('Role active:', role.is_active);
-console.log('Permissions:', role.permissions);
+console.log("Role active:", role.is_active);
+console.log("Permissions:", role.permissions);
 
 // Check user roles
 const roles = await rbacService.getUserRoles(userId);
-console.log('User roles:', roles);
+console.log("User roles:", roles);
 ```
 
 ### Issue: Permission checks slow down requests
 
 **Causes**:
+
 - Caching disabled
 - Large number of roles assigned to user
 
 **Solution**:
+
 ```typescript
 // Enable caching (default)
 rbacService.setCacheEnabled(true);
@@ -1074,10 +1114,12 @@ rbacService.clearCache();
 ### Issue: Newly assigned permissions not recognized
 
 **Causes**:
+
 - Permission cache not cleared
 - Role assignment hasn't propagated
 
 **Solution**:
+
 ```typescript
 // Clear permission cache for user
 rbacService.permissionCache.delete(userId);

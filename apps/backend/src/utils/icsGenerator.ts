@@ -30,7 +30,7 @@ export function createICS(events: CalendarEvent[]): string {
   events.forEach((event) => {
     const eventStart = formatDateForICS(new Date(event.start));
     const eventEnd = formatDateForICS(new Date(event.end));
-    
+
     ics.push("BEGIN:VEVENT");
     ics.push(`UID:${event.id}`);
     ics.push(`DTSTAMP:${formatDateForICS(new Date())}`);
@@ -46,19 +46,19 @@ export function createICS(events: CalendarEvent[]): string {
       ics.push("TRANSP:OPAQUE");
     }
     ics.push(`SUMMARY:${escapeICS(event.title)}`);
-    
+
     if (event.description) {
       ics.push(`DESCRIPTION:${escapeICS(event.description)}`);
     }
-    
+
     if (event.location) {
       ics.push(`LOCATION:${escapeICS(event.location)}`);
     }
-    
+
     if (event.category) {
       ics.push(`CATEGORIES:${escapeICS(event.category)}`);
     }
-    
+
     // Optional: RFC 7986 Color support
     if (event.color) {
       ics.push(`COLOR:${escapeICS(event.color)}`);
@@ -73,7 +73,7 @@ export function createICS(events: CalendarEvent[]): string {
         ics.push(`ORGANIZER;CN:${escapeICS(organizer)}`);
       }
     }
-    
+
     // Attendees
     if (Array.isArray(event.attendees)) {
       event.attendees.forEach((att: string) => {
@@ -81,14 +81,18 @@ export function createICS(events: CalendarEvent[]): string {
           const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(att);
           const cn = escapeICS(att);
           if (isEmail) {
-            ics.push(`ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=${cn}:mailto:${att}`);
+            ics.push(
+              `ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=${cn}:mailto:${att}`,
+            );
           } else {
-            ics.push(`ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=${cn}`);
+            ics.push(
+              `ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=${cn}`,
+            );
           }
         }
       });
     }
-    
+
     // Add reminders
     event.reminders?.forEach((minutes: number) => {
       ics.push("BEGIN:VALARM");
@@ -97,7 +101,7 @@ export function createICS(events: CalendarEvent[]): string {
       ics.push(`DESCRIPTION:Reminder: ${escapeICS(event.title)}`);
       ics.push("END:VALARM");
     });
-    
+
     ics.push("END:VEVENT");
   });
 
@@ -106,7 +110,8 @@ export function createICS(events: CalendarEvent[]): string {
 }
 
 function formatDateForICS(date: Date): string {
-  return date.toISOString()
+  return date
+    .toISOString()
     .replace(/[-:]/g, "")
     .replace(/\.\d{3}/, "");
 }

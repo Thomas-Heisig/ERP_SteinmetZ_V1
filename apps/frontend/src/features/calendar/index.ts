@@ -3,7 +3,7 @@
 
 /**
  * Calendar Feature Module
- * 
+ *
  * Provides comprehensive calendar and event management functionality:
  * - Multiple view modes (month, week, day, agenda)
  * - Event creation, editing, and deletion
@@ -12,7 +12,7 @@
  * - Import/Export capabilities (ICS, CSV, JSON)
  * - Attendee management
  * - Reminders and notifications
- * 
+ *
  * @module features/calendar
  */
 

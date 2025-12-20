@@ -16,7 +16,7 @@ router.get(
   "/export",
   asyncHandler(async (req, res) => {
     const { format = "ics", start, end } = req.query;
-    
+
     let sql = "SELECT * FROM calendar_events WHERE 1=1";
     const params: unknown[] = [];
 
@@ -37,7 +37,10 @@ router.get(
       case "ics": {
         const icsContent = createICS(events);
         res.setHeader("Content-Type", "text/calendar");
-        res.setHeader("Content-Disposition", "attachment; filename=calendar.ics");
+        res.setHeader(
+          "Content-Disposition",
+          "attachment; filename=calendar.ics",
+        );
         res.send(icsContent);
         break;
       }
@@ -45,14 +48,20 @@ router.get(
       case "csv": {
         const csvContent = eventsToCSV(events);
         res.setHeader("Content-Type", "text/csv");
-        res.setHeader("Content-Disposition", "attachment; filename=calendar.csv");
+        res.setHeader(
+          "Content-Disposition",
+          "attachment; filename=calendar.csv",
+        );
         res.send(csvContent);
         break;
       }
 
       case "json":
         res.setHeader("Content-Type", "application/json");
-        res.setHeader("Content-Disposition", "attachment; filename=calendar.json");
+        res.setHeader(
+          "Content-Disposition",
+          "attachment; filename=calendar.json",
+        );
         res.json({
           success: true,
           data: events,
@@ -69,7 +78,7 @@ router.get(
           error: "Unsupported export format",
         });
     }
-  })
+  }),
 );
 
 /**
@@ -79,14 +88,22 @@ router.get(
 router.post(
   "/import",
   asyncHandler(async (req, res) => {
-    const { events, ics, overwrite = false } = req.body as {
+    const {
+      events,
+      ics,
+      overwrite = false,
+    } = req.body as {
       events?: any[];
       ics?: string;
       overwrite?: boolean;
     };
 
     let importEvents: any[] = Array.isArray(events) ? events : [];
-    if (!Array.isArray(events) && typeof ics === "string" && ics.trim().length > 0) {
+    if (
+      !Array.isArray(events) &&
+      typeof ics === "string" &&
+      ics.trim().length > 0
+    ) {
       try {
         importEvents = parseICS(ics);
       } catch (e) {
@@ -139,7 +156,7 @@ router.post(
             event.createdBy || "import",
             now,
             now,
-          ]
+          ],
         );
         imported++;
       } catch (error) {
@@ -156,7 +173,7 @@ router.post(
         total: importEvents.length,
       },
     });
-  })
+  }),
 );
 
 // Helper functions
@@ -220,8 +237,12 @@ function parseICS(ics: string): any[] {
   const flush = () => {
     if (current) {
       // Detect allDay
-      const allDay = current.dtstartValueDate || /^(\d{8})$/.test(current.dtstartRaw || "");
-      const start = normalizeDateTime(current.dtstartRaw, current.dtstartValueDate);
+      const allDay =
+        current.dtstartValueDate || /^(\d{8})$/.test(current.dtstartRaw || "");
+      const start = normalizeDateTime(
+        current.dtstartRaw,
+        current.dtstartValueDate,
+      );
       const end = normalizeDateTime(current.dtendRaw, current.dtendValueDate);
       const attendees = current.attendees || [];
       events.push({
@@ -264,10 +285,13 @@ function parseICS(ics: string): any[] {
     const [prop, ...paramsParts] = left.split(";");
     const params = paramsParts
       .map((p) => p.split("=") as [string, string])
-      .reduce((acc, [k, v]) => {
-        if (k && v) acc[k.toUpperCase()] = v;
-        return acc;
-      }, {} as Record<string, string>);
+      .reduce(
+        (acc, [k, v]) => {
+          if (k && v) acc[k.toUpperCase()] = v;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
 
     switch (prop.toUpperCase()) {
       case "UID":
@@ -314,7 +338,10 @@ function parseICS(ics: string): any[] {
   return events;
 }
 
-function normalizeDateTime(raw: string | undefined, isDate: boolean | undefined): string {
+function normalizeDateTime(
+  raw: string | undefined,
+  isDate: boolean | undefined,
+): string {
   if (!raw) return new Date().toISOString();
   if (isDate || /^(\d{8})$/.test(raw)) {
     // YYYYMMDD -> treat as 00:00:00 UTC
