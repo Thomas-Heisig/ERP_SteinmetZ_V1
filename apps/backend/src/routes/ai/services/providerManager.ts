@@ -17,6 +17,7 @@ import type { ChatMessage, AIResponse } from "../types/types.js";
 import { callOllama, listOllamaModels } from "../providers/ollamaProvider.js";
 import { elizaProvider } from "../providers/elizaProvider.js";
 import generateAIResponse from "../providers/fallbackProvider.js";
+import { loadAPIKeys } from "./apiKeyService.js";
 
 const logger = createLogger("providerManager");
 
@@ -126,78 +127,111 @@ export class ProviderManager {
    * Check if OpenAI is configured and available
    */
   private async checkOpenAIStatus(): Promise<ProviderStatus> {
-    const apiKey = process.env.OPENAI_API_KEY;
-    
-    if (!apiKey) {
+    try {
+      const apiKeys = await loadAPIKeys();
+      const apiKey = apiKeys.openai || process.env.OPENAI_API_KEY;
+      
+      if (!apiKey) {
+        return {
+          provider: "openai",
+          available: false,
+          status: "offline",
+          message: "API key not configured",
+          lastChecked: new Date().toISOString(),
+        };
+      }
+
+      // Don't actually call the API for health check to avoid costs
+      // Just verify the key is present
+      return {
+        provider: "openai",
+        available: true,
+        status: "online",
+        message: "API key configured",
+        lastChecked: new Date().toISOString(),
+      };
+    } catch (error) {
       return {
         provider: "openai",
         available: false,
-        status: "offline",
-        message: "API key not configured",
+        status: "error",
+        message: error instanceof Error ? error.message : "Unknown error",
         lastChecked: new Date().toISOString(),
       };
     }
-
-    // Don't actually call the API for health check to avoid costs
-    // Just verify the key is present
-    return {
-      provider: "openai",
-      available: true,
-      status: "online",
-      message: "API key configured",
-      lastChecked: new Date().toISOString(),
-    };
   }
 
   /**
    * Check if Anthropic is configured and available
    */
   private async checkAnthropicStatus(): Promise<ProviderStatus> {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    
-    if (!apiKey) {
+    try {
+      const apiKeys = await loadAPIKeys();
+      const apiKey = apiKeys.anthropic || process.env.ANTHROPIC_API_KEY;
+      
+      if (!apiKey) {
+        return {
+          provider: "anthropic",
+          available: false,
+          status: "offline",
+          message: "API key not configured",
+          lastChecked: new Date().toISOString(),
+        };
+      }
+
+      return {
+        provider: "anthropic",
+        available: true,
+        status: "online",
+        message: "API key configured",
+        lastChecked: new Date().toISOString(),
+      };
+    } catch (error) {
       return {
         provider: "anthropic",
         available: false,
-        status: "offline",
-        message: "API key not configured",
+        status: "error",
+        message: error instanceof Error ? error.message : "Unknown error",
         lastChecked: new Date().toISOString(),
       };
     }
-
-    return {
-      provider: "anthropic",
-      available: true,
-      status: "online",
-      message: "API key configured",
-      lastChecked: new Date().toISOString(),
-    };
   }
 
   /**
    * Check if Azure OpenAI is configured and available
    */
   private async checkAzureStatus(): Promise<ProviderStatus> {
-    const apiKey = process.env.AZURE_OPENAI_API_KEY;
-    const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
-    
-    if (!apiKey || !endpoint) {
+    try {
+      const apiKeys = await loadAPIKeys();
+      const apiKey = apiKeys.azure?.apiKey || process.env.AZURE_OPENAI_API_KEY;
+      const endpoint = apiKeys.azure?.endpoint || process.env.AZURE_OPENAI_ENDPOINT;
+      
+      if (!apiKey || !endpoint) {
+        return {
+          provider: "azure",
+          available: false,
+          status: "offline",
+          message: "API key or endpoint not configured",
+          lastChecked: new Date().toISOString(),
+        };
+      }
+
+      return {
+        provider: "azure",
+        available: true,
+        status: "online",
+        message: "API key and endpoint configured",
+        lastChecked: new Date().toISOString(),
+      };
+    } catch (error) {
       return {
         provider: "azure",
         available: false,
-        status: "offline",
-        message: "API key or endpoint not configured",
+        status: "error",
+        message: error instanceof Error ? error.message : "Unknown error",
         lastChecked: new Date().toISOString(),
       };
     }
-
-    return {
-      provider: "azure",
-      available: true,
-      status: "online",
-      message: "API key and endpoint configured",
-      lastChecked: new Date().toISOString(),
-    };
   }
 
   /**

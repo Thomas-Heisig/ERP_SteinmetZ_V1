@@ -19,6 +19,7 @@ import React, {
 } from "react";
 import { useUnifiedQuickChat } from "./useUnifiedQuickChat";
 import { ProviderStatusIndicator } from "./ProviderStatusIndicator";
+import { APIKeySettings } from "./APIKeySettings";
 import styles from "./UnifiedQuickChat.module.css";
 import type {
   TabName,
@@ -477,6 +478,10 @@ export const UnifiedQuickChat: React.FC<UnifiedQuickChatProps> = ({
                       className={styles.settingInput}
                     />
                   </div>
+
+                  <hr className={styles.divider} />
+
+                  <APIKeySettings />
                 </div>
               )}
 

@@ -1,0 +1,281 @@
+/* API Key Settings Styles */
+
+.container {
+  padding: 16px 0;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: var(--text-primary, #1f2937);
+}
+
+[data-theme="dark"] .title {
+  color: var(--text-primary-dark, #f3f4f6);
+}
+
+.errorBanner {
+  padding: 12px;
+  margin-bottom: 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #991b1b;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .errorBanner {
+  background: #7f1d1d;
+  border-color: #991b1b;
+  color: #fecaca;
+}
+
+.successBanner {
+  padding: 12px;
+  margin-bottom: 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  color: #166534;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .successBanner {
+  background: #14532d;
+  border-color: #166534;
+  color: #bbf7d0;
+}
+
+.providerList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.providerItem {
+  padding: 16px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  background: var(--bg-secondary, #f9fafb);
+}
+
+[data-theme="dark"] .providerItem {
+  background: var(--bg-secondary-dark, #374151);
+  border-color: var(--border-color-dark, #4b5563);
+}
+
+.providerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.providerLabel {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+}
+
+[data-theme="dark"] .providerLabel {
+  color: var(--text-primary-dark, #f3f4f6);
+}
+
+.configuredBadge {
+  padding: 4px 12px;
+  background: #10b981;
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  background: white;
+  color: var(--text-primary, #1f2937);
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+[data-theme="dark"] .input {
+  background: var(--bg-tertiary-dark, #1f2937);
+  color: var(--text-primary-dark, #f3f4f6);
+  border-color: var(--border-color-dark, #4b5563);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.keyPreview {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--bg-tertiary, #f3f4f6);
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+}
+
+[data-theme="dark"] .keyPreview {
+  background: var(--bg-tertiary-dark, #1f2937);
+  color: var(--text-secondary-dark, #9ca3af);
+}
+
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.saveButton {
+  background: #3b82f6;
+  color: white;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.cancelButton {
+  background: var(--bg-tertiary, #f3f4f6);
+  color: var(--text-primary, #1f2937);
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: var(--bg-secondary, #e5e7eb);
+}
+
+[data-theme="dark"] .cancelButton {
+  background: var(--bg-tertiary-dark, #374151);
+  color: var(--text-primary-dark, #f3f4f6);
+}
+
+[data-theme="dark"] .cancelButton:hover:not(:disabled) {
+  background: var(--bg-secondary-dark, #4b5563);
+}
+
+.addButton {
+  background: #10b981;
+  color: white;
+  flex: 1;
+}
+
+.addButton:hover:not(:disabled) {
+  background: #059669;
+}
+
+.editButton {
+  background: #f59e0b;
+  color: white;
+}
+
+.editButton:hover:not(:disabled) {
+  background: #d97706;
+}
+
+.testButton {
+  background: #6366f1;
+  color: white;
+}
+
+.testButton:hover:not(:disabled) {
+  background: #4f46e5;
+}
+
+.deleteButton {
+  background: #ef4444;
+  color: white;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.helpText {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--bg-info, #eff6ff);
+  border: 1px solid var(--border-info, #bfdbfe);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-info, #1e40af);
+}
+
+[data-theme="dark"] .helpText {
+  background: var(--bg-info-dark, #1e3a8a);
+  border-color: var(--border-info-dark, #3b82f6);
+  color: var(--text-info-dark, #dbeafe);
+}
+
+.helpText p {
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .container {
+    padding: 12px 0;
+  }
+
+  .providerItem {
+    padding: 12px;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .keyPreview {
+    flex: none;
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+}

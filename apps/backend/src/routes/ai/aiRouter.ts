@@ -83,6 +83,14 @@ import {
 import { transcribeAudio } from "./services/audioService.js";
 import { translateText } from "./services/translationService.js";
 import { providerManager } from "./services/providerManager.js";
+import {
+  loadAPIKeys,
+  saveAPIKeys,
+  updateAPIKey,
+  deleteAPIKey,
+  validateAPIKey,
+  getSanitizedAPIKeys,
+} from "./services/apiKeyService.js";
 
 // Health Router
 import healthRouter from "./healthRouter.js";
@@ -382,6 +390,96 @@ router.patch(
     const validated = updateSettingSchema.parse(req.body);
     const updated = await updateSetting(req.params.key, validated.value);
     res.json({ success: true, updated });
+  }),
+);
+
+/* ========================================================================== */
+/* 🔑 API Key Management                                                      */
+/* ========================================================================== */
+
+// Get sanitized API keys (for display only)
+router.get(
+  "/api-keys",
+  asyncHandler(async (_req, res) => {
+    const keys = await getSanitizedAPIKeys();
+    res.json({ success: true, keys });
+  }),
+);
+
+// Update an API key
+router.put(
+  "/api-keys/:provider",
+  asyncHandler(async (req, res) => {
+    const { provider } = req.params;
+    const { value } = req.body;
+
+    if (!value) {
+      throw new BadRequestError("API key value is required");
+    }
+
+    // Validate based on provider
+    if (provider === "azure") {
+      if (!value.apiKey || !value.endpoint) {
+        throw new BadRequestError("Azure requires both apiKey and endpoint");
+      }
+      if (!validateAPIKey(provider, value.apiKey)) {
+        throw new BadRequestError("Invalid Azure API key format");
+      }
+    } else {
+      if (!validateAPIKey(provider, value)) {
+        throw new BadRequestError(`Invalid ${provider} API key format`);
+      }
+    }
+
+    await updateAPIKey(provider, value);
+    res.json({ success: true, message: "API key updated successfully" });
+  }),
+);
+
+// Delete an API key
+router.delete(
+  "/api-keys/:provider",
+  asyncHandler(async (req, res) => {
+    const { provider } = req.params;
+    await deleteAPIKey(provider);
+    res.json({ success: true, message: "API key deleted successfully" });
+  }),
+);
+
+// Test an API key connection
+router.post(
+  "/api-keys/:provider/test",
+  asyncHandler(async (req, res) => {
+    const { provider } = req.params;
+    
+    // For now, just validate the format
+    // In production, this would actually test the connection
+    const keys = await loadAPIKeys();
+    let isValid = false;
+    
+    switch (provider) {
+      case "openai":
+        isValid = !!keys.openai && validateAPIKey(provider, keys.openai);
+        break;
+      case "anthropic":
+        isValid = !!keys.anthropic && validateAPIKey(provider, keys.anthropic);
+        break;
+      case "azure":
+        isValid = !!keys.azure?.apiKey && validateAPIKey(provider, keys.azure.apiKey);
+        break;
+      case "huggingface":
+        isValid = !!keys.huggingface && validateAPIKey(provider, keys.huggingface);
+        break;
+      default:
+        isValid = !!keys.custom?.[provider];
+    }
+    
+    res.json({
+      success: true,
+      provider,
+      valid: isValid,
+      message: isValid ? "API key is valid" : "API key not configured or invalid",
+    });
   }),
 );
 
