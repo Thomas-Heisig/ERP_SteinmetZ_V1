@@ -42,6 +42,17 @@ ERP SteinmetZ ist ein **modernes Enterprise Resource Planning System** mit einem
 - **📱 Responsive**: Mobile-optimiert mit Touch-Interaktionen
 - **🔐 Sicher**: RBAC, GDPR-konform, Audit Trail
 
+### 💡 Was macht ERP SteinmetZ besonders?
+
+| Feature | Beschreibung |
+|---------|--------------|
+| **Instruction-Driven** | Fachprozesse als Arbeitsanweisungen (AA/DSL) und JSON-Schemas |
+| **KI als Moderator** | AI orchestriert Eingaben und ruft deterministische Services auf |
+| **Selbstdokumentierend** | Automatische Code-Generierung aus Funktionsbeschreibungen |
+| **Flexible Architektur** | Dynamische Navigation und Dashboards aus Modul-Manifesten |
+| **Deterministische Basis** | Kernzahlen werden ausschließlich deterministisch berechnet |
+| **RAG-Integration** | Retrieval Augmented Generation für intelligente Wissenssuche |
+
 ### Kernphilosophie
 
 - **Instruction-driven ERP**: Fachprozesse als Arbeitsanweisungen (AA/DSL) und JSON-Schemas beschrieben
@@ -311,23 +322,43 @@ ERP_SteinmetZ_V1/
 
 ## 🔧 Technologie-Stack
 
-### Frontend
+### Frontend Stack
 
-- **Framework:** React 19 + Vite
-- **Routing:** React Router v7 (zentralisiert in routes.tsx) ✨ NEU
-- **Styling:** CSS-Variablen + Theme-System ✨ NEU
-- **State:** React Context + Hooks
-- **i18n:** react-i18next (7 Sprachen)
-- **Themes:** Light, Dark, LCARS, High Contrast ✨ NEU
-- **TypeScript:** Vollständig typisiert
-- **Testing:** Vitest + React Testing Library
+| Technologie | Version | Verwendung |
+|------------|---------|------------|
+| **React** | 19.2.3 | UI Framework |
+| **Vite** | Latest | Build-Tool & Dev-Server |
+| **React Router** | v7 | Client-Side Routing |
+| **TypeScript** | 5.9+ | Type Safety |
+| **i18next** | Latest | Internationalisierung (7 Sprachen) |
+| **CSS Variables** | - | Theme-System (4 Themes) |
+| **Vitest** | Latest | Testing Framework |
 
-### Backend
+**Highlights:**
+- ⚡ **Lightning Fast**: Vite Dev-Server mit HMR
+- 🎨 **4 Themes**: Light, Dark, LCARS, High Contrast
+- 🌍 **7 Sprachen**: DE, EN, ES, FR, IT, PL, TR
+- 📱 **Responsive**: Mobile-First Design
+- ♿ **Accessible**: WCAG 2.1 konform
 
-- **Runtime:** Node.js + Express 5
-- **Database:** SQLite (dev) / PostgreSQL (prod)
-- **AI:** OpenAI API + Ollama + Lokale Modelle
-- **Patterns:** SAGA, Circuit Breaker, Retry Policy
+### Backend Stack
+
+| Technologie | Version | Verwendung |
+|------------|---------|------------|
+| **Node.js** | ≥18.18.0 | Runtime Environment |
+| **Express** | 5 | Web Framework |
+| **TypeScript** | 5.9+ | Type Safety |
+| **SQLite** | Latest | Development Database |
+| **PostgreSQL** | Latest | Production Database |
+| **Socket.IO** | Latest | WebSocket / Real-Time |
+| **Pino** | Latest | Structured Logging |
+
+**Highlights:**
+- 🤖 **13 AI-Provider**: OpenAI, Ollama, Anthropic, Azure, etc.
+- 🔄 **Real-Time**: WebSocket-Integration
+- 📊 **15.472 Funktionsknoten**: Vollständiger Katalog
+- 🛡️ **Resilience**: Circuit Breaker, Retry Policy, SAGA Pattern
+- 📈 **Monitoring**: Health Checks, Metrics, Performance-Tracking
 
 ## 📊 Features
 
@@ -565,7 +596,9 @@ Die Dokumentation folgt dem **[Diátaxis Framework](https://diataxis.fr/)** und 
 
 ## 🤝 Beitragen
 
-Dieses Projekt folgt dem [Copilot Ruleset](docs/development/COPILOT_RULESET.md) für konsistente Entwicklung:
+Wir freuen uns über Beiträge zur Verbesserung des ERP SteinmetZ! Dieses Projekt folgt dem [Copilot Ruleset](docs/development/COPILOT_RULESET.md) für konsistente Entwicklung.
+
+### 📋 Entwicklungsrichtlinien
 
 - **Aufgabenbearbeitung**: Arbeite [TODO.md](docs/development/TODO.md) und [ISSUES.md](docs/development/ISSUES.md) systematisch ab
 - **Dokumentation**: Halte Docs aktuell und strukturiert (Diátaxis Framework)
@@ -573,25 +606,76 @@ Dieses Projekt folgt dem [Copilot Ruleset](docs/development/COPILOT_RULESET.md) 
 - **Testing**: Mindest-Coverage 80%, alle Tests müssen bestehen
 - **Standards**: OpenAPI 3.0, Semantic Versioning, Conventional Commits
 
-### Contribution-Workflow
+### 🔄 Contribution-Workflow
 
-1. Fork das Repository
-2. Erstelle einen Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit deine Änderungen (`git commit -m 'feat(scope): Add AmazingFeature'`)
-4. Push zum Branch (`git push origin feature/AmazingFeature`)
-5. Öffne einen Pull Request
+1. **Fork** das Repository
+2. **Clone** deinen Fork: `git clone https://github.com/YOUR_USERNAME/ERP_SteinmetZ_V1.git`
+3. **Erstelle** einen Feature Branch: `git checkout -b feature/AmazingFeature`
+4. **Implementiere** deine Änderungen und **teste** sie gründlich
+5. **Commit** deine Änderungen: `git commit -m 'feat(scope): Add AmazingFeature'`
+6. **Push** zum Branch: `git push origin feature/AmazingFeature`
+7. **Öffne** einen Pull Request mit ausführlicher Beschreibung
 
-Siehe [CONTRIBUTING.md](CONTRIBUTING.md) für detaillierte Guidelines.
+### 📝 Commit-Message-Format
 
-## 📧 Kontakt
+Wir verwenden [Conventional Commits](https://www.conventionalcommits.org/):
 
-**Projektverantwortlicher:** Thomas Heisig
+```
+<type>(<scope>): <subject>
 
+<body>
+
+<footer>
+```
+
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`
+
+**Beispiele:**
+- `feat(hr): add employee onboarding workflow`
+- `fix(api): resolve caching issue in finance module`
+- `docs(readme): update installation instructions`
+
+> 📚 **Weitere Informationen:** Siehe [CONTRIBUTING.md](CONTRIBUTING.md) für detaillierte Guidelines.
+
+## 📧 Kontakt & Support
+
+### 👨‍💻 Projektverantwortlicher
+
+**Thomas Heisig**
 - GitHub: [@Thomas-Heisig](https://github.com/Thomas-Heisig)
+- Repository: [ERP_SteinmetZ_V1](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1)
+
+### 💬 Hilfe & Unterstützung
+
+- **📖 Dokumentation**: [Documentation Hub](docs/README.md)
+- **❓ FAQ**: [Support Guide](docs/SUPPORT.md)
+- **🐛 Bug Reports**: [GitHub Issues](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
+- **💡 Feature Requests**: [GitHub Issues](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
+- **🔒 Security**: Siehe [SECURITY.md](SECURITY.md) für Sicherheitsmeldungen
+
+### 🤝 Community
+
+- **Code of Conduct**: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Development Guide**: [Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)
 
 ## 📄 Lizenz
 
-Siehe LICENSE file für Details.
+Dieses Projekt ist unter der MIT-Lizenz lizenziert. Siehe [LICENSE](LICENSE) für Details.
+
+---
+
+<div align="center">
+
+**Entwickelt mit ❤️ von Thomas Heisig**
+
+[![GitHub Stars](https://img.shields.io/github/stars/Thomas-Heisig/ERP_SteinmetZ_V1?style=social)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/Thomas-Heisig/ERP_SteinmetZ_V1?style=social)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/Thomas-Heisig/ERP_SteinmetZ_V1)](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
+
+[⭐ Star dieses Projekt](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1) · [🐛 Bug melden](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues) · [💡 Feature vorschlagen](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
+
+</div>
 
 ---
 
