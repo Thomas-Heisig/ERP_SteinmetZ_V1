@@ -117,6 +117,16 @@
   opacity: 1;
 }
 
+.alertError {
+  background-color: var(--error-50, #fee);
+  border-color: var(--error-100, #faa);
+}
+
+.alertSuccess {
+  background-color: var(--success-50, #efe);
+  border-color: var(--success-100, #afa);
+}
+
 /* ============================================
    Toolbar
    ============================================ */

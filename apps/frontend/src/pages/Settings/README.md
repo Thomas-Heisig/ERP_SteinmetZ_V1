@@ -208,7 +208,7 @@ GET /api/settings/:key/history
 
 ### Ollama (Empfohlen)
 
-**Standard-Einstellungen für lokale KI-Modelle**
+**Standard-Einstellungen für lokale KI-Modelle!**
 
 ```json
 {
@@ -228,7 +228,7 @@ GET /api/settings/:key/history
 
 ### Eliza (Fallback)
 
-**Regelbasierter Fallback bei Provider-Fehlern**
+**Regelbasierter Fallback bei Provider-Fehlern!**
 
 ```json
 {
@@ -246,7 +246,7 @@ GET /api/settings/:key/history
 
 ### OpenAI
 
-**Cloud-basierte KI mit GPT-Modellen**
+**Cloud-basierte KI mit GPT-Modellen!**
 
 ```json
 {

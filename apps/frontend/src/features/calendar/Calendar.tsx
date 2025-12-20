@@ -2,14 +2,29 @@
 // apps/frontend/src/features/calendar/Calendar.tsx
 
 /**
- * Calendar component with month, week, and day views
- *
+ * Calendar Component
+ * 
+ * A comprehensive calendar component with multiple view modes (month, week, day).
+ * Displays events, allows date navigation, and provides event interaction.
+ * 
+ * @remarks
+ * Features:
+ * - Month/Week/Day view modes
+ * - Event display with color coding
+ * - Date navigation (previous/next/today)
+ * - Event detail modal
+ * - Responsive design
+ * - Filter support (category, search)
+ * - Real-time event fetching from backend
+ * 
  * @example
  * ```tsx
  * <Calendar
  *   onEventClick={(event) => console.log(event)}
  *   onDateClick={(date) => console.log(date)}
  *   onEventCreate={(start, end) => createEvent(start, end)}
+ *   viewMode="month"
+ *   filters={{ category: ['meeting'], search: 'budget' }}
  * />
  * ```
  */
@@ -22,8 +37,9 @@ type ViewMode = "month" | "week" | "day";
 
 /**
  * Calendar event interface
+ * Represents a single calendar event with all its properties
  */
-interface CalendarEvent {
+export interface CalendarEvent {
   id: string;
   title: string;
   description: string;
@@ -32,6 +48,10 @@ interface CalendarEvent {
   allDay: boolean;
   color?: string;
   category?: string;
+  location?: string;
+  attendees?: string[];
+  reminders?: number[];
+  recurrence?: string;
 }
 
 /**
@@ -44,6 +64,12 @@ interface CalendarProps {
   onDateClick?: (date: Date) => void;
   /** Callback when a new event should be created */
   onEventCreate?: (start: Date, end: Date) => void;
+  /** Controlled view mode */
+  viewMode?: ViewMode;
+  /** Notify view changes */
+  onViewChange?: (view: ViewMode) => void;
+  /** Optional filters (category, search) */
+  filters?: { category?: string[]; search?: string };
 }
 
 const WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
@@ -68,13 +94,24 @@ const MONTHS = [
 export const Calendar: React.FC<CalendarProps> = ({
   onEventClick,
   onDateClick,
+  viewMode: controlledView,
+  onViewChange,
+  filters,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<ViewMode>("month");
+  const [viewMode, setViewMode] = useState<ViewMode>(controlledView || "month");
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null,
   );
+
+  // Sync internal state when controlled prop changes
+  useEffect(() => {
+    if (controlledView && controlledView !== viewMode) {
+      setViewMode(controlledView);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [controlledView]);
 
   const getDateRange = useCallback(() => {
     const start = new Date(currentDate);
@@ -94,15 +131,21 @@ export const Calendar: React.FC<CalendarProps> = ({
   }, [currentDate, viewMode]);
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchEvents = async (): Promise<void> => {
       const { start, end } = getDateRange();
 
       try {
-        const response = await fetch(
-          `/api/calendar/events?start=${start.toISOString()}&end=${end.toISOString()}`,
-        );
+        const params = new URLSearchParams({
+          start: start.toISOString(),
+          end: end.toISOString(),
+        });
+        if (filters?.search) params.set("search", filters.search);
+        if (filters?.category && filters.category.length === 1) {
+          params.set("category", filters.category[0]);
+        }
+        const response = await fetch(`/api/calendar/events?${params.toString()}`);
         if (response.ok) {
-          const data = await response.json();
+          const data = await response.json() as { success: boolean; data: CalendarEvent[] };
           if (data.success) {
             setEvents(data.data);
           }
@@ -113,7 +156,7 @@ export const Calendar: React.FC<CalendarProps> = ({
     };
 
     fetchEvents();
-  }, [getDateRange]);
+  }, [getDateRange, filters?.search, filters?.category]);
 
   const navigatePeriod = useCallback(
     (direction: number) => {
@@ -210,7 +253,10 @@ export const Calendar: React.FC<CalendarProps> = ({
               key={mode}
               variant={viewMode === mode ? "primary" : "ghost"}
               size="sm"
-              onClick={() => setViewMode(mode)}
+              onClick={() => {
+                setViewMode(mode);
+                onViewChange?.(mode);
+              }}
             >
               {mode === "month" ? "Monat" : mode === "week" ? "Woche" : "Tag"}
             </Button>
@@ -257,7 +303,6 @@ export const Calendar: React.FC<CalendarProps> = ({
 
                   <div className={styles.eventsContainer}>
                     {dayEvents.slice(0, 3).map((event) => (
-                      // Dynamic CSS variable for custom event colors - CSS Modules cannot handle dynamic colors
                       <div
                         key={event.id}
                         onClick={(e) => {
@@ -266,13 +311,7 @@ export const Calendar: React.FC<CalendarProps> = ({
                           onEventClick?.(event);
                         }}
                         className={styles.eventItem}
-                        style={
-                          event.color
-                            ? ({
-                                "--event-bg": event.color,
-                              } as React.CSSProperties)
-                            : undefined
-                        }
+                        data-event-color={event.color}
                       >
                         {event.title}
                       </div>

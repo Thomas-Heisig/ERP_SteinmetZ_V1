@@ -3,28 +3,31 @@
 -- Description: Creates tables for employees, time entries, leave requests, contracts, onboarding, and payroll
 
 -- Employees table
-CREATE TABLE IF NOT EXISTS hr_employees (
-  id TEXT PRIMARY KEY,
-  employee_number TEXT UNIQUE,
-  first_name TEXT NOT NULL,
-  last_name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  phone TEXT,
-  department TEXT,
-  position TEXT NOT NULL,
-  start_date TEXT NOT NULL,
-  end_date TEXT,
-  status TEXT NOT NULL CHECK (status IN ('active', 'on_leave', 'terminated')) DEFAULT 'active',
-  address TEXT,
-  city TEXT,
-  postal_code TEXT,
-  country TEXT DEFAULT 'Deutschland',
-  emergency_contact TEXT,
-  emergency_phone TEXT,
-  notes TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[hr_employees]') AND type in (N'U'))
+BEGIN
+CREATE TABLE hr_employees (
+  id NVARCHAR(255) PRIMARY KEY,
+  employee_number NVARCHAR(255) UNIQUE,
+  first_name NVARCHAR(255) NOT NULL,
+  last_name NVARCHAR(255) NOT NULL,
+  email NVARCHAR(255) UNIQUE NOT NULL,
+  phone NVARCHAR(50),
+  department NVARCHAR(255),
+  position NVARCHAR(255) NOT NULL,
+  start_date DATETIME NOT NULL,
+  end_date DATETIME,
+  status NVARCHAR(50) NOT NULL CHECK (status IN ('active', 'on_leave', 'terminated')) DEFAULT 'active',
+  address NVARCHAR(500),
+  city NVARCHAR(255),
+  postal_code NVARCHAR(20),
+  country NVARCHAR(255) DEFAULT 'Deutschland',
+  emergency_contact NVARCHAR(255),
+  emergency_phone NVARCHAR(50),
+  notes NVARCHAR(MAX),
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE()
 );
+END
 
 -- Employment contracts table
 CREATE TABLE IF NOT EXISTS hr_contracts (
@@ -132,6 +135,25 @@ CREATE TABLE IF NOT EXISTS hr_onboarding_tasks (
   FOREIGN KEY (assigned_to) REFERENCES hr_employees(id) ON DELETE SET NULL
 );
 
+-- Payroll tax parameters table (DE defaults)
+CREATE TABLE IF NOT EXISTS hr_payroll_tax_params (
+  id TEXT PRIMARY KEY,
+  year INTEGER NOT NULL,
+  income_tax_rate REAL DEFAULT 0.42 CHECK (income_tax_rate >= 0 AND income_tax_rate <= 1),
+  pension_insurance_rate REAL DEFAULT 0.093 CHECK (pension_insurance_rate >= 0 AND pension_insurance_rate <= 1),
+  health_insurance_rate REAL DEFAULT 0.073 CHECK (health_insurance_rate >= 0 AND health_insurance_rate <= 1),
+  unemployment_insurance_rate REAL DEFAULT 0.012 CHECK (unemployment_insurance_rate >= 0 AND unemployment_insurance_rate <= 1),
+  church_tax_rate REAL DEFAULT 0.08 CHECK (church_tax_rate >= 0 AND church_tax_rate <= 1),
+  solidarity_surcharge_rate REAL DEFAULT 0.0055 CHECK (solidarity_surcharge_rate >= 0 AND solidarity_surcharge_rate <= 1),
+  minimum_wage REAL DEFAULT 12.41 CHECK (minimum_wage >= 0),
+  tax_free_allowance REAL DEFAULT 520 CHECK (tax_free_allowance >= 0),
+  country_code TEXT DEFAULT 'DE',
+  notes TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (year, country_code)
+);
+
 -- Payroll records table
 CREATE TABLE IF NOT EXISTS hr_payroll (
   id TEXT PRIMARY KEY,
@@ -145,10 +167,20 @@ CREATE TABLE IF NOT EXISTS hr_payroll (
   pension_insurance REAL DEFAULT 0 CHECK (pension_insurance >= 0),
   health_insurance REAL DEFAULT 0 CHECK (health_insurance >= 0),
   unemployment_insurance REAL DEFAULT 0 CHECK (unemployment_insurance >= 0),
+  church_tax REAL DEFAULT 0 CHECK (church_tax >= 0),
+  solidarity_surcharge REAL DEFAULT 0 CHECK (solidarity_surcharge >= 0),
   other_deductions REAL DEFAULT 0 CHECK (other_deductions >= 0),
   paid BOOLEAN DEFAULT 0,
   payment_date TEXT,
-  payment_method TEXT,
+  payment_method TEXT CHECK (payment_method IN ('bank_transfer', 'cash', 'check', 'direct_debit')),
+  payment_status TEXT CHECK (payment_status IN ('pending', 'processed', 'failed', 'reversed')) DEFAULT 'pending',
+  iban TEXT,
+  bic TEXT,
+  creditor_name TEXT,
+  tax_params_snapshot TEXT,
+  sepa_mandate_id TEXT,
+  sepa_batch_id TEXT,
+  sepa_status TEXT CHECK (sepa_status IN ('draft', 'submitted', 'accepted', 'rejected', 'revoked')) DEFAULT 'draft',
   notes TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -203,5 +235,8 @@ CREATE INDEX IF NOT EXISTS idx_hr_leave_requests_status ON hr_leave_requests(sta
 CREATE INDEX IF NOT EXISTS idx_hr_onboarding_employee ON hr_onboarding(employee_id);
 CREATE INDEX IF NOT EXISTS idx_hr_onboarding_tasks_onboarding ON hr_onboarding_tasks(onboarding_id);
 CREATE INDEX IF NOT EXISTS idx_hr_payroll_employee ON hr_payroll(employee_id);
+CREATE INDEX IF NOT EXISTS idx_hr_payroll_year_month ON hr_payroll(year, month);
+CREATE INDEX IF NOT EXISTS idx_hr_payroll_status ON hr_payroll(payment_status);
+CREATE INDEX IF NOT EXISTS idx_hr_payroll_tax_params_year ON hr_payroll_tax_params(year, country_code);
 CREATE INDEX IF NOT EXISTS idx_hr_employee_documents_employee ON hr_employee_documents(employee_id);
 CREATE INDEX IF NOT EXISTS idx_hr_overtime_employee ON hr_overtime(employee_id);

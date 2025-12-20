@@ -38,6 +38,23 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createLogger } from "../utils/logger.js";
+import type {
+  BetterSqlite3Database,
+  BetterSqlite3Module,
+  ColumnInfo,
+  CorrectedNodeData,
+  DatabaseErrorOriginal,
+  MutationResult,
+  RawNodeData,
+  SqlParams,
+  SqlValue,
+  UnknownRow,
+} from "../types/database.js";
+import type {
+  PostgresModule,
+  PostgresPool,
+  PostgresClient,
+} from "../types/postgres.js";
 
 const logger = createLogger("db");
 
@@ -197,10 +214,10 @@ function autoCorrectKind(kind: string): NodeKind {
  * ```
  */
 function attemptAdvancedCorrection(
-  rawData: any,
+  rawData: RawNodeData,
   lineIndex: number,
   fileName: string,
-): any {
+): CorrectedNodeData {
   try {
     // Tiefe Kopie der Daten für Korrektur-Versuche
     const correctedData = { ...rawData };
@@ -240,14 +257,24 @@ function attemptAdvancedCorrection(
     if (!correctedData.children) correctedData.children = [];
     if (!correctedData.weight) correctedData.weight = 1;
     if (!correctedData.icon) correctedData.icon = "";
+    if (!correctedData.kind) correctedData.kind = "item"; // Fallback kind
+    if (!correctedData.path) correctedData.path = [];
 
-    return correctedData;
+    return correctedData as CorrectedNodeData;
   } catch (error) {
     logger.error(
       { fileName, line: lineIndex + 1, err: error },
       "Advanced correction failed",
     );
-    return rawData;
+    // Return fallback with required fields
+    return {
+      kind: "item",
+      path: [],
+      children: [],
+      weight: 1,
+      icon: "",
+      ...rawData
+    } as CorrectedNodeData;
   }
 }
 
@@ -263,17 +290,17 @@ function attemptAdvancedCorrection(
  */
 class DatabaseError extends Error {
   public readonly sql: string;
-  public readonly params: any[];
+  public readonly params: SqlParams;
   public readonly original: unknown;
   public readonly code?: string;
 
-  constructor(message: string, sql: string, params: any[], original: unknown) {
+  constructor(message: string, sql: string, params: SqlParams, original: unknown) {
     super(message);
     this.name = "DatabaseError";
     this.sql = sql;
     this.params = params;
     this.original = original;
-    this.code = (original as any)?.code;
+    this.code = (original as DatabaseErrorOriginal)?.code;
   }
 }
 
@@ -369,7 +396,7 @@ interface HealthStatus {
   /** Error message if unhealthy */
   error?: string;
   /** Additional diagnostic details */
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 // -------------------------------------------------------------------
@@ -636,14 +663,14 @@ function resolvePgUrl() {
 
 interface SqlApi {
   init(): Promise<void>;
-  exec(sql: string, params?: any[]): Promise<void>;
+  exec(sql: string, params?: SqlParams): Promise<void>;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  run<T = any>(
+  run<T = UnknownRow>(
     sql: string,
-    params?: any[],
-  ): Promise<{ changes?: number; lastID?: number }>;
-  all<T = any>(sql: string, params?: any[]): Promise<T[]>;
-  get<T = any>(sql: string, params?: any[]): Promise<T | undefined>;
+    params?: SqlParams,
+  ): Promise<MutationResult>;
+  all<T = UnknownRow>(sql: string, params?: SqlParams): Promise<T[]>;
+  get<T = UnknownRow>(sql: string, params?: SqlParams): Promise<T | undefined>;
   transaction<T>(fn: () => Promise<T>): Promise<T>;
   close(): Promise<void>;
   healthCheck(): Promise<boolean>;
@@ -654,7 +681,7 @@ interface SqlApi {
 // -------------------------------------------------------------------
 
 class SqliteApi implements SqlApi {
-  private db!: any;
+  private db!: BetterSqlite3Database;
   private initialized = false;
   private config: DatabaseConfig;
 
@@ -665,7 +692,7 @@ class SqliteApi implements SqlApi {
   async init(): Promise<void> {
     if (this.initialized) return;
 
-    const mod: any = await import("better-sqlite3");
+    const mod = (await import("better-sqlite3")) as unknown as BetterSqlite3Module;
     const sqliteFile = this.config.sqliteFile || SQLITE_FILE;
 
     // Datenbankverzeichnis erstellen
@@ -677,9 +704,10 @@ class SqliteApi implements SqlApi {
         fileMustExist: false,
         timeout: this.config.timeout || 5000,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
       throw new DatabaseConnectionError(
-        `SQLite konnte nicht geöffnet werden: ${err.message}`,
+        `SQLite konnte nicht geöffnet werden: ${message}`,
         "sqlite",
         sqliteFile,
       );
@@ -699,8 +727,9 @@ class SqliteApi implements SqlApi {
   private safePragma(statement: string) {
     try {
       this.db.pragma(statement);
-    } catch (err: any) {
-      logger.warn({ statement, error: err.message }, "SQLite PRAGMA failed");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.warn({ statement, error: message }, "SQLite PRAGMA failed");
     }
   }
 
@@ -712,9 +741,10 @@ class SqliteApi implements SqlApi {
       try {
         this.db.exec(ddl);
         logger.debug({ table: name }, "Table ensured");
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
         logger.warn(
-          { table: name, error: err.message },
+          { table: name, error: message },
           "Could not create table",
         );
       }
@@ -730,8 +760,8 @@ class SqliteApi implements SqlApi {
   }
 
   private async addMissingColumns(): Promise<void> {
-    const colInfo = this.db.prepare("PRAGMA table_info(functions_nodes)").all();
-    const existingColumns = new Set(colInfo.map((c: any) => c.name));
+    const colInfo = this.db.prepare("PRAGMA table_info(functions_nodes)").all() as ColumnInfo[];
+    const existingColumns = new Set(colInfo.map((c) => c.name));
 
     const missingColumns = {
       annotation_status: "TEXT DEFAULT 'pending'",
@@ -759,9 +789,10 @@ class SqliteApi implements SqlApi {
             "Adding missing column to functions_nodes",
           );
           this.db.exec(`ALTER TABLE functions_nodes ADD COLUMN ${col} ${def}`);
-        } catch (err: any) {
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : String(err);
           logger.warn(
-            { column: col, error: err.message },
+            { column: col, error: message },
             "Could not add column",
           );
         }
@@ -771,8 +802,8 @@ class SqliteApi implements SqlApi {
     // Fehlende Spalten in functions_edges prüfen - OHNE DEFAULT für created_at
     const edgesColInfo = this.db
       .prepare("PRAGMA table_info(functions_edges)")
-      .all();
-    const edgesExistingCols = new Set(edgesColInfo.map((c: any) => c.name));
+      .all() as ColumnInfo[];
+    const edgesExistingCols = new Set(edgesColInfo.map((c) => c.name));
 
     const edgesMissingCols = {
       weight: "INTEGER DEFAULT 1",
@@ -795,9 +826,10 @@ class SqliteApi implements SqlApi {
               `UPDATE functions_edges SET created_at = datetime('now') WHERE created_at IS NULL`,
             );
           }
-        } catch (err: any) {
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : String(err);
           logger.warn(
-            { column: col, table: "functions_edges", error: err.message },
+            { column: col, table: "functions_edges", error: message },
             "Could not add column",
           );
         }
@@ -810,31 +842,36 @@ class SqliteApi implements SqlApi {
     for (const idx of INDEXES) {
       try {
         this.db.exec(idx);
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
         logger.warn(
-          { error: err.message, sql: idx.substring(0, 100) },
+          { error: message, sql: idx.substring(0, 100) },
           "Could not create index (skipping)",
         );
       }
     }
   }
 
-  async exec(sql: string, params: any[] = []): Promise<void> {
+  async exec(sql: string, params: SqlParams = []): Promise<void> {
     this.db.prepare(sql).run(params);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async run<T = any>(sql: string, params: any[] = []) {
+  async run<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<MutationResult> {
     const info = this.db.prepare(sql).run(params);
-    return { changes: info.changes, lastID: info.lastInsertRowid };
+    return {
+      changes: info.changes,
+      lastID: typeof info.lastInsertRowid === 'number' ? info.lastInsertRowid : Number(info.lastInsertRowid),
+      lastInsertRowid: info.lastInsertRowid
+    };
   }
 
-  async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
-    return this.db.prepare(sql).all(params);
+  async all<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<T[]> {
+    return this.db.prepare(sql).all(params) as T[];
   }
 
-  async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
-    return this.db.prepare(sql).get(params) ?? undefined;
+  async get<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<T | undefined> {
+    return this.db.prepare(sql).get(params) as T | undefined ?? undefined;
   }
 
   async transaction<T>(fn: () => Promise<T>): Promise<T> {
@@ -871,8 +908,8 @@ class SqliteApi implements SqlApi {
 // -------------------------------------------------------------------
 
 class PostgresApi implements SqlApi {
-  private pool!: any;
-  private txClient?: any;
+  private pool!: PostgresPool;
+  private txClient?: PostgresClient;
   private initialized = false;
   private config: DatabaseConfig;
 
@@ -883,7 +920,7 @@ class PostgresApi implements SqlApi {
   async init(): Promise<void> {
     if (this.initialized) return;
 
-    const mod: any = await import("pg");
+    const mod = (await import("pg")) as PostgresModule;
     const pgUrl = this.config.postgresUrl || resolvePgUrl();
 
     if (!pgUrl) {
@@ -929,9 +966,10 @@ class PostgresApi implements SqlApi {
 
         await this.exec(pgSchema);
         logger.debug({ table: tableName }, "PostgreSQL table ensured");
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
         logger.warn(
-          { table: tableName, error: err.message },
+          { table: tableName, error: message },
           "Failed to create PostgreSQL table",
         );
       }
@@ -980,9 +1018,10 @@ class PostgresApi implements SqlApi {
           await this.exec(
             `ALTER TABLE functions_nodes ADD COLUMN ${col} ${def};`,
           );
-        } catch (err: any) {
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : String(err);
           logger.warn(
-            { column: col, error: err.message },
+            { column: col, error: message },
             "Could not add PostgreSQL column",
           );
         }
@@ -997,9 +1036,10 @@ class PostgresApi implements SqlApi {
           .replace(/CREATE INDEX IF NOT EXISTS/g, "CREATE INDEX IF NOT EXISTS")
           .replace(/JSON/g, "JSONB");
         await this.exec(pgIndex);
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
         logger.warn(
-          { error: err.message, sql: indexSql.substring(0, 100) },
+          { error: message, sql: indexSql.substring(0, 100) },
           "Could not create PostgreSQL index (skipping)",
         );
       }
@@ -1011,7 +1051,7 @@ class PostgresApi implements SqlApi {
     return await this.pool.connect();
   }
 
-  async exec(sql: string, params: any[] = []): Promise<void> {
+  async exec(sql: string, params: SqlParams = []): Promise<void> {
     const client = await this.useClient();
     try {
       await client.query(sql, params);
@@ -1021,10 +1061,10 @@ class PostgresApi implements SqlApi {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async run<T = any>(
+  async run<T = UnknownRow>(
     sql: string,
-    params: any[] = [],
-  ): Promise<{ changes?: number; lastID?: number }> {
+    params: SqlParams = [],
+  ): Promise<MutationResult> {
     const startTime = Date.now();
     const client = await this.useClient();
     try {
@@ -1052,7 +1092,7 @@ class PostgresApi implements SqlApi {
     }
   }
 
-  async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+  async all<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<T[]> {
     const startTime = Date.now();
     const client = await this.useClient();
     try {
@@ -1080,7 +1120,7 @@ class PostgresApi implements SqlApi {
     }
   }
 
-  async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+  async get<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<T | undefined> {
     const startTime = Date.now();
     const client = await this.useClient();
     try {
@@ -1235,9 +1275,10 @@ class DatabaseService {
       await this.api.init();
       this.isInitialized = true;
       logger.info({ driver: this.config.driver }, "Database ready");
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
       logger.error(
-        { driver: this.config.driver, error: err.message },
+        { driver: this.config.driver, error: message },
         "Database initialization failed",
       );
       throw err;
@@ -1269,12 +1310,13 @@ class DatabaseService {
   }
 
   private enhanceError(
-    error: any,
+    error: unknown,
     sql: string,
-    params: any[] = [],
+    params: SqlParams = [],
   ): DatabaseError {
-    const message = error?.message
-      ? `Database Error: ${error.message}`
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const message = errorMessage
+      ? `Database Error: ${errorMessage}`
       : "Database Error (unbekannter Fehler)";
 
     return new DatabaseError(message, sql, params, error);
@@ -1284,15 +1326,16 @@ class DatabaseService {
   // Basis-Datenbankoperationen
   // -------------------------------------------------------------------
 
-  async exec(sql: string, params: any[] = []): Promise<void> {
+  async exec(sql: string, params: SqlParams = []): Promise<void> {
     await this.ensureInitialized();
     const startTime = Date.now();
 
     try {
       await this.api.exec(sql, params);
       this.trackQueryStats(sql, Date.now() - startTime);
-    } catch (err: any) {
-      console.error("❌ [DB] Error in exec():", err?.message, "\nSQL:", sql);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("❌ [DB] Error in exec():", message, "\nSQL:", sql);
       throw this.enhanceError(err, sql, params);
     }
   }
@@ -1315,10 +1358,10 @@ class DatabaseService {
    * console.log(result.changes); // Number of rows affected
    * ```
    */
-  async run<T = any>(
+  async run<T = UnknownRow>(
     sql: string,
-    params: any[] = [],
-  ): Promise<{ changes?: number; lastID?: number }> {
+    params: SqlParams = [],
+  ): Promise<MutationResult> {
     await this.ensureInitialized();
     const startTime = Date.now();
 
@@ -1326,8 +1369,9 @@ class DatabaseService {
       const result = await this.api.run<T>(sql, params);
       this.trackQueryStats(sql, Date.now() - startTime, result.changes);
       return result;
-    } catch (err: any) {
-      console.error("❌ [DB] Error in run():", err?.message, "\nSQL:", sql);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("❌ [DB] Error in run():", message, "\nSQL:", sql);
       throw this.enhanceError(err, sql, params);
     }
   }
@@ -1346,7 +1390,7 @@ class DatabaseService {
    * console.log(users.length); // Number of active users
    * ```
    */
-  async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+  async all<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<T[]> {
     await this.ensureInitialized();
     const startTime = Date.now();
 
@@ -1354,8 +1398,9 @@ class DatabaseService {
       const result = await this.api.all<T>(sql, params);
       this.trackQueryStats(sql, Date.now() - startTime, result.length);
       return result;
-    } catch (err: any) {
-      console.error("❌ [DB] Error in all():", err?.message, "\nSQL:", sql);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("❌ [DB] Error in all():", message, "\nSQL:", sql);
       throw this.enhanceError(err, sql, params);
     }
   }
@@ -1376,7 +1421,7 @@ class DatabaseService {
    * }
    * ```
    */
-  async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+  async get<T = UnknownRow>(sql: string, params: SqlParams = []): Promise<T | undefined> {
     await this.ensureInitialized();
     const startTime = Date.now();
 
@@ -1384,8 +1429,9 @@ class DatabaseService {
       const result = await this.api.get<T>(sql, params);
       this.trackQueryStats(sql, Date.now() - startTime, result ? 1 : 0);
       return result;
-    } catch (err: any) {
-      console.error("❌ [DB] Error in get():", err?.message, "\nSQL:", sql);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("❌ [DB] Error in get():", message, "\nSQL:", sql);
       throw this.enhanceError(err, sql, params);
     }
   }
@@ -1413,8 +1459,9 @@ class DatabaseService {
 
     try {
       return await this.api.transaction(fn);
-    } catch (err: any) {
-      console.error("❌ [DB] Error in transaction:", err?.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("❌ [DB] Error in transaction:", message);
       throw err;
     }
   }
@@ -1429,8 +1476,9 @@ class DatabaseService {
     try {
       await this.ensureInitialized();
       logger.info("Schema verification completed successfully");
-    } catch (err: any) {
-      console.error("❌ [DB] Schema verification failed:", err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("❌ [DB] Schema verification failed:", message);
       throw err;
     }
   }
@@ -1448,10 +1496,11 @@ class DatabaseService {
           : `UPDATE functions_nodes SET form_json = json(?), updated_at = datetime('now') WHERE id = ?`;
 
       await this.run(sql, [formJson, id]);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
       console.error(
         `❌ [DB] Error in updateFunctionsNodeForm(${id}):`,
-        err.message,
+        message,
       );
       throw err;
     }
@@ -1462,9 +1511,9 @@ class DatabaseService {
     await this.ensureInitialized();
 
     try {
-      const payload =
+      const payload: SqlValue =
         this.config.driver === "postgres"
-          ? (meta as object)
+          ? (meta as Record<string, unknown>)
           : JSON.stringify(meta);
       const sql =
         this.config.driver === "postgres"
@@ -1472,10 +1521,11 @@ class DatabaseService {
           : `UPDATE functions_nodes SET meta_json = ?, updated_at = datetime('now') WHERE id = ?`;
 
       await this.run(sql, [payload, id]);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
       console.error(
         `❌ [DB] Error in updateFunctionsNodeMeta(${id}):`,
-        err.message,
+        message,
       );
       throw err;
     }
@@ -1491,10 +1541,10 @@ class DatabaseService {
     let edgeCount = 0;
     let correctedCount = 0;
 
-    const toJsonParam = (obj: unknown): string | object | null => {
+    const toJsonParam = (obj: unknown): SqlValue => {
       if (obj === null || obj === undefined) return null;
       return this.config.driver === "postgres"
-        ? (obj as object)
+        ? (obj as Record<string, unknown>)
         : JSON.stringify(obj);
     };
 
@@ -1581,10 +1631,11 @@ class DatabaseService {
 
         await this.run(sql, [parentId, childId]);
         edgeCount++;
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
         console.warn(
           `⚠️ [DB] Could not insert edge (${parentId} → ${childId}):`,
-          err.message,
+          message,
         );
       }
     };
@@ -1625,7 +1676,7 @@ class DatabaseService {
 
   async batchInsert(
     table: string,
-    records: any[],
+    records: UnknownRow[],
     batchSize: number = 100,
   ): Promise<{
     inserted: number;
@@ -1649,7 +1700,7 @@ class DatabaseService {
 
       // Auto-Korrektur für die Batch-Daten
       const correctedBatch = batch.map((record) => {
-        if (table === "functions_nodes" && record.kind) {
+        if (table === "functions_nodes" && typeof record.kind === "string") {
           const originalKind = record.kind;
           const correctedKind = autoCorrectKind(originalKind);
           if (originalKind !== correctedKind) {

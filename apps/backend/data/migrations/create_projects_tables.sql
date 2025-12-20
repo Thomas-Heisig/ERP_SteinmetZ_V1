@@ -3,8 +3,10 @@
 -- Description: Creates tables for projects, tasks, milestones, and time tracking
 
 -- Projects table
-CREATE TABLE IF NOT EXISTS projects (
-  id TEXT PRIMARY KEY,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[projects]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[projects] (
+  id NVARCHAR(255) PRIMARY KEY,
   name TEXT NOT NULL,
   description TEXT,
   status TEXT NOT NULL CHECK (status IN ('planning', 'active', 'on_hold', 'completed', 'cancelled')) DEFAULT 'planning',
@@ -25,10 +27,13 @@ CREATE TABLE IF NOT EXISTS projects (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+END
 
 -- Tasks table
-CREATE TABLE IF NOT EXISTS project_tasks (
-  id TEXT PRIMARY KEY,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[project_tasks]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[project_tasks] (
+  id NVARCHAR(255) PRIMARY KEY,
   project_id TEXT NOT NULL,
   parent_task_id TEXT,
   title TEXT NOT NULL,
@@ -51,10 +56,13 @@ CREATE TABLE IF NOT EXISTS project_tasks (
   FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
   FOREIGN KEY (parent_task_id) REFERENCES project_tasks(id) ON DELETE SET NULL
 );
+END
 
 -- Milestones table
-CREATE TABLE IF NOT EXISTS project_milestones (
-  id TEXT PRIMARY KEY,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[project_milestones]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[project_milestones] (
+  id NVARCHAR(255) PRIMARY KEY,
   project_id TEXT NOT NULL,
   name TEXT NOT NULL,
   description TEXT,
@@ -67,10 +75,13 @@ CREATE TABLE IF NOT EXISTS project_milestones (
   updated_at TEXT NOT NULL DEFAULT (datetime('now')),
   FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
+END
 
 -- Time entries table (for time tracking)
-CREATE TABLE IF NOT EXISTS project_time_entries (
-  id TEXT PRIMARY KEY,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[project_time_entries]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[project_time_entries] (
+  id NVARCHAR(255) PRIMARY KEY,
   project_id TEXT NOT NULL,
   task_id TEXT,
   user_id TEXT NOT NULL,
@@ -85,10 +96,13 @@ CREATE TABLE IF NOT EXISTS project_time_entries (
   FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
   FOREIGN KEY (task_id) REFERENCES project_tasks(id) ON DELETE SET NULL
 );
+END
 
 -- Project team members table
-CREATE TABLE IF NOT EXISTS project_team_members (
-  id TEXT PRIMARY KEY,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[project_team_members]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[project_team_members] (
+  id NVARCHAR(255) PRIMARY KEY,
   project_id TEXT NOT NULL,
   user_id TEXT NOT NULL,
   role TEXT CHECK (role IN ('manager', 'developer', 'designer', 'qa', 'analyst', 'other')),
@@ -101,10 +115,13 @@ CREATE TABLE IF NOT EXISTS project_team_members (
   UNIQUE (project_id, user_id),
   FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
+END
 
 -- Project comments/notes table
-CREATE TABLE IF NOT EXISTS project_comments (
-  id TEXT PRIMARY KEY,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[project_comments]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[project_comments] (
+  id NVARCHAR(255) PRIMARY KEY,
   project_id TEXT,
   task_id TEXT,
   user_id TEXT NOT NULL,
@@ -116,22 +133,40 @@ CREATE TABLE IF NOT EXISTS project_comments (
   FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
   FOREIGN KEY (task_id) REFERENCES project_tasks(id) ON DELETE CASCADE
 );
+END
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
-CREATE INDEX IF NOT EXISTS idx_projects_manager ON projects(manager);
-CREATE INDEX IF NOT EXISTS idx_projects_start_date ON projects(start_date);
-CREATE INDEX IF NOT EXISTS idx_project_tasks_project ON project_tasks(project_id);
-CREATE INDEX IF NOT EXISTS idx_project_tasks_assignee ON project_tasks(assignee);
-CREATE INDEX IF NOT EXISTS idx_project_tasks_status ON project_tasks(status);
-CREATE INDEX IF NOT EXISTS idx_project_tasks_due_date ON project_tasks(due_date);
-CREATE INDEX IF NOT EXISTS idx_project_milestones_project ON project_milestones(project_id);
-CREATE INDEX IF NOT EXISTS idx_project_milestones_due_date ON project_milestones(due_date);
-CREATE INDEX IF NOT EXISTS idx_project_time_entries_project ON project_time_entries(project_id);
-CREATE INDEX IF NOT EXISTS idx_project_time_entries_task ON project_time_entries(task_id);
-CREATE INDEX IF NOT EXISTS idx_project_time_entries_user ON project_time_entries(user_id);
-CREATE INDEX IF NOT EXISTS idx_project_time_entries_date ON project_time_entries(date);
-CREATE INDEX IF NOT EXISTS idx_project_team_members_project ON project_team_members(project_id);
-CREATE INDEX IF NOT EXISTS idx_project_team_members_user ON project_team_members(user_id);
-CREATE INDEX IF NOT EXISTS idx_project_comments_project ON project_comments(project_id);
-CREATE INDEX IF NOT EXISTS idx_project_comments_task ON project_comments(task_id);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_projects_status')
+CREATE INDEX idx_projects_status ON projects(status);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_projects_manager')
+CREATE INDEX idx_projects_manager ON projects(manager);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_projects_start_date')
+CREATE INDEX idx_projects_start_date ON projects(start_date);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_tasks_project')
+CREATE INDEX idx_project_tasks_project ON project_tasks(project_id);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_tasks_assignee')
+CREATE INDEX idx_project_tasks_assignee ON project_tasks(assignee);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_tasks_status')
+CREATE INDEX idx_project_tasks_status ON project_tasks(status);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_tasks_due_date')
+CREATE INDEX idx_project_tasks_due_date ON project_tasks(due_date);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_milestones_project')
+CREATE INDEX idx_project_milestones_project ON project_milestones(project_id);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_milestones_due_date')
+CREATE INDEX idx_project_milestones_due_date ON project_milestones(due_date);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_time_entries_project')
+CREATE INDEX idx_project_time_entries_project ON project_time_entries(project_id);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_time_entries_task')
+CREATE INDEX idx_project_time_entries_task ON project_time_entries(task_id);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_time_entries_user')
+CREATE INDEX idx_project_time_entries_user ON project_time_entries(user_id);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_time_entries_date')
+CREATE INDEX idx_project_time_entries_date ON project_time_entries(date);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_team_members_project')
+CREATE INDEX idx_project_team_members_project ON project_team_members(project_id);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_team_members_user')
+CREATE INDEX idx_project_team_members_user ON project_team_members(user_id);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_comments_project')
+CREATE INDEX idx_project_comments_project ON project_comments(project_id);
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_project_comments_task')
+CREATE INDEX idx_project_comments_task ON project_comments(task_id);

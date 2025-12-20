@@ -109,6 +109,15 @@
   font-family: monospace;
 }
 
+.marginSmall {
+  margin: 0.5rem 0;
+}
+
+.classificationRecommendationText {
+  margin: 0;
+  color: var(--primary-600);
+}
+
 .modalActions {
   display: flex;
   gap: 0.5rem;

@@ -208,6 +208,7 @@ export default {
     logistics: "Logistics",
     personnel: "Personnel Management",
     timeTracking: "Time Tracking",
+    payroll: "Payroll",
     development: "Personnel Development",
     recruiting: "Recruiting",
     reports: "Standard Reports",

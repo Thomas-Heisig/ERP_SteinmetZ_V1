@@ -249,7 +249,24 @@
   color: var(--gray-500, #6b7280);
 }
 
-/* Status Badge */
+/* Status Text and Badge */
+.statusText {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.directionIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
 .statusBadge {
   display: inline-flex;
   align-items: center;

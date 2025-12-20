@@ -7,603 +7,413 @@
 -- =============================================================================
 
 -- 1.1 Company Basic Information
-CREATE TABLE IF NOT EXISTS business_company_info (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'business_company_info') AND type in (N'U'))
+BEGIN
+CREATE TABLE business_company_info (
+  id NVARCHAR(36) PRIMARY KEY DEFAULT (LOWER(CAST(NEWID() AS NVARCHAR(36)))),
   -- Basic Data
-  official_name TEXT NOT NULL,
-  trade_name TEXT,
-  company_purpose TEXT,
-  founded_date TEXT,
-  employee_count INTEGER,
-  revenue_class TEXT,
-  industry_classification TEXT,
+  official_name NVARCHAR(MAX) NOT NULL,
+  trade_name NVARCHAR(MAX),
+  company_purpose NVARCHAR(MAX),
+  founded_date DATETIME,
+  employee_count INT,
+  revenue_class NVARCHAR(100),
+  industry_classification NVARCHAR(200),
   
   -- Address
-  street TEXT,
-  postal_code TEXT,
-  city TEXT,
-  country TEXT DEFAULT 'Deutschland',
+  street NVARCHAR(500),
+  postal_code NVARCHAR(20),
+  city NVARCHAR(200),
+  country NVARCHAR(100) DEFAULT 'Deutschland',
   
   -- Contact
-  phone TEXT,
-  fax TEXT,
-  email TEXT,
-  website TEXT,
+  phone NVARCHAR(50),
+  fax NVARCHAR(50),
+  email NVARCHAR(255),
+  website NVARCHAR(500),
   
   -- Business Hours
-  business_hours TEXT, -- JSON format
-  timezone TEXT DEFAULT 'Europe/Berlin',
+  business_hours NVARCHAR(MAX), -- JSON format
+  timezone NVARCHAR(100) DEFAULT 'Europe/Berlin',
   
   -- Corporate Identity
-  logo_url TEXT,
-  brand_assets TEXT, -- JSON format
-  imprint_data TEXT,
+  logo_url NVARCHAR(500),
+  brand_assets NVARCHAR(MAX), -- JSON format
+  imprint_data NVARCHAR(MAX),
   
   -- Status
-  is_active BOOLEAN DEFAULT 1,
-  notes TEXT,
+  is_active BIT DEFAULT 1,
+  notes NVARCHAR(MAX),
   
   -- Audit
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+  created_by NVARCHAR(255),
+  updated_by NVARCHAR(255)
 );
+END
 
 -- 1.2 Legal Form & Commercial Register
-CREATE TABLE IF NOT EXISTS business_legal_info (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'business_legal_info') AND type in (N'U'))
+BEGIN
+CREATE TABLE business_legal_info (
+  id NVARCHAR(36) PRIMARY KEY DEFAULT (LOWER(CAST(NEWID() AS NVARCHAR(36)))),
+  company_id NVARCHAR(36) NOT NULL,
   
   -- Legal Form
-  legal_form TEXT NOT NULL, -- GmbH, AG, KG, etc.
-  registration_number TEXT,
-  registration_court TEXT,
-  registration_date TEXT,
+  legal_form NVARCHAR(100) NOT NULL, -- GmbH, AG, KG, etc.
+  registration_number NVARCHAR(100),
+  registration_court NVARCHAR(200),
+  registration_date DATETIME,
   
   -- Management
-  management TEXT, -- JSON array of management persons
-  shareholders TEXT, -- JSON array of shareholders
-  capital_amount REAL,
-  capital_increases TEXT, -- JSON array of capital increases
+  management NVARCHAR(MAX), -- JSON array of management persons
+  shareholders NVARCHAR(MAX), -- JSON array of shareholders
+  capital_amount DECIMAL(18,2),
+  capital_increases NVARCHAR(MAX), -- JSON array of capital increases
   
   -- Authorized Representatives
-  authorized_representatives TEXT, -- JSON array
+  authorized_representatives NVARCHAR(MAX), -- JSON array
   
   -- Documents
-  articles_of_association TEXT, -- Document reference
-  commercial_register_extract TEXT, -- Document reference
+  articles_of_association NVARCHAR(MAX), -- Document reference
+  commercial_register_extract NVARCHAR(MAX), -- Document reference
   
   -- International
-  international_registrations TEXT, -- JSON array
+  international_registrations NVARCHAR(MAX), -- JSON array
   
   -- Compliance
-  compliance_obligations TEXT, -- JSON array
-  representation_rules TEXT,
-  reporting_obligations TEXT, -- JSON array
+  compliance_obligations NVARCHAR(MAX), -- JSON array
+  representation_rules NVARCHAR(MAX),
+  reporting_obligations NVARCHAR(MAX), -- JSON array
   
   -- Audit
-  valid_from TEXT NOT NULL,
-  valid_to TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
+  valid_from DATETIME NOT NULL,
+  valid_to DATETIME,
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+  created_by NVARCHAR(255),
+  updated_by NVARCHAR(255),
   
   FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE
 );
+END
 
 -- 1.3 Tax Numbers & VAT ID
-CREATE TABLE IF NOT EXISTS business_tax_info (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'business_tax_info') AND type in (N'U'))
+BEGIN
+CREATE TABLE business_tax_info (
+  id NVARCHAR(36) PRIMARY KEY DEFAULT (LOWER(CAST(NEWID() AS NVARCHAR(36)))),
+  company_id NVARCHAR(36) NOT NULL,
   
   -- Tax Office
-  tax_office TEXT,
-  tax_office_address TEXT,
+  tax_office NVARCHAR(500),
+  tax_office_address NVARCHAR(MAX),
   
   -- Tax Numbers
-  tax_number TEXT,
-  vat_id TEXT,
+  tax_number NVARCHAR(100),
+  vat_id NVARCHAR(100),
   
   -- Additional Numbers
-  business_location_number TEXT,
-  payroll_tax_number TEXT,
-  trade_tax_number TEXT,
+  business_location_number NVARCHAR(100),
+  payroll_tax_number NVARCHAR(100),
+  trade_tax_number NVARCHAR(100),
   
   -- International
-  international_tax_ids TEXT, -- JSON array
+  international_tax_ids NVARCHAR(MAX), -- JSON array
   
   -- Validation
-  verification_status TEXT CHECK (verification_status IN ('pending', 'verified', 'failed')),
-  verification_date TEXT,
-  vies_check_log TEXT, -- JSON array of VIES checks
+  verification_status NVARCHAR(50) CHECK (verification_status IN ('pending', 'verified', 'failed')),
+  verification_date DATETIME,
+  vies_check_log NVARCHAR(MAX), -- JSON array of VIES checks
   
   -- ELSTER/E-Filing
-  elster_access TEXT, -- Encrypted JSON
-  digital_signature TEXT,
-  certificate_expiry TEXT,
+  elster_access NVARCHAR(MAX), -- Encrypted JSON
+  digital_signature NVARCHAR(MAX),
+  certificate_expiry DATETIME,
   
   -- Tax Classification
-  tax_classification TEXT,
-  tax_obligations TEXT, -- JSON array
+  tax_classification NVARCHAR(200),
+  tax_obligations NVARCHAR(MAX), -- JSON array
   
   -- Audit
-  valid_from TEXT NOT NULL,
-  valid_to TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
+  valid_from DATETIME NOT NULL,
+  valid_to DATETIME,
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+  created_by NVARCHAR(255),
+  updated_by NVARCHAR(255),
   
   FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE
 );
+END
 
 -- 1.4 Bank Accounts
-CREATE TABLE IF NOT EXISTS business_bank_accounts (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'business_bank_accounts') AND type in (N'U'))
+BEGIN
+CREATE TABLE business_bank_accounts (
+  id NVARCHAR(36) PRIMARY KEY DEFAULT (LOWER(CAST(NEWID() AS NVARCHAR(36)))),
+  company_id NVARCHAR(36) NOT NULL,
   
   -- Bank Details
-  bank_name TEXT NOT NULL,
-  account_name TEXT NOT NULL,
-  account_type TEXT, -- Business account, depot, etc.
+  bank_name NVARCHAR(500) NOT NULL,
+  account_name NVARCHAR(500) NOT NULL,
+  account_type NVARCHAR(100), -- Business account, depot, etc.
   
   -- Account Numbers
-  iban TEXT NOT NULL,
-  bic TEXT,
-  bank_code TEXT,
-  account_number TEXT,
+  iban NVARCHAR(34) NOT NULL,
+  bic NVARCHAR(11),
+  bank_code NVARCHAR(20),
+  account_number NVARCHAR(50),
   
   -- Limits & Credit
-  overdraft_limit REAL,
-  credit_line REAL,
+  overdraft_limit DECIMAL(18,2),
+  credit_line DECIMAL(18,2),
   
   -- Online Banking
-  online_banking_access TEXT, -- Encrypted JSON
-  ebics_keys TEXT, -- Encrypted JSON
-  last_sync TEXT,
+  online_banking_access NVARCHAR(MAX), -- Encrypted JSON
+  ebics_keys NVARCHAR(MAX), -- Encrypted JSON
+  last_sync DATETIME,
   
   -- Settings
-  is_primary BOOLEAN DEFAULT 0,
-  is_active BOOLEAN DEFAULT 1,
+  is_primary BIT DEFAULT 0,
+  is_active BIT DEFAULT 1,
   
   -- Warnings & Notifications
-  low_balance_threshold REAL,
-  notification_settings TEXT, -- JSON
+  low_balance_threshold DECIMAL(18,2),
+  notification_settings NVARCHAR(MAX), -- JSON
   
   -- Audit
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+  created_by NVARCHAR(255),
+  updated_by NVARCHAR(255),
   
   FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE
 );
+END
 
 -- 1.5 Communication Channels
-CREATE TABLE IF NOT EXISTS business_communication (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'business_communication') AND type in (N'U'))
+BEGIN
+CREATE TABLE business_communication (
+  id NVARCHAR(36) PRIMARY KEY DEFAULT (LOWER(CAST(NEWID() AS NVARCHAR(36)))),
+  company_id NVARCHAR(36) NOT NULL,
   
   -- Type
-  channel_type TEXT NOT NULL CHECK (channel_type IN ('email', 'phone', 'fax', 'social_media', 'website', 'other')),
-  channel_name TEXT NOT NULL,
+  channel_type NVARCHAR(50) NOT NULL CHECK (channel_type IN ('email', 'phone', 'fax', 'social_media', 'website', 'other')),
+  channel_name NVARCHAR(500) NOT NULL,
   
   -- Details
-  value TEXT NOT NULL, -- Email address, phone number, URL, etc.
-  description TEXT,
+  value NVARCHAR(500) NOT NULL, -- Email address, phone number, URL, etc.
+  description NVARCHAR(MAX),
   
   -- Configuration (for email, phone systems)
-  configuration TEXT, -- JSON format
+  configuration NVARCHAR(MAX), -- JSON format
   
   -- Status
-  is_primary BOOLEAN DEFAULT 0,
-  is_active BOOLEAN DEFAULT 1,
+  is_primary BIT DEFAULT 0,
+  is_active BIT DEFAULT 1,
   
   -- Audit
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+  created_by NVARCHAR(255),
+  updated_by NVARCHAR(255),
   
   FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE
 );
+END
 
 -- =============================================================================
 -- 2. ORGANIZATIONAL STRUCTURE (Organisation)
 -- =============================================================================
 
 -- 2.1 Organizational Units (Abteilungen)
-CREATE TABLE IF NOT EXISTS business_departments (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
-  parent_id TEXT,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'business_departments') AND type in (N'U'))
+BEGIN
+CREATE TABLE business_departments (
+  id NVARCHAR(36) PRIMARY KEY DEFAULT (LOWER(CAST(NEWID() AS NVARCHAR(36)))),
+  company_id NVARCHAR(36) NOT NULL,
+  parent_id NVARCHAR(36),
   
   -- Basic Info
-  name TEXT NOT NULL,
-  code TEXT,
-  type TEXT, -- department, team, division, etc.
-  description TEXT,
+  name NVARCHAR(500) NOT NULL,
+  code NVARCHAR(100),
+  type NVARCHAR(100), -- department, team, division, etc.
+  description NVARCHAR(MAX),
   
   -- Hierarchy
-  level INTEGER DEFAULT 0,
-  sort_order INTEGER DEFAULT 0,
+  level INT DEFAULT 0,
+  sort_order INT DEFAULT 0,
   
   -- Management
-  manager_id TEXT, -- Reference to HR employee
-  deputy_manager_id TEXT,
+  manager_id NVARCHAR(36), -- Reference to HR employee
+  deputy_manager_id NVARCHAR(36),
   
   -- Resources
-  budget REAL,
-  employee_count INTEGER,
+  budget DECIMAL(18,2),
+  employee_count INT,
   
   -- Location
-  location_id TEXT,
+  location_id NVARCHAR(36),
   
   -- Status
-  is_active BOOLEAN DEFAULT 1,
+  is_active BIT DEFAULT 1,
   
   -- Audit
-  valid_from TEXT NOT NULL,
-  valid_to TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
+  valid_from DATETIME NOT NULL,
+  valid_to DATETIME,
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+  created_by NVARCHAR(255),
+  updated_by NVARCHAR(255),
   
   FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE,
-  FOREIGN KEY (parent_id) REFERENCES business_departments(id) ON DELETE SET NULL
+  FOREIGN KEY (parent_id) REFERENCES business_departments(id) ON DELETE NO ACTION
 );
+END
 
 -- 2.2 Locations & Branches
-CREATE TABLE IF NOT EXISTS business_locations (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'business_locations') AND type in (N'U'))
+BEGIN
+CREATE TABLE business_locations (
+  id NVARCHAR(36) PRIMARY KEY DEFAULT (LOWER(CAST(NEWID() AS NVARCHAR(36)))),
+  company_id NVARCHAR(36) NOT NULL,
   
   -- Type
-  location_type TEXT CHECK (location_type IN ('headquarters', 'branch', 'production', 'warehouse', 'sales_office', 'service_center', 'foreign', 'representative', 'home_office', 'temporary')),
+  location_type NVARCHAR(50) CHECK (location_type IN ('headquarters', 'branch', 'production', 'warehouse', 'sales_office', 'service_center', 'foreign', 'representative', 'home_office', 'temporary')),
   
   -- Basic Info
-  name TEXT NOT NULL,
-  code TEXT,
-  description TEXT,
+  name NVARCHAR(500) NOT NULL,
+  code NVARCHAR(100),
+  description NVARCHAR(MAX),
   
   -- Address
-  street TEXT,
-  postal_code TEXT,
-  city TEXT,
-  country TEXT,
+  street NVARCHAR(500),
+  postal_code NVARCHAR(20),
+  city NVARCHAR(200),
+  country NVARCHAR(100),
   
   -- Contact
-  phone TEXT,
-  email TEXT,
+  phone NVARCHAR(50),
+  email NVARCHAR(255),
   
   -- Building Info
-  building_info TEXT, -- JSON
-  area_sqm REAL,
-  capacity INTEGER,
-  equipment TEXT, -- JSON array
+  building_info NVARCHAR(MAX), -- JSON
+  area_sqm DECIMAL(18,2),
+  capacity INT,
+  equipment NVARCHAR(MAX), -- JSON array
   
   -- Financial
-  rent_or_purchase TEXT CHECK (rent_or_purchase IN ('rent', 'purchase', 'lease')),
-  monthly_cost REAL,
+  rent_or_purchase NVARCHAR(50) CHECK (rent_or_purchase IN ('rent', 'purchase', 'lease')),
+  monthly_cost DECIMAL(18,2),
   
   -- Infrastructure
-  infrastructure TEXT, -- JSON
-  connectivity TEXT, -- JSON
+  infrastructure NVARCHAR(MAX), -- JSON
+  connectivity NVARCHAR(MAX), -- JSON
   
   -- Compliance
-  compliance_requirements TEXT, -- JSON array
+  compliance_requirements NVARCHAR(MAX), -- JSON array
   
   -- Performance
-  utilization_percent REAL,
+  utilization_percent DECIMAL(5,2),
   
   -- Status
-  is_active BOOLEAN DEFAULT 1,
+  is_active BIT DEFAULT 1,
   
   -- Audit
-  valid_from TEXT NOT NULL,
-  valid_to TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
+  valid_from DATETIME NOT NULL,
+  valid_to DATETIME,
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+  created_by NVARCHAR(255),
+  updated_by NVARCHAR(255),
   
   FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE
 );
+END
 
 -- 2.3 Cost Centers
-CREATE TABLE IF NOT EXISTS business_cost_centers (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
-  parent_id TEXT,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'business_cost_centers') AND type in (N'U'))
+BEGIN
+CREATE TABLE business_cost_centers (
+  id NVARCHAR(36) PRIMARY KEY DEFAULT (LOWER(CAST(NEWID() AS NVARCHAR(36)))),
+  company_id NVARCHAR(36) NOT NULL,
+  parent_id NVARCHAR(36),
   
   -- Basic Info
-  code TEXT NOT NULL,
-  name TEXT NOT NULL,
-  type TEXT CHECK (type IN ('cost_center', 'profit_center', 'investment_center', 'revenue_center')),
-  description TEXT,
+  code NVARCHAR(100) NOT NULL,
+  name NVARCHAR(500) NOT NULL,
+  type NVARCHAR(100) CHECK (type IN ('cost_center', 'profit_center', 'investment_center', 'revenue_center')),
+  description NVARCHAR(MAX),
   
   -- Hierarchy
-  level INTEGER DEFAULT 0,
+  level INT DEFAULT 0,
   
   -- Responsibility
-  responsible_person_id TEXT,
-  budget_responsible_id TEXT,
+  responsible_person_id NVARCHAR(36),
+  budget_responsible_id NVARCHAR(36),
   
   -- Budget
-  annual_budget REAL,
+  annual_budget DECIMAL(18,2),
   
   -- Department Link
-  department_id TEXT,
+  department_id NVARCHAR(36),
   
   -- Status
-  is_active BOOLEAN DEFAULT 1,
+  is_active BIT DEFAULT 1,
   
   -- Audit
-  valid_from TEXT NOT NULL,
-  valid_to TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
+  valid_from DATETIME NOT NULL,
+  valid_to DATETIME,
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+  created_by NVARCHAR(255),
+  updated_by NVARCHAR(255),
   
   FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE,
-  FOREIGN KEY (parent_id) REFERENCES business_cost_centers(id) ON DELETE SET NULL,
-  FOREIGN KEY (department_id) REFERENCES business_departments(id) ON DELETE SET NULL
+  FOREIGN KEY (parent_id) REFERENCES business_cost_centers(id) ON DELETE NO ACTION,
+  FOREIGN KEY (department_id) REFERENCES business_departments(id) ON DELETE NO ACTION
 );
+END
 
 -- 2.4 Roles & Responsibilities
-CREATE TABLE IF NOT EXISTS business_roles (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'business_roles') AND type in (N'U'))
+BEGIN
+CREATE TABLE business_roles (
+  id NVARCHAR(36) PRIMARY KEY DEFAULT (LOWER(CAST(NEWID() AS NVARCHAR(36)))),
+  company_id NVARCHAR(36) NOT NULL,
   
   -- Basic Info
-  role_name TEXT NOT NULL,
-  role_code TEXT,
-  description TEXT,
+  role_name NVARCHAR(500) NOT NULL,
+  role_code NVARCHAR(100),
+  description NVARCHAR(MAX),
   
   -- Competencies
-  competency_profile TEXT, -- JSON
-  qualifications_required TEXT, -- JSON array
+  competency_profile NVARCHAR(MAX), -- JSON
+  qualifications_required NVARCHAR(MAX), -- JSON array
   
   -- Responsibilities
-  responsibility_areas TEXT, -- JSON array
-  decision_authority TEXT, -- JSON
-  approval_limits TEXT, -- JSON
+  responsibility_areas NVARCHAR(MAX), -- JSON array
+  decision_authority NVARCHAR(MAX), -- JSON
+  approval_limits NVARCHAR(MAX), -- JSON
   
   -- Career
-  career_level TEXT,
+  career_level NVARCHAR(100),
   
   -- Status
-  is_active BOOLEAN DEFAULT 1,
+  is_active BIT DEFAULT 1,
   
   -- Audit
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
+  created_at DATETIME NOT NULL DEFAULT GETDATE(),
+  updated_at DATETIME NOT NULL DEFAULT GETDATE(),
+  created_by NVARCHAR(255),
+  updated_by NVARCHAR(255),
   
   FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE
 );
-
--- =============================================================================
--- 3. DOCUMENT MANAGEMENT (Dokumentenmanagement)
--- =============================================================================
-
--- 3.1 Document Templates
-CREATE TABLE IF NOT EXISTS business_doc_templates (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
-  
-  -- Basic Info
-  name TEXT NOT NULL,
-  category TEXT, -- email, letter, quote, invoice, report, form, presentation, contract, policy, process
-  description TEXT,
-  
-  -- Template Content
-  template_content TEXT, -- JSON or HTML
-  variables TEXT, -- JSON array of variables/placeholders
-  
-  -- Design
-  layout TEXT, -- JSON
-  branding TEXT, -- JSON
-  
-  -- Language
-  language TEXT DEFAULT 'de',
-  
-  -- Version
-  version TEXT NOT NULL DEFAULT '1.0',
-  status TEXT CHECK (status IN ('draft', 'review', 'approved', 'archived')) DEFAULT 'draft',
-  
-  -- Usage
-  usage_count INTEGER DEFAULT 0,
-  last_used TEXT,
-  
-  -- Approval
-  approved_by TEXT,
-  approved_at TEXT,
-  
-  -- Status
-  is_active BOOLEAN DEFAULT 1,
-  
-  -- Audit
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
-  
-  FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE
-);
-
--- 3.2 Document Versions
-CREATE TABLE IF NOT EXISTS business_doc_versions (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  template_id TEXT NOT NULL,
-  
-  -- Version Info
-  version TEXT NOT NULL,
-  version_note TEXT,
-  
-  -- Content
-  content TEXT, -- Full template content snapshot
-  
-  -- Author
-  author_id TEXT,
-  
-  -- Status
-  is_current BOOLEAN DEFAULT 0,
-  
-  -- Audit
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  
-  FOREIGN KEY (template_id) REFERENCES business_doc_templates(id) ON DELETE CASCADE
-);
-
--- 3.3 Workflow Definitions
-CREATE TABLE IF NOT EXISTS business_workflows (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
-  
-  -- Basic Info
-  name TEXT NOT NULL,
-  description TEXT,
-  workflow_type TEXT, -- approval, review, notification, etc.
-  
-  -- Target
-  target_entity TEXT, -- document, template, invoice, etc.
-  
-  -- Steps
-  steps TEXT NOT NULL, -- JSON array of workflow steps
-  
-  -- Rules
-  rules TEXT, -- JSON conditional rules
-  escalation_rules TEXT, -- JSON
-  
-  -- SLA
-  sla_hours INTEGER,
-  
-  -- Status
-  is_active BOOLEAN DEFAULT 1,
-  version TEXT DEFAULT '1.0',
-  
-  -- Audit
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
-  
-  FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE
-);
-
--- 3.4 Workflow Instances
-CREATE TABLE IF NOT EXISTS business_workflow_instances (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  workflow_id TEXT NOT NULL,
-  
-  -- Target
-  entity_type TEXT NOT NULL,
-  entity_id TEXT NOT NULL,
-  
-  -- Status
-  current_step INTEGER DEFAULT 0,
-  status TEXT CHECK (status IN ('pending', 'in_progress', 'approved', 'rejected', 'cancelled')) DEFAULT 'pending',
-  
-  -- Timing
-  started_at TEXT NOT NULL DEFAULT (datetime('now')),
-  completed_at TEXT,
-  due_date TEXT,
-  
-  -- Current Approver
-  current_approver_id TEXT,
-  
-  -- History
-  step_history TEXT, -- JSON array of completed steps
-  
-  -- Audit
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  
-  FOREIGN KEY (workflow_id) REFERENCES business_workflows(id) ON DELETE CASCADE
-);
-
--- 3.5 Document Archive
-CREATE TABLE IF NOT EXISTS business_doc_archive (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  company_id TEXT NOT NULL,
-  
-  -- Document Info
-  document_name TEXT NOT NULL,
-  document_type TEXT,
-  document_category TEXT,
-  
-  -- Storage
-  storage_path TEXT NOT NULL,
-  file_size INTEGER,
-  file_hash TEXT, -- For integrity verification
-  mime_type TEXT,
-  
-  -- Metadata
-  metadata TEXT, -- JSON
-  tags TEXT, -- JSON array
-  
-  -- Retention
-  retention_period_years INTEGER,
-  retention_start_date TEXT,
-  retention_end_date TEXT,
-  legal_hold BOOLEAN DEFAULT 0,
-  
-  -- Archive Status
-  archived_date TEXT NOT NULL,
-  archive_status TEXT CHECK (archive_status IN ('active', 'to_delete', 'deleted')) DEFAULT 'active',
-  
-  -- Access
-  access_log TEXT, -- JSON array of access events
-  
-  -- Compliance
-  compliance_tags TEXT, -- JSON array (GoBD, DSGVO, etc.)
-  
-  -- Audit
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-  created_by TEXT,
-  updated_by TEXT,
-  
-  FOREIGN KEY (company_id) REFERENCES business_company_info(id) ON DELETE CASCADE
-);
-
--- =============================================================================
--- 4. AUDIT TRAIL (Change History)
--- =============================================================================
-
-CREATE TABLE IF NOT EXISTS business_audit_log (
-  id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  
-  -- Entity
-  entity_type TEXT NOT NULL, -- company, department, cost_center, etc.
-  entity_id TEXT NOT NULL,
-  
-  -- Action
-  action TEXT NOT NULL CHECK (action IN ('create', 'update', 'delete', 'approve', 'reject')),
-  
-  -- Changes
-  old_value TEXT, -- JSON
-  new_value TEXT, -- JSON
-  changed_fields TEXT, -- JSON array
-  
-  -- User
-  user_id TEXT,
-  user_name TEXT,
-  user_role TEXT,
-  
-  -- Context
-  ip_address TEXT,
-  user_agent TEXT,
-  
-  -- Timestamp
-  timestamp TEXT NOT NULL DEFAULT (datetime('now'))
-);
+END
 
 -- =============================================================================
 -- INDEXES for Performance
@@ -644,23 +454,3 @@ CREATE INDEX IF NOT EXISTS idx_business_cost_centers_code ON business_cost_cente
 
 -- Roles
 CREATE INDEX IF NOT EXISTS idx_business_roles_company ON business_roles(company_id);
-
--- Templates
-CREATE INDEX IF NOT EXISTS idx_business_doc_templates_company ON business_doc_templates(company_id);
-CREATE INDEX IF NOT EXISTS idx_business_doc_templates_category ON business_doc_templates(category);
-CREATE INDEX IF NOT EXISTS idx_business_doc_templates_status ON business_doc_templates(status);
-
--- Workflows
-CREATE INDEX IF NOT EXISTS idx_business_workflows_company ON business_workflows(company_id);
-CREATE INDEX IF NOT EXISTS idx_business_workflow_instances_workflow ON business_workflow_instances(workflow_id);
-CREATE INDEX IF NOT EXISTS idx_business_workflow_instances_entity ON business_workflow_instances(entity_type, entity_id);
-CREATE INDEX IF NOT EXISTS idx_business_workflow_instances_status ON business_workflow_instances(status);
-
--- Archive
-CREATE INDEX IF NOT EXISTS idx_business_doc_archive_company ON business_doc_archive(company_id);
-CREATE INDEX IF NOT EXISTS idx_business_doc_archive_type ON business_doc_archive(document_type);
-
--- Audit Log
-CREATE INDEX IF NOT EXISTS idx_business_audit_log_entity ON business_audit_log(entity_type, entity_id);
-CREATE INDEX IF NOT EXISTS idx_business_audit_log_timestamp ON business_audit_log(timestamp);
-CREATE INDEX IF NOT EXISTS idx_business_audit_log_user ON business_audit_log(user_id);

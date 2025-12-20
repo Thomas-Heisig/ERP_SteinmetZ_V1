@@ -4,275 +4,170 @@
 /**
  * HR (Human Resources) Router
  *
- * Provides comprehensive HR management API including employee records,
- * time tracking, leave management, payroll, and document handling.
- *
- * @remarks
- * This router provides:
- * - Employee CRUD operations
- * - Time entry tracking (clock in/out)
- * - Leave request management (vacation, sick leave)
- * - Payroll record management
- * - Document upload and retrieval
- * - HR statistics and reports
- * - Department and position management
- *
- * Features:
- * - Zod-based request validation
- * - Status-based filtering (active, on_leave, terminated)
- * - Date-range queries for time entries and leave
- * - Payroll calculation and history
- * - Document attachment support
- * - Search and filtering capabilities
+ * Provides comprehensive HR management API endpoints with RBAC integration.
  *
  * @module routes/hr
- *
- * @example
- * ```typescript
- * // Create employee
- * POST /api/hr/employees
- * {
- *   "firstName": "John",
- *   "lastName": "Doe",
- *   "email": "john@example.com",
- *   "department": "Engineering",
- *   "position": "Software Developer",
- *   "startDate": "2024-01-15"
- * }
- *
- * // Record time entry
- * POST /api/hr/time-entries
- * {
- *   "employeeId": "emp-123",
- *   "date": "2024-12-09",
- *   "startTime": "09:00",
- *   "endTime": "17:00"
- * }
- *
- * // Request leave
- * POST /api/hr/leave-requests
- * {
- *   "employeeId": "emp-123",
- *   "startDate": "2024-12-20",
- *   "endDate": "2024-12-25",
- *   "type": "vacation",
- *   "reason": "Holiday vacation"
- * }
- * ```
  */
 
-import { Router, Request, Response } from "express";
-import { z } from "zod";
-import {
-  BadRequestError,
-  NotFoundError,
-  ValidationError,
-} from "../../types/errors.js";
-import { asyncHandler } from "../../middleware/asyncHandler.js";
-import pino from "pino";
+import { Router, Request, Response } from 'express';
+import { z } from 'zod';
+import hrService from '../../services/hrService';
+import { authenticate } from '../../middleware/authMiddleware.js';
+import { requirePermission, requireModuleAccess } from '../../middleware/rbacMiddleware';
+import { asyncHandler } from '../../middleware/asyncHandler';
+import { EmployeeStatus, ContractType, ContractStatus, TimeEntryType, LeaveRequestType, LeaveRequestStatus } from '../../types/hr';
+import pino from 'pino';
+
+// Helper function to get authenticated user ID
+function getUserId(req: Request): string {
+  if (!req.auth || !req.auth.user || !req.auth.user.id) {
+    throw new Error('User not authenticated');
+  }
+  return req.auth.user.id;
+}
 
 const router = Router();
-const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-// Validation schemas
-const employeeQuerySchema = z.object({
-  department: z.string().optional(),
-  status: z.enum(["active", "on_leave", "terminated"]).optional(),
-  search: z.string().optional(),
-});
+// Apply authentication and module access to all routes
+router.use(authenticate);
+router.use(requireModuleAccess('hr'));
+
+// ==================== VALIDATION SCHEMAS ====================
 
 const createEmployeeSchema = z.object({
-  firstName: z.string().min(1).max(100),
-  lastName: z.string().min(1).max(100),
+  employee_number: z.string().optional(),
+  first_name: z.string().min(1).max(100),
+  last_name: z.string().min(1).max(100),
   email: z.string().email(),
-  department: z.string().min(1),
+  phone: z.string().optional(),
+  department: z.string().optional(),
   position: z.string().min(1),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  employeeNumber: z.string().optional(),
+  start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  status: z.nativeEnum(EmployeeStatus).optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  postal_code: z.string().optional(),
+  country: z.string().optional(),
+  emergency_contact: z.string().optional(),
+  emergency_phone: z.string().optional(),
+  notes: z.string().optional(),
 });
 
-const timeEntryQuerySchema = z.object({
-  employeeId: z.string().optional(),
-  startDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-  endDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
+const updateEmployeeSchema = createEmployeeSchema.partial();
+
+const createContractSchema = z.object({
+  employee_id: z.string().uuid(),
+  type: z.nativeEnum(ContractType),
+  start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  salary: z.number().positive(),
+  working_hours: z.number().positive(),
+  vacation_days: z.number().int().min(0).optional(),
+  probation_period: z.number().int().min(0).optional(),
+  notice_period: z.number().int().min(0).optional(),
+  status: z.nativeEnum(ContractStatus).optional(),
+  notes: z.string().optional(),
 });
 
 const createTimeEntrySchema = z.object({
-  employeeId: z.string().min(1),
+  employee_id: z.string().uuid(),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  startTime: z.string().regex(/^\d{2}:\d{2}$/),
-  endTime: z.string().regex(/^\d{2}:\d{2}$/),
-  breakMinutes: z.number().int().min(0),
-  type: z.enum(["regular", "overtime", "sick", "vacation"]).optional(),
-});
-
-const leaveRequestQuerySchema = z.object({
-  employeeId: z.string().optional(),
-  status: z.enum(["pending", "approved", "rejected"]).optional(),
+  start_time: z.string().regex(/^\d{2}:\d{2}$/),
+  end_time: z.string().regex(/^\d{2}:\d{2}$/),
+  break_minutes: z.number().int().min(0).optional(),
+  type: z.nativeEnum(TimeEntryType).optional(),
+  notes: z.string().optional(),
 });
 
 const createLeaveRequestSchema = z.object({
-  employeeId: z.string().min(1),
-  type: z.enum(["vacation", "sick", "unpaid", "parental"]),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  days: z.number().int().positive().optional(),
+  employee_id: z.string().uuid(),
+  type: z.nativeEnum(LeaveRequestType),
+  start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  days: z.number().int().positive(),
   reason: z.string().optional(),
+  notes: z.string().optional(),
 });
 
-const leaveActionSchema = z.object({
-  reason: z.string().optional(),
+const createDepartmentSchema = z.object({
+  name: z.string().min(1).max(100),
+  manager_id: z.string().uuid().optional(),
+  description: z.string().optional(),
+  budget: z.number().positive().optional(),
+  is_active: z.boolean().optional(),
 });
 
-/**
- * HR Module Router
- * Handles employee management, time tracking, leave management, and payroll
- */
+const createOnboardingSchema = z.object({
+  employee_id: z.string().uuid(),
+  start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  mentor_id: z.string().uuid().optional(),
+  notes: z.string().optional(),
+});
 
-// ============================================================================
-// EMPLOYEE MANAGEMENT
-// ============================================================================
+const createOnboardingTaskSchema = z.object({
+  onboarding_id: z.string().uuid(),
+  title: z.string().min(1).max(200),
+  description: z.string().optional(),
+  due_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  assigned_to: z.string().uuid().optional(),
+  sort_order: z.number().int().min(0).optional(),
+  notes: z.string().optional(),
+});
+
+// ==================== EMPLOYEE ENDPOINTS ====================
 
 /**
  * GET /api/hr/employees
- * Get all employees with optional filters
+ * Get all employees with filters
  */
 router.get(
-  "/employees",
+  '/employees',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    // Validate query parameters
-    const validationResult = employeeQuerySchema.safeParse(req.query);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid query parameters",
-        validationResult.error.issues,
-      );
-    }
+    const filters = {
+      department: req.query.department as string | undefined,
+      status: req.query.status as EmployeeStatus | undefined,
+      position: req.query.position as string | undefined,
+      search: req.query.search as string | undefined,
+    };
 
-    const { department, status, search } = validationResult.data;
+    const pagination = {
+      page: parseInt(req.query.page as string) || 1,
+      limit: parseInt(req.query.limit as string) || 50,
+      sort_by: req.query.sort_by as string || 'last_name',
+      sort_order: (req.query.sort_order as 'asc' | 'desc') || 'asc',
+    };
 
-    // TODO: Replace with actual database query
-    const mockEmployees = [
-      {
-        id: "1",
-        firstName: "Max",
-        lastName: "Mustermann",
-        email: "max.mustermann@company.de",
-        department: "Entwicklung",
-        position: "Senior Developer",
-        startDate: "2020-03-15",
-        status: "active",
-        employeeNumber: "EMP-001",
-      },
-      {
-        id: "2",
-        firstName: "Anna",
-        lastName: "Schmidt",
-        email: "anna.schmidt@company.de",
-        department: "Vertrieb",
-        position: "Sales Manager",
-        startDate: "2019-07-01",
-        status: "active",
-        employeeNumber: "EMP-002",
-      },
-      {
-        id: "3",
-        firstName: "Thomas",
-        lastName: "Müller",
-        email: "thomas.mueller@company.de",
-        department: "Marketing",
-        position: "Marketing Specialist",
-        startDate: "2021-01-10",
-        status: "on_leave",
-        employeeNumber: "EMP-003",
-      },
-    ];
-
-    // Apply filters
-    let filteredEmployees = mockEmployees;
-    if (department) {
-      filteredEmployees = filteredEmployees.filter(
-        (emp) => emp.department === department,
-      );
-    }
-    if (status) {
-      filteredEmployees = filteredEmployees.filter(
-        (emp) => emp.status === status,
-      );
-    }
-    if (search) {
-      const searchLower = (search as string).toLowerCase();
-      filteredEmployees = filteredEmployees.filter(
-        (emp) =>
-          emp.firstName.toLowerCase().includes(searchLower) ||
-          emp.lastName.toLowerCase().includes(searchLower) ||
-          emp.email.toLowerCase().includes(searchLower),
-      );
-    }
+    const result = hrService.getEmployees(filters, pagination);
 
     res.json({
       success: true,
-      data: filteredEmployees,
-      count: filteredEmployees.length,
+      data: result,
     });
-  }),
+  })
 );
 
 /**
  * GET /api/hr/employees/:id
- * Get a single employee by ID
+ * Get employee by ID with relations
  */
 router.get(
-  "/employees/:id",
+  '/employees/:id',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const employee = hrService.getEmployeeWithRelations(req.params.id);
 
-    // TODO: Replace with actual database query
-    // In real implementation, this would be:
-    // const employee = await employeeService.findById(id);
-    // if (!employee) { return res.status(404).json(...) }
-    const mockEmployee = {
-      id,
-      firstName: "Max",
-      lastName: "Mustermann",
-      email: "max.mustermann@company.de",
-      department: "Entwicklung",
-      position: "Senior Developer",
-      startDate: "2020-03-15",
-      status: "active",
-      employeeNumber: "EMP-001",
-      phone: "+49 123 456789",
-      address: {
-        street: "Musterstraße 1",
-        city: "Berlin",
-        zipCode: "10115",
-        country: "Deutschland",
-      },
-      contract: {
-        type: "unbefristet",
-        startDate: "2020-03-15",
-        salary: 65000,
-        workingHours: 40,
-      },
-    };
-
-    // Note: This check is for demonstration purposes only
-    // Will be replaced with actual DB query in Phase 2
-    if (!mockEmployee) {
-      throw new NotFoundError("Employee not found", { employeeId: id });
+    if (!employee) {
+      throw new Error('Employee not found');
     }
 
     res.json({
       success: true,
-      data: mockEmployee,
+      data: employee,
     });
-  }),
+  })
 );
 
 /**
@@ -280,1014 +175,778 @@ router.get(
  * Create a new employee
  */
 router.post(
-  "/employees",
+  '/employees',
+  requirePermission('hr:create'),
   asyncHandler(async (req: Request, res: Response) => {
-    // Validate input
-    const validationResult = createEmployeeSchema.safeParse(req.body);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid employee data",
-        validationResult.error.issues,
-      );
-    }
+    const validatedData = createEmployeeSchema.parse(req.body);
+    const employee = hrService.createEmployee(validatedData);
 
-    const employeeData = validationResult.data;
-
-    // TODO: Save to database
-    // In production: const employee = await employeeService.create(employeeData);
-
-    const newEmployee = {
-      id: Date.now().toString(),
-      ...employeeData,
-      status: "active",
-      createdAt: new Date().toISOString(),
-    };
+    logger.info({ employeeId: employee.id }, 'Employee created');
 
     res.status(201).json({
       success: true,
-      data: newEmployee,
-      message: "Employee created successfully",
+      data: employee,
     });
-  }),
+  })
 );
 
 /**
  * PUT /api/hr/employees/:id
- * Update an employee
+ * Update employee
  */
 router.put(
-  "/employees/:id",
+  '/employees/:id',
+  requirePermission('hr:update'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const validatedData = updateEmployeeSchema.parse(req.body);
+    const employee = hrService.updateEmployee(req.params.id, validatedData);
 
-    // Validate input (using partial schema for updates)
-    const validationResult = createEmployeeSchema.partial().safeParse(req.body);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid employee update data",
-        validationResult.error.issues,
-      );
+    if (!employee) {
+      throw new Error('Employee not found');
     }
 
-    const updateData = validationResult.data;
-
-    // TODO: Update in database
-    // In production: const employee = await employeeService.update(id, updateData);
-    // if (!employee) throw new NotFoundError("Employee not found");
+    logger.info({ employeeId: employee.id }, 'Employee updated');
 
     res.json({
       success: true,
-      data: { id, ...updateData },
-      message: "Employee updated successfully",
+      data: employee,
     });
-  }),
+  })
 );
 
 /**
  * DELETE /api/hr/employees/:id
- * Delete (deactivate) an employee
+ * Delete (terminate) employee
  */
 router.delete(
-  "/employees/:id",
+  '/employees/:id',
+  requirePermission('hr:delete'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id: _id } = req.params;
+    const success = hrService.deleteEmployee(req.params.id);
 
-    // TODO: Soft delete in database (set status to inactive)
-    // In production: const result = await employeeService.deactivate(id);
-    // if (!result) throw new NotFoundError("Employee not found");
+    if (!success) {
+      throw new Error('Employee not found');
+    }
+
+    logger.info({ employeeId: req.params.id }, 'Employee terminated');
 
     res.json({
       success: true,
-      message: "Employee deactivated successfully",
+      message: 'Employee terminated successfully',
     });
-  }),
+  })
 );
 
-// ============================================================================
-// TIME TRACKING
-// ============================================================================
+// ==================== CONTRACT ENDPOINTS ====================
+
+/**
+ * GET /api/hr/employees/:employeeId/contracts
+ * Get employee contracts
+ */
+router.get(
+  '/employees/:employeeId/contracts',
+  requirePermission('hr:read'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const contracts = hrService.getEmployeeContracts(req.params.employeeId);
+
+    res.json({
+      success: true,
+      data: contracts,
+    });
+  })
+);
+
+/**
+ * POST /api/hr/contracts
+ * Create a contract
+ */
+router.post(
+  '/contracts',
+  requirePermission('hr:create'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = createContractSchema.parse(req.body);
+    const contract = hrService.createContract(validatedData);
+
+    logger.info({ contractId: contract.id }, 'Contract created');
+
+    res.status(201).json({
+      success: true,
+      data: contract,
+    });
+  })
+);
+
+/**
+ * GET /api/hr/contracts/:id
+ * Get contract by ID
+ */
+router.get(
+  '/contracts/:id',
+  requirePermission('hr:read'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const contract = hrService.getContractById(req.params.id);
+
+    if (!contract) {
+      throw new Error('Contract not found');
+    }
+
+    res.json({
+      success: true,
+      data: contract,
+    });
+  })
+);
+
+/**
+ * PUT /api/hr/contracts/:id
+ * Update contract
+ */
+router.put(
+  '/contracts/:id',
+  requirePermission('hr:update'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = createContractSchema.partial().parse(req.body);
+    const contract = hrService.updateContract(req.params.id, validatedData);
+
+    if (!contract) {
+      throw new Error('Contract not found');
+    }
+
+    logger.info({ contractId: contract.id }, 'Contract updated');
+
+    res.json({
+      success: true,
+      data: contract,
+    });
+  })
+);
+
+// ==================== TIME ENTRY ENDPOINTS ====================
 
 /**
  * GET /api/hr/time-entries
- * Get time entries with optional filters
+ * Get time entries
  */
 router.get(
-  "/time-entries",
+  '/time-entries',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    // Validate query parameters
-    const validationResult = timeEntryQuerySchema.safeParse(req.query);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid query parameters",
-        validationResult.error.issues,
-      );
+    const employeeId = req.query.employee_id as string;
+    const startDate = req.query.start_date as string | undefined;
+    const endDate = req.query.end_date as string | undefined;
+
+    if (!employeeId) {
+      throw new Error('employee_id is required');
     }
 
-    const {
-      employeeId,
-      startDate: _startDate,
-      endDate: _endDate,
-    } = validationResult.data;
-
-    // TODO: Replace with actual database query
-    const mockEntries = [
-      {
-        id: "1",
-        employeeId: "1",
-        date: "2024-12-05",
-        startTime: "08:00",
-        endTime: "17:00",
-        breakMinutes: 60,
-        totalHours: 8,
-        type: "regular",
-      },
-    ];
-
-    // Apply filters
-    let filteredEntries = mockEntries;
-    if (employeeId) {
-      filteredEntries = filteredEntries.filter(
-        (entry) => entry.employeeId === employeeId,
-      );
-    }
-    // Note: startDate and endDate filtering would be applied here in production
+    const timeEntries = hrService.getEmployeeTimeEntries(employeeId, startDate, endDate);
 
     res.json({
       success: true,
-      data: filteredEntries,
-      count: filteredEntries.length,
+      data: timeEntries,
     });
-  }),
+  })
 );
 
 /**
  * POST /api/hr/time-entries
- * Create a new time entry
+ * Create time entry
  */
 router.post(
-  "/time-entries",
+  '/time-entries',
+  requirePermission('hr:create'),
   asyncHandler(async (req: Request, res: Response) => {
-    // Validate input
-    const validationResult = createTimeEntrySchema.safeParse(req.body);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid time entry data",
-        validationResult.error.issues,
-      );
-    }
+    const validatedData = createTimeEntrySchema.parse(req.body);
+    const timeEntry = hrService.createTimeEntry(validatedData);
 
-    const timeEntry = validationResult.data;
-
-    // TODO: Save to database
-    // In production: const entry = await timeEntryService.create(timeEntry);
+    logger.info({ timeEntryId: timeEntry.id }, 'Time entry created');
 
     res.status(201).json({
       success: true,
-      data: { id: Date.now().toString(), ...timeEntry, totalHours: 8 },
-      message: "Time entry created successfully",
+      data: timeEntry,
     });
-  }),
+  })
 );
 
-// ============================================================================
-// LEAVE MANAGEMENT
-// ============================================================================
-
 /**
- * GET /api/hr/leave-requests
- * Get leave requests with optional filters
+ * POST /api/hr/time-entries/:id/approve
+ * Approve time entry
  */
-router.get(
-  "/leave-requests",
+router.post(
+  '/time-entries/:id/approve',
+  requirePermission('hr:approve'),
   asyncHandler(async (req: Request, res: Response) => {
-    // Validate query parameters
-    const validationResult = leaveRequestQuerySchema.safeParse(req.query);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid query parameters",
-        validationResult.error.issues,
-      );
+    const userId = getUserId(req);
+    const timeEntry = hrService.approveTimeEntry(req.params.id, userId);
+
+    if (!timeEntry) {
+      throw new Error('Time entry not found');
     }
 
-    const { employeeId, status } = validationResult.data;
-
-    // TODO: Replace with actual database query
-    const mockRequests = [
-      {
-        id: "1",
-        employeeId: "1",
-        type: "vacation",
-        startDate: "2024-12-20",
-        endDate: "2024-12-31",
-        days: 10,
-        status: "approved",
-        reason: "Weihnachtsurlaub",
-        requestedAt: "2024-11-15",
-      },
-    ];
-
-    // Apply filters
-    let filteredRequests = mockRequests;
-    if (employeeId) {
-      filteredRequests = filteredRequests.filter(
-        (req) => req.employeeId === employeeId,
-      );
-    }
-    if (status) {
-      filteredRequests = filteredRequests.filter(
-        (req) => req.status === status,
-      );
-    }
+    logger.info({ timeEntryId: timeEntry.id }, 'Time entry approved');
 
     res.json({
       success: true,
-      data: filteredRequests,
-      count: filteredRequests.length,
+      data: timeEntry,
     });
-  }),
+  })
+);
+
+// ==================== LEAVE REQUEST ENDPOINTS ====================
+
+/**
+ * GET /api/hr/leave-requests
+ * Get leave requests
+ */
+router.get(
+  '/leave-requests',
+  requirePermission('hr:read'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const employeeId = req.query.employee_id as string;
+    const status = req.query.status as LeaveRequestStatus | undefined;
+
+    if (!employeeId) {
+      throw new Error('employee_id is required');
+    }
+
+    const leaveRequests = hrService.getEmployeeLeaveRequests(employeeId, status);
+
+    res.json({
+      success: true,
+      data: leaveRequests,
+    });
+  })
 );
 
 /**
  * POST /api/hr/leave-requests
- * Create a new leave request
+ * Create leave request
  */
 router.post(
-  "/leave-requests",
+  '/leave-requests',
+  requirePermission('hr:create'),
   asyncHandler(async (req: Request, res: Response) => {
-    // Validate input
-    const validationResult = createLeaveRequestSchema.safeParse(req.body);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid leave request data",
-        validationResult.error.issues,
-      );
-    }
+    const validatedData = createLeaveRequestSchema.parse(req.body);
+    const leaveRequest = hrService.createLeaveRequest(validatedData);
 
-    const leaveRequest = validationResult.data;
-
-    // TODO: Save to database
-    // TODO: Calculate days automatically if not provided
-    // TODO: Check remaining leave balance
+    logger.info({ leaveRequestId: leaveRequest.id }, 'Leave request created');
 
     res.status(201).json({
       success: true,
-      data: {
-        id: Date.now().toString(),
-        ...leaveRequest,
-        status: "pending",
-        requestedAt: new Date().toISOString(),
-      },
-      message: "Leave request submitted successfully",
+      data: leaveRequest,
     });
-  }),
+  })
 );
 
 /**
- * PUT /api/hr/leave-requests/:id/approve
- * Approve a leave request
+ * POST /api/hr/leave-requests/:id/approve
+ * Approve leave request
  */
-router.put(
-  "/leave-requests/:id/approve",
+router.post(
+  '/leave-requests/:id/approve',
+  requirePermission('hr:approve'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const userId = getUserId(req);
+    const leaveRequest = hrService.approveLeaveRequest(req.params.id, userId);
 
-    // TODO: Update status in database
-    // In production: const updated = await leaveRequestService.approve(id);
-    // if (!updated) throw new NotFoundError("Leave request not found");
-    // TODO: Deduct from leave balance
-
-    logger.info({ leaveRequestId: id }, "Leave request approved");
-
-    res.json({
-      success: true,
-      message: "Leave request approved successfully",
-    });
-  }),
-);
-
-/**
- * PUT /api/hr/leave-requests/:id/reject
- * Reject a leave request
- */
-router.put(
-  "/leave-requests/:id/reject",
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-
-    // Validate input
-    const validationResult = leaveActionSchema.safeParse(req.body);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid rejection data",
-        validationResult.error.issues,
-      );
+    if (!leaveRequest) {
+      throw new Error('Leave request not found');
     }
 
-    const { reason } = validationResult.data;
-
-    // TODO: Update status in database
-    // In production: const updated = await leaveRequestService.reject(id, reason);
-    // if (!updated) throw new NotFoundError("Leave request not found");
-
-    logger.info({ leaveRequestId: id, reason }, "Leave request rejected");
+    logger.info({ leaveRequestId: leaveRequest.id }, 'Leave request approved');
 
     res.json({
       success: true,
-      message: "Leave request rejected",
+      data: leaveRequest,
     });
-  }),
+  })
 );
-
-// ============================================================================
-// PAYROLL
-// ============================================================================
 
 /**
- * GET /api/hr/payroll/:employeeId
- * Get payroll information for an employee
+ * POST /api/hr/leave-requests/:id/reject
+ * Reject leave request
  */
-router.get(
-  "/payroll/:employeeId",
+router.post(
+  '/leave-requests/:id/reject',
+  requirePermission('hr:approve'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { employeeId } = req.params;
+    const userId = getUserId(req);
+    const { reason } = req.body;
 
-    // TODO: Replace with actual database query
-    // In production: const payroll = await payrollService.findByEmployee(employeeId);
-    // if (!payroll) throw new NotFoundError("Payroll data not found");
+    if (!reason) {
+      throw new Error('Rejection reason is required');
+    }
 
-    const mockPayroll = {
-      employeeId,
-      baseSalary: 65000,
-      bonuses: [],
-      deductions: [],
-      netSalary: 65000,
-      lastPayment: "2024-11-30",
-    };
+    const leaveRequest = hrService.rejectLeaveRequest(req.params.id, userId, reason);
+
+    if (!leaveRequest) {
+      throw new Error('Leave request not found');
+    }
+
+    logger.info({ leaveRequestId: leaveRequest.id }, 'Leave request rejected');
 
     res.json({
       success: true,
-      data: mockPayroll,
+      data: leaveRequest,
     });
-  }),
+  })
 );
 
-// ============================================================================
-// DEPARTMENTS
-// ============================================================================
+// ==================== DEPARTMENT ENDPOINTS ====================
 
 /**
  * GET /api/hr/departments
  * Get all departments
  */
 router.get(
-  "/departments",
-  asyncHandler(async (_req: Request, res: Response) => {
-    // TODO: Replace with actual database query
-    const mockDepartments = [
-      {
-        id: "1",
-        name: "Entwicklung",
-        manager: "Max Mustermann",
-        employeeCount: 15,
-      },
-      { id: "2", name: "Vertrieb", manager: "Anna Schmidt", employeeCount: 8 },
-      {
-        id: "3",
-        name: "Marketing",
-        manager: "Thomas Müller",
-        employeeCount: 5,
-      },
-      { id: "4", name: "Personal", manager: "Lisa Weber", employeeCount: 3 },
-    ];
-
-    res.json({
-      success: true,
-      data: mockDepartments,
-      count: mockDepartments.length,
-    });
-  }),
-);
-
-// ============================================================================
-// STATISTICS
-// ============================================================================
-
-/**
- * GET /api/hr/statistics
- * Get HR statistics overview
- */
-router.get(
-  "/statistics",
-  asyncHandler(async (_req: Request, res: Response) => {
-    // TODO: Replace with actual database query
-    const mockStats = {
-      totalEmployees: 31,
-      activeEmployees: 29,
-      onLeave: 2,
-      newHires: 3,
-      departments: 4,
-      avgTenure: 3.5,
-      openPositions: 2,
-    };
-
-    res.json({
-      success: true,
-      data: mockStats,
-    });
-  }),
-);
-
-// ============================================================================
-// CONTRACT MANAGEMENT
-// ============================================================================
-
-const createContractSchema = z.object({
-  employeeId: z.string().min(1),
-  type: z.enum(["permanent", "temporary", "freelance", "internship"]),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  endDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-  salary: z.number().positive(),
-  workingHours: z.number().positive().max(80),
-  vacationDays: z.number().int().min(0).max(50),
-  probationPeriod: z.number().int().min(0).max(12).optional(),
-  noticePeriod: z.number().int().min(0).max(12).optional(),
-});
-
-/**
- * GET /api/hr/contracts
- * Get all employee contracts
- */
-router.get(
-  "/contracts",
+  '/departments',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { employeeId, status } = req.query;
-
-    // TODO: Replace with actual database query
-    const mockContracts = [
-      {
-        id: "contract-1",
-        employeeId: "1",
-        employeeName: "Max Mustermann",
-        type: "permanent",
-        startDate: "2020-03-15",
-        salary: 65000,
-        workingHours: 40,
-        vacationDays: 30,
-        status: "active",
-      },
-      {
-        id: "contract-2",
-        employeeId: "2",
-        employeeName: "Anna Schmidt",
-        type: "permanent",
-        startDate: "2019-07-01",
-        salary: 72000,
-        workingHours: 40,
-        vacationDays: 30,
-        status: "active",
-      },
-    ];
-
-    let filteredContracts = mockContracts;
-    if (employeeId) {
-      filteredContracts = filteredContracts.filter(
-        (c) => c.employeeId === employeeId,
-      );
-    }
-    if (status) {
-      filteredContracts = filteredContracts.filter((c) => c.status === status);
-    }
+    const activeOnly = req.query.active_only !== 'false';
+    const departments = hrService.getDepartments(activeOnly);
 
     res.json({
       success: true,
-      data: filteredContracts,
-      count: filteredContracts.length,
+      data: departments,
     });
-  }),
+  })
 );
 
 /**
- * POST /api/hr/contracts
- * Create a new employment contract
+ * POST /api/hr/departments
+ * Create department
  */
 router.post(
-  "/contracts",
+  '/departments',
+  requirePermission('hr:create'),
   asyncHandler(async (req: Request, res: Response) => {
-    const validationResult = createContractSchema.safeParse(req.body);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid contract data",
-        validationResult.error.issues,
-      );
-    }
+    const validatedData = createDepartmentSchema.parse(req.body);
+    const department = hrService.createDepartment(validatedData);
 
-    const contractData = validationResult.data;
-
-    // TODO: Save to database
-    const newContract = {
-      id: `contract-${Date.now()}`,
-      ...contractData,
-      status: "active",
-      createdAt: new Date().toISOString(),
-    };
+    logger.info({ departmentId: department.id }, 'Department created');
 
     res.status(201).json({
       success: true,
-      data: newContract,
-      message: "Contract created successfully",
+      data: department,
     });
-  }),
+  })
 );
 
-// ============================================================================
-// DOCUMENT MANAGEMENT (HR-specific)
-// ============================================================================
+// ==================== ONBOARDING ENDPOINTS ====================
 
 /**
- * GET /api/hr/employees/:id/documents
- * Get all documents for an employee
+ * GET /api/hr/onboarding/:id
+ * Get onboarding process with tasks
  */
 router.get(
-  "/employees/:id/documents",
+  '/onboarding/:id',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const onboarding = hrService.getOnboardingWithTasks(req.params.id);
 
-    // TODO: Query documents from database
-    const mockDocuments = [
-      {
-        id: "doc-1",
-        employeeId: id,
-        type: "contract",
-        title: "Arbeitsvertrag",
-        uploadedAt: "2020-03-15T00:00:00.000Z",
-        size: 123456,
-      },
-      {
-        id: "doc-2",
-        employeeId: id,
-        type: "certificate",
-        title: "Zeugnis Universität",
-        uploadedAt: "2020-03-10T00:00:00.000Z",
-        size: 98765,
-      },
-    ];
-
-    res.json({
-      success: true,
-      data: mockDocuments,
-    });
-  }),
-);
-
-/**
- * POST /api/hr/employees/:id/documents
- * Upload a document for an employee
- */
-router.post(
-  "/employees/:id/documents",
-  asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { type, title } = req.body;
-
-    if (!type || !title) {
-      throw new BadRequestError("Document type and title are required");
+    if (!onboarding) {
+      throw new Error('Onboarding not found');
     }
 
-    // TODO: Handle file upload with multer
-    // TODO: Store document in file system or cloud storage
-
-    const newDocument = {
-      id: `doc-${Date.now()}`,
-      employeeId: id,
-      type,
-      title,
-      uploadedAt: new Date().toISOString(),
-      size: 0, // Would come from uploaded file
-    };
-
-    res.status(201).json({
-      success: true,
-      data: newDocument,
-      message: "Document uploaded successfully",
-    });
-  }),
-);
-
-// ============================================================================
-// ONBOARDING WORKFLOW
-// ============================================================================
-
-const createOnboardingSchema = z.object({
-  employeeId: z.string().min(1),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  mentor: z.string().optional(),
-  tasks: z
-    .array(
-      z.object({
-        title: z.string(),
-        description: z.string().optional(),
-        dueDate: z
-          .string()
-          .regex(/^\d{4}-\d{2}-\d{2}$/)
-          .optional(),
-        assignee: z.string().optional(),
-      }),
-    )
-    .optional(),
-});
-
-/**
- * GET /api/hr/onboarding
- * Get all onboarding processes
- */
-router.get(
-  "/onboarding",
-  asyncHandler(async (req: Request, res: Response) => {
-    const { status: _status } = req.query;
-
-    // TODO: Query from database
-    const mockOnboarding = [
-      {
-        id: "onb-1",
-        employeeId: "4",
-        employeeName: "Julia Neumann",
-        startDate: "2024-12-15",
-        status: "in_progress",
-        completedTasks: 3,
-        totalTasks: 10,
-        mentor: "Max Mustermann",
-      },
-    ];
-
     res.json({
       success: true,
-      data: mockOnboarding,
+      data: onboarding,
     });
-  }),
+  })
 );
 
 /**
  * POST /api/hr/onboarding
- * Create a new onboarding process
+ * Create onboarding process
  */
 router.post(
-  "/onboarding",
+  '/onboarding',
+  requirePermission('hr:create'),
   asyncHandler(async (req: Request, res: Response) => {
-    const validationResult = createOnboardingSchema.safeParse(req.body);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid onboarding data",
-        validationResult.error.issues,
-      );
-    }
+    const validatedData = createOnboardingSchema.parse(req.body);
+    const onboarding = hrService.createOnboarding(validatedData);
 
-    const onboardingData = validationResult.data;
-
-    // TODO: Create onboarding process in database
-    // TODO: Create default tasks (IT setup, workspace, team intro, etc.)
-
-    const defaultTasks = [
-      { title: "IT-Ausstattung bereitstellen", status: "pending" },
-      { title: "Arbeitsplatz vorbereiten", status: "pending" },
-      { title: "Zugangskarten erstellen", status: "pending" },
-      { title: "E-Mail-Account einrichten", status: "pending" },
-      { title: "Team-Vorstellung", status: "pending" },
-      { title: "Einweisung Sicherheit", status: "pending" },
-      { title: "Unternehmensrichtlinien besprechen", status: "pending" },
-    ];
-
-    const newOnboarding = {
-      id: `onb-${Date.now()}`,
-      ...onboardingData,
-      status: "pending",
-      tasks: onboardingData.tasks || defaultTasks,
-      createdAt: new Date().toISOString(),
-    };
+    logger.info({ onboardingId: onboarding.id }, 'Onboarding created');
 
     res.status(201).json({
       success: true,
-      data: newOnboarding,
-      message: "Onboarding process created",
+      data: onboarding,
     });
-  }),
+  })
 );
 
 /**
- * PUT /api/hr/onboarding/:id/tasks/:taskId
- * Update onboarding task status
+ * POST /api/hr/onboarding/tasks
+ * Create onboarding task
  */
-router.put(
-  "/onboarding/:id/tasks/:taskId",
+router.post(
+  '/onboarding/tasks',
+  requirePermission('hr:create'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id: _id, taskId: _taskId } = req.params;
-    const { status, comment: _comment } = req.body;
+    const validatedData = createOnboardingTaskSchema.parse(req.body);
+    const task = hrService.createOnboardingTask(validatedData);
 
-    if (!status) {
-      throw new BadRequestError("Task status is required");
+    logger.info({ taskId: task.id }, 'Onboarding task created');
+
+    res.status(201).json({
+      success: true,
+      data: task,
+    });
+  })
+);
+
+/**
+ * POST /api/hr/onboarding/tasks/:id/complete
+ * Complete onboarding task
+ */
+router.post(
+  '/onboarding/tasks/:id/complete',
+  requirePermission('hr:update'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+    const task = hrService.completeOnboardingTask(req.params.id, userId);
+
+    if (!task) {
+      throw new Error('Onboarding task not found');
     }
 
-    // TODO: Update task in database
+    logger.info({ taskId: task.id }, 'Onboarding task completed');
 
     res.json({
       success: true,
-      message: "Task updated successfully",
+      data: task,
     });
-  }),
+  })
 );
 
-// ============================================================================
-// OVERTIME TRACKING
-// ============================================================================
+// ==================== DOCUMENT ENDPOINTS ====================
 
 /**
- * GET /api/hr/overtime/:employeeId
- * Get overtime account for an employee
+ * GET /api/hr/employees/:employeeId/documents
+ * Get employee documents
  */
 router.get(
-  "/overtime/:employeeId",
+  '/employees/:employeeId/documents',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { employeeId } = req.params;
+    const documents = hrService.getEmployeeDocuments(req.params.employeeId);
 
-    // TODO: Calculate from time entries
-    const mockOvertime = {
-      employeeId,
-      currentBalance: 12.5, // hours
-      thisMonth: 5.5,
-      lastMonth: 7.0,
-      ytd: 45.5,
-      entries: [
-        {
-          date: "2024-12-05",
-          hours: 2.5,
-          reason: "Project deadline",
-          approved: true,
-        },
-        {
-          date: "2024-12-08",
-          hours: 3.0,
-          reason: "Customer emergency",
-          approved: true,
-        },
-      ],
+    res.json({
+      success: true,
+      data: documents,
+    });
+  })
+);
+
+// ==================== OVERTIME ENDPOINTS ====================
+
+/**
+ * GET /api/hr/overtime
+ * Get overtime records
+ */
+router.get(
+  '/overtime',
+  requirePermission('hr:read'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const employeeId = req.query.employee_id as string;
+
+    if (!employeeId) {
+      throw new Error('employee_id is required');
+    }
+
+    const overtime = hrService.getEmployeeOvertime(employeeId);
+
+    res.json({
+      success: true,
+      data: overtime,
+    });
+  })
+);
+
+/**
+ * POST /api/hr/overtime
+ * Create overtime record
+ */
+router.post(
+  '/overtime',
+  requirePermission('hr:create'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = z.object({
+      employee_id: z.string().uuid(),
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      hours: z.number().positive(),
+      reason: z.string().optional(),
+      notes: z.string().optional(),
+    }).parse(req.body);
+
+    const overtime = hrService.createOvertimeRecord(validatedData);
+
+    logger.info({ overtimeId: overtime.id }, 'Overtime record created');
+
+    res.status(201).json({
+      success: true,
+      data: overtime,
+    });
+  })
+);
+
+/**
+ * POST /api/hr/overtime/:id/approve
+ * Approve overtime
+ */
+router.post(
+  '/overtime/:id/approve',
+  requirePermission('hr:approve'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+    const overtime = hrService.approveOvertime(req.params.id, userId);
+
+    if (!overtime) {
+      throw new Error('Overtime record not found');
+    }
+
+    logger.info({ overtimeId: overtime.id }, 'Overtime approved');
+
+    res.json({
+      success: true,
+      data: overtime,
+    });
+  })
+);
+
+// ==================== PAYROLL TAX PARAMETERS ENDPOINTS ====================
+
+/**
+ * GET /api/hr/payroll/tax-params/:year
+ * Get payroll tax parameters
+ */
+router.get(
+  '/payroll/tax-params/:year',
+  requirePermission('hr:read'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const year = parseInt(req.params.year);
+    const countryCode = (req.query.country_code as string) || 'DE';
+
+    const params = hrService.getPayrollTaxParams(year, countryCode);
+
+    res.json({
+      success: true,
+      data: params,
+    });
+  })
+);
+
+/**
+ * POST /api/hr/payroll/tax-params
+ * Create payroll tax parameters
+ */
+router.post(
+  '/payroll/tax-params',
+  requirePermission('hr:create'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = z.object({
+      year: z.number().int(),
+      income_tax_rate: z.number().positive(),
+      pension_insurance_rate: z.number().positive(),
+      health_insurance_rate: z.number().positive(),
+      unemployment_insurance_rate: z.number().positive(),
+      church_tax_rate: z.number().positive().optional(),
+      solidarity_surcharge_rate: z.number().positive().optional(),
+      minimum_wage: z.number().positive(),
+      tax_free_allowance: z.number().positive(),
+      country_code: z.string().optional(),
+      notes: z.string().optional(),
+    }).parse(req.body);
+
+    const params = hrService.createPayrollTaxParams({
+      ...validatedData,
+      country_code: validatedData.country_code || 'DE',
+    });
+
+    logger.info({ year: params.year }, 'Payroll tax parameters created');
+
+    res.status(201).json({
+      success: true,
+      data: params,
+    });
+  })
+);
+
+// ==================== PAYROLL ENDPOINTS ====================
+
+/**
+ * GET /api/hr/payroll
+ * Get payroll records for period with pagination
+ */
+router.get(
+  '/payroll',
+  requirePermission('hr:read'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const year = parseInt(req.query.year as string) || new Date().getFullYear();
+    const month = req.query.month as string | undefined;
+
+    const pagination = {
+      page: parseInt(req.query.page as string) || 1,
+      limit: parseInt(req.query.limit as string) || 50,
+      sort_by: req.query.sort_by as string,
+      sort_order: (req.query.sort_order as 'asc' | 'desc') || 'asc',
     };
 
+    const result = hrService.getPayrollRecords(year, month, pagination);
+
     res.json({
       success: true,
-      data: mockOvertime,
+      data: result,
     });
-  }),
+  })
 );
 
-// ============================================================================
-// APPROVAL WORKFLOWS
-// ============================================================================
-
 /**
- * GET /api/hr/approvals
- * Get pending approvals for current user
+ * GET /api/hr/payroll/:id
+ * Get payroll record by ID
  */
 router.get(
-  "/approvals",
+  '/payroll/:id',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { type } = req.query;
+    const payroll = hrService.getPayrollRecordById(req.params.id);
 
-    // TODO: Query from database based on user permissions
-    const mockApprovals = [
-      {
-        id: "appr-1",
-        type: "leave_request",
-        employeeId: "2",
-        employeeName: "Anna Schmidt",
-        requestDate: "2024-12-09",
-        details: {
-          startDate: "2024-12-20",
-          endDate: "2024-12-25",
-          days: 4,
-          type: "vacation",
-        },
-        status: "pending",
-      },
-      {
-        id: "appr-2",
-        type: "overtime",
-        employeeId: "3",
-        employeeName: "Thomas Müller",
-        requestDate: "2024-12-08",
-        details: {
-          date: "2024-12-08",
-          hours: 3.5,
-          reason: "Emergency deployment",
-        },
-        status: "pending",
-      },
-    ];
-
-    let filtered = mockApprovals;
-    if (type) {
-      filtered = filtered.filter((a) => a.type === type);
+    if (!payroll) {
+      throw new Error('Payroll record not found');
     }
 
     res.json({
       success: true,
-      data: filtered,
-      count: filtered.length,
+      data: payroll,
     });
-  }),
+  })
 );
 
 /**
- * POST /api/hr/approvals/:id/approve
- * Approve a pending request
+ * GET /api/hr/employees/:employeeId/payroll
+ * Get employee payroll records
  */
-router.post(
-  "/approvals/:id/approve",
+router.get(
+  '/employees/:employeeId/payroll',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id: _id } = req.params;
-    const { comment: _comment } = req.body;
+    const year = req.query.year ? parseInt(req.query.year as string) : undefined;
+    const month = req.query.month as string | undefined;
 
-    // TODO: Update approval status in database
-    // TODO: Send notification to requester
+    const records = hrService.getEmployeePayroll(req.params.employeeId, year, month);
 
     res.json({
       success: true,
-      message: "Request approved",
+      data: records,
     });
-  }),
+  })
 );
 
 /**
- * POST /api/hr/approvals/:id/reject
- * Reject a pending request
+ * POST /api/hr/payroll
+ * Create payroll record
  */
 router.post(
-  "/approvals/:id/reject",
+  '/payroll',
+  requirePermission('hr:create'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { id: _id } = req.params;
-    const { reason } = req.body;
+    const validatedData = z.object({
+      employee_id: z.string().uuid(),
+      month: z.string().regex(/^\d{2}$/),
+      year: z.number().int(),
+      gross_salary: z.number().positive(),
+      bonuses: z.number().nonnegative().optional(),
+      income_tax: z.number().nonnegative().optional(),
+      pension_insurance: z.number().nonnegative().optional(),
+      health_insurance: z.number().nonnegative().optional(),
+      unemployment_insurance: z.number().nonnegative().optional(),
+      church_tax: z.number().nonnegative().optional(),
+      solidarity_surcharge: z.number().nonnegative().optional(),
+      other_deductions: z.number().nonnegative().optional(),
+      payment_method: z.enum(['bank_transfer', 'cash', 'check', 'direct_debit']).optional(),
+      iban: z.string().optional(),
+      bic: z.string().optional(),
+      creditor_name: z.string().optional(),
+      notes: z.string().optional(),
+    }).parse(req.body);
 
-    if (!reason) {
-      throw new BadRequestError("Rejection reason is required");
-    }
+    const payroll = hrService.createPayrollRecord(validatedData);
 
-    // TODO: Update approval status in database
-    // TODO: Send notification to requester
+    logger.info({ payrollId: payroll.id }, 'Payroll record created');
 
-    res.json({
+    res.status(201).json({
       success: true,
-      message: "Request rejected",
+      data: payroll,
     });
-  }),
+  })
 );
 
-// ============================================================================
-// PAYROLL ENHANCEMENTS
-// ============================================================================
+/**
+ * GET /api/hr/payroll/export/csv
+ * Export payroll as CSV
+ */
+router.get(
+  '/payroll/export/csv',
+  requirePermission('hr:read'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const year = parseInt(req.query.year as string) || new Date().getFullYear();
+    const month = req.query.month as string | undefined;
 
-const createPayrollSchema = z.object({
-  employeeId: z.string().min(1),
-  month: z.string().regex(/^\d{4}-\d{2}$/),
-  grossSalary: z.number().positive(),
-  deductions: z.object({
-    incomeTax: z.number().min(0),
-    pensionInsurance: z.number().min(0),
-    healthInsurance: z.number().min(0),
-    unemploymentInsurance: z.number().min(0),
-    other: z.number().min(0).optional(),
-  }),
-  bonuses: z.number().min(0).optional(),
-});
+    const csv = hrService.exportPayrollAsCSV(year, month);
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="payroll-${year}-${month || 'all'}.csv"`);
+    res.send(csv);
+  })
+);
 
 /**
- * POST /api/hr/payroll/calculate
- * Calculate payroll with tax deductions
+ * POST /api/hr/payroll/export/sepa
+ * Export payroll as SEPA pain.001.001.03 XML
  */
 router.post(
-  "/payroll/calculate",
+  '/payroll/export/sepa',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    const validationResult = createPayrollSchema.safeParse(req.body);
-    if (!validationResult.success) {
-      throw new ValidationError(
-        "Invalid payroll data",
-        validationResult.error.issues,
-      );
-    }
+    const validatedData = z.object({
+      year: z.number().int(),
+      month: z.string().regex(/^\d{2}$/),
+      company_name: z.string(),
+      company_iban: z.string(),
+      company_bic: z.string(),
+    }).parse(req.body);
 
-    const {
-      employeeId,
-      grossSalary,
-      deductions,
-      bonuses = 0,
-    } = validationResult.data;
-
-    // TODO: Implement German tax calculation
-    // TODO: Calculate social security contributions
-    // For now, using provided deductions
-
-    const totalDeductions = Object.values(deductions).reduce(
-      (sum, val) => sum + val,
-      0,
+    const xml = hrService.exportPayrollAsSEPA(
+      validatedData.year,
+      validatedData.month,
+      validatedData.company_name,
+      validatedData.company_iban,
+      validatedData.company_bic
     );
-    const netSalary = grossSalary + bonuses - totalDeductions;
 
-    const calculation = {
-      employeeId,
-      grossSalary,
-      bonuses,
-      deductions: {
-        ...deductions,
-        total: totalDeductions,
-      },
-      netSalary,
-      calculatedAt: new Date().toISOString(),
-    };
-
-    res.json({
-      success: true,
-      data: calculation,
-    });
-  }),
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Content-Disposition', `attachment; filename="sepa-payroll-${validatedData.year}-${validatedData.month}.xml"`);
+    res.send(xml);
+  })
 );
 
+// ==================== STATISTICS ENDPOINT ====================
+
 /**
- * GET /api/hr/payroll/journal
- * Get payroll journal (Lohnjournal)
+ * GET /api/hr/statistics
+ * Get HR statistics
  */
 router.get(
-  "/payroll/journal",
+  '/statistics',
+  requirePermission('hr:read'),
   asyncHandler(async (req: Request, res: Response) => {
-    const { month, year } = req.query;
-
-    // TODO: Query from database
-    const mockJournal = {
-      period: `${year}-${month}`,
-      entries: [
-        {
-          employeeId: "1",
-          employeeName: "Max Mustermann",
-          grossSalary: 5416.67,
-          netSalary: 3450.23,
-          incomeTax: 1200.45,
-          socialSecurity: 765.99,
-        },
-        {
-          employeeId: "2",
-          employeeName: "Anna Schmidt",
-          grossSalary: 6000.0,
-          netSalary: 3750.12,
-          incomeTax: 1450.88,
-          socialSecurity: 799.0,
-        },
-      ],
-      totals: {
-        grossSalary: 11416.67,
-        netSalary: 7200.35,
-        incomeTax: 2651.33,
-        socialSecurity: 1564.99,
-      },
-    };
+    const statistics = hrService.getStatistics();
 
     res.json({
       success: true,
-      data: mockJournal,
+      data: statistics,
     });
-  }),
-);
-
-/**
- * POST /api/hr/payroll/sepa-export
- * Generate SEPA XML export for salary payments
- */
-router.post(
-  "/payroll/sepa-export",
-  asyncHandler(async (req: Request, res: Response) => {
-    const { month, year } = req.body;
-
-    if (!month || !year) {
-      throw new BadRequestError("Month and year are required");
-    }
-
-    // TODO: Generate SEPA XML file
-    // TODO: Include all employees' salary payments
-    // TODO: Follow SEPA XML schema (pain.001.001.03)
-
-    const sepaExport = {
-      fileName: `sepa-payroll-${year}-${month}.xml`,
-      createdAt: new Date().toISOString(),
-      transactionCount: 31,
-      totalAmount: 123456.78,
-      status: "ready",
-      downloadUrl: `/api/hr/payroll/sepa-export/download/${year}-${month}`,
-    };
-
-    res.json({
-      success: true,
-      data: sepaExport,
-      message: "SEPA export generated successfully",
-    });
-  }),
+  })
 );
 
 export default router;

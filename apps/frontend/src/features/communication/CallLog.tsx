@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Table, Button, Input } from "../../components/ui";
+import styles from "./CallLog.module.css";
 
 interface Call {
   id: string;
@@ -49,9 +50,10 @@ export const CallLog: React.FC = () => {
   const [filter, setFilter] = useState<"all" | "incoming" | "outgoing">("all");
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    // In production, fetch from API here
-  }, []);
+  // In production, fetch from API on mount
+  // useEffect(() => {
+  //   fetchCallsFromAPI();
+  // }, []);
 
   const filteredCalls = calls.filter((call) => {
     if (filter !== "all" && call.direction !== filter) return false;
@@ -95,7 +97,7 @@ export const CallLog: React.FC = () => {
       header: "",
       width: "40px",
       render: (value: unknown) => (
-        <span style={{ fontSize: "1.25rem" }}>
+        <span className={styles.directionIcon}>
           {(value as string) === "incoming" ? "📥" : "📤"}
         </span>
       ),
@@ -104,12 +106,12 @@ export const CallLog: React.FC = () => {
       key: "phoneNumber",
       header: "Nummer",
       render: (value: unknown, row: Call) => (
-        <div>
-          <div style={{ fontWeight: 500 }}>
+        <div className={styles.contactInfo}>
+          <div className={styles.contactName}>
             {row.contactName || (value as string)}
           </div>
           {row.contactName && (
-            <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+            <div className={styles.phoneNumber}>
               {value as string}
             </div>
           )}
@@ -144,7 +146,7 @@ export const CallLog: React.FC = () => {
           color: "var(--text-tertiary)",
         };
         return (
-          <span style={{ color: config.color, fontSize: "0.875rem" }}>
+          <span className={styles.statusText} style={{ color: config.color }}>
             {config.label}
           </span>
         );
@@ -155,7 +157,7 @@ export const CallLog: React.FC = () => {
       header: "",
       width: "100px",
       render: (_: unknown, _row: Call) => (
-        <div style={{ display: "flex", gap: "0.25rem" }}>
+        <div className={styles.actions}>
           <Button variant="ghost" size="sm" title="Anrufen">
             📞
           </Button>
@@ -169,14 +171,7 @@ export const CallLog: React.FC = () => {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          gap: "1rem",
-          padding: "1rem",
-          borderBottom: "1px solid var(--border)",
-        }}
-      >
+      <div className={styles.header}>
         <Input
           placeholder="Suchen..."
           value={search}
@@ -185,7 +180,7 @@ export const CallLog: React.FC = () => {
           }
           icon={<span>🔍</span>}
         />
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div className={styles.filterGroup}>
           {(["all", "incoming", "outgoing"] as const).map((f) => (
             <Button
               key={f}

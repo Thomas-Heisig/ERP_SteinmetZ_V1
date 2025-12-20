@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal } from "../../components/ui";
+import styles from "./FaxInbox.module.css";
 
 interface FaxDocument {
   id: string;
@@ -62,9 +63,10 @@ export const FaxInbox: React.FC = () => {
   const [loading] = useState(false);
   const [selectedFax, setSelectedFax] = useState<FaxDocument | null>(null);
 
-  useEffect(() => {
-    // In production, fetch from API here
-  }, []);
+  // In production, fetch from API on mount
+  // useEffect(() => {
+  //   fetchFaxesFromAPI();
+  // }, []);
 
   const formatTime = (timestamp: string): string => {
     const date = new Date(timestamp);
@@ -103,14 +105,8 @@ export const FaxInbox: React.FC = () => {
     const c = config[status];
     return (
       <span
-        style={{
-          padding: "0.25rem 0.5rem",
-          borderRadius: "4px",
-          background: c.bg,
-          color: c.color,
-          fontSize: "0.75rem",
-          fontWeight: 500,
-        }}
+        className={styles.statusBadge}
+        style={{ background: c.bg, color: c.color }}
       >
         {c.label}
       </span>
@@ -132,13 +128,7 @@ export const FaxInbox: React.FC = () => {
 
     return (
       <span
-        style={{
-          padding: "0.25rem 0.5rem",
-          borderRadius: "4px",
-          background: "var(--primary-50)",
-          color: "var(--primary-700)",
-          fontSize: "0.75rem",
-        }}
+        className={styles.classificationBadge}
       >
         {typeLabels[classification.type] || classification.type} (
         {Math.round(classification.confidence * 100)}%)
@@ -151,7 +141,7 @@ export const FaxInbox: React.FC = () => {
       key: "from",
       header: "Von",
       render: (value: unknown) => (
-        <span style={{ fontFamily: "monospace" }}>{value as string}</span>
+        <span className={styles.phoneNumber}>{value as string}</span>
       ),
     },
     {
@@ -184,7 +174,7 @@ export const FaxInbox: React.FC = () => {
       header: "",
       width: "100px",
       render: (_: unknown, row: FaxDocument) => (
-        <div style={{ display: "flex", gap: "0.25rem" }}>
+        <div className={styles.actions}>
           <Button
             variant="ghost"
             size="sm"
@@ -204,15 +194,9 @@ export const FaxInbox: React.FC = () => {
   return (
     <div>
       <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "1rem",
-          borderBottom: "1px solid var(--border)",
-        }}
+        className={styles.header}
       >
-        <span style={{ color: "var(--text-secondary)" }}>
+        <span className={styles.headerText}>
           {faxes.length} Faxe
         </span>
         <Button variant="outline" size="sm">
@@ -237,52 +221,40 @@ export const FaxInbox: React.FC = () => {
         size="lg"
       >
         {selectedFax && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
+          <div className={styles.modalContent}>
             <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "1rem",
-              }}
+              className={styles.infoGrid}
             >
               <div>
                 <strong>Von:</strong>
-                <p style={{ margin: "0.25rem 0" }}>{selectedFax.from}</p>
+                <p className={styles.infoRow}>{selectedFax.from}</p>
               </div>
               <div>
                 <strong>An:</strong>
-                <p style={{ margin: "0.25rem 0" }}>{selectedFax.to}</p>
+                <p className={styles.infoRow}>{selectedFax.to}</p>
               </div>
               <div>
                 <strong>Empfangen:</strong>
-                <p style={{ margin: "0.25rem 0" }}>
+                <p className={styles.infoRow}>
                   {new Date(selectedFax.receivedAt).toLocaleString("de-DE")}
                 </p>
               </div>
               <div>
                 <strong>Seiten:</strong>
-                <p style={{ margin: "0.25rem 0" }}>{selectedFax.pages}</p>
+                <p className={styles.infoRow}>{selectedFax.pages}</p>
               </div>
             </div>
 
             {selectedFax.classification && (
-              <div
-                style={{
-                  padding: "1rem",
-                  background: "var(--primary-50)",
-                  borderRadius: "8px",
-                }}
-              >
+              <div className={styles.detailsSection}>
                 <strong>KI-Klassifikation:</strong>
-                <p style={{ margin: "0.5rem 0" }}>
+                <p className={styles.marginSmall}>
                   Typ: {selectedFax.classification.type} (
                   {Math.round(selectedFax.classification.confidence * 100)}%
                   Konfidenz)
                 </p>
                 {selectedFax.classification.suggestedAction && (
-                  <p style={{ margin: 0, color: "var(--primary-600)" }}>
+                  <p className={styles.classificationRecommendationText}>
                     Empfehlung: {selectedFax.classification.suggestedAction}
                   </p>
                 )}
@@ -290,31 +262,16 @@ export const FaxInbox: React.FC = () => {
             )}
 
             {selectedFax.ocrText && (
-              <div>
+              <div className={styles.textContent}>
                 <strong>OCR-Text:</strong>
-                <pre
-                  style={{
-                    margin: "0.5rem 0",
-                    padding: "1rem",
-                    background: "var(--gray-50)",
-                    borderRadius: "8px",
-                    whiteSpace: "pre-wrap",
-                    fontSize: "0.875rem",
-                    maxHeight: "200px",
-                    overflow: "auto",
-                  }}
-                >
+                <pre className={styles.ocrText}>
                   {selectedFax.ocrText}
                 </pre>
               </div>
             )}
 
             <div
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                justifyContent: "flex-end",
-              }}
+              className={styles.actions}
             >
               <Button variant="outline">📥 Herunterladen</Button>
               <Button variant="primary">✅ Verarbeiten</Button>

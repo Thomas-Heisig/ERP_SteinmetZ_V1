@@ -3,6 +3,7 @@
 
 import React, { useState } from "react";
 import { Card, Table, Button, Input, Modal } from "../../components/ui";
+import styles from "./EmployeeList.module.css";
 
 interface Employee {
   id: string;
@@ -78,21 +79,12 @@ export const EmployeeList: React.FC = () => {
     const c = config[status];
     return (
       <span
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "0.25rem",
-          color: c.color,
-          fontSize: "0.875rem",
-        }}
+        className={styles.statusText}
+        style={{ color: c.color }}
       >
         <span
-          style={{
-            width: "8px",
-            height: "8px",
-            borderRadius: "50%",
-            background: c.color,
-          }}
+          className={styles.directionIcon}
+          style={{ background: c.color }}
         />
         {c.label}
       </span>
@@ -104,28 +96,18 @@ export const EmployeeList: React.FC = () => {
       key: "name",
       header: "Name",
       render: (_: unknown, row: Employee) => (
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div className={styles.contactInfo}>
           <div
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              background: "var(--primary-100)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: 600,
-              color: "var(--primary-600)",
-            }}
+            className={styles.directionIcon}
           >
             {row.firstName[0]}
             {row.lastName[0]}
           </div>
           <div>
-            <div style={{ fontWeight: 500 }}>
+            <div className={styles.contactName}>
               {row.firstName} {row.lastName}
             </div>
-            <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+            <div className={styles.phoneNumber}>
               {row.email}
             </div>
           </div>
@@ -165,19 +147,11 @@ export const EmployeeList: React.FC = () => {
 
   return (
     <Card variant="elevated" padding="none">
-      <div
-        style={{
-          padding: "1rem 1.5rem",
-          borderBottom: "1px solid var(--border)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
+      <div className={styles.header}>
+        <h2 className={styles.headerText}>
           👥 Mitarbeiter
         </h2>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div className={styles.filterGroup}>
           <Input
             placeholder="Suchen..."
             value={search}
@@ -206,51 +180,37 @@ export const EmployeeList: React.FC = () => {
         size="md"
       >
         {selectedEmployee && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
+          <div className={styles.modalContent}>
             <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "1rem",
-              }}
+              className={styles.infoGrid}
             >
               <div>
-                <label
-                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
-                >
+                <label className={styles.label}>
                   E-Mail
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>{selectedEmployee.email}</p>
+                <p className={styles.value}>{selectedEmployee.email}</p>
               </div>
               <div>
-                <label
-                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
-                >
+                <label className={styles.label}>
                   Abteilung
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>
+                <p className={styles.value}>
                   {selectedEmployee.department}
                 </p>
               </div>
               <div>
-                <label
-                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
-                >
+                <label className={styles.label}>
                   Position
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>
+                <p className={styles.value}>
                   {selectedEmployee.position}
                 </p>
               </div>
               <div>
-                <label
-                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
-                >
+                <label className={styles.label}>
                   Eintritt
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>
+                <p className={styles.value}>
                   {new Date(selectedEmployee.startDate).toLocaleDateString(
                     "de-DE",
                   )}
@@ -258,11 +218,7 @@ export const EmployeeList: React.FC = () => {
               </div>
             </div>
             <div
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                justifyContent: "flex-end",
-              }}
+              className={styles.actions}
             >
               <Button variant="outline">✏️ Bearbeiten</Button>
               <Button variant="primary">📅 Zeiterfassung</Button>

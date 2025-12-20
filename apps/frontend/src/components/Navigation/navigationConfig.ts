@@ -240,6 +240,12 @@ export const navigationStructure: NavigationItem[] = [
         icon: "💼",
         path: "/recruiting",
       },
+      {
+        id: "payroll",
+        label: "sidebar.payroll",
+        icon: "💰",
+        path: "/payroll",
+      },
     ],
   },
 

@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Card, Table, Button, Input, Modal } from "../../components/ui";
+import styles from "./CustomerList.module.css";
 
 type CustomerStatus = "lead" | "prospect" | "customer" | "inactive";
 
@@ -110,14 +111,8 @@ export const CustomerList: React.FC = () => {
     const c = config[status];
     return (
       <span
-        style={{
-          padding: "0.25rem 0.5rem",
-          borderRadius: "4px",
-          background: c.bg,
-          color: c.color,
-          fontSize: "0.75rem",
-          fontWeight: 500,
-        }}
+        className={styles.header}
+        style={{ background: c.bg, color: c.color }}
       >
         {c.label}
       </span>
@@ -136,8 +131,8 @@ export const CustomerList: React.FC = () => {
       header: "Firma",
       render: (value: unknown, row: Customer) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{value as string}</div>
-          <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>
+          <div className={styles.customerName}>{value as string}</div>
+          <div className={styles.customerEmail}>
             {row.contactPerson}
           </div>
         </div>
@@ -183,19 +178,11 @@ export const CustomerList: React.FC = () => {
 
   return (
     <Card variant="elevated" padding="none">
-      <div
-        style={{
-          padding: "1rem 1.5rem",
-          borderBottom: "1px solid var(--border)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600 }}>
+      <div className={styles.header}>
+        <h2 className={styles.headerText}>
           🏢 Kunden
         </h2>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <div className={styles.filterGroup}>
           <Input
             placeholder="Suchen..."
             value={search}
@@ -224,59 +211,41 @@ export const CustomerList: React.FC = () => {
         size="md"
       >
         {selectedCustomer && (
-          <div
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
+          <div className={styles.modalContent}>
             <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "1rem",
-              }}
+              className={styles.infoGrid}
             >
               <div>
-                <label
-                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
-                >
+                <label className={styles.label}>
                   Ansprechpartner
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>
+                <p className={styles.value}>
                   {selectedCustomer.contactPerson}
                 </p>
               </div>
               <div>
-                <label
-                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
-                >
+                <label className={styles.label}>
                   E-Mail
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>{selectedCustomer.email}</p>
+                <p className={styles.value}>{selectedCustomer.email}</p>
               </div>
               <div>
-                <label
-                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
-                >
+                <label className={styles.label}>
                   Telefon
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>{selectedCustomer.phone}</p>
+                <p className={styles.value}>{selectedCustomer.phone}</p>
               </div>
               <div>
-                <label
-                  style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}
-                >
+                <label className={styles.label}>
                   Umsatz
                 </label>
-                <p style={{ margin: "0.25rem 0" }}>
+                <p className={styles.value}>
                   {formatCurrency(selectedCustomer.revenue)}
                 </p>
               </div>
             </div>
             <div
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                justifyContent: "flex-end",
-              }}
+              className={styles.actions}
             >
               <Button variant="outline">✏️ Bearbeiten</Button>
               <Button variant="primary">📞 Kontaktieren</Button>

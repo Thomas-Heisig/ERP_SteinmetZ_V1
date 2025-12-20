@@ -1,0 +1,147 @@
+/* SPDX-License-Identifier: MIT */
+/* PayrollList module styles */
+
+.container {
+  padding: 1.5rem;
+  background: var(--color-background);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+.exportBtn {
+  padding: 0.5rem 1rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.exportBtn:hover {
+  background: var(--color-primary-dark);
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-secondary);
+}
+
+.tableWrapper {
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead tr {
+  background: var(--color-background-light);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.table thead th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.2s;
+}
+
+.table tbody tr:hover {
+  background: var(--color-background-light);
+}
+
+.table tbody td {
+  padding: 0.875rem 1rem;
+  color: var(--color-text-primary);
+}
+
+.number {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status.pending {
+  background: var(--color-warning-light);
+  color: var(--color-warning-dark);
+}
+
+.status.processed {
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.status.failed {
+  background: var(--color-error-light);
+  color: var(--color-error-dark);
+}
+
+.status.reversed {
+  background: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.paginationBtn {
+  padding: 0.5rem 1rem;
+  background: var(--color-background-light);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.paginationBtn:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.paginationBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

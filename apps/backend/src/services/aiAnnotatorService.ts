@@ -52,6 +52,17 @@ import db from "./dbService.js";
 import { EventEmitter } from "events";
 import * as os from "os";
 import { createLogger } from "../utils/logger.js";
+import type {
+  BatchResultMetadata,
+  ConditionalValue,
+  FormFieldValue,
+  NodeAnnotationJson,
+  NodeFilters,
+  NodeMetaJson,
+  NodeSchemaJson,
+  ResponsiveBreakpoints,
+  ValidationValue,
+} from "../types/ai-annotator.js";
 
 const logger = createLogger("ai-annotator");
 
@@ -136,7 +147,7 @@ export type DashboardRule = {
     rowSpan?: number;
     priority?: number;
     responsive?: boolean;
-    breakpoints?: Record<string, any>;
+    breakpoints?: ResponsiveBreakpoints;
   };
   aggregation?: string;
   timeRange?: string;
@@ -173,7 +184,7 @@ export type FormSection = {
   fields: string[];
   conditional?: {
     field: string;
-    value: any;
+    value: ConditionalValue;
   };
   collapsed?: boolean;
 };
@@ -199,7 +210,7 @@ export type FormField = {
   placeholder?: string;
   validation?: FieldValidation;
   helpText?: string;
-  defaultValue?: any;
+  defaultValue?: FormFieldValue;
   conditional?: ConditionalLogic;
   disabled?: boolean;
   readonly?: boolean;
@@ -209,7 +220,7 @@ export type FormField = {
 export type ConditionalLogic = {
   field: string;
   operator: "equals" | "notEquals" | "contains" | "greaterThan" | "lessThan";
-  value: any;
+  value: ConditionalValue;
   action: "show" | "hide" | "enable" | "disable";
 };
 
@@ -224,7 +235,7 @@ export type ValidationRule = {
     | "email"
     | "url"
     | "phone";
-  value?: any;
+  value?: ValidationValue;
   message: string;
 };
 
@@ -240,9 +251,9 @@ export type NodeForAnnotation = {
   title: string;
   kind: string;
   path: string[];
-  meta_json?: any | null;
-  schema_json?: any | null;
-  aa_json?: any | null;
+  meta_json?: NodeMetaJson | null;
+  schema_json?: NodeSchemaJson | null;
+  aa_json?: NodeAnnotationJson | null;
   source_file?: string | null;
   rule?: DashboardRule;
   created_at?: string;
@@ -268,7 +279,7 @@ export type BatchOperation = {
     | "full_annotation"
     | "validate_nodes"
     | "bulk_enhance";
-  filters: any;
+  filters: NodeFilters;
   options?: BatchOptions;
   status?: "pending" | "running" | "completed" | "failed" | "cancelled";
   progress?: number;
@@ -306,7 +317,7 @@ export type BatchResult = {
   results: Array<{
     id: string;
     success: boolean;
-    result?: any;
+    result?: BatchResultMetadata;
     error?: string;
     retries?: number;
     duration?: number;
@@ -2343,19 +2354,21 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
 
     result.results.forEach((r) => {
       if (r.success && r.result) {
+        // Type assertion for result metadata
+        const metadata = r.result as Record<string, any>;
         // Qualität (Confidence) kann entweder direkt im Ergebnis oder im eingebetteten meta-Objekt liegen
         const conf =
-          typeof r.result?.quality?.confidence === "number"
-            ? r.result.quality.confidence
-            : typeof r.result?.meta?.quality?.confidence === "number"
-              ? r.result.meta.quality.confidence
+          typeof metadata?.quality?.confidence === "number"
+            ? metadata.quality.confidence
+            : typeof metadata?.meta?.quality?.confidence === "number"
+              ? metadata.meta.quality.confidence
               : undefined;
         if (typeof conf === "number") confidences.push(conf);
 
-        const area = r.result?.businessArea || r.result?.meta?.businessArea;
+        const area = metadata?.businessArea || metadata?.meta?.businessArea;
         if (area) businessAreas[area] = (businessAreas[area] || 0) + 1;
 
-        const pii = r.result?.piiClass || r.result?.meta?.piiClass || "none";
+        const pii = metadata?.piiClass || metadata?.meta?.piiClass || "none";
         piiDistribution[pii] = (piiDistribution[pii] || 0) + 1;
       }
     });
@@ -2739,7 +2752,7 @@ Korrigiere das JSON‑Objekt und gib **nur** das gültige Ergebnis zurück.
     if (!node.meta_json) {
       errors.push("Keine Metadaten vorhanden");
     } else {
-      const metaVal = this.validateMeta(node.meta_json);
+      const metaVal = this.validateMeta(node.meta_json as GeneratedMeta);
       if (!metaVal.valid) errors.push(...metaVal.errors);
     }
 

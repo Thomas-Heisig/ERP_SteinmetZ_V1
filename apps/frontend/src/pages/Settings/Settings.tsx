@@ -5,7 +5,7 @@ import styles from "./Settings.module.css";
 interface SettingRecord {
   id: string;
   key: string;
-  value: any;
+  value: string | number | boolean;
   category: string;
   sensitive: boolean;
   description: string;
@@ -13,7 +13,7 @@ interface SettingRecord {
   validValues?: string[];
   minValue?: number;
   maxValue?: number;
-  defaultValue: any;
+  defaultValue: string | number | boolean;
   requiresRestart: boolean;
   updatedAt?: string;
   updatedBy?: string;
@@ -22,8 +22,8 @@ interface SettingRecord {
 interface SettingsHistory {
   id: string;
   setting_key: string;
-  old_value: any;
-  new_value: any;
+  old_value: string | number | boolean | null;
+  new_value: string | number | boolean | null;
   changed_by: string;
   changed_at: string;
   reason?: string;
@@ -95,7 +95,7 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [changes, setChanges] = useState<Map<string, any>>(new Map());
+  const [changes, setChanges] = useState<Map<string, string | number | boolean>>(new Map());
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<SettingsHistory[]>([]);
   const [selectedSetting, setSelectedSetting] = useState<string | null>(null);
@@ -111,6 +111,7 @@ export default function Settings() {
   // Filter settings when category or search changes
   useEffect(() => {
     filterSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCategory, searchTerm, settings]);
 
   const loadSettings = async () => {
@@ -157,7 +158,7 @@ export default function Settings() {
     setFilteredSettings(filtered);
   };
 
-  const handleChange = (key: string, value: any, setting: SettingRecord) => {
+  const handleChange = (key: string, value: string | number | boolean, setting: SettingRecord) => {
     // Validate
     const error = validateSetting(setting, value);
     if (error) {
@@ -178,7 +179,7 @@ export default function Settings() {
 
   const validateSetting = (
     setting: SettingRecord,
-    value: any,
+    value: string | number | boolean,
   ): string | null => {
     // Type validation
     if (setting.type === "number") {
@@ -255,7 +256,7 @@ export default function Settings() {
           } else if (data.message) {
             errorMessage = data.message;
           }
-        } catch (e) {
+        } catch {
           errorMessage = `HTTP ${response.status}: ${response.statusText}`;
         }
         throw new Error(errorMessage);
@@ -436,6 +437,7 @@ export default function Settings() {
               onChange={(e) =>
                 handleChange(setting.key, e.target.checked, setting)
               }
+              aria-label={setting.description || setting.key}
             />
             <span className={styles.toggleSlider}></span>
           </label>
@@ -446,7 +448,7 @@ export default function Settings() {
           <div className={styles.inputWrapper}>
             <input
               type="number"
-              value={currentValue ?? ""}
+              value={typeof currentValue === 'number' ? currentValue : ''}
               min={setting.minValue}
               max={setting.maxValue}
               onChange={(e) =>
@@ -465,7 +467,7 @@ export default function Settings() {
       case "select":
         return (
           <select
-            value={currentValue ?? ""}
+            value={String(currentValue ?? '')}
             onChange={(e) => handleChange(setting.key, e.target.value, setting)}
             className={styles.select}
             aria-label={setting.description || setting.key}
@@ -489,12 +491,12 @@ export default function Settings() {
           <div className={styles.inputWrapper}>
             <input
               type={setting.sensitive ? "password" : "text"}
-              value={currentValue ?? ""}
+              value={typeof currentValue === 'string' ? currentValue : String(currentValue ?? '')}
               onChange={(e) =>
                 handleChange(setting.key, e.target.value, setting)
               }
               className={`${styles.input} ${hasError ? styles.inputError : ""}`}
-              placeholder={setting.defaultValue}
+              placeholder={String(setting.defaultValue ?? '')}
             />
             {hasError && (
               <span className={styles.errorText}>{errorMessage}</span>
@@ -553,8 +555,7 @@ export default function Settings() {
 
       {error && (
         <div
-          className={styles.alert}
-          style={{ backgroundColor: "#fee", borderColor: "#faa" }}
+          className={`${styles.alert} ${styles.alertError}`}
         >
           <strong>❌ Fehler:</strong> {error}
           <button onClick={() => setError(null)} className={styles.alertClose}>
@@ -565,8 +566,7 @@ export default function Settings() {
 
       {successMessage && (
         <div
-          className={styles.alert}
-          style={{ backgroundColor: "#efe", borderColor: "#afa" }}
+          className={`${styles.alert} ${styles.alertSuccess}`}
         >
           <strong>✅ Erfolg:</strong> {successMessage}
           <button

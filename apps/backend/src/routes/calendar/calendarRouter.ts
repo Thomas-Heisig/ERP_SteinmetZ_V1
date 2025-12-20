@@ -60,9 +60,11 @@
  */
 
 import { Router, Request, Response } from "express";
+import { randomUUID } from "crypto";
 import db from "../../services/dbService.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { BadRequestError, NotFoundError } from "../../types/errors.js";
+import type { SqlValue } from "../../types/database.js";
 
 const router = Router();
 
@@ -155,21 +157,21 @@ router.get(
     } = req.query;
 
     let sql = "SELECT * FROM calendar_events WHERE 1=1";
-    const params: unknown[] = [];
+    const params: SqlValue[] = [];
 
     if (start) {
       sql += " AND end_time >= ?";
-      params.push(start);
+      params.push(start as string);
     }
 
     if (end) {
       sql += " AND start_time <= ?";
-      params.push(end);
+      params.push(end as string);
     }
 
     if (category) {
       sql += " AND category = ?";
-      params.push(category);
+      params.push(category as string);
     }
 
     if (search) {
@@ -258,7 +260,7 @@ router.post(
       throw new BadRequestError("Start and end times are required");
     }
 
-    const id = crypto.randomUUID();
+    const id = randomUUID();
     const now = new Date().toISOString();
 
     await db.run(
@@ -566,5 +568,219 @@ function expandRecurringEvents(
     (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
   );
 }
+
+// Ergänzungen zur calendarRouter.ts
+
+/**
+ * GET /api/calendar/stats
+ * Get calendar statistics
+ */
+router.get(
+  "/stats",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { start, end } = req.query;
+
+    const hasRange = Boolean(start && end);
+    const statsParams: SqlValue[] = [];
+    const statsWhere = hasRange ? "WHERE start_time BETWEEN ? AND ?" : "";
+    if (hasRange) {
+      statsParams.push(start as string, end as string);
+    }
+
+    const stats = await db.get<{
+      total: number;
+      upcoming: number;
+      allDay: number;
+      recurring: number;
+      withAttendees: number;
+    }>(`
+      SELECT
+        COUNT(*) as total,
+        SUM(CASE WHEN start_time > datetime('now') THEN 1 ELSE 0 END) as upcoming,
+        SUM(all_day) as allDay,
+        SUM(CASE WHEN recurrence != 'none' THEN 1 ELSE 0 END) as recurring,
+        SUM(CASE WHEN json_array_length(attendees_json) > 0 THEN 1 ELSE 0 END) as withAttendees
+      FROM calendar_events
+      ${statsWhere}
+    `, statsParams);
+
+    // Get events per category
+    const catConditions: string[] = ["category IS NOT NULL"];
+    const catParams: SqlValue[] = [];
+    if (hasRange) {
+      catConditions.push("start_time BETWEEN ? AND ?");
+      catParams.push(start as string, end as string);
+    }
+    const categories = await db.all<{ category: string; count: number }>(
+      `SELECT category, COUNT(*) as count
+       FROM calendar_events
+       WHERE ${catConditions.join(" AND ")}
+       GROUP BY category
+       ORDER BY count DESC`,
+      catParams
+    );
+
+    // Get events per day of week
+    const dowWhere = hasRange ? "WHERE start_time BETWEEN ? AND ?" : "";
+    const dowParams: SqlValue[] = hasRange ? [start as string, end as string] : [];
+    const daysOfWeek = await db.all<{ day: number; count: number }>(
+      `SELECT CAST(strftime('%w', start_time) AS INTEGER) as day, COUNT(*) as count
+       FROM calendar_events
+       ${dowWhere}
+       GROUP BY day
+       ORDER BY day`,
+      dowParams
+    );
+
+    res.json({
+      success: true,
+      data: {
+        ...stats,
+        categories,
+        daysOfWeek: daysOfWeek.map(row => ({
+          day: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][row.day],
+          count: row.count,
+        })),
+      },
+    });
+  })
+);
+
+/**
+ * POST /api/calendar/events/batch
+ * Batch operations on events
+ */
+router.post(
+  "/events/batch",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { action, eventIds, data } = req.body;
+
+    if (!Array.isArray(eventIds) || eventIds.length === 0) {
+      throw new BadRequestError("eventIds array is required");
+    }
+
+    let changes = 0;
+
+    switch (action) {
+      case "update": {
+        if (!data) {
+          throw new BadRequestError("data is required for update");
+        }
+
+        const updateFields: string[] = [];
+        const updateParams: SqlValue[] = [];
+
+        Object.entries(data).forEach(([key, value]) => {
+          if (key === "reminders" || key === "attendees") {
+            updateFields.push(`${key}_json = ?`);
+            updateParams.push(JSON.stringify(value));
+          } else if (key === "allDay") {
+            updateFields.push("all_day = ?");
+            updateParams.push(value ? 1 : 0);
+          } else {
+            updateFields.push(`${key} = ?`);
+            updateParams.push(value as SqlValue);
+          }
+        });
+
+        updateFields.push("updated_at = ?");
+        updateParams.push(new Date().toISOString());
+
+        const placeholders = eventIds.map(() => "?").join(",");
+        updateParams.push(...eventIds);
+
+        const result = await db.run(
+          `UPDATE calendar_events 
+           SET ${updateFields.join(", ")}
+           WHERE id IN (${placeholders})`,
+          updateParams
+        );
+        changes = result.changes || 0;
+        break;
+      }
+
+      case "delete": {
+        const placeholders2 = eventIds.map(() => "?").join(",");
+        const result2 = await db.run(
+          `DELETE FROM calendar_events WHERE id IN (${placeholders2})`,
+          eventIds
+        );
+        changes = result2.changes || 0;
+        break;
+      }
+
+      case "duplicate": {
+        const now = new Date().toISOString();
+        for (const eventId of eventIds) {
+          const original = await db.get<Record<string, unknown>>(
+            "SELECT * FROM calendar_events WHERE id = ?",
+            [eventId]
+          );
+
+          if (original) {
+            const newId = randomUUID();
+            await db.run(
+              `INSERT INTO calendar_events (
+                id, title, description, location, start_time, end_time,
+                all_day, color, category, recurrence, recurrence_end_date,
+                reminders_json, attendees_json, created_by, created_at, updated_at
+              ) SELECT ?, title, description, location, start_time, end_time,
+                all_day, color, category, recurrence, recurrence_end_date,
+                reminders_json, attendees_json, created_by, ?, ?
+              FROM calendar_events WHERE id = ?`,
+              [newId, now, now, eventId]
+            );
+            changes++;
+          }
+        }
+        break;
+      }
+
+      default:
+        throw new BadRequestError("Invalid action");
+    }
+
+    res.json({
+      success: true,
+      data: { changes },
+    });
+  })
+);
+
+/**
+ * GET /api/calendar/conflicts
+ * Check for scheduling conflicts
+ */
+router.get(
+  "/conflicts",
+  asyncHandler(async (req: Request, res: Response) => {
+    const { start, end, excludeId } = req.query;
+
+    if (!start || !end) {
+      throw new BadRequestError("start and end parameters are required");
+    }
+
+    // Overlap condition: start_time < end AND end_time > start
+    let sql = `
+      SELECT * FROM calendar_events 
+      WHERE start_time < ? AND end_time > ?
+    `;
+    const params: SqlValue[] = [end as string, start as string];
+
+    if (excludeId) {
+      sql += " AND id != ?";
+      params.push(excludeId as string);
+    }
+
+    const conflictingEvents = await db.all<Record<string, unknown>>(sql, params);
+    const events = conflictingEvents.map(rowToEvent);
+
+    res.json({
+      success: true,
+      data: events,
+      conflicts: events.length > 0,
+    });
+  })
+);
 
 export default router;

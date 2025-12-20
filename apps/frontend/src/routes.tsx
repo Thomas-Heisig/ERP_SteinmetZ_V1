@@ -216,6 +216,9 @@ const RecruitingList = lazy(
   () => import("./features/hr/modules/RecruitingList"),
 );
 
+/** HR: Payroll */
+const Payroll = lazy(() => import("./features/hr/Payroll"));
+
 // ============================================================================
 // Reporting Module
 // ============================================================================
@@ -482,6 +485,10 @@ export const router = createBrowserRouter([
       {
         path: "recruiting",
         element: lazyLoad(RecruitingList),
+      },
+      {
+        path: "payroll",
+        element: lazyLoad(Payroll),
       },
       // Reporting routes
       {

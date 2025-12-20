@@ -1,0 +1,96 @@
+/* SPDX-License-Identifier: MIT */
+/* SEPAExport module styles */
+
+.container {
+  padding: 1.5rem;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.container h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--color-text-primary);
+  font-size: 1.1rem;
+}
+
+.description {
+  margin: 0 0 1.5rem 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+}
+
+.input {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--color-text-primary);
+  background: white;
+  transition: border 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.message {
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.message.success {
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+  border: 1px solid var(--color-success-border);
+}
+
+.message.error {
+  background: var(--color-error-light);
+  color: var(--color-error-dark);
+  border: 1px solid var(--color-error-border);
+}
+
+.submitBtn {
+  padding: 0.75rem 1.5rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
