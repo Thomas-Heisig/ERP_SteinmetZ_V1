@@ -21,14 +21,14 @@
  */
 
 import { Router, Request, Response } from "express";
-import { asyncHandler } from "../middleware/asyncHandler.js";
-import { authenticate } from "../middleware/authMiddleware.js";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import { authenticate } from "../../middleware/authMiddleware.js";
 import {
   requirePermission,
   requireRole,
-} from "../middleware/rbacMiddleware.js";
-import { getRbacService } from "../services/rbacService.js";
-import type { Permission } from "../types/rbac.js";
+} from "../../middleware/rbacMiddleware.js";
+import { getRbacService } from "./rbacService.js";
+import type { Permission } from "../../types/rbac.js";
 
 // Helper functions for sending responses
 const sendSuccess = (res: Response, message: string, data?: unknown) => {

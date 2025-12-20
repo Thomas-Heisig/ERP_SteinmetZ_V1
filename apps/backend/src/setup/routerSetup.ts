@@ -42,8 +42,9 @@ import procurementRouter from "../routes/procurement/procurementRouter.js";
 import productionRouter from "../routes/production/productionRouter.js";
 import warehouseRouter from "../routes/warehouse/warehouseRouter.js";
 import reportingRouter from "../routes/reporting/reportingRouter.js";
-// import settingsRouter from "../routes/settings.js";
-// import userSettingsRouter from "../routes/userSettings.js";
+import settingsRouter from "../routes/settings/settings.js";
+import userSettingsRouter from "../routes/settings/userSettings.js";
+import rbacRouter from "../routes/rbac/rbacRouter.js";
 import helpRouter from "../routes/help/helpRouter.js";
 
 // Services
@@ -88,7 +89,11 @@ const routerRegistry: RouterEntry[] = [
   { path: "/api/innovation", router: innovationRouter, category: "workflow" },
 
   // Functions & Tools
-  { path: "/api/functions", router: functionsCatalogRouter, category: "system" },
+  {
+    path: "/api/functions",
+    router: functionsCatalogRouter,
+    category: "system",
+  },
   { path: "/diagnostics", router: diagnosticsRouter, category: "system" },
 
   // Business Modules
@@ -99,7 +104,11 @@ const routerRegistry: RouterEntry[] = [
   { path: "/api/finance", router: financeRouter, category: "business" },
 
   // Operations Modules
-  { path: "/api/procurement", router: procurementRouter, category: "operations" },
+  {
+    path: "/api/procurement",
+    router: procurementRouter,
+    category: "operations",
+  },
   { path: "/api/production", router: productionRouter, category: "operations" },
   { path: "/api/warehouse", router: warehouseRouter, category: "operations" },
   { path: "/api/inventory", router: inventoryRouter, category: "operations" },
@@ -108,11 +117,20 @@ const routerRegistry: RouterEntry[] = [
   { path: "/api/crm", router: crmRouter, category: "management" },
   { path: "/api/projects", router: projectsRouter, category: "management" },
   { path: "/api/documents", router: documentsRouter, category: "management" },
-  { path: "/api/communication", router: communicationRouter, category: "management" },
+  {
+    path: "/api/communication",
+    router: communicationRouter,
+    category: "management",
+  },
 
   // Settings
-  // { path: "/api/settings", router: settingsRouter, category: "config" },
-  // { path: "/api/user-settings", router: userSettingsRouter, category: "config" },
+  { path: "/api/settings", router: settingsRouter, category: "config" },
+  {
+    path: "/api/user-settings",
+    router: userSettingsRouter,
+    category: "config",
+  },
+  { path: "/api/rbac", router: rbacRouter, category: "core" },
   { path: "/api/help", router: helpRouter, category: "core" },
 ];
 
@@ -131,20 +149,17 @@ export function registerRouters(app: Application): number {
     try {
       app.use(entry.path, entry.router);
       const category = entry.category || "uncategorized";
-      routersByCategory.set(category, (routersByCategory.get(category) || 0) + 1);
-    } catch (error) {
-      logger.error(
-        { path: entry.path, error },
-        "Failed to register router"
+      routersByCategory.set(
+        category,
+        (routersByCategory.get(category) || 0) + 1,
       );
+    } catch (error) {
+      logger.error({ path: entry.path, error }, "Failed to register router");
     }
   }
 
   // Log registration summary
-  logger.info(
-    { totalRouters: routerRegistry.length },
-    "API routers activated"
-  );
+  logger.info({ totalRouters: routerRegistry.length }, "API routers activated");
 
   routersByCategory.forEach((count, category) => {
     logger.debug({ category, count }, "Routers registered");
@@ -188,7 +203,7 @@ export function registerDiagnosticEndpoints(app: Application): void {
         handle?: { name?: string };
       }
       type AppRouter = { _router?: { stack: RouterLayer[] } };
-      const appRouter = (app as unknown as AppRouter);
+      const appRouter = app as unknown as AppRouter;
       const routerStack: RouterLayer[] = appRouter._router?.stack || [];
       res.json({
         success: true,
@@ -196,8 +211,7 @@ export function registerDiagnosticEndpoints(app: Application): void {
         layers: routerStack.length,
         routes: routerStack
           .map(
-            (layer) =>
-              layer?.route?.path || layer?.name || layer?.handle?.name
+            (layer) => layer?.route?.path || layer?.name || layer?.handle?.name,
           )
           .filter(Boolean)
           .slice(0, 50),
