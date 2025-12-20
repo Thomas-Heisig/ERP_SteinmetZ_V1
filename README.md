@@ -11,9 +11,36 @@
 
 > 📘 **Dokumentation**: Vollständige technische Referenz im [Documentation Hub](docs/README.md)
 
+## 📑 Inhaltsverzeichnis
+
+- [🎯 Projektvision](#-projektvision)
+- [✅ Aktueller Status](#-aktueller-status-stand-20-dezember-2025)
+- [🚀 Quick Start](#-quick-start)
+- [📁 Projektstruktur](#-projektstruktur)
+- [🔧 Technologie-Stack](#-technologie-stack)
+- [📊 Features](#-features)
+- [🏗️ Architektur](#️-architektur)
+- [🔐 Sicherheit & Compliance](#-sicherheit--compliance)
+- [🧪 Tests & Qualität](#-tests--qualität)
+- [📚 Dokumentation](#-dokumentation)
+- [🤝 Beitragen](#-beitragen)
+- [📧 Kontakt](#-kontakt)
+- [📄 Lizenz](#-lizenz)
+
 ## 🎯 Projektvision
 
-ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit einem innovativen **KI-gestützten Architekturansatz**. Das System nutzt einen **AI Annotator**, um Funktionen, Metadaten, Regeln und Formulare flexibel zu analysieren, generieren und zu erweitern – damit wird das ERP zu einer sich selbst dokumentierenden und kontinuierlich lernenden Plattform.
+ERP SteinmetZ ist ein **modernes Enterprise Resource Planning System** mit einem innovativen **KI-gestützten Architekturansatz**. Das System nutzt einen **AI Annotator**, um Funktionen, Metadaten, Regeln und Formulare flexibel zu analysieren, generieren und zu erweitern – damit wird das ERP zu einer sich selbst dokumentierenden und kontinuierlich lernenden Plattform.
+
+### 🌟 Hauptmerkmale
+
+- **🤖 KI-Integration**: 13 AI-Provider (OpenAI, Ollama, Anthropic, Azure, Vertex AI, etc.)
+- **📊 15.472 Funktionsknoten**: Vollständiger Katalog in 11 Geschäftsbereichen
+- **🎨 Modern UI**: React 19 mit 4 Themes (Light, Dark, LCARS, High Contrast)
+- **🌍 Mehrsprachig**: 7 Sprachen (DE, EN, ES, FR, IT, PL, TR)
+- **🔄 Real-Time**: WebSocket-Integration für Live-Updates
+- **🏗️ Production-Ready**: Express 5 Backend mit TypeScript
+- **📱 Responsive**: Mobile-optimiert mit Touch-Interaktionen
+- **🔐 Sicher**: RBAC, GDPR-konform, Audit Trail
 
 ### Kernphilosophie
 
@@ -23,7 +50,7 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 - **Deterministische Basis**: Kernzahlen werden ausschließlich deterministisch berechnet
 - **RAG für Wissensmanagement**: Retrieval Augmented Generation nur für Text-/Webquellen
 
-## ✅ Aktueller Status (Stand: 9. Dezember 2025)
+## ✅ Aktueller Status (Stand: 20. Dezember 2025)
 
 > 📊 **System-Übersicht**: [Detaillierter System-Status](docs/SYSTEM_STATUS.md) mit Performance-Metriken, Operational-Readiness und bekannten Einschränkungen
 
@@ -177,35 +204,52 @@ ERP SteinmetZ ist ein **vollständiges Enterprise Resource Planning System** mit
 
 ### Voraussetzungen
 
-- Node.js >= 18.18.0
-- npm oder yarn
+- **Node.js** >= 18.18.0
+- **npm** oder yarn
+- **Git** für Repository-Kloning
 
-### Installation & Start
+### 🔧 Installation & Start (5 Minuten)
 
 ```bash
-# Dependencies installieren
+# 1. Repository klonen
+git clone https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1.git
+cd ERP_SteinmetZ_V1
+
+# 2. Dependencies installieren
 npm install
 
-# Development Modus (Frontend + Backend)
+# 3. Umgebungsvariablen konfigurieren (optional)
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env
+# Bearbeiten Sie die .env-Dateien nach Bedarf
+
+# 4. Development Server starten
 npm run dev
+# Alternativ: Nur Frontend oder nur Backend
+# npm run dev:frontend
+# npm run dev:backend
+```
 
-# Nur Frontend
-npm run dev:frontend
+### 🌐 URLs & Zugriff
 
-# Nur Backend
-npm run dev:backend
+Nach erfolgreichem Start sind folgende URLs verfügbar:
 
-# Production Build
+- **Frontend (Hauptanwendung):** http://localhost:5173
+- **Backend API:** http://localhost:3000
+- **Health Check:** http://localhost:3000/api/health
+- **API Funktionskatalog:** http://localhost:3000/api/functions
+
+### 📦 Production Build & Deployment
+
+```bash
+# Build für Production
 npm run build
+
+# Production Server starten
 npm start
 ```
 
-### URLs
-
-- **Frontend:** localhost:5173
-- **Backend:** localhost:3000
-- **Health Check:** localhost:3000/api/health
-- **API Docs:** localhost:3000/api/functions
+> 💡 **Weitere Informationen:** Siehe [Developer Onboarding Guide](docs/DEVELOPER_ONBOARDING.md) für detaillierte Setup-Anweisungen und Troubleshooting.
 
 ### Frontend Routes ✨ NEU
 
@@ -395,26 +439,42 @@ Siehe [COMPLIANCE.md](docs/COMPLIANCE.md) für:
 
 ## 🧪 Tests & Qualität
 
+### Test-Befehle
+
 ```bash
+# Alle Tests ausführen
+npm test
+
+# Nur Backend-Tests
+npm test:backend
+
+# Nur Frontend-Tests
+npm test:frontend
+
+# Tests mit Coverage-Report
+npm test:coverage
+npm test:backend:coverage    # Nur Backend Coverage
+npm test:frontend:coverage   # Nur Frontend Coverage
+
+# Interactive Test UI
+npm test:ui
+
 # Linting
 npm run lint
 
+# Code-Formatierung
+npm run format
+
 # Build (prüft TypeScript)
 npm run build
-
-# Tests
-npm test              # Alle Tests
-npm test:backend      # Nur Backend (42 Tests)
-npm test:frontend     # Nur Frontend (50 Tests)
-npm test:coverage     # Mit Coverage-Report (LCOV, HTML, JSON)
 ```
 
 **Aktueller Test-Status:**
 
-- ✅ Backend: 42/42 Tests passing (100%)
-- ✅ Frontend: 50/50 Tests passing (100%)
-- ✅ Build: Vollständig erfolgreich
-- ✅ Code Coverage: Backend 47%, Frontend 96% (Ziel: Gesamt 80%+)
+- ⚠️ Backend: 10/16 Test-Dateien bestanden (6 failed)
+- ⚠️ Frontend: 3/4 Test-Dateien bestanden (1 failed)
+- ✅ Build: Vollständig erfolgreich (Frontend + Backend)
+- ✅ Code Coverage: Backend 57.73%, Frontend 71.42% (Ziel: Gesamt 80%+)
 
 **Code-Qualität & Coverage:**
 
@@ -422,74 +482,86 @@ npm test:coverage     # Mit Coverage-Report (LCOV, HTML, JSON)
 - ✅ **Coverage Reports** - LCOV, HTML, JSON Formate
 - ✅ **Quality Gates** - Automatische Qualitätsprüfung in CI/CD
 - ✅ **Security Scanning** - CodeQL + SonarQube Sicherheitsanalyse
+- ✅ **ESLint & Prettier** - Konsistente Code-Formatierung
+- ✅ **TypeScript strict mode** - Vollständige Typsicherheit
 
-Siehe [SonarQube Guide](docs/SONARQUBE.md) und [CI/CD Setup](CI_CD_SETUP.md) für Details.
+> 📚 **Weitere Informationen:**
+>
+> - [SonarQube Guide](docs/SONARQUBE.md) - Code-Qualität und Coverage
+> - [CI/CD Setup](docs/development/CI_CD_SETUP.md) - Continuous Integration
+> - [Code Conventions](docs/CODE_CONVENTIONS.md) - Coding Standards
 
 ## 📚 Dokumentation
 
-### 🚀 Schnellstart
+> 📘 **Zentrale Anlaufstelle**: [Documentation Hub](docs/README.md) - Vollständiger Index aller Dokumentation
 
-- **[Getting Started Tutorial](docs/tutorials/getting-started.md)** - 5-Minuten-Setup für neue Entwickler
-- **[Documentation Hub](docs/README.md)** - Zentraler Dokumentations-Index mit allen Guides
-- **[COPILOT_RULESET.md](docs/development/COPILOT_RULESET.md)** - Entwicklungsrichtlinien für Copilot
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution Guidelines
-- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** - Community Standards
-- **[SECURITY.md](SECURITY.md)** - Security Policy
-- **[SUPPORT.md](docs/SUPPORT.md)** - Getting Help & FAQ
+### 🎯 Schnelleinstieg nach Rolle
 
-### 📖 Dokumentations-Hub
+#### 👨‍💻 Für Entwickler
 
-- **[Documentation Hub](docs/README.md)** ⭐ NEU - Zentraler Dokumentations-Index
-  - Folgt **Diátaxis Framework** und **ISO/IEC/IEEE 26514** Standards
-  - 📚 **Tutorials** - Schritt-für-Schritt Anleitungen
-  - 🔧 **How-To Guides** - Lösungen für spezifische Probleme
-  - 📖 **Reference** - Technische Referenz-Dokumentation
-  - 💡 **Explanation** - Konzeptionelle Erklärungen
+1. **[Getting Started Tutorial](docs/tutorials/getting-started.md)** - 5-Minuten-Setup
+2. **[Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)** - Vollständiger Setup-Guide
+3. **[Code Conventions](docs/CODE_CONVENTIONS.md)** - Coding Standards & Best Practices
+4. **[Copilot Ruleset](docs/development/COPILOT_RULESET.md)** - Entwicklungsrichtlinien
 
-### Haupt-Dokumentation
+#### 🔌 Für API-Nutzer
+
+1. **[API Documentation Hub](docs/api/README.md)** - Vollständige API-Referenz
+2. **[Environment Variables](docs/ENVIRONMENT_VARIABLES.md)** - Konfigurationsreferenz
+3. **[Authentication Guide](docs/AUTHENTICATION.md)** - Auth-System & Setup
+
+#### 🏗️ Für Architekten
+
+1. **[System Architecture](docs/ARCHITECTURE.md)** - Architektur-Übersicht
+2. **[Architecture Decision Records](docs/adr/README.md)** - ADRs & Design-Entscheidungen
+3. **[System Status](docs/SYSTEM_STATUS.md)** - Aktueller System-Status & Performance
+
+### 📂 Wichtige Dokumentations-Kategorien
+
+#### Kern-Dokumentation
+
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Beitragsrichtlinien
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** - Community-Standards
+- **[SECURITY.md](SECURITY.md)** - Sicherheitsrichtlinien
+- **[CHANGELOG.md](CHANGELOG.md)** - Versionshistorie
+- **[SUPPORT.md](docs/SUPPORT.md)** - Hilfe & FAQ
+
+#### Entwicklung & Projektmanagement
 
 - **[TODO.md](docs/development/TODO.md)** - Priorisierte Aufgabenliste
 - **[ISSUES.md](docs/development/ISSUES.md)** - Aktive Issues & Technical Debt
-- **[CHANGELOG.md](CHANGELOG.md)** - Projekt-Changelog mit allen Versionen
-- **[ARCHIVE.md](docs/archive/ARCHIVE.md)** - Behobene Issues & alte Changelogs
+- **[CI/CD Setup](docs/development/CI_CD_SETUP.md)** - Continuous Integration
+- **[Scripts Guide](docs/development/SCRIPTS.md)** - NPM Scripts & Tools
 
-### Architektur & Konzept
+#### Architektur & Konzept
 
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System-Architektur & Production-Readiness
-- **[Architecture Decision Records](docs/adr/README.md)** - Architektur-Entscheidungen
-- **[AUTHENTICATION.md](docs/AUTHENTICATION.md)** - Authentifizierungs-System
-- **[COMPLIANCE.md](docs/COMPLIANCE.md)** - Sicherheit, Datenschutz & GoBD
+- **[Architecture Decision Records](docs/adr/README.md)** - Architektur-Entscheidungen (ADRs)
+- **[Compliance](docs/COMPLIANCE.md)** - Sicherheit, Datenschutz & GoBD
 - **[Konzept](docs/concept/_0_KONZEPT.md)** - Vollständiges Projektkonzept
 - **[Roadmap](docs/concept/_ROADMAP.md)** - Detaillierte Projektphasen
 
-### Entwickler-Dokumentation
+#### Modul-Dokumentation
 
-- **[Copilot Ruleset](docs/development/COPILOT_RULESET.md)** - Entwicklungsrichtlinien & Arbeitsweise
-- **[Developer Onboarding](docs/DEVELOPER_ONBOARDING.md)** - Komplette Setup-Anleitung
-- **[Code Conventions](docs/CODE_CONVENTIONS.md)** - Coding Standards & Best Practices
-- **[Error Standardization Guide](docs/ERROR_STANDARDIZATION_GUIDE.md)** - Error-Handling Guide
-- **[Environment Variables](docs/ENVIRONMENT_VARIABLES.md)** - Konfigurationsreferenz
-- **[Database Migrations](docs/DATABASE_MIGRATIONS.md)** - Datenbank-Migrationen
-- **[CI/CD Setup](docs/development/CI_CD_SETUP.md)** - Continuous Integration & Deployment
-- **[Scripts Guide](docs/development/SCRIPTS.md)** - Verfügbare NPM Scripts und Tools
-
-### API-Dokumentation
-
-- **[API Documentation Hub](docs/api/README.md)** - Vollständige API-Referenz
-- **[AI Router](apps/backend/src/routes/ai/docs/)** - AI-API-Dokumentation
-- **[AI Annotator](apps/backend/src/routes/aiAnnotatorRouter/docs/)** - AI Annotator API
-- **[Dashboard](apps/backend/src/routes/dashboard/docs/)** - Dashboard-API
-- **[Functions Catalog](apps/backend/src/routes/functionsCatalog/docs/)** - Funktionskatalog-API
-- **[HR Module](apps/backend/src/routes/hr/docs/)** - Personal & HR Management API
-- **[Finance Module](apps/backend/src/routes/finance/docs/)** - Finanzen & Controlling API
-- **[Document Management](apps/backend/src/routes/documents/docs/)** - DMS API ✨ NEU
-
-### Erweiterte Themen
-
+- **[HR Module Guide](docs/HR_MODULE_GUIDE.md)** - Personalwesen & HR Management
+- **[Finance Module Guide](docs/FINANCE_MODULE_GUIDE.md)** - Finanzen & Controlling
 - **[AI Annotator Workflow](docs/AI_ANNOTATOR_WORKFLOW.md)** - KI-gestützte Annotation
 - **[Function Node Transformation](docs/FUNCTION_NODE_TRANSFORMATION.md)** - Code-Generierung
+
+#### Erweiterte Themen
+
 - **[Performance Features](docs/PERFORMANCE_FEATURES.md)** - Optimierung & Caching
 - **[Advanced Features](docs/ADVANCED_FEATURES.md)** - Fortgeschrittene Features
+- **[WebSocket Real-Time](docs/WEBSOCKET_REALTIME.md)** - Real-Time-Updates
+- **[Error Handling](docs/ERROR_HANDLING.md)** - Fehlerbehandlung & Recovery
+
+### 📖 Dokumentations-Framework
+
+Die Dokumentation folgt dem **[Diátaxis Framework](https://diataxis.fr/)** und **ISO/IEC/IEEE 26514** Standards:
+
+- **📚 Tutorials** - Learning-oriented: Schritt-für-Schritt Anleitungen
+- **🔧 How-To Guides** - Problem-oriented: Lösungen für spezifische Probleme
+- **📖 Reference** - Information-oriented: Technische Referenz-Dokumentation
+- **💡 Explanation** - Understanding-oriented: Konzeptionelle Erklärungen
 
 ## 🤝 Beitragen
 
@@ -524,9 +596,9 @@ Siehe LICENSE file für Details.
 ---
 
 **Version:** 0.3.0  
-**Letztes Update:** 7. Dezember 2025  
+**Letztes Update:** 20. Dezember 2025  
 **Build-Status:** ✅ Erfolgreich (Backend + Frontend)  
-**Test-Status:** ✅ 134/134 bestanden (Backend: 84/84, Frontend: 50/50)  
+**Test-Status:** ⚠️ 13/20 Test-Dateien bestanden (Backend: 10/16, Frontend: 3/4)  
 **Dependencies:** ✅ 0 Vulnerabilities
 
 ---
@@ -598,28 +670,37 @@ Siehe LICENSE file für Details.
 
 ### 📋 Roadmap 2025-2026
 
-#### Q1 2025: Core-Module vervollständigen
+#### Q4 2025 (Aktuell): Stabilisierung & Qualität
+
+- [x] Frontend: React 19 + Vite Migration
+- [x] Backend: Express 5 + TypeScript
+- [x] AI-Integration: Multi-Provider-System
+- [x] Dokumentation: Umfassende Reorganisation
+- [ ] Test-Coverage: Stabilisierung auf 80%+
+- [ ] Code-Qualität: SonarQube Integration abschließen
+
+#### Q1 2026: Core-Module vervollständigen
 
 - [ ] HR-Modul: Vollständige CRUD-Operationen
 - [ ] Finance-Modul: Buchhaltungsintegration
 - [ ] AI-Annotator: Production-Ready
 - [ ] Function-Node-Transformation: MVP
 
-#### Q2 2025: Enterprise-Features
+#### Q2 2026: Enterprise-Features
 
 - [ ] Workflow-Engine (BPMN 2.0)
 - [ ] Document-Management (OCR, AI-Tagging)
 - [ ] Advanced Analytics (BI-Dashboard)
 - [ ] Multi-Tenant-Support
 
-#### Q3 2025: Compliance & Security
+#### Q3 2026: Compliance & Security
 
 - [ ] GoBD-Zertifizierung
 - [ ] DSGVO-Audit-Toolkit
 - [ ] Pen-Test & Security-Hardening
 - [ ] ISO 27001-Vorbereitung
 
-#### Q4 2025: AI & Automation
+#### Q4 2026: AI & Automation
 
 - [ ] RAG-System für Dokumentensuche
 - [ ] Process-Mining & Optimization
