@@ -206,6 +206,9 @@ export interface WorkflowStep {
   /** Name des Tools, Workflows oder API-Aufrufs */
   tool?: string;
 
+  /** @deprecated Legacy field - use 'tool' instead */
+  action?: string;
+
   /** Parameter, die an Tool oder Subworkflow übergeben werden */
   params?: Record<string, unknown>;
 
@@ -313,7 +316,7 @@ export interface WorkflowDefinition {
   on_error?: "continue" | "stop" | "skip" | "rollback";
 
   /** Zusatzinformationen (Autor, Kategorie etc.) */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 
   /** Workflow-Kategorie */
   category?: string;
@@ -339,7 +342,7 @@ export interface WorkflowDefinition {
   /** Ergänzungen für erweiterte Workflow-Funktionen */
   triggers?: Array<{
     type: "manual" | "schedule" | "event" | "api";
-    config: Record<string, any>;
+    config: Record<string, unknown>;
   }>;
 
   /** Berechtigungen für Workflow-Ausführung */
@@ -359,8 +362,28 @@ export interface WorkflowDefinition {
   };
 
   /** Input/Output-Schema für bessere Validierung */
-  input_schema?: Record<string, any>;
-  output_schema?: Record<string, any>;
+  input_schema?: Record<string, unknown>;
+  output_schema?: Record<string, unknown>;
+}
+
+/**
+ * Workflow execution input parameters
+ */
+export type WorkflowInput = Record<string, unknown>;
+
+/**
+ * Workflow execution result - can be any JSON-serializable value
+ */
+export type WorkflowResult = unknown;
+
+/**
+ * Context variables during workflow execution
+ */
+export interface WorkflowContext {
+  input: WorkflowInput;
+  last_result: WorkflowResult;
+  timestamp: string;
+  [key: string]: unknown;
 }
 
 /* ========================================================================== */
