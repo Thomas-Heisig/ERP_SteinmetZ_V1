@@ -678,7 +678,10 @@ router.post(
         widget: widgetConfig,
         preview: {
           type,
-          title: typeof node.meta?.title === "string" ? node.meta.title : node.title || "Untitled Widget",
+          title:
+            typeof node.meta?.title === "string"
+              ? node.meta.title
+              : node.title || "Untitled Widget",
         },
       },
     });
