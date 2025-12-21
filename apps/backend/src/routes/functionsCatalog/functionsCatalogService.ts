@@ -1079,9 +1079,7 @@ export class FunctionsCatalogService {
   }
 
   /** Menü‑Struktur, gefiltert nach Rollen/Features/Bereich */
-  async getMenuForContext(
-    ctx: MenuContext,
-  ): Promise<{
+  async getMenuForContext(ctx: MenuContext): Promise<{
     menu: MenuNode[];
     loadedAt: string;
     stats: BuildResult["stats"];

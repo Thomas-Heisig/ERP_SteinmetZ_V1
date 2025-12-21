@@ -234,7 +234,7 @@ router.delete(
 router.post(
   "/users/:userId/roles/:roleId",
   authenticate,
-  requirePermission("role_management:assign" as Permission),
+  requirePermission("role_management:assign"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const { expiresAt } = req.body;
 
@@ -267,7 +267,7 @@ router.post(
 router.delete(
   "/users/:userId/roles/:roleId",
   authenticate,
-  requirePermission("role_management:revoke" as Permission),
+  requirePermission("role_management:revoke"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const success = await rbacService.revokeRoleFromUser(
@@ -297,7 +297,7 @@ router.delete(
 router.get(
   "/users/:userId/roles",
   authenticate,
-  requirePermission("user_management:read" as Permission),
+  requirePermission("user_management:read"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const roles = await rbacService.getUserRoles(req.params.userId);
@@ -317,7 +317,7 @@ router.get(
 router.get(
   "/users/:userId/permissions",
   authenticate,
-  requirePermission("user_management:read" as Permission),
+  requirePermission("user_management:read"),
   asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
       const permissions = await rbacService.getUserPermissions(
@@ -390,7 +390,7 @@ router.post(
     try {
       const hasPermission = await rbacService.hasPermission(
         getUserId(req),
-        permission as Permission,
+        permission,
       );
       sendSuccess(res, "Permission check completed", {
         permission,

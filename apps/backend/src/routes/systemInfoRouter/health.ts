@@ -80,20 +80,18 @@ router.get("/", (_req: Request, res: Response) => {
   } catch (error) {
     console.error("Health (liveness) error:", error);
     res.setHeader("Cache-Control", "no-store");
-    return res
-      .status(200)
-      .json(
-        basePayload(
-          "degraded",
-          {
-            processUp: true,
-            hasOpenAIKey: false,
-            hasAnthropicKey: false,
-            hasOllamaUrl: false,
-          },
-          false,
-        ),
-      ); // liveness bleibt 200
+    return res.status(200).json(
+      basePayload(
+        "degraded",
+        {
+          processUp: true,
+          hasOpenAIKey: false,
+          hasAnthropicKey: false,
+          hasOllamaUrl: false,
+        },
+        false,
+      ),
+    ); // liveness bleibt 200
   }
 });
 
@@ -119,20 +117,18 @@ router.get("/readiness", async (_req: Request, res: Response) => {
   } catch (error) {
     console.error("Health (readiness) error:", error);
     res.setHeader("Cache-Control", "no-store");
-    return res
-      .status(503)
-      .json(
-        basePayload(
-          "unhealthy",
-          {
-            processUp: false,
-            hasOpenAIKey: false,
-            hasAnthropicKey: false,
-            hasOllamaUrl: false,
-          },
-          false,
-        ),
-      );
+    return res.status(503).json(
+      basePayload(
+        "unhealthy",
+        {
+          processUp: false,
+          hasOpenAIKey: false,
+          hasAnthropicKey: false,
+          hasOllamaUrl: false,
+        },
+        false,
+      ),
+    );
   }
 });
 

@@ -346,7 +346,9 @@ export class DashboardService {
       this.dbManager
         .queryOne<{
           count: number;
-        }>("SELECT COUNT(*) as count FROM dashboard_tasks WHERE status != 'completed'")
+        }>(
+          "SELECT COUNT(*) as count FROM dashboard_tasks WHERE status != 'completed'",
+        )
         .then((r) => r?.count ?? 0),
       this.dbManager
         .queryOne<{

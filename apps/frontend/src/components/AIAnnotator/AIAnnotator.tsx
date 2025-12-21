@@ -3,18 +3,18 @@
 
 /**
  * AI Annotator Component
- * 
+ *
  * Provides a comprehensive interface for managing AI-powered annotation of function nodes.
  * Features include node management, batch operations, quality reporting, and AI generation
  * of metadata, rules, and forms.
- * 
+ *
  * @module AIAnnotator
  * @category Components
- * 
+ *
  * @example
  * ```tsx
  * import { AIAnnotator } from './components/AIAnnotator/AIAnnotator';
- * 
+ *
  * function App() {
  *   return <AIAnnotator />;
  * }
@@ -28,7 +28,7 @@ import "./AIAnnotator.css";
 
 /**
  * Main AI Annotator component for function node annotation and management
- * 
+ *
  * @returns {React.FC} AI Annotator interface with dashboard, nodes, quality, and batch tabs
  */
 export const AIAnnotator: React.FC = () => {

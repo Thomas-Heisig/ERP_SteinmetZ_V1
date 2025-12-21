@@ -3,19 +3,19 @@
 
 /**
  * Help Center Component
- * 
+ *
  * Provides a comprehensive help and documentation interface with categorized
  * articles, search functionality, and markdown rendering capabilities.
  * Displays documentation from various categories including getting started,
  * architecture, modules, tutorials, and reference materials.
- * 
+ *
  * @module HelpCenter
  * @category Components
- * 
+ *
  * @example
  * ```tsx
  * import { HelpCenter } from './components/HelpCenter/HelpCenter';
- * 
+ *
  * function App() {
  *   return <HelpCenter />;
  * }

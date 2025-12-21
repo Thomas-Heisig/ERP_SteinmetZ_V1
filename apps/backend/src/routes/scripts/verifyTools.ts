@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/scripts/verifyTools.ts
-import { loadAllTools, toolRegistry } from "../routes/ai/tools/index.ts";
+import { loadAllTools, toolRegistry } from "../../routes/ai/tools/index.js";
 
 async function main() {
   try {

@@ -170,10 +170,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigationSections = getNavigationSections();
-  
+
   // Track which sections are expanded (default: main sections expanded)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(["sidebar.main", "sidebar.business", "sidebar.finance"])
+    new Set(["sidebar.main", "sidebar.business", "sidebar.finance"]),
   );
 
   const handleToggle = useCallback(() => {
@@ -221,7 +221,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <nav className={styles.nav} aria-label={t("sidebar.title")}>
         {navigationSections.map((section) => {
           const isExpanded = expandedSections.has(section.titleKey);
-          
+
           return (
             <div key={section.titleKey} className={styles.section}>
               {!isCollapsed && (
@@ -236,7 +236,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </span>
                 </button>
               )}
-              <ul 
+              <ul
                 className={`${styles.items} ${!isExpanded && !isCollapsed ? styles.itemsCollapsed : ""}`}
               >
                 {section.items.map((item) => (
@@ -254,7 +254,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       </span>
                       {!isCollapsed && (
                         <>
-                          <span className={styles.label}>{t(item.labelKey)}</span>
+                          <span className={styles.label}>
+                            {t(item.labelKey)}
+                          </span>
                           {item.badge !== undefined && (
                             <span className={styles.badge}>{item.badge}</span>
                           )}

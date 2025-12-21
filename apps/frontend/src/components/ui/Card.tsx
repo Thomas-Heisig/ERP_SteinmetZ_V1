@@ -3,14 +3,14 @@
 
 /**
  * Card Component
- * 
+ *
  * A versatile container component for displaying content with optional
  * header, title, subtitle, icon, and actions. Supports multiple visual
  * variants and padding options.
- * 
+ *
  * @module Card
  * @category UI Components
- * 
+ *
  * @example
  * ```tsx
  * <Card
@@ -22,7 +22,7 @@
  * >
  *   <p>Card content goes here</p>
  * </Card>
- * 
+ *
  * // Glass variant for modern UI
  * <Card variant="glass" padding="lg">
  *   <h2>Glassmorphism Design</h2>
@@ -61,7 +61,7 @@ export interface CardProps {
 
 /**
  * Card component for structured content display
- * 
+ *
  * @param {CardProps} props - Card configuration props
  * @returns {React.FC} Rendered card element
  */

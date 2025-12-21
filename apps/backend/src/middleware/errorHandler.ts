@@ -114,7 +114,7 @@ export function errorHandler(
       code: ErrorCode.VALIDATION_ERROR,
       message: "Validation failed",
       statusCode,
-      details: validationErr.issues || validationErr.errors,
+      details: { issues: validationErr.issues || validationErr.errors },
       timestamp: new Date().toISOString(),
       path: req.path,
       requestId,
