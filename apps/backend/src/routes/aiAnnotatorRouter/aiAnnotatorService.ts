@@ -1713,8 +1713,7 @@ export class AiAnnotatorService extends EventEmitter {
   private async callLocal(prompt: string): Promise<string> {
     logger.info(
       { promptLength: prompt.length },
-      "[local] Aufruf:",
-      prompt.slice(0, 100) + "...",
+      `[local] Aufruf: ${prompt.slice(0, 100)}...`,
     );
     // Dummy‑Implementierung – in Produktion durch echten Service ersetzen
     if (prompt.includes("METADATEN‑GENERIERUNG")) {

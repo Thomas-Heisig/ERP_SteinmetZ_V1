@@ -95,11 +95,10 @@ const generateSchema = z.object({
   options: z
     .object({
       modelPreference: z.enum(["fast", "balanced", "accurate"]).optional(),
-      includeValidation: z.boolean().optional().default(true),
-      parallel: z.boolean().optional().default(true),
+      includeValidation: z.boolean().optional(),
+      parallel: z.boolean().optional(),
     })
-    .optional()
-    .default({}),
+    .optional(),
 });
 
 // Type for validated generate options
@@ -128,14 +127,13 @@ const batchOperationSchema = z.object({
   }),
   options: z
     .object({
-      retryFailed: z.boolean().optional().default(true),
-      maxRetries: z.number().int().positive().optional().default(3),
-      chunkSize: z.number().int().positive().optional().default(10),
-      parallelRequests: z.number().int().positive().optional().default(2),
+      retryFailed: z.boolean().optional(),
+      maxRetries: z.number().int().positive().optional(),
+      chunkSize: z.number().int().positive().optional(),
+      parallelRequests: z.number().int().positive().optional(),
       modelPreference: z.enum(["fast", "balanced", "accurate"]).optional(),
     })
-    .optional()
-    .default({}),
+    .optional(),
 });
 
 // Type for validated batch options
@@ -180,12 +178,11 @@ function catalogNodeToAnnotationFormat(node: CatalogNode): NodeForAnnotation {
     id: node.id,
     title: node.title,
     kind: node.kind,
-    parent_id: node.parent_id,
-    meta_json: node.meta,
-    schema_json: node.schema,
-    rule_json: undefined, // CatalogNode doesn't have rules
-    form_json: undefined, // CatalogNode doesn't have forms
-    breadcrumbs: [], // Will be added if needed
+    path: node.path,
+    meta_json: node.meta || null,
+    schema_json: node.schema || null,
+    aa_json: node.aa || null,
+    source_file: node.source?.file || null,
   };
 }
 
@@ -238,8 +235,8 @@ async function mergeFunctionData(
   let coverage = 0;
   if (node.meta || annotationData?.meta_json) coverage += 0.25;
   if (node.schema || annotationData?.schema_json) coverage += 0.25;
-  if (annotationData?.rule_json) coverage += 0.25;
-  if (annotationData?.form_json) coverage += 0.25;
+  if (annotationData?.rule) coverage += 0.25;
+  if (annotationData) coverage += 0.25; // Has annotation at all
 
   return {
     id: node.id,
@@ -250,13 +247,13 @@ async function mergeFunctionData(
       (annotationData?.meta_json as GeneratedMeta) ||
       (node.meta as GeneratedMeta),
     schema: annotationData?.schema_json || node.schema,
-    rule: annotationData?.rule_json as DashboardRule | undefined,
-    form: annotationData?.form_json as FormSpec | undefined,
+    rule: annotationData?.rule,
+    form: undefined, // Forms not currently stored in annotation
     quality: {
       annotated: !!annotationData,
       validated: !!annotationData?.meta_json,
       coverage,
-      last_updated: annotationData ? new Date().toISOString() : undefined,
+      last_updated: annotationData?.last_annotated,
     },
   };
 }
@@ -314,7 +311,7 @@ router.get(
     res.json({
       success: true,
       data: {
-        status: health.healthy ? "healthy" : "degraded",
+        status: health.overall,
         timestamp: new Date().toISOString(),
         ...health,
       },
@@ -405,7 +402,14 @@ router.post(
   strictAiRateLimiter,
   asyncHandler(async (req, res) => {
     const validated = generateSchema.parse(req.body);
-    const { types, force, options } = validated;
+    const { types, force, options: rawOptions } = validated;
+    
+    // Apply defaults manually
+    const options: GenerateOptions = {
+      parallel: rawOptions?.parallel ?? true,
+      includeValidation: rawOptions?.includeValidation ?? true,
+      modelPreference: rawOptions?.modelPreference,
+    };
 
     // Get node from catalog
     const node = await catalogService.getNodeById(req.params.id);
@@ -468,13 +472,6 @@ router.post(
         if (type === "widget") {
           results.widget = { type: "kpi-card", placeholder: true };
         }
-      }
-    }
-
-    // Save results (if force or not exists)
-    if (force || !node.meta_json) {
-      if (results.meta) {
-        await aiAnnotatorService.saveMeta(req.params.id, results.meta);
       }
     }
 
@@ -552,7 +549,16 @@ router.post(
   strictAiRateLimiter,
   asyncHandler(async (req, res) => {
     const validated = batchOperationSchema.parse(req.body);
-    const { operation, filters, options } = validated;
+    const { operation, filters, options: rawOptions } = validated;
+    
+    // Apply defaults manually
+    const options: BatchOptions = {
+      retryFailed: rawOptions?.retryFailed ?? true,
+      maxRetries: rawOptions?.maxRetries ?? 3,
+      chunkSize: rawOptions?.chunkSize ?? 10,
+      parallelRequests: rawOptions?.parallelRequests ?? 2,
+      modelPreference: rawOptions?.modelPreference ?? "balanced",
+    };
 
     // Get matching functions from catalog
     const catalogIndex = await catalogService.getFunctionsIndex();
@@ -582,7 +588,7 @@ router.post(
         maxRetries: options.maxRetries,
         chunkSize: options.chunkSize,
         parallelRequests: options.parallelRequests,
-        modelPreference: options.modelPreference || "balanced",
+        modelPreference: options.modelPreference,
       },
     };
 
@@ -740,8 +746,18 @@ router.get(
 
     const results = await catalogService.search(searchParams, pagination);
 
-    // Merge with annotation data
-    const merged = await Promise.all(results.map(mergeFunctionData));
+    // Convert search results to CatalogNodes - we need to fetch the full nodes
+    const fullNodes = await Promise.all(
+      results.map(async (result) => {
+        const node = await catalogService.getNodeById(result.id);
+        return node;
+      }),
+    );
+
+    // Filter out any null results and merge with annotation data
+    const merged = await Promise.all(
+      fullNodes.filter((n): n is CatalogNode => n !== null).map(mergeFunctionData),
+    );
 
     res.json({
       success: true,
