@@ -251,11 +251,13 @@ export function registerTools(toolRegistry: {
       if (!Array.isArray(expressions) || expressions.length === 0)
         throw new Error("Keine Ausdrücke.");
 
-      const results = expressions.map((expr) => {
-        const parsed = sanitizeExpression(expr);
-        const result = Function(`"use strict"; return (${parsed})`)();
-        return { expression: expr, result };
-      }).filter((r) => isNumber(r.result));
+      const results = expressions
+        .map((expr) => {
+          const parsed = sanitizeExpression(expr);
+          const result = Function(`"use strict"; return (${parsed})`)();
+          return { expression: expr, result };
+        })
+        .filter((r) => isNumber(r.result));
 
       return { success: true, count: results.length, results };
     } catch (error) {

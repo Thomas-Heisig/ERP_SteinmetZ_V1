@@ -266,7 +266,10 @@ export class FinanceService {
   /**
    * Update an invoice
    */
-  async updateInvoice(id: string, data: UpdateInvoiceRequest): Promise<Invoice> {
+  async updateInvoice(
+    id: string,
+    data: UpdateInvoiceRequest,
+  ): Promise<Invoice> {
     const invoice = await this.getInvoiceById(id);
 
     if (invoice.status !== "draft") {
@@ -447,7 +450,9 @@ export class FinanceService {
       );
 
     logger.info({ id, name: data.name }, "Supplier created");
-    return this.db.prepare("SELECT * FROM suppliers WHERE id = ?").get(id) as Supplier;
+    return this.db
+      .prepare("SELECT * FROM suppliers WHERE id = ?")
+      .get(id) as Supplier;
   }
 
   // ============================================================================
@@ -501,8 +506,13 @@ export class FinanceService {
         data.description || null,
       );
 
-    logger.info({ id, type: data.type, amount: data.amount }, "Payment created");
-    return this.db.prepare("SELECT * FROM payments WHERE id = ?").get(id) as Payment;
+    logger.info(
+      { id, type: data.type, amount: data.amount },
+      "Payment created",
+    );
+    return this.db
+      .prepare("SELECT * FROM payments WHERE id = ?")
+      .get(id) as Payment;
   }
 
   // ============================================================================
@@ -541,7 +551,9 @@ export class FinanceService {
   /**
    * Create a new transaction
    */
-  async createTransaction(data: CreateTransactionRequest): Promise<Transaction> {
+  async createTransaction(
+    data: CreateTransactionRequest,
+  ): Promise<Transaction> {
     const id = `T${String(Date.now()).slice(-6)}`;
 
     this.db
@@ -560,7 +572,9 @@ export class FinanceService {
       );
 
     logger.info({ id, amount: data.amount }, "Transaction created");
-    return this.db.prepare("SELECT * FROM transactions WHERE id = ?").get(id) as Transaction;
+    return this.db
+      .prepare("SELECT * FROM transactions WHERE id = ?")
+      .get(id) as Transaction;
   }
 
   // ============================================================================

@@ -3,10 +3,7 @@
 // Environment configuration validation tests
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import {
-  validateProviderConfig,
-  validateProductionConfig,
-} from "./env";
+import { validateProviderConfig, validateProductionConfig } from "./env";
 import type { Env } from "./env";
 
 describe("validateProviderConfig", () => {
@@ -202,16 +199,13 @@ describe("validateProductionConfig", () => {
 
     it("should throw error for weak JWT_SECRET with common placeholder", () => {
       mockEnv.JWT_SECRET = "change-me-in-production-but-still-long-enough";
-      expect(() => validateProductionConfig(mockEnv)).toThrow(
-        "default/weak",
-      );
+      expect(() => validateProductionConfig(mockEnv)).toThrow("default/weak");
     });
 
     it("should throw error for weak JWT_SECRET with 'secret' keyword", () => {
-      mockEnv.JWT_SECRET = "this-is-my-secret-key-but-not-changing-it-1234567890";
-      expect(() => validateProductionConfig(mockEnv)).toThrow(
-        "default/weak",
-      );
+      mockEnv.JWT_SECRET =
+        "this-is-my-secret-key-but-not-changing-it-1234567890";
+      expect(() => validateProductionConfig(mockEnv)).toThrow("default/weak");
     });
 
     it("should pass validation with strong JWT_SECRET", () => {
@@ -283,9 +277,7 @@ describe("validateProductionConfig", () => {
     it("should validate provider config when applicable", () => {
       mockEnv.AI_PROVIDER = "openai";
       delete mockEnv.OPENAI_API_KEY;
-      expect(() => validateProductionConfig(mockEnv)).toThrow(
-        "OPENAI_API_KEY",
-      );
+      expect(() => validateProductionConfig(mockEnv)).toThrow("OPENAI_API_KEY");
     });
   });
 });

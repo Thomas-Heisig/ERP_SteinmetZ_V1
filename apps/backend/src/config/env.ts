@@ -100,10 +100,10 @@ export type Env = z.infer<typeof envSchema>;
 
 /**
  * Validate and parse environment variables
- * 
+ *
  * Reads from process.env and validates against the defined schema.
  * Provides detailed error messages for validation failures.
- * 
+ *
  * @returns {Env} Validated environment configuration
  * @throws {Error} if validation fails with descriptive messages
  */
@@ -116,7 +116,7 @@ export function validateEnv(): Env {
     if (error instanceof z.ZodError) {
       logger.error({ issues: error.issues }, "Environment validation failed");
       console.error("❌ Environment variable validation failed:");
-      
+
       if ("issues" in error && Array.isArray(error.issues)) {
         error.issues.forEach((issue: z.ZodIssue) => {
           const path = issue.path ? issue.path.join(".") : "unknown";
@@ -131,17 +131,17 @@ export function validateEnv(): Env {
 
 /**
  * Get validated environment configuration
- * 
+ *
  * Returns cached configuration after first validation to avoid repeated parsing.
  * This is the primary way to access environment variables throughout the application.
- * 
+ *
  * @example
  * ```typescript
  * const env = getEnv();
  * const port = env.PORT;
  * const dbUrl = env.DATABASE_URL;
  * ```
- * 
+ *
  * @returns {Env} Cached validated environment configuration
  */
 let cachedEnv: Env | null = null;
@@ -155,14 +155,14 @@ export function getEnv(): Env {
 
 /**
  * Validate AI provider-specific configuration requirements
- * 
+ *
  * Different AI providers require different environment variables.
  * This function checks that all required variables for the selected
  * provider are present and valid.
- * 
+ *
  * @param {Env} env - Environment configuration to validate
  * @throws {Error} if required provider variables are missing
- * 
+ *
  * @example
  * ```typescript
  * const env = validateEnv();
@@ -208,7 +208,7 @@ export function validateProviderConfig(env: Env): void {
 
   if (env.DB_DRIVER === "sqlite" && !env.SQLITE_FILE) {
     logger.warn(
-      "SQLITE_FILE not explicitly set, using default: ../../data/dev.sqlite3"
+      "SQLITE_FILE not explicitly set, using default: ../../data/dev.sqlite3",
     );
     console.warn(
       "⚠️  SQLITE_FILE not set, using default: ../../data/dev.sqlite3",
@@ -227,18 +227,18 @@ export function validateProviderConfig(env: Env): void {
 
 /**
  * Validate production-specific environment configuration
- * 
+ *
  * Performs comprehensive security and reliability checks for production environments:
  * - JWT secret strength and validity
  * - Database configuration appropriateness
  * - Security settings and CORS configuration
  * - Warnings for potential development defaults in production
- * 
+ *
  * Skips validation entirely in non-production environments (development, test).
- * 
+ *
  * @param {Env} env - Environment configuration to validate
  * @throws {Error} if critical production requirements are not met
- * 
+ *
  * @example
  * ```typescript
  * const env = getEnv();
@@ -247,7 +247,9 @@ export function validateProviderConfig(env: Env): void {
  */
 export function validateProductionConfig(env: Env): void {
   if (env.NODE_ENV !== "production") {
-    logger.debug("Skipping production validation in non-production environment");
+    logger.debug(
+      "Skipping production validation in non-production environment",
+    );
     return; // Skip production validation in dev/test
   }
 
@@ -306,7 +308,10 @@ export function validateProductionConfig(env: Env): void {
     env.CORS_ORIGIN.includes("localhost") ||
     env.CORS_ORIGIN.includes("127.0.0.1")
   ) {
-    logger.warn({ corsOrigin: env.CORS_ORIGIN }, "Overly permissive CORS in production");
+    logger.warn(
+      { corsOrigin: env.CORS_ORIGIN },
+      "Overly permissive CORS in production",
+    );
     console.warn(
       "⚠️  WARNING: CORS_ORIGIN contains localhost or wildcard in production. This may be a security risk.",
     );
@@ -320,19 +325,19 @@ export function validateProductionConfig(env: Env): void {
 
 /**
  * Comprehensive environment validation
- * 
+ *
  * Main entry point for environment validation that should be called
  * at application startup. Combines general validation with production-specific checks.
- * 
+ *
  * This function:
  * 1. Validates all environment variables against the schema
  * 2. Performs provider-specific validation
  * 3. Performs production-specific validation if applicable
  * 4. Returns the validated environment configuration
- * 
+ *
  * @returns {Env} Fully validated environment configuration
  * @throws {Error} if any validation step fails
- * 
+ *
  * @example
  * ```typescript
  * // At application startup
@@ -343,7 +348,7 @@ export function validateProductionConfig(env: Env): void {
 export function validateEnvironment(): Env {
   logger.info(
     { nodeEnv: process.env.NODE_ENV || "not set" },
-    "Starting environment validation"
+    "Starting environment validation",
   );
   const env = validateEnv();
   validateProductionConfig(env);

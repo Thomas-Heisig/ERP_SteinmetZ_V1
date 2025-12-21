@@ -27,24 +27,24 @@ npm run dev
 
 ## Modul-Übersicht
 
-| Modul | Datei | Funktion |
-| --- | --- | --- |
-| **Router** | `documentsRouter.ts` | Main API Router |
-| **Handlers** | `handlers/*.ts` | Request Processing |
-| **Services** | `services/*.ts` | Business Logic |
-| **Types** | `types/documents.ts` | TypeScript Definitionen |
-| **Utils** | `utils/*.ts` | Helper Funktionen |
-| **Tests** | `tests/*.test.ts` | Unit/Integration Tests |
+| Modul        | Datei                | Funktion                |
+| ------------ | -------------------- | ----------------------- |
+| **Router**   | `documentsRouter.ts` | Main API Router         |
+| **Handlers** | `handlers/*.ts`      | Request Processing      |
+| **Services** | `services/*.ts`      | Business Logic          |
+| **Types**    | `types/documents.ts` | TypeScript Definitionen |
+| **Utils**    | `utils/*.ts`         | Helper Funktionen       |
+| **Tests**    | `tests/*.test.ts`    | Unit/Integration Tests  |
 
 ## Kernfeatures
 
 - ✅ Upload & Versionierung - Dokumente mit Änderungsverlauf  
-✅ OCR - Texterkennung aus Scans  
-✅ AI-Tags - Automatische Verschlagwortung  
-✅ Full-Text Search - Intelligente Suche  
-✅ Workflows - Genehmigungsprozesse  
-✅ E-Signature - Elektronische Unterschriften  
-✅ Retention - Aufbewahrungsfristen (DSGVO)  
+  ✅ OCR - Texterkennung aus Scans  
+  ✅ AI-Tags - Automatische Verschlagwortung  
+  ✅ Full-Text Search - Intelligente Suche  
+  ✅ Workflows - Genehmigungsprozesse  
+  ✅ E-Signature - Elektronische Unterschriften  
+  ✅ Retention - Aufbewahrungsfristen (DSGVO)
 
 ## Quick Start API
 
@@ -71,14 +71,14 @@ curl -X POST http://localhost:3001/api/documents/:id/workflows
 
 ## Kategorien & Aufbewahrung
 
-| Kategorie | Aufbewahrung | Rechtsgrundlage |
-| --- | --- | --- |
-| invoice | 10 Jahre | HGB §257 |
-| contract | 6 Jahre | BGB §195 |
-| employee_document | 3 Jahre* | DSGVO Art. 17 |
-| report | 5 Jahre | Firmenpolicy |
-| correspondence | 5 Jahre | Firmenpolicy |
-| other | 1 Jahr | Firmenpolicy |
+| Kategorie         | Aufbewahrung | Rechtsgrundlage |
+| ----------------- | ------------ | --------------- |
+| invoice           | 10 Jahre     | HGB §257        |
+| contract          | 6 Jahre      | BGB §195        |
+| employee_document | 3 Jahre\*    | DSGVO Art. 17   |
+| report            | 5 Jahre      | Firmenpolicy    |
+| correspondence    | 5 Jahre      | Firmenpolicy    |
+| other             | 1 Jahr       | Firmenpolicy    |
 
 \*nach Ausscheiden
 
@@ -100,9 +100,9 @@ npm test:watch -- src/routes/documents
 ### Dokument hochladen
 
 ```typescript
-import { documentsRouter } from './documentsRouter';
+import { documentsRouter } from "./documentsRouter";
 
-app.use('/api/documents', documentsRouter);
+app.use("/api/documents", documentsRouter);
 
 // POST /api/documents/upload
 // Content-Type: multipart/form-data
@@ -153,7 +153,7 @@ DATABASE_URL="sqlite:./data/dev.sqlite3"
 ✅ Rollenbasierte Zugriffskontrolle (RBAC)  
 ✅ Dokumentenebenen-Berechtigungen  
 ✅ Vollständiges Audit-Trail  
-✅ Verschlüsselung im Ruhezustand  
+✅ Verschlüsselung im Ruhezustand
 
 ## Abhängigkeiten
 

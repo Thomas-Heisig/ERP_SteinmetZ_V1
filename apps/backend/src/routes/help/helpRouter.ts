@@ -129,9 +129,7 @@ const searchQuerySchema = z
   })
   .strict();
 
-function formatValidationErrors(
-  issues: ZodIssue[],
-): Record<string, unknown> {
+function formatValidationErrors(issues: ZodIssue[]): Record<string, unknown> {
   return {
     issues: issues.map((issue) => ({
       path: issue.path.join(".") || "root",
@@ -581,7 +579,10 @@ router.get("/stats", async (_req: Request, res: Response) => {
       topArticles,
     };
 
-    logger.info(stats as unknown as Record<string, unknown>, "Retrieved help statistics");
+    logger.info(
+      stats as unknown as Record<string, unknown>,
+      "Retrieved help statistics",
+    );
 
     res.json({
       success: true,

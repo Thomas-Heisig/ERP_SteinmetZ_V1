@@ -42,9 +42,18 @@
             <p class="subtitle">Echtzeit-Monitoring & Diagnose Dashboard</p>
           </div>
           <div class="button-group">
-            <button class="refresh-btn" id="refresh-btn">🔄 Aktualisieren</button>
-            <button class="refresh-btn refresh-btn-success" id="auto-refresh-toggle">⏱️ Auto-Refresh AN</button>
-            <button class="refresh-btn refresh-btn-danger" id="logout-btn">🚪 Abmelden</button>
+            <button class="refresh-btn" id="refresh-btn">
+              🔄 Aktualisieren
+            </button>
+            <button
+              class="refresh-btn refresh-btn-success"
+              id="auto-refresh-toggle"
+            >
+              ⏱️ Auto-Refresh AN
+            </button>
+            <button class="refresh-btn refresh-btn-danger" id="logout-btn">
+              🚪 Abmelden
+            </button>
           </div>
           <div class="timestamp" id="timestamp"></div>
         </header>
@@ -113,7 +122,9 @@
             </div>
             <div id="maintenance-calendar" class="calendar-padding">
               <div class="calendar-section">
-                <h3 class="calendar-section-header">Nächste Wartungstermine:</h3>
+                <h3 class="calendar-section-header">
+                  Nächste Wartungstermine:
+                </h3>
                 <div id="maintenance-list" class="loading">Loading...</div>
               </div>
               <div class="calendar-section-divider">
@@ -133,12 +144,24 @@
 
           <div class="tab-container">
             <div class="tab-buttons">
-              <button class="tab-button active" data-tab="routes-tab">🛣️ Routes</button>
-              <button class="tab-button" data-tab="resources-tab">💾 Resources</button>
-              <button class="tab-button" data-tab="environment-tab">🔧 Environment</button>
-              <button class="tab-button" data-tab="dependencies-tab">📦 Dependencies</button>
-              <button class="tab-button" data-tab="diagnostics-tab">🔍 Diagnostics</button>
-              <button class="tab-button" data-tab="functions-tab">⚙️ Functions</button>
+              <button class="tab-button active" data-tab="routes-tab">
+                🛣️ Routes
+              </button>
+              <button class="tab-button" data-tab="resources-tab">
+                💾 Resources
+              </button>
+              <button class="tab-button" data-tab="environment-tab">
+                🔧 Environment
+              </button>
+              <button class="tab-button" data-tab="dependencies-tab">
+                📦 Dependencies
+              </button>
+              <button class="tab-button" data-tab="diagnostics-tab">
+                🔍 Diagnostics
+              </button>
+              <button class="tab-button" data-tab="functions-tab">
+                ⚙️ Functions
+              </button>
             </div>
 
             <!-- Routes Tab -->
@@ -148,27 +171,37 @@
 
             <!-- Resources Tab -->
             <div id="resources-tab" class="tab-content">
-              <div id="resources-content" class="loading">Loading resources...</div>
+              <div id="resources-content" class="loading">
+                Loading resources...
+              </div>
             </div>
 
             <!-- Environment Tab -->
             <div id="environment-tab" class="tab-content">
-              <div id="environment-content" class="loading">Loading environment...</div>
+              <div id="environment-content" class="loading">
+                Loading environment...
+              </div>
             </div>
 
             <!-- Dependencies Tab -->
             <div id="dependencies-tab" class="tab-content">
-              <div id="dependencies-content" class="loading">Loading dependencies...</div>
+              <div id="dependencies-content" class="loading">
+                Loading dependencies...
+              </div>
             </div>
 
             <!-- Diagnostics Tab -->
             <div id="diagnostics-tab" class="tab-content">
-              <div id="diagnostics-content" class="loading">Loading diagnostics...</div>
+              <div id="diagnostics-content" class="loading">
+                Loading diagnostics...
+              </div>
             </div>
 
             <!-- Functions Tab -->
             <div id="functions-tab" class="tab-content">
-              <div id="functions-content" class="loading">Loading functions...</div>
+              <div id="functions-content" class="loading">
+                Loading functions...
+              </div>
             </div>
           </div>
         </div>

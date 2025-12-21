@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 // apps/backend/src/service/WarehouseService.ts
 
-import { DatabaseService } from './DatabaseService.js';
+import { DatabaseService } from "./DatabaseService.js";
 import {
   NotFoundError,
   ValidationError,
   DatabaseError,
-} from '../types/errors.js';
+} from "../types/errors.js";
 import {
   StockItem,
   StockMovement,
@@ -25,11 +25,11 @@ import {
   PickingStatus,
   ShipmentStatus,
   InventoryCountStatus,
-} from '../types/warehouse.js';
-import { createLogger } from '../utils/logger.js';
-import { v4 as uuidv4 } from 'uuid';
+} from "../types/warehouse.js";
+import { createLogger } from "../utils/logger.js";
+import { v4 as uuidv4 } from "uuid";
 
-const logger = createLogger('WarehouseService');
+const logger = createLogger("WarehouseService");
 
 type ShipmentTrackingEvent = {
   id: string;
@@ -69,42 +69,39 @@ export class WarehouseService {
     offset?: number;
   }) {
     try {
-      let sql = 'SELECT * FROM warehouse_stock WHERE 1=1';
+      let sql = "SELECT * FROM warehouse_stock WHERE 1=1";
       const params: Array<string | number> = [];
 
       if (filters?.category) {
-        sql += ' AND category = ?';
+        sql += " AND category = ?";
         params.push(filters.category);
       }
 
       if (filters?.status) {
-        sql += ' AND status = ?';
+        sql += " AND status = ?";
         params.push(filters.status);
       }
 
       if (filters?.location_id) {
-        sql += ' AND location_id = ?';
+        sql += " AND location_id = ?";
         params.push(filters.location_id);
       }
 
-      sql += ' LIMIT ? OFFSET ?';
+      sql += " LIMIT ? OFFSET ?";
       params.push(filters?.limit || 50, filters?.offset || 0);
 
       const items = await this.db.all<StockItem>(sql, params);
 
-      logger.debug(
-        { count: items.length, filters },
-        'Stock items retrieved'
-      );
+      logger.debug({ count: items.length, filters }, "Stock items retrieved");
 
       return items;
     } catch (error) {
-      logger.error({ error, filters }, 'Failed to get stock items');
+      logger.error({ error, filters }, "Failed to get stock items");
       throw new DatabaseError(
-        'Failed to retrieve stock items',
-        'SELECT * FROM warehouse_stock',
+        "Failed to retrieve stock items",
+        "SELECT * FROM warehouse_stock",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -118,24 +115,24 @@ export class WarehouseService {
   async getStockItemById(id: string): Promise<StockItem> {
     try {
       const item = await this.db.get<StockItem>(
-        'SELECT * FROM warehouse_stock WHERE id = ?',
-        [id]
+        "SELECT * FROM warehouse_stock WHERE id = ?",
+        [id],
       );
 
       if (!item) {
-        throw new NotFoundError('Stock item not found', { itemId: id });
+        throw new NotFoundError("Stock item not found", { itemId: id });
       }
 
-      logger.debug({ id }, 'Stock item retrieved');
+      logger.debug({ id }, "Stock item retrieved");
       return item;
     } catch (error) {
       if (error instanceof NotFoundError) throw error;
-      logger.error({ error, id }, 'Failed to get stock item');
+      logger.error({ error, id }, "Failed to get stock item");
       throw new DatabaseError(
-        'Failed to retrieve stock item',
-        'SELECT * FROM warehouse_stock WHERE id = ?',
+        "Failed to retrieve stock item",
+        "SELECT * FROM warehouse_stock WHERE id = ?",
         [id],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -149,7 +146,7 @@ export class WarehouseService {
    */
   async recordStockMovement(
     data: CreateStockMovement,
-    userId: string
+    userId: string,
   ): Promise<StockMovement> {
     try {
       // Validate item exists
@@ -158,7 +155,7 @@ export class WarehouseService {
       // Validate transfer has both locations
       if (data.type === MovementType.TRANSFER) {
         if (!data.from_location_id || !data.to_location_id) {
-          throw new ValidationError('Transfer requires from and to locations', {
+          throw new ValidationError("Transfer requires from and to locations", {
             from_location_id: data.from_location_id,
             to_location_id: data.to_location_id,
           });
@@ -185,7 +182,7 @@ export class WarehouseService {
             data.notes || null,
             userId,
             now,
-          ]
+          ],
         );
 
         // Update stock quantity
@@ -196,38 +193,39 @@ export class WarehouseService {
             : data.quantity;
 
         await this.db.run(
-          'UPDATE warehouse_stock SET quantity = quantity + ?, updated_at = ? WHERE id = ?',
-          [quantityChange, now, data.material_id]
+          "UPDATE warehouse_stock SET quantity = quantity + ?, updated_at = ? WHERE id = ?",
+          [quantityChange, now, data.material_id],
         );
       });
 
       logger.info(
         { movementId, materialId: data.material_id, type: data.type },
-        'Stock movement recorded'
+        "Stock movement recorded",
       );
 
       const movement = await this.db.get<StockMovement>(
-        'SELECT * FROM warehouse_stock_movements WHERE id = ?',
-        [movementId]
+        "SELECT * FROM warehouse_stock_movements WHERE id = ?",
+        [movementId],
       );
 
       if (!movement) {
         throw new DatabaseError(
-          'Failed to retrieve created stock movement',
-          'SELECT * FROM warehouse_stock_movements WHERE id = ?',
-          [movementId]
+          "Failed to retrieve created stock movement",
+          "SELECT * FROM warehouse_stock_movements WHERE id = ?",
+          [movementId],
         );
       }
 
       return movement;
     } catch (error) {
-      if (error instanceof NotFoundError || error instanceof ValidationError) throw error;
-      logger.error({ error, data }, 'Failed to record stock movement');
+      if (error instanceof NotFoundError || error instanceof ValidationError)
+        throw error;
+      logger.error({ error, data }, "Failed to record stock movement");
       throw new DatabaseError(
-        'Failed to record stock movement',
-        '',
+        "Failed to record stock movement",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -243,18 +241,21 @@ export class WarehouseService {
   async getWarehouseLocations(): Promise<WarehouseLocation[]> {
     try {
       const locations = await this.db.all<WarehouseLocation>(
-        'SELECT * FROM warehouse_locations WHERE is_active = 1'
+        "SELECT * FROM warehouse_locations WHERE is_active = 1",
       );
 
-      logger.debug({ count: locations.length }, 'Warehouse locations retrieved');
+      logger.debug(
+        { count: locations.length },
+        "Warehouse locations retrieved",
+      );
       return locations;
     } catch (error) {
-      logger.error({ error }, 'Failed to get warehouse locations');
+      logger.error({ error }, "Failed to get warehouse locations");
       throw new DatabaseError(
-        'Failed to retrieve warehouse locations',
-        'SELECT * FROM warehouse_locations',
+        "Failed to retrieve warehouse locations",
+        "SELECT * FROM warehouse_locations",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -265,7 +266,7 @@ export class WarehouseService {
    * @returns Created location
    */
   async createWarehouseLocation(
-    data: CreateLocation
+    data: CreateLocation,
   ): Promise<WarehouseLocation> {
     try {
       const id = uuidv4();
@@ -287,22 +288,22 @@ export class WarehouseService {
           1,
           now,
           now,
-        ]
+        ],
       );
 
-      logger.info({ id, code: data.code }, 'Warehouse location created');
+      logger.info({ id, code: data.code }, "Warehouse location created");
 
       return this.db.get<WarehouseLocation>(
-        'SELECT * FROM warehouse_locations WHERE id = ?',
-        [id]
+        "SELECT * FROM warehouse_locations WHERE id = ?",
+        [id],
       ) as Promise<WarehouseLocation>;
     } catch (error) {
-      logger.error({ error, data }, 'Failed to create warehouse location');
+      logger.error({ error, data }, "Failed to create warehouse location");
       throw new DatabaseError(
-        'Failed to create warehouse location',
-        '',
+        "Failed to create warehouse location",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -318,28 +319,27 @@ export class WarehouseService {
    */
   async getPickingLists(status?: string): Promise<PickingList[]> {
     try {
-      let sql =
-        'SELECT * FROM warehouse_picking_lists WHERE 1=1';
+      let sql = "SELECT * FROM warehouse_picking_lists WHERE 1=1";
       const params: Array<string | number> = [];
 
       if (status) {
-        sql += ' AND status = ?';
+        sql += " AND status = ?";
         params.push(status);
       }
 
-      sql += ' ORDER BY created_at DESC';
+      sql += " ORDER BY created_at DESC";
 
       const lists = await this.db.all<PickingList>(sql, params);
 
-      logger.debug({ count: lists.length, status }, 'Picking lists retrieved');
+      logger.debug({ count: lists.length, status }, "Picking lists retrieved");
       return lists;
     } catch (error) {
-      logger.error({ error }, 'Failed to get picking lists');
+      logger.error({ error }, "Failed to get picking lists");
       throw new DatabaseError(
-        'Failed to retrieve picking lists',
-        '',
+        "Failed to retrieve picking lists",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -350,34 +350,36 @@ export class WarehouseService {
    * @returns Picking list with items
    */
   async getPickingListById(
-    id: string
+    id: string,
   ): Promise<PickingList & { items: PickingItem[] }> {
     try {
       const list = await this.db.get<PickingList>(
-        'SELECT * FROM warehouse_picking_lists WHERE id = ?',
-        [id]
+        "SELECT * FROM warehouse_picking_lists WHERE id = ?",
+        [id],
       );
 
       if (!list) {
-        throw new NotFoundError('Picking list not found', { pickingListId: id });
+        throw new NotFoundError("Picking list not found", {
+          pickingListId: id,
+        });
       }
 
       const items = await this.db.all<PickingItem>(
-        'SELECT * FROM warehouse_picking_items WHERE picking_list_id = ?',
-        [id]
+        "SELECT * FROM warehouse_picking_items WHERE picking_list_id = ?",
+        [id],
       );
 
-      logger.debug({ id, itemCount: items.length }, 'Picking list retrieved');
+      logger.debug({ id, itemCount: items.length }, "Picking list retrieved");
 
       return { ...list, items };
     } catch (error) {
       if (error instanceof NotFoundError) throw error;
-      logger.error({ error, id }, 'Failed to get picking list');
+      logger.error({ error, id }, "Failed to get picking list");
       throw new DatabaseError(
-        'Failed to retrieve picking list',
-        '',
+        "Failed to retrieve picking list",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -390,7 +392,7 @@ export class WarehouseService {
    */
   async createPickingList(
     data: CreatePickingList,
-    userId: string
+    userId: string,
   ): Promise<PickingList> {
     try {
       const pickingListId = uuidv4();
@@ -412,7 +414,7 @@ export class WarehouseService {
             data.items.length,
             now,
             now,
-          ]
+          ],
         );
 
         // Create picking items
@@ -422,27 +424,39 @@ export class WarehouseService {
             `INSERT INTO warehouse_picking_items 
              (id, picking_list_id, material_id, quantity_required, location_id, created_at)
              VALUES (?, ?, ?, ?, ?, ?)`,
-            [itemId, pickingListId, item.material_id, item.quantity, item.location_id, now]
+            [
+              itemId,
+              pickingListId,
+              item.material_id,
+              item.quantity,
+              item.location_id,
+              now,
+            ],
           );
         }
       });
 
       logger.info(
-        { pickingListId, pickingNumber, orderId: data.order_id, createdBy: userId },
-        'Picking list created'
+        {
+          pickingListId,
+          pickingNumber,
+          orderId: data.order_id,
+          createdBy: userId,
+        },
+        "Picking list created",
       );
 
       return this.db.get<PickingList>(
-        'SELECT * FROM warehouse_picking_lists WHERE id = ?',
-        [pickingListId]
+        "SELECT * FROM warehouse_picking_lists WHERE id = ?",
+        [pickingListId],
       ) as Promise<PickingList>;
     } catch (error) {
-      logger.error({ error, data }, 'Failed to create picking list');
+      logger.error({ error, data }, "Failed to create picking list");
       throw new DatabaseError(
-        'Failed to create picking list',
-        '',
+        "Failed to create picking list",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -457,24 +471,34 @@ export class WarehouseService {
       const list = await this.getPickingListById(pickingListId);
 
       if (!list) {
-        throw new NotFoundError('Picking list not found', {
+        throw new NotFoundError("Picking list not found", {
           pickingListId,
         });
       }
 
       await this.db.run(
-        'UPDATE warehouse_picking_lists SET picker_id = ?, status = ?, updated_at = ? WHERE id = ?',
-        [pickerId, PickingStatus.IN_PROGRESS, new Date().toISOString(), pickingListId]
+        "UPDATE warehouse_picking_lists SET picker_id = ?, status = ?, updated_at = ? WHERE id = ?",
+        [
+          pickerId,
+          PickingStatus.IN_PROGRESS,
+          new Date().toISOString(),
+          pickingListId,
+        ],
       );
 
       logger.info(
         { pickingListId, pickerId },
-        'Picker assigned to picking list'
+        "Picker assigned to picking list",
       );
     } catch (error) {
       if (error instanceof NotFoundError) throw error;
-      logger.error({ error }, 'Failed to assign picker');
-      throw new DatabaseError('Failed to assign picker', '', [], this.toError(error));
+      logger.error({ error }, "Failed to assign picker");
+      throw new DatabaseError(
+        "Failed to assign picker",
+        "",
+        [],
+        this.toError(error),
+      );
     }
   }
 
@@ -485,13 +509,13 @@ export class WarehouseService {
    */
   async completePicking(
     pickingListId: string,
-    data: CompletePicking
+    data: CompletePicking,
   ): Promise<void> {
     try {
       const list = await this.getPickingListById(pickingListId);
 
       if (!list) {
-        throw new NotFoundError('Picking list not found', {
+        throw new NotFoundError("Picking list not found", {
           pickingListId,
         });
       }
@@ -505,22 +529,33 @@ export class WarehouseService {
             `UPDATE warehouse_picking_items 
              SET quantity_picked = ?, is_picked = ?, notes = ?, updated_at = ? 
              WHERE id = ?`,
-            [item.quantity_picked, item.quantity_picked > 0 ? 1 : 0, item.notes || null, now, item.picking_item_id]
+            [
+              item.quantity_picked,
+              item.quantity_picked > 0 ? 1 : 0,
+              item.notes || null,
+              now,
+              item.picking_item_id,
+            ],
           );
         }
 
         // Update picking list status
         await this.db.run(
-          'UPDATE warehouse_picking_lists SET status = ?, completed_at = ?, updated_at = ? WHERE id = ?',
-          [PickingStatus.COMPLETED, now, now, pickingListId]
+          "UPDATE warehouse_picking_lists SET status = ?, completed_at = ?, updated_at = ? WHERE id = ?",
+          [PickingStatus.COMPLETED, now, now, pickingListId],
         );
       });
 
-      logger.info({ pickingListId }, 'Picking completed');
+      logger.info({ pickingListId }, "Picking completed");
     } catch (error) {
       if (error instanceof NotFoundError) throw error;
-      logger.error({ error }, 'Failed to complete picking');
-      throw new DatabaseError('Failed to complete picking', '', [], this.toError(error));
+      logger.error({ error }, "Failed to complete picking");
+      throw new DatabaseError(
+        "Failed to complete picking",
+        "",
+        [],
+        this.toError(error),
+      );
     }
   }
 
@@ -535,31 +570,28 @@ export class WarehouseService {
    */
   async getShipments(status?: string): Promise<Shipment[]> {
     try {
-      let sql = 'SELECT * FROM warehouse_shipments WHERE 1=1';
+      let sql = "SELECT * FROM warehouse_shipments WHERE 1=1";
       const params: Array<string | number> = [];
 
       if (status) {
-        sql += ' AND status = ?';
+        sql += " AND status = ?";
         params.push(status);
       }
 
-      sql += ' ORDER BY created_at DESC';
+      sql += " ORDER BY created_at DESC";
 
       const shipments = await this.db.all<Shipment>(sql, params);
 
-      logger.debug(
-        { count: shipments.length, status },
-        'Shipments retrieved'
-      );
+      logger.debug({ count: shipments.length, status }, "Shipments retrieved");
 
       return shipments;
     } catch (error) {
-      logger.error({ error }, 'Failed to get shipments');
+      logger.error({ error }, "Failed to get shipments");
       throw new DatabaseError(
-        'Failed to retrieve shipments',
-        '',
+        "Failed to retrieve shipments",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -607,25 +639,25 @@ export class WarehouseService {
           maxH,
           now,
           now,
-        ]
+        ],
       );
 
       logger.info(
         { shipmentId, shipmentNumber, orderId: data.order_id },
-        'Shipment created'
+        "Shipment created",
       );
 
       return this.db.get<Shipment>(
-        'SELECT * FROM warehouse_shipments WHERE id = ?',
-        [shipmentId]
+        "SELECT * FROM warehouse_shipments WHERE id = ?",
+        [shipmentId],
       ) as Promise<Shipment>;
     } catch (error) {
-      logger.error({ error, data }, 'Failed to create shipment');
+      logger.error({ error, data }, "Failed to create shipment");
       throw new DatabaseError(
-        'Failed to create shipment',
-        '',
+        "Failed to create shipment",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -636,16 +668,16 @@ export class WarehouseService {
    * @returns Shipment with tracking events
    */
   async getShipmentTracking(
-    shipmentId: string
+    shipmentId: string,
   ): Promise<Shipment & { tracking_events: ShipmentTrackingEvent[] }> {
     try {
       const shipment = await this.db.get<Shipment>(
-        'SELECT * FROM warehouse_shipments WHERE id = ?',
-        [shipmentId]
+        "SELECT * FROM warehouse_shipments WHERE id = ?",
+        [shipmentId],
       );
 
       if (!shipment) {
-        throw new NotFoundError('Shipment not found', {
+        throw new NotFoundError("Shipment not found", {
           shipmentId,
         });
       }
@@ -654,23 +686,23 @@ export class WarehouseService {
         `SELECT * FROM warehouse_shipment_tracking 
          WHERE shipment_id = ? 
          ORDER BY timestamp DESC`,
-        [shipmentId]
+        [shipmentId],
       );
 
       logger.debug(
         { shipmentId, eventCount: events.length },
-        'Shipment tracking retrieved'
+        "Shipment tracking retrieved",
       );
 
       return { ...shipment, tracking_events: events };
     } catch (error) {
       if (error instanceof NotFoundError) throw error;
-      logger.error({ error }, 'Failed to get shipment tracking');
+      logger.error({ error }, "Failed to get shipment tracking");
       throw new DatabaseError(
-        'Failed to retrieve shipment tracking',
-        '',
+        "Failed to retrieve shipment tracking",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -687,7 +719,7 @@ export class WarehouseService {
    */
   async createInventoryCount(
     data: CreateInventoryCount,
-    userId: string
+    userId: string,
   ): Promise<InventoryCount> {
     try {
       const countId = uuidv4();
@@ -708,25 +740,25 @@ export class WarehouseService {
           userId,
           now,
           now,
-        ]
+        ],
       );
 
       logger.info(
         { countId, countNumber, type: data.type },
-        'Inventory count created'
+        "Inventory count created",
       );
 
       return this.db.get<InventoryCount>(
-        'SELECT * FROM warehouse_inventory_counts WHERE id = ?',
-        [countId]
+        "SELECT * FROM warehouse_inventory_counts WHERE id = ?",
+        [countId],
       ) as Promise<InventoryCount>;
     } catch (error) {
-      logger.error({ error, data }, 'Failed to create inventory count');
+      logger.error({ error, data }, "Failed to create inventory count");
       throw new DatabaseError(
-        'Failed to create inventory count',
-        '',
+        "Failed to create inventory count",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }
@@ -750,7 +782,7 @@ export class WarehouseService {
           COUNT(*) as total_items,
           SUM(quantity * unit_cost) as total_value,
           SUM(CASE WHEN quantity < min_stock THEN 1 ELSE 0 END) as low_stock_items
-         FROM warehouse_stock`
+         FROM warehouse_stock`,
       );
 
       const stats = stockStats ?? {
@@ -762,10 +794,10 @@ export class WarehouseService {
       const pendingShipments = await this.db.get<{ count: number }>(
         `SELECT COUNT(*) as count FROM warehouse_shipments 
          WHERE status IN (?, ?)`,
-        [ShipmentStatus.PREPARED, ShipmentStatus.READY_FOR_SHIPMENT]
+        [ShipmentStatus.PREPARED, ShipmentStatus.READY_FOR_SHIPMENT],
       );
 
-      logger.debug({}, 'Warehouse analytics retrieved');
+      logger.debug({}, "Warehouse analytics retrieved");
 
       return {
         total_items: stats.total_items || 0,
@@ -779,12 +811,12 @@ export class WarehouseService {
         inventory_accuracy: 0.98,
       };
     } catch (error) {
-      logger.error({ error }, 'Failed to get warehouse analytics');
+      logger.error({ error }, "Failed to get warehouse analytics");
       throw new DatabaseError(
-        'Failed to retrieve warehouse analytics',
-        '',
+        "Failed to retrieve warehouse analytics",
+        "",
         [],
-        this.toError(error)
+        this.toError(error),
       );
     }
   }

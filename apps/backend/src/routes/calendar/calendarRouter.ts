@@ -88,11 +88,13 @@ export { RECURRENCE_TYPES } from "./types.js";
 async function ensureEventsTable(): Promise<void> {
   try {
     const tables = await db.all<{ name: string }>(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name = 'calendar_events'"
+      "SELECT name FROM sqlite_master WHERE type='table' AND name = 'calendar_events'",
     );
-    
+
     if (tables.length === 0) {
-      logger.warn("Calendar events table not found - migrations may not have run");
+      logger.warn(
+        "Calendar events table not found - migrations may not have run",
+      );
     } else {
       logger.info("Calendar events table verified");
     }
@@ -168,11 +170,7 @@ router.get(
     let events = rows.map(rowToEvent);
 
     if (start && end) {
-      events = expandRecurringEvents(
-        events,
-        new Date(start),
-        new Date(end),
-      );
+      events = expandRecurringEvents(events, new Date(start), new Date(end));
     }
 
     res.json({
@@ -324,7 +322,7 @@ router.put(
     }
 
     const existing = rowToEvent(existingRow);
-    
+
     // Zod-Validierung mit Fallback auf existierende Werte
     const validated = updateEventSchema.parse(req.body);
     const {
@@ -506,8 +504,10 @@ function rowToEvent(row: Record<string, unknown>): CalendarEvent {
     recurrenceEndDate: row.recurrence_end_date as string | undefined,
     reminders: JSON.parse((row.reminders_json as string) ?? "[]"),
     attendees: JSON.parse((row.attendees_json as string) ?? "[]"),
-    status: (row.status as "confirmed" | "tentative" | "cancelled") ?? "confirmed",
-    priority: (row.priority as "low" | "normal" | "high" | "urgent") ?? "normal",
+    status:
+      (row.status as "confirmed" | "tentative" | "cancelled") ?? "confirmed",
+    priority:
+      (row.priority as "low" | "normal" | "high" | "urgent") ?? "normal",
     timezone: (row.timezone as string) ?? "UTC",
     isPrivate: Boolean(row.is_private),
     url: row.url as string | undefined,
@@ -776,8 +776,13 @@ router.post(
 
       case "updateStatus": {
         const { status } = req.body.data ?? {};
-        if (!status || !["confirmed", "tentative", "cancelled"].includes(status)) {
-          throw new BadRequestError("Valid status required for updateStatus action");
+        if (
+          !status ||
+          !["confirmed", "tentative", "cancelled"].includes(status)
+        ) {
+          throw new BadRequestError(
+            "Valid status required for updateStatus action",
+          );
         }
         const placeholders3 = eventIds.map(() => "?").join(",");
         const result3 = await db.run(
@@ -790,8 +795,13 @@ router.post(
 
       case "updatePriority": {
         const { priority } = req.body.data ?? {};
-        if (!priority || !["low", "normal", "high", "urgent"].includes(priority)) {
-          throw new BadRequestError("Valid priority required for updatePriority action");
+        if (
+          !priority ||
+          !["low", "normal", "high", "urgent"].includes(priority)
+        ) {
+          throw new BadRequestError(
+            "Valid priority required for updatePriority action",
+          );
         }
         const placeholders4 = eventIds.map(() => "?").join(",");
         const result4 = await db.run(

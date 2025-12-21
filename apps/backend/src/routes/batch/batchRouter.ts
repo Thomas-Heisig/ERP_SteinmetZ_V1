@@ -65,7 +65,10 @@ import type { BatchOperation, BatchHistoryFilter } from "./types.js";
  * Custom error for bad requests
  */
 class BadRequestError extends Error {
-  constructor(message: string, public details?: Record<string, unknown>) {
+  constructor(
+    message: string,
+    public details?: Record<string, unknown>,
+  ) {
     super(message);
     this.name = "BadRequestError";
   }
@@ -92,7 +95,15 @@ function formatValidationErrors(issues: ZodIssue[]): Record<string, unknown> {
  */
 
 const batchCreationSchema = z.object({
-  operation: z.enum(["annotate", "import", "export", "transform", "report", "validate", "cleanup"]),
+  operation: z.enum([
+    "annotate",
+    "import",
+    "export",
+    "transform",
+    "report",
+    "validate",
+    "cleanup",
+  ]),
   filters: z.record(z.string(), z.unknown()),
   options: z.record(z.string(), z.unknown()).optional(),
   name: z.string().optional(),
@@ -100,8 +111,20 @@ const batchCreationSchema = z.object({
 });
 
 const batchHistorySchema = z.object({
-  operation: z.enum(["annotate", "import", "export", "transform", "report", "validate", "cleanup"]).optional(),
-  status: z.enum(["pending", "running", "completed", "failed", "cancelled"]).optional(),
+  operation: z
+    .enum([
+      "annotate",
+      "import",
+      "export",
+      "transform",
+      "report",
+      "validate",
+      "cleanup",
+    ])
+    .optional(),
+  status: z
+    .enum(["pending", "running", "completed", "failed", "cancelled"])
+    .optional(),
   createdAfter: z.string().optional(),
   createdBefore: z.string().optional(),
   limit: z.number().min(1).max(100).optional(),
@@ -147,13 +170,16 @@ router.post("/create", async (req: Request, res: Response) => {
     if (!validationResult.success) {
       throw new BadRequestError(
         "Invalid batch creation data",
-        formatValidationErrors(validationResult.error.issues)
+        formatValidationErrors(validationResult.error.issues),
       );
     }
 
     const batch = batchProcessingService.createBatch(validationResult.data);
 
-    logger.info({ batchId: batch.id, operation: batch.operation }, "Batch created");
+    logger.info(
+      { batchId: batch.id, operation: batch.operation },
+      "Batch created",
+    );
 
     res.status(201).json({
       success: true,
@@ -276,18 +302,24 @@ router.get("/history", async (req: Request, res: Response) => {
   try {
     const validationResult = batchHistorySchema.safeParse({
       ...req.query,
-      limit: req.query.limit ? parseInt(req.query.limit as string, 10) : undefined,
-      offset: req.query.offset ? parseInt(req.query.offset as string, 10) : undefined,
+      limit: req.query.limit
+        ? parseInt(req.query.limit as string, 10)
+        : undefined,
+      offset: req.query.offset
+        ? parseInt(req.query.offset as string, 10)
+        : undefined,
     });
 
     if (!validationResult.success) {
       throw new BadRequestError(
         "Invalid query parameters",
-        formatValidationErrors(validationResult.error.issues)
+        formatValidationErrors(validationResult.error.issues),
       );
     }
 
-    const batches = batchProcessingService.getBatchHistory(validationResult.data as BatchHistoryFilter);
+    const batches = batchProcessingService.getBatchHistory(
+      validationResult.data as BatchHistoryFilter,
+    );
 
     res.json({
       success: true,
@@ -353,7 +385,7 @@ router.delete("/cleanup", async (req: Request, res: Response) => {
     if (!validationResult.success) {
       throw new BadRequestError(
         "Invalid cleanup parameters",
-        formatValidationErrors(validationResult.error.issues)
+        formatValidationErrors(validationResult.error.issues),
       );
     }
 
@@ -388,19 +420,32 @@ router.get("/stats", async (_req: Request, res: Response) => {
     const stats = {
       total: allBatches.length,
       byStatus: {
-        pending: allBatches.filter((b: BatchOperation) => b.status === "pending").length,
-        running: allBatches.filter((b: BatchOperation) => b.status === "running").length,
-        completed: allBatches.filter((b: BatchOperation) => b.status === "completed").length,
-        failed: allBatches.filter((b: BatchOperation) => b.status === "failed").length,
-        cancelled: allBatches.filter((b: BatchOperation) => b.status === "cancelled").length,
+        pending: allBatches.filter(
+          (b: BatchOperation) => b.status === "pending",
+        ).length,
+        running: allBatches.filter(
+          (b: BatchOperation) => b.status === "running",
+        ).length,
+        completed: allBatches.filter(
+          (b: BatchOperation) => b.status === "completed",
+        ).length,
+        failed: allBatches.filter((b: BatchOperation) => b.status === "failed")
+          .length,
+        cancelled: allBatches.filter(
+          (b: BatchOperation) => b.status === "cancelled",
+        ).length,
       },
-      byOperation: allBatches.reduce((acc: Record<string, number>, batch: BatchOperation) => {
-        acc[batch.operation] = (acc[batch.operation] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>),
+      byOperation: allBatches.reduce(
+        (acc: Record<string, number>, batch: BatchOperation) => {
+          acc[batch.operation] = (acc[batch.operation] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
       completionRate:
         allBatches.length > 0
-          ? allBatches.filter((b: BatchOperation) => b.status === "completed").length / allBatches.length
+          ? allBatches.filter((b: BatchOperation) => b.status === "completed")
+              .length / allBatches.length
           : 0,
     };
 

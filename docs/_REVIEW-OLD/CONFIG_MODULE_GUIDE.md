@@ -28,11 +28,11 @@ The Configuration module provides centralized management of environment variable
 
 ### Core Files
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| [`env.ts`](../apps/backend/src/config/env.ts) | Environment variable validation and management | 353 |
-| [`env.test.ts`](../apps/backend/src/config/env.test.ts) | Comprehensive validation tests | 500+ |
-| [`rbac.ts`](../apps/backend/src/config/rbac.ts) | Role definitions and permissions | 710 |
+| File                                                    | Purpose                                        | Lines |
+| ------------------------------------------------------- | ---------------------------------------------- | ----- |
+| [`env.ts`](../apps/backend/src/config/env.ts)           | Environment variable validation and management | 353   |
+| [`env.test.ts`](../apps/backend/src/config/env.test.ts) | Comprehensive validation tests                 | 500+  |
+| [`rbac.ts`](../apps/backend/src/config/rbac.ts)         | Role definitions and permissions               | 710   |
 
 ### Key Features
 
@@ -41,7 +41,7 @@ The Configuration module provides centralized management of environment variable
 ✅ **Multi-Provider Support** - OpenAI, Anthropic, Azure, Ollama, Local  
 ✅ **RBAC System** - 5-level role hierarchy with module-based permissions  
 ✅ **Production Checks** - JWT strength, CORS validation, database verification  
-✅ **Comprehensive Tests** - 28 tests covering all validation scenarios  
+✅ **Comprehensive Tests** - 28 tests covering all validation scenarios
 
 ---
 
@@ -78,6 +78,7 @@ DATABASE_URL=postgresql://user:password@localhost:5432/steinmetz
 ```
 
 **Selection Logic:**
+
 - If `DB_DRIVER=sqlite`: Use `SQLITE_FILE` path
 - If `DB_DRIVER=postgresql`: Use `DATABASE_URL` connection string
 
@@ -94,6 +95,7 @@ OPENAI_MODEL=gpt-4-turbo-preview
 ```
 
 **Requirements:**
+
 - Valid OpenAI API key (starts with `sk-`)
 - Supported models: `gpt-4`, `gpt-4-turbo-preview`, `gpt-3.5-turbo`
 - API key must have sufficient quota
@@ -106,6 +108,7 @@ ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxx
 ```
 
 **Requirements:**
+
 - Valid Anthropic API key (starts with `sk-ant-`)
 - Supported models: `claude-3-opus`, `claude-3-sonnet`, `claude-3-haiku`
 
@@ -119,6 +122,7 @@ AZURE_OPENAI_DEPLOYMENT=your-deployment-name
 ```
 
 **Requirements:**
+
 - Valid Azure OpenAI resource API key
 - Endpoint URL (with trailing slash)
 - Deployment name matching your Azure resource
@@ -132,6 +136,7 @@ OLLAMA_MODEL=qwen2.5:3b
 ```
 
 **Requirements:**
+
 - Ollama service running and accessible
 - Model must be pulled locally: `ollama pull qwen2.5:3b`
 - Supported models: `qwen2.5:3b`, `mistral`, `neural-chat`, `llama2`
@@ -145,6 +150,7 @@ LOCAL_MODEL_NAME=custom-model
 ```
 
 **Requirements:**
+
 - ONNX or compatible model file
 - Model must be accessible at `LOCAL_MODEL_PATH`
 - No external API calls (completely local)
@@ -188,6 +194,7 @@ LOG_REQUESTS=1
 ```
 
 **Recommended Levels:**
+
 - **Development:** `debug` - See detailed operation flow
 - **Production:** `info` - Standard operational logging
 - **Debugging:** `trace` - Very detailed, includes internal calls
@@ -214,11 +221,12 @@ MAX_BATCH_OPERATION_SIZE=100
 ```
 
 **JWT Secret Requirements:**
+
 - Minimum 32 characters
 - Must contain uppercase letters
 - Must contain lowercase letters
 - Must contain at least one number
-- Must contain at least one symbol (!@#$%^&*)
+- Must contain at least one symbol (!@#$%^&\*)
 
 ### Fallback Configuration
 
@@ -296,11 +304,11 @@ hr:approve     // Approve HR requests
 #### Finance Module
 
 ```typescript
-finance:read         // View financial records
-finance:create       // Create transactions
-finance:approve      // Approve transactions
-finance:reconcile    // Reconcile accounts
-finance:report       // Generate financial reports
+finance: read; // View financial records
+finance: create; // Create transactions
+finance: approve; // Approve transactions
+finance: reconcile; // Reconcile accounts
+finance: report; // Generate financial reports
 ```
 
 #### CRM Module
@@ -316,16 +324,16 @@ crm:export     // Export customer data
 #### Dashboard
 
 ```typescript
-dashboard:read   // View dashboard
-dashboard:setup  // Configure dashboard
+dashboard: read; // View dashboard
+dashboard: setup; // Configure dashboard
 ```
 
 #### Calendar
 
 ```typescript
-calendar:read   // View calendar events
-calendar:create // Create events
-calendar:update // Modify events
+calendar: read; // View calendar events
+calendar: create; // Create events
+calendar: update; // Modify events
 ```
 
 ### Role Definitions
@@ -350,6 +358,7 @@ calendar:update // Modify events
 ```
 
 **Use Cases:**
+
 - System administrators
 - Initial setup and configuration
 - Security management
@@ -380,6 +389,7 @@ calendar:update // Modify events
 ```
 
 **Use Cases:**
+
 - System administrators
 - Department heads
 - Power users
@@ -408,6 +418,7 @@ calendar:update // Modify events
 ```
 
 **Use Cases:**
+
 - Team leads
 - Department managers
 - Project managers
@@ -433,6 +444,7 @@ calendar:update // Modify events
 ```
 
 **Use Cases:**
+
 - Regular employees
 - Data entry staff
 - Standard users
@@ -453,6 +465,7 @@ calendar:update // Modify events
 ```
 
 **Use Cases:**
+
 - External consultants
 - Read-only access users
 - Temporary users
@@ -465,14 +478,14 @@ calendar:update // Modify events
 
 Choose your AI provider based on your needs:
 
-| Provider | Setup Effort | Cost | Privacy | Speed |
-|----------|-------------|------|---------|-------|
-| **OpenAI** | Easy | Medium | Cloud | Fast |
-| **Anthropic** | Easy | Medium-High | Cloud | Medium |
-| **Azure OpenAI** | Medium | Variable | Cloud | Fast |
-| **Ollama** | Medium | Free | Local | Slow |
-| **Local** | Hard | Free | Local | Very Slow |
-| **None** | N/A | Free | N/A | N/A |
+| Provider         | Setup Effort | Cost        | Privacy | Speed     |
+| ---------------- | ------------ | ----------- | ------- | --------- |
+| **OpenAI**       | Easy         | Medium      | Cloud   | Fast      |
+| **Anthropic**    | Easy         | Medium-High | Cloud   | Medium    |
+| **Azure OpenAI** | Medium       | Variable    | Cloud   | Fast      |
+| **Ollama**       | Medium       | Free        | Local   | Slow      |
+| **Local**        | Hard         | Free        | Local   | Very Slow |
+| **None**         | N/A          | Free        | N/A     | N/A       |
 
 ### OpenAI Configuration
 
@@ -535,6 +548,7 @@ npm run dev
 #### Step 2: Get Credentials
 
 In Azure Portal, go to **Keys and Endpoint**:
+
 - Copy **Key 1** or **Key 2**
 - Copy **Endpoint** URL
 
@@ -561,18 +575,21 @@ npm run dev
 Download from [Ollama.ai](https://ollama.ai):
 
 **Windows:**
+
 ```bash
 # Download and install from ollama.ai
 # Ollama will start automatically on http://localhost:11434
 ```
 
 **macOS:**
+
 ```bash
 brew install ollama
 ollama serve  # Start Ollama service
 ```
 
 **Linux:**
+
 ```bash
 curl https://ollama.ai/install.sh | sh
 ollama serve  # Start Ollama service
@@ -679,15 +696,17 @@ python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
 
 **Validation:**
+
 ```typescript
 // JWT_SECRET must pass validation
 const jwtSecret = process.env.JWT_SECRET;
-const isValid = jwtSecret && 
+const isValid =
+  jwtSecret &&
   jwtSecret.length >= 32 &&
-  /[A-Z]/.test(jwtSecret) &&     // uppercase
-  /[a-z]/.test(jwtSecret) &&     // lowercase
-  /[0-9]/.test(jwtSecret) &&     // number
-  /[!@#$%^&*]/.test(jwtSecret);  // symbol
+  /[A-Z]/.test(jwtSecret) && // uppercase
+  /[a-z]/.test(jwtSecret) && // lowercase
+  /[0-9]/.test(jwtSecret) && // number
+  /[!@#$%^&*]/.test(jwtSecret); // symbol
 ```
 
 #### 3. Database Configuration
@@ -702,6 +721,7 @@ DATABASE_URL=postgresql://user:pass@host/db?sslmode=require&pool_size=20
 ```
 
 **Verify Connection:**
+
 ```bash
 # Test PostgreSQL connection
 psql postgresql://user:pass@host:5432/database_name -c "SELECT version();"
@@ -920,7 +940,10 @@ The configuration module validates at three levels:
 ```typescript
 // Each variable validated against Zod schema
 const envSchema = z.object({
-  PORT: z.string().default('3000').transform(v => parseInt(v, 10)),
+  PORT: z
+    .string()
+    .default("3000")
+    .transform((v) => parseInt(v, 10)),
   JWT_SECRET: z.string().min(32),
   // ... more variables
 });
@@ -932,7 +955,7 @@ const result = envSchema.parse(process.env);
 
 ```typescript
 // AI Provider config validated based on selected provider
-if (AI_PROVIDER === 'openai') {
+if (AI_PROVIDER === "openai") {
   // Verify OPENAI_API_KEY exists and is valid format
   // Verify OPENAI_MODEL is supported
 }
@@ -942,7 +965,7 @@ if (AI_PROVIDER === 'openai') {
 
 ```typescript
 // Additional checks for production environment
-if (NODE_ENV === 'production') {
+if (NODE_ENV === "production") {
   // JWT_SECRET strength verification
   // Database SSL requirement
   // CORS specific origin requirement
@@ -959,6 +982,7 @@ Config environment validation failed
 ```
 
 **Solution:**
+
 ```bash
 # Generate secure secret
 JWT_SECRET=$(openssl rand -base64 32)
@@ -972,6 +996,7 @@ Error: OPENAI_API_KEY required when AI_PROVIDER=openai
 ```
 
 **Solution:**
+
 ```bash
 # Get API key from provider and set
 OPENAI_API_KEY=sk-proj-your-key-here
@@ -985,6 +1010,7 @@ DATABASE_URL=postgresql://localhost/db not accessible
 ```
 
 **Solution:**
+
 ```bash
 # Verify database is running
 # Verify connection string is correct
@@ -999,6 +1025,7 @@ Error: ECONNREFUSED - Cannot connect to Ollama at http://localhost:11434
 ```
 
 **Solution:**
+
 ```bash
 # In separate terminal
 ollama serve
@@ -1016,6 +1043,7 @@ ollama serve &
 **Cause:** TypeScript import path not resolved
 
 **Solution:**
+
 ```bash
 # Ensure imports use correct path
 import { getEnv } from '../config/env.js';  // ✅ Correct
@@ -1030,6 +1058,7 @@ npm run type-check
 **Cause:** Secret doesn't meet strength requirements
 
 **Solution:**
+
 ```typescript
 // JWT_SECRET must have:
 // ✅ Minimum 32 characters
@@ -1039,7 +1068,7 @@ npm run type-check
 // ✅ At least one special character
 
 // Generate valid secret:
-const secret = require('crypto').randomBytes(32).toString('base64');
+const secret = require("crypto").randomBytes(32).toString("base64");
 ```
 
 ### Issue: "AI Provider configuration invalid"
@@ -1047,6 +1076,7 @@ const secret = require('crypto').randomBytes(32).toString('base64');
 **Cause:** Provider settings mismatch or missing keys
 
 **Solution:**
+
 ```bash
 # 1. Verify AI_PROVIDER value
 # 2. Check provider-specific variables are set
@@ -1067,6 +1097,7 @@ AZURE_OPENAI_ENDPOINT=https://...  # Must include https://
 **Cause:** CORS_ORIGIN doesn't match frontend URL
 
 **Solution:**
+
 ```bash
 # Development
 CORS_ORIGIN=http://localhost:5173
@@ -1083,6 +1114,7 @@ CORS_ORIGIN=https://your-domain.com
 **Cause:** SQLite file permissions or path issue
 
 **Solution:**
+
 ```bash
 # Verify data directory exists
 mkdir -p data
@@ -1101,6 +1133,7 @@ npm run dev
 ### Environment Variables
 
 ✅ **DO:**
+
 - Use `.env.local` for development
 - Use secrets manager for production
 - Document all variables in `.env.example`
@@ -1109,6 +1142,7 @@ npm run dev
 - Use strong JWT secrets
 
 ❌ **DON'T:**
+
 - Commit `.env` files
 - Store secrets in code
 - Use same secret in dev and production
@@ -1118,6 +1152,7 @@ npm run dev
 ### RBAC Configuration
 
 ✅ **DO:**
+
 - Start with least privilege principle
 - Use system roles (don't modify)
 - Create custom roles for specific needs
@@ -1126,6 +1161,7 @@ npm run dev
 - Test permissions before deployment
 
 ❌ **DON'T:**
+
 - Use SUPER_ADMIN for regular users
 - Grant unnecessary permissions
 - Hardcode roles in application logic
@@ -1135,6 +1171,7 @@ npm run dev
 ### AI Provider Management
 
 ✅ **DO:**
+
 - Test provider connection on startup
 - Implement fallback strategy
 - Monitor API usage and costs
@@ -1143,6 +1180,7 @@ npm run dev
 - Handle API errors gracefully
 
 ❌ **DON'T:**
+
 - Expose API keys in logs
 - Use production keys in development
 - Ignore rate limits
@@ -1152,6 +1190,7 @@ npm run dev
 ### Logging Configuration
 
 ✅ **DO:**
+
 - Set appropriate log level per environment
 - Use structured logging
 - Include context in log messages
@@ -1160,6 +1199,7 @@ npm run dev
 - Use consistent log format
 
 ❌ **DON'T:**
+
 - Log sensitive data (passwords, tokens)
 - Use console.log in production code
 - Ignore error logs
@@ -1169,6 +1209,7 @@ npm run dev
 ### Security
 
 ✅ **DO:**
+
 - Use HTTPS in production
 - Validate all input data
 - Use prepared statements
@@ -1178,6 +1219,7 @@ npm run dev
 - Regular security audits
 
 ❌ **DON'T:**
+
 - Disable CORS in production
 - Use weak database passwords
 - Trust client-side validation
@@ -1225,29 +1267,30 @@ The test suite includes:
 ### Configuration Export
 
 ```typescript
-import { getEnv } from '@/config/env';
+import { getEnv } from "@/config/env";
 
 // Get validated configuration object
 const config = getEnv();
 
 // Access configuration
-config.PORT          // 3000
-config.NODE_ENV      // 'development'
-config.AI_PROVIDER   // 'openai'
-config.OPENAI_API_KEY // 'sk-proj-...'
+config.PORT; // 3000
+config.NODE_ENV; // 'development'
+config.AI_PROVIDER; // 'openai'
+config.OPENAI_API_KEY; // 'sk-proj-...'
 ```
 
 ### Role-Based Access
 
 ```typescript
-import { DEFAULT_ROLES, ROLE_HIERARCHY } from '@/config/rbac';
+import { DEFAULT_ROLES, ROLE_HIERARCHY } from "@/config/rbac";
 
 // Check user role
-const userRole = DEFAULT_ROLES.find(r => r.id === user.role_id);
+const userRole = DEFAULT_ROLES.find((r) => r.id === user.role_id);
 
 // Check privilege level
-const hasAccess = ROLE_HIERARCHY.find(r => r.role === user.role)!.level <= 
-                  ROLE_HIERARCHY.find(r => r.role === 'admin')!.level;
+const hasAccess =
+  ROLE_HIERARCHY.find((r) => r.role === user.role)!.level <=
+  ROLE_HIERARCHY.find((r) => r.role === "admin")!.level;
 
 // Get permissions
 const permissions = userRole?.permissions || [];

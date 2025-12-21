@@ -21,11 +21,7 @@ export const RECURRENCE_TYPES = [
 export type RecurrenceType = (typeof RECURRENCE_TYPES)[number];
 
 // Event Status
-export const EVENT_STATUS = [
-  "confirmed",
-  "tentative",
-  "cancelled",
-] as const;
+export const EVENT_STATUS = ["confirmed", "tentative", "cancelled"] as const;
 
 export type EventStatus = (typeof EVENT_STATUS)[number];
 
@@ -122,7 +118,10 @@ export const createEventSchema = z.object({
   start: z.string().datetime({ message: "Invalid ISO datetime" }),
   end: z.string().datetime({ message: "Invalid ISO datetime" }),
   allDay: z.boolean().default(false),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional(),
   category: z.string().max(50).optional(),
   status: z.enum(EVENT_STATUS).default("confirmed"),
   priority: z.enum(EVENT_PRIORITY).default("normal"),
@@ -163,7 +162,12 @@ export const eventQuerySchema = z.object({
  * Schema für Batch-Operationen
  */
 export const batchOperationSchema = z.object({
-  action: z.enum(["delete", "updateCategory", "updateStatus", "updatePriority"]),
+  action: z.enum([
+    "delete",
+    "updateCategory",
+    "updateStatus",
+    "updatePriority",
+  ]),
   eventIds: z.array(z.string().uuid()).min(1),
   data: z.record(z.string(), z.unknown()).optional(),
 });

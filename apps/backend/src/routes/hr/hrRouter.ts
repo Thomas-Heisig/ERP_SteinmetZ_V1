@@ -44,9 +44,7 @@ const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 
 const uuidSchema = z.string().uuid();
 
-function formatValidationErrors(
-  issues: ZodIssue[],
-): Record<string, unknown> {
+function formatValidationErrors(issues: ZodIssue[]): Record<string, unknown> {
   return {
     issues: issues.map((issue) => ({
       path: issue.path.join(".") || "root",
@@ -63,7 +61,10 @@ function parseWithSchema<T>(
 ): T {
   const result = schema.safeParse(data);
   if (!result.success) {
-    throw new BadRequestError(message, formatValidationErrors(result.error.issues));
+    throw new BadRequestError(
+      message,
+      formatValidationErrors(result.error.issues),
+    );
   }
   return result.data;
 }
@@ -180,8 +181,14 @@ const employeesQuerySchema = z
 const timeEntriesQuerySchema = z
   .object({
     employee_id: uuidSchema,
-    start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    start_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    end_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
   })
   .strict();
 
@@ -263,7 +270,11 @@ router.get(
   "/employees/:id",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employeeId = parseWithSchema(uuidSchema, req.params.id, "Invalid employee id");
+    const employeeId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid employee id",
+    );
     const employee = hrService.getEmployeeWithRelations(employeeId);
 
     if (!employee) {
@@ -309,7 +320,11 @@ router.put(
   "/employees/:id",
   requirePermission("hr:update"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employeeId = parseWithSchema(uuidSchema, req.params.id, "Invalid employee id");
+    const employeeId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid employee id",
+    );
     const validatedData = parseWithSchema(
       updateEmployeeSchema,
       req.body,
@@ -338,7 +353,11 @@ router.delete(
   "/employees/:id",
   requirePermission("hr:delete"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employeeId = parseWithSchema(uuidSchema, req.params.id, "Invalid employee id");
+    const employeeId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid employee id",
+    );
     const success = hrService.deleteEmployee(employeeId);
 
     if (!success) {
@@ -364,7 +383,11 @@ router.get(
   "/employees/:employeeId/contracts",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employeeId = parseWithSchema(uuidSchema, req.params.employeeId, "Invalid employee id");
+    const employeeId = parseWithSchema(
+      uuidSchema,
+      req.params.employeeId,
+      "Invalid employee id",
+    );
     const contracts = hrService.getEmployeeContracts(employeeId);
 
     res.json({
@@ -406,7 +429,11 @@ router.get(
   "/contracts/:id",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const contractId = parseWithSchema(uuidSchema, req.params.id, "Invalid contract id");
+    const contractId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid contract id",
+    );
     const contract = hrService.getContractById(contractId);
 
     if (!contract) {
@@ -428,7 +455,11 @@ router.put(
   "/contracts/:id",
   requirePermission("hr:update"),
   asyncHandler(async (req: Request, res: Response) => {
-    const contractId = parseWithSchema(uuidSchema, req.params.id, "Invalid contract id");
+    const contractId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid contract id",
+    );
     const validatedData = parseWithSchema(
       createContractSchema.partial(),
       req.body,
@@ -511,7 +542,11 @@ router.post(
   requirePermission("hr:approve"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const timeEntryId = parseWithSchema(uuidSchema, req.params.id, "Invalid time entry id");
+    const timeEntryId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid time entry id",
+    );
     const timeEntry = hrService.approveTimeEntry(timeEntryId, userId);
 
     if (!timeEntry) {
@@ -588,7 +623,11 @@ router.post(
   requirePermission("hr:approve"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const leaveRequestId = parseWithSchema(uuidSchema, req.params.id, "Invalid leave request id");
+    const leaveRequestId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid leave request id",
+    );
     const leaveRequest = hrService.approveLeaveRequest(leaveRequestId, userId);
 
     if (!leaveRequest) {
@@ -613,7 +652,11 @@ router.post(
   requirePermission("hr:approve"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const leaveRequestId = parseWithSchema(uuidSchema, req.params.id, "Invalid leave request id");
+    const leaveRequestId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid leave request id",
+    );
     const body = parseWithSchema(
       z.object({ reason: z.string().min(1) }),
       req.body,
@@ -693,7 +736,11 @@ router.get(
   "/onboarding/:id",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const onboardingId = parseWithSchema(uuidSchema, req.params.id, "Invalid onboarding id");
+    const onboardingId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid onboarding id",
+    );
     const onboarding = hrService.getOnboardingWithTasks(onboardingId);
 
     if (!onboarding) {
@@ -764,7 +811,11 @@ router.post(
   requirePermission("hr:update"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const taskId = parseWithSchema(uuidSchema, req.params.id, "Invalid task id");
+    const taskId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid task id",
+    );
     const task = hrService.completeOnboardingTask(taskId, userId);
 
     if (!task) {
@@ -790,7 +841,11 @@ router.get(
   "/employees/:employeeId/documents",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employeeId = parseWithSchema(uuidSchema, req.params.employeeId, "Invalid employee id");
+    const employeeId = parseWithSchema(
+      uuidSchema,
+      req.params.employeeId,
+      "Invalid employee id",
+    );
     const documents = hrService.getEmployeeDocuments(employeeId);
 
     res.json({
@@ -867,7 +922,11 @@ router.post(
   requirePermission("hr:approve"),
   asyncHandler(async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const overtimeId = parseWithSchema(uuidSchema, req.params.id, "Invalid overtime id");
+    const overtimeId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid overtime id",
+    );
     const overtime = hrService.approveOvertime(overtimeId, userId);
 
     if (!overtime) {
@@ -992,7 +1051,11 @@ router.get(
   "/payroll/:id",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const payrollId = parseWithSchema(uuidSchema, req.params.id, "Invalid payroll id");
+    const payrollId = parseWithSchema(
+      uuidSchema,
+      req.params.id,
+      "Invalid payroll id",
+    );
     const payroll = hrService.getPayrollRecordById(payrollId);
 
     if (!payroll) {
@@ -1014,7 +1077,11 @@ router.get(
   "/employees/:employeeId/payroll",
   requirePermission("hr:read"),
   asyncHandler(async (req: Request, res: Response) => {
-    const employeeId = parseWithSchema(uuidSchema, req.params.employeeId, "Invalid employee id");
+    const employeeId = parseWithSchema(
+      uuidSchema,
+      req.params.employeeId,
+      "Invalid employee id",
+    );
     const query = parseWithSchema(
       employeePayrollQuerySchema,
       req.query,

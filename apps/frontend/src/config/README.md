@@ -9,6 +9,7 @@ Zentrale Konfiguration für alle Frontend-Dashboard-Komponenten.
 Definiert **alle Backend-API-Routen** als typsichere Konstanten.
 
 **Verwendung:**
+
 ```typescript
 import { API_ROUTES, buildApiUrl } from "@/config";
 
@@ -21,6 +22,7 @@ fetch(buildApiUrl(API_ROUTES.CRM.CUSTOMER(customerId)));
 ```
 
 **Features:**
+
 - 200+ Endpoints aus 20+ Modulen
 - Typsicher mit TypeScript
 - Parametrisierte URLs
@@ -33,6 +35,7 @@ fetch(buildApiUrl(API_ROUTES.CRM.CUSTOMER(customerId)));
 Definiert **Dashboard-Widgets, Themes, Grid-System**.
 
 **Verwendung:**
+
 ```typescript
 import { DASHBOARD_WIDGETS, getWidgetConfig } from "@/config";
 
@@ -40,13 +43,14 @@ import { DASHBOARD_WIDGETS, getWidgetConfig } from "@/config";
 const widget = DASHBOARD_WIDGETS.EXECUTIVE_OVERVIEW;
 
 // Widget-Properties
-console.log(widget.apiEndpoints);    // Array von API-URLs
+console.log(widget.apiEndpoints); // Array von API-URLs
 console.log(widget.refreshInterval); // Refresh-Zeit in Sekunden
-console.log(widget.gridSpan);        // Grid-Spalten (1-4)
-console.log(widget.permissions);     // Benötigte Berechtigungen
+console.log(widget.gridSpan); // Grid-Spalten (1-4)
+console.log(widget.permissions); // Benötigte Berechtigungen
 ```
 
 **Features:**
+
 - 13 vordefinierte Widgets
 - Theme-Konfigurationen (light/dark/lcars)
 - Grid-Breakpoints
@@ -59,6 +63,7 @@ console.log(widget.permissions);     // Benötigte Berechtigungen
 Zentrale Exports.
 
 **Verwendung:**
+
 ```typescript
 // Alles importieren
 import * from "@/config";
@@ -91,25 +96,25 @@ import { DASHBOARD_WIDGETS } from "@/config";
 const MyWidget: React.FC = () => {
   const widget = DASHBOARD_WIDGETS.CRM_WIDGET;
   const [data, setData] = useState(null);
-  
+
   useEffect(() => {
     // Alle API-Endpoints des Widgets laden
     Promise.all(
-      widget.apiEndpoints.map(endpoint => 
+      widget.apiEndpoints.map(endpoint =>
         fetch(buildApiUrl(endpoint)).then(r => r.json())
       )
     ).then(results => {
       setData(results);
     });
-    
+
     // Auto-Refresh
     const interval = setInterval(() => {
       // Refresh-Logik
     }, widget.refreshInterval * 1000);
-    
+
     return () => clearInterval(interval);
   }, [widget]);
-  
+
   return <div>...</div>;
 };
 ```
@@ -121,10 +126,10 @@ import { DASHBOARD_WIDGETS, getWidgetsByPermissions } from "@/config";
 
 const Dashboard: React.FC = () => {
   const userPermissions = ["crm:read", "finance:read"];
-  
+
   // Nur Widgets mit passenden Permissions
   const widgets = getWidgetsByPermissions(userPermissions);
-  
+
   return (
     <div>
       {widgets.map(widget => (
@@ -144,7 +149,7 @@ import { useTheme } from "@/hooks/useTheme";
 const ThemedComponent: React.FC = () => {
   const { theme } = useTheme(); // "light" | "dark" | "lcars"
   const colors = DASHBOARD_THEMES[theme];
-  
+
   return (
     <div style={{
       background: colors.background,
@@ -169,7 +174,7 @@ const ThemedComponent: React.FC = () => {
 ```typescript
 export const API_ROUTES = {
   // ... bestehende Module
-  
+
   MY_MODULE: {
     BASE: "/api/my-module",
     LIST: "/api/my-module/items",
@@ -189,19 +194,16 @@ export const API_ROUTES = {
 ```typescript
 export const DASHBOARD_WIDGETS: Record<string, DashboardWidget> = {
   // ... bestehende Widgets
-  
+
   MY_WIDGET: {
     id: "my-widget",
     title: "Mein Widget",
-    type: "kpi",                    // "kpi" | "chart" | "table" | ...
+    type: "kpi", // "kpi" | "chart" | "table" | ...
     module: "my-module",
-    apiEndpoints: [
-      API_ROUTES.MY_MODULE.LIST,
-      API_ROUTES.MY_MODULE.STATISTICS,
-    ],
-    refreshInterval: 180,           // 3 Minuten
-    gridSpan: 2,                    // 2 Spalten
-    priority: 25,                   // Display-Reihenfolge
+    apiEndpoints: [API_ROUTES.MY_MODULE.LIST, API_ROUTES.MY_MODULE.STATISTICS],
+    refreshInterval: 180, // 3 Minuten
+    gridSpan: 2, // 2 Spalten
+    priority: 25, // Display-Reihenfolge
     permissions: ["my-module:read"],
   },
 };
@@ -219,7 +221,7 @@ export const DASHBOARD_WIDGETS: Record<string, DashboardWidget> = {
 Baut vollständige API-URL mit Base-URL.
 
 ```typescript
-buildApiUrl("/api/dashboard/overview")
+buildApiUrl("/api/dashboard/overview");
 // → "http://localhost:3000/api/dashboard/overview"
 ```
 

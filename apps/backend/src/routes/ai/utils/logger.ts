@@ -89,7 +89,12 @@ export function log(level: LogLevel, msg: string, data?: unknown): void {
 /**
  * Erstellt eine standardisierte Fehlerstruktur für Express-Antworten.
  */
-export function errorResponse(res: unknown, code: number, msg: string, err?: unknown) {
+export function errorResponse(
+  res: unknown,
+  code: number,
+  msg: string,
+  err?: unknown,
+) {
   const detail = err instanceof Error ? err.message : err;
   log("error", msg, { code, detail });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

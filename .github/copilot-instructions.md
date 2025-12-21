@@ -29,6 +29,7 @@
 Format: `<prefix>_<beschreibender_name>.sql`
 
 Prefixe:
+
 - `001-009` = Core-System (Auth, RBAC, Settings)
 - `010-049` = Tabellen-Erstellung
 - `050-059` = Tabellen-Modifikationen (ALTER TABLE)
@@ -40,6 +41,7 @@ Prefixe:
 ### SQLite-Syntax OBLIGATORISCH
 
 **Verwende IMMER:**
+
 ```sql
 -- Tabellen
 CREATE TABLE IF NOT EXISTS tablename (
@@ -57,6 +59,7 @@ INSERT OR IGNORE INTO tablename (id, name) VALUES ('1', 'Test');
 ```
 
 **NIEMALS verwenden:**
+
 ```sql
 -- ❌ MS SQL Server Syntax
 IF NOT EXISTS (SELECT * FROM sys.objects...)
@@ -71,14 +74,14 @@ NEWID()           → Nutze: lower(hex(randomblob(16)))
 
 ### Typ-Mapping
 
-| MS SQL Server | SQLite | Verwendung |
-|--------------|--------|------------|
-| `NVARCHAR(n)` | `TEXT` | Strings |
-| `BIT` | `INTEGER` | Boolean (0/1) |
-| `INT` | `INTEGER` | Zahlen |
-| `DECIMAL(p,s)` | `REAL` | Dezimalzahlen |
-| `DATETIME` | `TEXT` | ISO 8601 Datum/Zeit |
-| `UNIQUEIDENTIFIER` | `TEXT` | UUIDs |
+| MS SQL Server      | SQLite    | Verwendung          |
+| ------------------ | --------- | ------------------- |
+| `NVARCHAR(n)`      | `TEXT`    | Strings             |
+| `BIT`              | `INTEGER` | Boolean (0/1)       |
+| `INT`              | `INTEGER` | Zahlen              |
+| `DECIMAL(p,s)`     | `REAL`    | Dezimalzahlen       |
+| `DATETIME`         | `TEXT`    | ISO 8601 Datum/Zeit |
+| `UNIQUEIDENTIFIER` | `TEXT`    | UUIDs               |
 
 ### Idempotenz
 
@@ -108,7 +111,7 @@ CREATE TABLE user_roles (
 );
 
 -- ❌ Falsch: Nach Tabellenerstellung
-ALTER TABLE user_roles 
+ALTER TABLE user_roles
 ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id);
 ```
 
@@ -126,15 +129,15 @@ Vollständige Standards siehe: [docs/DATABASE_MIGRATION_STANDARDS.md](../docs/DA
  * @route GET /api/resource
  * @access Public/Private
  */
-router.get('/resource', async (req: Request, res: Response) => {
+router.get("/resource", async (req: Request, res: Response) => {
   try {
     const result = await service.getResource();
     res.json({ success: true, data: result });
   } catch (error) {
-    logger.error({ error }, 'Failed to get resource');
-    res.status(500).json({ 
-      success: false, 
-      error: 'Internal server error' 
+    logger.error({ error }, "Failed to get resource");
+    res.status(500).json({
+      success: false,
+      error: "Internal server error",
     });
   }
 });
@@ -154,9 +157,9 @@ export class ResourceService {
    * @throws {NotFoundError} Wann der Fehler geworfen wird
    */
   async getById(id: string): Promise<Resource> {
-    const resource = await db.get('SELECT * FROM resources WHERE id = ?', [id]);
+    const resource = await db.get("SELECT * FROM resources WHERE id = ?", [id]);
     if (!resource) {
-      throw new NotFoundError('Resource not found');
+      throw new NotFoundError("Resource not found");
     }
     return resource;
   }
@@ -173,17 +176,17 @@ export class ResourceService {
  * @example
  * <ResourceList resources={resources} onSelect={handleSelect} />
  */
-export const ResourceList: React.FC<ResourceListProps> = ({ 
-  resources, 
-  onSelect 
+export const ResourceList: React.FC<ResourceListProps> = ({
+  resources,
+  onSelect
 }) => {
   return (
     <div className="resource-list">
       {resources.map(resource => (
-        <ResourceItem 
-          key={resource.id} 
-          resource={resource} 
-          onClick={() => onSelect(resource.id)} 
+        <ResourceItem
+          key={resource.id}
+          resource={resource}
+          onClick={() => onSelect(resource.id)}
         />
       ))}
     </div>
@@ -202,23 +205,23 @@ export const ResourceList: React.FC<ResourceListProps> = ({
 ### Unit Tests (Vitest)
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from "vitest";
 
-describe('ResourceService', () => {
+describe("ResourceService", () => {
   let service: ResourceService;
 
   beforeEach(() => {
     service = new ResourceService();
   });
 
-  it('should get resource by id', async () => {
-    const resource = await service.getById('123');
+  it("should get resource by id", async () => {
+    const resource = await service.getById("123");
     expect(resource).toBeDefined();
-    expect(resource.id).toBe('123');
+    expect(resource.id).toBe("123");
   });
 
-  it('should throw NotFoundError when resource does not exist', async () => {
-    await expect(service.getById('invalid')).rejects.toThrow(NotFoundError);
+  it("should throw NotFoundError when resource does not exist", async () => {
+    await expect(service.getById("invalid")).rejects.toThrow(NotFoundError);
   });
 });
 ```
@@ -231,14 +234,17 @@ describe('ResourceService', () => {
 export class NotFoundError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'NotFoundError';
+    this.name = "NotFoundError";
   }
 }
 
 export class ValidationError extends Error {
-  constructor(message: string, public fields?: Record<string, string>) {
+  constructor(
+    message: string,
+    public fields?: Record<string, string>,
+  ) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
   }
 }
 ```
@@ -247,26 +253,29 @@ export class ValidationError extends Error {
 
 ```typescript
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  logger.error({ err, req: { method: req.method, url: req.url } }, 'Request error');
+  logger.error(
+    { err, req: { method: req.method, url: req.url } },
+    "Request error",
+  );
 
   if (err instanceof ValidationError) {
-    return res.status(400).json({ 
-      success: false, 
-      error: err.message, 
-      fields: err.fields 
+    return res.status(400).json({
+      success: false,
+      error: err.message,
+      fields: err.fields,
     });
   }
 
   if (err instanceof NotFoundError) {
-    return res.status(404).json({ 
-      success: false, 
-      error: err.message 
+    return res.status(404).json({
+      success: false,
+      error: err.message,
     });
   }
 
-  res.status(500).json({ 
-    success: false, 
-    error: 'Internal server error' 
+  res.status(500).json({
+    success: false,
+    error: "Internal server error",
   });
 });
 ```
@@ -276,18 +285,18 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 ### Strukturiertes Logging
 
 ```typescript
-import { createLogger } from './utils/logger';
+import { createLogger } from "./utils/logger";
 
-const logger = createLogger('module-name');
+const logger = createLogger("module-name");
 
 // Info
-logger.info({ userId: '123', action: 'login' }, 'User logged in');
+logger.info({ userId: "123", action: "login" }, "User logged in");
 
 // Error
-logger.error({ error, userId: '123' }, 'Login failed');
+logger.error({ error, userId: "123" }, "Login failed");
 
 // Debug
-logger.debug({ query: 'SELECT * FROM users' }, 'Executing query');
+logger.debug({ query: "SELECT * FROM users" }, "Executing query");
 ```
 
 ## Security
@@ -295,12 +304,12 @@ logger.debug({ query: 'SELECT * FROM users' }, 'Executing query');
 ### Input Validation
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 const createUserSchema = z.object({
   username: z.string().min(3).max(50),
   email: z.string().email(),
-  password: z.string().min(8)
+  password: z.string().min(8),
 });
 
 const validateCreateUser = (data: unknown) => {
@@ -312,7 +321,7 @@ const validateCreateUser = (data: unknown) => {
 
 ```typescript
 // ✅ Korrekt: Prepared Statements
-db.get('SELECT * FROM users WHERE id = ?', [userId]);
+db.get("SELECT * FROM users WHERE id = ?", [userId]);
 
 // ❌ Falsch: String Concatenation
 db.get(`SELECT * FROM users WHERE id = '${userId}'`);
@@ -324,16 +333,16 @@ db.get(`SELECT * FROM users WHERE id = '${userId}'`);
 
 ```typescript
 // ✅ Effizient: Nur benötigte Spalten
-db.all('SELECT id, name FROM users WHERE is_active = 1');
+db.all("SELECT id, name FROM users WHERE is_active = 1");
 
 // ❌ Ineffizient: SELECT *
-db.all('SELECT * FROM users');
+db.all("SELECT * FROM users");
 ```
 
 ### Caching
 
 ```typescript
-import NodeCache from 'node-cache';
+import NodeCache from "node-cache";
 
 const cache = new NodeCache({ stdTTL: 600 }); // 10 Minuten
 
@@ -341,7 +350,7 @@ async function getCachedResource(id: string) {
   const cached = cache.get<Resource>(id);
   if (cached) return cached;
 
-  const resource = await db.get('SELECT * FROM resources WHERE id = ?', [id]);
+  const resource = await db.get("SELECT * FROM resources WHERE id = ?", [id]);
   cache.set(id, resource);
   return resource;
 }
@@ -361,21 +370,21 @@ async function getCachedResource(id: string) {
 
 ```typescript
 // ✅ Korrekt: Gruppiert und sortiert
-import fs from 'node:fs';
-import path from 'node:path';
+import fs from "node:fs";
+import path from "node:path";
 
-import express from 'express';
-import { z } from 'zod';
+import express from "express";
+import { z } from "zod";
 
-import { UserService } from './services/user-service.js';
-import { createLogger } from './utils/logger.js';
-import type { User } from './types/user.js';
+import { UserService } from "./services/user-service.js";
+import { createLogger } from "./utils/logger.js";
+import type { User } from "./types/user.js";
 
 // ❌ Falsch: Ungeordnet
-import { createLogger } from './utils/logger.js';
-import express from 'express';
-import { UserService } from './services/user-service.js';
-import path from 'node:path';
+import { createLogger } from "./utils/logger.js";
+import express from "express";
+import { UserService } from "./services/user-service.js";
+import path from "node:path";
 ```
 
 ## Git Commit Messages

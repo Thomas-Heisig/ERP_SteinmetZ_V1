@@ -46,9 +46,7 @@ const SimpleDashboard = lazy(
 );
 
 /** Full experience dashboard (modules, widgets, categories) */
-const Dashboard = lazy(
-  () => import("./components/Dashboard/Dashboard"),
-);
+const Dashboard = lazy(() => import("./components/Dashboard/Dashboard"));
 
 /** Functions catalog for browsing and managing available functions */
 const FunctionsCatalog = lazy(

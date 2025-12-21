@@ -494,9 +494,7 @@ function extractField(data: unknown, paths: string[]): unknown {
   return undefined;
 }
 
-function extractToolCalls(
-  data: unknown,
-): CustomToolCall[] {
+function extractToolCalls(data: unknown): CustomToolCall[] {
   const toolCalls: CustomToolCall[] = [];
 
   if (!data || typeof data !== "object") {
@@ -566,7 +564,9 @@ function extractToolCalls(
   return toolCalls;
 }
 
-async function executeToolCalls(toolCalls: CustomToolCall[]): Promise<ToolResult[]> {
+async function executeToolCalls(
+  toolCalls: CustomToolCall[],
+): Promise<ToolResult[]> {
   const results: ToolResult[] = [];
 
   for (const toolCall of toolCalls) {
@@ -622,7 +622,6 @@ function formatToolResults(results: ToolResult[]): string {
 
   return `\n\n---\n**Tool-Ausführungen:**\n${summary}`;
 }
-
 
 /* ========================================================================== */
 /* 🛡️ Fallback & Error Handling                                           */

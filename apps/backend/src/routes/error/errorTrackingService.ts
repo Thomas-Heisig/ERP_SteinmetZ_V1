@@ -304,14 +304,8 @@ function redactSensitiveData(
     const lowerKey = key.toLowerCase();
     if (sensitiveKeys.some((sensitive) => lowerKey.includes(sensitive))) {
       redacted[key] = "[REDACTED]";
-    } else if (
-      value &&
-      typeof value === "object" &&
-      !Array.isArray(value)
-    ) {
-      redacted[key] = redactSensitiveData(
-        value as Record<string, unknown>,
-      );
+    } else if (value && typeof value === "object" && !Array.isArray(value)) {
+      redacted[key] = redactSensitiveData(value as Record<string, unknown>);
     } else {
       redacted[key] = value;
     }

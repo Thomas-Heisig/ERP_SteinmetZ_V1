@@ -3,7 +3,7 @@
 
 /**
  * Comprehensive Dashboard API Routes
- * 
+ *
  * Provides detailed analytics, metrics, and monitoring data
  * for executive overview, process monitoring, and real-time analytics.
  *
@@ -315,18 +315,37 @@ async function ensureTables(): Promise<void> {
     `);
 
     // Create indexes for better query performance
-    await db.run("CREATE INDEX IF NOT EXISTS idx_widgets_user ON dashboard_widgets(user_id)");
-    await db.run("CREATE INDEX IF NOT EXISTS idx_widgets_visible ON dashboard_widgets(is_visible)");
-    await db.run("CREATE INDEX IF NOT EXISTS idx_layouts_user ON dashboard_layouts(user_id)");
-    await db.run("CREATE INDEX IF NOT EXISTS idx_layouts_active ON dashboard_layouts(is_active)");
-    await db.run("CREATE INDEX IF NOT EXISTS idx_favorites_user ON dashboard_favorites(user_id)");
-    await db.run("CREATE INDEX IF NOT EXISTS idx_warnings_type ON dashboard_warnings(type)");
-    await db.run("CREATE INDEX IF NOT EXISTS idx_warnings_severity ON dashboard_warnings(severity)");
-    await db.run("CREATE INDEX IF NOT EXISTS idx_warnings_resolved ON dashboard_warnings(resolved_at)");
+    await db.run(
+      "CREATE INDEX IF NOT EXISTS idx_widgets_user ON dashboard_widgets(user_id)",
+    );
+    await db.run(
+      "CREATE INDEX IF NOT EXISTS idx_widgets_visible ON dashboard_widgets(is_visible)",
+    );
+    await db.run(
+      "CREATE INDEX IF NOT EXISTS idx_layouts_user ON dashboard_layouts(user_id)",
+    );
+    await db.run(
+      "CREATE INDEX IF NOT EXISTS idx_layouts_active ON dashboard_layouts(is_active)",
+    );
+    await db.run(
+      "CREATE INDEX IF NOT EXISTS idx_favorites_user ON dashboard_favorites(user_id)",
+    );
+    await db.run(
+      "CREATE INDEX IF NOT EXISTS idx_warnings_type ON dashboard_warnings(type)",
+    );
+    await db.run(
+      "CREATE INDEX IF NOT EXISTS idx_warnings_severity ON dashboard_warnings(severity)",
+    );
+    await db.run(
+      "CREATE INDEX IF NOT EXISTS idx_warnings_resolved ON dashboard_warnings(resolved_at)",
+    );
 
     logger.info("Dashboard comprehensive tables initialized successfully");
   } catch (error) {
-    logger.error({ error }, "Failed to initialize dashboard comprehensive tables");
+    logger.error(
+      { error },
+      "Failed to initialize dashboard comprehensive tables",
+    );
     throw error;
   }
 }
@@ -473,7 +492,9 @@ function rowToOrderIntake(row: Record<string, unknown>): OrderIntake {
   };
 }
 
-function rowToProductivityMetrics(row: Record<string, unknown>): ProductivityMetrics {
+function rowToProductivityMetrics(
+  row: Record<string, unknown>,
+): ProductivityMetrics {
   return {
     date: row.date as string,
     employeeCount: row.employee_count as number,
@@ -495,7 +516,9 @@ function rowToPipelineStage(row: Record<string, unknown>): PipelineStage {
   };
 }
 
-function rowToProcurementMetrics(row: Record<string, unknown>): ProcurementMetrics {
+function rowToProcurementMetrics(
+  row: Record<string, unknown>,
+): ProcurementMetrics {
   return {
     date: row.date as string,
     purchaseOrders: row.purchase_orders as number,
@@ -507,7 +530,9 @@ function rowToProcurementMetrics(row: Record<string, unknown>): ProcurementMetri
   };
 }
 
-function rowToProductionUtilization(row: Record<string, unknown>): ProductionUtilization {
+function rowToProductionUtilization(
+  row: Record<string, unknown>,
+): ProductionUtilization {
   return {
     date: row.date as string,
     capacity: row.capacity as number,
@@ -585,24 +610,24 @@ router.get(
     logger.info({ period }, "Fetching revenue metrics");
 
     const metricsRow = await db.get(
-      "SELECT * FROM dashboard_revenue_metrics ORDER BY date DESC LIMIT 1"
+      "SELECT * FROM dashboard_revenue_metrics ORDER BY date DESC LIMIT 1",
     );
     const metrics = metricsRow ? rowToRevenueMetrics(metricsRow) : null;
 
     const topCustomersRows = await db.all(
       "SELECT * FROM dashboard_top_customers WHERE period = ? ORDER BY rank ASC LIMIT 10",
-      [period as string]
+      [period as string],
     );
     const topCustomers = topCustomersRows.map(rowToTopCustomer);
 
     const topProductsRows = await db.all(
       "SELECT * FROM dashboard_top_products WHERE period = ? ORDER BY rank ASC LIMIT 10",
-      [period as string]
+      [period as string],
     );
     const topProducts = topProductsRows.map(rowToTopProduct);
 
     const regionalRevenueRows = await db.all(
-      "SELECT * FROM dashboard_regional_revenue WHERE date = date('now') ORDER BY revenue DESC"
+      "SELECT * FROM dashboard_regional_revenue WHERE date = date('now') ORDER BY revenue DESC",
     );
     const regionalRevenue = regionalRevenueRows.map(rowToRegionalRevenue);
 
@@ -615,7 +640,7 @@ router.get(
         regionalRevenue,
       },
     });
-  })
+  }),
 );
 
 /**
@@ -633,7 +658,7 @@ router.get(
       `SELECT * FROM dashboard_profit_margins 
        WHERE date >= date('now', '-' || ? || ' days') 
        ORDER BY date DESC`,
-      [parseInt(days as string, 10)]
+      [parseInt(days as string, 10)],
     );
     const margins = marginsRows.map(rowToProfitMargin);
 
@@ -646,7 +671,7 @@ router.get(
         history: margins,
       },
     });
-  })
+  }),
 );
 
 /**
@@ -659,7 +684,7 @@ router.get(
     logger.info("Fetching liquidity status");
 
     const liquidityRow = await db.get(
-      "SELECT * FROM dashboard_liquidity ORDER BY date DESC LIMIT 1"
+      "SELECT * FROM dashboard_liquidity ORDER BY date DESC LIMIT 1",
     );
     const liquidity = liquidityRow ? rowToLiquidityStatus(liquidityRow) : null;
 
@@ -667,7 +692,7 @@ router.get(
       success: true,
       data: liquidity,
     });
-  })
+  }),
 );
 
 /**
@@ -683,7 +708,7 @@ router.get(
 
     const intakeRows = await db.all(
       "SELECT * FROM dashboard_order_intake ORDER BY period DESC LIMIT ?",
-      [parseInt(periods as string, 10)]
+      [parseInt(periods as string, 10)],
     );
     const intake = intakeRows.map(rowToOrderIntake);
 
@@ -691,7 +716,7 @@ router.get(
       success: true,
       data: intake,
     });
-  })
+  }),
 );
 
 /**
@@ -704,15 +729,17 @@ router.get(
     logger.info("Fetching productivity metrics");
 
     const productivityRow = await db.get(
-      "SELECT * FROM dashboard_productivity ORDER BY date DESC LIMIT 1"
+      "SELECT * FROM dashboard_productivity ORDER BY date DESC LIMIT 1",
     );
-    const productivity = productivityRow ? rowToProductivityMetrics(productivityRow) : null;
+    const productivity = productivityRow
+      ? rowToProductivityMetrics(productivityRow)
+      : null;
 
     res.json({
       success: true,
       data: productivity,
     });
-  })
+  }),
 );
 
 // ============================================================================
@@ -729,7 +756,7 @@ router.get(
     logger.info("Fetching pipeline stages");
 
     const pipelineRows = await db.all(
-      "SELECT * FROM dashboard_pipeline ORDER BY stage ASC"
+      "SELECT * FROM dashboard_pipeline ORDER BY stage ASC",
     );
     const pipeline = pipelineRows.map(rowToPipelineStage);
 
@@ -737,7 +764,7 @@ router.get(
       success: true,
       data: pipeline,
     });
-  })
+  }),
 );
 
 /**
@@ -755,7 +782,7 @@ router.get(
       `SELECT * FROM dashboard_procurement 
        WHERE date >= date('now', '-' || ? || ' days') 
        ORDER BY date DESC`,
-      [parseInt(days as string, 10)]
+      [parseInt(days as string, 10)],
     );
     const procurement = procurementRows.map(rowToProcurementMetrics);
 
@@ -763,7 +790,7 @@ router.get(
       success: true,
       data: procurement,
     });
-  })
+  }),
 );
 
 /**
@@ -781,7 +808,7 @@ router.get(
       `SELECT * FROM dashboard_production 
        WHERE date >= date('now', '-' || ? || ' days') 
        ORDER BY date DESC`,
-      [parseInt(days as string, 10)]
+      [parseInt(days as string, 10)],
     );
     const production = productionRows.map(rowToProductionUtilization);
 
@@ -789,7 +816,7 @@ router.get(
       success: true,
       data: production,
     });
-  })
+  }),
 );
 
 /**
@@ -807,7 +834,7 @@ router.get(
       `SELECT * FROM dashboard_sla 
        WHERE date >= date('now', '-' || ? || ' days') 
        ORDER BY date DESC`,
-      [parseInt(days as string, 10)]
+      [parseInt(days as string, 10)],
     );
     const sla = slaRows.map(rowToSLAMetrics);
 
@@ -815,7 +842,7 @@ router.get(
       success: true,
       data: sla,
     });
-  })
+  }),
 );
 
 /**
@@ -847,7 +874,7 @@ router.get(
       data: projects,
       count: projects.length,
     });
-  })
+  }),
 );
 
 // ============================================================================
@@ -863,7 +890,10 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const { type, severity, acknowledged, resolved } = req.query;
 
-    logger.info({ type, severity, acknowledged, resolved }, "Fetching warnings");
+    logger.info(
+      { type, severity, acknowledged, resolved },
+      "Fetching warnings",
+    );
 
     let sql = "SELECT * FROM dashboard_warnings WHERE 1=1";
     const params: SqlValue[] = [];
@@ -900,7 +930,7 @@ router.get(
       data: warnings,
       count: warnings.length,
     });
-  })
+  }),
 );
 
 // ============================================================================
@@ -920,7 +950,7 @@ router.get(
 
     const widgetsRows = await db.all(
       "SELECT * FROM dashboard_widgets WHERE user_id = ? ORDER BY position ASC",
-      [userId]
+      [userId],
     );
     const widgets = widgetsRows.map(rowToWidget);
 
@@ -929,7 +959,7 @@ router.get(
       data: widgets,
       count: widgets.length,
     });
-  })
+  }),
 );
 
 /**
@@ -967,10 +997,13 @@ router.post(
         validated.isVisible ? 1 : 0,
         now,
         now,
-      ]
+      ],
     );
 
-    const widgetRow = await db.get("SELECT * FROM dashboard_widgets WHERE id = ?", [id]);
+    const widgetRow = await db.get(
+      "SELECT * FROM dashboard_widgets WHERE id = ?",
+      [id],
+    );
     if (!widgetRow) {
       throw new NotFoundError("Widget not found after creation");
     }
@@ -981,7 +1014,7 @@ router.post(
       success: true,
       data: widget,
     });
-  })
+  }),
 );
 
 /**
@@ -996,7 +1029,10 @@ router.put(
 
     logger.info({ widgetId }, "Updating widget");
 
-    const existing = await db.get("SELECT * FROM dashboard_widgets WHERE id = ?", [widgetId]);
+    const existing = await db.get(
+      "SELECT * FROM dashboard_widgets WHERE id = ?",
+      [widgetId],
+    );
     if (!existing) {
       throw new NotFoundError("Widget not found");
     }
@@ -1038,11 +1074,14 @@ router.put(
 
       await db.run(
         `UPDATE dashboard_widgets SET ${updates.join(", ")} WHERE id = ?`,
-        params
+        params,
       );
     }
 
-    const updatedRow = await db.get("SELECT * FROM dashboard_widgets WHERE id = ?", [widgetId]);
+    const updatedRow = await db.get(
+      "SELECT * FROM dashboard_widgets WHERE id = ?",
+      [widgetId],
+    );
     if (!updatedRow) {
       throw new NotFoundError("Widget not found after update");
     }
@@ -1053,7 +1092,7 @@ router.put(
       success: true,
       data: widget,
     });
-  })
+  }),
 );
 
 /**
@@ -1067,7 +1106,9 @@ router.delete(
 
     logger.info({ widgetId }, "Deleting widget");
 
-    const result = await db.run("DELETE FROM dashboard_widgets WHERE id = ?", [widgetId]);
+    const result = await db.run("DELETE FROM dashboard_widgets WHERE id = ?", [
+      widgetId,
+    ]);
     if (result.changes === 0) {
       throw new NotFoundError("Widget not found");
     }
@@ -1076,7 +1117,7 @@ router.delete(
       success: true,
       message: "Widget deleted successfully",
     });
-  })
+  }),
 );
 
 // ============================================================================
@@ -1096,7 +1137,7 @@ router.get(
 
     const layoutsRows = await db.all(
       "SELECT * FROM dashboard_layouts WHERE user_id = ? ORDER BY is_active DESC, is_default DESC",
-      [userId]
+      [userId],
     );
     const layouts = layoutsRows.map(rowToLayout);
 
@@ -1105,7 +1146,7 @@ router.get(
       data: layouts,
       count: layouts.length,
     });
-  })
+  }),
 );
 
 /**
@@ -1137,10 +1178,13 @@ router.post(
         validated.isActive ? 1 : 0,
         now,
         now,
-      ]
+      ],
     );
 
-    const layoutRow = await db.get("SELECT * FROM dashboard_layouts WHERE id = ?", [id]);
+    const layoutRow = await db.get(
+      "SELECT * FROM dashboard_layouts WHERE id = ?",
+      [id],
+    );
     if (!layoutRow) {
       throw new NotFoundError("Layout not found after creation");
     }
@@ -1151,7 +1195,7 @@ router.post(
       success: true,
       data: layout,
     });
-  })
+  }),
 );
 
 /**
@@ -1166,7 +1210,10 @@ router.put(
 
     logger.info({ layoutId }, "Updating layout");
 
-    const existing = await db.get("SELECT * FROM dashboard_layouts WHERE id = ?", [layoutId]);
+    const existing = await db.get(
+      "SELECT * FROM dashboard_layouts WHERE id = ?",
+      [layoutId],
+    );
     if (!existing) {
       throw new NotFoundError("Layout not found");
     }
@@ -1203,11 +1250,14 @@ router.put(
 
       await db.run(
         `UPDATE dashboard_layouts SET ${updates.join(", ")} WHERE id = ?`,
-        params
+        params,
       );
     }
 
-    const updatedRow = await db.get("SELECT * FROM dashboard_layouts WHERE id = ?", [layoutId]);
+    const updatedRow = await db.get(
+      "SELECT * FROM dashboard_layouts WHERE id = ?",
+      [layoutId],
+    );
     if (!updatedRow) {
       throw new NotFoundError("Layout not found after update");
     }
@@ -1218,7 +1268,7 @@ router.put(
       success: true,
       data: layout,
     });
-  })
+  }),
 );
 
 /**
@@ -1232,7 +1282,9 @@ router.delete(
 
     logger.info({ layoutId }, "Deleting layout");
 
-    const result = await db.run("DELETE FROM dashboard_layouts WHERE id = ?", [layoutId]);
+    const result = await db.run("DELETE FROM dashboard_layouts WHERE id = ?", [
+      layoutId,
+    ]);
     if (result.changes === 0) {
       throw new NotFoundError("Layout not found");
     }
@@ -1241,7 +1293,7 @@ router.delete(
       success: true,
       message: "Layout deleted successfully",
     });
-  })
+  }),
 );
 
 // ============================================================================
@@ -1261,7 +1313,7 @@ router.get(
 
     const favoritesRows = await db.all(
       "SELECT * FROM dashboard_favorites WHERE user_id = ? ORDER BY position ASC",
-      [userId]
+      [userId],
     );
     const favorites = favoritesRows.map(rowToFavorite);
 
@@ -1270,7 +1322,7 @@ router.get(
       data: favorites,
       count: favorites.length,
     });
-  })
+  }),
 );
 
 /**
@@ -1301,10 +1353,13 @@ router.post(
         validated.icon ?? null,
         validated.position,
         now,
-      ]
+      ],
     );
 
-    const favoriteRow = await db.get("SELECT * FROM dashboard_favorites WHERE id = ?", [id]);
+    const favoriteRow = await db.get(
+      "SELECT * FROM dashboard_favorites WHERE id = ?",
+      [id],
+    );
     if (!favoriteRow) {
       throw new NotFoundError("Favorite not found after creation");
     }
@@ -1315,7 +1370,7 @@ router.post(
       success: true,
       data: favorite,
     });
-  })
+  }),
 );
 
 /**
@@ -1329,7 +1384,10 @@ router.delete(
 
     logger.info({ favoriteId }, "Deleting favorite");
 
-    const result = await db.run("DELETE FROM dashboard_favorites WHERE id = ?", [favoriteId]);
+    const result = await db.run(
+      "DELETE FROM dashboard_favorites WHERE id = ?",
+      [favoriteId],
+    );
     if (result.changes === 0) {
       throw new NotFoundError("Favorite not found");
     }
@@ -1338,7 +1396,7 @@ router.delete(
       success: true,
       message: "Favorite deleted successfully",
     });
-  })
+  }),
 );
 
 // ============================================================================
@@ -1364,30 +1422,40 @@ router.get(
       pipelineRows,
       warningsRows,
     ] = await Promise.all([
-      db.get("SELECT * FROM dashboard_revenue_metrics ORDER BY date DESC LIMIT 1"),
-      db.get("SELECT * FROM dashboard_profit_margins ORDER BY date DESC LIMIT 1"),
+      db.get(
+        "SELECT * FROM dashboard_revenue_metrics ORDER BY date DESC LIMIT 1",
+      ),
+      db.get(
+        "SELECT * FROM dashboard_profit_margins ORDER BY date DESC LIMIT 1",
+      ),
       db.get("SELECT * FROM dashboard_liquidity ORDER BY date DESC LIMIT 1"),
-      db.all("SELECT * FROM dashboard_order_intake ORDER BY period DESC LIMIT 12"),
+      db.all(
+        "SELECT * FROM dashboard_order_intake ORDER BY period DESC LIMIT 12",
+      ),
       db.get("SELECT * FROM dashboard_productivity ORDER BY date DESC LIMIT 1"),
       db.all("SELECT * FROM dashboard_pipeline ORDER BY stage ASC"),
       db.all(
-        "SELECT * FROM dashboard_warnings WHERE resolved_at IS NULL ORDER BY severity DESC, created_at DESC LIMIT 10"
+        "SELECT * FROM dashboard_warnings WHERE resolved_at IS NULL ORDER BY severity DESC, created_at DESC LIMIT 10",
       ),
     ]);
 
     res.json({
       success: true,
       data: {
-        revenue: revenueMetricsRow ? rowToRevenueMetrics(revenueMetricsRow) : null,
+        revenue: revenueMetricsRow
+          ? rowToRevenueMetrics(revenueMetricsRow)
+          : null,
         margins: profitMarginsRow ? rowToProfitMargin(profitMarginsRow) : null,
         liquidity: liquidityRow ? rowToLiquidityStatus(liquidityRow) : null,
         orderIntake: orderIntakeRows.map(rowToOrderIntake),
-        productivity: productivityRow ? rowToProductivityMetrics(productivityRow) : null,
+        productivity: productivityRow
+          ? rowToProductivityMetrics(productivityRow)
+          : null,
         pipeline: pipelineRows.map(rowToPipelineStage),
         warnings: warningsRows.map(rowToWarning),
       },
     });
-  })
+  }),
 );
 
 export default router;

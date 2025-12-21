@@ -83,7 +83,9 @@ const createItemSchema = z.object({
 const updateItemSchema = createItemSchema
   .omit({ quantity: true })
   .partial()
-  .refine((val) => Object.keys(val).length > 0, { message: "No fields to update" });
+  .refine((val) => Object.keys(val).length > 0, {
+    message: "No fields to update",
+  });
 
 const stockMovementSchema = z.object({
   itemId: z.string(),
@@ -194,7 +196,9 @@ router.get(
     const query = itemQuerySchema.safeParse(req.query);
 
     if (!query.success) {
-      throw new ValidationError("Invalid query parameters", { issues: query.error.issues });
+      throw new ValidationError("Invalid query parameters", {
+        issues: query.error.issues,
+      });
     }
 
     const { category, status, search } = query.data;
@@ -267,7 +271,9 @@ router.post(
     const validation = createItemSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid item data", { issues: validation.error.issues });
+      throw new ValidationError("Invalid item data", {
+        issues: validation.error.issues,
+      });
     }
 
     const skuExists = await db.get<{ id: string }>(
@@ -312,7 +318,10 @@ router.post(
       throw new NotFoundError("Item creation verification failed");
     }
 
-    logger.info({ itemId: id, sku: validation.data.sku }, "Created inventory item");
+    logger.info(
+      { itemId: id, sku: validation.data.sku },
+      "Created inventory item",
+    );
 
     res.status(201).json({
       success: true,
@@ -340,7 +349,9 @@ router.put(
     const validation = updateItemSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid item data", { issues: validation.error.issues });
+      throw new ValidationError("Invalid item data", {
+        issues: validation.error.issues,
+      });
     }
 
     const updates = validation.data;
@@ -444,7 +455,9 @@ router.post(
     const validation = stockMovementSchema.safeParse(req.body);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid movement data", { issues: validation.error.issues });
+      throw new ValidationError("Invalid movement data", {
+        issues: validation.error.issues,
+      });
     }
 
     const { itemId, quantity, type, reason, reference } = validation.data;
@@ -458,10 +471,13 @@ router.post(
     }
 
     if (type !== "adjustment" && quantity <= 0) {
-      throw new ValidationError("Quantity must be greater than zero for in/out movements");
+      throw new ValidationError(
+        "Quantity must be greater than zero for in/out movements",
+      );
     }
 
-    const delta = type === "in" ? quantity : type === "out" ? -quantity : quantity;
+    const delta =
+      type === "in" ? quantity : type === "out" ? -quantity : quantity;
     const previousQuantity = item.quantity;
     const newQuantity = previousQuantity + delta;
 
@@ -502,7 +518,10 @@ router.post(
       timestamp: now,
       previous_quantity: previousQuantity,
       new_quantity: newQuantity,
-    } as InventoryMovementRow & { previous_quantity: number; new_quantity: number });
+    } as InventoryMovementRow & {
+      previous_quantity: number;
+      new_quantity: number;
+    });
 
     const updatedItem = mapItemRow({
       ...item,
@@ -534,7 +553,9 @@ router.get(
     const validation = movementQuerySchema.safeParse(req.query);
 
     if (!validation.success) {
-      throw new ValidationError("Invalid movement query", { issues: validation.error.issues });
+      throw new ValidationError("Invalid movement query", {
+        issues: validation.error.issues,
+      });
     }
 
     const { itemId, type, dateFrom, dateTo } = validation.data;

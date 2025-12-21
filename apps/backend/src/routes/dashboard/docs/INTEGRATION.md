@@ -23,7 +23,7 @@ Der Dashboard-Module ist bereits Teil des Projekts. Keine zusätzliche Installat
 ### Basic Usage
 
 ```typescript
-import dashboardService from './routes/dashboard/DashboardService.js';
+import dashboardService from "./routes/dashboard/DashboardService.js";
 
 // In app startup
 await dashboardService.initialize();
@@ -36,9 +36,9 @@ const tasks = await dashboardService.getTasks({ limit: 10, offset: 0 });
 
 ```typescript
 // apps/backend/src/index.ts
-import dashboardRouter from './routes/dashboard/dashboard.js';
+import dashboardRouter from "./routes/dashboard/dashboard.js";
 
-app.use('/api/dashboard', dashboardRouter);
+app.use("/api/dashboard", dashboardRouter);
 ```
 
 ## 🔧 Service Integration
@@ -48,7 +48,7 @@ app.use('/api/dashboard', dashboardRouter);
 Der **DashboardService** ist ein Singleton mit lazy initialization:
 
 ```typescript
-import dashboardService from './routes/dashboard/DashboardService.js';
+import dashboardService from "./routes/dashboard/DashboardService.js";
 
 // Initialisierung (einmalig beim App-Start)
 await dashboardService.initialize();
@@ -76,18 +76,18 @@ const overview = await dashboardService.getDashboardOverview();
 ```typescript
 // Get KPIs with filtering
 const kpis = await dashboardService.getKPIs({
-  category: 'revenue',
-  days: 30
+  category: "revenue",
+  days: 30,
 });
 
 // Create new KPI
 const kpi = await dashboardService.createKPI({
-  category: 'sales',
-  name: 'Monthly Revenue',
+  category: "sales",
+  name: "Monthly Revenue",
   value: 125000,
-  unit: 'EUR',
+  unit: "EUR",
   target: 150000,
-  date: '2025-12-20'
+  date: "2025-12-20",
 });
 ```
 
@@ -96,36 +96,36 @@ const kpi = await dashboardService.createKPI({
 ```typescript
 // Get tasks (paginated)
 const result = await dashboardService.getTasks({
-  userId: 'user-123',
-  status: 'pending',
-  priority: 'high',
+  userId: "user-123",
+  status: "pending",
+  priority: "high",
   limit: 20,
   offset: 0,
-  sortBy: 'priority',
-  sortOrder: 'desc'
+  sortBy: "priority",
+  sortOrder: "desc",
 });
 
 // Create task
 const task = await dashboardService.createTask({
-  userId: 'user-123',
-  title: 'Review Q4 Report',
-  description: 'Review and approve financial report',
-  priority: 'urgent',
-  dueDate: '2025-12-25',
-  assignedTo: 'user-456',
-  tags: 'finance,urgent',
-  relatedTo: 'report-789',
-  relatedType: 'report'
+  userId: "user-123",
+  title: "Review Q4 Report",
+  description: "Review and approve financial report",
+  priority: "urgent",
+  dueDate: "2025-12-25",
+  assignedTo: "user-456",
+  tags: "finance,urgent",
+  relatedTo: "report-789",
+  relatedType: "report",
 });
 
 // Update task
-const updated = await dashboardService.updateTask('task-id', {
-  status: 'completed',
-  completedAt: new Date().toISOString()
+const updated = await dashboardService.updateTask("task-id", {
+  status: "completed",
+  completedAt: new Date().toISOString(),
 });
 
 // Delete task
-await dashboardService.deleteTask('task-id');
+await dashboardService.deleteTask("task-id");
 ```
 
 #### Notification Management
@@ -133,31 +133,31 @@ await dashboardService.deleteTask('task-id');
 ```typescript
 // Get notifications (paginated)
 const result = await dashboardService.getNotifications({
-  userId: 'user-123',
+  userId: "user-123",
   read: false,
-  type: 'warning',
+  type: "warning",
   limit: 10,
-  offset: 0
+  offset: 0,
 });
 
 // Create notification
 const notification = await dashboardService.createNotification({
-  userId: 'user-123',
-  type: 'warning',
-  title: 'Server Maintenance',
-  message: 'Scheduled maintenance at 02:00 AM',
-  actionUrl: '/maintenance',
-  actionLabel: 'View Details',
-  metadata: JSON.stringify({ priority: 'high' })
+  userId: "user-123",
+  type: "warning",
+  title: "Server Maintenance",
+  message: "Scheduled maintenance at 02:00 AM",
+  actionUrl: "/maintenance",
+  actionLabel: "View Details",
+  metadata: JSON.stringify({ priority: "high" }),
 });
 
 // Mark as read
-await dashboardService.updateNotification('notif-id', {
-  read: true
+await dashboardService.updateNotification("notif-id", {
+  read: true,
 });
 
 // Delete notification
-await dashboardService.deleteNotification('notif-id');
+await dashboardService.deleteNotification("notif-id");
 ```
 
 #### Widget Management (CRUD)
@@ -165,9 +165,9 @@ await dashboardService.deleteNotification('notif-id');
 ```typescript
 // Get widgets (paginated)
 const widgets = await dashboardService.getWidgets({
-  userId: 'user-123',
-  widgetType: 'chart',
-  dataSource: 'revenue',
+  userId: "user-123",
+  widgetType: "chart",
+  dataSource: "revenue",
   isVisible: true,
   limit: 12,
   offset: 0,
@@ -175,19 +175,19 @@ const widgets = await dashboardService.getWidgets({
 
 // Create widget
 const widget = await dashboardService.createWidget({
-  userId: 'user-123',
-  widgetType: 'chart',
-  dataSource: 'revenue',
-  title: 'Revenue by Month',
+  userId: "user-123",
+  widgetType: "chart",
+  dataSource: "revenue",
+  title: "Revenue by Month",
   position: 0,
   width: 6,
   height: 4,
-  config: JSON.stringify({ chartType: 'line' }),
+  config: JSON.stringify({ chartType: "line" }),
 });
 
 // Update widget
 const updatedWidget = await dashboardService.updateWidget(widget.id, {
-  title: 'Revenue (12 months)',
+  title: "Revenue (12 months)",
   position: 1,
   width: 8,
 });
@@ -200,13 +200,13 @@ await dashboardService.deleteWidget(widget.id);
 
 ```typescript
 // Get layouts for user
-const layouts = await dashboardService.getLayouts('user-123');
+const layouts = await dashboardService.getLayouts("user-123");
 
 // Create layout
 const layout = await dashboardService.createLayout({
-  userId: 'user-123',
-  name: 'Executive View',
-  description: 'KPIs and revenue overview',
+  userId: "user-123",
+  name: "Executive View",
+  description: "KPIs and revenue overview",
   layout: JSON.stringify({ grid: [] }),
   isDefault: true,
   isActive: true,
@@ -214,7 +214,7 @@ const layout = await dashboardService.createLayout({
 
 // Update layout
 const updatedLayout = await dashboardService.updateLayout(layout.id, {
-  name: 'Executive View v2',
+  name: "Executive View v2",
   isActive: true,
 });
 
@@ -226,16 +226,16 @@ await dashboardService.deleteLayout(layout.id);
 
 ```typescript
 // Get favorites for user
-const favorites = await dashboardService.getFavorites('user-123');
+const favorites = await dashboardService.getFavorites("user-123");
 
 // Add favorite
 const favorite = await dashboardService.addFavorite({
-  userId: 'user-123',
-  itemType: 'route',
-  itemId: 'finance-revenue',
-  title: 'Revenue Dashboard',
-  url: '/dashboard/finance/revenue',
-  icon: 'dollar-sign',
+  userId: "user-123",
+  itemType: "route",
+  itemId: "finance-revenue",
+  title: "Revenue Dashboard",
+  url: "/dashboard/finance/revenue",
+  icon: "dollar-sign",
   position: 0,
 });
 
@@ -248,23 +248,26 @@ await dashboardService.deleteFavorite(favorite.id);
 ### Route Handler mit DashboardService
 
 ```typescript
-import { Router } from 'express';
-import { asyncHandler } from '../../middleware/asyncHandler.js';
-import dashboardService from './DashboardService.js';
-import { queryTaskSchema } from './types.js';
+import { Router } from "express";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import dashboardService from "./DashboardService.js";
+import { queryTaskSchema } from "./types.js";
 
 const router = Router();
 
-router.get('/tasks', asyncHandler(async (req, res) => {
-  // 1. Validate input with Zod
-  const validated = queryTaskSchema.parse(req.query);
-  
-  // 2. Call service method
-  const result = await dashboardService.getTasks(validated);
-  
-  // 3. Return response
-  res.json(result);
-}));
+router.get(
+  "/tasks",
+  asyncHandler(async (req, res) => {
+    // 1. Validate input with Zod
+    const validated = queryTaskSchema.parse(req.query);
+
+    // 2. Call service method
+    const result = await dashboardService.getTasks(validated);
+
+    // 3. Return response
+    res.json(result);
+  }),
+);
 
 export default router;
 ```
@@ -272,9 +275,9 @@ export default router;
 ### Widgets/Layout/Favorites Router Examples
 
 ```typescript
-import { Router } from 'express';
-import { asyncHandler } from '../../middleware/asyncHandler.js';
-import dashboardService from './DashboardService.js';
+import { Router } from "express";
+import { asyncHandler } from "../../middleware/asyncHandler.js";
+import dashboardService from "./DashboardService.js";
 import {
   queryWidgetSchema,
   createWidgetSchema,
@@ -282,97 +285,142 @@ import {
   createLayoutSchema,
   createFavoriteSchema,
   updateLayoutSchema,
-} from './types.js';
+} from "./types.js";
 
 const router = Router();
 
 // Widgets
-router.get('/widgets', asyncHandler(async (req, res) => {
-  const validated = queryWidgetSchema.parse(req.query);
-  const result = await dashboardService.getWidgets({
-    ...validated,
-    isVisible: typeof validated.isVisible === 'string' ? validated.isVisible === 'true' : undefined,
-  } as any);
-  res.json(result);
-}));
+router.get(
+  "/widgets",
+  asyncHandler(async (req, res) => {
+    const validated = queryWidgetSchema.parse(req.query);
+    const result = await dashboardService.getWidgets({
+      ...validated,
+      isVisible:
+        typeof validated.isVisible === "string"
+          ? validated.isVisible === "true"
+          : undefined,
+    } as any);
+    res.json(result);
+  }),
+);
 
-router.post('/widgets', asyncHandler(async (req, res) => {
-  const validated = createWidgetSchema.parse(req.body);
-  const widget = await dashboardService.createWidget(validated);
-  res.status(201).json({ success: true, data: widget });
-}));
+router.post(
+  "/widgets",
+  asyncHandler(async (req, res) => {
+    const validated = createWidgetSchema.parse(req.body);
+    const widget = await dashboardService.createWidget(validated);
+    res.status(201).json({ success: true, data: widget });
+  }),
+);
 
-router.put('/widgets/:id', asyncHandler(async (req, res) => {
-  const validated = updateWidgetSchema.parse(req.body);
-  const widget = await dashboardService.updateWidget(req.params.id, validated);
-  res.json({ success: true, data: widget });
-}));
+router.put(
+  "/widgets/:id",
+  asyncHandler(async (req, res) => {
+    const validated = updateWidgetSchema.parse(req.body);
+    const widget = await dashboardService.updateWidget(
+      req.params.id,
+      validated,
+    );
+    res.json({ success: true, data: widget });
+  }),
+);
 
-router.delete('/widgets/:id', asyncHandler(async (req, res) => {
-  await dashboardService.deleteWidget(req.params.id);
-  res.json({ success: true, message: 'Widget deleted successfully' });
-}));
+router.delete(
+  "/widgets/:id",
+  asyncHandler(async (req, res) => {
+    await dashboardService.deleteWidget(req.params.id);
+    res.json({ success: true, message: "Widget deleted successfully" });
+  }),
+);
 
 // Layouts
-router.get('/layouts', asyncHandler(async (req, res) => {
-  const userId = req.query.userId as string | undefined;
-  if (!userId) throw new BadRequestError('Missing required query: userId');
-  const layouts = await dashboardService.getLayouts(userId);
-  res.json({ success: true, data: layouts, count: layouts.length });
-}));
+router.get(
+  "/layouts",
+  asyncHandler(async (req, res) => {
+    const userId = req.query.userId as string | undefined;
+    if (!userId) throw new BadRequestError("Missing required query: userId");
+    const layouts = await dashboardService.getLayouts(userId);
+    res.json({ success: true, data: layouts, count: layouts.length });
+  }),
+);
 
-router.post('/layouts', asyncHandler(async (req, res) => {
-  const validated = createLayoutSchema.parse(req.body);
-  const layout = await dashboardService.createLayout(validated);
-  res.status(201).json({ success: true, data: layout });
-}));
+router.post(
+  "/layouts",
+  asyncHandler(async (req, res) => {
+    const validated = createLayoutSchema.parse(req.body);
+    const layout = await dashboardService.createLayout(validated);
+    res.status(201).json({ success: true, data: layout });
+  }),
+);
 
-router.put('/layouts/:id', asyncHandler(async (req, res) => {
-  const validated = updateLayoutSchema.parse(req.body);
-  const layout = await dashboardService.updateLayout(req.params.id, validated);
-  res.json({ success: true, data: layout });
-}));
+router.put(
+  "/layouts/:id",
+  asyncHandler(async (req, res) => {
+    const validated = updateLayoutSchema.parse(req.body);
+    const layout = await dashboardService.updateLayout(
+      req.params.id,
+      validated,
+    );
+    res.json({ success: true, data: layout });
+  }),
+);
 
-router.delete('/layouts/:id', asyncHandler(async (req, res) => {
-  await dashboardService.deleteLayout(req.params.id);
-  res.json({ success: true, message: 'Layout deleted successfully' });
-}));
+router.delete(
+  "/layouts/:id",
+  asyncHandler(async (req, res) => {
+    await dashboardService.deleteLayout(req.params.id);
+    res.json({ success: true, message: "Layout deleted successfully" });
+  }),
+);
 
 // Favorites
-router.get('/favorites', asyncHandler(async (req, res) => {
-  const userId = req.query.userId as string | undefined;
-  if (!userId) throw new BadRequestError('Missing required query: userId');
-  const favorites = await dashboardService.getFavorites(userId);
-  res.json({ success: true, data: favorites, count: favorites.length });
-}));
+router.get(
+  "/favorites",
+  asyncHandler(async (req, res) => {
+    const userId = req.query.userId as string | undefined;
+    if (!userId) throw new BadRequestError("Missing required query: userId");
+    const favorites = await dashboardService.getFavorites(userId);
+    res.json({ success: true, data: favorites, count: favorites.length });
+  }),
+);
 
-router.post('/favorites', asyncHandler(async (req, res) => {
-  const validated = createFavoriteSchema.parse(req.body);
-  const favorite = await dashboardService.addFavorite(validated);
-  res.status(201).json({ success: true, data: favorite });
-}));
+router.post(
+  "/favorites",
+  asyncHandler(async (req, res) => {
+    const validated = createFavoriteSchema.parse(req.body);
+    const favorite = await dashboardService.addFavorite(validated);
+    res.status(201).json({ success: true, data: favorite });
+  }),
+);
 
-router.delete('/favorites/:id', asyncHandler(async (req, res) => {
-  await dashboardService.deleteFavorite(req.params.id);
-  res.json({ success: true, message: 'Favorite deleted successfully' });
-}));
+router.delete(
+  "/favorites/:id",
+  asyncHandler(async (req, res) => {
+    await dashboardService.deleteFavorite(req.params.id);
+    res.json({ success: true, message: "Favorite deleted successfully" });
+  }),
+);
 ```
 
 ### Error Handling
 
 ```typescript
-router.post('/tasks', asyncHandler(async (req, res) => {
-  try {
-    const validated = createTaskSchema.parse(req.body);
-    const task = await dashboardService.createTask(validated);
-    res.status(201).json({ success: true, data: task });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      throw new BadRequestError('Invalid input', error.errors);
+router.post(
+  "/tasks",
+  asyncHandler(async (req, res) => {
+    try {
+      const validated = createTaskSchema.parse(req.body);
+      const task = await dashboardService.createTask(validated);
+      res.status(201).json({ success: true, data: task });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw new BadRequestError("Invalid input", error.errors);
+      }
+      throw error;
     }
-    throw error;
-  }
-}));
+  }),
+);
 ```
 
 ## 🧰 Utility Functions
@@ -382,7 +430,7 @@ Das Dashboard-Module verwendet Utility-Funktionen aus `../database/utils.ts`:
 ### Pagination
 
 ```typescript
-import { parsePagination, createPaginatedResult } from '../database/utils.js';
+import { parsePagination, createPaginatedResult } from "../database/utils.js";
 
 // Parse pagination from query params
 const pagination = parsePagination(req.query);
@@ -396,13 +444,13 @@ const result = createPaginatedResult(data, total, pagination);
 ### WHERE Clause Building
 
 ```typescript
-import { buildWhereClause } from '../database/utils.js';
+import { buildWhereClause } from "../database/utils.js";
 
 const whereClause = buildWhereClause({
-  user_id: 'user-123',
-  status: 'pending',
-  'priority IN': ['high', 'urgent'],
-  'due_date <=': '2025-12-31'
+  user_id: "user-123",
+  status: "pending",
+  "priority IN": ["high", "urgent"],
+  "due_date <=": "2025-12-31",
 });
 // Returns: { clause: 'WHERE user_id = ? AND status = ? ...', params: [...] }
 ```
@@ -410,23 +458,23 @@ const whereClause = buildWhereClause({
 ### ORDER BY Building
 
 ```typescript
-import { buildOrderBy } from '../database/utils.js';
+import { buildOrderBy } from "../database/utils.js";
 
-const orderBy = buildOrderBy('priority', 'desc', ['created_at DESC']);
+const orderBy = buildOrderBy("priority", "desc", ["created_at DESC"]);
 // Returns: 'ORDER BY priority DESC, created_at DESC'
 ```
 
 ### SELECT Query Building
 
 ```typescript
-import { buildSelectQuery } from '../database/utils.js';
+import { buildSelectQuery } from "../database/utils.js";
 
 const sql = buildSelectQuery({
-  table: 'dashboard_tasks',
-  where: 'WHERE user_id = ?',
-  orderBy: 'priority DESC',
+  table: "dashboard_tasks",
+  where: "WHERE user_id = ?",
+  orderBy: "priority DESC",
   limit: 20,
-  offset: 0
+  offset: 0,
 });
 // Returns: 'SELECT * FROM dashboard_tasks WHERE user_id = ? ORDER BY priority DESC LIMIT 20 OFFSET 0'
 ```
@@ -434,10 +482,10 @@ const sql = buildSelectQuery({
 ### Error Formatting
 
 ```typescript
-import { formatDatabaseError } from '../database/utils.js';
+import { formatDatabaseError } from "../database/utils.js";
 
 try {
-  await db.run('INSERT INTO ...');
+  await db.run("INSERT INTO ...");
 } catch (error) {
   throw formatDatabaseError(error);
   // Converts DB errors to user-friendly messages
@@ -447,11 +495,14 @@ try {
 ### Retry Logic
 
 ```typescript
-import { retryOperation } from '../database/utils.js';
+import { retryOperation } from "../database/utils.js";
 
-const result = await retryOperation(async () => {
-  return await db.run('INSERT INTO ...');
-}, { maxRetries: 3, baseDelay: 100 });
+const result = await retryOperation(
+  async () => {
+    return await db.run("INSERT INTO ...");
+  },
+  { maxRetries: 3, baseDelay: 100 },
+);
 ```
 
 ## ❌ Error Handling
@@ -459,23 +510,23 @@ const result = await retryOperation(async () => {
 ### Custom Errors
 
 ```typescript
-import { NotFoundError, BadRequestError } from '../error/errors.js';
+import { NotFoundError, BadRequestError } from "../error/errors.js";
 
 // Task not found
 if (!task) {
-  throw new NotFoundError('Task not found', { taskId });
+  throw new NotFoundError("Task not found", { taskId });
 }
 
 // Invalid input
 if (!data.userId) {
-  throw new BadRequestError('Missing required field: userId');
+  throw new BadRequestError("Missing required field: userId");
 }
 ```
 
 ### Zod Validation Errors
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 try {
   const validated = createTaskSchema.parse(req.body);
@@ -484,8 +535,8 @@ try {
     // Return validation errors
     res.status(400).json({
       success: false,
-      error: 'Validation failed',
-      details: error.errors
+      error: "Validation failed",
+      details: error.errors,
     });
   }
 }
@@ -497,12 +548,12 @@ try {
 try {
   await dashboardService.createTask(data);
 } catch (error) {
-  logger.error({ error }, 'Failed to create task');
-  
-  if (error.message.includes('UNIQUE constraint')) {
-    throw new BadRequestError('Task already exists');
+  logger.error({ error }, "Failed to create task");
+
+  if (error.message.includes("UNIQUE constraint")) {
+    throw new BadRequestError("Task already exists");
   }
-  
+
   throw formatDatabaseError(error);
 }
 ```
@@ -512,10 +563,10 @@ try {
 ### Unit Tests (DashboardService)
 
 ```typescript
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import dashboardService from './DashboardService.js';
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import dashboardService from "./DashboardService.js";
 
-describe('DashboardService - Tasks', () => {
+describe("DashboardService - Tasks", () => {
   beforeEach(async () => {
     await dashboardService.initialize();
   });
@@ -524,48 +575,48 @@ describe('DashboardService - Tasks', () => {
     // Clean up test data
   });
 
-  it('should create task', async () => {
+  it("should create task", async () => {
     const task = await dashboardService.createTask({
-      userId: 'test-user',
-      title: 'Test Task',
-      priority: 'high'
+      userId: "test-user",
+      title: "Test Task",
+      priority: "high",
     });
-    
+
     expect(task.id).toBeDefined();
-    expect(task.title).toBe('Test Task');
-    expect(task.status).toBe('pending');
+    expect(task.title).toBe("Test Task");
+    expect(task.status).toBe("pending");
   });
 
-  it('should get paginated tasks', async () => {
+  it("should get paginated tasks", async () => {
     const result = await dashboardService.getTasks({
-      userId: 'test-user',
+      userId: "test-user",
       limit: 10,
-      offset: 0
+      offset: 0,
     });
-    
+
     expect(result.data).toBeInstanceOf(Array);
     expect(result.pagination.limit).toBe(10);
     expect(result.pagination.total).toBeGreaterThanOrEqual(0);
   });
 
-  it('should update task status', async () => {
+  it("should update task status", async () => {
     const task = await dashboardService.createTask({
-      userId: 'test-user',
-      title: 'Test Task'
+      userId: "test-user",
+      title: "Test Task",
     });
-    
+
     const updated = await dashboardService.updateTask(task.id, {
-      status: 'completed'
+      status: "completed",
     });
-    
-    expect(updated.status).toBe('completed');
+
+    expect(updated.status).toBe("completed");
     expect(updated.completedAt).toBeDefined();
   });
 
-  it('should throw error for non-existent task', async () => {
-    await expect(
-      dashboardService.getTaskById('invalid-id')
-    ).rejects.toThrow('Task not found');
+  it("should throw error for non-existent task", async () => {
+    await expect(dashboardService.getTaskById("invalid-id")).rejects.toThrow(
+      "Task not found",
+    );
   });
 });
 ```
@@ -573,66 +624,61 @@ describe('DashboardService - Tasks', () => {
 ### Integration Tests (Router)
 
 ```typescript
-import request from 'supertest';
-import app from '../../app.js';
+import request from "supertest";
+import app from "../../app.js";
 
-describe('Dashboard API - Tasks', () => {
-  it('GET /api/dashboard/tasks', async () => {
+describe("Dashboard API - Tasks", () => {
+  it("GET /api/dashboard/tasks", async () => {
     const res = await request(app)
-      .get('/api/dashboard/tasks')
+      .get("/api/dashboard/tasks")
       .query({ limit: 10, offset: 0 });
-    
+
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toBeInstanceOf(Array);
     expect(res.body.pagination).toBeDefined();
   });
 
-  it('POST /api/dashboard/tasks', async () => {
-    const res = await request(app)
-      .post('/api/dashboard/tasks')
-      .send({
-        userId: 'test-user',
-        title: 'Integration Test Task',
-        priority: 'normal'
-      });
-    
+  it("POST /api/dashboard/tasks", async () => {
+    const res = await request(app).post("/api/dashboard/tasks").send({
+      userId: "test-user",
+      title: "Integration Test Task",
+      priority: "normal",
+    });
+
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.id).toBeDefined();
   });
 
-  it('PUT /api/dashboard/tasks/:id', async () => {
-    const createRes = await request(app)
-      .post('/api/dashboard/tasks')
-      .send({
-        userId: 'test-user',
-        title: 'Test Task'
-      });
-    
+  it("PUT /api/dashboard/tasks/:id", async () => {
+    const createRes = await request(app).post("/api/dashboard/tasks").send({
+      userId: "test-user",
+      title: "Test Task",
+    });
+
     const taskId = createRes.body.data.id;
-    
+
     const updateRes = await request(app)
       .put(`/api/dashboard/tasks/${taskId}`)
-      .send({ status: 'completed' });
-    
+      .send({ status: "completed" });
+
     expect(updateRes.status).toBe(200);
-    expect(updateRes.body.data.status).toBe('completed');
+    expect(updateRes.body.data.status).toBe("completed");
   });
 
-  it('DELETE /api/dashboard/tasks/:id', async () => {
-    const createRes = await request(app)
-      .post('/api/dashboard/tasks')
-      .send({
-        userId: 'test-user',
-        title: 'Test Task'
-      });
-    
+  it("DELETE /api/dashboard/tasks/:id", async () => {
+    const createRes = await request(app).post("/api/dashboard/tasks").send({
+      userId: "test-user",
+      title: "Test Task",
+    });
+
     const taskId = createRes.body.data.id;
-    
-    const deleteRes = await request(app)
-      .delete(`/api/dashboard/tasks/${taskId}`);
-    
+
+    const deleteRes = await request(app).delete(
+      `/api/dashboard/tasks/${taskId}`,
+    );
+
     expect(deleteRes.status).toBe(200);
     expect(deleteRes.body.success).toBe(true);
   });
@@ -645,12 +691,12 @@ describe('Dashboard API - Tasks', () => {
 
 ```typescript
 // ✅ Korrekt
-import dashboardService from './DashboardService.js';
+import dashboardService from "./DashboardService.js";
 const tasks = await dashboardService.getTasks(filters);
 
 // ❌ Falsch
-import db from '../database/dbService.js';
-const tasks = await db.all('SELECT * FROM dashboard_tasks');
+import db from "../database/dbService.js";
+const tasks = await db.all("SELECT * FROM dashboard_tasks");
 ```
 
 ### 2. Zod für Input-Validierung
@@ -670,11 +716,11 @@ const result = await dashboardService.getTasks(req.query);
 // ✅ Korrekt
 const result = await dashboardService.getTasks({
   limit: 50,
-  offset: 0
+  offset: 0,
 });
 
 // ❌ Falsch
-const result = await db.all('SELECT * FROM dashboard_tasks');
+const result = await db.all("SELECT * FROM dashboard_tasks");
 ```
 
 ### 4. Error Handling
@@ -684,7 +730,7 @@ const result = await db.all('SELECT * FROM dashboard_tasks');
 try {
   const task = await dashboardService.getTaskById(id);
 } catch (error) {
-  logger.error({ error, taskId: id }, 'Failed to get task');
+  logger.error({ error, taskId: id }, "Failed to get task");
   throw formatDatabaseError(error);
 }
 
@@ -697,22 +743,22 @@ const task = await dashboardService.getTaskById(id);
 
 ```typescript
 // ✅ Korrekt
-import { createLogger } from '../../utils/logger.js';
-const logger = createLogger('dashboard-custom');
+import { createLogger } from "../../utils/logger.js";
+const logger = createLogger("dashboard-custom");
 
-logger.info({ userId, taskId }, 'Task created');
-logger.error({ error }, 'Task creation failed');
+logger.info({ userId, taskId }, "Task created");
+logger.error({ error }, "Task creation failed");
 
 // ❌ Falsch
-console.log('Task created');
-console.error('Error:', error);
+console.log("Task created");
+console.error("Error:", error);
 ```
 
 ### 6. Type Safety
 
 ```typescript
 // ✅ Korrekt
-import type { DashboardTask, CreateTaskInput } from './types.js';
+import type { DashboardTask, CreateTaskInput } from "./types.js";
 
 const createTask = async (data: CreateTaskInput): Promise<DashboardTask> => {
   return await dashboardService.createTask(data);
@@ -732,17 +778,17 @@ const createTask = async (data: any): Promise<any> => {
 // Routes verwenden nur SELECT, INSERT, UPDATE, DELETE
 
 // ❌ Falsch
-await db.run('CREATE TABLE IF NOT EXISTS dashboard_tasks ...');
+await db.run("CREATE TABLE IF NOT EXISTS dashboard_tasks ...");
 ```
 
 ### 8. Prepared Statements
 
 ```typescript
 // ✅ Korrekt
-await db.run(
-  'INSERT INTO dashboard_tasks (id, title) VALUES (?, ?)',
-  [id, title]
-);
+await db.run("INSERT INTO dashboard_tasks (id, title) VALUES (?, ?)", [
+  id,
+  title,
+]);
 
 // ❌ Falsch
 await db.run(`INSERT INTO dashboard_tasks VALUES ('${id}', '${title}')`);

@@ -2,17 +2,18 @@
 // apps/frontend/src/config/apiRoutes.ts
 /**
  * Central API Routes Configuration
- * 
+ *
  * This file defines all backend API routes used by frontend components.
  * Backend routes are fixed - frontend must adapt to these endpoints.
- * 
+ *
  * @see Backend docs: apps/backend/src/routes/*\/docs/README.md
  */
 
 /**
  * API Base URL - determined at runtime
  */
-export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 /**
  * API Routes organized by module
@@ -127,9 +128,11 @@ export const API_ROUTES = {
     EMPLOYEE: (id: string) => `/api/hr/employees/${id}`,
     CONTRACTS: "/api/hr/contracts",
     CONTRACT: (id: string) => `/api/hr/contracts/${id}`,
-    EMPLOYEE_CONTRACTS: (employeeId: string) => `/api/hr/employees/${employeeId}/contracts`,
+    EMPLOYEE_CONTRACTS: (employeeId: string) =>
+      `/api/hr/employees/${employeeId}/contracts`,
     LEAVE_REQUESTS: "/api/hr/leave-requests",
-    LEAVE_REQUEST_APPROVE: (id: string) => `/api/hr/leave-requests/${id}/approve`,
+    LEAVE_REQUEST_APPROVE: (id: string) =>
+      `/api/hr/leave-requests/${id}/approve`,
     LEAVE_REQUEST_REJECT: (id: string) => `/api/hr/leave-requests/${id}/reject`,
     TIME_ENTRIES: "/api/hr/time-entries",
     TIME_ENTRIES_BULK: "/api/hr/time-entries/bulk",
@@ -436,6 +439,8 @@ export function buildApiUrl(path: string): string {
 /**
  * Helper to get module routes
  */
-export function getModuleRoutes(module: keyof typeof API_ROUTES): Record<string, string> {
+export function getModuleRoutes(
+  module: keyof typeof API_ROUTES,
+): Record<string, string> {
   return API_ROUTES[module] as Record<string, string>;
 }

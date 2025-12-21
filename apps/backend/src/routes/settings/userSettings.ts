@@ -19,9 +19,7 @@ import {
 const router = Router();
 const logger = createLogger("user-settings-api");
 
-const isValidUserSettingKey = (
-  key: string,
-): key is keyof UserSettings =>
+const isValidUserSettingKey = (key: string): key is keyof UserSettings =>
   USER_SETTING_DEFINITIONS.some((definition) => definition.key === key);
 
 /**
@@ -142,7 +140,10 @@ router.post(
       sanitizedEntries,
     );
 
-    logger.info({ userId, updated: result.updated }, "Bulk user settings update");
+    logger.info(
+      { userId, updated: result.updated },
+      "Bulk user settings update",
+    );
 
     res.json({
       success: result.success,

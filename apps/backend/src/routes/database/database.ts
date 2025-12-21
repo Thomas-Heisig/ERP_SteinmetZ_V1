@@ -206,7 +206,9 @@ export type PostgresClient = PoolClient;
 /**
  * PostgreSQL query result type
  */
-export type PostgresQueryResult<T extends Record<string, unknown> = Record<string, unknown>> = PgQueryResult<T>;
+export type PostgresQueryResult<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = PgQueryResult<T>;
 
 /**
  * PostgreSQL query config object
@@ -232,4 +234,3 @@ export interface PostgresModule {
  * Database driver type
  */
 export type DatabaseDriver = "sqlite" | "postgres";
-

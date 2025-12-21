@@ -5,20 +5,23 @@
 ### 1. **API-Endpoint Korrekturen**
 
 #### Problem behoben:
+
 - ❌ Health API war falsch konfiguriert (`/api/diagnostics/health` statt `/api/system/health`)
 - ❌ Routes wurden nicht korrekt angezeigt
 - ❌ Fehlerhafte Datenextraktion
 
 #### Lösung:
+
 ```javascript
 // VORHER (falsch):
-fetchAPI(`${DIAGNOSTICS_BASE}/health`)
+fetchAPI(`${DIAGNOSTICS_BASE}/health`);
 
 // NACHHER (korrekt):
-fetchAPI(`${API_BASE}/health`)
+fetchAPI(`${API_BASE}/health`);
 ```
 
 **Korrekte Endpoints**:
+
 - ✅ `/api/system/health` - System Health Status
 - ✅ `/api/system/routes` - API Routes
 - ✅ `/api/system/status` - Service Status
@@ -29,12 +32,14 @@ fetchAPI(`${API_BASE}/health`)
 ### 2. **Verbesserte Fehlerbehandlung**
 
 #### Neue Features:
+
 - ✅ Console-Logging für alle API-Aufrufe
 - ✅ Detaillierte Fehlermeldungen mit Emojis
 - ✅ Fallback für fehlgeschlagene APIs
 - ✅ Status-Anzeige für unerreichbare Endpoints
 
 #### Implementierung:
+
 ```javascript
 async function fetchAPI(endpoint) {
   try {
@@ -55,6 +60,7 @@ async function fetchAPI(endpoint) {
 ```
 
 #### Sichtbare Verbesserungen:
+
 - 🟢 **Success**: Grüne Checkmarks in Console
 - 🔴 **Error**: Rote X mit detaillierter Fehlermeldung
 - 📡 **Loading**: Alle API-Aufrufe werden geloggt
@@ -65,20 +71,22 @@ async function fetchAPI(endpoint) {
 ### 3. **Health Status Display verbessert**
 
 #### Problem:
+
 - Daten wurden nicht korrekt verarbeitet
 - Verschiedene API-Formate nicht unterstützt
 
 #### Lösung:
+
 ```javascript
 function displayHealth(data) {
   // Unterstützt jetzt mehrere Formate:
   // 1. { status: "healthy", checks: [...] }
   // 2. { health: "ok", database: "connected", ai: "ready" }
   // 3. Beliebiges Format mit Service-Status
-  
-  const status = data.status || data.health || 'unknown';
-  const isHealthy = status === 'healthy' || status === 'ok';
-  
+
+  const status = data.status || data.health || "unknown";
+  const isHealthy = status === "healthy" || status === "ok";
+
   // Checks aus Array oder Objekten
   if (data.checks && Array.isArray(data.checks)) {
     // Array-Format verarbeiten
@@ -89,6 +97,7 @@ function displayHealth(data) {
 ```
 
 #### Ergebnis:
+
 - ✅ Flexibles Data-Parsing
 - ✅ Mehrere API-Formate unterstützt
 - ✅ Detaillierte Check-Anzeige
@@ -99,6 +108,7 @@ function displayHealth(data) {
 ### 4. **Routen-Anzeige komplett überarbeitet**
 
 #### Neue Features:
+
 - ✅ **Header mit Statistik** für jede HTTP-Methode
 - ✅ **Tabellen-Header** (Methode, Pfad, Status)
 - ✅ **Active Status** für alle Routes
@@ -106,11 +116,12 @@ function displayHealth(data) {
 - ✅ **Bis zu 50 Routes** pro Methode (vorher 20)
 
 #### Implementierung:
+
 ```javascript
 function displayRoutes(data) {
   // Unterstützt mehrere Formate:
   const routes = data.endpoints || data.routes || data || [];
-  
+
   // Gruppierung nach HTTP-Methode
   const grouped = {};
   routes.forEach((route) => {
@@ -118,13 +129,14 @@ function displayRoutes(data) {
     if (!grouped[method]) grouped[method] = [];
     grouped[method].push(route);
   });
-  
+
   // Schöne Tabellen mit Headers
   // Statistik-Footer mit allen Counts
 }
 ```
 
 #### Visuelle Verbesserungen:
+
 ```
 ┌──────────────────────────────────────────┐
 │ GET (45 routes)                          │
@@ -143,6 +155,7 @@ function displayRoutes(data) {
 ### 5. **Wartungs- & Backup-Kalender hinzugefügt** 🆕
 
 #### Neue Dashboard-Karte:
+
 ```html
 <div class="card">
   <div class="card-header">
@@ -157,6 +170,7 @@ function displayRoutes(data) {
 ```
 
 #### Features:
+
 - ✅ **Wartungstermine** mit Priorität (Hoch/Mittel/Niedrig)
 - ✅ **Backup-Schedule** mit Frequenz (täglich/wöchentlich/monatlich)
 - ✅ **Datumsformatierung** (deutsch)
@@ -164,42 +178,45 @@ function displayRoutes(data) {
 - ✅ **Icons & Badges** für bessere Visualisierung
 
 #### Wartungstermine Beispiel:
+
 ```javascript
 [
   {
     date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
     title: "Datenbank-Wartung",
     type: "maintenance",
-    priority: "medium"  // 🟡 Orange Badge
+    priority: "medium", // 🟡 Orange Badge
   },
   {
     date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     title: "System-Update",
     type: "maintenance",
-    priority: "high"    // 🔴 Rot Badge
-  }
-]
+    priority: "high", // 🔴 Rot Badge
+  },
+];
 ```
 
 #### Backup-Schedule Beispiel:
+
 ```javascript
 [
   {
     date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     title: "Tägliches Backup",
     type: "backup",
-    frequency: "täglich"
+    frequency: "täglich",
   },
   {
     date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     title: "Wöchentliches Vollbackup",
     type: "backup",
-    frequency: "wöchentlich"
-  }
-]
+    frequency: "wöchentlich",
+  },
+];
 ```
 
 #### Visuelle Darstellung:
+
 ```
 📅 Wartung & Backup
 ├─ Nächste Wartungstermine:
@@ -224,12 +241,14 @@ function displayRoutes(data) {
 ### 6. **Service Status verbessert**
 
 #### Verbesserungen:
+
 - ✅ **Zusätzliche Datenfelder** unterstützt
 - ✅ **Fallback-Werte** für fehlende Daten
 - ✅ **Visuelle Boxen** mit Hintergrundfarbe
 - ✅ **Icons** für jeden Service
 
 #### Neue Darstellung:
+
 ```
 ⚙️ Services
 ├─ Metriken:
@@ -249,6 +268,7 @@ function displayRoutes(data) {
 ### 7. **CSS-Styles erweitert**
 
 #### Neue Styles:
+
 ```css
 /* Maintenance Calendar */
 .calendar-event {
@@ -281,16 +301,19 @@ function displayRoutes(data) {
 ## 📊 Zusammenfassung der Änderungen
 
 ### Dateien geändert:
+
 1. ✅ `systemDashboard.html` - Kalender hinzugefügt
 2. ✅ `systemDashboard.js` - API-Korrekturen, Fehlerbehandlung, Kalender-Logik
 3. ✅ `systemDashboard.css` - Neue Styles für Kalender & Fehler
 
 ### Zeilen Code:
+
 - **JavaScript**: +130 Zeilen (Kalender-Funktionen, verbesserte Display-Logik)
 - **HTML**: +20 Zeilen (Kalender-Container)
 - **CSS**: +50 Zeilen (Kalender & Error-Styles)
 
 ### Neue Funktionen:
+
 1. ✅ `displayMaintenanceCalendar()` - Zeigt Wartungstermine
 2. ✅ Verbesserte `displayHealth()` - Flexibles Data-Parsing
 3. ✅ Verbesserte `displayRoutes()` - Bessere Tabellen
@@ -303,6 +326,7 @@ function displayRoutes(data) {
 ## 🎯 Behobene Probleme
 
 ### Vorher:
+
 - ❌ Health API funktionierte nicht (`/api/diagnostics/health`)
 - ❌ Routen wurden nicht angezeigt
 - ❌ Keine Fehlerausgabe in Console
@@ -311,6 +335,7 @@ function displayRoutes(data) {
 - ❌ Limitierte Route-Anzeige (nur 20)
 
 ### Nachher:
+
 - ✅ Health API funktioniert (`/api/system/health`)
 - ✅ Routen werden korrekt angezeigt (bis zu 50 pro Methode)
 - ✅ Detailliertes Console-Logging mit Emojis
@@ -325,11 +350,13 @@ function displayRoutes(data) {
 ### Manuelle Tests durchführen:
 
 1. **Backend starten**:
+
    ```bash
    npm run dev
    ```
 
 2. **Dashboard öffnen**:
+
    ```
    http://localhost:3000/
    ```
@@ -361,6 +388,7 @@ function displayRoutes(data) {
 ## 📈 Performance
 
 ### Keine Performance-Einbußen:
+
 - ✅ Auto-Refresh funktioniert weiterhin (30s)
 - ✅ Paralleles Laden aller 12 APIs
 - ✅ DOM-Rendering < 100ms
@@ -376,10 +404,10 @@ function displayRoutes(data) {
 // In systemDashboard.js, Zeile ~760
 const maintenanceEvents = [
   {
-    date: new Date('2025-12-25'),  // Weihnachten
+    date: new Date("2025-12-25"), // Weihnachten
     title: "Datenbank-Wartung",
     type: "maintenance",
-    priority: "medium"
+    priority: "medium",
   },
   // Weitere Events hinzufügen...
 ];
@@ -391,10 +419,10 @@ const maintenanceEvents = [
 // In systemDashboard.js, Zeile ~785
 const backupEvents = [
   {
-    date: new Date('2025-12-21T02:00:00'),
+    date: new Date("2025-12-21T02:00:00"),
     title: "Tägliches Backup",
     type: "backup",
-    frequency: "täglich"
+    frequency: "täglich",
   },
   // Weitere Backups hinzufügen...
 ];

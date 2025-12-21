@@ -3,7 +3,7 @@
 
 /**
  * TypeScript types and Zod validation schemas for Diagnostics Module
- * 
+ *
  * @module routes/diagnostics/types
  */
 
@@ -67,7 +67,7 @@ export const DB_OPERATION = {
  */
 export interface HealthCheck {
   name: string;
-  status: typeof HEALTH_STATUS[keyof typeof HEALTH_STATUS];
+  status: (typeof HEALTH_STATUS)[keyof typeof HEALTH_STATUS];
   message?: string;
   timestamp?: string;
   duration?: number;
@@ -78,7 +78,7 @@ export interface HealthCheck {
  * Overall health check result
  */
 export interface HealthResult {
-  status: typeof SYSTEM_HEALTH[keyof typeof SYSTEM_HEALTH];
+  status: (typeof SYSTEM_HEALTH)[keyof typeof SYSTEM_HEALTH];
   checks: HealthCheck[];
   timestamp: string;
   version?: string;
@@ -197,7 +197,7 @@ export interface AuditLog {
   id: string;
   entity: string;
   entityId?: string;
-  action: typeof AUDIT_ACTION[keyof typeof AUDIT_ACTION];
+  action: (typeof AUDIT_ACTION)[keyof typeof AUDIT_ACTION];
   userId?: string;
   userName?: string;
   changes?: string;
@@ -217,7 +217,7 @@ export interface QueryMetric {
   duration: number;
   timestamp: string;
   params?: unknown[];
-  operation: typeof DB_OPERATION[keyof typeof DB_OPERATION];
+  operation: (typeof DB_OPERATION)[keyof typeof DB_OPERATION];
   rowsAffected?: number;
   cached?: boolean;
 }
@@ -279,18 +279,24 @@ export const queryLogsSchema = z.object({
   offset: z.coerce.number().int().min(0).optional().default(0),
   entity: z.string().min(1).max(100).optional(),
   entityId: z.string().max(100).optional(),
-  action: z.enum([
-    AUDIT_ACTION.CREATE,
-    AUDIT_ACTION.UPDATE,
-    AUDIT_ACTION.DELETE,
-    AUDIT_ACTION.READ,
-    AUDIT_ACTION.LOGIN,
-    AUDIT_ACTION.LOGOUT,
-    AUDIT_ACTION.EXPORT,
-    AUDIT_ACTION.IMPORT,
-  ]).optional(),
+  action: z
+    .enum([
+      AUDIT_ACTION.CREATE,
+      AUDIT_ACTION.UPDATE,
+      AUDIT_ACTION.DELETE,
+      AUDIT_ACTION.READ,
+      AUDIT_ACTION.LOGIN,
+      AUDIT_ACTION.LOGOUT,
+      AUDIT_ACTION.EXPORT,
+      AUDIT_ACTION.IMPORT,
+    ])
+    .optional(),
   userId: z.string().uuid().optional(),
-  success: z.string().transform(val => val === "true").pipe(z.boolean()).optional(),
+  success: z
+    .string()
+    .transform((val) => val === "true")
+    .pipe(z.boolean())
+    .optional(),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
 });
@@ -379,7 +385,9 @@ export const systemMetricsQuerySchema = z.object({
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
   interval: z.enum(["minute", "hour", "day"]).optional().default("hour"),
-  metrics: z.array(z.enum(["cpu", "memory", "disk", "network", "queries"])).optional(),
+  metrics: z
+    .array(z.enum(["cpu", "memory", "disk", "network", "queries"]))
+    .optional(),
 });
 
 // ============================================================================
@@ -390,12 +398,12 @@ export const systemMetricsQuerySchema = z.object({
  * Type guard for health status validation
  */
 export function isValidHealthStatus(
-  status: unknown
-): status is typeof HEALTH_STATUS[keyof typeof HEALTH_STATUS] {
+  status: unknown,
+): status is (typeof HEALTH_STATUS)[keyof typeof HEALTH_STATUS] {
   return (
     typeof status === "string" &&
     Object.values(HEALTH_STATUS).includes(
-      status as typeof HEALTH_STATUS[keyof typeof HEALTH_STATUS]
+      status as (typeof HEALTH_STATUS)[keyof typeof HEALTH_STATUS],
     )
   );
 }
@@ -404,12 +412,12 @@ export function isValidHealthStatus(
  * Type guard for system health validation
  */
 export function isValidSystemHealth(
-  health: unknown
-): health is typeof SYSTEM_HEALTH[keyof typeof SYSTEM_HEALTH] {
+  health: unknown,
+): health is (typeof SYSTEM_HEALTH)[keyof typeof SYSTEM_HEALTH] {
   return (
     typeof health === "string" &&
     Object.values(SYSTEM_HEALTH).includes(
-      health as typeof SYSTEM_HEALTH[keyof typeof SYSTEM_HEALTH]
+      health as (typeof SYSTEM_HEALTH)[keyof typeof SYSTEM_HEALTH],
     )
   );
 }
@@ -418,12 +426,12 @@ export function isValidSystemHealth(
  * Type guard for audit action validation
  */
 export function isValidAuditAction(
-  action: unknown
-): action is typeof AUDIT_ACTION[keyof typeof AUDIT_ACTION] {
+  action: unknown,
+): action is (typeof AUDIT_ACTION)[keyof typeof AUDIT_ACTION] {
   return (
     typeof action === "string" &&
     Object.values(AUDIT_ACTION).includes(
-      action as typeof AUDIT_ACTION[keyof typeof AUDIT_ACTION]
+      action as (typeof AUDIT_ACTION)[keyof typeof AUDIT_ACTION],
     )
   );
 }
@@ -432,12 +440,12 @@ export function isValidAuditAction(
  * Type guard for database operation validation
  */
 export function isValidDbOperation(
-  operation: unknown
-): operation is typeof DB_OPERATION[keyof typeof DB_OPERATION] {
+  operation: unknown,
+): operation is (typeof DB_OPERATION)[keyof typeof DB_OPERATION] {
   return (
     typeof operation === "string" &&
     Object.values(DB_OPERATION).includes(
-      operation as typeof DB_OPERATION[keyof typeof DB_OPERATION]
+      operation as (typeof DB_OPERATION)[keyof typeof DB_OPERATION],
     )
   );
 }
@@ -446,8 +454,8 @@ export function isValidDbOperation(
  * Helper to determine overall health status from checks
  */
 export function calculateOverallHealth(
-  checks: HealthCheck[]
-): typeof SYSTEM_HEALTH[keyof typeof SYSTEM_HEALTH] {
+  checks: HealthCheck[],
+): (typeof SYSTEM_HEALTH)[keyof typeof SYSTEM_HEALTH] {
   const hasFailed = checks.some((c) => c.status === HEALTH_STATUS.FAIL);
   const hasWarning = checks.some((c) => c.status === HEALTH_STATUS.WARN);
 

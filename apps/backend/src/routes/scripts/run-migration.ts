@@ -59,7 +59,10 @@ async function runMigration(migrationFile: string): Promise<MigrationResult> {
       .map((s) => s.trim())
       .filter((s) => s.length > 0);
 
-    logger.info({ count: statements.length }, "Found SQL statements to execute");
+    logger.info(
+      { count: statements.length },
+      "Found SQL statements to execute",
+    );
 
     let executed = 0;
 

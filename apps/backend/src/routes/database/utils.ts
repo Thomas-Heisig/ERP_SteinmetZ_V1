@@ -53,7 +53,10 @@ export function parsePagination(
   defaults: { page?: number; limit?: number } = {},
 ): PaginationOptions {
   const page = Math.max(1, Number(req.query.page) || defaults.page || 1);
-  const limit = Math.max(1, Math.min(100, Number(req.query.limit) || defaults.limit || 10));
+  const limit = Math.max(
+    1,
+    Math.min(100, Number(req.query.limit) || defaults.limit || 10),
+  );
   const offset = (page - 1) * limit;
 
   return { page, limit, offset };
@@ -107,9 +110,10 @@ export function createPaginatedResult<T>(
  * // params = ['active', 'admin']
  * ```
  */
-export function buildWhereClause(
-  filters: Record<string, unknown>,
-): { where: string; params: unknown[] } {
+export function buildWhereClause(filters: Record<string, unknown>): {
+  where: string;
+  params: unknown[];
+} {
   const conditions: string[] = [];
   const params: unknown[] = [];
 
@@ -139,7 +143,10 @@ export function buildWhereClause(
  * // "ORDER BY created_at DESC"
  * ```
  */
-export function buildOrderBy(sortBy: string, order: "ASC" | "DESC" = "ASC"): string {
+export function buildOrderBy(
+  sortBy: string,
+  order: "ASC" | "DESC" = "ASC",
+): string {
   if (!sortBy || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(sortBy)) {
     logger.warn({ sortBy }, "Invalid sort column, using default");
     return "ORDER BY created_at DESC";
@@ -207,7 +214,10 @@ export function safeIdentifier(name: string): string {
  * @param error - Database error
  * @returns Formatted error object
  */
-export function formatDatabaseError(error: unknown): { error: string; details?: string } {
+export function formatDatabaseError(error: unknown): {
+  error: string;
+  details?: string;
+} {
   if (error instanceof Error) {
     // Handle specific error types
     if (error.message.includes("UNIQUE constraint failed")) {

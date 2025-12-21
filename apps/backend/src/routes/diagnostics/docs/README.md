@@ -486,7 +486,7 @@ const AUDIT_ACTION = {
 // Individual health check result
 interface HealthCheck {
   name: string;
-  status: typeof HEALTH_STATUS[keyof typeof HEALTH_STATUS];
+  status: (typeof HEALTH_STATUS)[keyof typeof HEALTH_STATUS];
   message?: string;
   timestamp?: string;
   duration?: number;
@@ -495,7 +495,7 @@ interface HealthCheck {
 
 // Overall health check result
 interface HealthResult {
-  status: typeof SYSTEM_HEALTH[keyof typeof SYSTEM_HEALTH];
+  status: (typeof SYSTEM_HEALTH)[keyof typeof SYSTEM_HEALTH];
   checks: HealthCheck[];
   timestamp: string;
   version?: string;
@@ -602,7 +602,7 @@ interface AuditLog {
   id: string;
   entity: string;
   entityId?: string;
-  action: typeof AUDIT_ACTION[keyof typeof AUDIT_ACTION];
+  action: (typeof AUDIT_ACTION)[keyof typeof AUDIT_ACTION];
   userId?: string;
   userName?: string;
   changes?: string;
@@ -737,7 +737,15 @@ export const diagnosticsApi = {
     success?: boolean;
     startDate?: string;
     endDate?: string;
-  }): Promise<{ data: AuditLog[]; pagination: { limit: number; offset: number; total: number; hasMore: boolean } }> => {
+  }): Promise<{
+    data: AuditLog[];
+    pagination: {
+      limit: number;
+      offset: number;
+      total: number;
+      hasMore: boolean;
+    };
+  }> => {
     const { data } = await axios.get(`${API_BASE_URL}/logs`, { params });
     return data;
   },
@@ -760,7 +768,8 @@ const DIAGNOSTICS_KEYS = {
   scheduler: () => [...DIAGNOSTICS_KEYS.all, "scheduler"] as const,
   reports: () => [...DIAGNOSTICS_KEYS.all, "reports"] as const,
   version: () => [...DIAGNOSTICS_KEYS.all, "version"] as const,
-  logs: (params?: Record<string, unknown>) => [...DIAGNOSTICS_KEYS.all, "logs", params] as const,
+  logs: (params?: Record<string, unknown>) =>
+    [...DIAGNOSTICS_KEYS.all, "logs", params] as const,
 };
 
 /**
@@ -856,7 +865,9 @@ export function useTriggerHealthCheck() {
       // Update health cache with new data
       queryClient.setQueryData(DIAGNOSTICS_KEYS.health(), data);
       // Invalidate diagnostics to refetch
-      queryClient.invalidateQueries({ queryKey: DIAGNOSTICS_KEYS.diagnostics() });
+      queryClient.invalidateQueries({
+        queryKey: DIAGNOSTICS_KEYS.diagnostics(),
+      });
     },
   });
 }
@@ -997,8 +1008,8 @@ export const SystemInfo: React.FC = () => {
       <div className="memory">
         <h3>Memory</h3>
         <div className="memory-bar">
-          <div 
-            className="memory-bar-fill" 
+          <div
+            className="memory-bar-fill"
             style={{ width: `${system.memoryUsagePercent}%` }}
           >
             {system.memoryUsagePercent}%
@@ -1443,7 +1454,7 @@ import app from "../app";
 describe("Diagnostics API", () => {
   it("GET /diagnostics/health should return health status", async () => {
     const res = await request(app).get("/api/diagnostics/health");
-    
+
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toHaveProperty("status");
@@ -1453,7 +1464,7 @@ describe("Diagnostics API", () => {
 
   it("GET /diagnostics/system should return system info", async () => {
     const res = await request(app).get("/api/diagnostics/system");
-    
+
     expect(res.status).toBe(200);
     expect(res.body.data).toHaveProperty("hostname");
     expect(res.body.data).toHaveProperty("cpus");
@@ -1464,7 +1475,7 @@ describe("Diagnostics API", () => {
     const res = await request(app)
       .get("/api/diagnostics/logs")
       .query({ entity: "users", limit: 10 });
-    
+
     expect(res.status).toBe(200);
     expect(res.body.data).toBeInstanceOf(Array);
     expect(res.body.pagination).toHaveProperty("total");
@@ -1472,7 +1483,7 @@ describe("Diagnostics API", () => {
 
   it("POST /diagnostics/health-check should trigger manual check", async () => {
     const res = await request(app).post("/api/diagnostics/health-check");
-    
+
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toHaveProperty("status");
@@ -1565,7 +1576,7 @@ If you're migrating from an older diagnostics implementation:
    ```typescript
    // Old
    import { HealthCheck, HealthResult } from "../oldTypes";
-   
+
    // New
    import type { HealthCheck, HealthResult } from "./types";
    ```
@@ -1574,8 +1585,8 @@ If you're migrating from an older diagnostics implementation:
 
    ```typescript
    // Old
-   const health = await fetch("/health").then(r => r.json());
-   
+   const health = await fetch("/health").then((r) => r.json());
+
    // New
    const health = await diagnosticsApi.getHealth();
    ```
@@ -1588,7 +1599,7 @@ If you're migrating from an older diagnostics implementation:
    useEffect(() => {
      fetchHealth().then(setHealth);
    }, []);
-   
+
    // New
    const { data: health } = useHealth();
    ```

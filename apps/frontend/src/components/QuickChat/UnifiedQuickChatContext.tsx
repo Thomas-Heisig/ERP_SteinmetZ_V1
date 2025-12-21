@@ -389,12 +389,12 @@ export const UnifiedQuickChatProvider: React.FC<
     loadSessions();
     loadModels();
     loadProviders();
-    
+
     // Refresh provider status every 30 seconds
     const interval = setInterval(() => {
       loadProviders();
     }, 30000);
-    
+
     return () => clearInterval(interval);
   }, [loadSessions, loadModels, loadProviders]);
 

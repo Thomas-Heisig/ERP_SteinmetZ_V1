@@ -27,17 +27,17 @@ CREATE TABLE communication_messages (
   html TEXT,
   priority TEXT DEFAULT 'normal',        -- 'low' | 'normal' | 'high' | 'urgent'
   status TEXT DEFAULT 'draft',           -- 'draft' | 'sent' | 'delivered' | 'read' | 'failed'
-  
+
   sent_at TEXT,
   delivered_at TEXT,
   read_at TEXT,
   failed_reason TEXT,
-  
+
   attachments_json TEXT DEFAULT '[]',
   reply_to TEXT,
   in_reply_to TEXT,
   thread_id TEXT,
-  
+
   created_by TEXT NOT NULL,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
@@ -62,19 +62,19 @@ CREATE TABLE communication_notifications (
   title TEXT NOT NULL,
   message TEXT NOT NULL,
   icon TEXT,
-  
+
   link TEXT,
   action_label TEXT,
   action_url TEXT,
-  
+
   read INTEGER DEFAULT 0,
   read_at TEXT,
   dismissed INTEGER DEFAULT 0,
   dismissed_at TEXT,
-  
+
   priority TEXT DEFAULT 'normal',        -- 'low' | 'normal' | 'high' | 'urgent'
   expires_at TEXT,
-  
+
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
 );
@@ -93,16 +93,16 @@ CREATE TABLE communication_templates (
   name TEXT NOT NULL,
   type TEXT NOT NULL,                    -- 'email' | 'sms' | 'fax' | 'internal'
   category TEXT,
-  
+
   subject TEXT,
   body TEXT NOT NULL,
   html TEXT,
-  
+
   variables_json TEXT DEFAULT '[]',
-  
+
   is_active INTEGER DEFAULT 1,
   usage_count INTEGER DEFAULT 0,
-  
+
   created_by TEXT NOT NULL,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
@@ -122,14 +122,14 @@ CREATE TABLE communication_calls (
   "from" TEXT NOT NULL,
   "to" TEXT NOT NULL,
   status TEXT DEFAULT 'ringing',         -- 'ringing' | 'answered' | 'ended' | 'missed' | 'failed'
-  
+
   duration INTEGER,                      -- seconds
   recording TEXT,
   notes TEXT,
-  
+
   started_at TEXT NOT NULL,
   ended_at TEXT,
-  
+
   created_by TEXT NOT NULL,
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -209,7 +209,9 @@ Get message by ID.
 ```json
 {
   "success": true,
-  "data": { /* Message object */ }
+  "data": {
+    /* Message object */
+  }
 }
 ```
 
@@ -243,7 +245,9 @@ Send a new message.
 ```json
 {
   "success": true,
-  "data": { /* Message object */ }
+  "data": {
+    /* Message object */
+  }
 }
 ```
 
@@ -548,7 +552,7 @@ Get communication statistics.
 // types/communication.ts
 export interface Message {
   id: string;
-  type: 'email' | 'sms' | 'fax' | 'internal';
+  type: "email" | "sms" | "fax" | "internal";
   from: string;
   to: string;
   cc?: string;
@@ -556,8 +560,8 @@ export interface Message {
   subject?: string;
   body: string;
   html?: string;
-  priority: 'low' | 'normal' | 'high' | 'urgent';
-  status: 'draft' | 'sent' | 'delivered' | 'read' | 'failed';
+  priority: "low" | "normal" | "high" | "urgent";
+  status: "draft" | "sent" | "delivered" | "read" | "failed";
   sentAt?: string;
   deliveredAt?: string;
   readAt?: string;
@@ -574,7 +578,7 @@ export interface Message {
 export interface Notification {
   id: string;
   userId: string;
-  type: 'success' | 'info' | 'warning' | 'error';
+  type: "success" | "info" | "warning" | "error";
   title: string;
   message: string;
   icon?: string;
@@ -585,7 +589,7 @@ export interface Notification {
   readAt?: string;
   dismissed: boolean;
   dismissedAt?: string;
-  priority: 'low' | 'normal' | 'high' | 'urgent';
+  priority: "low" | "normal" | "high" | "urgent";
   expiresAt?: string;
   createdAt: string;
   updatedAt: string;
@@ -594,7 +598,7 @@ export interface Notification {
 export interface Template {
   id: string;
   name: string;
-  type: 'email' | 'sms' | 'fax' | 'internal';
+  type: "email" | "sms" | "fax" | "internal";
   category?: string;
   subject?: string;
   body: string;
@@ -609,10 +613,10 @@ export interface Template {
 
 export interface Call {
   id: string;
-  type: 'inbound' | 'outbound' | 'missed';
+  type: "inbound" | "outbound" | "missed";
   from: string;
   to: string;
-  status: 'ringing' | 'answered' | 'ended' | 'missed' | 'failed';
+  status: "ringing" | "answered" | "ended" | "missed" | "failed";
   duration?: number;
   recording?: string;
   notes?: string;
@@ -627,24 +631,29 @@ export interface Call {
 
 ```typescript
 // services/communicationApi.ts
-import axios from 'axios';
-import type { Message, Notification, Template, Call } from '@/types/communication';
+import axios from "axios";
+import type {
+  Message,
+  Notification,
+  Template,
+  Call,
+} from "@/types/communication";
 
-const API_BASE = '/api/communication';
+const API_BASE = "/api/communication";
 
 export const communicationApi = {
   // Messages
   async getMessages(params?: Record<string, unknown>) {
     const { data } = await axios.get<{ success: boolean; data: Message[] }>(
       `${API_BASE}/messages`,
-      { params }
+      { params },
     );
     return data;
   },
 
   async getMessageById(id: string) {
     const { data } = await axios.get<{ success: boolean; data: Message }>(
-      `${API_BASE}/messages/${id}`
+      `${API_BASE}/messages/${id}`,
     );
     return data;
   },
@@ -652,7 +661,7 @@ export const communicationApi = {
   async sendMessage(message: Partial<Message>) {
     const { data } = await axios.post<{ success: boolean; data: Message }>(
       `${API_BASE}/messages`,
-      message
+      message,
     );
     return data;
   },
@@ -660,7 +669,7 @@ export const communicationApi = {
   async updateMessage(id: string, updates: Partial<Message>) {
     const { data } = await axios.put<{ success: boolean; data: Message }>(
       `${API_BASE}/messages/${id}`,
-      updates
+      updates,
     );
     return data;
   },
@@ -672,31 +681,31 @@ export const communicationApi = {
 
   // Notifications
   async getNotifications(params?: Record<string, unknown>) {
-    const { data } = await axios.get<{ success: boolean; data: Notification[] }>(
-      `${API_BASE}/notifications`,
-      { params }
-    );
+    const { data } = await axios.get<{
+      success: boolean;
+      data: Notification[];
+    }>(`${API_BASE}/notifications`, { params });
     return data;
   },
 
   async createNotification(notification: Partial<Notification>) {
     const { data } = await axios.post<{ success: boolean; data: Notification }>(
       `${API_BASE}/notifications`,
-      notification
+      notification,
     );
     return data;
   },
 
   async markNotificationAsRead(id: string) {
     const { data } = await axios.put(`${API_BASE}/notifications/${id}`, {
-      read: true
+      read: true,
     });
     return data;
   },
 
   async dismissNotification(id: string) {
     const { data } = await axios.put(`${API_BASE}/notifications/${id}`, {
-      dismissed: true
+      dismissed: true,
     });
     return data;
   },
@@ -710,14 +719,14 @@ export const communicationApi = {
   async getTemplates(params?: Record<string, unknown>) {
     const { data } = await axios.get<{ success: boolean; data: Template[] }>(
       `${API_BASE}/templates`,
-      { params }
+      { params },
     );
     return data;
   },
 
   async getTemplateById(id: string) {
     const { data } = await axios.get<{ success: boolean; data: Template }>(
-      `${API_BASE}/templates/${id}`
+      `${API_BASE}/templates/${id}`,
     );
     return data;
   },
@@ -725,7 +734,7 @@ export const communicationApi = {
   async createTemplate(template: Partial<Template>) {
     const { data } = await axios.post<{ success: boolean; data: Template }>(
       `${API_BASE}/templates`,
-      template
+      template,
     );
     return data;
   },
@@ -733,7 +742,7 @@ export const communicationApi = {
   async updateTemplate(id: string, updates: Partial<Template>) {
     const { data } = await axios.put<{ success: boolean; data: Template }>(
       `${API_BASE}/templates/${id}`,
-      updates
+      updates,
     );
     return data;
   },
@@ -747,7 +756,7 @@ export const communicationApi = {
   async getCalls(params?: Record<string, unknown>) {
     const { data } = await axios.get<{ success: boolean; data: Call[] }>(
       `${API_BASE}/calls`,
-      { params }
+      { params },
     );
     return data;
   },
@@ -755,7 +764,7 @@ export const communicationApi = {
   async logCall(call: Partial<Call>) {
     const { data } = await axios.post<{ success: boolean; data: Call }>(
       `${API_BASE}/calls`,
-      call
+      call,
     );
     return data;
   },
@@ -763,7 +772,7 @@ export const communicationApi = {
   async updateCall(id: string, updates: Partial<Call>) {
     const { data } = await axios.put<{ success: boolean; data: Call }>(
       `${API_BASE}/calls/${id}`,
-      updates
+      updates,
     );
     return data;
   },
@@ -780,21 +789,26 @@ export const communicationApi = {
 
 ```typescript
 // hooks/useCommunication.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { communicationApi } from '@/services/communicationApi';
-import type { Message, Notification, Template, Call } from '@/types/communication';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { communicationApi } from "@/services/communicationApi";
+import type {
+  Message,
+  Notification,
+  Template,
+  Call,
+} from "@/types/communication";
 
 // Messages
 export function useMessages(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['messages', params],
+    queryKey: ["messages", params],
     queryFn: () => communicationApi.getMessages(params),
   });
 }
 
 export function useMessage(id: string) {
   return useQuery({
-    queryKey: ['messages', id],
+    queryKey: ["messages", id],
     queryFn: () => communicationApi.getMessageById(id),
     enabled: !!id,
   });
@@ -803,10 +817,11 @@ export function useMessage(id: string) {
 export function useSendMessage() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (message: Partial<Message>) => communicationApi.sendMessage(message),
+    mutationFn: (message: Partial<Message>) =>
+      communicationApi.sendMessage(message),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
-      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      queryClient.invalidateQueries({ queryKey: ["communication-stats"] });
     },
   });
 }
@@ -817,8 +832,8 @@ export function useUpdateMessage() {
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Message> }) =>
       communicationApi.updateMessage(id, updates),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['messages', id] });
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ["messages", id] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
 }
@@ -828,7 +843,7 @@ export function useDeleteMessage() {
   return useMutation({
     mutationFn: (id: string) => communicationApi.deleteMessage(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
 }
@@ -836,7 +851,7 @@ export function useDeleteMessage() {
 // Notifications
 export function useNotifications(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['notifications', params],
+    queryKey: ["notifications", params],
     queryFn: () => communicationApi.getNotifications(params),
     refetchInterval: 30000, // Refetch every 30 seconds
   });
@@ -848,8 +863,8 @@ export function useCreateNotification() {
     mutationFn: (notification: Partial<Notification>) =>
       communicationApi.createNotification(notification),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["communication-stats"] });
     },
   });
 }
@@ -859,7 +874,7 @@ export function useMarkNotificationAsRead() {
   return useMutation({
     mutationFn: (id: string) => communicationApi.markNotificationAsRead(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 }
@@ -869,7 +884,7 @@ export function useDismissNotification() {
   return useMutation({
     mutationFn: (id: string) => communicationApi.dismissNotification(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 }
@@ -877,14 +892,14 @@ export function useDismissNotification() {
 // Templates
 export function useTemplates(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['templates', params],
+    queryKey: ["templates", params],
     queryFn: () => communicationApi.getTemplates(params),
   });
 }
 
 export function useTemplate(id: string) {
   return useQuery({
-    queryKey: ['templates', id],
+    queryKey: ["templates", id],
     queryFn: () => communicationApi.getTemplateById(id),
     enabled: !!id,
   });
@@ -896,7 +911,7 @@ export function useCreateTemplate() {
     mutationFn: (template: Partial<Template>) =>
       communicationApi.createTemplate(template),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
     },
   });
 }
@@ -907,8 +922,8 @@ export function useUpdateTemplate() {
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Template> }) =>
       communicationApi.updateTemplate(id, updates),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['templates', id] });
-      queryClient.invalidateQueries({ queryKey: ['templates'] });
+      queryClient.invalidateQueries({ queryKey: ["templates", id] });
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
     },
   });
 }
@@ -916,7 +931,7 @@ export function useUpdateTemplate() {
 // Calls
 export function useCalls(params?: Record<string, unknown>) {
   return useQuery({
-    queryKey: ['calls', params],
+    queryKey: ["calls", params],
     queryFn: () => communicationApi.getCalls(params),
   });
 }
@@ -926,8 +941,8 @@ export function useLogCall() {
   return useMutation({
     mutationFn: (call: Partial<Call>) => communicationApi.logCall(call),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calls'] });
-      queryClient.invalidateQueries({ queryKey: ['communication-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["calls"] });
+      queryClient.invalidateQueries({ queryKey: ["communication-stats"] });
     },
   });
 }
@@ -938,8 +953,8 @@ export function useUpdateCall() {
     mutationFn: ({ id, updates }: { id: string; updates: Partial<Call> }) =>
       communicationApi.updateCall(id, updates),
     onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ['calls', id] });
-      queryClient.invalidateQueries({ queryKey: ['calls'] });
+      queryClient.invalidateQueries({ queryKey: ["calls", id] });
+      queryClient.invalidateQueries({ queryKey: ["calls"] });
     },
   });
 }
@@ -947,7 +962,7 @@ export function useUpdateCall() {
 // Statistics
 export function useCommunicationStats() {
   return useQuery({
-    queryKey: ['communication-stats'],
+    queryKey: ["communication-stats"],
     queryFn: () => communicationApi.getStats(),
     staleTime: 60000, // Cache for 1 minute
   });
@@ -960,7 +975,7 @@ export function useCommunicationStats() {
 
 ```tsx
 // components/MessageList.tsx
-import { useMessages, useUpdateMessage } from '@/hooks/useCommunication';
+import { useMessages, useUpdateMessage } from "@/hooks/useCommunication";
 
 export function MessageList() {
   const { data: messagesData, isLoading } = useMessages({ limit: 50 });
@@ -1005,12 +1020,12 @@ export function MessageList() {
 
 ```tsx
 // components/NotificationBell.tsx
-import { useState } from 'react';
+import { useState } from "react";
 import {
   useNotifications,
   useMarkNotificationAsRead,
   useDismissNotification,
-} from '@/hooks/useCommunication';
+} from "@/hooks/useCommunication";
 
 export function NotificationBell() {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -1018,7 +1033,8 @@ export function NotificationBell() {
   const markAsRead = useMarkNotificationAsRead();
   const dismissNotification = useDismissNotification();
 
-  const unreadCount = notificationsData?.data.filter((n) => !n.read).length || 0;
+  const unreadCount =
+    notificationsData?.data.filter((n) => !n.read).length || 0;
 
   const handleNotificationClick = async (notification: Notification) => {
     await markAsRead.mutateAsync(notification.id);
@@ -1053,7 +1069,9 @@ export function NotificationBell() {
                 <div className="notification-icon">{notification.icon}</div>
                 <div className="notification-content">
                   <div className="notification-title">{notification.title}</div>
-                  <div className="notification-message">{notification.message}</div>
+                  <div className="notification-message">
+                    {notification.message}
+                  </div>
                 </div>
                 <button
                   className="dismiss-btn"
@@ -1075,17 +1093,21 @@ export function NotificationBell() {
 
 ```tsx
 // components/TemplateSelector.tsx
-import { useState } from 'react';
-import { useTemplates } from '@/hooks/useCommunication';
+import { useState } from "react";
+import { useTemplates } from "@/hooks/useCommunication";
 
 interface TemplateSelectorProps {
-  type: 'email' | 'sms' | 'fax' | 'internal';
+  type: "email" | "sms" | "fax" | "internal";
   onSelect: (template: Template) => void;
 }
 
 export function TemplateSelector({ type, onSelect }: TemplateSelectorProps) {
-  const [search, setSearch] = useState('');
-  const { data: templatesData } = useTemplates({ type, isActive: true, search });
+  const [search, setSearch] = useState("");
+  const { data: templatesData } = useTemplates({
+    type,
+    isActive: true,
+    search,
+  });
 
   return (
     <div className="template-selector">
@@ -1105,7 +1127,9 @@ export function TemplateSelector({ type, onSelect }: TemplateSelectorProps) {
           >
             <div className="template-name">{template.name}</div>
             <div className="template-category">{template.category}</div>
-            <div className="template-usage">Used {template.usageCount} times</div>
+            <div className="template-usage">
+              Used {template.usageCount} times
+            </div>
           </div>
         ))}
       </div>
@@ -1118,7 +1142,7 @@ export function TemplateSelector({ type, onSelect }: TemplateSelectorProps) {
 
 ```tsx
 // components/CommunicationStats.tsx
-import { useCommunicationStats } from '@/hooks/useCommunication';
+import { useCommunicationStats } from "@/hooks/useCommunication";
 
 export function CommunicationStats() {
   const { data: stats, isLoading } = useCommunicationStats();

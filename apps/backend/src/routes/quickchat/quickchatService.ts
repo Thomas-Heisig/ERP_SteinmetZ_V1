@@ -12,9 +12,7 @@
 
 import { createLogger } from "../../utils/logger.js";
 import { v4 as uuidv4 } from "uuid";
-import type {
-  ChatMessage,
-} from "../ai/types/types.js";
+import type { ChatMessage } from "../ai/types/types.js";
 import { providerManager } from "../ai/services/providerManager.js";
 import chatService from "../ai/services/chatService.js";
 import toolService from "../ai/services/toolService.js";
@@ -238,7 +236,10 @@ export class QuickChatService {
       preferences = {},
     } = options;
 
-    logger.debug({ message, sessionId: providedSessionId }, "Processing message");
+    logger.debug(
+      { message, sessionId: providedSessionId },
+      "Processing message",
+    );
 
     // Get or create session
     const sessionId = providedSessionId || uuidv4();
@@ -288,7 +289,11 @@ export class QuickChatService {
       commandResult = result.data;
     } else {
       // AI chat completion
-      const aiResponse = await this.getAICompletion(message, session, preferences);
+      const aiResponse = await this.getAICompletion(
+        message,
+        session,
+        preferences,
+      );
       assistantMessage = {
         id: uuidv4(),
         role: "assistant",
@@ -310,7 +315,7 @@ export class QuickChatService {
         responseLength: assistantMessage.content.length,
         duration,
       },
-      "Message processed successfully"
+      "Message processed successfully",
     );
 
     return {
@@ -337,7 +342,7 @@ export class QuickChatService {
    */
   async executeCommand(
     command: string,
-    session: QuickChatSession
+    session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     const startTime = Date.now();
     const parts = command.split(" ");
@@ -350,7 +355,7 @@ export class QuickChatService {
       return {
         success: false,
         message: `Unbekannter Befehl: ${cmd}\n\nVerfügbare Befehle:\n${Object.entries(
-          COMMANDS
+          COMMANDS,
         )
           .map(([k, v]) => `${k} - ${v.description}`)
           .join("\n")}`,
@@ -429,7 +434,10 @@ export class QuickChatService {
       result.toolsUsed = toolsUsed;
       result.duration = Date.now() - startTime;
 
-      logger.info({ command: cmd, success: result.success, duration: result.duration }, "Command executed");
+      logger.info(
+        { command: cmd, success: result.success, duration: result.duration },
+        "Command executed",
+      );
 
       return result;
     } catch (error) {
@@ -453,15 +461,18 @@ export class QuickChatService {
   private async getAICompletion(
     message: string,
     session: QuickChatSession,
-    preferences: SendMessageOptions["preferences"] = {}
+    preferences: SendMessageOptions["preferences"] = {},
   ): Promise<{ content: string; metadata: QuickChatMessage["metadata"] }> {
     const startTime = Date.now();
 
     try {
       // Get provider
-      const providerName = preferences.provider || session.preferences.provider || "openai";
+      const providerName =
+        preferences.provider || session.preferences.provider || "openai";
       const allStatuses = await providerManager.getProviderStatus();
-      const providerStatus = allStatuses.find((p) => p.provider === providerName);
+      const providerStatus = allStatuses.find(
+        (p) => p.provider === providerName,
+      );
 
       if (!providerStatus || !providerStatus.available) {
         logger.warn({ providerName }, "Provider not available, using fallback");
@@ -472,10 +483,12 @@ export class QuickChatService {
       }
 
       // Prepare messages for AI
-      const messages: ChatMessage[] = session.messages.slice(-10).map((msg) => ({
-        role: msg.role as "user" | "assistant" | "system",
-        content: msg.content,
-      }));
+      const messages: ChatMessage[] = session.messages
+        .slice(-10)
+        .map((msg) => ({
+          role: msg.role as "user" | "assistant" | "system",
+          content: msg.content,
+        }));
 
       messages.push({
         role: "user",
@@ -491,9 +504,11 @@ export class QuickChatService {
         messages,
         {
           provider: providerName,
-          temperature: preferences.temperature || session.preferences.temperature || 0.7,
-          max_tokens: preferences.maxTokens || session.preferences.maxTokens || 2000,
-        }
+          temperature:
+            preferences.temperature || session.preferences.temperature || 0.7,
+          max_tokens:
+            preferences.maxTokens || session.preferences.maxTokens || 2000,
+        },
       );
 
       // Note: Full tool calling not yet implemented - simplified version
@@ -503,7 +518,8 @@ export class QuickChatService {
         content: response.text || "No response generated",
         metadata: {
           provider: providerName,
-          model: preferences.model || session.preferences.model || "gpt-3.5-turbo",
+          model:
+            preferences.model || session.preferences.model || "gpt-3.5-turbo",
           duration: Date.now() - startTime,
         },
       };
@@ -526,7 +542,9 @@ export class QuickChatService {
     const lowerMessage = message.toLowerCase();
 
     if (lowerMessage.includes("hilfe") || lowerMessage.includes("help")) {
-      return `Wie kann ich Ihnen helfen? Verfügbare Befehle:\n${Object.entries(COMMANDS)
+      return `Wie kann ich Ihnen helfen? Verfügbare Befehle:\n${Object.entries(
+        COMMANDS,
+      )
         .map(([k, v]) => `• ${k} - ${v.description}`)
         .join("\n")}\n\nOder stellen Sie mir einfach eine Frage!`;
     }
@@ -544,7 +562,7 @@ export class QuickChatService {
 
   private async handleInvoiceCommand(
     args: string,
-    _session: QuickChatSession
+    _session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     return {
       success: true,
@@ -555,7 +573,7 @@ export class QuickChatService {
 
   private async handleQuoteCommand(
     args: string,
-    _session: QuickChatSession
+    _session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     return {
       success: true,
@@ -566,7 +584,7 @@ export class QuickChatService {
 
   private async handleReportCommand(
     args: string,
-    _session: QuickChatSession
+    _session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     return {
       success: true,
@@ -577,7 +595,7 @@ export class QuickChatService {
 
   private async handleIdeaCommand(
     args: string,
-    _session: QuickChatSession
+    _session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     const ideaId = uuidv4();
     return {
@@ -589,7 +607,7 @@ export class QuickChatService {
 
   private async handleEventCommand(
     args: string,
-    _session: QuickChatSession
+    _session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     return {
       success: true,
@@ -600,7 +618,7 @@ export class QuickChatService {
 
   private async handleSearchCommand(
     args: string,
-    _session: QuickChatSession
+    _session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     try {
       // Use AI embedding for semantic search
@@ -623,7 +641,7 @@ export class QuickChatService {
 
   private async handleTranslateCommand(
     args: string,
-    _session: QuickChatSession
+    _session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     try {
       // Parse args: "text | source | target"
@@ -648,15 +666,18 @@ export class QuickChatService {
 
   private async handleVisionCommand(
     args: string,
-    _session: QuickChatSession
+    _session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     try {
       // Args should be image URL or base64
-      const analysis = await visionService.analyzeImage(args, "Describe this image in detail");
+      const analysis = await visionService.analyzeImage(
+        args,
+        "Describe this image in detail",
+      );
 
       return {
         success: true,
-        message: `Bildanalyse:\n\n${analysis.text || 'Keine Beschreibung verfügbar'}`,
+        message: `Bildanalyse:\n\n${analysis.text || "Keine Beschreibung verfügbar"}`,
         data: analysis,
       };
     } catch (error) {
@@ -670,7 +691,7 @@ export class QuickChatService {
 
   private async handleAudioCommand(
     args: string,
-    _session: QuickChatSession
+    _session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     try {
       // Args: "transcribe|URL" or "generate|text|outputPath"
@@ -697,7 +718,8 @@ export class QuickChatService {
       } else {
         return {
           success: false,
-          message: "Ungültige Aktion. Nutzen Sie: /audio transcribe|URL oder /audio generate|Text",
+          message:
+            "Ungültige Aktion. Nutzen Sie: /audio transcribe|URL oder /audio generate|Text",
         };
       }
     } catch (error) {
@@ -711,7 +733,7 @@ export class QuickChatService {
 
   private async handleWorkflowCommand(
     args: string,
-    session: QuickChatSession
+    session: QuickChatSession,
   ): Promise<CommandExecutionResult> {
     try {
       const workflowName = args.trim();
@@ -772,7 +794,7 @@ export class QuickChatService {
     // Create session in AI sessionStore
     await sessionStore.createSession(
       options.preferences?.model || "gpt-3.5-turbo",
-      options.preferences?.provider || "openai"
+      options.preferences?.provider || "openai",
     );
 
     logger.info({ sessionId: session.id }, "Session created");
@@ -840,7 +862,7 @@ export class QuickChatService {
    */
   async listSessions(userId?: string): Promise<QuickChatSession[]> {
     const allSessions = sessionStore.listSessions();
-    
+
     const sessions: QuickChatSession[] = allSessions.map((aiSession) => ({
       id: aiSession.id,
       userId: undefined,
@@ -861,7 +883,10 @@ export class QuickChatService {
 
     if (userId) {
       // Cannot filter by userId since AI sessionStore doesn't track it
-      logger.warn({ userId }, "User filtering not supported by AI sessionStore");
+      logger.warn(
+        { userId },
+        "User filtering not supported by AI sessionStore",
+      );
     }
 
     return sessions;
@@ -885,7 +910,7 @@ export class QuickChatService {
     const providers = (providerStatuses as ProviderStatusInfo[])
       .filter((p) => p.available)
       .map((p) => p.provider);
-    
+
     const tools = toolService.getToolMetadata();
     const workflows = await workflowEngine.getWorkflowDefinitions();
 
@@ -915,7 +940,9 @@ export class QuickChatService {
       providers,
       models,
       tools: (tools as ToolInfo[]).map((t) => t.name),
-      workflows: Array.isArray(workflows) ? (workflows as WorkflowInfo[]).map((w) => w.name || w.id || 'unknown') : [],
+      workflows: Array.isArray(workflows)
+        ? (workflows as WorkflowInfo[]).map((w) => w.name || w.id || "unknown")
+        : [],
       features: {
         vision: true,
         audio: true,

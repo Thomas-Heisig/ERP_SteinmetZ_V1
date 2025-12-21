@@ -15,39 +15,39 @@
 
 ### 1️⃣ Für neue Entwickler
 
-| Dokument | Beschreibung | Dauer |
-|----------|-------------|-------|
-| **[QUICKSTART.md](QUICKSTART.md)** | 5-Minuten Setup | 5 min |
-| **[BACKEND_ARCHITECTURE.md](BACKEND_ARCHITECTURE.md)** | Systemarchitektur verstehen | 30 min |
+| Dokument                                               | Beschreibung                   | Dauer  |
+| ------------------------------------------------------ | ------------------------------ | ------ |
+| **[QUICKSTART.md](QUICKSTART.md)**                     | 5-Minuten Setup                | 5 min  |
+| **[BACKEND_ARCHITECTURE.md](BACKEND_ARCHITECTURE.md)** | Systemarchitektur verstehen    | 30 min |
 | **[FRONTEND_INTEGRATION.md](FRONTEND_INTEGRATION.md)** | Frontend mit Backend verbinden | 20 min |
 
 ### 2️⃣ Für Datenbankarbeit
 
-| Dokument | Beschreibung | Zielgruppe |
-|----------|-------------|-----------|
+| Dokument                                                               | Beschreibung                     | Zielgruppe        |
+| ---------------------------------------------------------------------- | -------------------------------- | ----------------- |
 | **[DATABASE_MIGRATION_STANDARDS.md](DATABASE_MIGRATION_STANDARDS.md)** | Migrations erstellen & Standards | DBAs, Backend-Dev |
-| **[DATABASE_MIGRATIONS.md](DATABASE_MIGRATIONS.md)** | Migration-Übersicht | Alle |
+| **[DATABASE_MIGRATIONS.md](DATABASE_MIGRATIONS.md)**                   | Migration-Übersicht              | Alle              |
 
 ### 3️⃣ Für API-Entwicklung
 
-| Dokument | Beschreibung | Zielgruppe |
-|----------|-------------|-----------|
-| **[API.md](API.md)** | Alle API-Endpoints | Frontend/Backend-Dev |
-| **[BACKEND_ARCHITECTURE.md#api-layer](BACKEND_ARCHITECTURE.md)** | API-Design Pattern | Backend-Dev |
+| Dokument                                                         | Beschreibung       | Zielgruppe           |
+| ---------------------------------------------------------------- | ------------------ | -------------------- |
+| **[API.md](API.md)**                                             | Alle API-Endpoints | Frontend/Backend-Dev |
+| **[BACKEND_ARCHITECTURE.md#api-layer](BACKEND_ARCHITECTURE.md)** | API-Design Pattern | Backend-Dev          |
 
 ### 4️⃣ Für Production/Deployment
 
-| Dokument | Beschreibung | Zielgruppe |
-|----------|-------------|-----------|
-| **[ENVIRONMENT_VARIABLES.md](ENVIRONMENT_VARIABLES.md)** | Konfiguration | DevOps, Deployment |
-| **[ERROR_HANDLING.md](ERROR_HANDLING.md)** | Error-Strategien | Alle |
+| Dokument                                                 | Beschreibung     | Zielgruppe         |
+| -------------------------------------------------------- | ---------------- | ------------------ |
+| **[ENVIRONMENT_VARIABLES.md](ENVIRONMENT_VARIABLES.md)** | Konfiguration    | DevOps, Deployment |
+| **[ERROR_HANDLING.md](ERROR_HANDLING.md)**               | Error-Strategien | Alle               |
 
 ### 5️⃣ Architektur & Design
 
-| Dokument | Beschreibung | Zielgruppe |
-|----------|-------------|-----------|
-| **[BACKEND_ARCHITECTURE.md](BACKEND_ARCHITECTURE.md)** | Vollständige Architektur | Architekten, Lead-Dev |
-| **[BACKEND_RESTRUCTURING_REPORT.md](BACKEND_RESTRUCTURING_REPORT.md)** | Was wurde changed? | Code-Review, Onboarding |
+| Dokument                                                               | Beschreibung             | Zielgruppe              |
+| ---------------------------------------------------------------------- | ------------------------ | ----------------------- |
+| **[BACKEND_ARCHITECTURE.md](BACKEND_ARCHITECTURE.md)**                 | Vollständige Architektur | Architekten, Lead-Dev   |
+| **[BACKEND_RESTRUCTURING_REPORT.md](BACKEND_RESTRUCTURING_REPORT.md)** | Was wurde changed?       | Code-Review, Onboarding |
 
 ---
 
@@ -56,27 +56,35 @@
 ### "Ich muss..."
 
 #### ✅ Den Server starten
+
 → [QUICKSTART.md - Schritt 3](QUICKSTART.md#schritt-3-server-starten)
 
 #### ✅ Eine Datenbank-Migration erstellen
+
 → [DATABASE_MIGRATION_STANDARDS.md](DATABASE_MIGRATION_STANDARDS.md)
 
 #### ✅ Einen neuen API-Endpoint hinzufügen
+
 → [BACKEND_ARCHITECTURE.md#http-layer](BACKEND_ARCHITECTURE.md#1️⃣-http-layer-express)
 
 #### ✅ Einen neuen Service erstellen
+
 → [BACKEND_ARCHITECTURE.md#service-architektur](BACKEND_ARCHITECTURE.md#service-architektur)
 
 #### ✅ Error-Handling implementieren
+
 → [BACKEND_ARCHITECTURE.md#error-handling](BACKEND_ARCHITECTURE.md#error-handling)
 
 #### ✅ Frontend mit Backend verbinden
+
 → [FRONTEND_INTEGRATION.md](FRONTEND_INTEGRATION.md)
 
 #### ✅ Die API dokumentieren
+
 → [API.md](API.md)
 
 #### ✅ Den Server in Production deployen
+
 → [ENVIRONMENT_VARIABLES.md](ENVIRONMENT_VARIABLES.md)
 
 ---
@@ -142,7 +150,7 @@ apps/backend/
 ```typescript
 // Service nutzen
 const userService = new UserService(db);
-const user = await userService.getById('123');
+const user = await userService.getById("123");
 ```
 
 👉 Mehr: [BACKEND_ARCHITECTURE.md#service-architektur](BACKEND_ARCHITECTURE.md#service-architektur)
@@ -151,10 +159,9 @@ const user = await userService.getById('123');
 
 ```typescript
 // Mit Zod Validierung
-const users = await db.all<User>(
-  'SELECT * FROM users WHERE role = ?',
-  ['admin']
-);
+const users = await db.all<User>("SELECT * FROM users WHERE role = ?", [
+  "admin",
+]);
 ```
 
 👉 Mehr: [BACKEND_ARCHITECTURE.md#type-system](BACKEND_ARCHITECTURE.md#type-system)
@@ -163,7 +170,7 @@ const users = await db.all<User>(
 
 ```typescript
 // Mit spezialisierter Error-Klasse
-throw new NotFoundError('User not found', { userId: '123' });
+throw new NotFoundError("User not found", { userId: "123" });
 ```
 
 👉 Mehr: [BACKEND_ARCHITECTURE.md#error-handling](BACKEND_ARCHITECTURE.md#error-handling)
@@ -172,7 +179,7 @@ throw new NotFoundError('User not found', { userId: '123' });
 
 ```typescript
 // Mit Zod
-app.post('/users', validateBody(CreateUserSchema), async (req, res) => {
+app.post("/users", validateBody(CreateUserSchema), async (req, res) => {
   // req.body ist validiert
 });
 ```
@@ -185,17 +192,17 @@ app.post('/users', validateBody(CreateUserSchema), async (req, res) => {
 
 ### Neue Dateien (Phase 1: Abgeschlossen)
 
-| Datei | Zeilen | Status |
-|-------|--------|--------|
-| `src/service/DatabaseService.ts` | 320+ | ✅ COMPLETE |
-| `src/service/index.ts` | 12 | ✅ COMPLETE |
-| `src/types/database.ts` | 320+ | ✅ COMPLETE |
-| `src/types/errors.ts` | 350+ | ✅ COMPLETE |
-| `docs/BACKEND_ARCHITECTURE.md` | 1.200+ | ✅ COMPLETE |
-| `docs/FRONTEND_INTEGRATION.md` | 1.000+ | ✅ COMPLETE |
-| `docs/BACKEND_RESTRUCTURING_REPORT.md` | 600+ | ✅ COMPLETE |
-| `docs/QUICKSTART.md` | 400+ | ✅ COMPLETE |
-| `docs/BACKEND_DOCUMENTATION_INDEX.md` | **Dieses Dokument** | ✅ COMPLETE |
+| Datei                                  | Zeilen              | Status      |
+| -------------------------------------- | ------------------- | ----------- |
+| `src/service/DatabaseService.ts`       | 320+                | ✅ COMPLETE |
+| `src/service/index.ts`                 | 12                  | ✅ COMPLETE |
+| `src/types/database.ts`                | 320+                | ✅ COMPLETE |
+| `src/types/errors.ts`                  | 350+                | ✅ COMPLETE |
+| `docs/BACKEND_ARCHITECTURE.md`         | 1.200+              | ✅ COMPLETE |
+| `docs/FRONTEND_INTEGRATION.md`         | 1.000+              | ✅ COMPLETE |
+| `docs/BACKEND_RESTRUCTURING_REPORT.md` | 600+                | ✅ COMPLETE |
+| `docs/QUICKSTART.md`                   | 400+                | ✅ COMPLETE |
+| `docs/BACKEND_DOCUMENTATION_INDEX.md`  | **Dieses Dokument** | ✅ COMPLETE |
 
 **Total: 5.200+ Zeilen Code & Dokumentation**
 
@@ -298,7 +305,7 @@ app.post('/users', validateBody(CreateUserSchema), async (req, res) => {
 db.get(`SELECT * FROM users WHERE id = '${id}'`);
 
 // ✅ KORREKT
-db.get('SELECT * FROM users WHERE id = ?', [id]);
+db.get("SELECT * FROM users WHERE id = ?", [id]);
 ```
 
 → Siehe: [BACKEND_ARCHITECTURE.md#database-layer](BACKEND_ARCHITECTURE.md#datenbankschicht)
@@ -313,7 +320,7 @@ const name = user.name; // Kann null sein!
 // ✅ KORREKT
 const user = await db.get(sql);
 if (!user) {
-  throw new NotFoundError('User not found');
+  throw new NotFoundError("User not found");
 }
 ```
 
@@ -353,32 +360,33 @@ const user = await db.get<User>(sql, [id]);
 
 ### Code-Qualität
 
-| Metrik | Wert |
-|--------|------|
-| TypeScript Coverage | 100% |
-| Zod Schemas | 8+ |
-| Error Classes | 16 |
-| Type Guards | 4+ |
-| Services | 6+ |
-| API Endpoints | 30+ |
-| Test Cases | Setup vorbereitet |
-| Documentation | 5.200+ Zeilen |
+| Metrik              | Wert              |
+| ------------------- | ----------------- |
+| TypeScript Coverage | 100%              |
+| Zod Schemas         | 8+                |
+| Error Classes       | 16                |
+| Type Guards         | 4+                |
+| Services            | 6+                |
+| API Endpoints       | 30+               |
+| Test Cases          | Setup vorbereitet |
+| Documentation       | 5.200+ Zeilen     |
 
 ### Performance
 
-| Aspekt | Status |
-|--------|--------|
+| Aspekt             | Status                          |
+| ------------------ | ------------------------------- |
 | Query Optimization | ✅ Indexes, Prepared Statements |
-| Caching | ✅ Node-Cache Ready |
-| Connection Pooling | ✅ SQLite/PostgreSQL |
-| Health Checks | ✅ Latency Monitoring |
-| Logging | ✅ Pino Ready |
+| Caching            | ✅ Node-Cache Ready             |
+| Connection Pooling | ✅ SQLite/PostgreSQL            |
+| Health Checks      | ✅ Latency Monitoring           |
+| Logging            | ✅ Pino Ready                   |
 
 ---
 
 **Zuletzt aktualisiert:** 20. Dezember 2025 ✍️
 
 **Suggerierte Reading-Reihenfolge:**
+
 1. [QUICKSTART.md](QUICKSTART.md) (5 min)
 2. [BACKEND_ARCHITECTURE.md](BACKEND_ARCHITECTURE.md) (30 min)
 3. [FRONTEND_INTEGRATION.md](FRONTEND_INTEGRATION.md) (20 min)

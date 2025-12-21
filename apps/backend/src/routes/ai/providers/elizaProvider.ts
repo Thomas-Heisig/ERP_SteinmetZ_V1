@@ -505,10 +505,9 @@ class ElizaEngine {
   /** Behandelt Wikipedia-Suche */
   private async handleWikipediaSearch(query: string): Promise<AIResponse> {
     try {
-      const result = (await toolRegistry.call(
-        "wikipedia_search",
-        { query } as Record<string, unknown>,
-      )) as unknown;
+      const result = (await toolRegistry.call("wikipedia_search", {
+        query,
+      } as Record<string, unknown>)) as unknown;
       const resultText =
         typeof result === "object" && result !== null && "result" in result
           ? (result as Record<string, unknown>).result

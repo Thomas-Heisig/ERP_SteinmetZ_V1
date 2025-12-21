@@ -22,14 +22,17 @@ Aktualisiere ergänze und reduziere danach die issues.md und todo.md.
 #### Durchgeführte Verbesserungen:
 
 **dbService.ts** (bereits vor dieser Session behoben):
+
 - ✅ 63 → 0 any types (-100%)
 - Neue Type-Dateien: database.ts, postgres.ts
 
 **aiAnnotatorService.ts** (bereits vor dieser Session teilweise behoben):
+
 - ✅ 33 → 24 any types (-27%)
 - Neue Type-Datei: ai-annotator.ts
 
 **workflowEngine.ts** (in dieser Session):
+
 - ✅ 28 → 17 any types (-39%, -11 instances)
 - Neue Typen in types.ts:
   - `WorkflowInput`: Type für Workflow-Eingabeparameter
@@ -40,12 +43,14 @@ Aktualisiere ergänze und reduziere danach die issues.md und todo.md.
 - Function signatures mit proper workflow types versehen
 
 **ai/types/types.ts** (in dieser Session):
+
 - ✅ 24 → 23 any types (-4%, -1 instance)
 - `metadata: Record<string, any>` → `Record<string, unknown>`
 - `triggers.config: any` → `unknown`
 - `input_schema/output_schema: any` → `unknown`
 
 #### Gesamtfortschritt:
+
 - **Vorher**: 441 any types
 - **Nachher**: ~379 any types
 - **Reduktion**: -62 any types (-14%)
@@ -54,6 +59,7 @@ Aktualisiere ergänze und reduziere danach die issues.md und todo.md.
 ### 3. Dokumentation aktualisiert
 
 #### ISSUES.md:
+
 - ✅ Stand auf 20. Dezember 2025 aktualisiert
 - ✅ ISSUE-017 mit korrekten Zahlen aktualisiert (~379 statt ~394)
 - ✅ Detaillierte Fortschritts-Tracking hinzugefügt:
@@ -65,6 +71,7 @@ Aktualisiere ergänze und reduziere danach die issues.md und todo.md.
 - ✅ Aufwandsschätzung angepasst (0.7 Tage bereits investiert)
 
 #### TODO.md:
+
 - ✅ Stand auf 20. Dezember 2025 aktualisiert
 - ✅ TypeScript any Types Task mit 14% Completion aktualisiert
 - ✅ Detaillierte File-by-File Progress hinzugefügt
@@ -80,12 +87,14 @@ Aktualisiere ergänze und reduziere danach die issues.md und todo.md.
 ## Ergebnisse
 
 ### Quantitativ:
+
 - **62 any types eliminiert** (14% Reduktion)
 - **15 any types in dieser Session** (workflowEngine.ts + types.ts)
 - **Build**: ✅ Erfolgreich
 - **Tests**: Status unverändert (existierende Testfehler nicht im Scope)
 
 ### Qualitativ:
+
 - Verbesserte Type Safety in Workflow-System
 - Klarere Type-Definitionen für Workflow-Execution
 - Bessere Error-Handling-Typen (unknown statt any)
@@ -94,21 +103,25 @@ Aktualisiere ergänze und reduziere danach die issues.md und todo.md.
 ## Verbleibende Arbeit
 
 ### Hohe Priorität:
+
 1. workflowEngine.ts vollständig typisieren (17 any types verbleibend)
 2. customProvider.ts typisieren (22 any types)
 3. systemInfoService.ts typisieren (19 any types)
 
 ### Mittlere Priorität:
+
 4. Restliche Files in types.ts (23 any types)
 5. helpers.ts (16 any types)
 6. errors.ts (15 any types)
 
 ### Geschätzter Aufwand verbleibend:
+
 - **4.3-6.3 Tage** für vollständige any-Type-Elimination (von ursprünglich 5-7 Tagen)
 
 ## Markdown Standards
 
 Die Dokumentation wurde auf Markdown-Standards überprüft:
+
 - Hauptsächlich MD013/line-length Violations (Zeilen > 80 Zeichen)
 - Diese sind in modernen Markdown-Standards akzeptabel (besonders für Tabellen/Links)
 - Keine kritischen Markdown-Fehler gefunden

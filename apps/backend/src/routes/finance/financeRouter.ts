@@ -219,7 +219,10 @@ router.get(
     // Validate query parameters
     const validationResult = invoiceQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid query parameters",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const { status, customerId, startDate, endDate } = validationResult.data;
@@ -291,7 +294,10 @@ router.post(
     // Validate input
     const validationResult = createInvoiceSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid invoice data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid invoice data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const invoiceData = validationResult.data;
@@ -330,7 +336,10 @@ router.put(
     // Validate input (using partial schema for updates)
     const validationResult = createInvoiceSchema.partial().safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid invoice update data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid invoice update data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const updateData = validationResult.data;
@@ -415,7 +424,10 @@ router.get(
     // Validate query parameters
     const validationResult = customerQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid query parameters",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const { search } = validationResult.data;
@@ -502,7 +514,10 @@ router.post(
     // Validate input
     const validationResult = createCustomerSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid customer data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid customer data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const customerData = validationResult.data;
@@ -535,7 +550,10 @@ router.get(
     // Validate query parameters
     const validationResult = supplierQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid query parameters",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const { search } = validationResult.data;
@@ -581,7 +599,10 @@ router.post(
     // Validate input
     const validationResult = createSupplierSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid supplier data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid supplier data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const supplierData = validationResult.data;
@@ -614,7 +635,10 @@ router.get(
     // Validate query parameters
     const validationResult = paymentQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid query parameters",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const { type, status } = validationResult.data;
@@ -660,7 +684,10 @@ router.post(
     // Validate input
     const validationResult = createPaymentSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid payment data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid payment data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const paymentData = validationResult.data;
@@ -739,7 +766,10 @@ router.get(
     // Validate query parameters
     const validationResult = transactionQuerySchema.safeParse(req.query);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid query parameters", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid query parameters",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const {
@@ -788,7 +818,10 @@ router.post(
     // Validate input
     const validationResult = createTransactionSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid transaction data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid transaction data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const transactionData = validationResult.data;
@@ -1037,7 +1070,10 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const validationResult = createNumberRangeSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid number range data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid number range data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const rangeData = validationResult.data;
@@ -1158,7 +1194,10 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const validationResult = createDunningSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid dunning data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid dunning data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const { invoiceId, level, message } = validationResult.data;
@@ -1643,7 +1682,10 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const validationResult = createAssetSchema.safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid asset data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid asset data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const assetData = validationResult.data;
@@ -1681,7 +1723,10 @@ router.put(
 
     const validationResult = createAssetSchema.partial().safeParse(req.body);
     if (!validationResult.success) {
-      throw new BadRequestError("Invalid asset update data", formatValidationErrors(validationResult.error.issues));
+      throw new BadRequestError(
+        "Invalid asset update data",
+        formatValidationErrors(validationResult.error.issues),
+      );
     }
 
     const updateData = validationResult.data;

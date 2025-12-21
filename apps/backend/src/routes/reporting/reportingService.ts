@@ -21,7 +21,12 @@ const logger = createLogger("reporting-service");
 /**
  * Report period types
  */
-export type ReportPeriod = "current_month" | "last_month" | "quarter" | "year" | "custom";
+export type ReportPeriod =
+  | "current_month"
+  | "last_month"
+  | "quarter"
+  | "year"
+  | "custom";
 
 /**
  * Report format types
@@ -370,7 +375,7 @@ export class ReportingService {
    */
   async getFinancialReports(
     period?: string,
-    year?: number
+    year?: number,
   ): Promise<FinancialReport> {
     const reportYear = year || new Date().getFullYear();
     logger.debug({ period, year: reportYear }, "Fetching financial reports");
@@ -402,10 +407,16 @@ export class ReportingService {
         ],
       };
 
-      logger.info({ period, year: reportYear, count: report.reports.length }, "Financial reports retrieved");
+      logger.info(
+        { period, year: reportYear, count: report.reports.length },
+        "Financial reports retrieved",
+      );
       return report;
     } catch (error) {
-      logger.error({ error, period, year: reportYear }, "Failed to get financial reports");
+      logger.error(
+        { error, period, year: reportYear },
+        "Failed to get financial reports",
+      );
       throw error;
     }
   }
@@ -454,7 +465,10 @@ export class ReportingService {
         },
       };
 
-      logger.info({ year, month, net_income: report.data.net_income }, "P&L report retrieved");
+      logger.info(
+        { year, month, net_income: report.data.net_income },
+        "P&L report retrieved",
+      );
       return report;
     } catch (error) {
       logger.error({ error, year, month }, "Failed to get P&L report");
@@ -513,7 +527,13 @@ export class ReportingService {
         ],
       };
 
-      logger.info({ total_revenue: report.revenue.total, order_count: report.orders.count }, "Sales report retrieved");
+      logger.info(
+        {
+          total_revenue: report.revenue.total,
+          order_count: report.orders.count,
+        },
+        "Sales report retrieved",
+      );
       return report;
     } catch (error) {
       logger.error({ error }, "Failed to get sales report");
@@ -571,7 +591,10 @@ export class ReportingService {
         ],
       };
 
-      logger.info({ oee: report.efficiency.oee, units: report.output.units_produced }, "Production report retrieved");
+      logger.info(
+        { oee: report.efficiency.oee, units: report.output.units_produced },
+        "Production report retrieved",
+      );
       return report;
     } catch (error) {
       logger.error({ error }, "Failed to get production report");
@@ -624,7 +647,13 @@ export class ReportingService {
         },
       };
 
-      logger.info({ headcount: report.headcount.total, presence_rate: report.attendance.presence_rate }, "HR report retrieved");
+      logger.info(
+        {
+          headcount: report.headcount.total,
+          presence_rate: report.attendance.presence_rate,
+        },
+        "HR report retrieved",
+      );
       return report;
     } catch (error) {
       logger.error({ error }, "Failed to get HR report");
@@ -676,7 +705,13 @@ export class ReportingService {
         },
       };
 
-      logger.info({ total_value: report.value.total, turnover_rate: report.turnover.rate }, "Inventory report retrieved");
+      logger.info(
+        {
+          total_value: report.value.total,
+          turnover_rate: report.turnover.rate,
+        },
+        "Inventory report retrieved",
+      );
       return report;
     } catch (error) {
       logger.error({ error }, "Failed to get inventory report");
@@ -707,7 +742,10 @@ export class ReportingService {
    * ```
    */
   async executeAdhocAnalysis(query: AdhocQuery): Promise<AdhocResult> {
-    logger.debug({ query_name: query.name, datasource: query.datasource }, "Executing ad-hoc analysis");
+    logger.debug(
+      { query_name: query.name, datasource: query.datasource },
+      "Executing ad-hoc analysis",
+    );
 
     const startTime = Date.now();
 
@@ -734,12 +772,15 @@ export class ReportingService {
           rows: results.total_rows,
           execution_time: results.execution_time_ms,
         },
-        "Ad-hoc analysis completed"
+        "Ad-hoc analysis completed",
       );
 
       return result;
     } catch (error) {
-      logger.error({ error, query_name: query.name }, "Failed to execute ad-hoc analysis");
+      logger.error(
+        { error, query_name: query.name },
+        "Failed to execute ad-hoc analysis",
+      );
       throw error;
     }
   }
@@ -805,10 +846,11 @@ export class ReportingService {
 
       logger.info(
         {
-          next_month_forecast: predictions.sales_forecast.next_month.predicted_revenue,
+          next_month_forecast:
+            predictions.sales_forecast.next_month.predicted_revenue,
           at_risk_customers: predictions.churn_risk.at_risk_customers,
         },
-        "AI predictions retrieved"
+        "AI predictions retrieved",
       );
 
       return predictions;
@@ -867,7 +909,8 @@ export class ReportingService {
           description:
             "Maschinenauslastung könnte durch bessere Reihenfolgeplanung um 8% gesteigert werden",
           potential_savings: 25000,
-          action: "Optimierungsalgorithmus für Produktionsplanung implementieren",
+          action:
+            "Optimierungsalgorithmus für Produktionsplanung implementieren",
         },
       ];
 
@@ -928,7 +971,10 @@ export class ReportingService {
         },
       ];
 
-      logger.info({ count: trends.length, alerts: trends.filter((t) => t.alert).length }, "AI trends retrieved");
+      logger.info(
+        { count: trends.length, alerts: trends.filter((t) => t.alert).length },
+        "AI trends retrieved",
+      );
       return trends;
     } catch (error) {
       logger.error({ error }, "Failed to get AI trends");
@@ -988,7 +1034,13 @@ export class ReportingService {
         },
       };
 
-      logger.info({ revenue: kpis.revenue.value, profit_margin: kpis.profit_margin.value }, "Dashboard KPIs retrieved");
+      logger.info(
+        {
+          revenue: kpis.revenue.value,
+          profit_margin: kpis.profit_margin.value,
+        },
+        "Dashboard KPIs retrieved",
+      );
       return kpis;
     } catch (error) {
       logger.error({ error }, "Failed to get dashboard KPIs");

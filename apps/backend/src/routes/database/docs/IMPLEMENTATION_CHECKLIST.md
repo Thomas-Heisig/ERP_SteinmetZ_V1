@@ -38,7 +38,7 @@
   - [ ] Verify DatabaseManager is initialized before routes
 
   ```typescript
-  import { initializeDatabase } from './bootstrap-database.js';
+  import { initializeDatabase } from "./bootstrap-database.js";
 
   // Early in app startup
   await initializeDatabase();
@@ -73,9 +73,9 @@
   });
 
   // Option 2: Use DatabaseRouterFactory
-  const factory = new DatabaseRouterFactory('resource');
-  factory.get('/', async (req, res, db) => {
-    const items = await db.query('SELECT * FROM items');
+  const factory = new DatabaseRouterFactory("resource");
+  factory.get("/", async (req, res, db) => {
+    const items = await db.query("SELECT * FROM items");
     res.json(items);
   });
   ```
@@ -192,7 +192,7 @@ Legend:
 ### Status Summary
 
 | Item | Status | Notes |
-|------|--------|-------|
+| ---- | ------ | ----- |
 
 | DatabaseManager.ts | ✅ | Created and ready |
 | DatabaseRouterFactory.ts | ✅ | Created and ready |
@@ -238,15 +238,13 @@ If issues occur:
 
    ```typescript
    // Support both old and new patterns temporarily
-   const db = isDatabaseInitialized() 
-     ? DatabaseManager 
-     : getDatabase(); // old pattern
+   const db = isDatabaseInitialized() ? DatabaseManager : getDatabase(); // old pattern
    ```
 
 2. **Feature flags** for gradual rollout
 
    ```typescript
-   const USE_NEW_DB_MANAGER = process.env.USE_NEW_DB_MANAGER === 'true';
+   const USE_NEW_DB_MANAGER = process.env.USE_NEW_DB_MANAGER === "true";
    ```
 
 3. **Git branch strategy**

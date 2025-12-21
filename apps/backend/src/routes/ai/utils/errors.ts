@@ -153,7 +153,11 @@ export class APIError extends BaseError {
 }
 
 export class ValidationError extends BaseError {
-  constructor(message: string, field?: string, details?: Record<string, unknown>) {
+  constructor(
+    message: string,
+    field?: string,
+    details?: Record<string, unknown>,
+  ) {
     super(
       `Validierungsfehler${field ? ` in Feld "${field}"` : ""}: ${message}`,
       "ERR_VALIDATION",

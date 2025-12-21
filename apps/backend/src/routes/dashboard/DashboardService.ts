@@ -3,7 +3,7 @@
 
 /**
  * Dashboard Service
- * 
+ *
  * Centralized business logic for all dashboard operations including:
  * - System health monitoring
  * - KPI tracking and analytics
@@ -13,14 +13,14 @@
  * - Layout management
  * - Executive metrics
  * - Process monitoring
- * 
+ *
  * @module routes/dashboard/DashboardService
- * 
+ *
  * @example
  * ```typescript
  * const service = DashboardService.getInstance();
  * await service.initialize();
- * 
+ *
  * // Get paginated tasks
  * const tasks = await service.getTasks({
  *   userId: '123',
@@ -28,7 +28,7 @@
  *   limit: 20,
  *   offset: 0
  * });
- * 
+ *
  * // Create notification
  * await service.createNotification({
  *   userId: '123',
@@ -229,7 +229,7 @@ export interface UpdateWidgetInput {
 
 /**
  * Dashboard Service - Singleton
- * 
+ *
  * Provides centralized dashboard operations with:
  * - Lazy initialization
  * - Database connection management
@@ -278,7 +278,7 @@ export class DashboardService {
            'dashboard_widgets',
            'dashboard_layouts',
            'dashboard_favorites'
-         )`
+         )`,
       );
 
       const tableNames = tables.map((t) => t.name);
@@ -288,13 +288,13 @@ export class DashboardService {
         "dashboard_notifications",
       ];
       const missingTables = requiredTables.filter(
-        (t) => !tableNames.includes(t)
+        (t) => !tableNames.includes(t),
       );
 
       if (missingTables.length > 0) {
         logger.warn(
           { missingTables },
-          "Dashboard tables not found - migrations may not have run"
+          "Dashboard tables not found - migrations may not have run",
         );
       } else {
         logger.info("Dashboard service initialized successfully");
@@ -344,14 +344,14 @@ export class DashboardService {
 
     const [taskCount, annotationCount] = await Promise.all([
       this.dbManager
-        .queryOne<{ count: number }>(
-          "SELECT COUNT(*) as count FROM dashboard_tasks WHERE status != 'completed'"
-        )
+        .queryOne<{
+          count: number;
+        }>("SELECT COUNT(*) as count FROM dashboard_tasks WHERE status != 'completed'")
         .then((r) => r?.count ?? 0),
       this.dbManager
-        .queryOne<{ count: number }>(
-          "SELECT COUNT(*) as count FROM annotations"
-        )
+        .queryOne<{
+          count: number;
+        }>("SELECT COUNT(*) as count FROM annotations")
         .then((r) => r?.count ?? 0),
     ]);
 
@@ -405,7 +405,7 @@ export class DashboardService {
       whereParts.join(" "),
       100,
       0,
-      "ORDER BY date DESC, category ASC"
+      "ORDER BY date DESC, category ASC",
     );
 
     const rows = await this.dbManager.query<DashboardKPI>(sql, params);
@@ -452,7 +452,7 @@ export class DashboardService {
           kpi.target,
           kpi.date,
           kpi.createdAt,
-        ]
+        ],
       );
       return kpi;
     });
@@ -466,7 +466,7 @@ export class DashboardService {
    * Get tasks with pagination and filtering
    */
   public async getTasks(
-    filters: TaskQueryFilters
+    filters: TaskQueryFilters,
   ): Promise<PaginatedResult<DashboardTask>> {
     await this.initialize();
 
@@ -501,7 +501,10 @@ export class DashboardService {
     const orderBy = "ORDER BY priority DESC, due_date ASC";
 
     const countSql = `SELECT COUNT(*) as count FROM dashboard_tasks ${whereParts.join(" ")}`;
-    const totalRow = await this.dbManager.queryOne<{ count: number }>(countSql, params);
+    const totalRow = await this.dbManager.queryOne<{ count: number }>(
+      countSql,
+      params,
+    );
     const total = totalRow?.count ?? 0;
 
     const dataSql = buildSelectQuery(
@@ -509,10 +512,13 @@ export class DashboardService {
       whereParts.join(" "),
       limit,
       offset,
-      orderBy
+      orderBy,
     );
 
-    const rows = await this.dbManager.query<Record<string, unknown>>(dataSql, params);
+    const rows = await this.dbManager.query<Record<string, unknown>>(
+      dataSql,
+      params,
+    );
     const data = rows.map(this.rowToTask);
 
     return createPaginatedResult(data, total, page, limit);
@@ -526,7 +532,7 @@ export class DashboardService {
 
     const task = await this.dbManager.queryOne<Record<string, unknown>>(
       "SELECT * FROM dashboard_tasks WHERE id = ?",
-      [id]
+      [id],
     );
 
     if (!task) {
@@ -579,7 +585,7 @@ export class DashboardService {
           task.relatedType,
           task.createdAt,
           task.updatedAt,
-        ]
+        ],
       );
       return task;
     });
@@ -590,7 +596,7 @@ export class DashboardService {
    */
   public async updateTask(
     id: string,
-    data: UpdateTaskInput
+    data: UpdateTaskInput,
   ): Promise<DashboardTask> {
     await this.initialize();
 
@@ -627,7 +633,7 @@ export class DashboardService {
           updated.relatedType,
           updated.updatedAt,
           id,
-        ]
+        ],
       );
       return updated;
     });
@@ -642,7 +648,7 @@ export class DashboardService {
     await retryOperation(async () => {
       const result = await this.dbManager.execute(
         "DELETE FROM dashboard_tasks WHERE id = ?",
-        [id]
+        [id],
       );
       if (!result.changes || result.changes === 0) {
         throw new NotFoundError("Task not found");
@@ -658,7 +664,7 @@ export class DashboardService {
    * Get notifications with pagination and filtering
    */
   public async getNotifications(
-    filters: NotificationQueryFilters
+    filters: NotificationQueryFilters,
   ): Promise<PaginatedResult<DashboardNotification>> {
     await this.initialize();
 
@@ -668,8 +674,7 @@ export class DashboardService {
     const whereConditions: Record<string, unknown> = {};
 
     if (filters.userId) whereConditions.user_id = filters.userId;
-    if (filters.read !== undefined)
-      whereConditions.read = filters.read ? 1 : 0;
+    if (filters.read !== undefined) whereConditions.read = filters.read ? 1 : 0;
     if (filters.type) whereConditions.type = filters.type;
     if (filters.createdAfter)
       whereConditions["created_at >="] = filters.createdAfter;
@@ -683,7 +688,10 @@ export class DashboardService {
 
     // Get total count
     const countSql = `SELECT COUNT(*) as count FROM dashboard_notifications ${where}`;
-    const totalRow = await this.dbManager.queryOne<{ count: number }>(countSql, params);
+    const totalRow = await this.dbManager.queryOne<{ count: number }>(
+      countSql,
+      params,
+    );
     const total = totalRow?.count ?? 0;
 
     // Get paginated data
@@ -692,10 +700,13 @@ export class DashboardService {
       where,
       limit,
       offset,
-      orderBy
+      orderBy,
     );
 
-    const rows = await this.dbManager.query<Record<string, unknown>>(dataSql, params);
+    const rows = await this.dbManager.query<Record<string, unknown>>(
+      dataSql,
+      params,
+    );
     const data = rows.map(this.rowToNotification);
 
     return createPaginatedResult(data, total, page, limit);
@@ -704,14 +715,12 @@ export class DashboardService {
   /**
    * Get single notification by ID
    */
-  public async getNotificationById(
-    id: string
-  ): Promise<DashboardNotification> {
+  public async getNotificationById(id: string): Promise<DashboardNotification> {
     await this.initialize();
 
     const notification = await this.dbManager.queryOne<Record<string, unknown>>(
       "SELECT * FROM dashboard_notifications WHERE id = ?",
-      [id]
+      [id],
     );
 
     if (!notification) {
@@ -725,7 +734,7 @@ export class DashboardService {
    * Create new notification
    */
   public async createNotification(
-    data: CreateNotificationInput
+    data: CreateNotificationInput,
   ): Promise<DashboardNotification> {
     await this.initialize();
 
@@ -760,7 +769,7 @@ export class DashboardService {
           notification.actionLabel,
           notification.metadata,
           notification.createdAt,
-        ]
+        ],
       );
       return notification;
     });
@@ -771,7 +780,7 @@ export class DashboardService {
    */
   public async updateNotification(
     id: string,
-    data: UpdateNotificationInput
+    data: UpdateNotificationInput,
   ): Promise<DashboardNotification> {
     await this.initialize();
 
@@ -792,7 +801,7 @@ export class DashboardService {
         `UPDATE dashboard_notifications 
          SET read = ?, read_at = ?
          WHERE id = ?`,
-        [updated.read ? 1 : 0, updated.readAt, id]
+        [updated.read ? 1 : 0, updated.readAt, id],
       );
       return updated;
     });
@@ -807,7 +816,7 @@ export class DashboardService {
     await retryOperation(async () => {
       const result = await this.dbManager.execute(
         "DELETE FROM dashboard_notifications WHERE id = ?",
-        [id]
+        [id],
       );
       if (!result.changes || result.changes === 0) {
         throw new NotFoundError("Notification not found");
@@ -823,7 +832,7 @@ export class DashboardService {
    * Get widgets with pagination and filtering
    */
   public async getWidgets(
-    filters: WidgetQueryFilters
+    filters: WidgetQueryFilters,
   ): Promise<PaginatedResult<DashboardWidget>> {
     await this.initialize();
 
@@ -844,7 +853,10 @@ export class DashboardService {
     const orderBy = "ORDER BY position ASC, updated_at DESC";
 
     const countSql = `SELECT COUNT(*) as count FROM dashboard_widgets ${where}`;
-    const totalRow = await this.dbManager.queryOne<{ count: number }>(countSql, params);
+    const totalRow = await this.dbManager.queryOne<{ count: number }>(
+      countSql,
+      params,
+    );
     const total = totalRow?.count ?? 0;
 
     const dataSql = buildSelectQuery(
@@ -852,10 +864,13 @@ export class DashboardService {
       where,
       limit,
       offset,
-      orderBy
+      orderBy,
     );
 
-    const rows = await this.dbManager.query<Record<string, unknown>>(dataSql, params);
+    const rows = await this.dbManager.query<Record<string, unknown>>(
+      dataSql,
+      params,
+    );
     const data = rows.map(this.rowToWidget);
 
     return createPaginatedResult(data, total, page, limit);
@@ -905,7 +920,7 @@ export class DashboardService {
           widget.isVisible ? 1 : 0,
           widget.createdAt,
           widget.updatedAt,
-        ]
+        ],
       );
       return widget;
     });
@@ -916,13 +931,13 @@ export class DashboardService {
    */
   public async updateWidget(
     id: string,
-    data: UpdateWidgetInput
+    data: UpdateWidgetInput,
   ): Promise<DashboardWidget> {
     await this.initialize();
 
     const existing = await this.dbManager.queryOne<Record<string, unknown>>(
       "SELECT * FROM dashboard_widgets WHERE id = ?",
-      [id]
+      [id],
     );
     if (!existing) throw new NotFoundError("Widget not found");
 
@@ -949,7 +964,7 @@ export class DashboardService {
           updated.isVisible ? 1 : 0,
           updated.updatedAt,
           id,
-        ]
+        ],
       );
       if (!result.changes) throw new NotFoundError("Widget not found");
     });
@@ -965,7 +980,7 @@ export class DashboardService {
     await retryOperation(async () => {
       const result = await this.dbManager.execute(
         "DELETE FROM dashboard_widgets WHERE id = ?",
-        [id]
+        [id],
       );
       if (!result.changes) throw new NotFoundError("Widget not found");
     });
@@ -978,13 +993,11 @@ export class DashboardService {
   /**
    * Get layouts for a user
    */
-  public async getLayouts(
-    userId: string
-  ): Promise<DashboardLayout[]> {
+  public async getLayouts(userId: string): Promise<DashboardLayout[]> {
     await this.initialize();
     const rows = await this.dbManager.query<Record<string, unknown>>(
       "SELECT * FROM dashboard_layouts WHERE user_id = ? ORDER BY is_active DESC, is_default DESC, updated_at DESC",
-      [userId]
+      [userId],
     );
     return rows.map(this.rowToLayout);
   }
@@ -1029,7 +1042,7 @@ export class DashboardService {
           layout.isActive ? 1 : 0,
           layout.createdAt,
           layout.updatedAt,
-        ]
+        ],
       );
     });
 
@@ -1041,13 +1054,13 @@ export class DashboardService {
    */
   public async updateLayout(
     id: string,
-    data: Partial<Omit<DashboardLayout, "id" | "userId" | "createdAt">>
+    data: Partial<Omit<DashboardLayout, "id" | "userId" | "createdAt">>,
   ): Promise<DashboardLayout> {
     await this.initialize();
 
     const existing = await this.dbManager.queryOne<Record<string, unknown>>(
       "SELECT * FROM dashboard_layouts WHERE id = ?",
-      [id]
+      [id],
     );
     if (!existing) throw new NotFoundError("Layout not found");
 
@@ -1070,7 +1083,7 @@ export class DashboardService {
           updated.isActive ? 1 : 0,
           updated.updatedAt,
           id,
-        ]
+        ],
       );
       if (!result.changes) throw new NotFoundError("Layout not found");
     });
@@ -1086,7 +1099,7 @@ export class DashboardService {
     await retryOperation(async () => {
       const result = await this.dbManager.execute(
         "DELETE FROM dashboard_layouts WHERE id = ?",
-        [id]
+        [id],
       );
       if (!result.changes) throw new NotFoundError("Layout not found");
     });
@@ -1103,7 +1116,7 @@ export class DashboardService {
     await this.initialize();
     const rows = await this.dbManager.query<Record<string, unknown>>(
       "SELECT * FROM dashboard_favorites WHERE user_id = ? ORDER BY position ASC, created_at DESC",
-      [userId]
+      [userId],
     );
     return rows.map(this.rowToFavorite);
   }
@@ -1149,7 +1162,7 @@ export class DashboardService {
           favorite.icon,
           favorite.position,
           favorite.createdAt,
-        ]
+        ],
       );
     });
 
@@ -1164,7 +1177,7 @@ export class DashboardService {
     await retryOperation(async () => {
       const result = await this.dbManager.execute(
         "DELETE FROM dashboard_favorites WHERE id = ?",
-        [id]
+        [id],
       );
       if (!result.changes) throw new NotFoundError("Favorite not found");
     });
@@ -1194,7 +1207,7 @@ export class DashboardService {
   }
 
   private rowToNotification(
-    row: Record<string, unknown>
+    row: Record<string, unknown>,
   ): DashboardNotification {
     return {
       id: row.id as string,

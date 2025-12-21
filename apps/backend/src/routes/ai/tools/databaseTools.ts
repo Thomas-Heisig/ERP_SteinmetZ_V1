@@ -34,18 +34,13 @@ type SQLite3Module = {
 type PostgresModule = {
   Client: new (opts: { connectionString: string }) => {
     connect: () => Promise<void>;
-    query: (
-      sql: string,
-      params?: unknown[],
-    ) => Promise<{ rows: unknown[] }>;
+    query: (sql: string, params?: unknown[]) => Promise<{ rows: unknown[] }>;
     end: () => Promise<void>;
   };
 };
 
 type MySQLModule = {
-  createConnection: (
-    connectionString: string,
-  ) => Promise<{
+  createConnection: (connectionString: string) => Promise<{
     execute: (sql: string, params?: unknown[]) => Promise<[unknown, unknown]>;
     end: () => Promise<void>;
   }>;
@@ -114,11 +109,15 @@ async function querySQLite(
   if (sqlite3) {
     const db = new sqlite3.Database(file);
     return new Promise((resolve, reject) => {
-      db.all(sql, (params || []) as unknown[], (err: Error | null, rows: unknown[]) => {
-        db.close();
-        if (err) reject(err);
-        else resolve(rows);
-      });
+      db.all(
+        sql,
+        (params || []) as unknown[],
+        (err: Error | null, rows: unknown[]) => {
+          db.close();
+          if (err) reject(err);
+          else resolve(rows);
+        },
+      );
     });
   }
   throw new Error(
@@ -198,9 +197,11 @@ export function registerTools(toolRegistry: {
       }
 
       if (file.endsWith(".json")) {
-        const raw = JSON.parse(await fs.promises.readFile(file, "utf8")) as unknown;
+        const raw = JSON.parse(
+          await fs.promises.readFile(file, "utf8"),
+        ) as unknown;
         const isArray = Array.isArray(raw);
-        const first = isArray ? (raw as unknown[])[0] ?? {} : raw;
+        const first = isArray ? ((raw as unknown[])[0] ?? {}) : raw;
         const keys = isRecord(first) ? Object.keys(first) : [];
         return {
           success: true,
@@ -214,7 +215,9 @@ export function registerTools(toolRegistry: {
       if (file.endsWith(".csv")) {
         const content = await fs.promises.readFile(file, "utf8");
         const [headerLine] = content.split(/\r?\n/);
-        const columns = headerLine ? headerLine.split(",").map((c) => c.trim()) : [];
+        const columns = headerLine
+          ? headerLine.split(",").map((c) => c.trim())
+          : [];
         return {
           success: true,
           file,
@@ -254,8 +257,7 @@ export function registerTools(toolRegistry: {
 
       if (file && isSQLiteDatabase(file)) {
         rows = await querySQLite(file, query, params);
-      }
-      else if (connectionString && type === "postgres") {
+      } else if (connectionString && type === "postgres") {
         const client = await connectPostgres(connectionString);
         const res = await client.query(query, params);
         await client.end();
@@ -266,7 +268,9 @@ export function registerTools(toolRegistry: {
         await conn.end();
         rows = Array.isArray(res) ? (res as unknown[]) : [res];
       } else if (file?.endsWith(".json")) {
-        const raw = JSON.parse(await fs.promises.readFile(file, "utf8")) as unknown;
+        const raw = JSON.parse(
+          await fs.promises.readFile(file, "utf8"),
+        ) as unknown;
         if (query.toLowerCase().startsWith("select")) {
           rows = Array.isArray(raw) ? (raw as unknown[]) : [raw];
         }
@@ -300,14 +304,28 @@ export function registerTools(toolRegistry: {
         file,
         "SELECT name FROM sqlite_master WHERE type='table';",
       );
-      const results: Array<{ table: string; indices: unknown[]; columnCount: number }> = [];
+      const results: Array<{
+        table: string;
+        indices: unknown[];
+        columnCount: number;
+      }> = [];
       for (const t of tables) {
         const tableName = (t as Record<string, unknown>).name as string;
         const idx = await querySQLite(file, `PRAGMA index_list(${tableName});`);
-        const cols = await querySQLite(file, `PRAGMA table_info(${tableName});`);
-        results.push({ table: tableName, indices: idx, columnCount: cols.length as number });
+        const cols = await querySQLite(
+          file,
+          `PRAGMA table_info(${tableName});`,
+        );
+        results.push({
+          table: tableName,
+          indices: idx,
+          columnCount: cols.length as number,
+        });
       }
-      const total = results.reduce((a, r) => a + (Array.isArray(r.indices) ? r.indices.length : 0), 0);
+      const total = results.reduce(
+        (a, r) => a + (Array.isArray(r.indices) ? r.indices.length : 0),
+        0,
+      );
       return { success: true, results, totalIndices: total };
     } catch (error) {
       return { success: false, error: getErrorMessage(error) };
@@ -328,9 +346,12 @@ export function registerTools(toolRegistry: {
       const pageSize = await querySQLite(file, "PRAGMA page_size;");
       const pageCount = await querySQLite(file, "PRAGMA page_count;");
       const freelist = await querySQLite(file, "PRAGMA freelist_count;");
-      const pageSizeVal = (pageSize[0] as Record<string, unknown>)?.page_size as number;
-      const pageCountVal = (pageCount[0] as Record<string, unknown>)?.page_count as number;
-      const freelistVal = (freelist[0] as Record<string, unknown>)?.freelist_count as number;
+      const pageSizeVal = (pageSize[0] as Record<string, unknown>)
+        ?.page_size as number;
+      const pageCountVal = (pageCount[0] as Record<string, unknown>)
+        ?.page_count as number;
+      const freelistVal = (freelist[0] as Record<string, unknown>)
+        ?.freelist_count as number;
       const size = pageSizeVal * pageCountVal;
       return {
         success: true,

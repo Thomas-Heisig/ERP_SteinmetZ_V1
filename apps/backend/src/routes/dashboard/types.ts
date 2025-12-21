@@ -3,7 +3,7 @@
 
 /**
  * TypeScript types and Zod validation schemas for Dashboard Module
- * 
+ *
  * @module routes/dashboard/types
  */
 
@@ -119,8 +119,8 @@ export const WARNING_TYPE = {
 export interface DashboardWidget {
   id: string;
   userId: string;
-  widgetType: typeof WIDGET_TYPE[keyof typeof WIDGET_TYPE];
-  dataSource: typeof WIDGET_DATA_SOURCE[keyof typeof WIDGET_DATA_SOURCE];
+  widgetType: (typeof WIDGET_TYPE)[keyof typeof WIDGET_TYPE];
+  dataSource: (typeof WIDGET_DATA_SOURCE)[keyof typeof WIDGET_DATA_SOURCE];
   title: string;
   description?: string;
   position: number;
@@ -171,8 +171,8 @@ export interface DashboardTask {
   userId: string;
   title: string;
   description?: string;
-  status: typeof TASK_STATUS[keyof typeof TASK_STATUS];
-  priority: typeof TASK_PRIORITY[keyof typeof TASK_PRIORITY];
+  status: (typeof TASK_STATUS)[keyof typeof TASK_STATUS];
+  priority: (typeof TASK_PRIORITY)[keyof typeof TASK_PRIORITY];
   dueDate?: string;
   completedAt?: string;
   assignedTo?: string;
@@ -189,7 +189,7 @@ export interface DashboardTask {
 export interface DashboardNotification {
   id: string;
   userId: string;
-  type: typeof NOTIFICATION_TYPE[keyof typeof NOTIFICATION_TYPE];
+  type: (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE];
   title: string;
   message: string;
   read: boolean;
@@ -209,7 +209,7 @@ export interface DashboardKPI {
   category: string;
   value: number;
   unit?: string;
-  trend?: typeof TREND_DIRECTION[keyof typeof TREND_DIRECTION];
+  trend?: (typeof TREND_DIRECTION)[keyof typeof TREND_DIRECTION];
   trendValue?: number;
   target?: number;
   description?: string;
@@ -222,8 +222,8 @@ export interface DashboardKPI {
  */
 export interface DashboardWarning {
   id: string;
-  type: typeof WARNING_TYPE[keyof typeof WARNING_TYPE];
-  severity: typeof WARNING_SEVERITY[keyof typeof WARNING_SEVERITY];
+  type: (typeof WARNING_TYPE)[keyof typeof WARNING_TYPE];
+  severity: (typeof WARNING_SEVERITY)[keyof typeof WARNING_SEVERITY];
   title: string;
   message: string;
   value?: number;
@@ -490,28 +490,32 @@ export const createWidgetSchema = z.object({
  * Schema for updating a widget
  */
 export const updateWidgetSchema = z.object({
-  widgetType: z.enum([
-    WIDGET_TYPE.CHART,
-    WIDGET_TYPE.STAT,
-    WIDGET_TYPE.TABLE,
-    WIDGET_TYPE.LIST,
-    WIDGET_TYPE.GAUGE,
-    WIDGET_TYPE.MAP,
-    WIDGET_TYPE.TIMELINE,
-    WIDGET_TYPE.CUSTOM,
-  ]).optional(),
-  dataSource: z.enum([
-    WIDGET_DATA_SOURCE.REVENUE,
-    WIDGET_DATA_SOURCE.ORDERS,
-    WIDGET_DATA_SOURCE.CUSTOMERS,
-    WIDGET_DATA_SOURCE.INVENTORY,
-    WIDGET_DATA_SOURCE.PRODUCTION,
-    WIDGET_DATA_SOURCE.FINANCE,
-    WIDGET_DATA_SOURCE.HR,
-    WIDGET_DATA_SOURCE.TASKS,
-    WIDGET_DATA_SOURCE.NOTIFICATIONS,
-    WIDGET_DATA_SOURCE.CUSTOM,
-  ]).optional(),
+  widgetType: z
+    .enum([
+      WIDGET_TYPE.CHART,
+      WIDGET_TYPE.STAT,
+      WIDGET_TYPE.TABLE,
+      WIDGET_TYPE.LIST,
+      WIDGET_TYPE.GAUGE,
+      WIDGET_TYPE.MAP,
+      WIDGET_TYPE.TIMELINE,
+      WIDGET_TYPE.CUSTOM,
+    ])
+    .optional(),
+  dataSource: z
+    .enum([
+      WIDGET_DATA_SOURCE.REVENUE,
+      WIDGET_DATA_SOURCE.ORDERS,
+      WIDGET_DATA_SOURCE.CUSTOMERS,
+      WIDGET_DATA_SOURCE.INVENTORY,
+      WIDGET_DATA_SOURCE.PRODUCTION,
+      WIDGET_DATA_SOURCE.FINANCE,
+      WIDGET_DATA_SOURCE.HR,
+      WIDGET_DATA_SOURCE.TASKS,
+      WIDGET_DATA_SOURCE.NOTIFICATIONS,
+      WIDGET_DATA_SOURCE.CUSTOM,
+    ])
+    .optional(),
   title: z.string().min(1).max(200).optional(),
   description: z.string().max(500).optional(),
   position: z.number().int().min(0).optional(),
@@ -577,20 +581,24 @@ export const createTaskSchema = z.object({
   userId: z.string().uuid(),
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
-  status: z.enum([
-    TASK_STATUS.PENDING,
-    TASK_STATUS.IN_PROGRESS,
-    TASK_STATUS.COMPLETED,
-    TASK_STATUS.CANCELLED,
-    TASK_STATUS.ON_HOLD,
-  ]).default(TASK_STATUS.PENDING),
-  priority: z.enum([
-    TASK_PRIORITY.LOW,
-    TASK_PRIORITY.NORMAL,
-    TASK_PRIORITY.HIGH,
-    TASK_PRIORITY.URGENT,
-    TASK_PRIORITY.CRITICAL,
-  ]).default(TASK_PRIORITY.NORMAL),
+  status: z
+    .enum([
+      TASK_STATUS.PENDING,
+      TASK_STATUS.IN_PROGRESS,
+      TASK_STATUS.COMPLETED,
+      TASK_STATUS.CANCELLED,
+      TASK_STATUS.ON_HOLD,
+    ])
+    .default(TASK_STATUS.PENDING),
+  priority: z
+    .enum([
+      TASK_PRIORITY.LOW,
+      TASK_PRIORITY.NORMAL,
+      TASK_PRIORITY.HIGH,
+      TASK_PRIORITY.URGENT,
+      TASK_PRIORITY.CRITICAL,
+    ])
+    .default(TASK_PRIORITY.NORMAL),
   dueDate: z.string().datetime().optional(),
   assignedTo: z.string().uuid().optional(),
   tags: z.string().optional(),
@@ -604,20 +612,24 @@ export const createTaskSchema = z.object({
 export const updateTaskSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   description: z.string().max(1000).optional(),
-  status: z.enum([
-    TASK_STATUS.PENDING,
-    TASK_STATUS.IN_PROGRESS,
-    TASK_STATUS.COMPLETED,
-    TASK_STATUS.CANCELLED,
-    TASK_STATUS.ON_HOLD,
-  ]).optional(),
-  priority: z.enum([
-    TASK_PRIORITY.LOW,
-    TASK_PRIORITY.NORMAL,
-    TASK_PRIORITY.HIGH,
-    TASK_PRIORITY.URGENT,
-    TASK_PRIORITY.CRITICAL,
-  ]).optional(),
+  status: z
+    .enum([
+      TASK_STATUS.PENDING,
+      TASK_STATUS.IN_PROGRESS,
+      TASK_STATUS.COMPLETED,
+      TASK_STATUS.CANCELLED,
+      TASK_STATUS.ON_HOLD,
+    ])
+    .optional(),
+  priority: z
+    .enum([
+      TASK_PRIORITY.LOW,
+      TASK_PRIORITY.NORMAL,
+      TASK_PRIORITY.HIGH,
+      TASK_PRIORITY.URGENT,
+      TASK_PRIORITY.CRITICAL,
+    ])
+    .optional(),
   dueDate: z.string().datetime().optional(),
   completedAt: z.string().datetime().optional(),
   assignedTo: z.string().uuid().optional(),
@@ -736,12 +748,12 @@ export const queryWarningSchema = z.object({
  * Type guard for widget type validation
  */
 export function isValidWidgetType(
-  type: unknown
-): type is typeof WIDGET_TYPE[keyof typeof WIDGET_TYPE] {
+  type: unknown,
+): type is (typeof WIDGET_TYPE)[keyof typeof WIDGET_TYPE] {
   return (
     typeof type === "string" &&
     Object.values(WIDGET_TYPE).includes(
-      type as typeof WIDGET_TYPE[keyof typeof WIDGET_TYPE]
+      type as (typeof WIDGET_TYPE)[keyof typeof WIDGET_TYPE],
     )
   );
 }
@@ -750,12 +762,12 @@ export function isValidWidgetType(
  * Type guard for data source validation
  */
 export function isValidDataSource(
-  source: unknown
-): source is typeof WIDGET_DATA_SOURCE[keyof typeof WIDGET_DATA_SOURCE] {
+  source: unknown,
+): source is (typeof WIDGET_DATA_SOURCE)[keyof typeof WIDGET_DATA_SOURCE] {
   return (
     typeof source === "string" &&
     Object.values(WIDGET_DATA_SOURCE).includes(
-      source as typeof WIDGET_DATA_SOURCE[keyof typeof WIDGET_DATA_SOURCE]
+      source as (typeof WIDGET_DATA_SOURCE)[keyof typeof WIDGET_DATA_SOURCE],
     )
   );
 }
@@ -764,12 +776,12 @@ export function isValidDataSource(
  * Type guard for task status validation
  */
 export function isValidTaskStatus(
-  status: unknown
-): status is typeof TASK_STATUS[keyof typeof TASK_STATUS] {
+  status: unknown,
+): status is (typeof TASK_STATUS)[keyof typeof TASK_STATUS] {
   return (
     typeof status === "string" &&
     Object.values(TASK_STATUS).includes(
-      status as typeof TASK_STATUS[keyof typeof TASK_STATUS]
+      status as (typeof TASK_STATUS)[keyof typeof TASK_STATUS],
     )
   );
 }
@@ -778,12 +790,12 @@ export function isValidTaskStatus(
  * Type guard for task priority validation
  */
 export function isValidTaskPriority(
-  priority: unknown
-): priority is typeof TASK_PRIORITY[keyof typeof TASK_PRIORITY] {
+  priority: unknown,
+): priority is (typeof TASK_PRIORITY)[keyof typeof TASK_PRIORITY] {
   return (
     typeof priority === "string" &&
     Object.values(TASK_PRIORITY).includes(
-      priority as typeof TASK_PRIORITY[keyof typeof TASK_PRIORITY]
+      priority as (typeof TASK_PRIORITY)[keyof typeof TASK_PRIORITY],
     )
   );
 }
@@ -792,12 +804,12 @@ export function isValidTaskPriority(
  * Type guard for notification type validation
  */
 export function isValidNotificationType(
-  type: unknown
-): type is typeof NOTIFICATION_TYPE[keyof typeof NOTIFICATION_TYPE] {
+  type: unknown,
+): type is (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE] {
   return (
     typeof type === "string" &&
     Object.values(NOTIFICATION_TYPE).includes(
-      type as typeof NOTIFICATION_TYPE[keyof typeof NOTIFICATION_TYPE]
+      type as (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE],
     )
   );
 }
@@ -806,12 +818,12 @@ export function isValidNotificationType(
  * Type guard for warning type validation
  */
 export function isValidWarningType(
-  type: unknown
-): type is typeof WARNING_TYPE[keyof typeof WARNING_TYPE] {
+  type: unknown,
+): type is (typeof WARNING_TYPE)[keyof typeof WARNING_TYPE] {
   return (
     typeof type === "string" &&
     Object.values(WARNING_TYPE).includes(
-      type as typeof WARNING_TYPE[keyof typeof WARNING_TYPE]
+      type as (typeof WARNING_TYPE)[keyof typeof WARNING_TYPE],
     )
   );
 }
@@ -820,12 +832,12 @@ export function isValidWarningType(
  * Type guard for warning severity validation
  */
 export function isValidWarningSeverity(
-  severity: unknown
-): severity is typeof WARNING_SEVERITY[keyof typeof WARNING_SEVERITY] {
+  severity: unknown,
+): severity is (typeof WARNING_SEVERITY)[keyof typeof WARNING_SEVERITY] {
   return (
     typeof severity === "string" &&
     Object.values(WARNING_SEVERITY).includes(
-      severity as typeof WARNING_SEVERITY[keyof typeof WARNING_SEVERITY]
+      severity as (typeof WARNING_SEVERITY)[keyof typeof WARNING_SEVERITY],
     )
   );
 }

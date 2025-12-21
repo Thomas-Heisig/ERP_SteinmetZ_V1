@@ -26,11 +26,11 @@ async function ensureTable(
   tableName: string,
   ddl: string,
 ): Promise<void> {
-  const exists = await toolRegistry.call("query_database", {
+  const exists = (await toolRegistry.call("query_database", {
     file: dbFile,
     query: `SELECT name FROM sqlite_master WHERE type='table' AND name=?;`,
     params: [tableName],
-  }) as { count?: number };
+  })) as { count?: number };
   if ((exists?.count ?? 0) === 0) {
     await toolRegistry.call("query_database", { file: dbFile, query: ddl });
   }

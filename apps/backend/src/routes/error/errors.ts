@@ -105,7 +105,10 @@ export class ForbiddenError extends APIError {
  * 404 Not Found
  */
 export class NotFoundError extends APIError {
-  constructor(message = "Resource not found", details?: Record<string, unknown>) {
+  constructor(
+    message = "Resource not found",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.NOT_FOUND, message, 404, details);
   }
 }
@@ -123,7 +126,10 @@ export class ConflictError extends APIError {
  * 422 Validation Error
  */
 export class ValidationError extends APIError {
-  constructor(message = "Validation failed", details?: Record<string, unknown>) {
+  constructor(
+    message = "Validation failed",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.VALIDATION_ERROR, message, 422, details);
   }
 }
@@ -132,7 +138,10 @@ export class ValidationError extends APIError {
  * 429 Rate Limit Exceeded
  */
 export class RateLimitError extends APIError {
-  constructor(message = "Rate limit exceeded", details?: Record<string, unknown>) {
+  constructor(
+    message = "Rate limit exceeded",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.RATE_LIMIT_EXCEEDED, message, 429, details);
   }
 }
@@ -141,7 +150,10 @@ export class RateLimitError extends APIError {
  * 500 Internal Server Error
  */
 export class InternalServerError extends APIError {
-  constructor(message = "Internal Server Error", details?: Record<string, unknown>) {
+  constructor(
+    message = "Internal Server Error",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.INTERNAL_SERVER_ERROR, message, 500, details, false);
   }
 }
@@ -150,7 +162,10 @@ export class InternalServerError extends APIError {
  * 503 Service Unavailable
  */
 export class ServiceUnavailableError extends APIError {
-  constructor(message = "Service Unavailable", details?: Record<string, unknown>) {
+  constructor(
+    message = "Service Unavailable",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.SERVICE_UNAVAILABLE, message, 503, details);
   }
 }
@@ -168,7 +183,10 @@ export class DatabaseError extends APIError {
  * AI Provider Error
  */
 export class AIProviderError extends APIError {
-  constructor(message = "AI Provider Error", details?: Record<string, unknown>) {
+  constructor(
+    message = "AI Provider Error",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.AI_PROVIDER_ERROR, message, 502, details);
   }
 }
@@ -177,7 +195,10 @@ export class AIProviderError extends APIError {
  * External API Error
  */
 export class ExternalAPIError extends APIError {
-  constructor(message = "External API Error", details?: Record<string, unknown>) {
+  constructor(
+    message = "External API Error",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.EXTERNAL_API_ERROR, message, 502, details);
   }
 }

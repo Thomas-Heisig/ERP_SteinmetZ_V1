@@ -2,7 +2,7 @@
 
 **Status:** ✅ COMPLETE  
 **Date:** 2025-12-20  
-**Version:** 1.0  
+**Version:** 1.0
 
 ---
 
@@ -11,7 +11,7 @@
 The warehouse management component has been completely refactored to meet production standards. The component now features:
 
 - ✅ **Type-safe** service layer with 15+ methods
-- ✅ **Validated** inputs via 16 Zod schemas + 8 enums  
+- ✅ **Validated** inputs via 16 Zod schemas + 8 enums
 - ✅ **Documented** endpoints with JSDoc comments
 - ✅ **Tested** with comprehensive mock-based test suite
 - ✅ **Database-backed** migrations with 8 tables
@@ -67,7 +67,7 @@ HTTP Request
 **Error Flow:**
 
 ```
-Service throws error → Router catches with asyncHandler 
+Service throws error → Router catches with asyncHandler
   → Global error handler → API response (400/404/500)
 ```
 
@@ -84,27 +84,69 @@ Service throws error → Router catches with asyncHandler
 
 ```typescript
 // Stock management
-enum StockStatus { 'LOW' = 'low', 'OK' = 'ok', 'OVERSTOCK' = 'overstock', 'RESERVED' = 'reserved' }
-enum MovementType { 'INCOMING' = 'incoming', 'OUTGOING' = 'outgoing', 'TRANSFER' = 'transfer', 'ADJUSTMENT' = 'adjustment' }
+enum StockStatus {
+  "LOW" = "low",
+  "OK" = "ok",
+  "OVERSTOCK" = "overstock",
+  "RESERVED" = "reserved",
+}
+enum MovementType {
+  "INCOMING" = "incoming",
+  "OUTGOING" = "outgoing",
+  "TRANSFER" = "transfer",
+  "ADJUSTMENT" = "adjustment",
+}
 
 // Picking operations
-enum PickingStatus { 'OPEN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED' }
+enum PickingStatus {
+  "OPEN",
+  "IN_PROGRESS",
+  "COMPLETED",
+  "CANCELLED",
+}
 
 // Shipment tracking
-enum ShipmentStatus { 'PREPARED', 'READY_FOR_SHIPMENT', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED' }
+enum ShipmentStatus {
+  "PREPARED",
+  "READY_FOR_SHIPMENT",
+  "IN_TRANSIT",
+  "DELIVERED",
+  "CANCELLED",
+}
 
 // Inventory management
-enum InventoryCountType { 'FULL', 'SPOT_CHECK', 'CYCLE' }
-enum InventoryCountStatus { 'PLANNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED' }
+enum InventoryCountType {
+  "FULL",
+  "SPOT_CHECK",
+  "CYCLE",
+}
+enum InventoryCountStatus {
+  "PLANNED",
+  "IN_PROGRESS",
+  "COMPLETED",
+  "CANCELLED",
+}
 
 // Warehouse organization
-enum WarehouseLocationType { 'STANDARD', 'PALLET', 'SHELF', 'BIN', 'BULK' }
-enum PickingPriority { 'LOW', 'NORMAL', 'HIGH', 'URGENT' }
+enum WarehouseLocationType {
+  "STANDARD",
+  "PALLET",
+  "SHELF",
+  "BIN",
+  "BULK",
+}
+enum PickingPriority {
+  "LOW",
+  "NORMAL",
+  "HIGH",
+  "URGENT",
+}
 ```
 
 #### Zod Schemas (16 total)
 
 **Output Schemas (Database Response Models):**
+
 - `StockItemSchema` - Warehouse stock item with status
 - `StockMovementSchema` - Stock movement record
 - `WarehouseLocationSchema` - Location with capacity
@@ -115,6 +157,7 @@ enum PickingPriority { 'LOW', 'NORMAL', 'HIGH', 'URGENT' }
 - `WarehouseAnalyticsSchema` - KPI metrics
 
 **Input Schemas (Request Body Validation):**
+
 - `CreateStockMovementSchema` - Incoming stock movement
 - `CreateLocationSchema` - New warehouse location
 - `CreatePickingListSchema` - Create picking list
@@ -214,31 +257,35 @@ async getAnalytics(): Promise<WarehouseAnalytics>
 #### Features
 
 **Transaction Support:**
+
 - `recordStockMovement()` - Insert movement + update stock in single transaction
 - `createPickingList()` - Create list + items atomically
 - `completePicking()` - Update items + list status together
 
 **Error Handling:**
+
 ```typescript
 // All methods throw proper error classes
-throw new NotFoundError('Stock item not found');
-throw new ValidationError('Transfer requires both locations');
-throw new DatabaseError('Query failed', { query, params });
+throw new NotFoundError("Stock item not found");
+throw new ValidationError("Transfer requires both locations");
+throw new DatabaseError("Query failed", { query, params });
 ```
 
 **Structured Logging:**
+
 ```typescript
-logger.debug({ filters }, 'Fetching stock items');
-logger.info({ movementId, quantity }, 'Stock movement recorded');
-logger.error({ error, materialId }, 'Failed to get stock item');
+logger.debug({ filters }, "Fetching stock items");
+logger.info({ movementId, quantity }, "Stock movement recorded");
+logger.error({ error, materialId }, "Failed to get stock item");
 ```
 
 **Database Abstraction:**
+
 ```typescript
 // All queries use prepared statements
-const stock = this.db.prepare(
-  'SELECT * FROM warehouse_stock WHERE material_id = ?'
-).get(materialId);
+const stock = this.db
+  .prepare("SELECT * FROM warehouse_stock WHERE material_id = ?")
+  .get(materialId);
 ```
 
 ---
@@ -265,7 +312,9 @@ const asyncHandler = (fn: RequestHandler) => (req, res, next) => {
 // Global error handler
 router.use((err: Error, req, res, next) => {
   if (err instanceof ValidationError) {
-    return res.status(400).json({ success: false, error: err.message, fields: err.fields });
+    return res
+      .status(400)
+      .json({ success: false, error: err.message, fields: err.fields });
   }
   // ... more error handling
 });
@@ -361,20 +410,26 @@ router.use((err: Error, req, res, next) => {
 #### Response Format
 
 **Success (200/201):**
+
 ```json
 {
   "success": true,
-  "data": { /* actual data */ },
-  "count": 42  // For list endpoints
+  "data": {
+    /* actual data */
+  },
+  "count": 42 // For list endpoints
 }
 ```
 
 **Error (400/404/500):**
+
 ```json
 {
   "success": false,
   "error": "Descriptive error message",
-  "fields": { /* validation errors for 400 */ }
+  "fields": {
+    /* validation errors for 400 */
+  }
 }
 ```
 
@@ -383,21 +438,21 @@ router.use((err: Error, req, res, next) => {
 ```typescript
 /**
  * Record a stock movement (incoming/outgoing/transfer/adjustment)
- * 
+ *
  * @route POST /api/warehouse/stock/movement
  * @access Private
- * 
+ *
  * @param {CreateStockMovement} req.body - Movement data
  *   - material_id (required): Material ID
  *   - type (required): 'incoming', 'outgoing', 'transfer', 'adjustment'
  *   - quantity (required): Positive integer
  *   - from_location_id: Required for transfer/outgoing
  *   - to_location_id: Required for transfer/incoming
- * 
+ *
  * @returns {Object} 201 - Created movement
  *   @example
  *   { success: true, data: { id: '...', type: 'incoming', quantity: 5 } }
- * 
+ *
  * @returns {Object} 400 - Validation error
  * @returns {Object} 500 - Server error
  */
@@ -417,16 +472,16 @@ router.use((err: Error, req, res, next) => {
 beforeAll(() => {
   app = express();
   app.use(express.json());
-  
+
   // Mock service with vi.fn().mockResolvedValue()
   warehouseServiceMock = { ... };
-  
+
   // Inject mock via middleware
   app.use((req: any, _res, next) => {
     req.warehouseService = warehouseServiceMock;
     next();
   });
-  
+
   app.use('/api/warehouse', warehouseRouter);
 });
 ```
@@ -434,6 +489,7 @@ beforeAll(() => {
 #### Test Cases (18 total)
 
 **Stock Tests (3):**
+
 ```typescript
 ✅ GET /stock returns items successfully
 ✅ GET /stock filters by category
@@ -441,18 +497,21 @@ beforeAll(() => {
 ```
 
 **Movement Tests (2):**
+
 ```typescript
 ✅ POST /stock/movement records movement
 ✅ POST /stock/movement rejects invalid data
 ```
 
 **Location Tests (2):**
+
 ```typescript
 ✅ GET /locations returns warehouse locations
 ✅ POST /locations creates new location
 ```
 
 **Picking Tests (3):**
+
 ```typescript
 ✅ POST /picking creates picking list
 ✅ GET /picking returns lists
@@ -460,6 +519,7 @@ beforeAll(() => {
 ```
 
 **Shipment Tests (3):**
+
 ```typescript
 ✅ POST /shipments creates shipment
 ✅ GET /shipments returns shipments
@@ -467,6 +527,7 @@ beforeAll(() => {
 ```
 
 **Other Tests (3):**
+
 ```typescript
 ✅ POST /inventory-count creates inventory count
 ✅ GET /analytics returns KPIs
@@ -489,11 +550,11 @@ it("should do something", async () => {
 
   // Verify HTTP
   expect(response.status).toBe(200);
-  
+
   // Verify response structure
   expect(response.body.success).toBe(true);
   expect(Array.isArray(response.body.data)).toBe(true);
-  
+
   // Verify service was called
   expect(warehouseServiceMock.getStockItems).toHaveBeenCalledWith(
     expect.objectContaining({ category: "Rohstoffe" })
@@ -511,42 +572,50 @@ it("should do something", async () => {
 #### Tables (8 total)
 
 **1. warehouse_stock**
+
 - Columns: id, material_id, quantity, location_id, status, min_stock, unit_cost, created_at
 - Indexes: material_id, status, location_id
 - Foreign Keys: location_id → warehouse_locations
 
 **2. warehouse_stock_movements**
+
 - Tracks all stock changes (incoming, outgoing, transfer, adjustment)
 - Columns: id, material_id, type, quantity, from_location_id, to_location_id, reference, created_by, created_at
 - Indexes: material_id, type, created_at
 
 **3. warehouse_locations**
+
 - Physical warehouse locations
 - Columns: id, code, zone, aisle, position, capacity, type, is_active
 - Indexes: code, zone, is_active
 - Pre-inserted: 4 default locations (A-01, A-02, B-01, C-01)
 
 **4. warehouse_picking_lists**
+
 - Picking orders
 - Columns: id, picking_number, order_id, status, priority, picker_id, completed_at
 - Indexes: order_id, status, picker_id, created_at
 
 **5. warehouse_picking_items**
+
 - Individual line items for picking
 - Columns: id, picking_list_id, material_id, quantity_required, quantity_picked, is_picked
 - Foreign Keys: picking_list_id → picking_lists, material_id → stock
 
 **6. warehouse_shipments**
+
 - Outbound shipments
 - Columns: id, shipment_number, order_id, carrier, tracking_number, status, weight_kg
 - Indexes: order_id, status, tracking_number, created_at
 
 **7. warehouse_shipment_tracking**
+
 - Tracking events for shipments
 - Columns: id, shipment_id, event_timestamp, location, status, description
 - Foreign Keys: shipment_id → shipments
 
 **8. warehouse_inventory_counts**
+
 - Inventory count operations
 - Columns: id, count_number, type, status, location_ids (JSON), scheduled_date, completed_date
 - Indexes: type, status, created_at
@@ -566,18 +635,18 @@ it("should do something", async () => {
 
 ### Before vs After
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| **Data Source** | Hardcoded mock data | DatabaseService integration |
-| **Validation** | None | 16 Zod schemas with custom logic |
-| **Error Handling** | Generic Error | 5+ custom error classes |
-| **Type Safety** | `any` types | 100% TypeScript coverage |
-| **Testing** | Static response data | Service mock verification |
-| **Logging** | No logs | Structured Pino logging |
-| **Documentation** | No JSDoc | Complete JSDoc for all methods |
-| **Database** | None | 8-table schema with migrations |
-| **Dependencies** | Missing | Proper dependency injection |
-| **Transactions** | None | Multi-step operation atomicity |
+| Aspect             | Before               | After                            |
+| ------------------ | -------------------- | -------------------------------- |
+| **Data Source**    | Hardcoded mock data  | DatabaseService integration      |
+| **Validation**     | None                 | 16 Zod schemas with custom logic |
+| **Error Handling** | Generic Error        | 5+ custom error classes          |
+| **Type Safety**    | `any` types          | 100% TypeScript coverage         |
+| **Testing**        | Static response data | Service mock verification        |
+| **Logging**        | No logs              | Structured Pino logging          |
+| **Documentation**  | No JSDoc             | Complete JSDoc for all methods   |
+| **Database**       | None                 | 8-table schema with migrations   |
+| **Dependencies**   | Missing              | Proper dependency injection      |
+| **Transactions**   | None                 | Multi-step operation atomicity   |
 
 ### Metrics
 
@@ -597,9 +666,9 @@ it("should do something", async () => {
 
 ```typescript
 // apps/backend/src/index.ts
-import warehouseRouter from './routes/warehouse/warehouseRouter.js';
+import warehouseRouter from "./routes/warehouse/warehouseRouter.js";
 
-app.use('/api/warehouse', warehouseRouter);
+app.use("/api/warehouse", warehouseRouter);
 ```
 
 ### 2. Run Database Migrations
@@ -632,6 +701,7 @@ npm test -- warehouseRouter.test.ts
 ## Dependencies
 
 **Required Packages:**
+
 - ✅ `express` - HTTP framework
 - ✅ `zod` - Schema validation
 - ✅ `uuid` - ID generation
@@ -639,6 +709,7 @@ npm test -- warehouseRouter.test.ts
 - ✅ `pino` - Logging (via createLogger)
 
 **Internal Dependencies:**
+
 - ✅ `DatabaseService` - Database abstraction
 - ✅ Error classes from `types/errors.ts`
 - ✅ Logger from `utils/logger.ts`
@@ -734,6 +805,7 @@ curl http://localhost:3000/api/warehouse/analytics
 ### API Documentation
 
 Full OpenAPI/Swagger documentation available at:
+
 - `GET /api/docs` - Swagger UI (when enabled)
 - Or see JSDoc comments in `warehouseRouter.ts`
 
@@ -766,10 +838,9 @@ For questions or issues:
 
 **Refactoring Completed:** 2025-12-20  
 **Status:** ✅ Production Ready  
-**Version:** 1.0.0  
+**Version:** 1.0.0
 
 ---
 
-*This document was generated as part of the warehouse component refactoring.*
-*For the latest updates, check the [CHANGELOG.md](../CHANGELOG.md)*
-
+_This document was generated as part of the warehouse component refactoring._
+_For the latest updates, check the [CHANGELOG.md](../CHANGELOG.md)_

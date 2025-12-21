@@ -26,16 +26,26 @@ const router = Router();
 --------------------------------------------------------- */
 
 const projectQuerySchema = z.object({
-  status: z.enum(["planning", "active", "on_hold", "completed", "cancelled"]).optional(),
+  status: z
+    .enum(["planning", "active", "on_hold", "completed", "cancelled"])
+    .optional(),
   search: z.string().optional(),
 });
 
 const createProjectSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().optional(),
-  status: z.enum(["planning", "active", "on_hold", "completed", "cancelled"]).default("planning"),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  status: z
+    .enum(["planning", "active", "on_hold", "completed", "cancelled"])
+    .default("planning"),
+  startDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  endDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   budget: z.number().min(0).optional(),
   client: z.string().optional(),
   manager: z.string().optional(),
@@ -50,7 +60,10 @@ const createTaskSchema = z.object({
   status: z.enum(["todo", "in_progress", "review", "done"]).default("todo"),
   priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
   assignee: z.string().optional(),
-  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  dueDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   estimatedHours: z.number().min(0).optional(),
 });
 
@@ -85,7 +98,10 @@ router.get(
     const validation = projectQuerySchema.safeParse(req.query);
     if (!validation.success) {
       const issues = Object.fromEntries(
-        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+        validation.error.issues.map((issue) => [
+          issue.path.join(".") || "root",
+          issue.message,
+        ]),
       );
       throw new ValidationError("Invalid query parameters", issues);
     }
@@ -99,7 +115,7 @@ router.get(
       data: projects,
       count: projects.length,
     });
-  })
+  }),
 );
 
 /**
@@ -126,7 +142,7 @@ router.get(
       success: true,
       data: project,
     });
-  })
+  }),
 );
 
 /**
@@ -146,20 +162,26 @@ router.post(
     const validation = createProjectSchema.safeParse(req.body);
     if (!validation.success) {
       const issues = Object.fromEntries(
-        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+        validation.error.issues.map((issue) => [
+          issue.path.join(".") || "root",
+          issue.message,
+        ]),
       );
       throw new ValidationError("Invalid project data", issues);
     }
 
     const project = await projectsService.createProject(validation.data);
 
-    logger.info({ projectId: project.id, name: project.name }, "Project created");
+    logger.info(
+      { projectId: project.id, name: project.name },
+      "Project created",
+    );
 
     res.status(201).json({
       success: true,
       data: project,
     });
-  })
+  }),
 );
 
 /**
@@ -175,17 +197,26 @@ router.post(
 router.put(
   "/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    logger.debug({ projectId: req.params.id, body: req.body }, "PUT /api/projects/:id");
+    logger.debug(
+      { projectId: req.params.id, body: req.body },
+      "PUT /api/projects/:id",
+    );
 
     const validation = updateProjectSchema.safeParse(req.body);
     if (!validation.success) {
       const issues = Object.fromEntries(
-        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+        validation.error.issues.map((issue) => [
+          issue.path.join(".") || "root",
+          issue.message,
+        ]),
       );
       throw new ValidationError("Invalid project data", issues);
     }
 
-    const project = await projectsService.updateProject(req.params.id, validation.data);
+    const project = await projectsService.updateProject(
+      req.params.id,
+      validation.data,
+    );
 
     logger.info({ projectId: req.params.id }, "Project updated");
 
@@ -193,7 +224,7 @@ router.put(
       success: true,
       data: project,
     });
-  })
+  }),
 );
 
 /**
@@ -222,7 +253,7 @@ router.delete(
       success: true,
       message: "Project deleted successfully",
     });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -241,18 +272,24 @@ router.delete(
 router.get(
   "/:projectId/tasks",
   asyncHandler(async (req: Request, res: Response) => {
-    logger.debug({ projectId: req.params.projectId }, "GET /api/projects/:projectId/tasks");
+    logger.debug(
+      { projectId: req.params.projectId },
+      "GET /api/projects/:projectId/tasks",
+    );
 
     const tasks = await projectsService.getProjectTasks(req.params.projectId);
 
-    logger.info({ projectId: req.params.projectId, count: tasks.length }, "Tasks retrieved");
+    logger.info(
+      { projectId: req.params.projectId, count: tasks.length },
+      "Tasks retrieved",
+    );
 
     res.json({
       success: true,
       data: tasks,
       count: tasks.length,
     });
-  })
+  }),
 );
 
 /**
@@ -272,20 +309,26 @@ router.post(
     const validation = createTaskSchema.safeParse(req.body);
     if (!validation.success) {
       const issues = Object.fromEntries(
-        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+        validation.error.issues.map((issue) => [
+          issue.path.join(".") || "root",
+          issue.message,
+        ]),
       );
       throw new ValidationError("Invalid task data", issues);
     }
 
     const task = await projectsService.createTask(validation.data);
 
-    logger.info({ taskId: task.id, projectId: task.project_id }, "Task created");
+    logger.info(
+      { taskId: task.id, projectId: task.project_id },
+      "Task created",
+    );
 
     res.status(201).json({
       success: true,
       data: task,
     });
-  })
+  }),
 );
 
 /**
@@ -301,7 +344,10 @@ router.post(
 router.put(
   "/tasks/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    logger.debug({ taskId: req.params.id, body: req.body }, "PUT /api/projects/tasks/:id");
+    logger.debug(
+      { taskId: req.params.id, body: req.body },
+      "PUT /api/projects/tasks/:id",
+    );
 
     const task = await projectsService.updateTask(req.params.id, req.body);
 
@@ -311,7 +357,7 @@ router.put(
       success: true,
       data: task,
     });
-  })
+  }),
 );
 
 /**
@@ -340,7 +386,7 @@ router.delete(
       success: true,
       message: "Task deleted successfully",
     });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -359,18 +405,24 @@ router.delete(
 router.get(
   "/:projectId/time-entries",
   asyncHandler(async (req: Request, res: Response) => {
-    logger.debug({ projectId: req.params.projectId }, "GET /api/projects/:projectId/time-entries");
+    logger.debug(
+      { projectId: req.params.projectId },
+      "GET /api/projects/:projectId/time-entries",
+    );
 
     const entries = await projectsService.getTimeEntries(req.params.projectId);
 
-    logger.info({ projectId: req.params.projectId, count: entries.length }, "Time entries retrieved");
+    logger.info(
+      { projectId: req.params.projectId, count: entries.length },
+      "Time entries retrieved",
+    );
 
     res.json({
       success: true,
       data: entries,
       count: entries.length,
     });
-  })
+  }),
 );
 
 /**
@@ -390,20 +442,26 @@ router.post(
     const validation = timeEntrySchema.safeParse(req.body);
     if (!validation.success) {
       const issues = Object.fromEntries(
-        validation.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+        validation.error.issues.map((issue) => [
+          issue.path.join(".") || "root",
+          issue.message,
+        ]),
       );
       throw new ValidationError("Invalid time entry data", issues);
     }
 
     const entry = await projectsService.logTimeEntry(validation.data);
 
-    logger.info({ entryId: entry.id, projectId: entry.project_id }, "Time entry logged");
+    logger.info(
+      { entryId: entry.id, projectId: entry.project_id },
+      "Time entry logged",
+    );
 
     res.status(201).json({
       success: true,
       data: entry,
     });
-  })
+  }),
 );
 
 /* ---------------------------------------------------------
@@ -422,15 +480,20 @@ router.post(
 router.get(
   "/:projectId/analytics",
   asyncHandler(async (req: Request, res: Response) => {
-    logger.debug({ projectId: req.params.projectId }, "GET /api/projects/:projectId/analytics");
+    logger.debug(
+      { projectId: req.params.projectId },
+      "GET /api/projects/:projectId/analytics",
+    );
 
-    const analytics = await projectsService.getProjectAnalytics(req.params.projectId);
+    const analytics = await projectsService.getProjectAnalytics(
+      req.params.projectId,
+    );
 
     res.json({
       success: true,
       data: analytics,
     });
-  })
+  }),
 );
 
 /**
@@ -448,13 +511,16 @@ router.get(
 
     const stats = await projectsService.getStatistics();
 
-    logger.info(stats as unknown as Record<string, unknown>, "Project statistics retrieved");
+    logger.info(
+      stats as unknown as Record<string, unknown>,
+      "Project statistics retrieved",
+    );
 
     res.json({
       success: true,
       data: stats,
     });
-  })
+  }),
 );
 
 export default router;

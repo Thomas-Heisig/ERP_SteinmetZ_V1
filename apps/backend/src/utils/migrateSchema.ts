@@ -85,7 +85,9 @@ function columnExists(table: string, column: string): boolean {
   }
 
   try {
-    const info = db.prepare(`PRAGMA table_info(${table});`).all() as PragmaTableInfo[];
+    const info = db
+      .prepare(`PRAGMA table_info(${table});`)
+      .all() as PragmaTableInfo[];
     return info.some((row) => row.name === column);
   } catch {
     return false;
@@ -97,7 +99,9 @@ try {
     name: string;
   }
 
-  const columns = db.prepare("PRAGMA table_info(schema_migrations);").all() as PragmaTableInfo[];
+  const columns = db
+    .prepare("PRAGMA table_info(schema_migrations);")
+    .all() as PragmaTableInfo[];
   const names = columns.map((c) => c.name);
   if (!names.includes("status")) {
     db.exec(

@@ -142,7 +142,9 @@ export async function deleteFile(filePath: string): Promise<boolean> {
 /**
  * Liest JSON-Dateien sicher mit Fallback auf leeres Objekt.
  */
-export async function readJsonFile<T = Record<string, unknown>>(filePath: string): Promise<T> {
+export async function readJsonFile<T = Record<string, unknown>>(
+  filePath: string,
+): Promise<T> {
   try {
     const data = await fsp.readFile(filePath, "utf8");
     return JSON.parse(data) as T;
@@ -170,7 +172,9 @@ export async function writeJsonFile(
 /**
  * Liest YAML-Dateien sicher.
  */
-export async function readYamlFile<T = Record<string, unknown>>(filePath: string): Promise<T> {
+export async function readYamlFile<T = Record<string, unknown>>(
+  filePath: string,
+): Promise<T> {
   try {
     const text = await fsp.readFile(filePath, "utf8");
     return yaml.parse(text) as T;

@@ -35,7 +35,7 @@ Das QuickChat-Modul ist ein vollständig integrierter AI-Assistent für das ERP 
 ### Kernkomponenten
 
 | Komponente | Pfad | Verantwortlichkeit |
-| -----------|------| -------------------|
+| ---------- | ---- | ------------------ |
 
 | Router | `quickchatRouter.ts` | HTTP-Endpoints und Validierung |
 | Service | `quickchatService.ts` | Business-Logik und AI-Integration |
@@ -269,16 +269,16 @@ HUGGINGFACE_API_KEY=hf_...
 
 ### Provider-Merkmale
 
-| Provider | Streaming | Tools | Vision | Audio | Local |
-| --- | --- | --- | --- | --- | --- |
-| OpenAI | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Anthropic | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Azure OpenAI | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Ollama | ✅ | ⚠️ | ❌ | ❌ | ✅ |
-| Vertex AI | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Hugging Face | ❌ | ❌ | ⚠️ | ❌ | ❌ |
-| LlamaCpp | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Fallback | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Provider     | Streaming | Tools | Vision | Audio | Local |
+| ------------ | --------- | ----- | ------ | ----- | ----- |
+| OpenAI       | ✅        | ✅    | ✅     | ✅    | ❌    |
+| Anthropic    | ✅        | ✅    | ✅     | ❌    | ❌    |
+| Azure OpenAI | ✅        | ✅    | ✅     | ✅    | ❌    |
+| Ollama       | ✅        | ⚠️    | ❌     | ❌    | ✅    |
+| Vertex AI    | ✅        | ✅    | ✅     | ❌    | ❌    |
+| Hugging Face | ❌        | ❌    | ⚠️     | ❌    | ❌    |
+| LlamaCpp     | ❌        | ❌    | ❌     | ❌    | ✅    |
+| Fallback     | ❌        | ❌    | ❌     | ❌    | ✅    |
 
 ---
 
@@ -540,9 +540,9 @@ Sessions auflisten.
 
 **Query-Parameter:**
 
-| Parameter | Typ    | Optional | Beschreibung |
-|-----------|-   ----|----------|--------------|
-| `userId`  | string | ✅      | Filter nach User-ID |
+| Parameter | Typ    | Optional | Beschreibung        |
+| --------- | ------ | -------- | ------------------- |
+| `userId`  | string | ✅       | Filter nach User-ID |
 
 **Response:**
 
@@ -569,7 +569,7 @@ Session löschen.
   success: true;
   data: {
     deleted: boolean;
-  };
+  }
 }
 ```
 
@@ -726,8 +726,8 @@ Audio verarbeiten.
 **Usage:**
 
 ```html
-/audio transcribe|https://example.com/audio.mp3
-/audio generate|Willkommen im ERP System
+/audio transcribe|https://example.com/audio.mp3 /audio generate|Willkommen im
+ERP System
 ```
 
 **Actions:**
@@ -794,7 +794,7 @@ import { visionService } from "../ai/services/visionService.js";
 
 const analysis = await visionService.analyzeImage(
   "https://example.com/image.jpg",
-  "What's in this image?"
+  "What's in this image?",
 );
 
 console.log(analysis.description);
@@ -830,17 +830,17 @@ import { audioService } from "../ai/services/audioService.js";
 
 // Transkription
 const transcription = await audioService.transcribeAudio(
-  "https://example.com/meeting.mp3"
+  "https://example.com/meeting.mp3",
 );
 
 console.log(transcription.text);
 // "Guten Tag, wir besprechen heute..."
 
 // Text-to-Speech
-const audio = await audioService.generateSpeech(
-  "Willkommen im ERP System",
-  { voice: "alloy", format: "mp3" }
-);
+const audio = await audioService.generateSpeech("Willkommen im ERP System", {
+  voice: "alloy",
+  format: "mp3",
+});
 ```
 
 ---
@@ -864,7 +864,7 @@ import { translationService } from "../ai/services/translationService.js";
 const translation = await translationService.translate(
   "The quick brown fox",
   "en",
-  "de"
+  "de",
 );
 
 console.log(translation.translatedText);
@@ -892,14 +892,13 @@ import { knowledgeService } from "../ai/services/knowledgeService.js";
 
 // Embedding erstellen
 const embedding = await embeddingService.createEmbedding(
-  "How to create an invoice"
+  "How to create an invoice",
 );
 
 // Semantische Suche
-const results = await knowledgeService.search(
-  "invoice creation process",
-  { limit: 5 }
-);
+const results = await knowledgeService.search("invoice creation process", {
+  limit: 5,
+});
 
 results.forEach((result) => {
   console.log(`${result.title}: ${result.similarity}`);
@@ -960,7 +959,7 @@ import { workflowEngine } from "../ai/workflows/workflowEngine.js";
 // Workflow ausführen
 const result = await workflowEngine.executeWorkflow("data_export", {
   format: "csv",
-  tables: ["customers", "invoices"]
+  tables: ["customers", "invoices"],
 });
 
 // Workflows auflisten
@@ -999,14 +998,14 @@ const session = await quickchatService.createSession({
   userId: "user-123",
   preferences: {
     provider: "openai",
-    model: "gpt-4"
-  }
+    model: "gpt-4",
+  },
 });
 
 // 2. Nachricht senden
 const response = await quickchatService.sendMessage({
   sessionId: session.id,
-  message: "Hello, how can you help me?"
+  message: "Hello, how can you help me?",
 });
 
 // 3. Session abrufen
@@ -1031,7 +1030,9 @@ const recentMessages = session.messages.slice(-10);
 session.context = {
   customerId: "ABC",
   invoiceId: "INV-001",
-  metadata: { /* ... */ }
+  metadata: {
+    /* ... */
+  },
 };
 
 await quickchatService.updateSession(session);
@@ -1155,7 +1156,7 @@ interface QuickChatCapabilities {
 import { quickchatService } from "./quickchatService.js";
 
 const response = await quickchatService.sendMessage({
-  message: "What is our total revenue this year?"
+  message: "What is our total revenue this year?",
 });
 
 console.log(response.message.content);
@@ -1170,8 +1171,8 @@ const response = await quickchatService.sendMessage({
   preferences: {
     provider: "anthropic",
     model: "claude-3-opus-20240229",
-    temperature: 0.7
-  }
+    temperature: 0.7,
+  },
 });
 ```
 
@@ -1180,7 +1181,7 @@ const response = await quickchatService.sendMessage({
 ```typescript
 const result = await quickchatService.executeCommand(
   "/rechnung Kunde ABC, 1000€",
-  session
+  session,
 );
 
 console.log(result.message);
@@ -1195,19 +1196,19 @@ console.log(result.data);
 ```typescript
 // Session erstellen
 const session = await quickchatService.createSession({
-  userId: "user-123"
+  userId: "user-123",
 });
 
 // Erste Nachricht
 await quickchatService.sendMessage({
   sessionId: session.id,
-  message: "Show me the revenue for January"
+  message: "Show me the revenue for January",
 });
 
 // Folge-Nachricht mit Context
 await quickchatService.sendMessage({
   sessionId: session.id,
-  message: "And what about February?" // AI erinnert sich an Kontext
+  message: "And what about February?", // AI erinnert sich an Kontext
 });
 ```
 
@@ -1215,7 +1216,8 @@ await quickchatService.sendMessage({
 
 ```typescript
 const response = await quickchatService.sendMessage({
-  message: "Create an invoice for customer ABC with 3 items, then send it via email"
+  message:
+    "Create an invoice for customer ABC with 3 items, then send it via email",
 });
 
 // AI verwendet mehrere Tools:
@@ -1238,21 +1240,21 @@ console.log(response.message.metadata.toolCalls);
 const productionPreferences = {
   provider: "openai",
   model: "gpt-4",
-  temperature: 0.3 // Konsistente Antworten
+  temperature: 0.3, // Konsistente Antworten
 };
 
 // Entwicklung: Lokale Provider
 const devPreferences = {
   provider: "ollama",
   model: "llama2",
-  temperature: 0.7
+  temperature: 0.7,
 };
 
 // Kosten-optimiert
 const budgetPreferences = {
   provider: "openai",
   model: "gpt-3.5-turbo",
-  maxTokens: 500
+  maxTokens: 500,
 };
 ```
 
@@ -1261,7 +1263,7 @@ const budgetPreferences = {
 ```typescript
 try {
   const response = await quickchatService.sendMessage({
-    message: "Complex query..."
+    message: "Complex query...",
   });
 } catch (error) {
   if (error instanceof ValidationError) {
@@ -1293,8 +1295,8 @@ if (session.messages.length > 20) {
 await quickchatService.sendMessage({
   message: "Summarize this document...",
   preferences: {
-    maxTokens: 500 // Kurze Antwort
-  }
+    maxTokens: 500, // Kurze Antwort
+  },
 });
 ```
 
@@ -1309,10 +1311,10 @@ async function getCapabilities() {
   if (cachedCapabilities && Date.now() < cacheExpiry) {
     return cachedCapabilities;
   }
-  
+
   cachedCapabilities = await quickchatService.getCapabilities();
   cacheExpiry = Date.now() + 3600000; // 1 Stunde
-  
+
   return cachedCapabilities;
 }
 ```
@@ -1324,8 +1326,8 @@ async function getCapabilities() {
 const stream = await quickchatService.sendMessageStream({
   message: "Write a detailed report on...",
   preferences: {
-    stream: true
-  }
+    stream: true,
+  },
 });
 
 for await (const chunk of stream) {
@@ -1347,30 +1349,30 @@ describe("QuickChatService", () => {
   describe("sendMessage", () => {
     it("should create session if not provided", async () => {
       const result = await quickchatService.sendMessage({
-        message: "Hello"
+        message: "Hello",
       });
-      
+
       expect(result.sessionId).toBeDefined();
       expect(result.message.role).toBe("assistant");
     });
-    
+
     it("should execute commands", async () => {
       const result = await quickchatService.sendMessage({
-        message: "/hilfe"
+        message: "/hilfe",
       });
-      
+
       expect(result.message.content).toContain("Verfügbare Befehle");
     });
   });
-  
+
   describe("executeCommand", () => {
     it("should handle /rechnung command", async () => {
       const session = await quickchatService.createSession({});
       const result = await quickchatService.executeCommand(
         "/rechnung Test",
-        session
+        session,
       );
-      
+
       expect(result.success).toBe(true);
       expect(result.data).toHaveProperty("type", "invoice");
     });
@@ -1387,21 +1389,18 @@ import app from "../../app.js";
 
 describe("QuickChat API", () => {
   it("should process message", async () => {
-    const response = await request(app)
-      .post("/api/quickchat/message")
-      .send({
-        message: "Hello, QuickChat!"
-      });
-    
+    const response = await request(app).post("/api/quickchat/message").send({
+      message: "Hello, QuickChat!",
+    });
+
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.data.message).toBeDefined();
   });
-  
+
   it("should list capabilities", async () => {
-    const response = await request(app)
-      .get("/api/quickchat/capabilities");
-    
+    const response = await request(app).get("/api/quickchat/capabilities");
+
     expect(response.status).toBe(200);
     expect(response.body.data.providers).toBeInstanceOf(Array);
     expect(response.body.data.features.vision).toBeDefined();
@@ -1448,8 +1447,8 @@ preferences: {
 const result = await quickchatService.sendMessage({
   message: "...",
   preferences: {
-    provider: "openai" // Falls Rate Limit, automatisch Fallback
-  }
+    provider: "openai", // Falls Rate Limit, automatisch Fallback
+  },
 });
 ```
 

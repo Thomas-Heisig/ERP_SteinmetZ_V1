@@ -11,7 +11,7 @@ Das Config-Modul bietet:
 ✅ **AI-Provider-Unterstützung** - OpenAI, Anthropic, Azure, Ollama, Local  
 ✅ **RBAC-System** - 5-stufige Rollenhierarchie mit modulbasierenden Permissions  
 ✅ **Produktions-Checks** - JWT-Validierung, CORS-Sicherheit, Datenbank-Verifizierung  
-✅ **Umfangreiche Tests** - 28 Tests zur vollständigen Validierung  
+✅ **Umfangreiche Tests** - 28 Tests zur vollständigen Validierung
 
 ## Dateistruktur
 
@@ -42,7 +42,7 @@ Umgebungsvariablen-Validierung und -Management mit Zod.
 
 - **Server:** PORT, NODE_ENV, CORS_ORIGIN
 - **Datenbank:** DB_DRIVER, SQLITE_FILE, DATABASE_URL
-- **AI-Provider:** AI_PROVIDER, OPENAI_API_KEY, ANTHROPIC_API_KEY, AZURE_*, OLLAMA_*, LOCAL_*
+- **AI-Provider:** AI*PROVIDER, OPENAI_API_KEY, ANTHROPIC_API_KEY, AZURE*_, OLLAMA\__, LOCAL\_\*
 - **Sicherheit:** JWT_SECRET, JWT_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN
 - **Logging:** LOG_LEVEL, LOG_REQUESTS
 - **Limits:** MAX_FILE_UPLOAD_SIZE, MAX_BATCH_OPERATION_SIZE
@@ -160,7 +160,7 @@ SUPER_ADMIN (Level 0) → ADMIN (Level 1) → MANAGER (Level 2) → USER (Level 
 ### Umgebungsvariablen laden
 
 ```typescript
-import { getEnv } from '@/config/env';
+import { getEnv } from "@/config/env";
 
 // Am Server-Start
 const env = getEnv();
@@ -174,17 +174,17 @@ const aiProvider = env.AI_PROVIDER;
 ### RBAC verwenden
 
 ```typescript
-import { DEFAULT_ROLES, ROLE_HIERARCHY } from '@/config/rbac';
+import { DEFAULT_ROLES, ROLE_HIERARCHY } from "@/config/rbac";
 
 // Benutzer-Rolle abrufen
-const userRole = DEFAULT_ROLES.find(r => r.id === user.roleId);
+const userRole = DEFAULT_ROLES.find((r) => r.id === user.roleId);
 
 // Permissions prüfen
-const hasPermission = userRole?.permissions.includes('hr:read');
+const hasPermission = userRole?.permissions.includes("hr:read");
 
 // Privilege-Level prüfen
-const userLevel = ROLE_HIERARCHY.find(r => r.role === user.role)!.level;
-const requiredLevel = ROLE_HIERARCHY.find(r => r.role === 'admin')!.level;
+const userLevel = ROLE_HIERARCHY.find((r) => r.role === user.role)!.level;
+const requiredLevel = ROLE_HIERARCHY.find((r) => r.role === "admin")!.level;
 const hasAccess = userLevel <= requiredLevel;
 ```
 
@@ -240,8 +240,11 @@ Alle Umgebungsvariablen werden gegen Zod-Schema validiert:
 
 ```typescript
 const envSchema = z.object({
-  PORT: z.string().default('3000').transform(v => parseInt(v, 10)),
-  NODE_ENV: z.enum(['development', 'production', 'test']),
+  PORT: z
+    .string()
+    .default("3000")
+    .transform((v) => parseInt(v, 10)),
+  NODE_ENV: z.enum(["development", "production", "test"]),
   JWT_SECRET: z.string().min(32).optional(),
   // ...
 });
@@ -252,7 +255,7 @@ const envSchema = z.object({
 Abhängig vom `AI_PROVIDER` werden provider-spezifische Variablen validiert:
 
 ```typescript
-if (env.AI_PROVIDER === 'openai') {
+if (env.AI_PROVIDER === "openai") {
   // OPENAI_API_KEY muss gesetzt sein
   // OPENAI_MODEL muss gültig sein
 }

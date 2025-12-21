@@ -222,7 +222,10 @@ router.post(
       userId,
     );
 
-    logger.info({ documentId: newDocument.id }, "Document uploaded successfully");
+    logger.info(
+      { documentId: newDocument.id },
+      "Document uploaded successfully",
+    );
 
     res.status(201).json({
       success: true,
@@ -265,7 +268,10 @@ router.post(
       userId,
     );
 
-    logger.info({ documentId: id, version: newVersion.version }, "New document version created");
+    logger.info(
+      { documentId: id, version: newVersion.version },
+      "New document version created",
+    );
 
     res.status(201).json({
       success: true,
@@ -323,7 +329,10 @@ router.get(
     const searchParams = validationResult.data;
     const results = await searchService.searchDocuments(searchParams);
 
-    logger.info({ query: searchParams.query, resultCount: results.length }, "Search completed");
+    logger.info(
+      { query: searchParams.query, resultCount: results.length },
+      "Search completed",
+    );
 
     res.json({
       success: true,
@@ -414,7 +423,10 @@ router.post(
       ],
     };
 
-    logger.info({ documentId: id, tagCount: generatedTags.length }, "AI tags generated");
+    logger.info(
+      { documentId: id, tagCount: generatedTags.length },
+      "AI tags generated",
+    );
 
     res.json({
       success: true,
@@ -599,7 +611,10 @@ router.post(
       provider: req.body.provider || "internal",
     });
 
-    logger.info({ documentId: id, signerCount: signers.length }, "Signature request created");
+    logger.info(
+      { documentId: id, signerCount: signers.length },
+      "Signature request created",
+    );
 
     res.status(201).json({
       success: true,
@@ -654,7 +669,8 @@ router.put(
       throw new BadRequestError("Invalid signature status");
     }
 
-    const ipAddress = req.ip || (req.headers["x-forwarded-for"] as string) || "unknown";
+    const ipAddress =
+      req.ip || (req.headers["x-forwarded-for"] as string) || "unknown";
 
     await signatureService.updateSignatureStatus(
       signatureId,
@@ -729,7 +745,10 @@ router.put(
       userId,
     );
 
-    logger.info({ documentId: id, retentionYears, userId }, "Retention policy updated");
+    logger.info(
+      { documentId: id, retentionYears, userId },
+      "Retention policy updated",
+    );
 
     res.json({
       success: true,
@@ -759,7 +778,10 @@ router.get(
 
     const expiringDocuments = await documentService.getExpiringDocuments(days);
 
-    logger.info({ days, count: expiringDocuments.length }, "Expiring documents retrieved");
+    logger.info(
+      { days, count: expiringDocuments.length },
+      "Expiring documents retrieved",
+    );
 
     res.json({
       success: true,
@@ -790,7 +812,14 @@ router.get(
     const pendingWorkflows = workflowService.getPendingWorkflowsCount();
     const pendingSignatures = signatureService.getPendingSignaturesCount();
 
-    logger.info({ totalDocuments: stats.totalDocuments, pendingWorkflows, pendingSignatures }, "Statistics retrieved");
+    logger.info(
+      {
+        totalDocuments: stats.totalDocuments,
+        pendingWorkflows,
+        pendingSignatures,
+      },
+      "Statistics retrieved",
+    );
 
     res.json({
       success: true,

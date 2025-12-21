@@ -160,7 +160,9 @@ const getIdeasQuerySchema = z.object({
   priority: z.coerce.number().int().min(0).max(100).optional(),
   author: z.string().min(1).max(100).optional(),
   search: z.string().min(1).max(200).optional(),
-  sortBy: z.enum(["priority", "created_at", "updated_at", "due_date"]).default("priority"),
+  sortBy: z
+    .enum(["priority", "created_at", "updated_at", "due_date"])
+    .default("priority"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
   limit: z.coerce.number().int().positive().max(200).default(100),
   offset: z.coerce.number().int().min(0).default(0),
@@ -222,7 +224,10 @@ function parseWithSchema<T>(
 ): T {
   const result = schema.safeParse(data);
   if (!result.success) {
-    throw new BadRequestError(message, formatValidationErrors(result.error.issues));
+    throw new BadRequestError(
+      message,
+      formatValidationErrors(result.error.issues),
+    );
   }
   return result.data;
 }
@@ -243,8 +248,16 @@ router.get(
       req.query,
       "Invalid idea query parameters",
     );
-    const { phase, priority, author, search, sortBy, sortOrder, limit, offset } =
-      validated;
+    const {
+      phase,
+      priority,
+      author,
+      search,
+      sortBy,
+      sortOrder,
+      limit,
+      offset,
+    } = validated;
 
     let sql = "FROM ideas WHERE 1=1";
     const params: Array<string | number> = [];
@@ -706,7 +719,9 @@ router.get(
       throw new NotFoundError("Idea not found");
     }
 
-    const history = JSON.parse((row.phase_history_json as string) ?? "[]") as PhaseChange[];
+    const history = JSON.parse(
+      (row.phase_history_json as string) ?? "[]",
+    ) as PhaseChange[];
 
     res.json({
       success: true,

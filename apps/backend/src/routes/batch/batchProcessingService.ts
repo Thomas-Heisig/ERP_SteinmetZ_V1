@@ -102,11 +102,21 @@ export class BatchProcessingService {
     const successful = results.filter((r) => r.success).length;
     const failed = results.filter((r) => !r.success).length;
 
-    const durations = results.filter((r) => r.durationMs !== undefined).map((r) => r.durationMs as number);
-    const avgDuration = durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0;
+    const durations = results
+      .filter((r) => r.durationMs !== undefined)
+      .map((r) => r.durationMs as number);
+    const avgDuration =
+      durations.length > 0
+        ? durations.reduce((sum, d) => sum + d, 0) / durations.length
+        : 0;
 
-    const qualityScores = results.filter((r) => r.qualityScore !== undefined).map((r) => r.qualityScore as number);
-    const avgQuality = qualityScores.length > 0 ? qualityScores.reduce((sum, q) => sum + q, 0) / qualityScores.length : 0;
+    const qualityScores = results
+      .filter((r) => r.qualityScore !== undefined)
+      .map((r) => r.qualityScore as number);
+    const avgQuality =
+      qualityScores.length > 0
+        ? qualityScores.reduce((sum, q) => sum + q, 0) / qualityScores.length
+        : 0;
 
     const summary: BatchResultSummary = {
       total: results.length,
@@ -116,7 +126,8 @@ export class BatchProcessingService {
       performanceMetrics: {
         averageDuration: avgDuration,
         totalDuration: durations.reduce((sum, d) => sum + d, 0),
-        requestsPerMinute: durations.length > 0 ? (60000 / avgDuration) * durations.length : 0,
+        requestsPerMinute:
+          durations.length > 0 ? (60000 / avgDuration) * durations.length : 0,
       },
     };
 
@@ -126,7 +137,11 @@ export class BatchProcessingService {
   /**
    * Updates batch progress and status
    */
-  updateBatchProgress(id: string, progress: number, status?: BatchOperation["status"]): void {
+  updateBatchProgress(
+    id: string,
+    progress: number,
+    status?: BatchOperation["status"],
+  ): void {
     const batch = this.batches.get(id);
     if (!batch) return;
 
@@ -139,7 +154,11 @@ export class BatchProcessingService {
         batch.started_at = new Date().toISOString();
       }
 
-      if (status === "completed" || status === "failed" || status === "cancelled") {
+      if (
+        status === "completed" ||
+        status === "failed" ||
+        status === "cancelled"
+      ) {
         batch.completed_at = new Date().toISOString();
       }
     }
@@ -205,12 +224,16 @@ export class BatchProcessingService {
 
     if (filter.createdAfter) {
       const afterDate = filter.createdAfter;
-      batches = batches.filter((b) => b.created_at && b.created_at >= afterDate);
+      batches = batches.filter(
+        (b) => b.created_at && b.created_at >= afterDate,
+      );
     }
 
     if (filter.createdBefore) {
       const beforeDate = filter.createdBefore;
-      batches = batches.filter((b) => b.created_at && b.created_at <= beforeDate);
+      batches = batches.filter(
+        (b) => b.created_at && b.created_at <= beforeDate,
+      );
     }
 
     batches.sort((a, b) => {
@@ -236,12 +259,21 @@ export class BatchProcessingService {
     const successful = results.filter((r) => r.success).length;
     const failed = results.filter((r) => !r.success).length;
 
-    const durations = results.filter((r) => r.durationMs !== undefined).map((r) => r.durationMs as number).sort((a, b) => a - b);
-    const avgDuration = durations.length > 0 ? durations.reduce((sum, d) => sum + d, 0) / durations.length : 0;
+    const durations = results
+      .filter((r) => r.durationMs !== undefined)
+      .map((r) => r.durationMs as number)
+      .sort((a, b) => a - b);
+    const avgDuration =
+      durations.length > 0
+        ? durations.reduce((sum, d) => sum + d, 0) / durations.length
+        : 0;
 
-    const p50 = durations.length > 0 ? durations[Math.floor(durations.length * 0.5)] : 0;
-    const p95 = durations.length > 0 ? durations[Math.floor(durations.length * 0.95)] : 0;
-    const p99 = durations.length > 0 ? durations[Math.floor(durations.length * 0.99)] : 0;
+    const p50 =
+      durations.length > 0 ? durations[Math.floor(durations.length * 0.5)] : 0;
+    const p95 =
+      durations.length > 0 ? durations[Math.floor(durations.length * 0.95)] : 0;
+    const p99 =
+      durations.length > 0 ? durations[Math.floor(durations.length * 0.99)] : 0;
 
     const errorCounts: Record<string, number> = {};
     results.forEach((r) => {
@@ -250,11 +282,13 @@ export class BatchProcessingService {
       }
     });
 
-    const errorDistribution = Object.entries(errorCounts).map(([error, count]) => ({
-      error,
-      count,
-      percentage: failed > 0 ? (count / failed) * 100 : 0,
-    }));
+    const errorDistribution = Object.entries(errorCounts).map(
+      ([error, count]) => ({
+        error,
+        count,
+        percentage: failed > 0 ? (count / failed) * 100 : 0,
+      }),
+    );
 
     const qualityRanges: Record<string, number> = {
       "0.0-0.2": 0,
@@ -274,11 +308,13 @@ export class BatchProcessingService {
       }
     });
 
-    const qualityDistribution = Object.entries(qualityRanges).map(([range, count]) => ({
-      range,
-      count,
-      percentage: results.length > 0 ? (count / results.length) * 100 : 0,
-    }));
+    const qualityDistribution = Object.entries(qualityRanges).map(
+      ([range, count]) => ({
+        range,
+        count,
+        percentage: results.length > 0 ? (count / results.length) * 100 : 0,
+      }),
+    );
 
     return {
       batchId,
@@ -323,7 +359,9 @@ export class BatchProcessingService {
    * Cleans up old batch operations
    */
   cleanupOldBatches(daysToKeep = 30): number {
-    const cutoffDate = new Date(Date.now() - daysToKeep * 24 * 60 * 60 * 1000).toISOString();
+    const cutoffDate = new Date(
+      Date.now() - daysToKeep * 24 * 60 * 60 * 1000,
+    ).toISOString();
     let deleted = 0;
 
     for (const [id, batch] of this.batches.entries()) {

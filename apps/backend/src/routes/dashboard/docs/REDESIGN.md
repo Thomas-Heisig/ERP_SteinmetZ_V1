@@ -42,13 +42,13 @@ const overview = await dashboardService.getDashboardOverview();
 **KPI Management:**
 
 ```typescript
-const kpis = await dashboardService.getKPIs({ category: 'revenue', days: 30 });
+const kpis = await dashboardService.getKPIs({ category: "revenue", days: 30 });
 const newKPI = await dashboardService.createKPI({
-  category: 'sales',
-  name: 'Monthly Revenue',
+  category: "sales",
+  name: "Monthly Revenue",
   value: 125000,
-  unit: 'EUR',
-  target: 150000
+  unit: "EUR",
+  target: 150000,
 });
 ```
 
@@ -57,28 +57,28 @@ const newKPI = await dashboardService.createKPI({
 ```typescript
 // Paginated tasks with filtering
 const tasks = await dashboardService.getTasks({
-  userId: 'user-123',
-  status: 'pending',
-  priority: 'high',
+  userId: "user-123",
+  status: "pending",
+  priority: "high",
   limit: 20,
-  offset: 0
+  offset: 0,
 });
 
 // Create task
 const task = await dashboardService.createTask({
-  userId: 'user-123',
-  title: 'Review Q4 Report',
-  priority: 'urgent',
-  dueDate: '2025-12-25'
+  userId: "user-123",
+  title: "Review Q4 Report",
+  priority: "urgent",
+  dueDate: "2025-12-25",
 });
 
 // Update task
-await dashboardService.updateTask('task-id', {
-  status: 'completed'
+await dashboardService.updateTask("task-id", {
+  status: "completed",
 });
 
 // Delete task
-await dashboardService.deleteTask('task-id');
+await dashboardService.deleteTask("task-id");
 ```
 
 **Notification Management:**
@@ -86,25 +86,25 @@ await dashboardService.deleteTask('task-id');
 ```typescript
 // Paginated notifications
 const notifications = await dashboardService.getNotifications({
-  userId: 'user-123',
+  userId: "user-123",
   read: false,
   limit: 10,
-  offset: 0
+  offset: 0,
 });
 
 // Create notification
 const notification = await dashboardService.createNotification({
-  userId: 'user-123',
-  type: 'warning',
-  title: 'Server Maintenance',
-  message: 'Scheduled maintenance at 02:00 AM',
-  actionUrl: '/maintenance',
-  actionLabel: 'View Details'
+  userId: "user-123",
+  type: "warning",
+  title: "Server Maintenance",
+  message: "Scheduled maintenance at 02:00 AM",
+  actionUrl: "/maintenance",
+  actionLabel: "View Details",
 });
 
 // Mark as read
-await dashboardService.updateNotification('notif-id', {
-  read: true
+await dashboardService.updateNotification("notif-id", {
+  read: true,
 });
 ```
 
@@ -192,10 +192,10 @@ mv dashboard_new.ts dashboard.ts
 
 ```typescript
 // Alt
-import db from '../database/dbService.js';
+import db from "../database/dbService.js";
 
 // Neu
-import dashboardService from './DashboardService.js';
+import dashboardService from "./DashboardService.js";
 ```
 
 ### Schritt 4: Code migrieren
@@ -203,20 +203,26 @@ import dashboardService from './DashboardService.js';
 **Vorher:**
 
 ```typescript
-router.get('/tasks', asyncHandler(async (req, res) => {
-  const tasks = await db.all('SELECT * FROM dashboard_tasks');
-  res.json({ success: true, data: tasks });
-}));
+router.get(
+  "/tasks",
+  asyncHandler(async (req, res) => {
+    const tasks = await db.all("SELECT * FROM dashboard_tasks");
+    res.json({ success: true, data: tasks });
+  }),
+);
 ```
 
 **Nachher:**
 
 ```typescript
-router.get('/tasks', asyncHandler(async (req, res) => {
-  const validated = queryTaskSchema.parse(req.query);
-  const result = await dashboardService.getTasks(validated);
-  res.json(result);
-}));
+router.get(
+  "/tasks",
+  asyncHandler(async (req, res) => {
+    const validated = queryTaskSchema.parse(req.query);
+    const result = await dashboardService.getTasks(validated);
+    res.json(result);
+  }),
+);
 ```
 
 ## 📊 Database Schema
@@ -354,7 +360,7 @@ Alle Inputs werden mit **Zod** validiert:
 const createTaskSchema = z.object({
   userId: z.string().uuid(),
   title: z.string().min(1).max(200),
-  priority: z.enum(['low', 'normal', 'high', 'urgent', 'critical']),
+  priority: z.enum(["low", "normal", "high", "urgent", "critical"]),
   // ...
 });
 ```
@@ -366,12 +372,14 @@ const createTaskSchema = z.object({
 ```typescript
 // ✅ Sicher
 await db.run(
-  'INSERT INTO dashboard_tasks (id, user_id, title) VALUES (?, ?, ?)',
-  [id, userId, title]
+  "INSERT INTO dashboard_tasks (id, user_id, title) VALUES (?, ?, ?)",
+  [id, userId, title],
 );
 
 // ❌ NIEMALS
-await db.run(`INSERT INTO dashboard_tasks VALUES ('${id}', '${userId}', '${title}')`);
+await db.run(
+  `INSERT INTO dashboard_tasks VALUES ('${id}', '${userId}', '${title}')`,
+);
 ```
 
 ### Error Handling
@@ -382,7 +390,7 @@ Alle Fehler werden **formatiert** und **geloggt**:
 try {
   await dashboardService.createTask(data);
 } catch (error) {
-  logger.error({ error }, 'Failed to create task');
+  logger.error({ error }, "Failed to create task");
   throw formatDatabaseError(error);
 }
 ```
@@ -392,32 +400,32 @@ try {
 ### Unit Tests (Vitest)
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
-import dashboardService from './DashboardService.js';
+import { describe, it, expect, beforeEach } from "vitest";
+import dashboardService from "./DashboardService.js";
 
-describe('DashboardService', () => {
+describe("DashboardService", () => {
   beforeEach(async () => {
     await dashboardService.initialize();
   });
 
-  it('should create task', async () => {
+  it("should create task", async () => {
     const task = await dashboardService.createTask({
-      userId: 'user-123',
-      title: 'Test Task',
-      priority: 'high'
+      userId: "user-123",
+      title: "Test Task",
+      priority: "high",
     });
-    
+
     expect(task.id).toBeDefined();
-    expect(task.title).toBe('Test Task');
-    expect(task.priority).toBe('high');
+    expect(task.title).toBe("Test Task");
+    expect(task.priority).toBe("high");
   });
 
-  it('should get paginated tasks', async () => {
+  it("should get paginated tasks", async () => {
     const result = await dashboardService.getTasks({
       limit: 10,
-      offset: 0
+      offset: 0,
     });
-    
+
     expect(result.data).toBeInstanceOf(Array);
     expect(result.pagination.limit).toBe(10);
   });
@@ -427,26 +435,24 @@ describe('DashboardService', () => {
 ### Integration Tests
 
 ```typescript
-import request from 'supertest';
-import app from '../../app.js';
+import request from "supertest";
+import app from "../../app.js";
 
-describe('Dashboard API', () => {
-  it('GET /api/dashboard/health', async () => {
-    const res = await request(app).get('/api/dashboard/health');
-    
+describe("Dashboard API", () => {
+  it("GET /api/dashboard/health", async () => {
+    const res = await request(app).get("/api/dashboard/health");
+
     expect(res.status).toBe(200);
-    expect(res.body.status).toBe('healthy');
+    expect(res.body.status).toBe("healthy");
   });
 
-  it('POST /api/dashboard/tasks', async () => {
-    const res = await request(app)
-      .post('/api/dashboard/tasks')
-      .send({
-        userId: 'user-123',
-        title: 'Integration Test Task',
-        priority: 'normal'
-      });
-    
+  it("POST /api/dashboard/tasks", async () => {
+    const res = await request(app).post("/api/dashboard/tasks").send({
+      userId: "user-123",
+      title: "Integration Test Task",
+      priority: "normal",
+    });
+
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.id).toBeDefined();
@@ -464,7 +470,7 @@ describe('Dashboard API', () => {
 
 ```typescript
 // In app.ts / index.ts
-import dashboardService from './routes/dashboard/DashboardService.js';
+import dashboardService from "./routes/dashboard/DashboardService.js";
 
 async function startServer() {
   await dashboardService.initialize();
@@ -480,9 +486,9 @@ async function startServer() {
 
 ```typescript
 try {
-  const task = await dashboardService.getTaskById('invalid-id');
+  const task = await dashboardService.getTaskById("invalid-id");
 } catch (error) {
-  if (error.message.includes('not found')) {
+  if (error.message.includes("not found")) {
     // Handle 404
   }
 }

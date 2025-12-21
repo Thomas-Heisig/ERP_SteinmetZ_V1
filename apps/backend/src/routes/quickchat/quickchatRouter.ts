@@ -94,7 +94,10 @@ router.post(
     const validationResult = messageSchema.safeParse(req.body);
     if (!validationResult.success) {
       const issues = Object.fromEntries(
-        validationResult.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+        validationResult.error.issues.map((issue) => [
+          issue.path.join(".") || "root",
+          issue.message,
+        ]),
       );
       throw new ValidationError("Invalid request body", issues);
     }
@@ -106,14 +109,14 @@ router.post(
         sessionId: result.sessionId,
         messageLength: result.message.content.length,
       },
-      "Message processed successfully"
+      "Message processed successfully",
     );
 
     res.json({
       success: true,
       data: result,
     });
-  })
+  }),
 );
 
 /**
@@ -134,7 +137,10 @@ router.post(
     const validationResult = commandSchema.safeParse(req.body);
     if (!validationResult.success) {
       const issues = Object.fromEntries(
-        validationResult.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+        validationResult.error.issues.map((issue) => [
+          issue.path.join(".") || "root",
+          issue.message,
+        ]),
       );
       throw new ValidationError("Invalid request body", issues);
     }
@@ -144,7 +150,10 @@ router.post(
 
     // Create temporary session for command execution
     const session = await quickchatService.createSession({});
-    const result = await quickchatService.executeCommand(`${cmd} ${args || ""}`, session);
+    const result = await quickchatService.executeCommand(
+      `${cmd} ${args || ""}`,
+      session,
+    );
 
     logger.info({ command: cmd, success: result.success }, "Command executed");
 
@@ -152,7 +161,7 @@ router.post(
       success: true,
       data: result,
     });
-  })
+  }),
 );
 
 /**
@@ -182,7 +191,7 @@ router.get(
         })),
       },
     });
-  })
+  }),
 );
 
 /**
@@ -206,14 +215,14 @@ router.get(
         providers: capabilities.providers.length,
         tools: capabilities.tools.length,
       },
-      "Capabilities retrieved"
+      "Capabilities retrieved",
     );
 
     res.json({
       success: true,
       data: capabilities,
     });
-  })
+  }),
 );
 
 /**
@@ -234,7 +243,10 @@ router.post(
     const validationResult = sessionCreateSchema.safeParse(req.body);
     if (!validationResult.success) {
       const issues = Object.fromEntries(
-        validationResult.error.issues.map((issue) => [issue.path.join(".") || "root", issue.message])
+        validationResult.error.issues.map((issue) => [
+          issue.path.join(".") || "root",
+          issue.message,
+        ]),
       );
       throw new ValidationError("Invalid request body", issues);
     }
@@ -247,7 +259,7 @@ router.post(
       success: true,
       data: session,
     });
-  })
+  }),
 );
 
 /**
@@ -276,7 +288,7 @@ router.get(
       success: true,
       data: session,
     });
-  })
+  }),
 );
 
 /**
@@ -306,7 +318,7 @@ router.get(
         count: sessions.length,
       },
     });
-  })
+  }),
 );
 
 /**
@@ -333,7 +345,7 @@ router.delete(
       success: true,
       data: { deleted },
     });
-  })
+  }),
 );
 
 export default router;

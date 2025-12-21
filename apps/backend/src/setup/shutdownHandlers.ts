@@ -37,7 +37,7 @@ function registerWebSocketShutdown(): void {
         await websocketService.shutdown();
       }
     },
-    { timeout: 5000, critical: false }
+    { timeout: 5000, critical: false },
   );
 }
 
@@ -61,7 +61,7 @@ function registerHttpServerShutdown(server: Server): void {
         });
       });
     },
-    { timeout: 10000, critical: true }
+    { timeout: 10000, critical: true },
   );
 }
 
@@ -76,7 +76,7 @@ function registerRedisShutdown(): void {
       await redisService.disconnect();
       logger.info("Redis connection closed");
     },
-    { timeout: 5000, critical: false }
+    { timeout: 5000, critical: false },
   );
 }
 
@@ -91,7 +91,7 @@ function registerDatabaseShutdown(): void {
       await db.close();
       logger.info("Database connections closed");
     },
-    { timeout: 10000, critical: true }
+    { timeout: 10000, critical: true },
   );
 }
 
@@ -106,7 +106,7 @@ function registerTracingShutdown(): void {
       await tracingService.shutdown();
       logger.info("Tracing service shut down");
     },
-    { timeout: 5000, critical: false }
+    { timeout: 5000, critical: false },
   );
 }
 
@@ -121,7 +121,7 @@ function registerErrorTrackingShutdown(): void {
       await errorTrackingService.close();
       logger.info("Error tracking shut down");
     },
-    { timeout: 5000, critical: false }
+    { timeout: 5000, critical: false },
   );
 }
 
@@ -135,7 +135,7 @@ function registerHealthStatusShutdown(): void {
       logger.info("Setting health status to shutting down");
       // Health endpoint will check shutdownManager.isShuttingDown()
     },
-    { timeout: 1000, critical: false }
+    { timeout: 1000, critical: false },
   );
 }
 
@@ -164,7 +164,7 @@ export function registerAllShutdownHandlers(server: Server): void {
   // Log shutdown handler summary
   setTimeout(() => {
     logger.info(
-      "Shutdown handlers ready - application will perform graceful shutdown on SIGTERM/SIGINT"
+      "Shutdown handlers ready - application will perform graceful shutdown on SIGTERM/SIGINT",
     );
   }, 100);
 }

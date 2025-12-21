@@ -59,7 +59,7 @@
 ### Core Components
 
 | Component | File | Description |
-|-----------|------|-------------|
+| --------- | ---- | ----------- |
 
 | **DashboardService** | `DashboardService.ts` | Singleton-Service mit Business-Logik |
 | **Main Router** | `dashboard.ts` | Express-Router mit Zod-Validierung |
@@ -71,7 +71,7 @@
 ### Documentation
 
 | Document | Purpose | Audience |
-|----------|---------|----------|
+| -------- | ------- | -------- |
 
 | **REDESIGN.md** | Complete redesign overview | All |
 | **INTEGRATION.md** | Integration guide & best practices | Developers |
@@ -214,44 +214,46 @@ GET /api/dashboard/comprehensive/favorites               - Favorites management
 ### Service Usage
 
 ```typescript
-import dashboardService from './routes/dashboard/DashboardService.js';
+import dashboardService from "./routes/dashboard/DashboardService.js";
 
 // Initialize once at app startup
 await dashboardService.initialize();
 
 // Use throughout application
 const tasks = await dashboardService.getTasks({
-  userId: 'user-123',
-  status: 'pending',
+  userId: "user-123",
+  status: "pending",
   limit: 20,
-  offset: 0
+  offset: 0,
 });
 ```
 
 ### Router Usage
 
 ```typescript
-import dashboardRouter from './routes/dashboard/dashboard.js';
+import dashboardRouter from "./routes/dashboard/dashboard.js";
 
-app.use('/api/dashboard', dashboardRouter);
+app.use("/api/dashboard", dashboardRouter);
 ```
 
 ### API Call (Frontend)
 
 ```typescript
 // Get paginated tasks
-const response = await fetch('/api/dashboard/tasks?limit=20&offset=0&status=pending');
+const response = await fetch(
+  "/api/dashboard/tasks?limit=20&offset=0&status=pending",
+);
 const result = await response.json();
 
 // Create task
-const response = await fetch('/api/dashboard/tasks', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const response = await fetch("/api/dashboard/tasks", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    userId: 'user-123',
-    title: 'Review Report',
-    priority: 'high'
-  })
+    userId: "user-123",
+    title: "Review Report",
+    priority: "high",
+  }),
 });
 ```
 

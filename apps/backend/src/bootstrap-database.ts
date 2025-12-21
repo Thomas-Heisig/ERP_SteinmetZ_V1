@@ -9,10 +9,10 @@
  * @module bootstrap-database
  */
 
-import { DatabaseManager } from './routes/database/index.js';
-import { createLogger } from './utils/logger.js';
+import { DatabaseManager } from "./routes/database/index.js";
+import { createLogger } from "./utils/logger.js";
 
-const logger = createLogger('app-bootstrap');
+const logger = createLogger("app-bootstrap");
 
 /**
  * Initialize database on application startup
@@ -42,14 +42,14 @@ const logger = createLogger('app-bootstrap');
  */
 export async function initializeDatabase(): Promise<void> {
   try {
-    logger.info('Initializing database...');
+    logger.info("Initializing database...");
 
     // Initialize DatabaseManager (singleton)
     await DatabaseManager.initialize();
 
-    logger.info('Database initialized successfully');
+    logger.info("Database initialized successfully");
   } catch (error) {
-    logger.error({ error }, 'Database initialization failed');
+    logger.error({ error }, "Database initialization failed");
     throw error;
   }
 }
@@ -91,7 +91,7 @@ export function registerDatabaseHooks(): void {
 
   // Example hook: Log database health
   dbManager.registerHook(async () => {
-    logger.debug('Database initialization hook completed');
+    logger.debug("Database initialization hook completed");
   });
 }
 

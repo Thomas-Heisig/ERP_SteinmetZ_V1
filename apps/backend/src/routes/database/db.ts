@@ -40,8 +40,14 @@ interface DatabaseService {
   };
   init?: () => Promise<void>;
   all?: <T = unknown>(sql: string, params?: unknown[]) => Promise<T[]>;
-  get?: <T = unknown>(sql: string, params?: unknown[]) => Promise<T | undefined>;
-  run?: (sql: string, params?: unknown[]) => Promise<{ changes: number; lastID?: number }>;
+  get?: <T = unknown>(
+    sql: string,
+    params?: unknown[],
+  ) => Promise<T | undefined>;
+  run?: (
+    sql: string,
+    params?: unknown[],
+  ) => Promise<{ changes: number; lastID?: number }>;
 }
 
 /**

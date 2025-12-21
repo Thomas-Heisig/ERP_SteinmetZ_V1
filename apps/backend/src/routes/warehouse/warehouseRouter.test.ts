@@ -6,66 +6,66 @@
  * Tests all warehouse management endpoints
  */
 
-import { describe, it, expect, beforeAll, vi } from 'vitest';
-import request from 'supertest';
-import express, { Express } from 'express';
-import warehouseRouter from './warehouseRouter';
+import { describe, it, expect, beforeAll, vi } from "vitest";
+import request from "supertest";
+import express, { Express } from "express";
+import warehouseRouter from "./warehouseRouter";
 
-describe('Warehouse Router', () => {
+describe("Warehouse Router", () => {
   let app: Express;
   let warehouseServiceMock: any;
 
   beforeAll(() => {
     app = express();
     app.use(express.json());
-    
+
     // Mock warehouse service
     warehouseServiceMock = {
       getStockItems: vi.fn().mockResolvedValue([
         {
-          id: '1',
-          material_id: 'mat-1',
-          material_name: 'Schwarzer Granit',
-          category: 'Rohstoffe',
+          id: "1",
+          material_id: "mat-1",
+          material_name: "Schwarzer Granit",
+          category: "Rohstoffe",
           quantity: 12,
-          unit: 'm²',
-          location_id: 'loc-1',
+          unit: "m²",
+          location_id: "loc-1",
           min_stock: 20,
-          status: 'low',
+          status: "low",
         },
       ]),
       getStockItemById: vi.fn().mockResolvedValue({
-        id: '1',
-        material_id: 'mat-1',
-        material_name: 'Schwarzer Granit',
+        id: "1",
+        material_id: "mat-1",
+        material_name: "Schwarzer Granit",
         quantity: 12,
       }),
       getWarehouseLocations: vi.fn().mockResolvedValue([
         {
-          id: '1',
-          code: 'A-01',
-          zone: 'A',
+          id: "1",
+          code: "A-01",
+          zone: "A",
           capacity: 100,
           occupied: 50,
-          type: 'Rohstoffe',
+          type: "Rohstoffe",
         },
       ]),
       getPickingLists: vi.fn().mockResolvedValue([
         {
-          id: '1',
-          picking_number: 'PL-2025-001',
-          order_id: 'OR-001',
-          status: 'open',
-          priority: 'high',
+          id: "1",
+          picking_number: "PL-2025-001",
+          order_id: "OR-001",
+          status: "open",
+          priority: "high",
         },
       ]),
       getShipments: vi.fn().mockResolvedValue([
         {
-          id: '1',
-          shipment_number: 'SH-2025-001',
-          order_id: 'OR-001',
-          status: 'prepared',
-          carrier: 'DHL',
+          id: "1",
+          shipment_number: "SH-2025-001",
+          order_id: "OR-001",
+          status: "prepared",
+          carrier: "DHL",
         },
       ]),
       getAnalytics: vi.fn().mockResolvedValue({
@@ -84,7 +84,7 @@ describe('Warehouse Router', () => {
       next();
     });
 
-    app.use('/api/warehouse', warehouseRouter);
+    app.use("/api/warehouse", warehouseRouter);
   });
 
   describe("GET /api/warehouse/stock", () => {
@@ -114,7 +114,7 @@ describe('Warehouse Router', () => {
 
       expect(response.status).toBe(200);
       expect(warehouseServiceMock.getStockItems).toHaveBeenCalledWith(
-        expect.objectContaining({ limit: 10, offset: 0 })
+        expect.objectContaining({ limit: 10, offset: 0 }),
       );
     });
   });
@@ -122,15 +122,15 @@ describe('Warehouse Router', () => {
   describe("POST /api/warehouse/stock/movement", () => {
     it("should record a stock movement", async () => {
       warehouseServiceMock.recordStockMovement = vi.fn().mockResolvedValue({
-        id: '1',
-        material_id: 'mat-1',
-        type: 'incoming',
+        id: "1",
+        material_id: "mat-1",
+        type: "incoming",
         quantity: 5,
       });
 
       const movement = {
-        material_id: 'mat-1',
-        type: 'incoming',
+        material_id: "mat-1",
+        type: "incoming",
         quantity: 5,
       };
 
@@ -140,13 +140,13 @@ describe('Warehouse Router', () => {
 
       expect(response.status).toBe(201);
       expect(response.body.success).toBe(true);
-      expect(response.body.data).toHaveProperty('id');
+      expect(response.body.data).toHaveProperty("id");
     });
 
     it("should reject invalid movement data", async () => {
       const response = await request(app)
         .post("/api/warehouse/stock/movement")
-        .send({ material_id: 'mat-1' }); // Missing required fields
+        .send({ material_id: "mat-1" }); // Missing required fields
 
       expect(response.status).toBe(400);
       expect(response.body.success).toBe(false);
@@ -167,13 +167,13 @@ describe('Warehouse Router', () => {
   describe("POST /api/warehouse/locations", () => {
     it("should create a new warehouse location", async () => {
       warehouseServiceMock.createWarehouseLocation = vi.fn().mockResolvedValue({
-        id: 'loc-1',
-        code: 'A-01-02',
-        zone: 'A',
-        aisle: '01',
-        position: '02',
+        id: "loc-1",
+        code: "A-01-02",
+        zone: "A",
+        aisle: "01",
+        position: "02",
         capacity: 1000,
-        type: 'pallet',
+        type: "pallet",
       });
 
       const newLocation = {
@@ -193,7 +193,7 @@ describe('Warehouse Router', () => {
       expect(response.body.success).toBe(true);
       expect(response.body.data).toHaveProperty("id");
       expect(warehouseServiceMock.createWarehouseLocation).toHaveBeenCalledWith(
-        expect.objectContaining({ code: newLocation.code })
+        expect.objectContaining({ code: newLocation.code }),
       );
     });
   });
@@ -201,11 +201,11 @@ describe('Warehouse Router', () => {
   describe("POST /api/warehouse/picking", () => {
     it("should create a picking list", async () => {
       warehouseServiceMock.createPickingList = vi.fn().mockResolvedValue({
-        id: 'pl-1',
-        picking_number: 'PL-2025-001',
-        order_id: 'order-1',
-        status: 'open',
-        priority: 'high',
+        id: "pl-1",
+        picking_number: "PL-2025-001",
+        order_id: "order-1",
+        status: "open",
+        priority: "high",
       });
 
       const pickingOrder = {
@@ -248,18 +248,18 @@ describe('Warehouse Router', () => {
         .query({ status: "open" });
 
       expect(response.status).toBe(200);
-      expect(warehouseServiceMock.getPickingLists).toHaveBeenCalledWith('open');
+      expect(warehouseServiceMock.getPickingLists).toHaveBeenCalledWith("open");
     });
   });
 
   describe("POST /api/warehouse/shipment", () => {
     it("should create a shipment", async () => {
       warehouseServiceMock.createShipment = vi.fn().mockResolvedValue({
-        id: 'ship-1',
-        shipment_number: 'SH-2025-001',
-        order_id: 'order-1',
-        status: 'prepared',
-        carrier: 'DHL',
+        id: "ship-1",
+        shipment_number: "SH-2025-001",
+        order_id: "order-1",
+        status: "prepared",
+        carrier: "DHL",
       });
 
       const shipment = {
@@ -304,17 +304,19 @@ describe('Warehouse Router', () => {
         .query({ status: "prepared" });
 
       expect(response.status).toBe(200);
-      expect(warehouseServiceMock.getShipments).toHaveBeenCalledWith('prepared');
+      expect(warehouseServiceMock.getShipments).toHaveBeenCalledWith(
+        "prepared",
+      );
     });
   });
 
   describe("POST /api/warehouse/inventory-count", () => {
     it("should create an inventory count", async () => {
       warehouseServiceMock.createInventoryCount = vi.fn().mockResolvedValue({
-        id: 'ic-1',
-        count_number: 'IC-2025-001',
-        type: 'full',
-        status: 'planned',
+        id: "ic-1",
+        count_number: "IC-2025-001",
+        type: "full",
+        status: "planned",
       });
 
       const inventoryCount = {
@@ -350,11 +352,13 @@ describe('Warehouse Router', () => {
 
   describe("Error Handling", () => {
     it("should handle 404 errors for missing resources", async () => {
-      warehouseServiceMock.getStockItemById = vi.fn().mockRejectedValue(
-        new Error('Not found')
-      );
+      warehouseServiceMock.getStockItemById = vi
+        .fn()
+        .mockRejectedValue(new Error("Not found"));
 
-      const response = await request(app).get("/api/warehouse/stock/invalid-id");
+      const response = await request(app).get(
+        "/api/warehouse/stock/invalid-id",
+      );
 
       expect(response.status).toBeGreaterThanOrEqual(400);
       expect(response.body.success).toBe(false);

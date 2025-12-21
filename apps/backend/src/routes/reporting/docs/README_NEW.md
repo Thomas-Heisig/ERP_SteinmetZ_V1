@@ -39,7 +39,7 @@ Das Reporting-Modul bietet eine zentrale Schnittstelle für alle Reporting- und 
 ### Kernkomponenten
 
 | Komponente | Pfad | Verantwortlichkeit |
-| -----------|------| -------------------|
+| ---------- | ---- | ------------------ |
 
 | Router | `reportingRouter.ts` | HTTP-Endpoints und Request-Validierung |
 | Service | `reportingService.ts` | Business-Logik und Daten-Aggregation |
@@ -175,7 +175,7 @@ Finanzberichte-Übersicht abrufen.
 **Query-Parameter:**
 
 | Parameter | Typ | Optional | Beschreibung |
-|-----------|-----|----------|--------------|
+| --------- | --- | -------- | ------------ |
 
 | `period` | string | ✅ | Berichtszeitraum (current_month, last_month, quarter, year) |
 | `year` | number | ✅ | Jahr (Standard: aktuelles Jahr) |
@@ -219,13 +219,13 @@ Spezifischen Finanzbericht abrufen.
 **Path-Parameter:**
 
 | Parameter | Typ    | Beschreibung                              |
-|-----------|-----   |--------------                             |
+| --------- | ------ | ----------------------------------------- |
 | `type`    | string | Report-Typ (pnl, balance_sheet, cashflow) |
 
 **Query-Parameter:**
 
 | Parameter | Typ    | Optional | Beschreibung |
-|-----------|-----   |----------|--------------|
+| --------- | ------ | -------- | ------------ |
 | `year`    | number | ❌       | Jahr         |
 | `month`   | number | ✅       | Monat (1-12) |
 
@@ -491,7 +491,7 @@ const cache = new Map<string, { data: any; expires: number }>();
 function getCachedReport<T>(
   key: string,
   fetchFn: () => Promise<T>,
-  ttl: number = 300000
+  ttl: number = 300000,
 ): Promise<T> {
   const cached = cache.get(key);
   if (cached && cached.expires > Date.now()) {
@@ -510,7 +510,7 @@ function getCachedReport<T>(
 ```typescript
 async function safelyFetchReport<T>(
   fetchFn: () => Promise<T>,
-  fallback: T
+  fallback: T,
 ): Promise<T> {
   try {
     return await fetchFn();
@@ -558,7 +558,7 @@ describe("ReportingService", () => {
 ```typescript
 const rowCount = await db.get(
   "SELECT COUNT(*) as count FROM sales WHERE date >= ?",
-  [startDate]
+  [startDate],
 );
 
 if (rowCount.count === 0) {

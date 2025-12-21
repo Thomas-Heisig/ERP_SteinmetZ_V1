@@ -53,15 +53,23 @@ export type { Customer, Contact, Opportunity, Activity } from "./types.js";
 async function ensureTables(): Promise<void> {
   try {
     const tables = await db.all<{ name: string }>(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('crm_customers', 'crm_contacts', 'crm_opportunities', 'crm_activities')"
+      "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('crm_customers', 'crm_contacts', 'crm_opportunities', 'crm_activities')",
     );
-    
-    const tableNames = tables.map(t => t.name);
-    const requiredTables = ['crm_customers', 'crm_contacts', 'crm_opportunities', 'crm_activities'];
-    const missingTables = requiredTables.filter(t => !tableNames.includes(t));
-    
+
+    const tableNames = tables.map((t) => t.name);
+    const requiredTables = [
+      "crm_customers",
+      "crm_contacts",
+      "crm_opportunities",
+      "crm_activities",
+    ];
+    const missingTables = requiredTables.filter((t) => !tableNames.includes(t));
+
     if (missingTables.length > 0) {
-      logger.warn({ missingTables }, "CRM tables not found - migrations may not have run");
+      logger.warn(
+        { missingTables },
+        "CRM tables not found - migrations may not have run",
+      );
     } else {
       logger.info("CRM tables verified successfully");
     }
@@ -178,7 +186,8 @@ router.get(
   "/customers",
   asyncHandler(async (req: Request, res: Response) => {
     const validated = customerQuerySchema.parse(req.query);
-    const { status, search, category, industry, assignedTo, limit, offset } = validated;
+    const { status, search, category, industry, assignedTo, limit, offset } =
+      validated;
 
     let sql = "SELECT * FROM crm_customers WHERE 1=1";
     const params: SqlValue[] = [];
@@ -368,10 +377,9 @@ router.put(
 router.delete(
   "/customers/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const result = await db.run(
-      "DELETE FROM crm_customers WHERE id = ?",
-      [req.params.id],
-    );
+    const result = await db.run("DELETE FROM crm_customers WHERE id = ?", [
+      req.params.id,
+    ]);
 
     if (result.changes === 0) {
       throw new NotFoundError("Customer not found");
@@ -483,7 +491,10 @@ router.post(
       updatedAt: now,
     };
 
-    logger.info({ contactId: id, customerId: validated.customerId }, "Contact created");
+    logger.info(
+      { contactId: id, customerId: validated.customerId },
+      "Contact created",
+    );
     res.status(201).json({ success: true, data: contact });
   }),
 );
@@ -527,7 +538,9 @@ router.put(
       if (jsKey in validated) {
         updates.push(`${dbKey} = ?`);
         const value = (validated as Record<string, unknown>)[jsKey];
-        params.push(jsKey === "isPrimary" ? (value ? 1 : 0) : (value as SqlValue));
+        params.push(
+          jsKey === "isPrimary" ? (value ? 1 : 0) : (value as SqlValue),
+        );
       }
     }
 
@@ -562,10 +575,9 @@ router.put(
 router.delete(
   "/contacts/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const result = await db.run(
-      "DELETE FROM crm_contacts WHERE id = ?",
-      [req.params.id],
-    );
+    const result = await db.run("DELETE FROM crm_contacts WHERE id = ?", [
+      req.params.id,
+    ]);
 
     if (result.changes === 0) {
       throw new NotFoundError("Contact not found");
@@ -586,7 +598,16 @@ router.get(
   "/opportunities",
   asyncHandler(async (req: Request, res: Response) => {
     const validated = opportunityQuerySchema.parse(req.query);
-    const { customerId, status, stage, assignedTo, minValue, maxValue, limit, offset } = validated;
+    const {
+      customerId,
+      status,
+      stage,
+      assignedTo,
+      minValue,
+      maxValue,
+      limit,
+      offset,
+    } = validated;
 
     let sql = "SELECT * FROM crm_opportunities WHERE 1=1";
     const params: SqlValue[] = [];
@@ -695,7 +716,10 @@ router.post(
       updatedAt: now,
     };
 
-    logger.info({ opportunityId: id, customerId: validated.customerId }, "Opportunity created");
+    logger.info(
+      { opportunityId: id, customerId: validated.customerId },
+      "Opportunity created",
+    );
     res.status(201).json({ success: true, data: opportunity });
   }),
 );
@@ -778,10 +802,9 @@ router.put(
 router.delete(
   "/opportunities/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const result = await db.run(
-      "DELETE FROM crm_opportunities WHERE id = ?",
-      [req.params.id],
-    );
+    const result = await db.run("DELETE FROM crm_opportunities WHERE id = ?", [
+      req.params.id,
+    ]);
 
     if (result.changes === 0) {
       throw new NotFoundError("Opportunity not found");
@@ -1013,10 +1036,9 @@ router.put(
 router.delete(
   "/activities/:id",
   asyncHandler(async (req: Request, res: Response) => {
-    const result = await db.run(
-      "DELETE FROM crm_activities WHERE id = ?",
-      [req.params.id],
-    );
+    const result = await db.run("DELETE FROM crm_activities WHERE id = ?", [
+      req.params.id,
+    ]);
 
     if (result.changes === 0) {
       throw new NotFoundError("Activity not found");

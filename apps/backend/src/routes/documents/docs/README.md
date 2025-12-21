@@ -671,7 +671,10 @@ Alle Aktionen werden protokolliert:
   ```typescript
   // BPMN Engine Integration
   interface BPMNWorkflow {
-    startProcess(documentId: string, processDefinition: string): Promise<string>;
+    startProcess(
+      documentId: string,
+      processDefinition: string,
+    ): Promise<string>;
     completeTask(taskId: string, variables: Record<string, any>): Promise<void>;
     getActiveTasks(processInstanceId: string): Promise<Task[]>;
   }
@@ -693,10 +696,11 @@ Alle Aktionen werden protokolliert:
 
   ```typescript
   // Service Worker für Offline-Support
-  self.addEventListener('fetch', (event) => {
+  self.addEventListener("fetch", (event) => {
     event.respondWith(
-      caches.match(event.request)
-        .then(response => response || fetch(event.request))
+      caches
+        .match(event.request)
+        .then((response) => response || fetch(event.request)),
     );
   });
   ```
@@ -742,26 +746,26 @@ Alle Aktionen werden protokolliert:
 
 ### 📊 Feature Matrix
 
-| Feature | Phase 1 | Phase 2 | Phase 3 | Phase 4 |
-| --- | --- | --- | --- | --- |
-| Upload/Download | ✅ | ✅ | ✅ | ✅ |
-| Versionierung | ✅ | ✅ | ✅ | ✅ |
-| Metadaten | ✅ | ✅ | ✅ | ✅ |
-| Basis-Suche | ✅ | ✅ | ✅ | ✅ |
-| Workflows | ✅ Mock | ✅ DB | ✅ BPMN | ✅ Advanced |
-| E-Signature | ✅ Mock | ✅ Real | ✅ Advanced | ✅ Legal |
-| Database | ❌ | ✅ | ✅ | ✅ |
-| File Storage | ❌ | ✅ S3/MinIO | ✅ CDN | ✅ Distributed |
-| OCR | ❌ | ✅ Basic | ✅ Advanced | ✅ AI-Enhanced |
-| AI-Tags | ❌ | ✅ Basic | ✅ Advanced | ✅ ML-Based |
-| Frontend | ❌ | ✅ Basic | ✅ Advanced | ✅ Enterprise |
-| Collaboration | ❌ | ❌ | ✅ | ✅ |
-| Mobile App | ❌ | ❌ | ✅ | ✅ |
-| Offline-Mode | ❌ | ❌ | ✅ | ✅ |
-| Records Mgmt | ❌ | ❌ | ❌ | ✅ |
-| Analytics | ❌ | ❌ | ❌ | ✅ |
-| Blockchain | ❌ | ❌ | ❌ | ✅ |
-| Compliance | ❌ | ❌ | ❌ | ✅ |
+| Feature         | Phase 1 | Phase 2     | Phase 3     | Phase 4        |
+| --------------- | ------- | ----------- | ----------- | -------------- |
+| Upload/Download | ✅      | ✅          | ✅          | ✅             |
+| Versionierung   | ✅      | ✅          | ✅          | ✅             |
+| Metadaten       | ✅      | ✅          | ✅          | ✅             |
+| Basis-Suche     | ✅      | ✅          | ✅          | ✅             |
+| Workflows       | ✅ Mock | ✅ DB       | ✅ BPMN     | ✅ Advanced    |
+| E-Signature     | ✅ Mock | ✅ Real     | ✅ Advanced | ✅ Legal       |
+| Database        | ❌      | ✅          | ✅          | ✅             |
+| File Storage    | ❌      | ✅ S3/MinIO | ✅ CDN      | ✅ Distributed |
+| OCR             | ❌      | ✅ Basic    | ✅ Advanced | ✅ AI-Enhanced |
+| AI-Tags         | ❌      | ✅ Basic    | ✅ Advanced | ✅ ML-Based    |
+| Frontend        | ❌      | ✅ Basic    | ✅ Advanced | ✅ Enterprise  |
+| Collaboration   | ❌      | ❌          | ✅          | ✅             |
+| Mobile App      | ❌      | ❌          | ✅          | ✅             |
+| Offline-Mode    | ❌      | ❌          | ✅          | ✅             |
+| Records Mgmt    | ❌      | ❌          | ❌          | ✅             |
+| Analytics       | ❌      | ❌          | ❌          | ✅             |
+| Blockchain      | ❌      | ❌          | ❌          | ✅             |
+| Compliance      | ❌      | ❌          | ❌          | ✅             |
 
 ---
 
@@ -777,7 +781,7 @@ CREATE TABLE documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title VARCHAR(200) NOT NULL,
   category VARCHAR(50) NOT NULL CHECK (category IN (
-    'invoice', 'contract', 'employee_document', 
+    'invoice', 'contract', 'employee_document',
     'report', 'correspondence', 'other'
   )),
   file_name VARCHAR(255) NOT NULL,
@@ -965,7 +969,7 @@ export class DocumentService {
     private storageService: StorageService,
     private ocrService: OCRService,
     private aiService: AIService,
-    private logger: Logger
+    private logger: Logger,
   ) {}
 
   /**
@@ -974,7 +978,7 @@ export class DocumentService {
   async uploadDocument(
     file: Express.Multer.File,
     metadata: UploadDocumentDto,
-    userId: string
+    userId: string,
   ): Promise<Document> {
     const transaction = await this.db.transaction();
 
@@ -983,55 +987,67 @@ export class DocumentService {
       const storagePath = await this.storageService.upload(
         file.buffer,
         file.originalname,
-        userId
+        userId,
       );
 
       // 2. Checksum berechnen
       const checksum = this.calculateChecksum(file.buffer);
 
       // 3. Dokument in DB speichern
-      const document = await this.db.documents.create({
-        title: metadata.title,
-        category: metadata.category,
-        file_name: file.originalname,
-        file_type: file.mimetype,
-        file_size: file.size,
-        storage_path: storagePath,
-        checksum,
-        uploaded_by: userId,
-        retention_years: metadata.retentionYears,
-        retention_expires_at: this.calculateRetentionExpiry(
-          metadata.retentionYears
-        ),
-      }, { transaction });
+      const document = await this.db.documents.create(
+        {
+          title: metadata.title,
+          category: metadata.category,
+          file_name: file.originalname,
+          file_type: file.mimetype,
+          file_size: file.size,
+          storage_path: storagePath,
+          checksum,
+          uploaded_by: userId,
+          retention_years: metadata.retentionYears,
+          retention_expires_at: this.calculateRetentionExpiry(
+            metadata.retentionYears,
+          ),
+        },
+        { transaction },
+      );
 
       // 4. Metadaten speichern
       if (metadata.metadata) {
-        await this.db.documentMetadata.create({
-          document_id: document.id,
-          metadata: metadata.metadata,
-        }, { transaction });
+        await this.db.documentMetadata.create(
+          {
+            document_id: document.id,
+            metadata: metadata.metadata,
+          },
+          { transaction },
+        );
       }
 
       // 5. Tags speichern
       if (metadata.tags) {
         await Promise.all(
-          metadata.tags.map(tag =>
-            this.db.documentTags.create({
-              document_id: document.id,
-              tag,
-              source: 'manual',
-            }, { transaction })
-          )
+          metadata.tags.map((tag) =>
+            this.db.documentTags.create(
+              {
+                document_id: document.id,
+                tag,
+                source: "manual",
+              },
+              { transaction },
+            ),
+          ),
         );
       }
 
       // 6. Audit-Log
-      await this.logAudit({
-        document_id: document.id,
-        action: 'created',
-        user_id: userId,
-      }, transaction);
+      await this.logAudit(
+        {
+          document_id: document.id,
+          action: "created",
+          user_id: userId,
+        },
+        transaction,
+      );
 
       await transaction.commit();
 
@@ -1045,12 +1061,12 @@ export class DocumentService {
         this.queueAITagJob(document.id);
       }
 
-      this.logger.info({ documentId: document.id }, 'Document uploaded');
+      this.logger.info({ documentId: document.id }, "Document uploaded");
 
       return document;
     } catch (error) {
       await transaction.rollback();
-      this.logger.error({ error }, 'Document upload failed');
+      this.logger.error({ error }, "Document upload failed");
       throw error;
     }
   }
@@ -1062,7 +1078,7 @@ export class DocumentService {
     documentId: string,
     file: Express.Multer.File,
     changes: string,
-    userId: string
+    userId: string,
   ): Promise<DocumentVersion> {
     const transaction = await this.db.transaction();
 
@@ -1070,52 +1086,61 @@ export class DocumentService {
       // 1. Dokument laden
       const document = await this.db.documents.findByPk(documentId);
       if (!document) {
-        throw new NotFoundError('Document not found');
+        throw new NotFoundError("Document not found");
       }
 
       // 2. Neue Version in Storage
       const storagePath = await this.storageService.upload(
         file.buffer,
         file.originalname,
-        userId
+        userId,
       );
 
       const checksum = this.calculateChecksum(file.buffer);
       const newVersion = document.current_version + 1;
 
       // 3. Version speichern
-      const version = await this.db.documentVersions.create({
-        document_id: documentId,
-        version: newVersion,
-        file_name: file.originalname,
-        storage_path: storagePath,
-        file_size: file.size,
-        checksum,
-        uploaded_by: userId,
-        changes,
-      }, { transaction });
+      const version = await this.db.documentVersions.create(
+        {
+          document_id: documentId,
+          version: newVersion,
+          file_name: file.originalname,
+          storage_path: storagePath,
+          file_size: file.size,
+          checksum,
+          uploaded_by: userId,
+          changes,
+        },
+        { transaction },
+      );
 
       // 4. Dokument aktualisieren
-      await document.update({
-        current_version: newVersion,
-        file_name: file.originalname,
-        file_type: file.mimetype,
-        file_size: file.size,
-        storage_path: storagePath,
-        checksum,
-      }, { transaction });
+      await document.update(
+        {
+          current_version: newVersion,
+          file_name: file.originalname,
+          file_type: file.mimetype,
+          file_size: file.size,
+          storage_path: storagePath,
+          checksum,
+        },
+        { transaction },
+      );
 
       // 5. Audit-Log
-      await this.logAudit({
-        document_id: documentId,
-        action: 'version_uploaded',
-        user_id: userId,
-        changes: { version: newVersion, changes },
-      }, transaction);
+      await this.logAudit(
+        {
+          document_id: documentId,
+          action: "version_uploaded",
+          user_id: userId,
+          changes: { version: newVersion, changes },
+        },
+        transaction,
+      );
 
       await transaction.commit();
 
-      this.logger.info({ documentId, version: newVersion }, 'Version uploaded');
+      this.logger.info({ documentId, version: newVersion }, "Version uploaded");
 
       return version;
     } catch (error) {
@@ -1130,7 +1155,7 @@ export class DocumentService {
   async downloadDocument(
     documentId: string,
     userId: string,
-    version?: number
+    version?: number,
   ): Promise<{ buffer: Buffer; filename: string; mimetype: string }> {
     // 1. Dokument oder Version laden
     let storagePath: string;
@@ -1142,15 +1167,15 @@ export class DocumentService {
         where: { document_id: documentId, version },
       });
       if (!docVersion) {
-        throw new NotFoundError('Document version not found');
+        throw new NotFoundError("Document version not found");
       }
       storagePath = docVersion.storage_path;
       filename = docVersion.file_name;
-      mimetype = 'application/octet-stream'; // From storage or document
+      mimetype = "application/octet-stream"; // From storage or document
     } else {
       const document = await this.db.documents.findByPk(documentId);
       if (!document) {
-        throw new NotFoundError('Document not found');
+        throw new NotFoundError("Document not found");
       }
       storagePath = document.storage_path;
       filename = document.file_name;
@@ -1163,7 +1188,7 @@ export class DocumentService {
     // 3. Audit-Log
     await this.logAudit({
       document_id: documentId,
-      action: 'downloaded',
+      action: "downloaded",
       user_id: userId,
       changes: { version },
     });
@@ -1180,30 +1205,36 @@ export class DocumentService {
     try {
       const document = await this.db.documents.findByPk(documentId);
       if (!document) {
-        throw new NotFoundError('Document not found');
+        throw new NotFoundError("Document not found");
       }
 
       // Check Retention Policy
       const now = new Date();
-      if (document.retention_expires_at && now < document.retention_expires_at) {
+      if (
+        document.retention_expires_at &&
+        now < document.retention_expires_at
+      ) {
         throw new ForbiddenError(
-          `Document cannot be deleted before ${document.retention_expires_at}`
+          `Document cannot be deleted before ${document.retention_expires_at}`,
         );
       }
 
       // Soft Delete
-      await document.update({ status: 'deleted' }, { transaction });
+      await document.update({ status: "deleted" }, { transaction });
 
       // Audit-Log
-      await this.logAudit({
-        document_id: documentId,
-        action: 'deleted',
-        user_id: userId,
-      }, transaction);
+      await this.logAudit(
+        {
+          document_id: documentId,
+          action: "deleted",
+          user_id: userId,
+        },
+        transaction,
+      );
 
       await transaction.commit();
 
-      this.logger.info({ documentId }, 'Document deleted');
+      this.logger.info({ documentId }, "Document deleted");
     } catch (error) {
       await transaction.rollback();
       throw error;
@@ -1214,7 +1245,7 @@ export class DocumentService {
    * Hilfs-Methoden
    */
   private calculateChecksum(buffer: Buffer): string {
-    return crypto.createHash('sha256').update(buffer).digest('hex');
+    return crypto.createHash("sha256").update(buffer).digest("hex");
   }
 
   private calculateRetentionExpiry(years: number): Date {
@@ -1223,24 +1254,32 @@ export class DocumentService {
   }
 
   private shouldProcessOCR(mimetype: string): boolean {
-    return ['application/pdf', 'image/jpeg', 'image/png', 'image/tiff'].includes(mimetype);
+    return [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+      "image/tiff",
+    ].includes(mimetype);
   }
 
-  private async queueOCRJob(documentId: string, fileBuffer: Buffer): Promise<void> {
+  private async queueOCRJob(
+    documentId: string,
+    fileBuffer: Buffer,
+  ): Promise<void> {
     // Queue mit Bull oder BullMQ
-    await this.ocrQueue.add('process-ocr', {
+    await this.ocrQueue.add("process-ocr", {
       documentId,
-      fileBuffer: fileBuffer.toString('base64'),
+      fileBuffer: fileBuffer.toString("base64"),
     });
   }
 
   private async queueAITagJob(documentId: string): Promise<void> {
-    await this.aiQueue.add('generate-tags', { documentId });
+    await this.aiQueue.add("generate-tags", { documentId });
   }
 
   private async logAudit(
     data: AuditLogData,
-    transaction?: Transaction
+    transaction?: Transaction,
   ): Promise<void> {
     await this.db.documentAuditLog.create(data, { transaction });
   }
@@ -1257,7 +1296,7 @@ export class SearchService {
   constructor(
     private elastic: Client,
     private db: Database,
-    private logger: Logger
+    private logger: Logger,
   ) {}
 
   /**
@@ -1265,7 +1304,7 @@ export class SearchService {
    */
   async searchDocuments(
     query: SearchDocumentsDto,
-    userId: string
+    userId: string,
   ): Promise<SearchResults> {
     const mustClauses: any[] = [];
     const filterClauses: any[] = [];
@@ -1275,8 +1314,8 @@ export class SearchService {
       mustClauses.push({
         multi_match: {
           query: query.query,
-          fields: ['title^3', 'ocr_text^2', 'tags', 'metadata.*'],
-          fuzziness: 'AUTO',
+          fields: ["title^3", "ocr_text^2", "tags", "metadata.*"],
+          fuzziness: "AUTO",
         },
       });
     }
@@ -1303,7 +1342,7 @@ export class SearchService {
 
     // Elasticsearch Query
     const result = await this.elastic.search({
-      index: 'documents',
+      index: "documents",
       body: {
         query: {
           bool: {
@@ -1322,12 +1361,12 @@ export class SearchService {
         },
         from: (query.page - 1) * query.limit,
         size: query.limit,
-        sort: [{ _score: 'desc' }, { created_at: 'desc' }],
+        sort: [{ _score: "desc" }, { created_at: "desc" }],
       },
     });
 
     return {
-      hits: result.hits.hits.map(hit => ({
+      hits: result.hits.hits.map((hit) => ({
         id: hit._id,
         score: hit._score,
         document: hit._source,
@@ -1344,7 +1383,7 @@ export class SearchService {
    */
   async indexDocument(document: Document): Promise<void> {
     await this.elastic.index({
-      index: 'documents',
+      index: "documents",
       id: document.id,
       body: {
         title: document.title,
@@ -1362,7 +1401,7 @@ export class SearchService {
     const tags = await this.db.documentTags.findAll({
       where: { document_id: documentId },
     });
-    return tags.map(t => t.tag);
+    return tags.map((t) => t.tag);
   }
 
   private async getOCRText(documentId: string): Promise<string | null> {
@@ -1390,7 +1429,7 @@ export class SearchService {
 export class OCRService {
   constructor(
     private db: Database,
-    private logger: Logger
+    private logger: Logger,
   ) {}
 
   /**
@@ -1403,23 +1442,23 @@ export class OCRService {
       // 1. Dokument laden
       const document = await this.db.documents.findByPk(documentId);
       if (!document) {
-        throw new NotFoundError('Document not found');
+        throw new NotFoundError("Document not found");
       }
 
       // 2. Datei laden
       const buffer = await this.storageService.download(document.storage_path);
 
       // 3. OCR mit Tesseract
-      const worker = await createWorker('deu');
+      const worker = await createWorker("deu");
       const { data } = await worker.recognize(buffer);
 
       // 4. Ergebnis speichern
       await this.db.documentOCR.upsert({
         document_id: documentId,
         extracted_text: data.text,
-        language: 'deu',
+        language: "deu",
         confidence: data.confidence / 100,
-        ocr_provider: 'tesseract',
+        ocr_provider: "tesseract",
         processed_at: new Date(),
         processing_time_ms: Date.now() - startTime,
       });
@@ -1429,7 +1468,7 @@ export class OCRService {
       // 5. Elasticsearch aktualisieren
       await this.searchService.indexDocument(document);
 
-      this.logger.info({ documentId }, 'OCR processing completed');
+      this.logger.info({ documentId }, "OCR processing completed");
 
       return {
         text: data.text,
@@ -1437,7 +1476,7 @@ export class OCRService {
         processingTime: Date.now() - startTime,
       };
     } catch (error) {
-      this.logger.error({ error, documentId }, 'OCR processing failed');
+      this.logger.error({ error, documentId }, "OCR processing failed");
       throw error;
     }
   }
@@ -1454,7 +1493,7 @@ export class WorkflowService {
   constructor(
     private db: Database,
     private notificationService: NotificationService,
-    private logger: Logger
+    private logger: Logger,
   ) {}
 
   /**
@@ -1463,31 +1502,37 @@ export class WorkflowService {
   async startWorkflow(
     documentId: string,
     workflowData: CreateWorkflowDto,
-    userId: string
+    userId: string,
   ): Promise<Workflow> {
     const transaction = await this.db.transaction();
 
     try {
       // 1. Workflow erstellen
-      const workflow = await this.db.workflows.create({
-        document_id: documentId,
-        type: workflowData.type,
-        created_by: userId,
-        deadline: workflowData.deadline,
-        description: workflowData.description,
-        status: 'pending',
-      }, { transaction });
+      const workflow = await this.db.workflows.create(
+        {
+          document_id: documentId,
+          type: workflowData.type,
+          created_by: userId,
+          deadline: workflowData.deadline,
+          description: workflowData.description,
+          status: "pending",
+        },
+        { transaction },
+      );
 
       // 2. Workflow-Schritte erstellen
       await Promise.all(
         workflowData.approvers.map((approverId, index) =>
-          this.db.workflowSteps.create({
-            workflow_id: workflow.id,
-            step_number: index + 1,
-            approver_id: approverId,
-            status: index === 0 ? 'pending' : 'pending', // Ersten aktiv machen
-          }, { transaction })
-        )
+          this.db.workflowSteps.create(
+            {
+              workflow_id: workflow.id,
+              step_number: index + 1,
+              approver_id: approverId,
+              status: index === 0 ? "pending" : "pending", // Ersten aktiv machen
+            },
+            { transaction },
+          ),
+        ),
       );
 
       await transaction.commit();
@@ -1495,10 +1540,10 @@ export class WorkflowService {
       // 3. Erste Approver benachrichtigen
       await this.notificationService.notifyApprover(
         workflowData.approvers[0],
-        workflow.id
+        workflow.id,
       );
 
-      this.logger.info({ workflowId: workflow.id }, 'Workflow started');
+      this.logger.info({ workflowId: workflow.id }, "Workflow started");
 
       return workflow;
     } catch (error) {
@@ -1514,7 +1559,7 @@ export class WorkflowService {
     workflowId: string,
     stepNumber: number,
     userId: string,
-    comment?: string
+    comment?: string,
   ): Promise<void> {
     const transaction = await this.db.transaction();
 
@@ -1525,19 +1570,22 @@ export class WorkflowService {
       });
 
       if (!step) {
-        throw new NotFoundError('Workflow step not found');
+        throw new NotFoundError("Workflow step not found");
       }
 
       if (step.approver_id !== userId) {
-        throw new ForbiddenError('Not authorized to approve this step');
+        throw new ForbiddenError("Not authorized to approve this step");
       }
 
       // 2. Schritt genehmigen
-      await step.update({
-        status: 'approved',
-        comment,
-        actioned_at: new Date(),
-      }, { transaction });
+      await step.update(
+        {
+          status: "approved",
+          comment,
+          actioned_at: new Date(),
+        },
+        { transaction },
+      );
 
       // 3. Nächsten Schritt aktivieren oder Workflow abschließen
       const nextStep = await this.db.workflowSteps.findOne({
@@ -1548,35 +1596,35 @@ export class WorkflowService {
         // Nächsten Approver benachrichtigen
         await this.notificationService.notifyApprover(
           nextStep.approver_id,
-          workflowId
+          workflowId,
         );
       } else {
         // Workflow abschließen
         await this.db.workflows.update(
           {
-            status: 'approved',
+            status: "approved",
             completed_at: new Date(),
           },
           {
             where: { id: workflowId },
             transaction,
-          }
+          },
         );
 
         // Dokument-Status aktualisieren
         const workflow = await this.db.workflows.findByPk(workflowId);
         await this.db.documents.update(
-          { status: 'approved' },
+          { status: "approved" },
           {
             where: { id: workflow.document_id },
             transaction,
-          }
+          },
         );
       }
 
       await transaction.commit();
 
-      this.logger.info({ workflowId, stepNumber }, 'Workflow step approved');
+      this.logger.info({ workflowId, stepNumber }, "Workflow step approved");
     } catch (error) {
       await transaction.rollback();
       throw error;
@@ -1593,31 +1641,35 @@ export class WorkflowService {
 
 ```typescript
 // Chunked Upload für große Dateien
-app.post('/api/documents/upload-chunked', upload.single('chunk'), async (req, res) => {
-  const { chunkIndex, totalChunks, fileId } = req.body;
-  
-  // Chunk speichern
-  await redis.setex(`upload:${fileId}:${chunkIndex}`, 3600, req.file.buffer);
-  
-  if (chunkIndex == totalChunks - 1) {
-    // Alle Chunks zusammenführen
-    const chunks = [];
-    for (let i = 0; i < totalChunks; i++) {
-      chunks.push(await redis.getBuffer(`upload:${fileId}:${i}`));
+app.post(
+  "/api/documents/upload-chunked",
+  upload.single("chunk"),
+  async (req, res) => {
+    const { chunkIndex, totalChunks, fileId } = req.body;
+
+    // Chunk speichern
+    await redis.setex(`upload:${fileId}:${chunkIndex}`, 3600, req.file.buffer);
+
+    if (chunkIndex == totalChunks - 1) {
+      // Alle Chunks zusammenführen
+      const chunks = [];
+      for (let i = 0; i < totalChunks; i++) {
+        chunks.push(await redis.getBuffer(`upload:${fileId}:${i}`));
+      }
+      const fullFile = Buffer.concat(chunks);
+
+      // Dokument speichern
+      await documentService.uploadDocument(fullFile, metadata, userId);
+
+      // Cleanup
+      for (let i = 0; i < totalChunks; i++) {
+        await redis.del(`upload:${fileId}:${i}`);
+      }
     }
-    const fullFile = Buffer.concat(chunks);
-    
-    // Dokument speichern
-    await documentService.uploadDocument(fullFile, metadata, userId);
-    
-    // Cleanup
-    for (let i = 0; i < totalChunks; i++) {
-      await redis.del(`upload:${fileId}:${i}`);
-    }
-  }
-  
-  res.json({ success: true, uploadedChunks: chunkIndex + 1 });
-});
+
+    res.json({ success: true, uploadedChunks: chunkIndex + 1 });
+  },
+);
 ```
 
 ### Caching-Strategie
@@ -1627,29 +1679,29 @@ app.post('/api/documents/upload-chunked', upload.single('chunk'), async (req, re
 class CachedDocumentService {
   constructor(
     private documentService: DocumentService,
-    private redis: Redis
+    private redis: Redis,
   ) {}
-  
+
   async getDocument(documentId: string): Promise<Document> {
     // Cache-Check
     const cached = await this.redis.get(`document:${documentId}`);
     if (cached) {
       return JSON.parse(cached);
     }
-    
+
     // DB-Abfrage
     const document = await this.documentService.getById(documentId);
-    
+
     // Cache speichern (5 Minuten)
     await this.redis.setex(
       `document:${documentId}`,
       300,
-      JSON.stringify(document)
+      JSON.stringify(document),
     );
-    
+
     return document;
   }
-  
+
   async invalidateCache(documentId: string): Promise<void> {
     await this.redis.del(`document:${documentId}`);
   }
@@ -1669,15 +1721,13 @@ const documentLoader = new DataLoader(async (documentIds: string[]) => {
       { model: db.documentOCR },
     ],
   });
-  
-  return documentIds.map(id => 
-    documents.find(doc => doc.id === id)
-  );
+
+  return documentIds.map((id) => documents.find((doc) => doc.id === id));
 });
 
 // Verwenden
 const documents = await Promise.all(
-  documentIds.map(id => documentLoader.load(id))
+  documentIds.map((id) => documentLoader.load(id)),
 );
 ```
 
@@ -1697,14 +1747,14 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     // Erlaubte Dateitypen
     const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'image/jpeg',
-      'image/png',
-      'image/tiff',
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "image/jpeg",
+      "image/png",
+      "image/tiff",
     ];
-    
+
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
@@ -1725,36 +1775,38 @@ async function scanFile(buffer: Buffer): Promise<boolean> {
 
 ```typescript
 // Permission Middleware
-const requireDocumentPermission = (action: 'view' | 'edit' | 'delete') =>
+const requireDocumentPermission =
+  (action: "view" | "edit" | "delete") =>
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const userId = req.user.id;
-    
+
     const document = await db.documents.findByPk(id);
-    
+
     // Owner hat immer Zugriff
     if (document.uploaded_by === userId) {
       return next();
     }
-    
+
     // RBAC prüfen
     const hasPermission = await rbacService.hasPermission(
       userId,
-      `document:${action}`
+      `document:${action}`,
     );
-    
+
     if (!hasPermission) {
-      throw new ForbiddenError('Insufficient permissions');
+      throw new ForbiddenError("Insufficient permissions");
     }
-    
+
     next();
   };
 
 // Verwenden
-router.delete('/:id',
+router.delete(
+  "/:id",
   authenticate,
-  requireDocumentPermission('delete'),
-  asyncHandler(deleteDocumentHandler)
+  requireDocumentPermission("delete"),
+  asyncHandler(deleteDocumentHandler),
 );
 ```
 
@@ -1762,46 +1814,40 @@ router.delete('/:id',
 
 ```typescript
 // Verschlüsselung vor Storage
-import crypto from 'crypto';
+import crypto from "crypto";
 
 class EncryptedStorageService implements StorageService {
-  private algorithm = 'aes-256-gcm';
-  private key = Buffer.from(process.env.ENCRYPTION_KEY, 'hex');
-  
+  private algorithm = "aes-256-gcm";
+  private key = Buffer.from(process.env.ENCRYPTION_KEY, "hex");
+
   async upload(buffer: Buffer, filename: string): Promise<string> {
     // Verschlüsseln
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(this.algorithm, this.key, iv);
-    
-    const encrypted = Buffer.concat([
-      cipher.update(buffer),
-      cipher.final(),
-    ]);
-    
+
+    const encrypted = Buffer.concat([cipher.update(buffer), cipher.final()]);
+
     const authTag = cipher.getAuthTag();
-    
+
     // IV + AuthTag + Encrypted speichern
     const combined = Buffer.concat([iv, authTag, encrypted]);
-    
+
     return await this.s3.upload(combined, filename);
   }
-  
+
   async download(storagePath: string): Promise<Buffer> {
     const combined = await this.s3.download(storagePath);
-    
+
     // Extrahieren
     const iv = combined.slice(0, 16);
     const authTag = combined.slice(16, 32);
     const encrypted = combined.slice(32);
-    
+
     // Entschlüsseln
     const decipher = crypto.createDecipheriv(this.algorithm, this.key, iv);
     decipher.setAuthTag(authTag);
-    
-    return Buffer.concat([
-      decipher.update(encrypted),
-      decipher.final(),
-    ]);
+
+    return Buffer.concat([decipher.update(encrypted), decipher.final()]);
   }
 }
 ```
@@ -1818,13 +1864,13 @@ describe('DocumentService', () => {
   let service: DocumentService;
   let mockDb: jest.Mocked<Database>;
   let mockStorage: jest.Mocked<StorageService>;
-  
+
   beforeEach(() => {
     mockDb = createMockDatabase();
     mockStorage = createMockStorage();
     service = new DocumentService(mockDb, mockStorage, ...);
   });
-  
+
   describe('uploadDocument', () => {
     it('should upload document and create audit log', async () => {
       const file = {
@@ -1833,35 +1879,35 @@ describe('DocumentService', () => {
         mimetype: 'application/pdf',
         size: 1024,
       };
-      
+
       const metadata = {
         title: 'Test Document',
         category: 'invoice',
         retentionYears: 10,
       };
-      
+
       mockStorage.upload.mockResolvedValue('/storage/test.pdf');
       mockDb.documents.create.mockResolvedValue({
         id: 'doc-123',
         ...metadata,
       });
-      
+
       const result = await service.uploadDocument(file, metadata, 'user-123');
-      
+
       expect(result.id).toBe('doc-123');
       expect(mockDb.documentAuditLog.create).toHaveBeenCalledWith(
         expect.objectContaining({ action: 'created' }),
         expect.anything()
       );
     });
-    
+
     it('should rollback on error', async () => {
       mockStorage.upload.mockRejectedValue(new Error('Storage error'));
-      
+
       await expect(
         service.uploadDocument(file, metadata, 'user-123')
       ).rejects.toThrow('Storage error');
-      
+
       expect(mockDb.transaction().rollback).toHaveBeenCalled();
     });
   });
@@ -1872,50 +1918,50 @@ describe('DocumentService', () => {
 
 ```typescript
 // documents.integration.test.ts
-describe('Documents API Integration', () => {
+describe("Documents API Integration", () => {
   let app: Express;
   let db: Database;
   let token: string;
-  
+
   beforeAll(async () => {
     app = await createTestApp();
     db = await createTestDatabase();
     token = await createTestUser();
   });
-  
+
   afterAll(async () => {
     await db.close();
   });
-  
-  it('should upload, search, and download document', async () => {
+
+  it("should upload, search, and download document", async () => {
     // Upload
     const uploadRes = await request(app)
-      .post('/api/documents/upload')
-      .set('Authorization', `Bearer ${token}`)
-      .attach('file', Buffer.from('test content'), 'test.pdf')
-      .field('title', 'Test Document')
-      .field('category', 'invoice')
+      .post("/api/documents/upload")
+      .set("Authorization", `Bearer ${token}`)
+      .attach("file", Buffer.from("test content"), "test.pdf")
+      .field("title", "Test Document")
+      .field("category", "invoice")
       .expect(201);
-    
+
     const documentId = uploadRes.body.data.id;
-    
+
     // Search
     const searchRes = await request(app)
-      .get('/api/documents/search?query=test')
-      .set('Authorization', `Bearer ${token}`)
+      .get("/api/documents/search?query=test")
+      .set("Authorization", `Bearer ${token}`)
       .expect(200);
-    
+
     expect(searchRes.body.data).toContainEqual(
-      expect.objectContaining({ id: documentId })
+      expect.objectContaining({ id: documentId }),
     );
-    
+
     // Download
     const downloadRes = await request(app)
       .get(`/api/documents/${documentId}/download`)
-      .set('Authorization', `Bearer ${token}`)
+      .set("Authorization", `Bearer ${token}`)
       .expect(200);
-    
-    expect(downloadRes.body.toString()).toBe('test content');
+
+    expect(downloadRes.body.toString()).toBe("test content");
   });
 });
 ```
@@ -1924,19 +1970,19 @@ describe('Documents API Integration', () => {
 
 ```typescript
 // performance.test.ts
-import autocannon from 'autocannon';
+import autocannon from "autocannon";
 
-describe('Performance Tests', () => {
-  it('should handle 1000 concurrent document requests', async () => {
+describe("Performance Tests", () => {
+  it("should handle 1000 concurrent document requests", async () => {
     const result = await autocannon({
-      url: 'http://localhost:3001/api/documents',
+      url: "http://localhost:3001/api/documents",
       connections: 100,
       duration: 30,
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    
+
     expect(result.requests.average).toBeGreaterThan(1000);
     expect(result.latency.p99).toBeLessThan(500);
   });
@@ -2003,7 +2049,7 @@ CMD ["node", "dist/server.js"]
 #### docker-compose.yml
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   # Backend mit DMS
@@ -2124,48 +2170,48 @@ spec:
         app: dms-backend
     spec:
       containers:
-      - name: backend
-        image: ghcr.io/your-org/erp-steinmetz-backend:latest
-        ports:
-        - containerPort: 3001
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: db-secrets
-              key: connection-string
-        - name: JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: jwt-secret
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "2000m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3001
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health/ready
-            port: 3001
-          initialDelaySeconds: 10
-          periodSeconds: 5
-        volumeMounts:
-        - name: logs
-          mountPath: /app/logs
+        - name: backend
+          image: ghcr.io/your-org/erp-steinmetz-backend:latest
+          ports:
+            - containerPort: 3001
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: connection-string
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: jwt-secret
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          volumeMounts:
+            - name: logs
+              mountPath: /app/logs
       volumes:
-      - name: logs
-        emptyDir: {}
+        - name: logs
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -2175,9 +2221,9 @@ spec:
   selector:
     app: dms-backend
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 3001
+    - protocol: TCP
+      port: 80
+      targetPort: 3001
   type: LoadBalancer
 ---
 apiVersion: autoscaling/v2
@@ -2192,18 +2238,18 @@ spec:
   minReplicas: 3
   maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
 ```
 
 ### CI/CD Pipeline (GitHub Actions)
@@ -2238,89 +2284,89 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run linter
-      run: npm run lint
-    
-    - name: Run type check
-      run: npm run type-check
-    
-    - name: Run unit tests
-      run: npm run test:unit
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
-        REDIS_URL: redis://localhost:6379
-    
-    - name: Run integration tests
-      run: npm run test:integration
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v3
-      with:
-        files: ./coverage/lcov.info
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run type check
+        run: npm run type-check
+
+      - name: Run unit tests
+        run: npm run test:unit
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test
+          REDIS_URL: redis://localhost:6379
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
 
   build:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Build and push
-      uses: docker/build-push-action@v5
-      with:
-        context: ./apps/backend
-        push: true
-        tags: |
-          ghcr.io/${{ github.repository }}/backend:latest
-          ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/backend
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/backend:latest
+            ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup kubectl
-      uses: azure/setup-kubectl@v3
-    
-    - name: Configure kubectl
-      run: |
-        echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
-        export KUBECONFIG=kubeconfig
-    
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl set image deployment/dms-backend \
-          backend=ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
-        kubectl rollout status deployment/dms-backend
+      - uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/dms-backend \
+            backend=ghcr.io/${{ github.repository }}/backend:${{ github.sha }}
+          kubectl rollout status deployment/dms-backend
 ```
 
 ### Monitoring Setup
@@ -2329,55 +2375,63 @@ jobs:
 
 ```typescript
 // metrics.ts
-import promClient from 'prom-client';
+import promClient from "prom-client";
 
 const register = new promClient.Registry();
 
 // Metrics
 export const httpRequestDuration = new promClient.Histogram({
-  name: 'http_request_duration_seconds',
-  help: 'Duration of HTTP requests in seconds',
-  labelNames: ['method', 'route', 'status_code'],
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
   registers: [register],
 });
 
 export const documentUploads = new promClient.Counter({
-  name: 'documents_uploaded_total',
-  help: 'Total number of documents uploaded',
-  labelNames: ['category'],
+  name: "documents_uploaded_total",
+  help: "Total number of documents uploaded",
+  labelNames: ["category"],
   registers: [register],
 });
 
 export const documentStorageBytes = new promClient.Gauge({
-  name: 'documents_storage_bytes',
-  help: 'Total storage used by documents in bytes',
+  name: "documents_storage_bytes",
+  help: "Total storage used by documents in bytes",
   registers: [register],
 });
 
 export const ocrProcessingDuration = new promClient.Histogram({
-  name: 'ocr_processing_duration_seconds',
-  help: 'Duration of OCR processing in seconds',
+  name: "ocr_processing_duration_seconds",
+  help: "Duration of OCR processing in seconds",
   buckets: [1, 5, 10, 30, 60, 120],
   registers: [register],
 });
 
 // Middleware
-export const metricsMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const metricsMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const start = Date.now();
-  
-  res.on('finish', () => {
+
+  res.on("finish", () => {
     const duration = (Date.now() - start) / 1000;
     httpRequestDuration
-      .labels(req.method, req.route?.path || req.path, res.statusCode.toString())
+      .labels(
+        req.method,
+        req.route?.path || req.path,
+        res.statusCode.toString(),
+      )
       .observe(duration);
   });
-  
+
   next();
 };
 
 // Metrics Endpoint
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', register.contentType);
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", register.contentType);
   res.send(await register.metrics());
 });
 ```
@@ -2472,20 +2526,20 @@ fi
 
 ```typescript
 // bpmn-workflow.service.ts
-import { BpmnEngine } from 'bpmn-engine';
+import { BpmnEngine } from "bpmn-engine";
 
 export class BPMNWorkflowService {
   private engine: BpmnEngine;
-  
+
   constructor() {
     this.engine = new BpmnEngine({
-      name: 'Document Approval Engine',
+      name: "Document Approval Engine",
     });
   }
-  
+
   async startProcess(
     documentId: string,
-    processDefinition: string
+    processDefinition: string,
   ): Promise<string> {
     const execution = await this.engine.execute({
       name: `Document ${documentId} Approval`,
@@ -2495,21 +2549,21 @@ export class BPMNWorkflowService {
         startDate: new Date(),
       },
     });
-    
+
     return execution.id;
   }
-  
+
   async completeTask(
     processId: string,
     taskId: string,
-    variables: Record<string, any>
+    variables: Record<string, any>,
   ): Promise<void> {
     const execution = await this.engine.getExecution(processId);
     const task = execution.getActivityById(taskId);
-    
+
     task.signal(variables);
   }
-  
+
   async getActiveTasks(processId: string): Promise<Task[]> {
     const execution = await this.engine.getExecution(processId);
     return execution.getPostponedActivities();
@@ -2521,52 +2575,59 @@ export class BPMNWorkflowService {
 
 ```typescript
 // collaboration.service.ts
-import { Server as SocketServer } from 'socket.io';
+import { Server as SocketServer } from "socket.io";
 
 export class CollaborationService {
   private io: SocketServer;
   private activeUsers = new Map<string, Set<string>>();
-  
+
   constructor(io: SocketServer) {
     this.io = io;
     this.setupHandlers();
   }
-  
+
   private setupHandlers(): void {
-    this.io.on('connection', (socket) => {
-      socket.on('join-document', async ({ documentId, userId }) => {
+    this.io.on("connection", (socket) => {
+      socket.on("join-document", async ({ documentId, userId }) => {
         socket.join(`document:${documentId}`);
-        
+
         if (!this.activeUsers.has(documentId)) {
           this.activeUsers.set(documentId, new Set());
         }
         this.activeUsers.get(documentId).add(userId);
-        
+
         // Benachrichtige andere Nutzer
-        socket.to(`document:${documentId}`).emit('user-joined', {
+        socket.to(`document:${documentId}`).emit("user-joined", {
           userId,
           activeUsers: Array.from(this.activeUsers.get(documentId)),
         });
       });
-      
-      socket.on('add-comment', async ({ documentId, comment }) => {
+
+      socket.on("add-comment", async ({ documentId, comment }) => {
         const savedComment = await this.saveComment(documentId, comment);
-        
+
         // Broadcast an alle im Dokument
-        this.io.to(`document:${documentId}`).emit('comment-added', savedComment);
+        this.io
+          .to(`document:${documentId}`)
+          .emit("comment-added", savedComment);
       });
-      
-      socket.on('add-annotation', async ({ documentId, annotation }) => {
-        const savedAnnotation = await this.saveAnnotation(documentId, annotation);
-        
-        this.io.to(`document:${documentId}`).emit('annotation-added', savedAnnotation);
+
+      socket.on("add-annotation", async ({ documentId, annotation }) => {
+        const savedAnnotation = await this.saveAnnotation(
+          documentId,
+          annotation,
+        );
+
+        this.io
+          .to(`document:${documentId}`)
+          .emit("annotation-added", savedAnnotation);
       });
-      
-      socket.on('leave-document', ({ documentId, userId }) => {
+
+      socket.on("leave-document", ({ documentId, userId }) => {
         socket.leave(`document:${documentId}`);
         this.activeUsers.get(documentId)?.delete(userId);
-        
-        socket.to(`document:${documentId}`).emit('user-left', { userId });
+
+        socket.to(`document:${documentId}`).emit("user-left", { userId });
       });
     });
   }
@@ -2577,67 +2638,67 @@ export class CollaborationService {
 
 ```typescript
 // blockchain-audit.service.ts
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 
 export class BlockchainAuditService {
   private provider: ethers.providers.JsonRpcProvider;
   private contract: ethers.Contract;
-  
+
   constructor() {
     this.provider = new ethers.providers.JsonRpcProvider(
-      process.env.ETHEREUM_RPC_URL
+      process.env.ETHEREUM_RPC_URL,
     );
-    
+
     const wallet = new ethers.Wallet(
       process.env.ETHEREUM_PRIVATE_KEY,
-      this.provider
+      this.provider,
     );
-    
+
     this.contract = new ethers.Contract(
       process.env.AUDIT_CONTRACT_ADDRESS,
       AuditContractABI,
-      wallet
+      wallet,
     );
   }
-  
+
   async logAction(action: AuditAction): Promise<string> {
     // Hash der Aktion berechnen
     const actionHash = ethers.utils.keccak256(
-      ethers.utils.toUtf8Bytes(JSON.stringify(action))
+      ethers.utils.toUtf8Bytes(JSON.stringify(action)),
     );
-    
+
     // In Blockchain schreiben
     const tx = await this.contract.logAudit(
       action.documentId,
       action.action,
       actionHash,
-      Math.floor(Date.now() / 1000)
+      Math.floor(Date.now() / 1000),
     );
-    
+
     await tx.wait();
-    
+
     return tx.hash;
   }
-  
+
   async verifyIntegrity(documentId: string): Promise<boolean> {
     const dbAudits = await db.documentAuditLog.findAll({
       where: { document_id: documentId },
-      order: [['created_at', 'ASC']],
+      order: [["created_at", "ASC"]],
     });
-    
+
     const blockchainAudits = await this.contract.getAuditTrail(documentId);
-    
+
     // Hashes vergleichen
     for (let i = 0; i < dbAudits.length; i++) {
       const dbHash = ethers.utils.keccak256(
-        ethers.utils.toUtf8Bytes(JSON.stringify(dbAudits[i]))
+        ethers.utils.toUtf8Bytes(JSON.stringify(dbAudits[i])),
       );
-      
+
       if (dbHash !== blockchainAudits[i].hash) {
         return false;
       }
     }
-    
+
     return true;
   }
 }
@@ -2650,55 +2711,51 @@ export class BlockchainAuditService {
 export class AnalyticsService {
   async getUsageStatistics(
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<UsageStatistics> {
-    const [
-      uploadStats,
-      downloadStats,
-      storageStats,
-    ] = await Promise.all([
+    const [uploadStats, downloadStats, storageStats] = await Promise.all([
       this.getUploadStatistics(startDate, endDate),
       this.getDownloadStatistics(startDate, endDate),
       this.getStorageStatistics(),
     ]);
-    
+
     return {
       uploads: uploadStats,
       downloads: downloadStats,
       storage: storageStats,
     };
   }
-  
+
   async getStorageTrends(): Promise<StorageTrend[]> {
     const last30Days = [...Array(30)].map((_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      return date.toISOString().split('T')[0];
+      return date.toISOString().split("T")[0];
     });
-    
+
     const trends = await Promise.all(
       last30Days.map(async (date) => {
         const stats = await db.documents.findAll({
           attributes: [
-            [db.fn('COUNT', db.col('id')), 'count'],
-            [db.fn('SUM', db.col('file_size')), 'totalSize'],
+            [db.fn("COUNT", db.col("id")), "count"],
+            [db.fn("SUM", db.col("file_size")), "totalSize"],
           ],
           where: {
             created_at: {
               [Op.lte]: new Date(date),
             },
-            status: 'active',
+            status: "active",
           },
         });
-        
+
         return {
           date,
-          documentCount: parseInt(stats[0].get('count') as string),
-          storageBytes: parseInt(stats[0].get('totalSize') as string),
+          documentCount: parseInt(stats[0].get("count") as string),
+          storageBytes: parseInt(stats[0].get("totalSize") as string),
         };
-      })
+      }),
     );
-    
+
     return trends.reverse();
   }
 }
@@ -2740,17 +2797,17 @@ curl -X POST http://localhost:3001/api/admin/reindex
 ```typescript
 // Version-Check Middleware
 app.use((req, res, next) => {
-  const clientVersion = req.headers['x-client-version'];
+  const clientVersion = req.headers["x-client-version"];
   const serverVersion = process.env.APP_VERSION;
-  
+
   if (semver.major(clientVersion) < semver.major(serverVersion)) {
     return res.status(426).json({
-      error: 'Upgrade Required',
+      error: "Upgrade Required",
       message: `Client version ${clientVersion} is outdated. Please upgrade to ${serverVersion}`,
-      downloadUrl: 'https://erp-steinmetz.com/download',
+      downloadUrl: "https://erp-steinmetz.com/download",
     });
   }
-  
+
   next();
 });
 ```
@@ -2808,19 +2865,19 @@ RUN apk add tesseract-ocr tesseract-ocr-data-deu
 
 ```typescript
 // Stream-basierter Upload statt Buffer
-import { pipeline } from 'stream/promises';
+import { pipeline } from "stream/promises";
 
-router.post('/upload-stream', async (req, res) => {
+router.post("/upload-stream", async (req, res) => {
   const busboy = Busboy({ headers: req.headers });
-  
-  busboy.on('file', async (fieldname, file, info) => {
+
+  busboy.on("file", async (fieldname, file, info) => {
     const uploadStream = await storageService.createUploadStream(info.filename);
-    
+
     await pipeline(file, uploadStream);
-    
+
     res.json({ success: true });
   });
-  
+
   req.pipe(busboy);
 });
 ```
@@ -2831,7 +2888,7 @@ router.post('/upload-stream', async (req, res) => {
 # docker-compose.yml
 elasticsearch:
   environment:
-    - "ES_JAVA_OPTS=-Xms2g -Xmx2g"  # Erhöhen
+    - "ES_JAVA_OPTS=-Xms2g -Xmx2g" # Erhöhen
     - bootstrap.memory_lock=true
   ulimits:
     memlock:

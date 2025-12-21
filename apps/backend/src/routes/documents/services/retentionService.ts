@@ -32,7 +32,7 @@ export class RetentionService {
    */
   async getAllPolicies(): Promise<RetentionPolicy[]> {
     const stmt = this.db.prepare(
-      "SELECT * FROM retention_policies ORDER BY category"
+      "SELECT * FROM retention_policies ORDER BY category",
     );
     return stmt.all() as RetentionPolicy[];
   }
@@ -42,7 +42,7 @@ export class RetentionService {
    */
   async getPolicyByCategory(category: string): Promise<RetentionPolicy | null> {
     const stmt = this.db.prepare(
-      "SELECT * FROM retention_policies WHERE category = ?"
+      "SELECT * FROM retention_policies WHERE category = ?",
     );
     return stmt.get(category) as RetentionPolicy | null;
   }
@@ -54,7 +54,7 @@ export class RetentionService {
     documentId: string,
     retentionYears: number,
     reason: string,
-    userId: string
+    userId: string,
   ): Promise<void> {
     const expiryDate = new Date();
     expiryDate.setFullYear(expiryDate.getFullYear() + retentionYears);
@@ -78,7 +78,7 @@ export class RetentionService {
     auditStmt.run(
       documentId,
       userId,
-      JSON.stringify({ retentionYears, reason })
+      JSON.stringify({ retentionYears, reason }),
     );
 
     logger.info({ documentId, retentionYears }, "Retention policy updated");

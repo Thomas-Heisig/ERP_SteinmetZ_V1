@@ -10,6 +10,7 @@ Dieses Verzeichnis enthält die ursprünglichen Concept-Dateien, die in das neue
 ### Archivierte Dateien
 
 #### Hauptkonzepte
+
 - `_0_KONZEPT.md` - Ursprüngliches Hauptkonzept (instruction-driven ERP)
 - `_00_SYSTEM.md` - System-Informationen (GPU, CUDA, etc.)
 - `_ROADMAP.md` - Ursprüngliche Roadmap und Entwicklungsstand
@@ -18,6 +19,7 @@ Dieses Verzeichnis enthält die ursprünglichen Concept-Dateien, die in das neue
 - `_1_DASHBOARD.md` - Dashboard-Konzept (Executive Overview)
 
 #### Module-Konzepte
+
 - `_2_GESCHÄFTSVERWALTUNG.md` - Business-Management-Modul
 - `_3_0_FINANZEN & CONTROLLING.md` - Finanz-Modul
 - `_3_1_AUSWERTUNGEN.md` - Finanz-Auswertungen
@@ -34,12 +36,14 @@ Dieses Verzeichnis enthält die ursprünglichen Concept-Dateien, die in das neue
 ## Warum archiviert?
 
 Die ursprünglichen Concept-Dateien waren:
+
 - Über viele einzelne Dateien verteilt
 - Teilweise redundant
 - Nicht konsistent strukturiert
 - Schwer zu überblicken
 
 Das neue **GESAMTKONZEPT_V1.0.md** ist:
+
 - ✅ Ein einzelnes, kohärentes Dokument
 - ✅ Vollständig integriert (Katalog + Annotator)
 - ✅ Konsistent strukturiert
@@ -51,6 +55,7 @@ Das neue **GESAMTKONZEPT_V1.0.md** ist:
 Diese Dateien bleiben zur Referenz erhalten, sollten aber **NICHT** mehr bearbeitet werden.
 
 Alle zukünftigen Änderungen am Konzept erfolgen in:
+
 - `docs/concept/GESAMTKONZEPT_V1.0.md` (Hauptdokument)
 - `docs/concept/GESAMTKONZEPT_V1.1.md` (nächste Version)
 - etc.

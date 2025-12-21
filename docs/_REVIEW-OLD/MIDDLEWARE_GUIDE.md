@@ -35,7 +35,7 @@ Die Middleware-Komponente bietet 11 spezialisierte Express Middleware Module:
 ✅ **Caching** - HTTP-Response Caching mit TTL  
 ✅ **Monitoring** - Request-Metriken und Query-Performance  
 ✅ **Error Tracking** - Sentry Integration  
-✅ **Async Handling** - Promise-Error Catching  
+✅ **Async Handling** - Promise-Error Catching
 
 ### Dateistruktur
 
@@ -72,20 +72,20 @@ Zentrale Authentifizierung und Autorisierung mit JWT-Token.
 Validiert JWT-Token und wirft 401 Fehler wenn nicht vorhanden:
 
 ```typescript
-import { authenticate } from '@/middleware/authMiddleware';
-import { Router } from 'express';
+import { authenticate } from "@/middleware/authMiddleware";
+import { Router } from "express";
 
 const router = Router();
 
 // Geschützte Route - erfordert Token
-router.get('/profile', authenticate, (req, res) => {
+router.get("/profile", authenticate, (req, res) => {
   const userId = req.auth?.userId;
   const userRole = req.auth?.role;
   res.json({ userId, userRole });
 });
 
 // POST mit Authentication
-router.post('/users', authenticate, (req, res) => {
+router.post("/users", authenticate, (req, res) => {
   // user muss authentifiziert sein
   const user = req.auth?.user;
   res.json({ user });
@@ -128,10 +128,10 @@ declare global {
 Validiert Token wenn vorhanden, erfordert ihn aber nicht:
 
 ```typescript
-import { optionalAuthenticate } from '@/middleware/authMiddleware';
+import { optionalAuthenticate } from "@/middleware/authMiddleware";
 
 // Öffentliche Route mit optionaler Auth
-router.get('/articles', optionalAuthenticate, (req, res) => {
+router.get("/articles", optionalAuthenticate, (req, res) => {
   if (req.auth?.userId) {
     // User ist angemeldet - personalisierte Inhalte
     res.json({ articles: getPersonalArticles(req.auth.userId) });
@@ -147,20 +147,22 @@ router.get('/articles', optionalAuthenticate, (req, res) => {
 Schränkt Zugriff auf spezifische Rollen ein:
 
 ```typescript
-import { authenticate, requireRole } from '@/middleware/authMiddleware';
+import { authenticate, requireRole } from "@/middleware/authMiddleware";
 
 // Nur Admins dürfen Zugriff
-router.delete('/users/:id', 
-  authenticate, 
-  requireRole('admin'), 
-  deleteUserHandler
+router.delete(
+  "/users/:id",
+  authenticate,
+  requireRole("admin"),
+  deleteUserHandler,
 );
 
 // Nur Admins oder Manager
-router.post('/approvals',
+router.post(
+  "/approvals",
   authenticate,
-  requireRole('admin'),  // oder requireRole('manager')
-  approveHandler
+  requireRole("admin"), // oder requireRole('manager')
+  approveHandler,
 );
 ```
 
@@ -169,27 +171,30 @@ router.post('/approvals',
 Kontrolliert Zugriff auf Basis von Permissions im Format `modul:action`:
 
 ```typescript
-import { authenticate, requirePermission } from '@/middleware/authMiddleware';
+import { authenticate, requirePermission } from "@/middleware/authMiddleware";
 
 // Nutzer muss 'hr:read' Permission haben
-router.get('/employees', 
+router.get(
+  "/employees",
   authenticate,
-  requirePermission('hr:read'),
-  listEmployeesHandler
+  requirePermission("hr:read"),
+  listEmployeesHandler,
 );
 
 // Nutzer muss 'finance:create' Permission haben
-router.post('/invoices',
+router.post(
+  "/invoices",
   authenticate,
-  requirePermission('finance:create'),
-  createInvoiceHandler
+  requirePermission("finance:create"),
+  createInvoiceHandler,
 );
 
 // Nutzer muss 'crm:delete' Permission haben
-router.delete('/customers/:id',
+router.delete(
+  "/customers/:id",
   authenticate,
-  requirePermission('crm:delete'),
-  deleteCustomerHandler
+  requirePermission("crm:delete"),
+  deleteCustomerHandler,
 );
 ```
 
@@ -225,11 +230,12 @@ calendar:update  - Termine ändern
 Schützt Login-Endpunkte vor Brute-Force Attacken:
 
 ```typescript
-import { rateLimitLogin } from '@/middleware/authMiddleware';
+import { rateLimitLogin } from "@/middleware/authMiddleware";
 
-router.post('/auth/login', 
-  rateLimitLogin,  // 5 Versuche pro 15 Minuten
-  loginHandler
+router.post(
+  "/auth/login",
+  rateLimitLogin, // 5 Versuche pro 15 Minuten
+  loginHandler,
 );
 ```
 
@@ -247,43 +253,48 @@ import {
   requireAllPermissions,
   requireModuleAccess,
   requirePermissionCheck,
-} from '@/middleware/rbacMiddleware';
+} from "@/middleware/rbacMiddleware";
 
 // Einzelne Rolle
-router.delete('/system/config',
+router.delete(
+  "/system/config",
   authenticate,
-  requireRole('super_admin'),
-  updateSystemHandler
+  requireRole("super_admin"),
+  updateSystemHandler,
 );
 
 // Mehrere Rollen (ODER)
-router.post('/approvals',
+router.post(
+  "/approvals",
   authenticate,
-  requireAnyRole(['admin', 'manager']),
-  approveHandler
+  requireAnyRole(["admin", "manager"]),
+  approveHandler,
 );
 
 // Alle Rollen erforderlich (UND)
-router.post('/critical-action',
+router.post(
+  "/critical-action",
   authenticate,
-  requireAllRoles(['admin', 'auditor']),
-  criticalActionHandler
+  requireAllRoles(["admin", "auditor"]),
+  criticalActionHandler,
 );
 
 // Modul-Zugriff
-router.get('/hr/reports',
+router.get(
+  "/hr/reports",
   authenticate,
-  requireModuleAccess('hr'),
-  getReportsHandler
+  requireModuleAccess("hr"),
+  getReportsHandler,
 );
 
 // Benutzerdefinierte Permission-Check
-router.get('/users/:id',
+router.get(
+  "/users/:id",
   authenticate,
   requirePermissionCheck(async (req) => {
     return await canViewUser(req.auth?.userId, req.params.id);
   }),
-  getUserHandler
+  getUserHandler,
 );
 ```
 
@@ -298,8 +309,8 @@ Globale Fehlerbehandlung mit standardisierten Responses.
 #### Setup
 
 ```typescript
-import express from 'express';
-import { errorHandler } from '@/middleware/errorHandler';
+import express from "express";
+import { errorHandler } from "@/middleware/errorHandler";
 
 const app = express();
 
@@ -360,11 +371,11 @@ throw new Error('Unexpected error');
 #### Custom Error Classes
 
 ```typescript
-import { APIError, ErrorCode } from '@/utils/errors';
+import { APIError, ErrorCode } from "@/utils/errors";
 
 // Neuer Custom Error
 class RateLimitError extends APIError {
-  constructor(message = 'Too many requests') {
+  constructor(message = "Too many requests") {
     super(message, ErrorCode.TOO_MANY_REQUESTS, 429);
   }
 }
@@ -377,31 +388,37 @@ throw new RateLimitError();
 Wrapper für Async Route Handler um Errors automatisch zu fangen:
 
 ```typescript
-import { asyncHandler } from '@/middleware/asyncHandler';
-import { Router } from 'express';
+import { asyncHandler } from "@/middleware/asyncHandler";
+import { Router } from "express";
 
 const router = Router();
 
 // ❌ FALSCH - Error wird nicht gefangen
-router.get('/users', async (req, res) => {
-  const users = await db.query('SELECT * FROM users');
+router.get("/users", async (req, res) => {
+  const users = await db.query("SELECT * FROM users");
   res.json(users);
 });
 
 // ✅ RICHTIG - asyncHandler fängt Errors
-router.get('/users', asyncHandler(async (req, res) => {
-  const users = await db.query('SELECT * FROM users');
-  res.json(users);
-}));
+router.get(
+  "/users",
+  asyncHandler(async (req, res) => {
+    const users = await db.query("SELECT * FROM users");
+    res.json(users);
+  }),
+);
 
 // Mit Error Handling
-router.post('/users', asyncHandler(async (req, res) => {
-  const user = await createUser(req.body);
-  if (!user) {
-    throw new ValidationError('User creation failed');
-  }
-  res.json({ success: true, user });
-}));
+router.post(
+  "/users",
+  asyncHandler(async (req, res) => {
+    const user = await createUser(req.body);
+    if (!user) {
+      throw new ValidationError("User creation failed");
+    }
+    res.json({ success: true, user });
+  }),
+);
 ```
 
 ### errorTrackingMiddleware.ts
@@ -409,7 +426,7 @@ router.post('/users', asyncHandler(async (req, res) => {
 Sentry Integration für Fehler-Tracking:
 
 ```typescript
-import { errorTrackingMiddleware } from '@/middleware/errorTrackingMiddleware';
+import { errorTrackingMiddleware } from "@/middleware/errorTrackingMiddleware";
 
 // Nach allen Routes, VOR errorHandler
 app.use(errorTrackingMiddleware);
@@ -432,41 +449,41 @@ Pre-konfigurierte Rate Limiter für verschiedene Endpunkt-Typen:
 #### Allgemeine API (100 Requests / 15 Minuten)
 
 ```typescript
-import { generalRateLimiter } from '@/middleware/rateLimiters';
+import { generalRateLimiter } from "@/middleware/rateLimiters";
 
 // Allgemeine API Limiter
-router.get('/api/data', generalRateLimiter, handler);
-router.post('/api/data', generalRateLimiter, handler);
+router.get("/api/data", generalRateLimiter, handler);
+router.post("/api/data", generalRateLimiter, handler);
 ```
 
 #### AI Endpoints (20 Requests / 15 Minuten)
 
 ```typescript
-import { aiRateLimiter } from '@/middleware/rateLimiters';
+import { aiRateLimiter } from "@/middleware/rateLimiters";
 
 // AI-basierte Endpoints
-router.post('/api/ai/chat', aiRateLimiter, aiChatHandler);
-router.post('/api/ai/translate', aiRateLimiter, translateHandler);
-router.post('/api/ai/summarize', aiRateLimiter, summarizeHandler);
+router.post("/api/ai/chat", aiRateLimiter, aiChatHandler);
+router.post("/api/ai/translate", aiRateLimiter, translateHandler);
+router.post("/api/ai/summarize", aiRateLimiter, summarizeHandler);
 ```
 
 #### Teure AI Operationen (5 Requests / 15 Minuten)
 
 ```typescript
-import { strictAiRateLimiter } from '@/middleware/rateLimiters';
+import { strictAiRateLimiter } from "@/middleware/rateLimiters";
 
 // Sehr teure Operationen
-router.post('/api/ai/imageGenerate', strictAiRateLimiter, imageHandler);
-router.post('/api/ai/videoGenerate', strictAiRateLimiter, videoHandler);
+router.post("/api/ai/imageGenerate", strictAiRateLimiter, imageHandler);
+router.post("/api/ai/videoGenerate", strictAiRateLimiter, videoHandler);
 ```
 
 #### Audio Transkription (10 Requests / Stunde)
 
 ```typescript
-import { audioRateLimiter } from '@/middleware/rateLimiters';
+import { audioRateLimiter } from "@/middleware/rateLimiters";
 
-router.post('/api/audio/transcribe', audioRateLimiter, transcribeHandler);
-router.post('/api/audio/process', audioRateLimiter, processAudioHandler);
+router.post("/api/audio/transcribe", audioRateLimiter, transcribeHandler);
+router.post("/api/audio/process", audioRateLimiter, processAudioHandler);
 ```
 
 #### Rate Limit Bypass in Entwicklung
@@ -499,7 +516,7 @@ SKIP_RATE_LIMIT=true
 Automatische Erfassung von HTTP Request Metriken:
 
 ```typescript
-import { metricsMiddleware } from '@/middleware/metricsMiddleware';
+import { metricsMiddleware } from "@/middleware/metricsMiddleware";
 
 // Am Anfang der Middleware-Chain
 app.use(metricsMiddleware);
@@ -548,13 +565,13 @@ curl http://localhost:3000/metrics
 Database Query Performance Monitoring:
 
 ```typescript
-import { queryMonitor } from '@/middleware/queryMonitor';
+import { queryMonitor } from "@/middleware/queryMonitor";
 
 // Query ausführen und tracken
 const users = await queryMonitor.trackQuery(
-  'SELECT * FROM users WHERE status = ?',
-  ['active'],
-  () => db.all('SELECT * FROM users WHERE status = ?', ['active'])
+  "SELECT * FROM users WHERE status = ?",
+  ["active"],
+  () => db.all("SELECT * FROM users WHERE status = ?", ["active"]),
 );
 
 // Slow Query automatisch geloggt wenn > 100ms (konfigurierbar)
@@ -591,7 +608,7 @@ LOG_ALL_QUERIES=false         # Log alle Queries (default: false, nur Slow)
 Persistente HTTP Sessions mit Redis oder SQLite:
 
 ```typescript
-import { createSessionMiddleware } from '@/middleware/sessionMiddleware';
+import { createSessionMiddleware } from "@/middleware/sessionMiddleware";
 
 const app = express();
 
@@ -600,7 +617,7 @@ const sessionMiddleware = createSessionMiddleware();
 app.use(sessionMiddleware);
 
 // Verwendung in Routes
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   const user = await authenticateUser(req.body);
   if (user) {
     req.session.userId = user.id;
@@ -610,17 +627,17 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/profile', (req, res) => {
+app.get("/profile", (req, res) => {
   if (req.session.userId) {
     res.json({ userId: req.session.userId });
   } else {
-    res.status(401).json({ error: 'Not authenticated' });
+    res.status(401).json({ error: "Not authenticated" });
   }
 });
 
-app.post('/logout', (req, res) => {
+app.post("/logout", (req, res) => {
   req.session.destroy((err) => {
-    if (err) res.json({ error: 'Logout failed' });
+    if (err) res.json({ error: "Logout failed" });
     else res.json({ success: true });
   });
 });
@@ -657,7 +674,7 @@ curl http://localhost:3000/api/session/stats
 **Automatische Cleanup:**
 
 ```typescript
-import { startSessionCleanup } from '@/middleware/sessionMiddleware';
+import { startSessionCleanup } from "@/middleware/sessionMiddleware";
 
 // Cleanup alte Sessions jede Stunde
 startSessionCleanup(60 * 60 * 1000);
@@ -672,38 +689,46 @@ startSessionCleanup(60 * 60 * 1000);
 HTTP Response Caching mit TTL und Invalidation:
 
 ```typescript
-import { cacheMiddleware, invalidateCacheMiddleware } from '@/middleware/cacheMiddleware';
+import {
+  cacheMiddleware,
+  invalidateCacheMiddleware,
+} from "@/middleware/cacheMiddleware";
 
 // Responses für 5 Minuten cachen
-app.get('/api/products', 
-  cacheMiddleware({ ttl: 5 * 60 * 1000 }), 
-  listProductsHandler
+app.get(
+  "/api/products",
+  cacheMiddleware({ ttl: 5 * 60 * 1000 }),
+  listProductsHandler,
 );
 
 // Cache mit Custom Key Generator
-app.get('/api/users/:id',
+app.get(
+  "/api/users/:id",
   cacheMiddleware({
     ttl: 10 * 60 * 1000,
     keyGenerator: (req) => `user:${req.params.id}`,
-    skip: (req) => req.query.noCache === 'true'
+    skip: (req) => req.query.noCache === "true",
   }),
-  getUserHandler
+  getUserHandler,
 );
 
 // POST/PUT/DELETE invalidieren Cache
-app.post('/api/products',
+app.post(
+  "/api/products",
   createProductHandler,
-  invalidateCacheMiddleware('/api/products')
+  invalidateCacheMiddleware("/api/products"),
 );
 
-app.put('/api/products/:id',
+app.put(
+  "/api/products/:id",
   updateProductHandler,
-  invalidateCacheMiddleware(/^\/api\/products/)  // Regex Pattern
+  invalidateCacheMiddleware(/^\/api\/products/), // Regex Pattern
 );
 
-app.delete('/api/products/:id',
+app.delete(
+  "/api/products/:id",
   deleteProductHandler,
-  invalidateCacheMiddleware((req) => `/api/products/${req.params.id}`)
+  invalidateCacheMiddleware((req) => `/api/products/${req.params.id}`),
 );
 ```
 
@@ -711,9 +736,9 @@ app.delete('/api/products/:id',
 
 ```typescript
 interface CacheOptions {
-  ttl?: number;                           // Time to live (ms)
-  keyGenerator?: (req) => string;         // Custom cache key
-  skip?: (req, res) => boolean;           // Skip cache für Bedingung
+  ttl?: number; // Time to live (ms)
+  keyGenerator?: (req) => string; // Custom cache key
+  skip?: (req, res) => boolean; // Skip cache für Bedingung
 }
 ```
 
@@ -739,12 +764,17 @@ curl http://localhost:3000/api/cache/stats
 ### Korrekte Middleware Reihenfolge
 
 ```typescript
-import express from 'express';
-import { errorHandler, asyncHandler, authenticate, requirePermission } from '@/middleware';
-import { metricsMiddleware } from '@/middleware/metricsMiddleware';
-import { cacheMiddleware } from '@/middleware/cacheMiddleware';
-import { sessionMiddleware } from '@/middleware/sessionMiddleware';
-import { errorTrackingMiddleware } from '@/middleware/errorTrackingMiddleware';
+import express from "express";
+import {
+  errorHandler,
+  asyncHandler,
+  authenticate,
+  requirePermission,
+} from "@/middleware";
+import { metricsMiddleware } from "@/middleware/metricsMiddleware";
+import { cacheMiddleware } from "@/middleware/cacheMiddleware";
+import { sessionMiddleware } from "@/middleware/sessionMiddleware";
+import { errorTrackingMiddleware } from "@/middleware/errorTrackingMiddleware";
 
 const app = express();
 
@@ -763,20 +793,21 @@ app.use(cacheMiddleware({ ttl: 5 * 60 * 1000 }));
 app.use(authenticate);
 
 // 5. Routes
-app.get('/api/public', (req, res) => {
-  res.json({ message: 'Öffentlich' });
+app.get("/api/public", (req, res) => {
+  res.json({ message: "Öffentlich" });
 });
 
-app.get('/api/protected', authenticate, (req, res) => {
+app.get("/api/protected", authenticate, (req, res) => {
   res.json({ user: req.auth?.userId });
 });
 
-app.post('/api/admin', 
-  authenticate, 
-  requirePermission('admin:write'),
+app.post(
+  "/api/admin",
+  authenticate,
+  requirePermission("admin:write"),
   asyncHandler(async (req, res) => {
     // Handler
-  })
+  }),
 );
 
 // 6. Error Tracking (vor Error Handler)
@@ -930,29 +961,27 @@ Test Coverage:
 ### Integration Tests
 
 ```typescript
-import request from 'supertest';
-import app from '@/server';
+import request from "supertest";
+import app from "@/server";
 
-describe('Auth Middleware Integration', () => {
-  it('should reject missing token', async () => {
-    const res = await request(app)
-      .get('/api/protected')
-      .expect(401);
+describe("Auth Middleware Integration", () => {
+  it("should reject missing token", async () => {
+    const res = await request(app).get("/api/protected").expect(401);
   });
 
-  it('should accept valid token', async () => {
+  it("should accept valid token", async () => {
     const token = generateTestToken();
     const res = await request(app)
-      .get('/api/protected')
-      .set('Authorization', `Bearer ${token}`)
+      .get("/api/protected")
+      .set("Authorization", `Bearer ${token}`)
       .expect(200);
   });
 
-  it('should require permission', async () => {
-    const token = generateTestToken({ permissions: ['user:read'] });
+  it("should require permission", async () => {
+    const token = generateTestToken({ permissions: ["user:read"] });
     const res = await request(app)
-      .post('/api/admin')
-      .set('Authorization', `Bearer ${token}`)
+      .post("/api/admin")
+      .set("Authorization", `Bearer ${token}`)
       .expect(403);
   });
 });
@@ -993,8 +1022,8 @@ JWT_SECRET=$(openssl rand -base64 32)
 ```typescript
 // Erhöhe Limits schrittweise
 export const aiRateLimiter = rateLimit({
-  max: 50,  // Erhöht von 20
-  windowMs: 15 * 60 * 1000
+  max: 50, // Erhöht von 20
+  windowMs: 15 * 60 * 1000,
 });
 ```
 
@@ -1006,9 +1035,10 @@ export const aiRateLimiter = rateLimit({
 
 ```typescript
 // Verwende exakte Pattern
-app.put('/api/users/:id',
+app.put(
+  "/api/users/:id",
   updateHandler,
-  invalidateCacheMiddleware(/^\/api\/users\//) // Breiteres Pattern
+  invalidateCacheMiddleware(/^\/api\/users\//), // Breiteres Pattern
 );
 ```
 
@@ -1035,4 +1065,3 @@ ls -la data/sessions.db
 - **Letzte Aktualisierung:** 2025-12-20
 - **TypeScript Errors:** 0
 - **Test Coverage:** 100%
-

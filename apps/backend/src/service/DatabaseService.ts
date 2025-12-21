@@ -120,9 +120,7 @@ export class DatabaseService {
    */
   private async initSqlite(): Promise<void> {
     try {
-      const Database = (
-        await import("better-sqlite3")
-      ).default;
+      const Database = (await import("better-sqlite3")).default;
 
       this.db = new Database(this.config.sqliteFile || "./data/dev.sqlite3", {
         timeout: this.config.timeout,
@@ -253,10 +251,7 @@ export class DatabaseService {
    * console.log(result.lastInsertRowid);
    * ```
    */
-  async run(
-    sql: string,
-    params?: SqlParameters,
-  ): Promise<MutationResult> {
+  async run(sql: string, params?: SqlParameters): Promise<MutationResult> {
     this.ensureInitialized();
 
     const startTime = Date.now();
@@ -338,9 +333,7 @@ export class DatabaseService {
    * });
    * ```
    */
-  async transaction<T = unknown>(
-    callback: () => Promise<T>,
-  ): Promise<T> {
+  async transaction<T = unknown>(callback: () => Promise<T>): Promise<T> {
     this.ensureInitialized();
 
     try {
@@ -353,12 +346,16 @@ export class DatabaseService {
         return result;
       } catch (error) {
         this.db.exec("ROLLBACK");
-        throw new TransactionError("Transaction failed", { error: String(error) });
+        throw new TransactionError("Transaction failed", {
+          error: String(error),
+        });
       }
     } catch (error) {
       throw error instanceof TransactionError
         ? error
-        : new TransactionError("Unexpected transaction error", { error: String(error) });
+        : new TransactionError("Unexpected transaction error", {
+            error: String(error),
+          });
     }
   }
 
@@ -440,9 +437,7 @@ export class DatabaseService {
    */
   private ensureInitialized(): void {
     if (!this.isInitialized) {
-      throw new Error(
-        "Database not initialized. Call init() first.",
-      );
+      throw new Error("Database not initialized. Call init() first.");
     }
   }
 

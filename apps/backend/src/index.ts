@@ -69,7 +69,7 @@ function logStartupInfo(): void {
   logger.info(`🔧 Environment:       ${versionInfo.environment}`);
   logger.info(`📦 Node:              ${versionInfo.nodeVersion}`);
   logger.info(
-    `💻 Platform:          ${versionInfo.platform} (${versionInfo.arch})`
+    `💻 Platform:          ${versionInfo.platform} (${versionInfo.arch})`,
   );
   logger.info("--------------------------------------------------------");
   logger.info(`📁 Views:             ${VIEWS_DIR}`);
@@ -132,29 +132,28 @@ async function start(): Promise<void> {
       logger.info("--------------------------------------------------------");
       logger.info(
         { port: PORT },
-        `Backend listening on: http://localhost:${PORT}`
+        `Backend listening on: http://localhost:${PORT}`,
       );
       logger.info(`Dashboard:            http://localhost:${PORT}/`);
       logger.info(`System API:           http://localhost:${PORT}/api/system`);
       logger.info(`Health API:           http://localhost:${PORT}/api/health`);
       logger.info(
-        `Functions API:        http://localhost:${PORT}/api/functions`
+        `Functions API:        http://localhost:${PORT}/api/functions`,
       );
       logger.info(
-        `AI Annotator API:     http://localhost:${PORT}/api/ai-annotator`
+        `AI Annotator API:     http://localhost:${PORT}/api/ai-annotator`,
       );
       logger.info(`Metrics API:          http://localhost:${PORT}/api/metrics`);
       logger.info("--------------------------------------------------------");
 
       // Initialize WebSocket server via dynamic import
       void (async () => {
-        const { websocketService: ws } = await import(
-          "./routes/other/websocketService.js"
-        );
+        const { websocketService: ws } =
+          await import("./routes/other/websocketService.js");
         ws.initialize(server);
         logger.info(
           { port: PORT },
-          `WebSocket initialized: ws://localhost:${PORT}`
+          `WebSocket initialized: ws://localhost:${PORT}`,
         );
       })();
 

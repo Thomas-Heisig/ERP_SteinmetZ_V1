@@ -213,7 +213,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (parseError) {
         console.error("❌ Failed to parse response:", parseError);
         throw new Error(
-          `Server error: ${response.status} ${response.statusText}`
+          `Server error: ${response.status} ${response.statusText}`,
         );
       }
 
@@ -247,7 +247,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!userResponse.ok) {
-        console.warn("Could not fetch user info, using data from login response");
+        console.warn(
+          "Could not fetch user info, using data from login response",
+        );
         // Still proceed with login even if we can't get user info
         setState({
           user: data.user || {
@@ -332,12 +334,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (parseError) {
         console.error("❌ Failed to parse response:", parseError);
         throw new Error(
-          `Server error: ${response.status} ${response.statusText}`
+          `Server error: ${response.status} ${response.statusText}`,
         );
       }
 
       if (!response.ok) {
-        const errorMsg = result.error || result.message || "Registration failed";
+        const errorMsg =
+          result.error || result.message || "Registration failed";
         console.error("❌ Registration failed:", errorMsg);
         throw new Error(errorMsg);
       }

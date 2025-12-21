@@ -231,7 +231,10 @@ export class ValidationError extends APIError {
  * ```
  */
 export class RateLimitError extends APIError {
-  constructor(message = "Rate Limit Exceeded", details?: Record<string, unknown>) {
+  constructor(
+    message = "Rate Limit Exceeded",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.RATE_LIMIT_EXCEEDED, message, 429, details);
   }
 }
@@ -325,13 +328,7 @@ export class DatabaseSchemaError extends APIError {
     public readonly table?: string,
     public readonly operation?: string,
   ) {
-    super(
-      ErrorCode.SCHEMA_ERROR,
-      message,
-      500,
-      { table, operation },
-      true,
-    );
+    super(ErrorCode.SCHEMA_ERROR, message, 500, { table, operation }, true);
   }
 }
 
@@ -344,7 +341,10 @@ export class DatabaseSchemaError extends APIError {
  * ```
  */
 export class TransactionError extends APIError {
-  constructor(message = "Transaction Error", details?: Record<string, unknown>) {
+  constructor(
+    message = "Transaction Error",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.TRANSACTION_ERROR, message, 500, details);
   }
 }
@@ -359,7 +359,10 @@ export class TransactionError extends APIError {
  * Nur für unerwartete Fehler verwenden
  */
 export class InternalServerError extends APIError {
-  constructor(message = "Internal Server Error", details?: Record<string, unknown>) {
+  constructor(
+    message = "Internal Server Error",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.INTERNAL_SERVER_ERROR, message, 500, details, false);
   }
 }
@@ -373,7 +376,10 @@ export class InternalServerError extends APIError {
  * ```
  */
 export class ServiceUnavailableError extends APIError {
-  constructor(message = "Service Unavailable", details?: Record<string, unknown>) {
+  constructor(
+    message = "Service Unavailable",
+    details?: Record<string, unknown>,
+  ) {
     super(ErrorCode.SERVICE_UNAVAILABLE, message, 503, details);
   }
 }
@@ -424,12 +430,10 @@ export class PaymentError extends APIError {
     public readonly paymentProvider: string,
     details?: Record<string, unknown>,
   ) {
-    super(
-      ErrorCode.PAYMENT_ERROR,
-      message,
-      400,
-      { ...details, provider: paymentProvider },
-    );
+    super(ErrorCode.PAYMENT_ERROR, message, 400, {
+      ...details,
+      provider: paymentProvider,
+    });
   }
 }
 
@@ -475,7 +479,10 @@ export function toAPIError(error: unknown): APIError {
 /**
  * Erstellt Error-Response für API
  */
-export function createErrorResponse(error: APIError, requestId?: string): ErrorResponse {
+export function createErrorResponse(
+  error: APIError,
+  requestId?: string,
+): ErrorResponse {
   return {
     success: false,
     error: {

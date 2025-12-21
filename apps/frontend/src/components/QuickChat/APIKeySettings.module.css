@@ -102,7 +102,7 @@
   border: 1px solid var(--border-color, #d1d5db);
   border-radius: 6px;
   font-size: 14px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   background: white;
   color: var(--text-primary, #1f2937);
   transition: border-color 0.2s ease;
@@ -142,7 +142,7 @@
   padding: 8px 12px;
   background: var(--bg-tertiary, #f3f4f6);
   border-radius: 4px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 13px;
   color: var(--text-secondary, #6b7280);
 }

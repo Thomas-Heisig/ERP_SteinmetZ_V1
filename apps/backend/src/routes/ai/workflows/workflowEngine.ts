@@ -448,7 +448,10 @@ export class WorkflowEngine {
     return resolved;
   }
 
-  private interpolate(value: unknown, context: Record<string, unknown>): unknown {
+  private interpolate(
+    value: unknown,
+    context: Record<string, unknown>,
+  ): unknown {
     if (typeof value === "string") {
       return value.replace(/\{\{(.*?)\}\}/g, (_, expr) => {
         try {

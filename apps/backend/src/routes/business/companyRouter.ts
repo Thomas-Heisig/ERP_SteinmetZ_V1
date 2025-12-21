@@ -472,10 +472,13 @@ router.post(
       ],
     );
 
-    logger.info({
-      company_id: id,
-      iban: validatedData.iban,
-    }, "Bank account added");
+    logger.info(
+      {
+        company_id: id,
+        iban: validatedData.iban,
+      },
+      "Bank account added",
+    );
 
     res.status(201).json({ message: "Bank account added successfully" });
   }),
@@ -526,10 +529,13 @@ router.post(
       ],
     );
 
-    logger.info({
-      company_id: id,
-      type: validatedData.channel_type,
-    }, "Communication channel added");
+    logger.info(
+      {
+        company_id: id,
+        type: validatedData.channel_type,
+      },
+      "Communication channel added",
+    );
 
     res
       .status(201)

@@ -11,15 +11,18 @@
 ### 1. ✅ Admin hat keine Berechtigungen (KRITISCH - BEHOBEN)
 
 **Problem:**
+
 ```
 ❌ Fehler: Zugriff verweigert. Bitte als Administrator anmelden.
 ```
 
 **Ursache:**
+
 - Admin-Benutzer hatte **keine Rolle zugewiesen** (role: null in DB)
 - System-Rollen existierten, aber waren nicht mit dem Admin-User verknüpft
 
 **Lösung:**
+
 1. Script erstellt: `apps/backend/src/scripts/assignAdminRole.ts`
 2. Super Admin-Rolle dem Admin-User zugewiesen:
    ```sql
@@ -28,6 +31,7 @@
    ```
 
 **Ergebnis:**
+
 - ✅ Admin hat jetzt **Super Administrator** Rechte
 - ✅ Voller Zugriff auf alle Module
 - ✅ Kann Rollen und Benutzer verwalten
@@ -37,6 +41,7 @@
 ### 2. ✅ Fehlende Benutzerrechte-Verwaltung (NEU IMPLEMENTIERT)
 
 **Problem:**
+
 - Keine UI zum Verwalten von Benutzerrollen
 - Keine Möglichkeit, Berechtigungen zuzuweisen
 
@@ -44,6 +49,7 @@
 Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
 
 **Features:**
+
 - 👥 **Benutzerübersicht** mit allen registrierten Usern
 - 🎭 **Rollen zuweisen/entziehen** über intuitive Modals
 - ✅ **Benutzer aktivieren/deaktivieren**
@@ -51,16 +57,18 @@ Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
 - 🔍 **Live-Anzeige** aller zugewiesenen Rollen pro Benutzer
 
 **Dateien:**
+
 - `UserManagement.tsx` (400+ Zeilen)
 - `UserManagement.module.css` (450+ Zeilen)
 
 **Funktionen:**
+
 ```typescript
-- fetchUsers() // Lädt alle Benutzer
-- fetchRoles() // Lädt alle System-Rollen
-- handleAssignRole(userId, roleId) // Rolle zuweisen
-- handleRevokeRole(userId, roleId) // Rolle entziehen
-- handleToggleActive(userId, isActive) // Benutzer aktivieren/deaktivieren
+-fetchUsers() - // Lädt alle Benutzer
+  fetchRoles() - // Lädt alle System-Rollen
+  handleAssignRole(userId, roleId) - // Rolle zuweisen
+  handleRevokeRole(userId, roleId) - // Rolle entziehen
+  handleToggleActive(userId, isActive); // Benutzer aktivieren/deaktivieren
 ```
 
 ---
@@ -68,6 +76,7 @@ Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
 ### 3. ✅ Dashboard nicht responsiv (BEHOBEN)
 
 **Problem:**
+
 - Dashboard-Inhalt nicht komplett sichtbar bei ausgeklappter Sidebar
 - Keine responsive Anpassung für mobile Geräte
 - Feste Breiten verursachten Scroll-Probleme
@@ -76,6 +85,7 @@ Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
 `ComprehensiveDashboard.css` überarbeitet:
 
 **Änderungen:**
+
 ```css
 /* Vorher (problematisch): */
 .comprehensive-dashboard {
@@ -102,12 +112,14 @@ Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
 ```
 
 **Responsive Breakpoints hinzugefügt:**
+
 - Desktop (> 1024px): Volle Ansicht
 - Tablet (768px - 1024px): Reduzierte Abstände
 - Mobile (< 768px): 1-spaltig, kleinere Schriften
 - Klein (< 480px): Kompakte Navigation
 
 **Verbesserungen:**
+
 - ✅ `clamp()` für responsive Schriftgrößen
 - ✅ `box-sizing: border-box` für korrektes Layout
 - ✅ Flexible Grid-Spalten mit `auto-fit` und `minmax()`
@@ -121,6 +133,7 @@ Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
 ### Datenbank-Status:
 
 **Admin-Benutzer:**
+
 ```
 ✅ Username: admin
 ✅ Email: admin@dev.local
@@ -130,6 +143,7 @@ Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
 ```
 
 **Verfügbare System-Rollen:**
+
 1. **super_admin** - Voller Systemzugriff
 2. **admin** - Administrative Rechte (ohne Rollenverwaltung)
 3. **manager** - Team-Management und Genehmigungen
@@ -147,6 +161,7 @@ Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
 **URL:** `/user-management`
 
 **Funktionen:**
+
 1. **Benutzerübersicht-Tabelle:**
    - Avatar mit Initialen
    - Vollständiger Name + Username
@@ -170,6 +185,7 @@ Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
    - Verfügbare Rollen
 
 **Berechtigungen:**
+
 - Erfordert `super_admin` oder `admin` Rolle
 - Nur Super Admins können System-Rollen ändern
 
@@ -178,6 +194,7 @@ Neue Seite erstellt: `apps/frontend/src/pages/UserManagement/`
 ## 🧪 Testing & Verifizierung
 
 ### 1. Admin-Rolle prüfen:
+
 ```bash
 node -e "const Database = require('better-sqlite3'); \
   const db = new Database('data/dev.sqlite3'); \
@@ -191,12 +208,14 @@ node -e "const Database = require('better-sqlite3'); \
 ```
 
 ### 2. Dashboard Responsivität testen:
+
 - ✅ Desktop (1920x1080): Volle Breite, 4-spaltig
 - ✅ Laptop (1366x768): 3-spaltig, reduzierte Abstände
 - ✅ Tablet (768x1024): 2-spaltig, kompaktere Navigation
 - ✅ Mobile (375x667): 1-spaltig, gestapelte Karten
 
 ### 3. Benutzerverwaltung testen:
+
 ```bash
 # Zugriff:
 http://localhost:5173/user-management
@@ -217,6 +236,7 @@ http://localhost:5173/user-management
 ### Empfohlene Erweiterungen:
 
 1. **Backend-Endpoints erweitern:**
+
    ```typescript
    // Fehlt noch (aktuell Frontend-ready):
    GET  /api/auth/users              // Liste aller Benutzer
@@ -224,10 +244,11 @@ http://localhost:5173/user-management
    ```
 
 2. **Routing hinzufügen:**
+
    ```typescript
    // apps/frontend/src/routes.tsx
    import UserManagement from './pages/UserManagement/UserManagement';
-   
+
    {
      path: '/user-management',
      element: <ProtectedRoute><UserManagement /></ProtectedRoute>
@@ -235,6 +256,7 @@ http://localhost:5173/user-management
    ```
 
 3. **Navigation erweitern:**
+
    ```typescript
    // MainNavigation.tsx
    {
@@ -257,12 +279,14 @@ http://localhost:5173/user-management
 ## 🐛 Hinweis zu Browser-Extension-Fehlern
 
 Die gemeldeten Fehler:
+
 ```
 Unchecked runtime.lastError: The message port closed...
 FrameIsBrowserFrameError: Frame X in tab Y is a browser frame...
 ```
 
 **Status:** Nicht relevant für ERP-System
+
 - ❌ **NICHT** Teil des ERP SteinmetZ-Projekts
 - ℹ️ Fehler kommen von Browser-Extensions (Chrome/Edge)
 - ℹ️ Haben keine Auswirkung auf die Anwendung
@@ -275,16 +299,19 @@ FrameIsBrowserFrameError: Frame X in tab Y is a browser frame...
 ## 📚 Dokumentation
 
 ### Neue Dateien:
+
 - ✅ `apps/backend/src/scripts/assignAdminRole.ts` - Admin-Rollenzuweisung
 - ✅ `apps/frontend/src/pages/UserManagement/UserManagement.tsx` - UI-Komponente
 - ✅ `apps/frontend/src/pages/UserManagement/UserManagement.module.css` - Styling
 - ✅ `docs/ADMIN_RIGHTS_FIX_2025_12_20.md` - Diese Datei
 
 ### Geänderte Dateien:
+
 - ✅ `apps/frontend/src/pages/ComprehensiveDashboard.css` - Responsive Verbesserungen
 - ✅ `data/dev.sqlite3` - user_roles Tabelle aktualisiert
 
 ### Referenzen:
+
 - [RBAC Implementation](RBAC_IMPLEMENTATION.md)
 - [RBAC Completion](../RBAC_COMPLETION.md)
 - [Database Migration Standards](DATABASE_MIGRATION_STANDARDS.md)
@@ -295,17 +322,20 @@ FrameIsBrowserFrameError: Frame X in tab Y is a browser frame...
 ## ✅ Zusammenfassung
 
 **Behobene Probleme:**
+
 1. ✅ Admin-Benutzer hat jetzt Super Admin-Rechte
 2. ✅ Benutzerverwaltungs-UI erstellt
 3. ✅ Dashboard ist jetzt vollständig responsiv
 
 **Neue Features:**
+
 1. ✅ Benutzerübersicht mit Rollen
 2. ✅ Rollen zuweisen/entziehen
 3. ✅ Benutzer aktivieren/deaktivieren
 4. ✅ Statistik-Dashboard
 
 **Technische Verbesserungen:**
+
 1. ✅ Responsive Design für alle Bildschirmgrößen
 2. ✅ Box-Model-Korrekturen für Layout
 3. ✅ Flexible Grid-Layouts

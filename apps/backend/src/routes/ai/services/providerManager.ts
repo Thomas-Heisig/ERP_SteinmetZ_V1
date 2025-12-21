@@ -1,14 +1,14 @@
 /**
  * Provider Manager Service
- * 
+ *
  * Manages AI provider selection, health checking, and fallback chain
  * for the QuickChat component.
- * 
+ *
  * Provider Priority (configurable):
  * 1. Ollama (local, fast, offline)
  * 2. Eliza (rule-based fallback, always available)
  * 3. Simple fallback (basic responses)
- * 
+ *
  * @module services/providerManager
  */
 
@@ -78,7 +78,7 @@ export class ProviderManager {
     statuses.push(await this.checkAzureStatus());
 
     // Update cache
-    statuses.forEach(status => {
+    statuses.forEach((status) => {
       this.providerCache.set(status.provider, status);
     });
 
@@ -130,7 +130,7 @@ export class ProviderManager {
     try {
       const apiKeys = await loadAPIKeys();
       const apiKey = apiKeys.openai || process.env.OPENAI_API_KEY;
-      
+
       if (!apiKey) {
         return {
           provider: "openai",
@@ -168,7 +168,7 @@ export class ProviderManager {
     try {
       const apiKeys = await loadAPIKeys();
       const apiKey = apiKeys.anthropic || process.env.ANTHROPIC_API_KEY;
-      
+
       if (!apiKey) {
         return {
           provider: "anthropic",
@@ -204,8 +204,9 @@ export class ProviderManager {
     try {
       const apiKeys = await loadAPIKeys();
       const apiKey = apiKeys.azure?.apiKey || process.env.AZURE_OPENAI_API_KEY;
-      const endpoint = apiKeys.azure?.endpoint || process.env.AZURE_OPENAI_ENDPOINT;
-      
+      const endpoint =
+        apiKeys.azure?.endpoint || process.env.AZURE_OPENAI_ENDPOINT;
+
       if (!apiKey || !endpoint) {
         return {
           provider: "azure",
@@ -240,22 +241,28 @@ export class ProviderManager {
   async sendMessage(
     messages: ChatMessage[],
     preferredProvider?: string,
-    model?: string
+    model?: string,
   ): Promise<AIResponse> {
     const providerChain = this.getProviderChain(preferredProvider);
 
     for (const provider of providerChain) {
       try {
-        logger.info({ provider, model }, "Attempting to send message via provider");
-        
+        logger.info(
+          { provider, model },
+          "Attempting to send message via provider",
+        );
+
         const response = await this.callProvider(provider, messages, model);
-        
+
         logger.info({ provider, model }, "Message sent successfully");
         return response;
       } catch (error) {
         logger.warn(
-          { provider, error: error instanceof Error ? error.message : String(error) },
-          "Provider failed, trying next in chain"
+          {
+            provider,
+            error: error instanceof Error ? error.message : String(error),
+          },
+          "Provider failed, trying next in chain",
         );
         continue;
       }
@@ -268,7 +275,7 @@ export class ProviderManager {
       meta: {
         provider: "fallback",
         model: "none",
-      }
+      },
     };
   }
 
@@ -280,7 +287,9 @@ export class ProviderManager {
 
     // Add preferred provider first if specified and enabled
     if (preferredProvider) {
-      const providerConfig = this.providers.find(p => p.name === preferredProvider);
+      const providerConfig = this.providers.find(
+        (p) => p.name === preferredProvider,
+      );
       if (providerConfig?.enabled) {
         chain.push(preferredProvider);
       }
@@ -288,10 +297,10 @@ export class ProviderManager {
 
     // Add remaining providers in priority order
     const sortedProviders = [...this.providers]
-      .filter(p => p.enabled && p.name !== preferredProvider)
+      .filter((p) => p.enabled && p.name !== preferredProvider)
       .sort((a, b) => a.priority - b.priority);
 
-    chain.push(...sortedProviders.map(p => p.name));
+    chain.push(...sortedProviders.map((p) => p.name));
 
     return chain;
   }
@@ -302,13 +311,13 @@ export class ProviderManager {
   private async callProvider(
     provider: string,
     messages: ChatMessage[],
-    model?: string
+    model?: string,
   ): Promise<AIResponse> {
     switch (provider) {
       case "ollama":
         return await callOllama(
           model || process.env.OLLAMA_MODEL || "qwen2.5:3b",
-          messages
+          messages,
         );
 
       case "eliza":
@@ -317,14 +326,14 @@ export class ProviderManager {
       case "fallback": {
         const response = await generateAIResponse(
           model || "fallback",
-          messages
+          messages,
         );
         return {
           text: typeof response === "string" ? response : response.text,
           meta: {
             provider: "fallback",
             model: model || "fallback",
-          }
+          },
         };
       }
 

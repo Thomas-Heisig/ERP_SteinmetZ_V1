@@ -59,9 +59,10 @@ function assignAdminRole(): void {
 
     // Get admin user
     const admin = db
-      .prepare<string, UserRecord>(
-        "SELECT id, username, email FROM users WHERE username = ?"
-      )
+      .prepare<
+        string,
+        UserRecord
+      >("SELECT id, username, email FROM users WHERE username = ?")
       .get("admin");
 
     if (!admin) {
@@ -74,9 +75,10 @@ function assignAdminRole(): void {
 
     // Get super_admin role
     const superAdminRole = db
-      .prepare<string, RoleRecord>(
-        "SELECT id, name, display_name FROM roles WHERE name = ?"
-      )
+      .prepare<
+        string,
+        RoleRecord
+      >("SELECT id, name, display_name FROM roles WHERE name = ?")
       .get("super_admin");
 
     if (!superAdminRole) {
@@ -89,9 +91,10 @@ function assignAdminRole(): void {
 
     // Check if already assigned
     const existing = db
-      .prepare<[string, string], UserRoleRecord>(
-        "SELECT * FROM user_roles WHERE user_id = ? AND role_id = ?"
-      )
+      .prepare<
+        [string, string],
+        UserRoleRecord
+      >("SELECT * FROM user_roles WHERE user_id = ? AND role_id = ?")
       .get(admin.id, superAdminRole.id);
 
     if (existing) {
@@ -99,12 +102,14 @@ function assignAdminRole(): void {
 
       // Show current roles
       const roles = db
-        .prepare<string, RoleDisplay>(`
+        .prepare<string, RoleDisplay>(
+          `
           SELECT r.name, r.display_name 
           FROM user_roles ur 
           JOIN roles r ON ur.role_id = r.id 
           WHERE ur.user_id = ?
-        `)
+        `,
+        )
         .all(admin.id);
 
       console.log("\n📋 Current roles:");
@@ -119,20 +124,24 @@ function assignAdminRole(): void {
     // Assign super_admin role
     console.log("🔧 Assigning Super Admin role...");
 
-    db.prepare<[string, string, string]>(`
+    db.prepare<[string, string, string]>(
+      `
       INSERT INTO user_roles (user_id, role_id, assigned_by, assigned_at)
       VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-    `).run(admin.id, superAdminRole.id, admin.id);
+    `,
+    ).run(admin.id, superAdminRole.id, admin.id);
 
     // Verify assignment
     const verification = db
-      .prepare<string, RoleAssignment>(`
+      .prepare<string, RoleAssignment>(
+        `
         SELECT u.username, r.name as role_name, r.display_name 
         FROM users u
         JOIN user_roles ur ON u.id = ur.user_id
         JOIN roles r ON ur.role_id = r.id
         WHERE u.id = ?
-      `)
+      `,
+      )
       .all(admin.id);
 
     console.log("\n✅ Super Admin role assigned successfully!");

@@ -286,7 +286,9 @@ function normalizeSettings(settings: AISettings): AISettings {
     ...DEFAULT_SETTINGS,
     ...settings,
     last_updated:
-      typeof settings.last_updated === "string" ? settings.last_updated : nowIso(),
+      typeof settings.last_updated === "string"
+        ? settings.last_updated
+        : nowIso(),
   };
 
   if (!isValidLogLevel(normalized.log_level)) {
@@ -339,7 +341,12 @@ function toBoolean(value: unknown, fallback: boolean): boolean {
 }
 
 function isValidLogLevel(level: unknown): level is LogLevelValue {
-  return level === "error" || level === "warn" || level === "info" || level === "debug";
+  return (
+    level === "error" ||
+    level === "warn" ||
+    level === "info" ||
+    level === "debug"
+  );
 }
 
 function isValidProvider(provider: unknown): provider is Provider {

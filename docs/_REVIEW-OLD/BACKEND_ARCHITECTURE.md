@@ -29,7 +29,7 @@ Das Backend folgt diesen Architektur-Prinzipien:
 ✅ **Dependency Injection** - Lose Kopplung zwischen Komponenten  
 ✅ **Type Safety** - 100% TypeScript mit Zod-Validierung  
 ✅ **Structured Logging** - Pino für Performance  
-✅ **Error Recovery** - Graceful Error Handling  
+✅ **Error Recovery** - Graceful Error Handling
 
 ### Schichten-Modell
 
@@ -64,10 +64,10 @@ Das Backend folgt diesen Architektur-Prinzipien:
 **Dateiort:** `apps/backend/src/routes/`
 
 ```typescript
-import express, { Request, Response } from 'express';
-import { authMiddleware } from '../middleware/auth.js';
-import { validateRequest } from '../middleware/validation.js';
-import { UserService } from '../service/UserService.js';
+import express, { Request, Response } from "express";
+import { authMiddleware } from "../middleware/auth.js";
+import { validateRequest } from "../middleware/validation.js";
+import { UserService } from "../service/UserService.js";
 
 const router = express.Router();
 const userService = new UserService(db);
@@ -78,7 +78,7 @@ const userService = new UserService(db);
  * @param id User-ID
  * @returns User-Objekt
  */
-router.get('/:id', authMiddleware, async (req, res, next) => {
+router.get("/:id", authMiddleware, async (req, res, next) => {
   try {
     const user = await userService.getById(req.params.id);
     res.json({ success: true, data: user });
@@ -91,6 +91,7 @@ export default router;
 ```
 
 **Verantwortungen:**
+
 - HTTP-Request/Response Handling
 - Route Definitionen
 - Middleware Verkettung
@@ -101,11 +102,11 @@ export default router;
 **Dateiort:** `apps/backend/src/middleware/`
 
 ```typescript
-import { Request, Response, NextFunction } from 'express';
-import { createLogger } from '../utils/logger.js';
-import { toAPIError } from '../types/errors.js';
+import { Request, Response, NextFunction } from "express";
+import { createLogger } from "../utils/logger.js";
+import { toAPIError } from "../types/errors.js";
 
-const logger = createLogger('api');
+const logger = createLogger("api");
 
 /**
  * Globaler Error Handler
@@ -114,10 +115,10 @@ export const errorHandler = (
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const error = toAPIError(err);
-  
+
   res.status(error.statusCode).json({
     success: false,
     error: {
@@ -128,8 +129,8 @@ export const errorHandler = (
     timestamp: new Date().toISOString(),
     requestId: req.id,
   });
-  
-  logger.error({ error, requestId: req.id }, 'Request error');
+
+  logger.error({ error, requestId: req.id }, "Request error");
 };
 
 /**
@@ -146,13 +147,14 @@ export const validateRequest = (schema: ZodSchema) => {
       req.validated = parsed;
       next();
     } catch (error) {
-      next(new ValidationError('Invalid request', parseZodErrors(error)));
+      next(new ValidationError("Invalid request", parseZodErrors(error)));
     }
   };
 };
 ```
 
 **Verantwortungen:**
+
 - Request Validation (Zod)
 - Response Formatting
 - Error Handling
@@ -163,8 +165,8 @@ export const validateRequest = (schema: ZodSchema) => {
 **Dateiort:** `apps/backend/src/service/`
 
 ```typescript
-import { DatabaseService } from './DatabaseService.js';
-import { NotFoundError, ValidationError } from '../types/errors.js';
+import { DatabaseService } from "./DatabaseService.js";
+import { NotFoundError, ValidationError } from "../types/errors.js";
 
 /**
  * Business-Logik für Benutzer
@@ -180,8 +182,8 @@ export class UserService {
    */
   async getById(id: string) {
     const user = await this.db.get(
-      'SELECT id, name, email, role FROM users WHERE id = ?',
-      [id]
+      "SELECT id, name, email, role FROM users WHERE id = ?",
+      [id],
     );
 
     if (!user) {
@@ -199,14 +201,14 @@ export class UserService {
    */
   async create(data: CreateUserInput) {
     // Validierung
-    if (!data.email?.includes('@')) {
-      throw new ValidationError('Invalid email', { field: 'email' });
+    if (!data.email?.includes("@")) {
+      throw new ValidationError("Invalid email", { field: "email" });
     }
 
     // Insert
     const result = await this.db.run(
-      'INSERT INTO users (id, name, email, role) VALUES (?, ?, ?, ?)',
-      [generateId(), data.name, data.email, data.role]
+      "INSERT INTO users (id, name, email, role) VALUES (?, ?, ?, ?)",
+      [generateId(), data.name, data.email, data.role],
     );
 
     return result.lastInsertRowid;
@@ -222,11 +224,11 @@ export class UserService {
     const values: any[] = [];
 
     if (data.name) {
-      updates.push('name = ?');
+      updates.push("name = ?");
       values.push(data.name);
     }
     if (data.email) {
-      updates.push('email = ?');
+      updates.push("email = ?");
       values.push(data.email);
     }
 
@@ -234,8 +236,8 @@ export class UserService {
 
     values.push(id);
     await this.db.run(
-      `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
-      values
+      `UPDATE users SET ${updates.join(", ")} WHERE id = ?`,
+      values,
     );
   }
 
@@ -244,12 +246,13 @@ export class UserService {
    * @param id User-ID
    */
   async delete(id: string) {
-    await this.db.run('DELETE FROM users WHERE id = ?', [id]);
+    await this.db.run("DELETE FROM users WHERE id = ?", [id]);
   }
 }
 ```
 
 **Verantwortungen:**
+
 - Business-Logik
 - Datenvalidierung
 - Transaktionen
@@ -260,9 +263,9 @@ export class UserService {
 **Dateiort:** `apps/backend/src/service/DatabaseService.ts`
 
 ```typescript
-import Database from 'better-sqlite3';
-import { DatabaseConfig } from '../types/database.js';
-import { DatabaseError } from '../types/errors.js';
+import Database from "better-sqlite3";
+import { DatabaseConfig } from "../types/database.js";
+import { DatabaseError } from "../types/errors.js";
 
 /**
  * Zentrale Datenbank-Abstraktionsschicht
@@ -271,7 +274,7 @@ import { DatabaseError } from '../types/errors.js';
 export class DatabaseService {
   private db: any;
   private config: DatabaseConfig;
-  private stats = { total: 0, errors: 0, lastQuery: '' };
+  private stats = { total: 0, errors: 0, lastQuery: "" };
 
   constructor(config: DatabaseConfig) {
     this.config = config;
@@ -283,17 +286,17 @@ export class DatabaseService {
    */
   async init(): Promise<void> {
     try {
-      if (this.config.driver === 'sqlite') {
+      if (this.config.driver === "sqlite") {
         this.db = new Database(this.config.sqliteFile);
-        this.db.pragma('journal_mode = WAL');
-        this.db.pragma('foreign_keys = ON');
-      } else if (this.config.driver === 'postgres') {
+        this.db.pragma("journal_mode = WAL");
+        this.db.pragma("foreign_keys = ON");
+      } else if (this.config.driver === "postgres") {
         // PostgreSQL-Initialisierung
-        const { Pool } = await import('pg');
+        const { Pool } = await import("pg");
         this.db = new Pool({ connectionString: this.config.postgresUri });
       }
     } catch (error) {
-      throw new DatabaseError('Failed to initialize database', '', [], error);
+      throw new DatabaseError("Failed to initialize database", "", [], error);
     }
   }
 
@@ -307,7 +310,7 @@ export class DatabaseService {
       this.trackQuery(sql);
       return results;
     } catch (error) {
-      throw new DatabaseError('Query failed', sql, params, error);
+      throw new DatabaseError("Query failed", sql, params, error);
     }
   }
 
@@ -321,7 +324,7 @@ export class DatabaseService {
       this.trackQuery(sql);
       return result;
     } catch (error) {
-      throw new DatabaseError('Query failed', sql, params, error);
+      throw new DatabaseError("Query failed", sql, params, error);
     }
   }
 
@@ -338,7 +341,7 @@ export class DatabaseService {
         lastInsertRowid: result.lastInsertRowid,
       };
     } catch (error) {
-      throw new DatabaseError('Mutation failed', sql, params, error);
+      throw new DatabaseError("Mutation failed", sql, params, error);
     }
   }
 
@@ -350,7 +353,7 @@ export class DatabaseService {
     try {
       return await transaction();
     } catch (error) {
-      throw new DatabaseError('Transaction failed', '', [], error);
+      throw new DatabaseError("Transaction failed", "", [], error);
     }
   }
 
@@ -360,21 +363,21 @@ export class DatabaseService {
   async healthCheck(): Promise<HealthStatus> {
     try {
       const start = Date.now();
-      await this.get('SELECT 1');
+      await this.get("SELECT 1");
       const latency = Date.now() - start;
 
       return {
-        status: latency < 100 ? 'healthy' : 'degraded',
+        status: latency < 100 ? "healthy" : "degraded",
         latency,
         driver: this.config.driver,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
       return {
-        status: 'unhealthy',
+        status: "unhealthy",
         latency: -1,
         driver: this.config.driver,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
         timestamp: new Date().toISOString(),
       };
     }
@@ -391,6 +394,7 @@ export class DatabaseService {
 ```
 
 **Verantwortungen:**
+
 - Datenbankverbindung
 - Query Execution
 - Connection Management
@@ -405,20 +409,20 @@ export class DatabaseService {
 **Dateiort:** `apps/backend/src/types/database.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Konfigurationsschema für Datenbankverbindung
  */
-export const DatabaseConfigSchema = z.discriminatedUnion('driver', [
+export const DatabaseConfigSchema = z.discriminatedUnion("driver", [
   z.object({
-    driver: z.literal('sqlite'),
+    driver: z.literal("sqlite"),
     sqliteFile: z.string(),
     enableWAL: z.boolean().optional(),
     logging: z.boolean().optional(),
   }),
   z.object({
-    driver: z.literal('postgres'),
+    driver: z.literal("postgres"),
     postgresUri: z.string().url(),
     connectionTimeout: z.number().optional(),
     idleTimeout: z.number().optional(),
@@ -461,7 +465,7 @@ export interface MutationResult {
 ✅ Runtime-Validierung  
 ✅ Type Inference  
 ✅ IDE Autocompletion  
-✅ Self-Documenting Code  
+✅ Self-Documenting Code
 
 ---
 
@@ -494,24 +498,24 @@ APTError (base)
 ```typescript
 // NotFoundError
 if (!user) {
-  throw new NotFoundError('User not found', { userId: '123' });
+  throw new NotFoundError("User not found", { userId: "123" });
 }
 
 // ValidationError
-if (!email.includes('@')) {
-  throw new ValidationError('Invalid email', { field: 'email', value: email });
+if (!email.includes("@")) {
+  throw new ValidationError("Invalid email", { field: "email", value: email });
 }
 
 // DatabaseError (mit Context)
 try {
   await db.run(sql, params);
 } catch (error) {
-  throw new DatabaseError('Insert failed', sql, params, error);
+  throw new DatabaseError("Insert failed", sql, params, error);
 }
 
 // UnauthorizedError
 if (!token) {
-  throw new UnauthorizedError('Token required');
+  throw new UnauthorizedError("Token required");
 }
 ```
 
@@ -519,12 +523,9 @@ if (!token) {
 
 ```typescript
 // Retry Logic
-async function withRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3
-): Promise<T> {
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
   let lastError: Error;
-  
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
@@ -535,7 +536,7 @@ async function withRetry<T>(
       }
     }
   }
-  
+
   throw lastError!;
 }
 
@@ -567,29 +568,28 @@ export class DocumentService {
   constructor(private db: DatabaseService) {}
 
   async getAll(filters?: DocumentFilters) {
-    const sql = 'SELECT * FROM documents WHERE 1=1';
+    const sql = "SELECT * FROM documents WHERE 1=1";
     // ... build query with filters
     return await this.db.all<Document>(sql, params);
   }
 
   async getById(id: string) {
-    return await this.db.get<Document>(
-      'SELECT * FROM documents WHERE id = ?',
-      [id]
-    );
+    return await this.db.get<Document>("SELECT * FROM documents WHERE id = ?", [
+      id,
+    ]);
   }
 
   async create(data: CreateDocumentInput) {
     const id = generateId();
     await this.db.run(
-      'INSERT INTO documents (id, title, category, created_at) VALUES (?, ?, ?, ?)',
-      [id, data.title, data.category, new Date().toISOString()]
+      "INSERT INTO documents (id, title, category, created_at) VALUES (?, ?, ?, ?)",
+      [id, data.title, data.category, new Date().toISOString()],
     );
     return id;
   }
 
   async delete(id: string) {
-    await this.db.run('DELETE FROM documents WHERE id = ?', [id]);
+    await this.db.run("DELETE FROM documents WHERE id = ?", [id]);
   }
 }
 ```
@@ -627,26 +627,23 @@ CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
 ```typescript
 // ✅ KORREKT: Prepared Statements
-const user = await db.get(
-  'SELECT * FROM users WHERE id = ?',
-  [userId]
-);
+const user = await db.get("SELECT * FROM users WHERE id = ?", [userId]);
 
 // ❌ FALSCH: String Concatenation
 const user = await db.get(
-  `SELECT * FROM users WHERE id = '${userId}'` // SQL Injection!
+  `SELECT * FROM users WHERE id = '${userId}'`, // SQL Injection!
 );
 
 // ✅ KORREKT: Named Parameters
 const result = await db.all(
-  'SELECT * FROM documents WHERE category = ? AND status = ?',
-  [category, status]
+  "SELECT * FROM documents WHERE category = ? AND status = ?",
+  [category, status],
 );
 
 // ✅ KORREKT: Transaktionen
 await db.transaction(async () => {
-  await db.run('INSERT INTO documents ...', []);
-  await db.run('UPDATE document_versions ...', []);
+  await db.run("INSERT INTO documents ...", []);
+  await db.run("UPDATE document_versions ...", []);
 });
 ```
 
@@ -668,21 +665,17 @@ export function validateBody(schema: z.ZodSchema) {
       next();
     } catch (error) {
       const details = parseZodErrors(error);
-      next(new ValidationError('Invalid request body', details));
+      next(new ValidationError("Invalid request body", details));
     }
   };
 }
 
 // Verwendung
-app.post(
-  '/users',
-  validateBody(CreateUserSchema),
-  async (req, res, next) => {
-    // req.body ist jetzt validiert und typsicher
-    const result = await userService.create(req.body);
-    res.json({ success: true, data: result });
-  }
-);
+app.post("/users", validateBody(CreateUserSchema), async (req, res, next) => {
+  // req.body ist jetzt validiert und typsicher
+  const result = await userService.create(req.body);
+  res.json({ success: true, data: result });
+});
 ```
 
 ### Auth-Middleware
@@ -694,25 +687,25 @@ app.post(
 export async function authMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    
+    const token = req.headers.authorization?.replace("Bearer ", "");
+
     if (!token) {
-      throw new UnauthorizedError('Token required');
+      throw new UnauthorizedError("Token required");
     }
 
     const payload = jwt.verify(token, process.env.JWT_SECRET!);
     req.user = payload as UserPayload;
     next();
   } catch (error) {
-    next(new UnauthorizedError('Invalid token'));
+    next(new UnauthorizedError("Invalid token"));
   }
 }
 
 // Verwendung
-router.get('/profile', authMiddleware, async (req, res) => {
+router.get("/profile", authMiddleware, async (req, res) => {
   res.json({ success: true, data: req.user });
 });
 ```
@@ -724,14 +717,14 @@ router.get('/profile', authMiddleware, async (req, res) => {
 ### 1. Logging
 
 ```typescript
-import { createLogger } from '../utils/logger.js';
+import { createLogger } from "../utils/logger.js";
 
-const logger = createLogger('DocumentService');
+const logger = createLogger("DocumentService");
 
-logger.debug({ id }, 'Finding document');
-logger.info({ count: results.length }, 'Documents found');
-logger.warn({ expired: true }, 'Cache expired');
-logger.error({ error }, 'Database error');
+logger.debug({ id }, "Finding document");
+logger.info({ count: results.length }, "Documents found");
+logger.warn({ expired: true }, "Cache expired");
+logger.error({ error }, "Database error");
 ```
 
 ### 2. Error Handling
@@ -741,7 +734,7 @@ try {
   const user = await userService.getById(id);
 } catch (error) {
   if (error instanceof NotFoundError) {
-    return res.status(404).json({ error: 'User not found' });
+    return res.status(404).json({ error: "User not found" });
   }
   if (error instanceof ValidationError) {
     return res.status(400).json({ error: error.message, fields: error.fields });
@@ -780,25 +773,25 @@ const stats = db.getStats(); // { total, errors, lastQuery }
 ### 5. Testing
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
-import { DatabaseService } from './DatabaseService';
+import { describe, it, expect, beforeEach } from "vitest";
+import { DatabaseService } from "./DatabaseService";
 
-describe('DatabaseService', () => {
+describe("DatabaseService", () => {
   let db: DatabaseService;
 
   beforeEach(async () => {
     db = new DatabaseService({
-      driver: 'sqlite',
-      sqliteFile: ':memory:', // In-memory für Tests
+      driver: "sqlite",
+      sqliteFile: ":memory:", // In-memory für Tests
     });
     await db.init();
   });
 
-  it('should insert and retrieve data', async () => {
-    await db.run('CREATE TABLE test (id TEXT PRIMARY KEY, name TEXT)');
-    await db.run('INSERT INTO test VALUES (?, ?)', ['1', 'Test']);
-    const result = await db.get('SELECT * FROM test WHERE id = ?', ['1']);
-    expect(result?.name).toBe('Test');
+  it("should insert and retrieve data", async () => {
+    await db.run("CREATE TABLE test (id TEXT PRIMARY KEY, name TEXT)");
+    await db.run("INSERT INTO test VALUES (?, ?)", ["1", "Test"]);
+    const result = await db.get("SELECT * FROM test WHERE id = ?", ["1"]);
+    expect(result?.name).toBe("Test");
   });
 });
 ```

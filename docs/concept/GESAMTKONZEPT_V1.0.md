@@ -43,6 +43,7 @@ ERP SteinmetZ ist ein **instruction-driven ERP-System**, das durch die Verschmel
 ### Differenzierung Version 1.0
 
 In Version 1.0 sind **alle Grundfunktionen** aus dem Konzept implementiert:
+
 - ✅ Unified Dashboard mit KI-Integration
 - ✅ Alle 11 Hauptmodule (Dashboard bis System & Administration)
 - ✅ Automatische Funktionsgenerierung
@@ -57,6 +58,7 @@ In Version 1.0 sind **alle Grundfunktionen** aus dem Konzept implementiert:
 ### 2.1 Vision
 
 Ein **universelles Betriebssystem für Unternehmen**, das:
+
 - Sich selbst an Geschäftsprozesse anpasst
 - Durch KI kontinuierlich verbessert
 - Deterministisch und nachvollziehbar arbeitet
@@ -113,6 +115,7 @@ data/
 ### 3.2 Technologie-Stack
 
 **Frontend**:
+
 - React 18+ mit TypeScript
 - Next.js 14 (App Router)
 - TanStack Query (Data Fetching)
@@ -120,6 +123,7 @@ data/
 - Recharts (Analytics)
 
 **Backend**:
+
 - Node.js 20+
 - Fastify 4 (API Framework)
 - PostgreSQL 15+ (Datenbank)
@@ -127,11 +131,13 @@ data/
 - Pino (Logging)
 
 **KI-Layer**:
+
 - Multi-Provider Support (OpenAI, Anthropic, Ollama)
 - Local-First mit Ollama (Datenschutz)
 - Model Selection basierend auf Komplexität
 
 **DevOps**:
+
 - Docker/Docker Compose
 - GitHub Actions (CI/CD)
 - Vitest (Testing)
@@ -203,6 +209,7 @@ Das **Unified Dashboard** ist das Herzstück von ERP SteinmetZ V1.0 und entsteht
 #### 4.2.1 Funktionsgenerierung
 
 **Workflow**:
+
 1. **Benutzer** wählt Modul/Bereich (z.B. "HR > Mitarbeiterverwaltung")
 2. **Dashboard** zeigt bestehende Funktionen und leere Slots
 3. **KI-Button**: "Neue Funktion generieren"
@@ -216,6 +223,7 @@ Das **Unified Dashboard** ist das Herzstück von ERP SteinmetZ V1.0 und entsteht
 7. **Speichern** in Katalog + Audit-Log
 
 **Beispiel-Prompt**:
+
 ```
 Funktion: "Urlaubsantrag stellen"
 Kontext: HR-Modul, Mitarbeiter-Self-Service
@@ -227,6 +235,7 @@ Anforderungen:
 ```
 
 **KI generiert**:
+
 ```json
 {
   "id": "hr.vacation-request.create",
@@ -274,14 +283,15 @@ Anforderungen:
 ```typescript
 interface FormSpec {
   title: string;
-  schema: JSONSchema;          // JSON Schema 7
-  uiSchema?: UISchema;         // React-JSONSCHEMA-Form
+  schema: JSONSchema; // JSON Schema 7
+  uiSchema?: UISchema; // React-JSONSCHEMA-Form
   validation?: ValidationRule[];
-  triState: boolean;           // known | unknown | not_applicable
+  triState: boolean; // known | unknown | not_applicable
 }
 ```
 
 **Tri-State Pattern**:
+
 ```json
 {
   "employee": {
@@ -291,7 +301,7 @@ interface FormSpec {
     },
     "tax_id": {
       "value": null,
-      "state": "unknown"  // → Erzeugt To-Do
+      "state": "unknown" // → Erzeugt To-Do
     },
     "parking_spot": {
       "value": null,
@@ -304,6 +314,7 @@ interface FormSpec {
 #### 4.2.3 Dashboard-Widget-Generierung
 
 **Widget-Typen**:
+
 - **KPI-Cards**: Einzelne Kennzahlen (Umsatz, Kosten, etc.)
 - **Charts**: Line, Bar, Pie, Area (mit Recharts)
 - **Tables**: Sortierbar, filterbar, paginiert
@@ -312,6 +323,7 @@ interface FormSpec {
 - **Custom**: Spezifische Widgets (Friedhofsverwaltung, etc.)
 
 **Beispiel: Umsatz-Widget**
+
 ```json
 {
   "widget": {
@@ -320,7 +332,7 @@ interface FormSpec {
     "title": "Tagesumsatz",
     "dataSource": {
       "endpoint": "/api/finance/kpi/revenue-today",
-      "refresh": 60  // Sekunden
+      "refresh": 60 // Sekunden
     },
     "visualization": {
       "format": "currency",
@@ -475,15 +487,19 @@ export function UnifiedDashboard({ user, context }: UnifiedDashboardProps) {
    - Keine direkten Writes
 
 **Model Selection Logic**:
+
 ```typescript
-function selectModel(operation: string, priority: 'fast' | 'balanced' | 'accurate'): Model {
-  if (operation === 'simple_meta' && priority === 'fast') {
+function selectModel(
+  operation: string,
+  priority: "fast" | "balanced" | "accurate",
+): Model {
+  if (operation === "simple_meta" && priority === "fast") {
     return OllamaQwen3B;
   }
-  if (operation === 'form_generation' && priority === 'accurate') {
+  if (operation === "form_generation" && priority === "accurate") {
     return OllamaQwen14B;
   }
-  if (operation === 'consultation') {
+  if (operation === "consultation") {
     return OpenAIGPT4;
   }
   return OllamaQwen7B; // Default
@@ -493,6 +509,7 @@ function selectModel(operation: string, priority: 'fast' | 'balanced' | 'accurat
 ### 5.2 Prompt-Strategie
 
 **Meta-Generierung**:
+
 ```
 Du bist ein ERP-Experte. Analysiere die Funktion "{functionId}" und generiere Metadaten.
 
@@ -519,6 +536,7 @@ Regeln:
 ```
 
 **Form-Generierung**:
+
 ```
 Erstelle ein JSON-Schema Formular für die Funktion "{functionId}".
 
@@ -554,15 +572,16 @@ Beispiel Output:
 ### 5.3 Error Correction & Validation
 
 **Automatische Korrektur**:
+
 ```typescript
 async function correctErrors(
   functionId: string,
   meta: GeneratedMeta,
-  errors: string[]
+  errors: string[],
 ): Promise<GeneratedMeta> {
   const prompt = `
 Die generierten Metadaten für "${functionId}" haben folgende Fehler:
-${errors.join('\n')}
+${errors.join("\n")}
 
 Ursprüngliche Metadaten:
 ${JSON.stringify(meta, null, 2)}
@@ -570,12 +589,13 @@ ${JSON.stringify(meta, null, 2)}
 Korrigiere die Fehler und gib gültiges JSON zurück.
   `;
 
-  const corrected = await callAI(prompt, 'error_correction');
+  const corrected = await callAI(prompt, "error_correction");
   return JSON.parse(corrected);
 }
 ```
 
 **Qualitätschecks**:
+
 - ✅ Schema-Validität ≥ 99.5%
 - ✅ Tool-Call-Korrektheit ≥ 99%
 - ✅ Rückfragenquote ≤ 1%
@@ -589,6 +609,7 @@ Korrigiere die Fehler und gib gültiges JSON zurück.
 Alle Module aus dem Konzept sind in V1.0 implementiert (Basisversion):
 
 ### 6.1 Dashboard (Executive Overview)
+
 - ✅ KPI-Übersicht (Umsatz, Marge, Liquidität)
 - ✅ Prozess-Monitoring (Lead-to-Cash, Procure-to-Pay)
 - ✅ Warnungen & Eskalationen
@@ -597,56 +618,66 @@ Alle Module aus dem Konzept sind in V1.0 implementiert (Basisversion):
 - ✅ Personalisierte Widgets
 
 ### 6.2 Geschäftsverwaltung
+
 - ✅ Unternehmensstammdaten
 - ✅ Prozess-Management (BPMN 2.0)
 - ✅ Dokumentenmanagement
 - ✅ Risiko & Compliance
 
 ### 6.3 Finanzen & Controlling
+
 - ✅ Buchhaltung (Hauptbuch, Debitoren, Kreditoren)
 - ✅ Controlling (Kostenrechnung, Budgetierung)
 - ✅ Treasury (Liquidität, Zahlungsverkehr)
 - ✅ Steuern (UStVA, XRechnung, ZUGFeRD)
 
 ### 6.4 Vertrieb & Marketing
+
 - ✅ CRM (360° Kundenansicht)
 - ✅ Marketing (Kampagnen, Lead-Scoring)
 - ✅ Vertrieb (Angebot, Auftrag, Pipeline)
 - ✅ Fulfillment (Versand, Rechnung, Retoure)
 
 ### 6.5 Einkauf & Beschaffung
+
 - ✅ Beschaffung (Bedarf, Bestellung, Lieferant)
 - ✅ Wareneingang (Kontrolle, Qualität, Rechnung)
 - ✅ Lieferanten (Stammdaten, Bewertung, Verträge)
 
 ### 6.6 Produktion & Fertigung (Werk)
+
 - ✅ Produktionsplanung (Kapazität, Material, Termine)
 - ✅ Fertigungssteuerung (Arbeitspläne, MDE, BDE)
 - ✅ Qualitätsmanagement (Prüfpläne, Kontrolle, Zertifikate)
 - ✅ Wartung (Pläne, Instandhaltung, Ersatzteile)
 
 ### 6.7 Produktion & Fertigung (Lager)
+
 - ✅ Lagerverwaltung (Bestand, Plätze, Inventur)
 - ✅ Kommissionierung (Listen, Pick-by-Voice, Routing)
 - ✅ Logistik (Versand, Transport, Tracking)
 
 ### 6.8 Personal & HR
+
 - ✅ Personalverwaltung (Stammdaten, Verträge, Archiv)
 - ✅ Zeiterfassung (Arbeitszeit, Urlaub, Projekt)
 - ✅ Personalentwicklung (Qualifikation, Schulung, Karriere)
 - ✅ Recruiting (Stellen, Bewerbung, Onboarding)
 
 ### 6.9 Reporting & Analytics
+
 - ✅ Standard-Reports (Finanzen, Vertrieb, Produktion)
 - ✅ Ad-hoc-Analysen (Explorer, Pivot, Viz)
 - ✅ KI-Analytics (Predictive, Trends, Empfehlungen)
 
 ### 6.10 Kommunikation & Social
+
 - ✅ E-Mail-Management (Inbox, Smart Response, Tracking)
 - ✅ Messaging (Chat, Video, Collaboration)
 - ✅ Social Media (Multi-Channel, Content, Sentiment)
 
 ### 6.11 System & Administration
+
 - ✅ Benutzerverwaltung (Rollen, Rechte, Audit)
 - ✅ Systemeinstellungen (Mandanten, DB, Backup)
 - ✅ Integrationen (API, Schnittstellen, Plugins)
@@ -784,7 +815,19 @@ CREATE TABLE finance.invoice (
         },
         "area": {
           "type": "string",
-          "enum": ["dashboard", "business", "finance", "sales", "procurement", "production", "warehouse", "hr", "reporting", "communication", "system"]
+          "enum": [
+            "dashboard",
+            "business",
+            "finance",
+            "sales",
+            "procurement",
+            "production",
+            "warehouse",
+            "hr",
+            "reporting",
+            "communication",
+            "system"
+          ]
         },
         "complexity": {
           "type": "string",
@@ -818,6 +861,7 @@ CREATE TABLE finance.invoice (
 ### 7.3 API-Konventionen
 
 **REST-Prinzipien**:
+
 - `GET /api/resource` → Liste
 - `GET /api/resource/:id` → Einzeln
 - `POST /api/resource` → Erstellen
@@ -825,6 +869,7 @@ CREATE TABLE finance.invoice (
 - `DELETE /api/resource/:id` → Löschen
 
 **Response-Format**:
+
 ```json
 {
   "success": true,
@@ -837,6 +882,7 @@ CREATE TABLE finance.invoice (
 ```
 
 **Error-Format**:
+
 ```json
 {
   "success": false,
@@ -862,7 +908,7 @@ CREATE TABLE finance.invoice (
 Jedes Datenfeld kann in 3 Zuständen existieren:
 
 ```typescript
-type FieldState = 'known' | 'unknown' | 'not_applicable';
+type FieldState = "known" | "unknown" | "not_applicable";
 
 interface TriStateField<T> {
   value: T | null;
@@ -877,6 +923,7 @@ interface EmployeeData {
 ```
 
 **Verhalten**:
+
 - `known`: Wert vorhanden und validiert
 - `unknown`: Wert fehlt → To-Do wird erstellt
 - `not_applicable`: Feld nicht relevant für diesen Fall
@@ -890,7 +937,7 @@ interface AuditEvent {
   id: number;
   timestamp: Date;
   user_id: string;
-  event_type: 'created' | 'updated' | 'deleted' | 'sent' | 'approved';
+  event_type: "created" | "updated" | "deleted" | "sent" | "approved";
   entity_type: string;
   entity_id: string;
   changes: Record<string, { old: any; new: any }>;
@@ -903,6 +950,7 @@ interface AuditEvent {
 ```
 
 **Regeln**:
+
 - Events sind append-only (keine Updates/Deletes)
 - Vollständige Nachvollziehbarkeit
 - Snapshots für Performance
@@ -947,6 +995,7 @@ interface AuditEvent {
 ### 9.1 RBAC (Role-Based Access Control)
 
 **Hierarchie**:
+
 ```
 System Admin
   └─ Mandanten-Admin
@@ -956,6 +1005,7 @@ System Admin
 ```
 
 **Permissions**:
+
 - **CRUD**: Create, Read, Update, Delete
 - **Feld-Ebene**: Maskierung von sensiblen Daten (IBAN, Gehalt)
 - **Objekt-Ebene**: Zugriff nur auf eigene Datensätze
@@ -964,12 +1014,14 @@ System Admin
 ### 9.2 DSGVO-Compliance
 
 **PII-Klassifikation**:
+
 - **Public**: Name, E-Mail (Geschäft)
 - **Internal**: Personalnummer, Telefon
 - **Confidential**: IBAN, Geburtsdatum
 - **Restricted**: Gehalt, Gesundheitsdaten
 
 **Maßnahmen**:
+
 - Verschlüsselung at rest (AES-256)
 - Verschlüsselung in transit (TLS 1.3)
 - Pseudonymisierung bei Export
@@ -979,6 +1031,7 @@ System Admin
 ### 9.3 GoBD-Konformität
 
 **Anforderungen**:
+
 - ✅ Lückenlose Nummernkreise (Rechnungen, Belege)
 - ✅ Unveränderbarkeit nach Versand/Buchung
 - ✅ Storno/Gutschrift statt Überschreiben
@@ -988,6 +1041,7 @@ System Admin
 ### 9.4 XRechnung & ZUGFeRD
 
 **Integration**:
+
 - Automatische Generierung von XRechnung-XML (PEPPOL)
 - ZUGFeRD 2.1 (PDF/A-3 + XML-Embedding)
 - Validierung gegen EN 16931
@@ -995,9 +1049,9 @@ System Admin
 
 ```typescript
 interface XRechnungGenerator {
-  generate(invoice: Invoice): string;  // XML
+  generate(invoice: Invoice): string; // XML
   validate(xml: string): ValidationResult;
-  embed(pdf: Buffer, xml: string): Buffer;  // ZUGFeRD
+  embed(pdf: Buffer, xml: string): Buffer; // ZUGFeRD
 }
 ```
 
@@ -1008,24 +1062,28 @@ interface XRechnungGenerator {
 ### 10.1 Version 1.0 (Q1 2026) – **Current Milestone**
 
 **Fundament (✅ Abgeschlossen)**:
+
 - App-Shell (Frontend + Backend)
 - Health-Check-System
 - BFF-Pattern (Backend-for-Frontend)
 - Basis-RBAC
 
 **Unified Dashboard (🔄 In Arbeit)**:
+
 - [ ] Fusion von KI-Annotator + Funktionskatalog
 - [ ] Unified API (`/api/unified-dashboard/*`)
 - [ ] Dashboard-Frontend mit Widget-Grid
 - [ ] KI-Panel für Generierung
 
 **Kern-Module (🔄 Schrittweise)**:
+
 - [x] Dashboard (Executive Overview)
 - [ ] HR (Mitarbeiter anlegen - MVP)
 - [ ] Finance (Rechnung E2E - MVP)
 - [ ] Weitere Module (Basis-Funktionen)
 
 **KI-Integration (🔄 In Arbeit)**:
+
 - [ ] Ollama-Setup (Qwen 2.5 Modelle)
 - [ ] Multi-Provider-Support
 - [ ] Prompt-Engineering
@@ -1034,6 +1092,7 @@ interface XRechnungGenerator {
 ### 10.2 Version 1.1 (Q2 2026)
 
 **Erweiterungen**:
+
 - Vollständige HR-Suite (Zeiterfassung, Urlaub, Recruiting)
 - Finance-Automatisierung (Bank-Import, UStVA, DATEV)
 - Workflow-Designer (BPMN 2.0)
@@ -1042,6 +1101,7 @@ interface XRechnungGenerator {
 ### 10.3 Version 1.2 (Q3 2026)
 
 **Spezialisierung**:
+
 - Friedhofsverwaltung (Steinmetz-spezifisch)
 - Verschnittoptimierung (Material-Optimierung)
 - CAD-Integration (Import von Plänen)
@@ -1050,6 +1110,7 @@ interface XRechnungGenerator {
 ### 10.4 Version 2.0 (Q4 2026)
 
 **Enterprise-Features**:
+
 - Multi-Mandanten-Fähigkeit
 - High Availability (HA-Cluster)
 - Advanced Analytics (ML-Pipelines)

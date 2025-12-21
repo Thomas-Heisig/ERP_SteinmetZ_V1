@@ -221,7 +221,10 @@ export default function UserManagement() {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id} className={!user.is_active ? styles.inactive : ""}>
+              <tr
+                key={user.id}
+                className={!user.is_active ? styles.inactive : ""}
+              >
                 <td>
                   <div className={styles.userInfo}>
                     <div className={styles.userAvatar}>
@@ -229,7 +232,9 @@ export default function UserManagement() {
                     </div>
                     <div>
                       <div className={styles.userName}>{user.full_name}</div>
-                      <div className={styles.userUsername}>@{user.username}</div>
+                      <div className={styles.userUsername}>
+                        @{user.username}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -283,9 +288,13 @@ export default function UserManagement() {
                     </button>
                     <button
                       className={`${styles.actionBtn} ${
-                        user.is_active ? styles.deactivateBtn : styles.activateBtn
+                        user.is_active
+                          ? styles.deactivateBtn
+                          : styles.activateBtn
                       }`}
-                      onClick={() => handleToggleActive(user.id, user.is_active)}
+                      onClick={() =>
+                        handleToggleActive(user.id, user.is_active)
+                      }
                       title={user.is_active ? "Deaktivieren" : "Aktivieren"}
                     >
                       {user.is_active ? "🔒" : "🔓"}
@@ -300,7 +309,10 @@ export default function UserManagement() {
 
       {showRoleModal && selectedUser && (
         <div className={styles.modal} onClick={() => setShowRoleModal(false)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className={styles.modalHeader}>
               <h2>Rolle zuweisen: {selectedUser.full_name}</h2>
               <button
@@ -316,7 +328,9 @@ export default function UserManagement() {
               </p>
               <div className={styles.rolesList}>
                 {roles.map((role) => {
-                  const hasRole = selectedUser.roles?.some((r) => r.id === role.id);
+                  const hasRole = selectedUser.roles?.some(
+                    (r) => r.id === role.id,
+                  );
                   return (
                     <div key={role.id} className={styles.roleItem}>
                       <div className={styles.roleItemInfo}>

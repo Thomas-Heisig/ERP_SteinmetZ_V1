@@ -11,6 +11,7 @@ Das vollständige System-Konzept für ERP SteinmetZ V1.0 ist hier:
 👉 **[GESAMTKONZEPT_V1.0.md](./GESAMTKONZEPT_V1.0.md)**
 
 Dieses Dokument enthält:
+
 - ✅ Vision und Zielsetzung
 - ✅ Kernarchitektur (Monorepo, Tech-Stack)
 - ✅ **Unified Dashboard System** (Fusion von KI-Annotator + Funktionskatalog)
@@ -73,6 +74,7 @@ Das **Unified Dashboard** ist das Herzstück von V1.0 und vereint:
 ```
 
 **Vorteile**:
+
 - ✅ Eine API statt zwei (Katalog + Annotator)
 - ✅ Konsistente Daten (automatisches Merging)
 - ✅ Bessere Performance (Server-seitiges Caching)
@@ -90,7 +92,7 @@ Das **Unified Dashboard** ist das Herzstück von V1.0 und vereint:
 Jedes Feld kann in 3 Zuständen existieren:
 
 ```typescript
-type FieldState = 'known' | 'unknown' | 'not_applicable';
+type FieldState = "known" | "unknown" | "not_applicable";
 ```
 
 - `known` → Wert vorhanden und validiert
@@ -116,6 +118,7 @@ type FieldState = 'known' | 'unknown' | 'not_applicable';
 ## 📋 Version History
 
 ### Version 1.0 (2025-12-20)
+
 - ✅ **GESAMTKONZEPT_V1.0.md** erstellt
 - ✅ Unified Dashboard konzipiert
 - ✅ Alte Concept-Dateien archiviert
@@ -123,6 +126,7 @@ type FieldState = 'known' | 'unknown' | 'not_applicable';
 - ✅ Backend-Router implementiert
 
 ### Version 0.1-alpha (vorher)
+
 - Getrennte Konzepte für Module
 - KI-Annotator und Funktionskatalog separat
 - Verteilte Dokumentation
@@ -130,16 +134,19 @@ type FieldState = 'known' | 'unknown' | 'not_applicable';
 ## 🔗 Weiterführende Dokumentation
 
 ### Backend
+
 - [Unified Dashboard API](../../apps/backend/src/routes/unifiedDashboard/README.md)
 - [AI Annotator Docs](../../apps/backend/src/routes/aiAnnotatorRouter/docs/README.md)
 - [Functions Catalog Docs](../../apps/backend/src/routes/functionsCatalog/docs/README.md)
 
 ### Konzepte
+
 - [AI Annotator Integration](../AI_ANNOTATOR_INTEGRATION.md)
 - [AI Annotator Workflow](../AI_ANNOTATOR_WORKFLOW.md)
 - [Architecture](../ARCHITECTURE.md)
 
 ### Development
+
 - [Developer Onboarding](../DEVELOPER_ONBOARDING.md)
 - [Code Conventions](../CODE_CONVENTIONS.md)
 - [Testing Strategy](../backend/) (in Arbeit)
@@ -164,6 +171,7 @@ Bei Änderungen am Konzept:
 ## 📞 Support
 
 Bei Fragen zum Konzept:
+
 - GitHub Issues: [ERP_SteinmetZ_V1/issues](https://github.com/Thomas-Heisig/ERP_SteinmetZ_V1/issues)
 - Team-Kontakt: siehe [SUPPORT.md](../SUPPORT.md)
 

@@ -27,7 +27,8 @@ import { workflowEngine } from "../workflows/workflowEngine.js";
 /* ⚙️ System-Konfiguration                                                   */
 /* ========================================================================== */
 
-const ACTIVE_PROVIDER: ProviderName = (process.env.AI_PROVIDER?.toLowerCase() ?? "ollama") as ProviderName;
+const ACTIVE_PROVIDER: ProviderName = (process.env.AI_PROVIDER?.toLowerCase() ??
+  "ollama") as ProviderName;
 const FALLBACK_ENABLED = process.env.AI_FALLBACK_ENABLED === "1";
 const FALLBACK_PROVIDER: ProviderName =
   (process.env.AI_FALLBACK_PROVIDER?.toLowerCase() ?? "eliza") as ProviderName;
@@ -167,7 +168,9 @@ export async function handleChatRequest(
           };
         } catch (elizaError: unknown) {
           const elizaMessage =
-            elizaError instanceof Error ? elizaError.message : String(elizaError);
+            elizaError instanceof Error
+              ? elizaError.message
+              : String(elizaError);
           log("warn", "Eliza Fallback fehlgeschlagen", {
             error: elizaMessage,
           });
@@ -179,7 +182,7 @@ export async function handleChatRequest(
       const fbText =
         typeof fb === "string"
           ? fb
-          : getTextFromUnknown(fb) ?? "Fallback aktiv.";
+          : (getTextFromUnknown(fb) ?? "Fallback aktiv.");
       return {
         text: fbText,
         meta: {

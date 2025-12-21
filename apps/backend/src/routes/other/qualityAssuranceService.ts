@@ -164,16 +164,14 @@ export class QualityAssuranceService {
     const schemaQuality = {
       hasSchema,
       fieldCount: schema.fields?.length || 0,
-      requiredFields: (
+      requiredFields:
         (schema.fields as Array<{ required?: boolean }> | undefined)?.filter(
           (f) => f.required,
-        )?.length || 0
-      ),
-      validationRules: (
+        )?.length || 0,
+      validationRules:
         (schema.fields as Array<{ validation?: unknown }> | undefined)?.filter(
           (f) => f.validation,
-        )?.length || 0
-      ),
+        )?.length || 0,
     };
 
     const completeness =

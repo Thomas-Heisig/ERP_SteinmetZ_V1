@@ -102,7 +102,9 @@ router.post(
       overwrite?: boolean;
     };
 
-    let importEvents: Partial<CalendarEvent>[] = Array.isArray(events) ? events : [];
+    let importEvents: Partial<CalendarEvent>[] = Array.isArray(events)
+      ? events
+      : [];
     if (
       !Array.isArray(events) &&
       typeof ics === "string" &&
@@ -226,8 +228,15 @@ function rowToEvent(row: Record<string, unknown>): CalendarEvent {
     recurrenceEndDate: row.recurrence_end_date as string | undefined,
     reminders: JSON.parse((row.reminders_json as string) ?? "[]") as number[],
     attendees: JSON.parse((row.attendees_json as string) ?? "[]") as string[],
-    status: ((row.status as string) ?? "confirmed") as "confirmed" | "tentative" | "cancelled",
-    priority: ((row.priority as string) ?? "normal") as "low" | "normal" | "high" | "urgent",
+    status: ((row.status as string) ?? "confirmed") as
+      | "confirmed"
+      | "tentative"
+      | "cancelled",
+    priority: ((row.priority as string) ?? "normal") as
+      | "low"
+      | "normal"
+      | "high"
+      | "urgent",
     timezone: (row.timezone as string) ?? "UTC",
     isPrivate: Boolean(row.is_private),
     url: row.url as string | undefined,
