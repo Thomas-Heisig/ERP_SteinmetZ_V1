@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/Sidebar/Sidebar.tsx
 
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import styles from "./Sidebar.module.css";
@@ -170,12 +170,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigationSections = getNavigationSections();
+  
+  // Track which sections are expanded (default: main sections expanded)
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(["sidebar.main", "sidebar.business", "sidebar.finance"])
+  );
 
   const handleToggle = useCallback(() => {
     if (onToggleCollapse) {
       onToggleCollapse();
     }
   }, [onToggleCollapse]);
+
+  const toggleSection = useCallback((sectionKey: string) => {
+    setExpandedSections((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(sectionKey)) {
+        newSet.delete(sectionKey);
+      } else {
+        newSet.add(sectionKey);
+      }
+      return newSet;
+    });
+  }, []);
 
   const sidebarClasses = [
     styles.sidebar,
@@ -202,39 +219,54 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Navigation Sections */}
       <nav className={styles.nav} aria-label={t("sidebar.title")}>
-        {navigationSections.map((section) => (
-          <div key={section.titleKey} className={styles.section}>
-            {!isCollapsed && (
-              <h3 className={styles.sectionTitle}>{t(section.titleKey)}</h3>
-            )}
-            <ul className={styles.items}>
-              {section.items.map((item) => (
-                <li key={item.path}>
-                  <NavLink
-                    to={item.path}
-                    end={item.path === "/"}
-                    className={({ isActive }) =>
-                      `${styles.link} ${isActive ? styles.active : ""}`
-                    }
-                    title={isCollapsed ? t(item.labelKey) : undefined}
-                  >
-                    <span className={styles.icon} aria-hidden="true">
-                      {item.icon}
-                    </span>
-                    {!isCollapsed && (
-                      <>
-                        <span className={styles.label}>{t(item.labelKey)}</span>
-                        {item.badge !== undefined && (
-                          <span className={styles.badge}>{item.badge}</span>
-                        )}
-                      </>
-                    )}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {navigationSections.map((section) => {
+          const isExpanded = expandedSections.has(section.titleKey);
+          
+          return (
+            <div key={section.titleKey} className={styles.section}>
+              {!isCollapsed && (
+                <button
+                  className={styles.sectionHeader}
+                  onClick={() => toggleSection(section.titleKey)}
+                  aria-expanded={isExpanded}
+                >
+                  <h3 className={styles.sectionTitle}>{t(section.titleKey)}</h3>
+                  <span className={styles.sectionToggle}>
+                    {isExpanded ? "▼" : "▶"}
+                  </span>
+                </button>
+              )}
+              <ul 
+                className={`${styles.items} ${!isExpanded && !isCollapsed ? styles.itemsCollapsed : ""}`}
+              >
+                {section.items.map((item) => (
+                  <li key={item.path}>
+                    <NavLink
+                      to={item.path}
+                      end={item.path === "/"}
+                      className={({ isActive }) =>
+                        `${styles.link} ${isActive ? styles.active : ""}`
+                      }
+                      title={isCollapsed ? t(item.labelKey) : undefined}
+                    >
+                      <span className={styles.icon} aria-hidden="true">
+                        {item.icon}
+                      </span>
+                      {!isCollapsed && (
+                        <>
+                          <span className={styles.label}>{t(item.labelKey)}</span>
+                          {item.badge !== undefined && (
+                            <span className={styles.badge}>{item.badge}</span>
+                          )}
+                        </>
+                      )}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
       </nav>
 
       {/* Sidebar Footer */}
