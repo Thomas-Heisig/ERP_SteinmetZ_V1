@@ -1,6 +1,6 @@
 # ERP SteinmetZ - Aktive Issues
 
-**Stand**: 20. Dezember 2025
+**Stand**: 21. Dezember 2025
 **Version**: 0.3.0
 
 Dieses Dokument listet alle **aktiven (offenen)** Probleme, Bugs und Technical Debt im Projekt auf.
@@ -311,7 +311,7 @@ Die Anwendung ist nicht barrierefrei. Fehlen von ARIA-Labels, Keyboard-Navigatio
 **Beschreibung**:
 Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind nicht erklärt.
 
-**Fortschritt** (2025-12-09):
+**Fortschritt Backend** (2025-12-09):
 
 1. ✅ Umfassende Dokumentation für wichtige Module:
    - ✅ ERROR_HANDLING.md - Standardisiertes Error-Handling-System
@@ -338,24 +338,41 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
    - ⏳ Verbleibende Services (~12): dbService, aiAnnotatorService, etc.
 7. ⏳ Inline-Comments für komplexe Logik (laufend)
 
+**Fortschritt Frontend** 🆕 (2025-12-21):
+
+1. ✅ JSDoc für Frontend-Komponenten begonnen (5/50+ Komponenten):
+   - ✅ AIAnnotator.tsx - Vollständige Modul-Dokumentation mit @example
+   - ✅ FunctionsCatalog.tsx - Komponenten-Dokumentation mit Beispielen
+   - ✅ HelpCenter.tsx - Interface- und Komponenten-Dokumentation
+   - ✅ Card.tsx - Props-Dokumentation mit Nutzungsbeispielen
+   - ✅ LoadingFallback.tsx - Suspense-Fallback-Dokumentation
+2. ⏳ Verbleibende Komponenten (~45):
+   - Dashboard-Komponenten (Dashboard.tsx hat bereits gutes Interface-Doc)
+   - Navigation-Komponenten (MainNavigation.tsx hat @module)
+   - Feature-Komponenten (BatchProcessing, QualityDashboard, etc.)
+   - UI-Komponenten (Button bereits ✅, Input, Table, Toast, etc.)
+   - Page-Komponenten (Settings, Sales, Procurement, etc.)
+
 **Betroffen** (verbleibend):
 
-- Komplexe Utilities (teilweise)
-- Weitere Router-Module (systemInfo - hat bereits docs/README.md)
+- Backend: Komplexe Utilities, weitere Services (~12)
+- Frontend: ~45 Komponenten ohne vollständige JSDoc
 - Resilience-Patterns (dokumentiert in ARCHITECTURE.md)
 
 **Lösungsansatz**:
 
 1. ✅ README in komplexen Modulen
 2. ✅ Umfassende Guides für Kern-Features
-3. ⏳ JSDoc für alle öffentlichen Functions/Classes
+3. 🔄 JSDoc für alle öffentlichen Functions/Classes (Backend: 8/20, Frontend: 5/50)
 4. ✅ TypeDoc für API-Dokumentation generieren (npm run docs funktioniert)
 
 **Auswirkung**: Wesentlich verbesserte Einarbeitung neuer Entwickler
 
 **Aufwand (ursprünglich)**: Laufend  
-**Aufwand (bereits investiert)**: 5 Stunden (Infrastruktur + Phase 1 erweitert - 8 Services) ✅  
-**Aufwand (verbleibend)**: 5-8 Stunden für vollständige JSDoc-Migration
+**Aufwand (bereits investiert)**: 6 Stunden (Backend: 5h, Frontend: 1h) ✅  
+**Aufwand (verbleibend)**: 
+- Backend: 5-8 Stunden für vollständige JSDoc-Migration
+- Frontend: 8-12 Stunden für vollständige Komponenten-Dokumentation
 
 ---
 
@@ -506,17 +523,16 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 
 ### Empfohlene Reihenfolge
 
-1. **ISSUE-017** (TypeScript `any` Types) - Type Safety verbessern (2-3 Tage) 🆕
-2. **ISSUE-018** (Deprecated Dependencies) - Package-Updates evaluieren (4-6h) 🆕
+1. **ISSUE-013** (Code-Dokumentation) - Frontend JSDoc Migration (1-2 Wochen) 🆕
+2. **ISSUE-017** (TypeScript `any` Types) - Type Safety verbessern (2-3 Tage) 
 3. **ISSUE-008** (Monitoring & Observability) - Production-Readiness Implementation
-4. **ISSUE-013** (Code-Dokumentation) - JSDoc Phase 2-3 Migration
-5. **ISSUE-009** (Dependencies) - Wartung und Updates
+4. **ISSUE-009** (Dependencies) - Wartung und Updates
 
-**Hinweis**: ISSUE-010 (Console.logs) und ISSUE-011 (TypeScript Strict Mode) wurden erfolgreich abgeschlossen und archiviert.
+**Hinweis**: ISSUE-010 (Console.logs), ISSUE-011 (TypeScript Strict Mode), und ISSUE-018 (Deprecated Dependencies) wurden erfolgreich abgeschlossen und archiviert.
 
 ---
 
-**Letzte Aktualisierung**: 20. Dezember 2025  
+**Letzte Aktualisierung**: 21. Dezember 2025  
 **Maintainer**: Thomas Heisig  
 **Nächster Review**: Januar 2026
 

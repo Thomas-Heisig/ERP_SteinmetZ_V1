@@ -1,6 +1,27 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/HelpCenter/HelpCenter.tsx
 
+/**
+ * Help Center Component
+ * 
+ * Provides a comprehensive help and documentation interface with categorized
+ * articles, search functionality, and markdown rendering capabilities.
+ * Displays documentation from various categories including getting started,
+ * architecture, modules, tutorials, and reference materials.
+ * 
+ * @module HelpCenter
+ * @category Components
+ * 
+ * @example
+ * ```tsx
+ * import { HelpCenter } from './components/HelpCenter/HelpCenter';
+ * 
+ * function App() {
+ *   return <HelpCenter />;
+ * }
+ * ```
+ */
+
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -10,6 +31,9 @@ import rehypeSanitize from "rehype-sanitize";
 import { getHelpArticles, getHelpArticle } from "../../api/helpApi";
 import "./HelpCenter.css";
 
+/**
+ * Represents a documentation file/article
+ */
 interface DocFile {
   id: string;
   title: string;
@@ -20,6 +44,9 @@ interface DocFile {
   icon?: string;
 }
 
+/**
+ * Represents a documentation category
+ */
 interface Category {
   id: string;
   name: string;
