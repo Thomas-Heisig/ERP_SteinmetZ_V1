@@ -153,7 +153,6 @@ const getNavigationSections = (): NavSection[] => [
       { path: "/documents", labelKey: "sidebar.documents", icon: "📄" },
       { path: "/innovation", labelKey: "sidebar.innovation", icon: "💡" },
       { path: "/help", labelKey: "sidebar.help", icon: "❓" },
-      { path: "/settings", labelKey: "sidebar.settings", icon: "⚙️" },
     ],
   },
 ];
