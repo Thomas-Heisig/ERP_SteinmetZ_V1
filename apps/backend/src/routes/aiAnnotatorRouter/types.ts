@@ -29,11 +29,14 @@ export const ANNOTATION_STATUS = {
  * Batch operation types
  */
 export const BATCH_OPERATION = {
-  ANNOTATE: "annotate",
-  VALIDATE: "validate",
+  GENERATE_META: "generate_meta",
+  GENERATE_FORMS: "generate_forms",
+  ENHANCE_SCHEMA: "enhance_schema",
   CLASSIFY_PII: "classify_pii",
-  ENHANCE: "enhance",
-  CORRECT_ERRORS: "correct_errors",
+  GENERATE_RULE: "generate_rule",
+  FULL_ANNOTATION: "full_annotation",
+  VALIDATE_NODES: "validate_nodes",
+  BULK_ENHANCE: "bulk_enhance",
 } as const;
 
 /**
@@ -101,9 +104,17 @@ export const PII_LEVEL = {
  */
 export interface NodeForAnnotation {
   id: string;
-  name: string;
+  name?: string;
+  title?: string;
+  kind?: string;
   description?: string;
   category?: string;
+  parent_id?: string | null;
+  meta_json?: unknown;
+  schema_json?: unknown;
+  rule_json?: unknown;
+  form_json?: unknown;
+  breadcrumbs?: Array<{ id: string; title: string }>;
   annotation_status?: (typeof ANNOTATION_STATUS)[keyof typeof ANNOTATION_STATUS];
   ai_metadata?: string;
   ai_rule?: string;

@@ -11,7 +11,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import db from "../../routes/database/dbService.js";
-import { createLogger } from "../../../utils/logger.js";
+import { createLogger } from "../../utils/logger.js";
 
 const logger = createLogger("migration-runner");
 const __filename = fileURLToPath(import.meta.url);

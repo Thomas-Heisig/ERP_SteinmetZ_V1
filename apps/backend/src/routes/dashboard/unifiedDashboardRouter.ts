@@ -98,8 +98,16 @@ const generateSchema = z.object({
       includeValidation: z.boolean().optional().default(true),
       parallel: z.boolean().optional().default(true),
     })
-    .optional(),
+    .optional()
+    .default({}),
 });
+
+// Type for validated generate options
+type GenerateOptions = {
+  modelPreference?: "fast" | "balanced" | "accurate";
+  includeValidation?: boolean;
+  parallel?: boolean;
+};
 
 const batchOperationSchema = z.object({
   operation: z.enum([
@@ -108,6 +116,9 @@ const batchOperationSchema = z.object({
     "generate_meta",
     "generate_forms",
     "generate_rules",
+    "full_annotation",
+    "classify_pii",
+    "generate_rule",
   ]),
   filters: z.object({
     kinds: z.array(z.string()).optional(),
@@ -123,8 +134,18 @@ const batchOperationSchema = z.object({
       parallelRequests: z.number().int().positive().optional().default(2),
       modelPreference: z.enum(["fast", "balanced", "accurate"]).optional(),
     })
-    .optional(),
+    .optional()
+    .default({}),
 });
+
+// Type for validated batch options
+type BatchOptions = {
+  retryFailed?: boolean;
+  maxRetries?: number;
+  chunkSize?: number;
+  parallelRequests?: number;
+  modelPreference?: "fast" | "balanced" | "accurate";
+};
 
 const widgetContextSchema = z.object({
   roles: z.array(z.string()).optional(),
@@ -144,6 +165,29 @@ const searchQuerySchema = z.object({
 /* ========================================================================== */
 /* Helper Functions                                                           */
 /* ========================================================================== */
+
+/**
+ * Import CatalogNode type from the catalog service
+ */
+import type { CatalogNode } from "../functionsCatalog/functionsCatalogService.js";
+
+/**
+ * Adapter: Convert CatalogNode to NodeForAnnotation format
+ * CatalogNode uses .meta (object), NodeForAnnotation uses .meta_json (unknown)
+ */
+function catalogNodeToAnnotationFormat(node: CatalogNode): NodeForAnnotation {
+  return {
+    id: node.id,
+    title: node.title,
+    kind: node.kind,
+    parent_id: node.parent_id,
+    meta_json: node.meta,
+    schema_json: node.schema,
+    rule_json: undefined, // CatalogNode doesn't have rules
+    form_json: undefined, // CatalogNode doesn't have forms
+    breadcrumbs: [], // Will be added if needed
+  };
+}
 
 /**
  * Merged function data from Catalog + Annotator
@@ -174,18 +218,9 @@ interface UnifiedFunction {
  * Merge function from catalog with annotation data
  */
 async function mergeFunctionData(
-  catalogNode: unknown,
+  catalogNode: CatalogNode,
 ): Promise<UnifiedFunction> {
-  const node = catalogNode as {
-    id: string;
-    kind: string;
-    parent_id?: string;
-    breadcrumbs?: Array<{ id: string; title: string }>;
-    meta_json?: unknown;
-    schema_json?: unknown;
-    rule_json?: unknown;
-    form_json?: unknown;
-  };
+  const node = catalogNode;
 
   // Try to get annotation data
   let annotationData: NodeForAnnotation | null = null;
@@ -199,28 +234,24 @@ async function mergeFunctionData(
     logger.warn({ nodeId: node.id, err }, "Failed to fetch annotation data");
   }
 
-  // Calculate coverage
+  // Calculate coverage based on what data is available
   let coverage = 0;
-  if (node.meta_json || annotationData?.meta_json) coverage += 0.25;
-  if (node.schema_json || annotationData?.schema_json) coverage += 0.25;
-  if (node.rule_json || annotationData?.meta_json?.rule) coverage += 0.25;
-  if (node.form_json || annotationData?.meta_json?.formSpec) coverage += 0.25;
+  if (node.meta || annotationData?.meta_json) coverage += 0.25;
+  if (node.schema || annotationData?.schema_json) coverage += 0.25;
+  if (annotationData?.rule_json) coverage += 0.25;
+  if (annotationData?.form_json) coverage += 0.25;
 
   return {
     id: node.id,
     kind: node.kind,
     parent_id: node.parent_id,
-    breadcrumbs: node.breadcrumbs,
-    meta: (annotationData?.meta_json as GeneratedMeta) || node.meta_json,
-    schema: annotationData?.schema_json || node.schema_json,
-    rule:
-      ((annotationData?.meta_json as { rule?: DashboardRule })?.rule as
-        | DashboardRule
-        | undefined) || node.rule_json,
-    form:
-      ((annotationData?.meta_json as { formSpec?: FormSpec })?.formSpec as
-        | FormSpec
-        | undefined) || node.form_json,
+    breadcrumbs: [], // Add if needed from node
+    meta:
+      (annotationData?.meta_json as GeneratedMeta) ||
+      (node.meta as GeneratedMeta),
+    schema: annotationData?.schema_json || node.schema,
+    rule: annotationData?.rule_json as DashboardRule | undefined,
+    form: annotationData?.form_json as FormSpec | undefined,
     quality: {
       annotated: !!annotationData,
       validated: !!annotationData?.meta_json,
@@ -313,13 +344,11 @@ router.get(
     let filtered = nodes;
     if (kinds && typeof kinds === "string") {
       const kindArray = kinds.split(",").map((k) => k.trim());
-      filtered = nodes.filter((n: { kind: string }) =>
-        kindArray.includes(n.kind),
-      );
+      filtered = nodes.filter((n: CatalogNode) => kindArray.includes(n.kind));
     }
     if (area && typeof area === "string") {
       filtered = filtered.filter(
-        (n: { meta_json?: { area?: string } }) => n.meta_json?.area === area,
+        (n: CatalogNode) => n.area === area || (n.meta as any)?.area === area,
       );
     }
 
@@ -376,7 +405,7 @@ router.post(
   strictAiRateLimiter,
   asyncHandler(async (req, res) => {
     const validated = generateSchema.parse(req.body);
-    const { types, force, options = {} } = validated;
+    const { types, force, options } = validated;
 
     // Get node from catalog
     const node = await catalogService.getNodeById(req.params.id);
@@ -384,15 +413,8 @@ router.post(
       throw new NotFoundError(`Funktion ${req.params.id} nicht gefunden`);
     }
 
-    // Convert to NodeForAnnotation
-    const nodeForAnnotation: NodeForAnnotation = {
-      id: node.id,
-      kind: node.kind,
-      parent_id: node.parent_id,
-      meta_json: node.meta_json,
-      schema_json: node.schema_json,
-      breadcrumbs: node.breadcrumbs,
-    };
+    // Convert CatalogNode to NodeForAnnotation format
+    const nodeForAnnotation = catalogNodeToAnnotationFormat(node);
 
     // Generate requested types
     const results: {
@@ -455,12 +477,20 @@ router.post(
         await aiAnnotatorService.saveMeta(req.params.id, results.meta);
       }
     }
-    if (force || !node.rule_json) {
+
+    // Save results if force or if data is missing
+    // Note: CatalogNode doesn't store generated data, so we always save through annotatorService
+    if (force || !node.meta) {
+      if (results.meta) {
+        await aiAnnotatorService.saveMeta(req.params.id, results.meta);
+      }
+    }
+    if (force) {
       if (results.rule) {
         await aiAnnotatorService.saveRule(req.params.id, results.rule);
       }
     }
-    if (force || !node.form_json) {
+    if (force) {
       if (results.form) {
         await aiAnnotatorService.saveFormSpec(req.params.id, results.form);
       }
@@ -495,14 +525,7 @@ router.post(
       throw new NotFoundError(`Funktion ${req.params.id} nicht gefunden`);
     }
 
-    const nodeForAnnotation: NodeForAnnotation = {
-      id: node.id,
-      kind: node.kind,
-      parent_id: node.parent_id,
-      meta_json: node.meta_json,
-      schema_json: node.schema_json,
-      breadcrumbs: node.breadcrumbs,
-    };
+    const nodeForAnnotation = catalogNodeToAnnotationFormat(node);
 
     const validation = await aiAnnotatorService.validateNode(nodeForAnnotation);
 
@@ -529,7 +552,7 @@ router.post(
   strictAiRateLimiter,
   asyncHandler(async (req, res) => {
     const validated = batchOperationSchema.parse(req.body);
-    const { operation, filters, options = {} } = validated;
+    const { operation, filters, options } = validated;
 
     // Get matching functions from catalog
     const catalogIndex = await catalogService.getFunctionsIndex();
@@ -537,24 +560,22 @@ router.post(
 
     // Apply filters
     if (filters.kinds) {
-      nodes = nodes.filter((n: { kind: string }) =>
-        filters.kinds!.includes(n.kind),
-      );
+      nodes = nodes.filter((n: CatalogNode) => filters.kinds!.includes(n.kind));
     }
     if (filters.businessArea) {
-      nodes = nodes.filter((n: { meta_json?: { area?: string } }) =>
-        filters.businessArea!.includes(n.meta_json?.area || ""),
+      nodes = nodes.filter((n: CatalogNode) =>
+        filters.businessArea!.includes(n.area || (n.meta as any)?.area || ""),
       );
     }
     if (filters.missingOnly) {
-      nodes = nodes.filter((n: { meta_json?: unknown }) => !n.meta_json);
+      nodes = nodes.filter((n: CatalogNode) => !n.meta);
     }
 
     // Execute batch operation through aiAnnotatorService
     const batchOp = {
-      operation: operation as string,
+      operation: operation,
       filters: {
-        nodeIds: nodes.map((n: { id: string }) => n.id),
+        nodeIds: nodes.map((n: CatalogNode) => n.id),
       },
       options: {
         retryFailed: options.retryFailed,
