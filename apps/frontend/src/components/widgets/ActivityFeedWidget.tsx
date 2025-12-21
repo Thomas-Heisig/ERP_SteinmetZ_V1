@@ -1,60 +1,12 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/widgets/ActivityFeedWidget.tsx
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useActivities } from "../Dashboard/hooks/useDashboardData";
 import "./widgets.css";
 
-interface Activity {
-  id: string;
-  type: "info" | "success" | "warning" | "error";
-  icon: string;
-  title: string;
-  description: string;
-  timestamp: string;
-}
-
 export const ActivityFeedWidget: React.FC = () => {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/dashboard/activities`,
-        );
-        const result = await response.json();
-        if (result.success) {
-          // Map API response to component format
-          setActivities(
-            result.data.map((item: {
-              id: string;
-              type: string;
-              title: string;
-              description: string;
-              timestamp: string;
-              icon: string;
-            }) => ({
-              id: item.id,
-              type: (item.type || "info") as "info" | "success" | "warning" | "error",
-              icon: item.icon,
-              title: item.title,
-              description: item.description,
-              timestamp: formatTimestamp(item.timestamp),
-            })),
-          );
-        }
-      } catch (error) {
-        console.error("Failed to fetch activities:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchActivities();
-    const interval = setInterval(fetchActivities, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
+  const { activities, loading } = useActivities(30000);
 
   const formatTimestamp = (timestamp: string): string => {
     const date = new Date(timestamp);
@@ -107,7 +59,9 @@ export const ActivityFeedWidget: React.FC = () => {
               <div className="activity-content">
                 <h4 className="activity-title">{activity.title}</h4>
                 <p className="activity-description">{activity.description}</p>
-                <span className="activity-timestamp">{activity.timestamp}</span>
+                <span className="activity-timestamp">
+                  {formatTimestamp(activity.timestamp)}
+                </span>
               </div>
             </div>
           ))

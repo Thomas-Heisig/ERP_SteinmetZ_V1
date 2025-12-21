@@ -1,56 +1,21 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/DashboardWidgets/DashboardWidgets.tsx
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   KPIWidget,
   SystemStatusWidget,
   QuickActionsWidget,
   ActivityFeedWidget,
 } from "../widgets";
+import { useDashboardData } from "../Dashboard/hooks/useDashboardData";
 import "./DashboardWidgets.css";
 
-interface DashboardData {
-  system: {
-    uptime: number;
-    cpu: number;
-    memory: {
-      free: string;
-      total: string;
-    };
-  };
-  erp: {
-    openOrders: number;
-    pendingInvoices: number;
-    stockItems: number;
-    customers: number;
-  };
-}
-
 export const DashboardWidgets: React.FC = () => {
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/dashboard/overview`,
-        );
-        const result = await response.json();
-        setData(result);
-      } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboardData();
-    const interval = setInterval(fetchDashboardData, 60000); // Refresh every minute
-
-    return () => clearInterval(interval);
-  }, []);
+  const { data, loading } = useDashboardData({
+    refreshInterval: 60000,
+    autoRefresh: true,
+  });
 
   return (
     <div className="dashboard-widgets-container">
@@ -58,7 +23,7 @@ export const DashboardWidgets: React.FC = () => {
         {/* KPI Widgets Row */}
         <KPIWidget
           title="Open Orders"
-          value={loading ? "..." : data?.erp.openOrders || 0}
+          value={loading ? "..." : data.overview?.erp.openOrders || 0}
           subtitle="Active orders in system"
           icon="📦"
           color="primary"
@@ -68,7 +33,7 @@ export const DashboardWidgets: React.FC = () => {
 
         <KPIWidget
           title="Pending Invoices"
-          value={loading ? "..." : data?.erp.pendingInvoices || 0}
+          value={loading ? "..." : data.overview?.erp.pendingInvoices || 0}
           subtitle="Awaiting payment"
           icon="💰"
           color="warning"
@@ -78,7 +43,7 @@ export const DashboardWidgets: React.FC = () => {
 
         <KPIWidget
           title="Stock Items"
-          value={loading ? "..." : (data?.erp.stockItems || 0).toLocaleString()}
+          value={loading ? "..." : (data.overview?.erp.stockItems || 0).toLocaleString()}
           subtitle="Total inventory"
           icon="📊"
           color="success"
@@ -88,7 +53,7 @@ export const DashboardWidgets: React.FC = () => {
 
         <KPIWidget
           title="Customers"
-          value={loading ? "..." : data?.erp.customers || 0}
+          value={loading ? "..." : data.overview?.erp.customers || 0}
           subtitle="Active customers"
           icon="👥"
           color="info"
