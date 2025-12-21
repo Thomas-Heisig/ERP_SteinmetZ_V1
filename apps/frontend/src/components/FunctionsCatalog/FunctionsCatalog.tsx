@@ -3,18 +3,18 @@
 
 /**
  * Functions Catalog Component
- * 
- * A comprehensive catalog interface for browsing, searching, and managing 
+ *
+ * A comprehensive catalog interface for browsing, searching, and managing
  * ERP function nodes. Provides search capabilities, node details viewing,
  * linting functionality, and customizable actions.
- * 
+ *
  * @module FunctionsCatalog
  * @category Components
- * 
+ *
  * @example
  * ```tsx
  * import FunctionsCatalog from './components/FunctionsCatalog/FunctionsCatalog';
- * 
+ *
  * function App() {
  *   return (
  *     <FunctionsCatalog
@@ -41,7 +41,7 @@ import Panel from "./layout/Panel";
 
 /**
  * Main Functions Catalog component for browsing and managing function nodes
- * 
+ *
  * @param {FunctionsCatalogProps} props - Component configuration props
  * @returns {React.FC} Functions catalog interface
  */

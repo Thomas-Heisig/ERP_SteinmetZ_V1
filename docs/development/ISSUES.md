@@ -370,7 +370,8 @@ Es gibt kaum JSDoc-Kommentare oder Code-Dokumentation. Komplexe Funktionen sind 
 
 **Aufwand (ursprünglich)**: Laufend  
 **Aufwand (bereits investiert)**: 6 Stunden (Backend: 5h, Frontend: 1h) ✅  
-**Aufwand (verbleibend)**: 
+**Aufwand (verbleibend)**:
+
 - Backend: 5-8 Stunden für vollständige JSDoc-Migration
 - Frontend: 8-12 Stunden für vollständige Komponenten-Dokumentation
 
@@ -524,7 +525,7 @@ Issues werden monatlich reviewed und nach Priorität neu bewertet.
 ### Empfohlene Reihenfolge
 
 1. **ISSUE-013** (Code-Dokumentation) - Frontend JSDoc Migration (1-2 Wochen) 🆕
-2. **ISSUE-017** (TypeScript `any` Types) - Type Safety verbessern (2-3 Tage) 
+2. **ISSUE-017** (TypeScript `any` Types) - Type Safety verbessern (2-3 Tage)
 3. **ISSUE-008** (Monitoring & Observability) - Production-Readiness Implementation
 4. **ISSUE-009** (Dependencies) - Wartung und Updates
 

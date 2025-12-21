@@ -3,7 +3,7 @@
 
 /**
  * Unified Dashboard Data Hook
- * 
+ *
  * Consolidates all dashboard API calls into a single hook to:
  * - Reduce duplicate fetching logic
  * - Enable request batching and caching
@@ -85,22 +85,22 @@ interface UseDashboardDataReturn {
 
 /**
  * Fetches all dashboard data in parallel
- * 
+ *
  * @param options Configuration options
  * @returns Dashboard data, loading state, error state, and refetch function
- * 
+ *
  * @example
  * ```tsx
  * const { data, loading, error, refetch } = useDashboardData({
  *   refreshInterval: 30000, // 30 seconds
  *   autoRefresh: true
  * });
- * 
+ *
  * if (loading) return <LoadingSpinner />;
  * if (error) return <ErrorMessage error={error} />;
- * 
+ *
  * return (
- *   <Dashboard 
+ *   <Dashboard
  *     health={data.health}
  *     activities={data.activities}
  *     overview={data.overview}
@@ -109,7 +109,7 @@ interface UseDashboardDataReturn {
  * ```
  */
 export function useDashboardData(
-  options: UseDashboardDataOptions = {}
+  options: UseDashboardDataOptions = {},
 ): UseDashboardDataReturn {
   const {
     refreshInterval = 60000, // Default 60 seconds
@@ -123,7 +123,7 @@ export function useDashboardData(
     overview: null,
     stats: null,
   });
-  
+
   const [loading, setLoading] = useState(fetchOnMount);
   const [error, setError] = useState<Error | null>(null);
 
@@ -136,12 +136,13 @@ export function useDashboardData(
       setError(null);
 
       // Fetch all endpoints in parallel
-      const [healthRes, activitiesRes, overviewRes, statsRes] = await Promise.allSettled([
-        fetch(`${API_BASE_URL}/api/dashboard/health`),
-        fetch(`${API_BASE_URL}/api/dashboard/activities`),
-        fetch(`${API_BASE_URL}/api/dashboard/overview`),
-        fetch(`${API_BASE_URL}/api/dashboard/widgets/stats`),
-      ]);
+      const [healthRes, activitiesRes, overviewRes, statsRes] =
+        await Promise.allSettled([
+          fetch(`${API_BASE_URL}/api/dashboard/health`),
+          fetch(`${API_BASE_URL}/api/dashboard/activities`),
+          fetch(`${API_BASE_URL}/api/dashboard/overview`),
+          fetch(`${API_BASE_URL}/api/dashboard/widgets/stats`),
+        ]);
 
       // Process results
       const newData: DashboardData = {
@@ -175,7 +176,10 @@ export function useDashboardData(
 
       setData(newData);
     } catch (err) {
-      const error = err instanceof Error ? err : new Error("Failed to fetch dashboard data");
+      const error =
+        err instanceof Error
+          ? err
+          : new Error("Failed to fetch dashboard data");
       setError(error);
       console.error("Dashboard data fetch error:", error);
     } finally {
@@ -247,7 +251,9 @@ export function useActivities(refreshInterval = 30000) {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/dashboard/activities`);
+        const response = await fetch(
+          `${API_BASE_URL}/api/dashboard/activities`,
+        );
         const result = await response.json();
         if (result.success) {
           setActivities(result.data);

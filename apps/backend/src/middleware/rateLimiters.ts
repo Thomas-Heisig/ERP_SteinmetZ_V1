@@ -34,12 +34,12 @@ export const aiRateLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: "Too many AI requests from this IP, please try again later.",
-  handler: (req, res, next, options) => {
-    const retryAfter = Math.ceil(options.windowMs / 1000);
+  handler: (req, res) => {
+    const retryAfter = Math.ceil((15 * 60 * 1000) / 1000);
     logger.warn({
       ip: req.ip,
       endpoint: req.path,
-      limit: options.max,
+      limit: 20,
       message: "AI rate limit exceeded",
     });
     sendRateLimitError(
@@ -74,12 +74,12 @@ export const strictAiRateLimiter = rateLimit({
   legacyHeaders: false,
   message:
     "Too many expensive AI requests from this IP, please try again later.",
-  handler: (req, res, next, options) => {
-    const retryAfter = Math.ceil(options.windowMs / 1000);
+  handler: (req, res) => {
+    const retryAfter = Math.ceil((15 * 60 * 1000) / 1000);
     logger.warn({
       ip: req.ip,
       endpoint: req.path,
-      limit: options.max,
+      limit: 5,
       message: "Strict AI rate limit exceeded (expensive operation)",
     });
     sendRateLimitError(
@@ -109,12 +109,12 @@ export const audioRateLimiter = rateLimit({
   legacyHeaders: false,
   message:
     "Too many audio transcription requests from this IP, please try again later.",
-  handler: (req, res, next, options) => {
-    const retryAfter = Math.ceil(options.windowMs / 1000);
+  handler: (req, res) => {
+    const retryAfter = Math.ceil((60 * 60 * 1000) / 1000);
     logger.warn({
       ip: req.ip,
       endpoint: req.path,
-      limit: options.max,
+      limit: 10,
       message: "Audio transcription rate limit exceeded",
     });
     sendRateLimitError(
@@ -143,12 +143,12 @@ export const generalRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: "Too many requests from this IP, please try again later.",
-  handler: (req, res, next, options) => {
-    const retryAfter = Math.ceil(options.windowMs / 1000);
+  handler: (req, res) => {
+    const retryAfter = Math.ceil((15 * 60 * 1000) / 1000);
     logger.warn({
       ip: req.ip,
       endpoint: req.path,
-      limit: options.max,
+      limit: 100,
       message: "General API rate limit exceeded",
     });
     sendRateLimitError(

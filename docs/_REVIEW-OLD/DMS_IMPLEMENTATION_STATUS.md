@@ -306,6 +306,7 @@ Das Document Management System (DMS) wurde erfolgreich von Mock-Daten auf echte 
    ```
 
 2. ✅ AI-Endpoint implementieren
+
    ```typescript
    router.post("/:id/ai-tags", async (req, res) => {
      const document = await documentService.getDocumentById(id);

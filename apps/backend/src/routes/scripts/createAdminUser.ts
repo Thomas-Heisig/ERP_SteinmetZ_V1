@@ -7,8 +7,8 @@
  */
 
 import "dotenv/config";
-import { AuthService } from "../routes/auth/authService.js";
-import db from "../routes/database/dbService.js";
+import { AuthService } from "../../routes/auth/authService.js";
+import db from "../../routes/database/dbService.js";
 
 interface RoleRecord {
   id: string;

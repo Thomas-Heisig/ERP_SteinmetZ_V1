@@ -58,14 +58,25 @@ export class WorkflowEngine {
       tags: "array?",
       variables: "object?",
       enabled: "boolean?",
+      triggers: "array?",
+      permissions: "object?",
+      scheduling: "object?",
+      retry_policy: "object?",
+      notifications: "object?",
+      dependencies: "array?",
+      outputs: "object?",
     } as const;
 
     const validation = validateSchema<WorkflowDefinition>(
       def,
-      // enger Cast nur an dieser Stelle, damit die "?"-Marker verwendbar bleiben
-      schema as unknown as Record<
+      schema as Record<
         keyof WorkflowDefinition,
-        "string" | "number" | "boolean" | "object" | "array"
+        | "string"
+        | "number"
+        | "boolean"
+        | "object"
+        | "array"
+        | `${"string" | "number" | "boolean" | "array" | "object"}?`
       >,
       {
         allowExtra: true,

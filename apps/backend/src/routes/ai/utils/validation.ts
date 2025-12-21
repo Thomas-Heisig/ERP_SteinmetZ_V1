@@ -139,7 +139,11 @@ export function validateAIConfig(config: Record<string, unknown>): {
     issues.push("Feld 'provider' fehlt oder ist ungültig.");
   }
 
-  if (!config.model || !validateModelName(config.model)) {
+  if (
+    !config.model ||
+    !isString(config.model) ||
+    !validateModelName(config.model)
+  ) {
     issues.push(
       "Feld 'model' fehlt oder ist ungültig (nur a–z, 0–9, -, _, .).",
     );
@@ -151,7 +155,7 @@ export function validateAIConfig(config: Record<string, unknown>): {
 
   if (
     "max_tokens" in config &&
-    (!isNumber(config.max_tokens) || config.max_tokens <= 0)
+    (!isNumber(config.max_tokens) || (config.max_tokens as number) <= 0)
   ) {
     issues.push("Feld 'max_tokens' muss eine positive Zahl sein.");
   }
