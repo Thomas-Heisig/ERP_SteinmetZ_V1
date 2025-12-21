@@ -1,6 +1,6 @@
 # ERP SteinmetZ - TODO Liste
 
-**Stand**: 20. Dezember 2025  
+**Stand**: 21. Dezember 2025  
 **Version**: 0.3.0
 
 Diese Liste dokumentiert alle anstehenden Aufgaben, sortiert nach Priorität und Phase.
@@ -579,6 +579,25 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - [ ] Phase 2: Routes
   - [ ] Phase 3: Supporting Code
   - **Aufwand**: 2-3 Stunden → 5 Stunden erledigt (Infrastruktur + Phase 1 erweitert ✅), 5-8 Stunden für vollständige Migration verbleibend
+
+- [ ] **Frontend Component Documentation** 🆕 (21. Dez 2025 - In Bearbeitung)
+  - [x] Dokumentationsstruktur nach Backend-Standard etabliert
+  - [x] JSDoc für UI-Komponenten hinzugefügt (4/50+ Komponenten)
+    - [x] AIAnnotator.tsx - Vollständige Modul-Dokumentation
+    - [x] FunctionsCatalog.tsx - Komponenten-Dokumentation mit Beispielen
+    - [x] HelpCenter.tsx - Interface- und Komponenten-Dokumentation
+    - [x] Card.tsx - Props-Dokumentation mit Beispielen
+    - [x] LoadingFallback.tsx - Suspense-Fallback-Dokumentation
+  - [ ] Weitere Komponenten dokumentieren (~46 verbleibend)
+    - [ ] Dashboard-Komponenten (Dashboard.tsx, CategoryGrid, etc.)
+    - [ ] Navigation-Komponenten (MainNavigation, Sidebar, etc.)
+    - [ ] Feature-Komponenten (BatchProcessing, QualityDashboard, etc.)
+    - [ ] UI-Komponenten (Button ✅, Input, Table, Toast, etc.)
+    - [ ] Page-Komponenten (Settings, Sales, Procurement, etc.)
+  - **Aufwand**: 2-3 Tage → 1 Stunde erledigt (5 Komponenten ✅), 2 Tage verbleibend
+  - **Priorität**: Mittel - Verbessert Developer Experience und Code-Wartbarkeit
+  - **Stil**: Analog Backend mit @module, @category, @example, @param, @returns
+  - **Ziel**: Alle 50+ Frontend-Komponenten mit JSDoc wie Backend-Services
 
 ### UI/UX Enhancements
 
@@ -1293,8 +1312,21 @@ Folgt internationalen Standards: ISO/IEC 25010 (Qualität), IEEE 830 (Requiremen
   - **Aufwand**: Überprüfung abgeschlossen
   - **Priorität**: Niedrig - keine direkten Abhängigkeiten betroffen
 
+### Dokumentation
+
+- [x] **Dokumentations-Reorganisation** ✅ ERLEDIGT (21. Dez 2025)
+  - [x] Root-Verzeichnis aufgeräumt
+    - [x] FRONTEND_CONSOLIDATION_REPORT.md → docs/archive/
+    - [x] TASK_COMPLETION.md → docs/archive/
+    - [x] IMPLEMENTATION_SUMMARY.md → docs/archive/IMPLEMENTATION_SUMMARY_2025_12_20.md
+  - [x] Frontend-Komponenten JSDoc hinzugefügt (5 Komponenten)
+  - [x] TODO.md aktualisiert mit aktuellen Aufgaben (21. Dez 2025)
+  - [x] ISSUES.md wird separat aktualisiert
+  - **Aufwand**: 2 Stunden → 1.5 Stunden erledigt ✅
+  - **Ergebnis**: Klarere Projektstruktur, archivierte Completion-Reports
+
 ---
 
-**Letzte Aktualisierung**: 20. Dezember 2025  
+**Letzte Aktualisierung**: 21. Dezember 2025  
 **Maintainer**: Thomas Heisig  
 **Nächster Review**: Januar 2026

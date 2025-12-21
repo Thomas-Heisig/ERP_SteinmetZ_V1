@@ -1,6 +1,32 @@
 // SPDX-License-Identifier: MIT
 // src/components/FunctionsCatalog/FunctionsCatalog.tsx
 
+/**
+ * Functions Catalog Component
+ * 
+ * A comprehensive catalog interface for browsing, searching, and managing 
+ * ERP function nodes. Provides search capabilities, node details viewing,
+ * linting functionality, and customizable actions.
+ * 
+ * @module FunctionsCatalog
+ * @category Components
+ * 
+ * @example
+ * ```tsx
+ * import FunctionsCatalog from './components/FunctionsCatalog/FunctionsCatalog';
+ * 
+ * function App() {
+ *   return (
+ *     <FunctionsCatalog
+ *       roles={['admin', 'user']}
+ *       features={{ search: true, lint: true }}
+ *       onNodeSelect={(node) => console.log('Selected:', node)}
+ *     />
+ *   );
+ * }
+ * ```
+ */
+
 import React, { useCallback } from "react";
 
 import { useFunctionsCatalog } from "../../hooks/useFunctionsCatalog";
@@ -13,6 +39,12 @@ import NodeDetails from "./details/NodeDetails";
 import LintPanel from "./lint/LintPanel";
 import Panel from "./layout/Panel";
 
+/**
+ * Main Functions Catalog component for browsing and managing function nodes
+ * 
+ * @param {FunctionsCatalogProps} props - Component configuration props
+ * @returns {React.FC} Functions catalog interface
+ */
 export default function FunctionsCatalog({
   roles,
   features,
