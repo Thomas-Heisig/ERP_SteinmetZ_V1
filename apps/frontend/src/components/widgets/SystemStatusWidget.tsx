@@ -1,44 +1,12 @@
 // SPDX-License-Identifier: MIT
 // apps/frontend/src/components/widgets/SystemStatusWidget.tsx
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useSystemHealth } from "../Dashboard/hooks/useDashboardData";
 import "./widgets.css";
 
-interface SystemHealth {
-  status: "healthy" | "warning" | "error";
-  uptime: number;
-  memory: {
-    free: string;
-    total: string;
-  };
-  loadavg: number[];
-  timestamp: string;
-}
-
 export const SystemStatusWidget: React.FC = () => {
-  const [health, setHealth] = useState<SystemHealth | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchHealth = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/dashboard/health`,
-        );
-        const data = await response.json();
-        setHealth(data);
-      } catch (error) {
-        console.error("Failed to fetch system health:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHealth();
-    const interval = setInterval(fetchHealth, 30000); // Refresh every 30 seconds
-
-    return () => clearInterval(interval);
-  }, []);
+  const { health, loading } = useSystemHealth(30000);
 
   const formatUptime = (seconds: number) => {
     const days = Math.floor(seconds / 86400);
