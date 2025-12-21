@@ -403,7 +403,7 @@ router.post(
   asyncHandler(async (req, res) => {
     const validated = generateSchema.parse(req.body);
     const { types, force, options: rawOptions } = validated;
-    
+
     // Apply defaults manually
     const options: GenerateOptions = {
       parallel: rawOptions?.parallel ?? true,
@@ -550,7 +550,7 @@ router.post(
   asyncHandler(async (req, res) => {
     const validated = batchOperationSchema.parse(req.body);
     const { operation, filters, options: rawOptions } = validated;
-    
+
     // Apply defaults manually
     const options: BatchOptions = {
       retryFailed: rawOptions?.retryFailed ?? true,
@@ -756,7 +756,9 @@ router.get(
 
     // Filter out any null results and merge with annotation data
     const merged = await Promise.all(
-      fullNodes.filter((n): n is CatalogNode => n !== null).map(mergeFunctionData),
+      fullNodes
+        .filter((n): n is CatalogNode => n !== null)
+        .map(mergeFunctionData),
     );
 
     res.json({
